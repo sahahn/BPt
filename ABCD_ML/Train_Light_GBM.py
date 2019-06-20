@@ -4,7 +4,6 @@ from sklearn.model_selection import ParameterSampler, KFold, train_test_split
 from scipy.stats import (randint as sp_randint, uniform as sp_uniform)
 import numpy as np
 
-
 DEFAULT_PARAM_GRID = {
             'num_leaves'       : sp_randint(6, 50), 
             'min_child_samples': sp_randint(100, 500), 

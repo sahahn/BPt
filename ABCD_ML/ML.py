@@ -128,7 +128,7 @@ def evaluate_binary_model(X, y, model_type='logistic cv', n_splits=3, n_repeats=
 
 
 def test_binary_model(X, y, X_test, y_test, model_type='logistic cv', int_cv=3,
-                     metric='roc', class_weight=='balanced', extra_params={}):
+                     metric='roc', class_weight='balanced', extra_params={}):
     '''Wrapper function to perform a single test with explicit X,y and test set for classification'''
 
 

@@ -84,45 +84,4 @@ def train_binary_model(X, y, model_type='logistic cv', cv=3, class_weight='balan
 
 
 
-from sklearn.model_selection import RepeatedStratifiedKFold, RepeatedKFold, RandomizedSearchCV, train_test_split,
-from sklearn.model_selection import KFold, ParameterSampler
-from sklearn.metrics import roc_auc_score, mean_squared_error, r2_score
-from scipy.stats import randint as sp_randint
-from scipy.stats import uniform as sp_uniform
-from sklearn.linear_model import LogisticRegressionCV, ElasticNetCV, LinearRegression, OrthogonalMatchingPursuitCV, LarsCV, RidgeCV
-from sklearn.svm import LinearSVR
-from sklearn.tree import DecisionTreeClassifier
-
-
-from sklearn.neural_network import MLPClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from sklearn.gaussian_process import GaussianProcessClassifier
-from sklearn.gaussian_process.kernels import RBF
-from sklearn.ensemble import RandomForestClassifier
-
-
-
-
-
-
-
-
-def train_binary_model(X, y, model_type='logistic cv', int_cv=3, class_weight='balanced'):
-     
-    if model_type == 'logistic cv':
-        model = LogisticRegressionCV(cv=int_cv, class_weight=class_weight, max_iter=1000)
-
-
-    
-    elif model_type == 'DTC':
-        
-    model.fit(X, y)
-    
-    return model
-
-
-
 

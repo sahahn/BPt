@@ -119,7 +119,6 @@ def evaluate_binary_model(X, y, model_type='logistic cv', n_splits=3, n_repeats=
 
         scores.append(test_binary_model(X_train, y_train, X_test, y_test, model_type,
                                         int_cv, metric, class_weight, extra_params))
-        scores.append(score)
 
     scores = np.array(scores)
     macro_scores = np.mean(np.reshape(scores, (n_repeats, n_splits)), axis=1)

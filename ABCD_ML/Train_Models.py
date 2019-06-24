@@ -7,6 +7,16 @@ Scripts for training models
 from sklearn.linear_model import (LogisticRegressionCV, ElasticNetCV, LinearRegression,
 OrthogonalMatchingPursuitCV,LarsCV, RidgeCV)
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import LinearSVR
 from xgboost import XGBRegressor

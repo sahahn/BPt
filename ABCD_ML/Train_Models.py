@@ -76,12 +76,12 @@ def train_binary_model(X, y, model_type='logistic cv', cv=3, class_weight='balan
     
     elif model_type == 'knn':
         raw_model = KNeighborsClassifier(n_neighbors=1, weights='uniform') 
-        param_grid = {n_neighbors : list(range(1,20))}
+        param_grid = {'n_neighbors' : list(range(1,20))}
         model = param_search(raw_model, param_grid, **extra_params)
 
     elif model_type == 'dtc':
         raw_model = DecisionTreeClassifier()
-        param_grid = {max_depth : list(range(1, 20)), min_samples_split: list(range(2, 10))}
+        param_grid = {'max_depth' : list(range(1, 20)), 'min_samples_split': list(range(2, 50))}
         model = param_search(raw_model, param_grid, **extra_params)
     
     elif model_type == 'full lightgbm':

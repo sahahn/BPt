@@ -10,6 +10,7 @@ RandomizedSearchCV, train_test_split, ParameterSampler)
 from sklearn.metrics import (roc_auc_score, mean_squared_error, r2_score, balanced_accuracy_score,
 f1_score, log_loss)
 
+from sklearn.preprocessing import (MinMaxScaler,RobustScaler,StandardScaler)
 from ABCD_ML.Ensemble_Model import Ensemble_Model
 from ABCD_ML.Train_Models import train_regression_model, train_binary_model
 
@@ -17,6 +18,22 @@ import numpy as np
 import warnings
 
 #warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+def feature_transformation(feature,method='Standard'):
+    ''' Transform continuous features by different scaler so that all values
+    would be in the same range'''
+    
+    if method=='Standard':
+        scaler = StandardScaler()
+    elif method=='MinMax':
+        scaler = MinMaxScaler()
+    elif method=='Robust':
+        scaler = RobustScaler()
+    elif method=='Power':
+        pt=PowerTransformer(method='yeo-johnson',standardize=False)
+        return pt.fit_transform(feature)
+    scaler.fit(feature)
+    return scaler.transform(feature)
 
 def metric_from_string(metric):
     ''' Helper function to convert from string input to sklearn metric, 

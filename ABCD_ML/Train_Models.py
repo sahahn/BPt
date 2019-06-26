@@ -8,6 +8,7 @@ from sklearn.linear_model import (LogisticRegressionCV, ElasticNetCV, LinearRegr
 OrthogonalMatchingPursuitCV,LarsCV, RidgeCV)
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.svm import LinearSVR
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor, LGBMClassifier
@@ -34,7 +35,7 @@ def train_regression_model(X, y, model_type='elastic cv', cv=3, extra_params={})
         model = LinearRegression(fit_intercept=True)
     
     elif model_type == 'elastic cv':
-        model = ElasticNetCV(cv=cv)
+        model = ElasticNetCV(cv=cv, max_iter=5000)
     
     elif model_type == 'omp cv':
         model = OrthogonalMatchingPursuitCV(cv=cv)
@@ -44,6 +45,9 @@ def train_regression_model(X, y, model_type='elastic cv', cv=3, extra_params={})
     
     elif model_type == 'ridge cv':
         model = RidgeCV(cv=cv)
+
+    elif model_type == 'gaussian process' or model_type == 'gp':
+        model = GaussianProcessRegressor()
     
     elif model_type == 'full lightgbm':
         model = Train_Light_GBM(X, y, int_cv=cv, regression=True, **extra_params)
@@ -59,7 +63,7 @@ def train_binary_model(X, y, model_type='logistic cv', cv=3, class_weight='balan
     model_type = model_type.lower()
 
     if model_type == 'logistic cv':
-        model = LogisticRegressionCV(cv=cv, class_weight=class_weight, max_iter=1000)
+        model = LogisticRegressionCV(cv=cv, class_weight=class_weight, max_iter=5000)
     
     elif model_type == 'nb':
         model = GaussianNB()

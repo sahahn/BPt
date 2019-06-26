@@ -7,6 +7,16 @@ Scripts for training models
 from sklearn.linear_model import (LogisticRegressionCV, ElasticNetCV, LinearRegression,
 OrthogonalMatchingPursuitCV,LarsCV, RidgeCV)
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.svm import LinearSVR
@@ -70,12 +80,12 @@ def train_binary_model(X, y, model_type='logistic cv', cv=3, class_weight='balan
     
     elif model_type == 'knn':
         raw_model = KNeighborsClassifier(n_neighbors=1, weights='uniform') 
-        param_grid = {n_neighbors : list(range(1,20))}
+        param_grid = {'n_neighbors' : list(range(1,20))}
         model = param_search(raw_model, param_grid, **extra_params)
 
     elif model_type == 'dtc':
         raw_model = DecisionTreeClassifier()
-        param_grid = {max_depth : list(range(1, 20)), min_samples_split: list(range(2, 10))}
+        param_grid = {'max_depth' : list(range(1, 20)), 'min_samples_split': list(range(2, 50))}
         model = param_search(raw_model, param_grid, **extra_params)
     
     elif model_type == 'full lightgbm':

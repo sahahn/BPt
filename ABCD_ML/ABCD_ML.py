@@ -1,22 +1,29 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
+from scipy.stats.mstats import winsorize
+from ABCD_ML.Data_Helpers import (process_binary_input, process_categorical_input,
+                                  filter_float_by_outlier)
 
 class ABCD_ML():
 
     def __init__(self,
                  eventname = 'baseline_year_1_arm_1',
                  use_default_subject_ids = True,
+                 default_na_values = ['777', '999'],
                  verbose = True
                  ):
 
         self.eventname = eventname
         self.use_default_subject_ids = use_default_subject_ids
+        self.default_na_values = default_na_values
         self.verbose = verbose
 
         self.data, self.covars = [], []
         self.scores, self.strat = [], []
         self.name_map, self.exclusions = {}, set()
+        self.covar_encoders, self.score_encoder, self.strat_encoders = {}, None, {}
+        self.score_key = 'score'
 
     def print(self, *args):
         '''Overriding the print function to allow from verbosity'''
@@ -24,9 +31,23 @@ class ABCD_ML():
         if self.verbose:
             print(*args)
     
+    def merge_existing(self, class_data, local_data):
+        '''Internal helper function to handle either merging dataframes after load,
+           or if not loaded then setting class value'''
+
+        #If other covars data is already loaded, merge with it
+        if len(class_data) > 0:
+            class_data = pd.merge(class_data, local_data, on='src_subject_id')
+            self.print('Merged with existing!')
+            return class_data
+        else:
+            return local_data
+
     def load_data(self,
-                  data_loc,
-                  drop_keys = []
+                  loc,
+                  drop_keys = [],
+                  filter_outlier_percent = None,
+                  winsorize_val = None
                   ):
         ''' 
         Load a 2.0_ABCD_Data_Explorer release formatted neuroimaging dataset of ROI's
@@ -34,93 +55,237 @@ class ABCD_ML():
         data_loc -- The location of the dataset csv file
         eventname -- The eventname to select datapoints by, if None then ignore
         drop_keys -- A list of keys to drop columns by, where if any key given in a columns name,
-        then that column will be dropped (Note: if a name mapping exists, this drop step will be conducted after renaming)
+            then that column will be dropped (Note: if a name mapping exists,
+            this drop step will be conducted after renaming)
+        filter_outlier_percent -- For float/ordinal only:
+            A percent of values to exclude from either end of the score distribution,
+            provided as either 1 number, or a tuple (% from lower, % from higher). None, to perform no filtering.
+        winsorize_val -- The (limits[0])th lowest values are set to the (limits[0])th percentile,
+            and the (limits[1])th highest values are set to the (1 - limits[1])th
+            percentile. If one value passed, used for both ends.
         '''
         
-        self.print('Loading', data_loc) 
-        data = pd.read_csv(data_loc)
+        self.print('Loading', loc) 
+        data = pd.read_csv(loc, na_values=self.default_na_values)
 
         #Drop the first two columns by default (typically specific id, then dataset id for NDA csvs)
         first_cols = list(data)[:2]
         data = data.drop(first_cols, axis=1)
-        self.print('dropped', first_cols)
+        self.print('dropped', first_cols, 'columns by default')
 
         #Perform common operations (check subject id, drop duplicate subjects ect...)
         data = self.proc_df(data)
 
         #Drop any columns if any of the drop keys occur in the column name
         column_names = list(data)
-
         to_drop = [name for name in column_names for drop_key in drop_keys if drop_key in name]
         data = data.drop(to_drop, axis=1)
-        self.print('Dropped', len(to_drop), ' columns, per drop_keys argument')
+        self.print('Dropped', len(to_drop), 'columns, per drop_keys argument')
 
-        missing_values = data.isna().any(axis=1)
-        data = data.dropna()
-        self.print('Dropped', sum(missing_values), 'rows for missing values')
+        #Drop any rows with missing data
+        data = self.drop_na(data)
+        self.print('Dropped rows with missing data')
+
+        data_keys = list(data)
+        data_keys.remove('src_subject_id')
+
+        if filter_outlier_percent != None:
+            for key in data_keys:
+                data = filter_float_by_outlier(data, key, filter_outlier_percent, in_place=False, verbose=False)
+
+            data = data.dropna() #To actually remove the outliers
+            self.print('Filtered data for outliers with value: ', filter_outlier_percent)
+
+        if winsorize_val != None:
+            
+            if type(winsorize_val) != tuple:
+                winsorize_val = (winsorize_val)
+
+            data[data_keys] = winsorize(data[data_keys], winsorize_val, axis=0)
+            self.print('Winsorized data with value: ', winsorize_val)
 
         self.print('loaded shape: ', data.shape)
 
         #If other data is already loaded, merge this data with existing loaded data
-        if len(self.data) > 0:
-
-            self.data = pd.merge(self.data, data, on='src_subject_id')
-            self.print('Merged with existing data, new data shape: ', self.data.shape)
-        
-        else:
-            self.data = data
-
+        self.data = self.merge_existing(self.data, data)
         self.process_new()
 
     def load_custom_data(self):
         pass
 
-    def load_covars(self):
-        pass
+    def common_load(self, loc, col_name=None, col_names=None):
+        '''
+        Internal helpfer function to perform set of loading functions used by multiple loaders.
+        2.0_ABCD_Data_Explorer release formatted.
+
+        If col_name passed, just returns df
+        If col_names passed, returns df, col_names
+        '''
+
+        #Read csv data from loc
+        data = pd.read_csv(loc, na_values=self.default_na_values)
+
+        #Perform common df corrections
+        data = self.proc_df(data)
+
+        if col_name != None:
+
+            data = data[['src_subject_id', col_name]]
+            return data.dropna()
+
+        if type(col_names) != list:
+            col_names = list(col_names)
+
+        data = data[['src_subject_id'] + col_names].dropna()
+        return data, col_names
+
+    def load_covars(self,
+                    loc,
+                    col_names,
+                    data_types,
+                    dummy_code_categorical = True,
+                    filter_float_outlier_percent = None,
+                    standardize = True,
+                    normalize = True,
+                    ):
+
+        drop = None
+        if dummy_code_categorical:
+            drop = 'first'
+
+        self.print('Reading covariates from', loc)
+        covars, col_names = self.common_load(loc, col_names=col_names)
+
+        if type(data_types) != list:
+            data_types = list(data_types)
+
+        assert len(data_types) == len(col_names), "You must provide the same # of datatypes as column names!"
+
+        for key, d_type in zip(col_names, data_types):
+
+            self.print('load:', key)
+
+            if d_type == 'binary' or d_type == 'b':
+                covars, encoder = process_binary_input(covars, key, self.verbose)
+                self.covar_encoders[key] = encoder
+
+            elif d_type == "categorical" or d_type == 'c':
+                covars, new_keys, encoder = process_categorical_input(covars, key,
+                            drop=drop, verbose=self.verbose)
+                self.covar_encoders[key] = encoder
+
+            elif (d_type == 'float' or d_type == 'ordinal' or
+                  d_type == 'f' or d_type == 'o'):
+
+                if filter_float_outlier_percent != None and (d_type == 'float' or d_type == 'f'):
+                    covars = filter_float_by_outlier(covars, key, filter_outlier_percent,
+                                                     in_place=False, verbose=self.verbose)
+
+                if standardize:
+                    covars[key] -= np.mean(covars[key])
+                    covars[key] /= np.std(covars[key])
+
+                if normalize:
+                    min_val, max_val = np.min(covars[key]), np.max(covars[key])
+                    covars[key] = (covars[key] - min_val) / (max_val - min_val)
+
+        #Filter float by outlier just replaces with nan, so actually remove here
+        covars = covars.dropna()
+
+        #If other data is already loaded, merge this data with existing loaded data
+        self.covars = self.merge_existing(self.covars, covars)
+        self.process_new() 
 
     def load_scores(self,
-                    scores_loc,
-                    score_col_name,
+                    loc,
+                    col_name,
+                    data_type = 'float',
+                    filter_outlier_percent = None
                     ):
 
         '''
-        Loads in a set of subject ids and associated scores from a 2.0_ABCD_Data_Explorer release formatted csv
+        Loads in a set of subject ids and associated scores from a 2.0_ABCD_Data_Explorer release formatted csv.
+        Scores can be either 'binary', 'categorical', 'ordinal' or 'float', where ordinal and float are treated the same.
+        
+        For binary: scores are read in and label encoded to be 0 and 1, 
+        (Will work if passed column of unique string also, e.g. 'M' and 'F')
+       
+        For categorical: scores are read in and by default one-hot encoded,
+        Note: This function is designed only to work with categorical scores read in from one column!
+        *Reading multiple scores from multiple places is not supported as of now.
 
+        For ordinal + float: scores are read in as a floating point number,
+        and optionally then filtered for outliers with the filter_outlier_percent flag.
+        
         scores_loc -- The location of the scores csv file
         score_col_name -- The name of the column with the score of interest
-        eventname -- The eventname to select datapoints by, if None then ignore
-        (Note: if a name mapping exists, the score col name will refer to the changes name)
+            Note: if a name mapping exists, the score col name will refer to the changes name
+        score_data_type -- The datatype of the score, 'binary', 'categorical', 'ordinal' or 'float',
+            explained in more detail above. Can also pass in 'b', 'c', 'o' or 'f'
+        filter_outlier_percent -- For float/ordinal only:
+            A percent of values to exclude from either end of the score distribution,
+            provided as either 1 number, or a tuple (% from lower, % from higher). None, to perform no filtering.
+        
+        '''
+
+        self.score_key = 'score'
+
+        self.print('Loading ', loc)
+        scores = self.common_load(loc, col_name=col_name)
+       
+        #Rename the column with score to default score key name
+        scores = scores.rename({col_name: self.score_key}, axis=1)
+
+        if data_type == 'binary' or data_type == 'b':
+
+            #Processing for binary, with some tolerance to funky input
+            scores, self.score_encoder = process_binary_input(scores, self.score_key, self.verbose)
+
+        elif data_type == 'categorical' or data_type == 'c':
+            
+            #Processing for categorical input
+            scores, self.score_key, self.score_encoder = process_categorical_input(scores, self.score_key,
+                                                                         drop=None, verbose=self.verbose)
+        elif (data_type == 'float' or data_type == 'ordinal' or
+              data_type == 'f' or data_type == 'o'):
+
+            if filter_outlier_percent != None:
+                scores = filter_float_by_outlier(scores, self.score_key, filter_outlier_percent,
+                                                         in_place=True, verbose=self.verbose)
+               
+        self.print('Final shape: ', scores.shape)
+        self.scores = scores #By default on store one scores, so don't merge
+        self.process_new()
+
+    def load_strat_values(self,
+                          loc,
+                          col_names
+                          ):
+        '''
+        Load stratification values from a 2.0_ABCD_Data_Explorer release formatted csv
+
+        strat_loc -- Location of the csv with stratification values 
+        strat_col_names -- list of column names to load
         '''
         
-        self.print('Loading ', scores_loc)
+        self.print('Reading stratification values from', loc)
+        strat, col_names = self.common_load(loc, col_names=col_names)
 
-        #Read in the dataframe
-        scores = pd.read_csv(scores_loc)
+        #Encode each column into unique values
+        for col in col_names:
+            
+            label_encoder = LabelEncoder()
+            strat[col] = label_encoder.fit_transform(strat[col])
+            self.strat_encoders[col] = label_encoder
 
-        #Perform common corrections on the scores dataframe
-        scores = self.proc_df(scores)
-
-        assert score_col_name in scores, "No column with name " + score_col_name
-
-        #Rename the column with score, to score
-        scores = scores.rename({score_col_name: 'score'}, axis=1)
-
-        #Limit the dataframe to just subject and score columns
-        scores = scores[['src_subject_id', 'score']]
-
-        #Dropping missing scores, or scores that are NaN
-        invalid_score_inds = scores[np.isnan(scores.score)].index
-        scores = scores.drop(index=invalid_score_inds)
-        self.print('Dropped', len(invalid_score_inds), 'scores/subjects for NaN scores')
-
-        self.print('Final shape: ', scores.shape)
-        self.scores = scores
+        self.strat = self.merge_existing(self.strat, strat)
         self.process_new()
 
     def load_custom_scores(self,
                            scores_loc,
                            subject_ind=0,
-                           score_ind=1
+                           score_ind=1,
+                           filter_outlier_percent = None
                            ):
 
         '''
@@ -129,9 +294,13 @@ class ABCD_ML():
         scores_loc -- The location of the scores csv file
         subject_ind -- The column index within the csv where subject is saved, if not already named src_subject_id
         score_ind -- The column index within the csv where the score is saved, if not already named score
+        filter_outlier_percent -- A percent of values to exclude from either end of the score distribution,
+            provided as either 1 number, or a tuple (% from lower, % from higher). None, to perform no filtering.
         '''
 
-        scores = pd.read_csv(scores_loc)
+        pass
+
+        scores = pd.read_csv(scores_loc, na_values=self.default_na_values)
         column_names = list(scores)
        
         #Rename subject column to src_subject_id
@@ -153,49 +322,19 @@ class ABCD_ML():
         invalid_score_inds = scores[np.isnan(scores.score)].index
         scores = scores.drop(index=invalid_score_inds)
         self.print('Dropped', len(invalid_score_inds), 'scores/subjects for NaN scores')
+        self.print('Min-Max Score (before outlier filtering):', np.min(scores.score), np.max(scores.score))
 
+        if filter_outlier_percent != None:
+            scores = self.filter_by_outlier(scores, 'score', filter_outlier_percent)
+            self.print('Filtered score for outliers, dropping rows with params: ', filter_outlier_percent)
+            self.print('Min-Max Score (post outlier filtering):', np.min(scores.score), np.max(scores.score))
+
+        self.print('Final shape: ', scores.shape)
         self.scores = scores
         self.process_new()
 
-    def load_strat_values(self,
-                          strat_loc,
-                          strat_col_names
-                          ):
-        '''
-        Load stratification values from a 2.0_ABCD_Data_Explorer release formatted csv
-
-        strat_loc -- Location of the csv with stratification values 
-        strat_col_names -- list of column names to load
-        '''
-        
-        self.print('Reading stratification values from', strat_loc)
-        strat = pd.read_csv(strat_loc)
-
-        #Perform common df corrections
-        strat = self.proc_df(strat)
-
-        if type(strat_col_names) != list:
-            strat_col_names = list(strat_col_names)
-
-        #Limit the dataframe to just the subject id and columns of interest
-        to_keep = ['src_subject_id'] + strat_col_names
-        strat = strat[to_keep]
-
-        #Save the various encoders, in case they need to be decoded
-        self.strat_encoders = {}
-        
-        #Encode each column into unique values
-        for col in strat_col_names:
-            
-            le = LabelEncoder()
-            strat[col] = le.fit_transform(strat[col])
-            self.strat_encoders[col] = le
-
-        self.strat = strat
-        self.process_new()
-
     def load_exclusions(self,
-                        exclusions_loc=None,
+                        loc=None,
                         exclusions=None
                         ):
         '''
@@ -209,8 +348,8 @@ class ABCD_ML():
         Note: if default subject id behavior is set to false, reading subjects from exclusion loc might break
         '''
 
-        if exclusions_loc != None:
-            with open(exclusions_loc, 'r') as f:
+        if loc != None:
+            with open(loc, 'r') as f:
                 lines = f.readlines()
 
                 for line in lines:
@@ -259,9 +398,10 @@ class ABCD_ML():
             self.strat = self.strat[self.strat['src_subject_id'].isin(overlap)]
 
         self.print('Total subjects = ', len(overlap))
+        self.print()
 
     def load_name_mapping(self,
-                          name_map_loc,
+                          loc,
                           existing_name_col = "NDAR name",
                           changed_name_col = "REDCap name/NDA alias"
                           ):
@@ -274,7 +414,7 @@ class ABCD_ML():
         changed_name_col -- The column name within the file which lists the new name
         '''
     
-        mapping = pd.read_csv(name_map_loc)
+        mapping = pd.read_csv(loc)
 
         try:
             self.name_map = dict(zip(mapping[existing_name_col], mapping[changed_name_col]))
@@ -339,10 +479,13 @@ class ABCD_ML():
 
         else:
             return subject
-
-
-
-
     
+    def drop_na(self, data):
+        '''Helper function to drop rows with na'''
+        
+        missing_values = data.isna().any(axis=1)
+        data = data.dropna()
+        self.print('Dropped', sum(missing_values), 'rows for missing values')
 
+        return data
     

@@ -3,7 +3,8 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from scipy.stats.mstats import winsorize
 from ABCD_ML.Data_Helpers import (process_binary_input, process_categorical_input,
-                                  filter_float_by_outlier)
+                                  filter_float_by_outlier, get_unique_combo)
+from ABCD_ML.CV import CV
 
 class ABCD_ML():
 
@@ -24,6 +25,11 @@ class ABCD_ML():
         self.name_map, self.exclusions = {}, set()
         self.covar_encoders, self.score_encoder, self.strat_encoders = {}, None, {}
         self.score_key = 'score'
+
+        self.all_data, self.train_subjects, self.test_subjects = None, None, None
+        self.CV = CV()
+
+        from ._ML  import evaluate_regression_model
 
     def print(self, *args):
         '''Overriding the print function to allow from verbosity'''
@@ -87,7 +93,6 @@ class ABCD_ML():
         self.print('Dropped rows with missing data')
 
         data_keys = list(data)
-        data_keys.remove('src_subject_id')
 
         if filter_outlier_percent != None:
             for key in data_keys:
@@ -109,7 +114,7 @@ class ABCD_ML():
         #If other data is already loaded, merge this data with existing loaded data
         self.data = self.merge_existing(self.data, data)
         self.process_new()
-
+    
     def load_custom_data(self):
         pass
 
@@ -130,13 +135,13 @@ class ABCD_ML():
 
         if col_name != None:
 
-            data = data[['src_subject_id', col_name]]
-            return data.dropna()
+            data = data[[col_name]].dropna()
+            return data
 
         if type(col_names) != list:
             col_names = list(col_names)
 
-        data = data[['src_subject_id'] + col_names].dropna()
+        data = data[col_names].dropna()
         return data, col_names
 
     def load_covars(self,
@@ -348,26 +353,95 @@ class ABCD_ML():
         Note: if default subject id behavior is set to false, reading subjects from exclusion loc might break
         '''
 
-        if loc != None:
+        self.exclusions.update(self.load_set_of_subjects(loc=loc, subjects=exclusions))
+        self.print('Total excluded subjects: ', len(self.exclusions))
+        self.process_new()
+
+    def load_set_of_subjects(self,
+                             loc=None,
+                             subjects=None):
+
+        '''
+        Function to load in a set of subjects from either a saved location, or
+        directly passed in as a set or list of subjects. 
+        '''
+
+        loaded_subjects = set()
+
+        if loc is not None:
             with open(loc, 'r') as f:
                 lines = f.readlines()
 
                 for line in lines:
                     subject = line.rstrip()
-                    self.exclusions.add(self.process_subject_name(subject))
+                    loaded_subjects.add(self.process_subject_name(subject))
 
-        if exclusions != None:
-
-            exclusions = set([self.process_subject_name(s) for s in exclusions])
-            self.exclusions.update(exclusions)
-
-        self.print('Total excluded subjects: ', len(self.exclusions))
-        self.process_new()
+        if subjects is not None:
+            loaded_subjects = set([self.process_subject_name(s) for s in subjects])
+        
+        return loaded_subjects
 
     def clear_exclusions(self):
         ''' Resets exclusions to be an empty set '''
 
         self.exclusions = set()
+
+    def define_validation_strategy(self,
+                                   groups = None,
+                                   stratify = None
+                                   ):
+        
+        '''
+        Define a validation stratagy to be used during different train/test splits,
+        in addition to model selection and model hyperparameter CV. 
+           
+        In general, these options are:
+        
+            Random: Just make splits randomly
+            Group Preserving: Make splits that ensure subjects that are part of specific group
+                are all within the same fold e.g., split by family, so that people with the same family id
+                are always a part of the same fold.
+            Stratifying: Make splits such that the distribution of a given group is as equally split between
+                two folds as possible, so simmilar to matched halves or e.g., in a binary or categorical predictive
+                context, splits could be done to ensure roughly equal distribution of dependent class.
+
+        For now, it is possible to define only one overarching stratagy (One could imagine combining group preserving splits
+            while also trying to stratify for class, but the logistics become more complicated).
+            Though, within one strategy it is certainly possible to provide multiple values e.g.,
+            for stratification you can stratify by score (the dependent variable to be predicted) as well as say sex,
+            though with addition of unique value, the size of the smallest unique group decreases.
+
+        By default (if this function is not called) just random.
+
+        groups -- string or list (if merging multiple groups) of loaded strat column names, to preserve by.
+        stratify -- string or list (if merging multiple) of loaded strat column names (AND/OR 'score' for binary/categorical),
+            to preserve distribution between folds.
+        '''
+
+        if groups is not None:
+
+            if type(groups) is str:
+                self.CV = CV(groups = self.strat[groups])
+            elif type(groups) is list:
+                self.CV = CV(groups = get_unique_combo(self.strat, groups))
+
+        elif stratify is not None:
+            
+            if type(stratify) is str:
+
+                if stratify == 'score':
+                    self.strat[self.score_key] = self.scores[self.score_key]
+                    stratify = self.score_key
+
+                self.CV = CV(stratify = self.strat[stratify])
+
+            elif type(stratify) is list:
+
+                if 'score' in list:
+                    self.strat[self.score_key] = self.scores[self.score_key]
+                    stratify = [self.score_key if s == 'score' else s for s in stratify]
+
+                self.CV = CV(stratify = get_unique_combo(self.strat, stratify))
 
     def process_new(self):
         '''Internal function to handle keeping an overlapping subject list'''
@@ -375,13 +449,13 @@ class ABCD_ML():
         valid_subjects = []
 
         if len(self.data) > 0:
-            valid_subjects.append(set(self.data['src_subject_id']))
+            valid_subjects.append(set(self.data.index))
         if len(self.covars) > 0:
-            valid_subjects.append(set(self.covars['src_subject_id']))
+            valid_subjects.append(set(self.covars.index))
         if len(self.scores) > 0:
-            valid_subjects.append(set(self.scores['src_subject_id']))
+            valid_subjects.append(set(self.scores.index))
         if len(self.strat) > 0:
-            valid_subjects.append(set(self.strat['src_subject_id']))
+            valid_subjects.append(set(self.strat.index))
 
         overlap = set.intersection(*valid_subjects)
         overlap = overlap - self.exclusions
@@ -389,13 +463,13 @@ class ABCD_ML():
         self.print('Removing non overlapping + excluded subjects')
 
         if len(self.data) > 0:
-            self.data = self.data[self.data['src_subject_id'].isin(overlap)]
+            self.data = self.data[self.data.index.isin(overlap)]
         if len(self.covars) > 0:
-            self.covars = self.covars[self.covars['src_subject_id'].isin(overlap)]
+            self.covars = self.covars[self.covars.index.isin(overlap)]
         if len(self.scores) > 0:
-            self.scores = self.scores[self.scores['src_subject_id'].isin(overlap)]
+            self.scores = self.scores[self.scores.index.isin(overlap)]
         if len(self.strat) > 0:
-            self.strat = self.strat[self.strat['src_subject_id'].isin(overlap)]
+            self.strat = self.strat[self.strat.index.isin(overlap)]
 
         self.print('Total subjects = ', len(overlap))
         self.print()
@@ -449,6 +523,8 @@ class ABCD_ML():
         if self.name_map:
             data = data.rename(self.name_map, axis=1)
 
+        data = data.set_index('src_subject_id')
+
         return data
 
     def filter_by_eventname(self, data):
@@ -488,4 +564,63 @@ class ABCD_ML():
         self.print('Dropped', sum(missing_values), 'rows for missing values')
 
         return data
+    
+    def train_test_split(self,
+                         test_size=None,
+                         test_loc=None,
+                         test_subjects=None,
+                         random_state=None):
+
+        '''
+        Define the overarching train / test split.
+           
+        test_size -- If float, should be between 0.0 and 1.0 and represent the proportion
+            of the dataset to include in the test split.
+            If int, represents the absolute number of test groups.
+            Set to None if using test_loc or test_subjects.
+        test_loc -- Location of file to load in test subjects from.
+            File should be formatted as one subject per line.
+        test_subjects -- List or set of test subjects to pass in directly.
+        random_state -- If using test_size, then can optionally provide a random state
+        '''
+        
+        if self.all_data is None:
+            self.prepare_data()
+
+        if test_size is not None:
+            self.train_subjects, self.test_subjects = self.CV.train_test_split(self.all_data.index, test_size, random_state)
+
+        else:
+            test_subjects = self.load_set_of_subjects(loc=test_loc, subjects=test_subjects)
+            train_subjects = [subject for subject in self.all_data.index if subject not in test_subjects]
+            self.train_subjects, self.test_subjects = pd.Index(train_subjects, name='src_subject_id'), pd.Index(test_subjects, name='src_subject_id')
+        
+        self.print('Performed train/test split, train size:', len(self.train_subjects), 'test size: ', len(self.test_subjects))
+
+    def prepare_data(self):
+        '''Prepares all loaded data into self.all_data for use directly in ML'''
+
+        dfs = []
+
+        assert len(self.scores > 0), 'Scores must be loaded!'
+        assert len(self.data) > 0 or len(self.covars) > 0, 'Some data must be loaded!'
+
+        if len(self.data) > 0:
+            dfs.append(self.data)
+            self.data_keys = list(self.data)
+
+        if len(self.covars) > 0:
+            dfs.append(self.covars)
+            self.covars_keys = list(self.covars)
+        
+        dfs.append(self.scores)
+
+        self.all_data = dfs[0]
+        for i in range(1, len(dfs)):
+            self.all_data = pd.merge(self.all_data, dfs[i], on='src_subject_id')
+
+        
+
+        
+        
     

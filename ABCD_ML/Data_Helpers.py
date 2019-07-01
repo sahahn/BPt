@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
+from operator import add
+from functools import reduce
+
 def process_binary_input(data, key, verbose=True):
     '''Helper function to perform processing on binary input'''
         
@@ -90,3 +93,18 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place, verbose
             print('Min-Max Score (post outlier filtering):', np.nanmin(data[key]), np.nanmax(data[key]))
 
         return data
+
+def get_unique_combo(data, keys):
+    '''
+    Get unique label combinations from a dataframe (data) and multiple column names,
+    returns the combined unique values.
+    '''
+
+    combo = [data[k].astype(str) + '***' for k in keys]
+    combo = reduce(add, combo).dropna()
+
+    label_encoder = LabelEncoder()
+    combo[data.index] = label_encoder.fit_transform(combo)
+
+    return combo
+    

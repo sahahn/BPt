@@ -86,30 +86,69 @@ def get_binary_score(model, X_test, y_test, metric='roc'):
     return score
 
 
-def evaluate_regression_model(X, y, model_type='linear', n_splits=3, n_repeats=2, int_cv=3,
-                              metric='r2', target_transform=None, extra_params={}):
-    '''Wrapper function to perform a repeated KFold regression analysis'''
+def premodel_check(self):
+
+    if self.all_data is None:
+        self.prepare_data()
+    
+    if self.train_subjects is None:
+        print('No train-test set defined! Performing one automatically with default split =.25')
+        print('If no test set is intentional, just called train_test_split(test_size=0)')
+        self.train_test_split(test_size=.25)
+
+def evaluate_regression_model(self,
+                              model_type = 'linear',
+                              data_scaler = 'standard',
+                              n_splits = 3,
+                              n_repeats = 2,
+                              int_cv = 3,
+                              metric = 'r2', 
+                              target_transform = None,
+                              random_state = None,
+                              extra_params = {}
+                              ):
+
+    #Perform check
+    self.premodel_check()
+
+    #Set the data this function to be just the training data
+    data = self.all_data.loc[self.train_subjects]
 
     scores = []
-    skf = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats)
 
-    for train_ind, test_ind in skf.split(X,y):
-       
-        X_train, y_train = X[train_ind], y[train_ind]
-        X_test, y_test = X[test_ind], y[test_ind]
+    #Setup the desired splits
+    splits = self.CV.repeated_k_fold(subjects=data.index, n_repeats=n_repeats,
+                                n_splits=n_splits, random_state=random_state)
 
-        scores.append(test_regression_model(X_train, y_train, X_test, y_test, model_type,
-                                            int_cv, metric, target_transform, extra_params))
+    for train_subjects, test_subjects in splits:
+
+        score = test_regression_model(data.loc[train_subjects],
+                                      data.loc[test_subjects],
+                                      CV, model_type, data_scaler,
+                                      int_cv, metric, target_transform,
+                                      random_state, extra_params)
+        scores.append(score)
 
     scores = np.array(scores)
     macro_scores = np.mean(np.reshape(scores, (n_repeats, n_splits)), axis=1)
 
-    return np.mean(macro_scores), np.std(macro_scores)
+    return np.mean(macro_scores), np.std(macro_scores), np.mean(score), np.std(scores)
 
 
-def test_regression_model(X, y, X_test, y_test, model_type='linear', int_cv=3,
-                          metric='r2', target_transform=None, extra_params={}):
-    '''Wrapper function to perform a single test with explicit X,y and test set for regression'''
+def test_regression_model(train_data,
+                          test_data,
+                          CV,
+                          model_type = 'linear',
+                          data_scaler = 'standard',
+                          int_cv = 3,
+                          metric = 'r2',
+                          target_transform = None,
+                          random_state = None,
+                          extra_params = {}
+                          ):
+
+    
+   
 
     if target_transform == 'log':
         y = np.log1p(y)

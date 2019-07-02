@@ -42,8 +42,7 @@ def load_data(self,
     ''' 
     Load a 2.0_ABCD_Data_Explorer release formatted neuroimaging dataset of ROI's
 
-    data_loc -- The location of the dataset csv file
-    eventname -- The eventname to select datapoints by, if None then ignore
+    loc -- The location of the dataset csv file
     drop_keys -- A list of keys to drop columns by, where if any key given in a columns name,
         then that column will be dropped (Note: if a name mapping exists,
         this drop step will be conducted after renaming)
@@ -112,6 +111,25 @@ def load_covars(self,
                 standardize = True,
                 normalize = True,
                 ):
+    '''
+    Load a covariate or covariates from a 2.0_ABCD_Data_Explorer release formatted csv
+
+    loc -- The location of the dataset csv file to load from
+    col_names -- The name of the column or columns to load (must be in the same order as data types)
+    data_types -- The data types of the different columns to load, in the same order as the column names passed in.
+        Options for datatypes are 'binary' or 'b', 'categorical' or 'c', 'ordinal' or 'o', 'float' or 'f'
+    dummy_code_categorical -- Boolean flag, if true then categorical variables are dummy coded.
+        If False, categorical variables are one-hot encoded.
+    filter_outlier_percent -- For float only:
+        A percent of values to exclude from either end of the score distribution,
+        provided as either 1 number, or a tuple (% from lower, % from higher). None, to perform no filtering.
+    standardize -- For float + ordinal only:
+        Scales any float/ordinal covar loaded to have a mean of 0, and std of 1
+        (Computed before normalization, both set to True)
+    normalize -- For float + ordinal only:
+        Scale any float/ordinal covar loader to between 0 and 1
+        (Computed after standardization, if both set to True)
+    '''
 
     drop = None
     if dummy_code_categorical:
@@ -181,10 +199,10 @@ def load_scores(self,
     For ordinal + float: scores are read in as a floating point number,
     and optionally then filtered for outliers with the filter_outlier_percent flag.
     
-    scores_loc -- The location of the scores csv file
-    score_col_name -- The name of the column with the score of interest
+    loc -- The location of the scores csv file
+    col_name -- The name of the column with the score of interest
         Note: if a name mapping exists, the score col name will refer to the changes name
-    score_data_type -- The datatype of the score, 'binary', 'categorical', 'ordinal' or 'float',
+    data_type -- The datatype of the score, 'binary', 'categorical', 'ordinal' or 'float',
         explained in more detail above. Can also pass in 'b', 'c', 'o' or 'f'
     filter_outlier_percent -- For float/ordinal only:
         A percent of values to exclude from either end of the score distribution,

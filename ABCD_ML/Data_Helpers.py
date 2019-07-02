@@ -1,5 +1,6 @@
 '''
-Various helper functions for loading and processing data for ABCD_ML
+Various helper functions for loading and processing data for ABCD_ML.
+Specifically, these are non-class functions used in _Data.py and ABCD_ML.py.
 '''
 import numpy as np
 import pandas as pd

@@ -1,5 +1,6 @@
 ''' 
 File with various ML helper functions for ABCD_ML
+Specifically, these are non-class functions that are used in _ML.py.
 '''
 import numpy as np
 

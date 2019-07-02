@@ -13,7 +13,8 @@ setup(name='ABCD_ML',
           'lightgbm',
           'xgboost',
           'numpy',
-          'scipy'
+          'scipy',
+          'pandas'
       ],
       test_suite='nose.collector',
       tests_require=['nose'],

@@ -5,7 +5,7 @@ class CV():
     
     def __init__(self, groups=None, stratify=None):
         '''
-        If not groups or stratify is passed, then by default just uses random.
+        If no groups or stratify is passed, then by default just uses random.
         If groups is passed uses Group Folds, if Stratify, then Stratified Folds.
         '''
 
@@ -31,19 +31,19 @@ class CV():
         train_subjects, test_subjects = subjects[inds[0]], subjects[inds[1]]
         return train_subjects, test_subjects
 
-    def repeated_k_fold(self, subjects, n_repeats, n_splits, random_state=None):
+    def repeated_k_fold(self, subjects, n_repeats, n_splits, random_state=None, return_index=False):
 
-        subjects = []
+        subject_splits = []
         for n in range(n_repeats):
             
             if random_state is not None:
                 random_state += 1
             
-            subjects += self.k_fold(subjects, n_splits, random_state)
+            subject_splits += self.k_fold(subjects, n_splits, random_state, return_index)
         
-        return subjects
+        return subject_splits
 
-    def k_fold(self, subjects, n_splits, random_state=None):
+    def k_fold(self, subjects, n_splits, random_state=None, return_index=False):
 
         #Special implementation for group K fold, just do KFold on unique groups
         if self.groups is not None:
@@ -54,10 +54,16 @@ class CV():
             splitter = MS.KFold(n_splits=n_splits, random_state=random_state)
 
             [*inds] =  splitter.split(unique_groups)
-            subjects = [(groups.index[groups.isin(unique_groups[i[0]])],
-                         groups.index[groups.isin(unique_groups[i[1]])]) for i in inds]
 
-            return subjects
+
+            subject_splits = [(groups.index[groups.isin(unique_groups[i[0]])],
+                             groups.index[groups.isin(unique_groups[i[1]])]) for i in inds]
+
+            if return_index:
+                subject_inds = [[[subjects.get_loc(name) for name in s] for s in split] for split in subject_splits]
+                return subject_inds
+
+            return subject_splits
 
         elif self.stratify is not None:
 
@@ -69,8 +75,11 @@ class CV():
             splitter = MS.KFold(n_splits=n_splits, random_state=random_state)
             [*inds] = splitter.split(subjects)
 
-        subjects = [(subjects[i[0]], subjects[i[1]]) for i in inds]
-        return subjects
+        if return_index:
+            return inds
+
+        subject_splits = [(subjects[i[0]], subjects[i[1]]) for i in inds]
+        return subject_splits
 
 
             

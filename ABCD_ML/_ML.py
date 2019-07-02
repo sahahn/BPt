@@ -4,58 +4,17 @@ ABCD_ML Project
 Main wrappers for Machine Learning functions
 '''
 
-from sklearn.model_selection import (RepeatedStratifiedKFold, RepeatedKFold, KFold,
-RandomizedSearchCV, train_test_split, ParameterSampler)
-
-from sklearn.metrics import (roc_auc_score, mean_squared_error, r2_score, balanced_accuracy_score,
-f1_score, log_loss)
-
-from sklearn.preprocessing import (MinMaxScaler,RobustScaler,StandardScaler)
 from ABCD_ML.Ensemble_Model import Ensemble_Model
 from ABCD_ML.Train_Models import train_regression_model, train_binary_model
+from ABCD_ML.ML_Helpers import get_scaler, metric_from_string, compute_macro_micro
 
 import numpy as np
-import warnings
 
+
+#import warnings
 #warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-def feature_transformation(feature,method='Standard'):
-    ''' Transform continuous features by different scaler so that all values
-    would be in the same range'''
-    
-    if method=='Standard':
-        scaler = StandardScaler()
-    elif method=='MinMax':
-        scaler = MinMaxScaler()
-    elif method=='Robust':
-        scaler = RobustScaler()
-    elif method=='Power':
-        pt=PowerTransformer(method='yeo-johnson',standardize=False)
-        return pt.fit_transform(feature)
-    scaler.fit(feature)
-    return scaler.transform(feature)
 
-def metric_from_string(metric):
-    ''' Helper function to convert from string input to sklearn metric, 
-        can also be passed a metric directly'''
-
-    if callable(metric):
-        return metric
-    elif metric == 'r2' or metric == 'r2 score':
-        return r2_score
-    elif metric == 'mse' or metric == 'mean squared error':
-        return mean_squared_error
-    elif metric == 'roc' or metric == 'roc auc':
-        return roc_auc_score
-    elif metric == 'bas' or metric == 'balanced acc':
-        return balanced_accuracy_score
-    elif metric == 'f1':
-        return f1_score
-    elif metric == 'log loss':
-        return log_loss
-
-    print('No metric function defined')
-    return None
 
 def get_regression_score(model, X_test, y_test, metric='r2', target_transform=None):
     '''Computes a regression score, provided a model and testing data with labels and metric'''
@@ -85,7 +44,6 @@ def get_binary_score(model, X_test, y_test, metric='roc'):
 
     return score
 
-
 def premodel_check(self):
 
     if self.all_data is None:
@@ -110,54 +68,64 @@ def evaluate_regression_model(self,
 
     #Perform check
     self.premodel_check()
-
-    #Set the data this function to be just the training data
-    data = self.all_data.loc[self.train_subjects]
-
     scores = []
 
-    #Setup the desired splits
-    splits = self.CV.repeated_k_fold(subjects=data.index, n_repeats=n_repeats,
+    #Setup the desired splits, using the train subjects
+    subject_splits = self.CV.repeated_k_fold(subjects=self.train_subjects, n_repeats=n_repeats,
                                 n_splits=n_splits, random_state=random_state)
 
-    for train_subjects, test_subjects in splits:
+    for train_subjects, test_subjects in subject_splits:
 
-        score = test_regression_model(data.loc[train_subjects],
-                                      data.loc[test_subjects],
-                                      CV, model_type, data_scaler,
-                                      int_cv, metric, target_transform,
-                                      random_state, extra_params)
+        score = self.test_regression_model(train_subjects,
+                                           test_subjects,
+                                           model_type, data_scaler,
+                                           int_cv, metric, target_transform,
+                                           False, random_state, extra_params)
         scores.append(score)
 
-    scores = np.array(scores)
-    macro_scores = np.mean(np.reshape(scores, (n_repeats, n_splits)), axis=1)
+    return compute_macro_micro(scores, n_repeats, n_splits)
 
-    return np.mean(macro_scores), np.std(macro_scores), np.mean(score), np.std(scores)
-
-
-def test_regression_model(train_data,
-                          test_data,
-                          CV,
+def test_regression_model(self,
+                          train_subjects = None,
+                          test_subjects = None,
                           model_type = 'linear',
                           data_scaler = 'standard',
                           int_cv = 3,
                           metric = 'r2',
                           target_transform = None,
+                          return_model = False,
                           random_state = None,
                           extra_params = {}
                           ):
 
-    
-   
+    if train_subjects is None:
+        train_subjects = self.train_subjects
+    if test_subjects is None:
+        test_subjects = self.test_subjects
 
-    if target_transform == 'log':
-        y = np.log1p(y)
+    train_data = self.all_data.loc[train_subjects]
+    test_data = self.all_data.loc[test_subjects]
+    
+    #if target_transform == 'log':
+    #    y = np.log1p(y)
+
+    if data_scaler is not None:
+
+        scaler = get_scaler(data_scaler, extra_params)
+        train_data[self.data_keys] = scaler.fit_transform(train_data[self.data_keys])
+        test_data[self.data_keys] = scaler.transform(test_data[self.data_keys])
 
     if type(model_type) == list:
-        model = Ensemble_Model(X, y, model_type, int_cv, regresson=True, extra_params=extra_params)
+        model = Ensemble_Model(train_data, self.score_key, self.CV, model_type,
+                               int_cv, metric, problem_type, random_state, self.n_jobs,
+                               extra_params=extra_params)
     else:
-        model = train_regression_model(X, y, model_type, int_cv, extra_params=extra_params) 
+        model = train_regression_model(train_data, self.score_key, self.CV,
+                                       model_type,
+                                       int_cv, metric, random_state, self.n_jobs,
+                                       extra_params=extra_params) 
 
+    X_test, y_test = np.array(test_data.drop(self.score_key, axis=1)), np.array(test_data[self.score_key])
     score = get_regression_score(model, X_test, y_test, metric, target_transform)
     return score
 
@@ -194,7 +162,6 @@ def test_binary_model(X, y, X_test, y_test, model_type='logistic cv', int_cv=3,
 
     score = get_binary_score(model, X_test, y_test, metric)
     return score
-
 
 
 

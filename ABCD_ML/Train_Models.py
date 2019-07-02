@@ -23,48 +23,82 @@ from sklearn.svm import LinearSVR
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor, LGBMClassifier
 from ABCD_ML.Train_Light_GBM import Train_Light_GBM
-
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.ensemble import RandomForestRegressor
 
-def param_search(raw_model, param_grid, search_folds=3, search_scoring='roc_auc', search_type='grid search', **kwargs):
-    
-    if search_type == 'grid search':
-        model = GridSearchCV(raw_model, param_grid, cv=search_folds, scoring=search_scoring)
-    elif search_type == 'random search':
-        model = RandomizedSearchCV(raw_model, param_grid, cv=search_folds, scoring=search_scoring)
-    
-    return model
+from ABCD_ML.ML_Helpers import metric_from_string
+import ABCD_ML.Default_Params as P
+import numpy as np
 
-def train_regression_model(X, y, model_type='elastic cv', cv=3, extra_params={}):
-    '''Wrapper function to train various regression models with X,y input,
-       where extra params can be passed to override any default parameters''' 
+def train_regression_model(data,
+                           score_key,
+                           CV,
+                           model_type,
+                           int_cv=3,
+                           metric='r2',
+                           random_state=None,
+                           n_jobs=1,
+                           extra_params={}
+                           ):
 
     model_type = model_type.lower()
+    
+    base_int_cv = CV.k_fold(data.index, int_cv, random_state=random_state, return_index=True)
+    scorer = metric_from_string(metric, return_scorer=True)
+
+    params = {'n_jobs': n_jobs}
 
     if model_type == 'linear':
-        model = LinearRegression(fit_intercept=True)
-    
+        model = LinearRegression
+        params.update({'fit_intercept': True})
+
     elif model_type == 'elastic cv':
-        model = ElasticNetCV(cv=cv, max_iter=5000)
-    
+        model = ElasticNetCV
+        params.update({'cv': base_int_cv, 'max_iter': 5000})
+        
     elif model_type == 'omp cv':
-        model = OrthogonalMatchingPursuitCV(cv=cv)
+        model = OrthogonalMatchingPursuitCV
+        params.update({'cv': base_int_cv})
     
     elif model_type == 'lars cv':
-        model = LarsCV(cv=cv)
+        model = LarsCV
+        params.update({'cv': base_int_cv})
     
     elif model_type == 'ridge cv':
-        model = RidgeCV(cv=cv)
+        model = RidgeCV
+        params.update({'cv': base_int_cv})
 
-    elif model_type == 'gaussian process' or model_type == 'gp':
-        model = GaussianProcessRegressor()
-    
-    elif model_type == 'full lightgbm':
-        model = Train_Light_GBM(X, y, int_cv=cv, regression=True, **extra_params)
-        return model
-        
+    elif model_type == 'rf' or model_type == 'random forest':
+        sub_model = RandomForestRegressor(n_estimators=100)
+        model = RandomizedSearchCV
+        params.update({
+                  'estimator': sub_model,
+                  'param_distributions' : P.DEFAULT_RF_GRID1,
+                  'n_iter': 10,
+                  'scoring' : scorer,
+                  'cv': base_int_cv,
+                  'iid' : False 
+                  })
+
+    if model_type in extra_params:
+        print('Adding extra user passed params')
+        params.update(extra_params[model_type])
+
+    model = model(**params)
+
+    X, y = np.array(data.drop(score_key, axis=1)), np.array(data[score_key])
+
+    print('Training model ', model_type) 
     model.fit(X, y)
+
     return model
+
+    #elif model_type == 'gaussian process' or model_type == 'gp':
+    #    model = GaussianProcessRegressor()
+    
+    #elif model_type == 'full lightgbm':
+    #    model = Train_Light_GBM(X, y, int_cv=cv, regression=True, **extra_params)
+    #    return model
 
 def train_binary_model(X, y, model_type='logistic cv', cv=3, class_weight='balanced', extra_params={}):
     '''Wrapper function to train various binary models with X,y input,

@@ -26,10 +26,10 @@ class ABCD_ML():
         self.covar_encoders, self.score_encoder, self.strat_encoders = {}, None, {}
         self.score_key = 'score'
 
+        self.n_jobs = 8
+
         self.all_data, self.train_subjects, self.test_subjects = None, None, None
         self.CV = CV()
-
-        from ._ML  import evaluate_regression_model
 
     def print(self, *args):
         '''Overriding the print function to allow from verbosity'''
@@ -619,8 +619,9 @@ class ABCD_ML():
         for i in range(1, len(dfs)):
             self.all_data = pd.merge(self.all_data, dfs[i], on='src_subject_id')
 
-        
-
+    from ABCD_ML._ML import evaluate_regression_model
+    from ABCD_ML._ML import test_regression_model
+    from ABCD_ML._ML import premodel_check
         
         
     

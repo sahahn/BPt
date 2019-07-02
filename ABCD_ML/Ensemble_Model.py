@@ -11,17 +11,26 @@ import numpy as np
 class Ensemble_Model():
     '''Basic ensemble wrapper'''
 
-    def __init__(self, X, y, model_names, cv=3, regresson=True, class_weight='balanced', extra_params={}):
+    def __init__(self,
+                 data,
+                 score_key,
+                 model_names,
+                 int_cv=3,
+                 problem_type='regression',
+                 class_weight='balanced',
+                 extra_params={}
+                 ):
 
         self.models = []
         
-        if regresson:
+        if problem_type == 'regresson':
             for name in model_names:
-                model = train_regression_model(X, y, model_type, cv, extra_params)
+                model = train_regression_model(data, score_key, model_type, int_cv, extra_params)
                 self.models.append(model)
-        else:
+
+        elif problem_type == 'binary':
             for name in model_name:
-                model = train_binary_model(X, y, model_type, cv, class_weight, extra_params)
+                model = train_binary_model(data, score_key, model_type, int_cv, class_weight, extra_params)
                 self.models.append(model)
 
     def predict(self, X):

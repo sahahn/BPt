@@ -1,7 +1,7 @@
 '''
 ABCD_ML Project
 
-Main wrapper for Machine Learning functionality
+Main class extension file for the Machine Learning functionality
 '''
 import numpy as np
 

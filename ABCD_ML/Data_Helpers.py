@@ -1,7 +1,9 @@
+'''
+Various helper functions for loading and processing data for ABCD_ML
+'''
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-
 from operator import add
 from functools import reduce
 

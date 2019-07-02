@@ -1,3 +1,7 @@
+''' 
+Internal class for performing train test splits and other cross validation for ABCD_ML
+'''
+
 import sklearn.model_selection as MS
 import numpy as np
 

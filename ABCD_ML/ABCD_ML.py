@@ -1,5 +1,8 @@
-import pandas as pd
+''' 
+Main class file for ABCD_ML class, contains most of the data loading functionality
+'''
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from scipy.stats.mstats import winsorize
 from ABCD_ML.Data_Helpers import (process_binary_input, process_categorical_input,
@@ -403,7 +406,7 @@ class ABCD_ML():
                 are always a part of the same fold.
             Stratifying: Make splits such that the distribution of a given group is as equally split between
                 two folds as possible, so simmilar to matched halves or e.g., in a binary or categorical predictive
-                context, splits could be done to ensure roughly equal distribution of dependent class.
+                context, splits could be done to ensure roughly equal distribution of the dependent class.
 
         For now, it is possible to define only one overarching stratagy (One could imagine combining group preserving splits
             while also trying to stratify for class, but the logistics become more complicated).
@@ -621,7 +624,12 @@ class ABCD_ML():
 
     from ABCD_ML._ML import evaluate_regression_model
     from ABCD_ML._ML import test_regression_model
+    from ABCD_ML._ML import get_trained_model
     from ABCD_ML._ML import premodel_check
+    from ABCD_ML._ML import split_data
+
+    
+    
         
         
     

@@ -1,13 +1,13 @@
+''' 
+File with various ML helper functions for ABCD_ML
+'''
+import numpy as np
 
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
-
 from sklearn.metrics import (roc_auc_score, mean_squared_error, r2_score, balanced_accuracy_score,
                              f1_score, log_loss, make_scorer)
 
-import numpy as np
-
-
-def get_scaler(method='standard',  extra_params=None):
+def get_scaler(method='standard', extra_params=None):
     ''' 
     Returns a scaler based on the method passed,
     Likewise, if a dictionary exists in extra_params with the same key as the
@@ -38,10 +38,24 @@ def get_scaler(method='standard',  extra_params=None):
     scaler = scaler(**params)
     return scaler
 
+def scale_data(train_data, test_data, data_scaler, data_keys, extra_params):
+    '''
+    Wrapper function to take in train/test data and if applicable fit + transform
+    a data scaler on the train data, and then transform the test data
+    '''
+
+    if data_scaler is not None:
+
+        scaler = get_scaler(data_scaler, extra_params)
+        train_data[data_keys] = scaler.fit_transform(train_data[data_keys])
+        test_data[data_keys] = scaler.transform(test_data[data_keys])
+
+    return train_data, test_data
 
 def metric_from_string(metric, return_scorer=False):
-    ''' Helper function to convert from string input to sklearn metric, 
-        can also be passed a metric directly (though can't make scorer for user passed metric)
+    ''' 
+    Helper function to convert from string input to sklearn metric, 
+    can also be passed a metric directly (though can't make scorer for user passed metric)
     '''
 
     if callable(metric):

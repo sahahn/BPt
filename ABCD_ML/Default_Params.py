@@ -1,3 +1,7 @@
+''' 
+File with different saved default parameter settings for various classifiers for ABCD_ML
+'''
+
 from scipy.stats import (randint as sp_randint, uniform as sp_uniform)
 
 DEFAULT_RF_GRID1 = {
@@ -8,3 +12,9 @@ DEFAULT_RF_GRID1 = {
                    "bootstrap": [True],
                    "criterion": ["mse"]
                    }
+
+DEFAULT_DTC_GRID1 = {'max_depth' : list(range(1, 20)),
+                     'min_samples_split': list(range(2, 50))}
+
+DEFAULT_KNN_GRID1 = {'weights': ['uniform', 'distance'],
+                     'n_neighbors' : list(range(1,20))}

@@ -210,7 +210,7 @@ def load_scores(self,
     
     '''
 
-    self.score_key = 'score'
+    self.score_key = self.original_score_key
 
     self.print('Loading ', loc)
     scores = self.common_load(loc, col_name=col_name)
@@ -225,9 +225,9 @@ def load_scores(self,
 
     elif data_type == 'categorical' or data_type == 'c':
         
-        #Processing for categorical input
+        #Processing for categorical input, score encoder is a tuple with encoder to ordinal then encoder from ord to sparse
         scores, self.score_key, self.score_encoder = process_categorical_input(scores, self.score_key,
-                                                                        drop=None, verbose=self.verbose)
+                                                                    drop=None, verbose=self.verbose)
     elif (data_type == 'float' or data_type == 'ordinal' or
             data_type == 'f' or data_type == 'o'):
 

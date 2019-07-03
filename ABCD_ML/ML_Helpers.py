@@ -1,6 +1,6 @@
 ''' 
 File with various ML helper functions for ABCD_ML
-Specifically, these are non-class functions that are used in _ML.py.
+Specifically, these are non-class functions that are used in _ML.py and Scoring.py
 '''
 import numpy as np
 
@@ -53,40 +53,87 @@ def scale_data(train_data, test_data, data_scaler, data_keys, extra_params):
 
     return train_data, test_data
 
-def metric_from_string(metric, return_scorer=False):
+def metric_from_string(metric, return_needs_proba=False, return_scorer=False):
     ''' 
     Helper function to convert from string input to sklearn metric, 
-    can also be passed a metric directly (though can't make scorer for user passed metric)
+    can also be passed a metric directly. 
+    
+    For a user passed metric, will return that it needs proba by default, and that greater is better.
+
+    If pass return_needs_proba = True, will return metric, and if that metric needs a probability,
+    for all classification / categorical valid metrics
+
+    For a metric that requires a special parameter, the metric will be returned in a list as [metric, param_dict]
     '''
 
+    #If a user passed metric
     if callable(metric):
+        if return_needs_proba:
+            return metric, True
+        elif return_scorer:
+            return make_scorer(metric, greater_is_better=True, needs_proba=True)
         return metric
 
-    elif metric == 'r2' or metric == 'r2 score':
+    metric = metric.lower()
+    metric = metric.replace('_',' ')
+
+    #Correct for common conversions
+    conv_dict = {'r2_score':'r2','r2score':'r2', 'mean squared error':'mse',
+    'roc':'macro roc auc', 'roc auc':'macro roc auc', 'balanced acc':'bac', 
+    'f1 score': 'f1', 'log loss':'log', 'logistic':'log', 'logistic loss':'log',
+    'cross entropy loss': 'log', 'crossentropy loss':'log'}
+
+    if metric in conv_dict:
+        metric = conv_dict[metric]
+
+    elif metric == 'r2':
         
         m = r2_score
         if return_scorer:
             return make_scorer(m, greater_is_better=True)
         return m
 
-    elif metric == 'mse' or metric == 'mean squared error':
+    elif metric == 'mse':
         
         m = mean_squared_error
         if return_scorer:
             return make_scorer(m, greater_is_better=False)
         return m
 
-    elif metric == 'roc' or metric == 'roc auc':
+    elif metric == 'macro roc auc':
         
         m = roc_auc_score
-
-        if return_scorer:
+        if return_needs_proba:
+            return m, True
+        elif return_scorer:
             return make_scorer(m, greater_is_better=True, needs_proba=True)
         return m
-        
-    elif metric == 'bas' or metric == 'balanced acc':
-        m = balanced_accuracy_score
 
+    elif metric == 'micro roc auc':
+        
+        m = roc_auc_score
+        metric_params = {'average': 'micro'}
+        if return_needs_proba:
+            return [m, metric_params], True
+        elif return_scorer:
+            return make_scorer(m, greater_is_better=True, needs_proba=True, average='micro')
+        return [m, metric_params]
+
+    elif metric == 'weighted roc auc':
+        
+        m = roc_auc_score
+        metric_params = {'average': 'weighted'}
+        if return_needs_proba:
+            return [m, metric_params], True
+        elif return_scorer:
+            return make_scorer(m, greater_is_better=True, needs_proba=True, average='weighted')
+        return [m, metric_params]
+        
+    elif metric == 'bas':
+        
+        m = balanced_accuracy_score
+        if return_needs_proba:
+            return m, False
         if return_scorer:
             return make_scorer(m, greater_is_better=True)
         return m
@@ -94,15 +141,27 @@ def metric_from_string(metric, return_scorer=False):
     elif metric == 'f1':
 
         m = f1_score
-
+        if return_needs_proba:
+            return m, False
         if return_scorer:
             return make_scorer(m, greater_is_better=True)
         return m
 
-    elif metric == 'log loss':
+    elif metric == 'weighted f1':
+
+        m = f1_score
+        metric_params = {'average': 'weighted'}
+        if return_needs_proba:
+            return [m, metric_params], False
+        if return_scorer:
+            return make_scorer(m, greater_is_better=True, average='weighted')
+        return [m, metric_params]
+
+    elif metric == 'log':
 
         m = log_loss
-
+        if return_needs_proba:
+            return m, True
         if return_scorer:
             return make_scorer(m, greater_is_better=False, needs_proba=True)
         return m

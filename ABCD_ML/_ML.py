@@ -17,7 +17,7 @@ def evaluate_model(self,
                    n_splits = 3,
                    n_repeats = 2,
                    int_cv = 3,
-                   metric = 'r2', 
+                   metric = 'default', 
                    random_state = None,
                    class_weight = 'balanced',
                    extra_params = {}
@@ -25,6 +25,15 @@ def evaluate_model(self,
 
     #Perform pre-modeling data check
     self.premodel_check()
+
+    default_metrics = {'regression': 'r2',
+                       'binary'    : 'roc',
+                       'categorical' : 'weighted roc auc'}
+
+    #Set default metric based on problem type
+    if metric == 'default':
+        metric = default_metrics[problem_type]
+
     
     #Setup the desired splits, using the gloablly defined train subjects
     subject_splits = self.CV.repeated_k_fold(subjects = self.train_subjects,
@@ -129,8 +138,53 @@ def get_trained_model(self,
                       random_state = None,
                       extra_params = {}
                       ):
+    '''
+    Helper function for training either an ensemble or one single model.
 
-    '''Helpfer function for training either an ensemble or one single model'''
+    Parameters
+    ----------
+    problem_type : string, either 'regression', 'binary' or 'categorical'
+    
+    data : pandas DataFrame,
+           ABCD_ML formatted df.
+    
+    model_type : str or list of strs,
+        Each string refers to a type of model to train.
+        If a list of strings is passed then an ensemble model
+        will be created over all individual models.
+        For a full list of supported options call:
+        self.show_model_types(problem_type=problem_type)
+    
+    int_cv : int,
+        Number of internal folds to use during parameter selection.
+        Must be atleast 2.
+    
+    metric : str,
+        Indicator for which metric to use for parameter selection
+        and model evaluation. For a full list of supported metrics,
+        call self.show_metrics(problem_type=problem_type)
+    
+    class weight : {dict, 'balanced'}, optional (default='balanced')
+        Only avaliable for binary and categorical problem types.
+
+    random_state : int, RandomState instance or None, optional (default=None)
+        Random state passed to sklearn. 
+
+    extra_params : dict, optional
+        Any extra params being passed. Typically, extra params are
+        added when the user wants to update a given classifiers default parameters.
+        These can be supplied by creating another dict within extra_params as:
+        extra_params[model_name] = {}
+        If this dictionary includes any values, they will be passed to the classifier
+        during training.
+    
+    Returns
+    -------
+    model : returns a trained model object.
+    '''
+
+    #!!! Perform a check here for if the model_type passed requires the ordinal multiclass input,
+    #In the case of ensemble, make sure all of the models can support the same type ~~~
 
     model_params = {'problem_type': problem_type,
                     'data' : data,
@@ -148,6 +202,8 @@ def get_trained_model(self,
         model = Ensemble_Model(**model_params)
     else:
         model = train_model(**model_params)
+
+    return model
 
 
 

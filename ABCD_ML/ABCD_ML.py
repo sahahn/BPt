@@ -24,7 +24,7 @@ class ABCD_ML():
         self.scores, self.strat = [], []
         self.name_map, self.exclusions = {}, set()
         self.covar_encoders, self.score_encoder, self.strat_encoders = {}, None, {}
-        self.score_key = 'score'
+        self.original_score_key = 'score'
 
         self.n_jobs = n_jobs
 
@@ -154,7 +154,11 @@ class ABCD_ML():
                              split_data,
                              get_trained_model)
                               
+    def show_model_types(self, problem_type):
+        pass
 
+    def show_metrics(self, problem_type):
+        pass
 
     
     

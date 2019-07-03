@@ -35,8 +35,19 @@ def process_binary_input(data, key, verbose=True):
     return data, encoder
 
 def process_categorical_input(data, key, drop=None, verbose=True):
-    '''Helper function to perform processing on categorical input'''
+    '''
+    Helper function to perform processing on categorical input
+    Returns the new dataframe, the new keys, and a tuple with the first encoder
+    to ordinal, then the second encoder as between ordinal and sparse.
+    '''
 
+    #First convert to label encoder style, want to be able to do reverse transform w/ 1-hot encoder
+    #between label encoded results.
+
+    label_encoder = LabelEncoder()
+    data[key] = label_encoder.fit_transform(data[key])
+
+    #Now convert to one hot or dummy encoded
     vals = np.array(data[key]).reshape(-1, 1)
 
     #If drop is set to 'first', then performs dummy coding
@@ -62,7 +73,7 @@ def process_categorical_input(data, key, drop=None, verbose=True):
     if verbose:
         print('Encoded to', len(categories), 'categories')
 
-    return data, new_keys, encoder
+    return data, new_keys, (label_encoder, encoder)
 
 def filter_float_by_outlier(data, key, filter_outlier_percent, in_place, verbose=True):
         '''

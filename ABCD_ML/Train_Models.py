@@ -4,28 +4,61 @@ ABCD_ML Project
 Scripts for training models
 '''
 import numpy as np
-import ABCD_ML.Default_Params as DP
 
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.gaussian_process import GaussianProcessClassifier, GaussianProcessRegressor
-from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier, RandomForestRegressor
-from sklearn.linear_model import (LogisticRegressionCV, ElasticNetCV, LinearRegression,
-                                  OrthogonalMatchingPursuitCV,LarsCV, RidgeCV)
+from ABCD_ML.Models import MODELS
 
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-#from sklearn.svm import SVC, LinearSVR
-#from sklearn.neural_network import MLPClassifier
-
-#from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-#from xgboost import XGBRegressor
-#from lightgbm import LGBMRegressor, LGBMClassifier
 from ABCD_ML.Train_Light_GBM import Train_Light_GBM
 from ABCD_ML.ML_Helpers import metric_from_string
 
-def train_model(problem_type,
-                data,
+
+def replace(params, base_int_cv, scorer, class_weight, n_jobs, estimator=None, base_model=False):
+
+    if 'base_int_cv' in params:
+        params['base_int_cv'] = base_int_cv
+    
+    if 'scorer' in params:
+        params['scorer'] = scorer
+    
+    if 'class_weight' in params:
+        params['class_weight'] = class_weight
+    
+    if 'n_jobs' in params:
+        if base_model:
+            del params['n_jobs']
+        else:
+            params['n_jobs'] = n_jobs
+    
+    if 'estimator' in params and estimator is not None:
+        params['estimator'] = estimator
+
+    return params
+
+def get_model(model_type, base_int_cv, scorer, class_weight, n_jobs, extra_params, base_model=False):
+
+    estimator = None
+
+    #If gs or rs in name (grid or random search) recursively build the base_model / estimator
+    if ' gs' in model_type or ' rs' in model_type:
+        
+        base_model_type = MODELS[model_type][1]['estimator']
+        estimator = get_model(base_model_type, base_int_cv, scorer, class_weight, n_jobs, extra_params, base_model=True)
+
+    #Grab the right model and params
+    model, model_params = MODELS[model_type]
+    model_params = replace(model_params, base_int_cv, scorer, class_weight, n_jobs, estimator, base_model=base_model)
+
+    #Check to see if there are any user passed model params to update
+    ex_params = {}
+    if model_type in extra_params:
+        ex_params = extra_params[model_type]
+    model_params.update(ex_params)
+
+    #Create model
+    model = model(**model_params)
+
+    return model
+
+def train_model(data,
                 score_key,
                 CV,
                 model_type='logistic cv',
@@ -33,130 +66,26 @@ def train_model(problem_type,
                 metric='roc',
                 class_weight='balanced',
                 random_state=None,
+                score_encoder=None,
                 n_jobs=1,
                 extra_params={}
                 ):
-
-    problem_type = problem_type.lower()
-    model_type_lower = model_type.lower()
-
+    
+    #Create the internal base k-fold and scorer
     base_int_cv = CV.k_fold(data.index, int_cv, random_state=random_state, return_index=True)
     scorer = metric_from_string(metric, return_scorer=True)
-    
-    params = {'n_jobs': n_jobs}
 
-    if problem_type == 'regression':
-        model, params = get_regression_model(model_type_lower, params, base_int_cv, scorer)
-    elif problem_type == 'binary':
-        model, params = get_binary_model(model_type_lower, params, base_int_cv, scorer, class_weight)
-    elif problem_type == 'categorical':
-        model, params = get_categorical_model(model_type_lower, params, base_int_cv, scorer, class_weight)
+    #Create the model
+    model = get_model(model_type, base_int_cv, scorer, class_weight, n_jobs, extra_params)
 
-    if model_type in extra_params:
-        params.update(extra_params[model_type])
-
-    model = model(**params)
-
+    #Fit the model
     X, y = np.array(data.drop(score_key, axis=1)), np.array(data[score_key])
+
+    #If a score encoder is passed, inverse transform y back to ordinal
+    if score_encoder is not None:
+        y = score_encoder.inverse_transform(y).squeeze()
+
+
     model.fit(X, y)
 
     return model
-
-def get_regression_model(model_type,
-                         params,
-                         base_int_cv,
-                         scorer
-                         ):
-
-    if model_type == 'linear':
-        model = LinearRegression
-        params.update({'fit_intercept': True})
-
-    elif model_type == 'elastic cv':
-        model = ElasticNetCV
-        params.update({'cv': base_int_cv, 'max_iter': 5000})
-        
-    elif model_type == 'omp cv':
-        model = OrthogonalMatchingPursuitCV
-        params.update({'cv': base_int_cv})
-    
-    elif model_type == 'lars cv':
-        model = LarsCV
-        params.update({'cv': base_int_cv})
-    
-    elif model_type == 'ridge cv':
-        model = RidgeCV
-        params.update({'cv': base_int_cv})
-
-    elif model_type == 'rf' or model_type == 'random forest':
-        raw_model = RandomForestRegressor(n_estimators=100)
-        model = RandomizedSearchCV
-        params.update({
-                  'estimator': raw_model,
-                  'param_distributions' : DP.DEFAULT_RF_GRID1,
-                  'n_iter': 10,
-                  'scoring' : scorer,
-                  'cv': base_int_cv,
-                  'iid' : False 
-                  })
-    
-    elif model_type == 'gaussian process' or model_type == 'gp':
-        model = GaussianProcessRegressor
-    
-    #elif model_type == 'full lightgbm':
-    #    model = Train_Light_GBM(X, y, int_cv=cv, regression=True, **extra_params)
-    #    return model
-
-    return model, params
-
-def get_binary_model(model_type,
-                     params,
-                     base_int_cv,
-                     scorer,
-                     class_weight
-                     ):  
-
-    if model_type == 'logistic cv':
-        model = LogisticRegressionCV
-        params.update({'cv': base_int_cv, 'class_weight': class_weight, 'max_iter': 5000})
-    
-    elif model_type == 'nb':
-        model = GaussianNB
-    
-    elif model_type == 'knn':
-        raw_model = KNeighborsClassifier(n_neighbors=1)
-        model = GridSearchCV
-        params.update({
-                  'estimator': raw_model,
-                  'param_grid' : DP.DEFAULT_KNN_GRID1,
-                  'scoring' : scorer,
-                  'cv': base_int_cv,
-                  'iid' : False 
-                  })
-        
-        model = param_search(raw_model, param_grid, **extra_params)
-
-    elif model_type == 'dtc':
-        raw_model = DecisionTreeClassifier(class_weight=class_weight)
-        model = GridSearchCV
-        params.update({
-                  'estimator': raw_model,
-                  'param_grid' : DP.DEFAULT_DTC_GRID1,
-                  'scoring' : scorer,
-                  'cv': base_int_cv,
-                  'iid' : False 
-                  })
-    
-    #elif model_type == 'full lightgbm':
-    #    model = Train_Light_GBM(X, y, int_cv=cv, regression=False, **extra_params)
-    #    return model
-
-    return model, params
-
-def get_categorical_model(model_type,
-                          params,
-                          base_int_cv,
-                          scorer,
-                          class_weight
-                          ): 
-    pass

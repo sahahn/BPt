@@ -86,9 +86,8 @@ def get_score(problem_type,
 
     score_encoder : sklearn encoder, optional (default=None)
         A sklearn api encoder, for optionally transforming the target
-        variable. Used either in the case of categorical data in converting from
-        one-hot encoding to ordinal, or in the case of a target transformation in
-        a regression problem.
+        variable. Used in the case of categorical data in converting from
+        one-hot encoding to ordinal.
 
     Returns
     -------

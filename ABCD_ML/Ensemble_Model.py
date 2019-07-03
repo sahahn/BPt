@@ -11,7 +11,6 @@ class Ensemble_Model():
     '''Basic ensemble wrapper'''
 
     def __init__(self,
-                 problem_type,
                  data,
                  score_key,
                  CV,
@@ -20,6 +19,7 @@ class Ensemble_Model():
                  metric='r2',
                  class_weight='balanced',
                  random_state=None,
+                 score_encoder=None,
                  n_jobs=1,
                  extra_params={}
                  ):
@@ -29,8 +29,7 @@ class Ensemble_Model():
         
         for model_type in model_names:
             
-            model = train_model(problem_type,
-                                data,
+            model = train_model(data,
                                 score_key,
                                 CV,
                                 model_type,
@@ -38,6 +37,7 @@ class Ensemble_Model():
                                 metric,
                                 class_weight,
                                 random_state,
+                                score_encoder,
                                 n_jobs,
                                 extra_params)
             

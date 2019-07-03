@@ -9,6 +9,7 @@ from ABCD_ML.Ensemble_Model import Ensemble_Model
 from ABCD_ML.Train_Models import train_model
 from ABCD_ML.ML_Helpers import scale_data, compute_macro_micro
 from ABCD_ML.Scoring import get_score
+from ABCD_ML.Models import AVALIABLE
 
 def evaluate_model(self,
                    problem_type,
@@ -77,11 +78,20 @@ def test_model(self,
                extra_params = {}
                ):
 
+    assert problem_type in ['binary', 'regression', 'categorical'], "Invalid problem type"
+
     #Split the data to train/test
     train_data, test_data = self.split_data(train_subjects, test_subjects)
     
     #If passed a data scaler, scale and transform the data
     train_data, test_data = scale_data(train_data, test_data, data_scaler, self.data_keys, extra_params)
+
+    #Process model_type, and get the cat_conv flag
+    model_type, extra_params, cat_conv_flag = process_model_type(model_type, extra_params)
+
+    score_encoder = None
+    if cat_conv_flag:
+        score_encoder = self.score_encoder[1]
 
     #Create a trained model based on the provided parameters
     model = self.get_trained_model(problem_type = problem_type,
@@ -91,6 +101,7 @@ def test_model(self,
                                    metric = metric,
                                    class_weight = class_weight,
                                    random_state = random_state,
+                                   score_encoder = score_encoder,
                                    extra_params = extra_params)
 
     #Compute the score of the trained model on the testing data
@@ -136,10 +147,12 @@ def get_trained_model(self,
                       metric,
                       class_weight = 'balanced',
                       random_state = None,
+                      score_encoder = None,
                       extra_params = {}
                       ):
     '''
     Helper function for training either an ensemble or one single model.
+    Handles model type additionally.
 
     Parameters
     ----------
@@ -168,7 +181,12 @@ def get_trained_model(self,
         Only avaliable for binary and categorical problem types.
 
     random_state : int, RandomState instance or None, optional (default=None)
-        Random state passed to sklearn. 
+        Random state passed to sklearn.
+
+    score_encoder : sklearn encoder, optional (default=None)
+        A sklearn api encoder, for optionally transforming the target
+        variable. Used in the case of categorical data in converting from
+        one-hot encoding to ordinal.
 
     extra_params : dict, optional
         Any extra params being passed. Typically, extra params are
@@ -182,12 +200,8 @@ def get_trained_model(self,
     -------
     model : returns a trained model object.
     '''
-
-    #!!! Perform a check here for if the model_type passed requires the ordinal multiclass input,
-    #In the case of ensemble, make sure all of the models can support the same type ~~~
-
-    model_params = {'problem_type': problem_type,
-                    'data' : data,
+    
+    model_params = {'data' : data,
                     'score_key' : self.score_key,
                     'CV' : self.CV,
                     'model_type' : model_type,
@@ -195,6 +209,7 @@ def get_trained_model(self,
                     'metric' : metric,
                     'class_weight' : class_weight,
                     'random_state' : random_state,
+                    'score_encoder' : score_encoder,
                     'n_jobs' : self.n_jobs,
                     'extra_params' : extra_params}
             
@@ -206,14 +221,76 @@ def get_trained_model(self,
     return model
 
 
+def process_model_type(model_type, extra_params):
+
+    #Only in the case of categorical, with model types that just support multiclass and not multilabel
+    #Will this flag be set to true, which means score must be converted to ordinal
+    cat_conv_flag = False
+
+    if type(model_type) == list:
+        conv_model_types = [m.replace('_', ' ').lower() for m in model_type]
+
+        if problem_type == 'categorical':
+
+            #Check first to see if all model names are in multilabel
+            if np.array([m in AVALIABLE['categorical']['multilabel'] for m in conv_model_types]).all():
+                conv_model_types = [AVALIABLE['categorical']['multilabel'][m] for m in conv_model_types]
+            
+            #Then check for multiclass, if multilabel not avaliable
+            elif np.array([m in AVALIABLE['categorical']['multiclass'] for m in conv_model_types]).all():
+                conv_model_types = [AVALIABLE['categorical']['multiclass'][m] for m in conv_model_types]
+                cat_conv_flag = True
+            
+            else:
+                assert 0 == 1, "Selected model type not avaliable for type of problem"
+
+        else:
+
+            #Ensure for binary/regression the models passed exist, and change names
+            assert np.array([m in AVALIABLE[problem_type] for m in conv_model_types]).all(), "Selected model type not avaliable for type of problem"
+            conv_model_types = [AVALIABLE[problem_type][m] for m in conv_model_types]
+
+        #If any extra params passed for the model, change to conv'ed name
+        for m in range(len(conv_model_types)):
+            if model_type[m] in extra_params:
+                extra_params[conv_model_types[m]] = extra_params[model_type[m]]
+
+        return conv_model_types, extra_params, cat_conv_flag
+
+    else:
+        conv_model_type = m.replace('_', ' ').lower()
+
+        if problem_type == 'categorical':
+            
+            #Check multilabel first
+            if conv_model_type in AVALIABLE['categorical']['multilabel']:
+                conv_model_type = AVALIABLE['categorical']['multilabel'][conv_model_type]
+            
+            #Then multi class
+            elif conv_model_type in AVALIABLE['categorical']['multiclass']:
+                conv_model_type = AVALIABLE['categorical']['multiclass'][conv_model_type]
+                cat_conv_flag = True
+
+            else:
+                assert 0 == 1, "Selected model type not avaliable for type of problem"
+
+        else:
+
+            #Ensure for binary/regression the model passed exist, and change name
+            assert conv_model_type in AVALIABLE[problem_type], "Selected model type not avaliable for type of problem"
+            conv_model_type = AVALIABLE[problem_type]
+
+            if conv_model_type in extra_params:
+                extra_params[conv_model_type] = extra_params[model_type]
+
+        return conv_model_type, extra_params, cat_conv_flag
 
 
 
 
 
 
-
-
+        
 
 
 

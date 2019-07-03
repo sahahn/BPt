@@ -1,2 +1,2 @@
 # ABCD_ML
-Machine Learning library for tabular Neuroimaging data.
+Python based Machine Learning library for tabular Neuroimaging data, specifically geared towards the ABCD dataset.

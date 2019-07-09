@@ -27,14 +27,6 @@ def evaluate_model(self,
     #Perform pre-modeling data check
     self.premodel_check()
 
-    default_metrics = {'regression': 'r2',
-                       'binary'    : 'roc',
-                       'categorical' : 'weighted roc auc'}
-
-    #Set default metric based on problem type
-    if metric == 'default':
-        metric = default_metrics[problem_type]
-
     
     #Setup the desired splits, using the gloablly defined train subjects
     subject_splits = self.CV.repeated_k_fold(subjects = self.train_subjects,
@@ -71,7 +63,7 @@ def test_model(self,
                model_type = 'linear',
                data_scaler = 'standard',
                int_cv = 3,
-               metric = 'r2',
+               metric = 'default',
                random_state = None,
                class_weight = 'balanced',
                return_model = False,
@@ -80,6 +72,14 @@ def test_model(self,
 
     assert problem_type in ['binary', 'regression', 'categorical'], "Invalid problem type"
 
+    default_metrics = {'regression'  : 'r2',
+                       'binary'      : 'roc',
+                       'categorical' : 'weighted roc auc'}
+
+    #Set default metric based on problem type
+    if metric == 'default':
+        metric = default_metrics[problem_type]
+
     #Split the data to train/test
     train_data, test_data = self.split_data(train_subjects, test_subjects)
     
@@ -87,7 +87,7 @@ def test_model(self,
     train_data, test_data = scale_data(train_data, test_data, data_scaler, self.data_keys, extra_params)
 
     #Process model_type, and get the cat_conv flag
-    model_type, extra_params, cat_conv_flag = process_model_type(model_type, extra_params)
+    model_type, extra_params, cat_conv_flag = process_model_type(problem_type, model_type, extra_params)
 
     score_encoder = None
     if cat_conv_flag:
@@ -221,7 +221,7 @@ def get_trained_model(self,
     return model
 
 
-def process_model_type(model_type, extra_params):
+def process_model_type(problem_type, model_type, extra_params):
 
     #Only in the case of categorical, with model types that just support multiclass and not multilabel
     #Will this flag be set to true, which means score must be converted to ordinal
@@ -258,7 +258,7 @@ def process_model_type(model_type, extra_params):
         return conv_model_types, extra_params, cat_conv_flag
 
     else:
-        conv_model_type = m.replace('_', ' ').lower()
+        conv_model_type = model_type.replace('_', ' ').lower()
 
         if problem_type == 'categorical':
             
@@ -278,7 +278,7 @@ def process_model_type(model_type, extra_params):
 
             #Ensure for binary/regression the model passed exist, and change name
             assert conv_model_type in AVALIABLE[problem_type], "Selected model type not avaliable for type of problem"
-            conv_model_type = AVALIABLE[problem_type]
+            conv_model_type = AVALIABLE[problem_type][conv_model_type]
 
             if conv_model_type in extra_params:
                 extra_params[conv_model_type] = extra_params[model_type]

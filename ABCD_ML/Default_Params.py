@@ -10,7 +10,6 @@ DEFAULT_RF_GRID1 = {
                    "max_features": sp_uniform(),
                    "min_samples_split": sp_uniform(),
                    "bootstrap": [True],
-                   "criterion": ["mse"]
                    }
 
 DEFAULT_DTC_GRID1 = {'max_depth' : list(range(1, 20)),

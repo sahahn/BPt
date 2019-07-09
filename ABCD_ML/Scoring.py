@@ -1,60 +1,83 @@
 ''' 
 File with functions related to calculating score from ML models
 '''
-from ABCD_ML.ML_Helpers import metric_from_string
+import numpy as np
+from sklearn.metrics import (roc_auc_score, mean_squared_error, r2_score, balanced_accuracy_score,
+                             f1_score, log_loss, make_scorer)
 
-def get_regression_score(model, X_test, y_test, metric):
-    '''Computes a regression score, provided a model and testing data with labels and metric'''
-    
-    preds = model.predict(X_test)
-    metric_func = metric_from_string(metric)
-    
-    score = use_metric(metric_func, y_test, preds)
-    return score
-
-def get_binary_score(model, X_test, y_test, metric):
-    '''Computes a binary score, provided a model and testing data with labels and metric'''
-
-    #Get the metric function and if metric needs proba, or preds
-    metric_func, needs_proba = metric_from_string(metric, return_needs_proba=True)
-
-    if needs_proba:
-        preds = model.predict_proba(X_test)[:,1]
-    else:
-        preds = model.predict(X_test)
-
-    score = use_metric(metric_func, y_test, preds)
-    return score
-
-def get_categorical_score(model, X_test, y_test, metric):
-    '''Computes a categorical score, provided a model and testing data with labels and metric'''
-
-    metric_func, needs_proba = metric_from_string(metric, return_needs_proba=True)
-
-    if needs_proba:
-        pred_proba = clf.predict_proba(X_test)
-        preds = np.stack([p[:,1] for p in pred_proba], axis=1)
-    else:
-        preds = model.predict(X_test)
-
-    score = use_metric(metric_func, y_test, preds)
-    return score
-
-
-def use_metric(metric_func, y_test, preds):
-    '''
-    Check for extra metric params wrapped up in function to compute actual metric.
-    Returns score.
+def scorer_from_string(scorer):
+    ''' 
+    Helper function to convert from string input to sklearn scorer/metric, 
     '''
 
-    metric_params = {}
+    scorer = scorer.lower()
+    scorer = scorer.replace('_',' ')
 
-    if type(metric_func) == list:
-        metric_params = metric_func[1]
-        metric_func = metric_func[0]
-    
-    score = metric_func(y_test, preds, **metric_params)
-    return score
+    #Correct for common conversions
+    conv_dict = {'r2 score':'r2','r2score':'r2', 'mean squared error':'mse',
+    'roc':'macro roc auc', 'roc auc':'macro roc auc', 'balanced acc':'bac', 
+    'f1 score': 'f1', 'log loss':'log', 'logistic':'log', 'logistic loss':'log',
+    'cross entropy loss': 'log', 'crossentropy loss':'log'}
+
+    if scorer in conv_dict:
+        scorer = conv_dict[scorer]
+
+    print('using scorer / metric: ', scorer)
+
+    #Regression
+    if scorer == 'r2':
+        return make_scorer(r2_score, greater_is_better=True)
+
+    #Regression
+    elif scorer == 'mse':
+        return make_scorer(mean_squared_error, greater_is_better=False)
+
+    #Binary, multilabel, multiclass?
+    elif scorer == 'macro roc auc':
+        return make_scorer(roc_auc_score_wrapper, greater_is_better=True, needs_proba=True)
+
+    #Binary, multilabel, multiclass?
+    elif scorer == 'micro roc auc':
+        return make_scorer(roc_auc_score_wrapper, greater_is_better=True, needs_proba=True, average='micro')
+
+    #Binary, multilabel, multiclass?
+    elif scorer == 'weighted roc auc':
+        return make_scorer(roc_auc_score_wrapper, greater_is_better=True, needs_proba=True, average='weighted')
+
+    #Binary, multiclass
+    elif scorer == 'bas':
+        return make_scorer(balanced_accuracy_score, greater_is_better=True)
+
+    elif scorer == 'f1':
+        return make_scorer(f1_score_wrapper, greater_is_better=True)
+
+    elif scorer == 'weighted f1':
+        return make_scorer(f1_score_wrapper, greater_is_better=True, average='weighted')
+
+    elif scorer == 'log':
+        return make_scorer(log_loss_wrapper, greater_is_better=False, needs_proba=True)
+        
+    print('No scorer function defined')
+    return None
+
+def roc_auc_score_wrapper(y_true, y_score, average='macro', sample_weight=None, max_fpr=None):
+    y_score = mutlilabel_compat(y_score)
+    return roc_auc_score(y_true, y_score, average, sample_weight, max_fpr)
+
+def f1_score_wrapper(y_true, y_pred, labels=None, pos_label=1, average='binary'):
+    y_score = mutlilabel_compat(y_score)
+    return f1_score(y_true, y_pred, labels, pos_label, average)
+
+def log_loss_wrapper(y_true, y_pred, eps=1e-15, normalize=True, sample_weight=None):
+    y_score = mutlilabel_compat(y_score)
+    return log_loss(y_true, y_pred, eps, normalize, sample_weight)
+
+def mutlilabel_compat(y_score):
+
+    if type(y_score) == list:
+        y_score = np.stack([s[:,1] for s in y_score], axis=1)
+
+    return y_score
 
 def get_score(problem_type,
               model,
@@ -100,12 +123,6 @@ def get_score(problem_type,
     #If a score encoder is passed, transform the encoded y back for testing
     if score_encoder is not None:
         y_test = score_encoder.inverse_transform(y_test).squeeze()
-    
-    if problem_type == 'regression':
-        score = get_regression_score(model, X_test, y_test, metric)
-    elif problem_type == 'binary':
-        score = get_binary_score(model, X_test, y_test, metric)
-    elif problem_type == 'categorical':
-        score = get_categorical_score(model, X_test, y_test, metric)
 
-    return score
+    score_func = scorer_from_string(metric)
+    return score_func(model, X_test, y_test)

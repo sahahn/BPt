@@ -8,32 +8,39 @@ import numpy as np
 from ABCD_ML.Models import MODELS
 
 from ABCD_ML.Train_Light_GBM import Train_Light_GBM
-from ABCD_ML.ML_Helpers import metric_from_string
+from ABCD_ML.Scoring import scorer_from_string
 
 
 def replace(params, base_int_cv, scorer, class_weight, n_jobs, estimator=None, base_model=False):
 
-    if 'base_int_cv' in params:
-        params['base_int_cv'] = base_int_cv
+    if 'cv' in params:
+        if params['cv'] == 'base_int_cv':
+            params['cv'] = base_int_cv
     
-    if 'scorer' in params:
-        params['scorer'] = scorer
+    if 'scoring' in params:
+        if params['scoring'] == 'scorer':
+            params['scoring'] = scorer
     
     if 'class_weight' in params:
-        params['class_weight'] = class_weight
+        if params['class_weight'] == 'class_weight':
+            params['class_weight'] = class_weight
     
     if 'n_jobs' in params:
-        if base_model:
-            del params['n_jobs']
-        else:
-            params['n_jobs'] = n_jobs
+        if params['n_jobs'] == 'n_jobs':
+            if base_model:
+                del params['n_jobs']
+            else:
+                params['n_jobs'] = n_jobs
     
-    if 'estimator' in params and estimator is not None:
-        params['estimator'] = estimator
+    if 'estimator' in params:
+        if type(params['estimator']) == str and estimator is not None:
+            params['estimator'] = estimator
 
     return params
 
 def get_model(model_type, base_int_cv, scorer, class_weight, n_jobs, extra_params, base_model=False):
+
+    print(model_type)
 
     estimator = None
 
@@ -44,7 +51,7 @@ def get_model(model_type, base_int_cv, scorer, class_weight, n_jobs, extra_param
         estimator = get_model(base_model_type, base_int_cv, scorer, class_weight, n_jobs, extra_params, base_model=True)
 
     #Grab the right model and params
-    model, model_params = MODELS[model_type]
+    model, model_params = MODELS[model_type][0], MODELS[model_type][1].copy()
     model_params = replace(model_params, base_int_cv, scorer, class_weight, n_jobs, estimator, base_model=base_model)
 
     #Check to see if there are any user passed model params to update
@@ -73,7 +80,7 @@ def train_model(data,
     
     #Create the internal base k-fold and scorer
     base_int_cv = CV.k_fold(data.index, int_cv, random_state=random_state, return_index=True)
-    scorer = metric_from_string(metric, return_scorer=True)
+    scorer = scorer_from_string(metric)
 
     #Create the model
     model = get_model(model_type, base_int_cv, scorer, class_weight, n_jobs, extra_params)
@@ -84,7 +91,6 @@ def train_model(data,
     #If a score encoder is passed, inverse transform y back to ordinal
     if score_encoder is not None:
         y = score_encoder.inverse_transform(y).squeeze()
-
 
     model.fit(X, y)
 

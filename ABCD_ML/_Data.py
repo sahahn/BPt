@@ -1,102 +1,129 @@
-'''
-ABCD_ML Project
-
-Main class extension file for the Data loading functionality methods
-'''
+"""
+_Data.py
+====================================
+Main class extension file for the Data loading functionality methods of
+the ABCD_ML class.
+"""
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from scipy.stats.mstats import winsorize
-from ABCD_ML.Data_Helpers import (process_binary_input, process_categorical_input,
-                                 filter_float_by_outlier)
+from ABCD_ML.Data_Helpers import (process_binary_input,
+                                  process_categorical_input,
+                                  filter_float_by_outlier)
+
 
 def load_name_mapping(self,
                       loc,
-                      existing_name_col = "NDAR name",
-                      changed_name_col = "REDCap name/NDA alias"
-                      ):
-    '''
-    Loads a mapping dictionary for column names
+                      existing_name_col="NDAR name",
+                      changed_name_col="REDCap name/NDA alias"):
+    '''Loads a mapping dictionary for loading column names
 
-    Keyword arguments:
-    name_map_loc -- The location of the csv file which contains the mapping
-    existing_name_col -- The column name with the file which lists names to be changed
-    changed_name_col -- The column name within the file which lists the new name
+    Parameters
+    ----------
+    loc : str, Path or None
+        The location of the csv file which contains the mapping.
+
+    existing_name_col : str, optional (default = "NDAR name")
+        The column name with the file which lists names to be changed,
+
+    changed_name_col : str, optional (default = "REDCap name/NDA alias")
+        The column name within the file which lists the new name.
     '''
 
     mapping = pd.read_csv(loc)
 
     try:
-        self.name_map = dict(zip(mapping[existing_name_col], mapping[changed_name_col]))
+        self.name_map = dict(zip(mapping[existing_name_col],
+                                 mapping[changed_name_col]))
     except KeyError:
         print('Error: One or both provided column names do not exist!')
 
-    self.print('Loaded map file')
+    self._print('Loaded map file')
 
-def load_data(self,
-              loc,
-              drop_keys = [],
-              filter_outlier_percent = None,
-              winsorize_val = None
-              ):
-    ''' 
-    Load a 2.0_ABCD_Data_Explorer release formatted neuroimaging dataset of ROI's
 
-    loc -- The location of the dataset csv file
-    drop_keys -- A list of keys to drop columns by, where if any key given in a columns name,
-        then that column will be dropped (Note: if a name mapping exists,
-        this drop step will be conducted after renaming)
-    filter_outlier_percent -- For float/ordinal only:
-        A percent of values to exclude from either end of the score distribution,
-        provided as either 1 number, or a tuple (% from lower, % from higher). None, to perform no filtering.
-    winsorize_val -- The (limits[0])th lowest values are set to the (limits[0])th percentile,
-        and the (limits[1])th highest values are set to the (1 - limits[1])th
-        percentile. If one value passed, used for both ends.
-    '''
-    
-    self.print('Loading', loc) 
+def load_data(self, loc, drop_keys=[], filter_outlier_percent=None,
+              winsorize_val=None):
+    """Load a 2.0_ABCD_Data_Explorer release formatted
+    neuroimaging dataset of ROI's
+
+    Parameters
+    ----------
+    loc : str, Path or None
+        The location of the csv file to load data load from.
+
+    drop_keys : list, optional (default = [])
+        A list of keys to drop columns by, where if any key given in a columns
+        name, then that column will be dropped.
+        (Note: if a name mapping exists, this drop step will be
+        conducted after renaming)
+
+    filter_outlier_percent : int, tuple or None, optional (default = None)
+        For float / ordinal data only.
+        A percent of values to exclude from either end of the
+        score distribution, provided as either 1 number,
+        or a tuple (% from lower, % from higher).
+        set `filter_outlier_percent' to None for no filtering.
+
+    winsorize_val : int, tuple or None, optional (default = None)
+        The (limits[0])th lowest values are set to
+        the (limits[0])th percentile, and the (limits[1])th highest values
+        are set to the (1 - limits[1])th percentile.
+        If one value passed, used for both ends.
+        If None, then no winsorization performed.
+        Note: Winsorizing will be performed after
+        filtering for outliers if values are passed for both.
+    """
+
+    self._print('Loading', loc)
     data = pd.read_csv(loc, na_values=self.default_na_values)
 
-    #Drop the first two columns by default (typically specific id, then dataset id for NDA csvs)
+    # Drop the first two columns by default
+    # typically specific id, then dataset id for NDA tyle csv
     first_cols = list(data)[:2]
     data = data.drop(first_cols, axis=1)
-    self.print('dropped', first_cols, 'columns by default')
+    self._print('dropped', first_cols, 'columns by default')
 
-    #Perform common operations (check subject id, drop duplicate subjects ect...)
+    # Perform common operations
+    # (check subject id, drop duplicate subjects ect...)
     data = self.proc_df(data)
 
-    #Drop any columns if any of the drop keys occur in the column name
+    # Drop any columns if any of the drop keys occur in the column name
     column_names = list(data)
-    to_drop = [name for name in column_names for drop_key in drop_keys if drop_key in name]
+    to_drop = [name for name in column_names for drop_key in drop_keys
+               if drop_key in name]
     data = data.drop(to_drop, axis=1)
-    self.print('Dropped', len(to_drop), 'columns, per drop_keys argument')
+    self._print('Dropped', len(to_drop), 'columns, per drop_keys argument')
 
-    #Drop any rows with missing data
+    # Drop any rows with missing data
     data = self.drop_na(data)
-    self.print('Dropped rows with missing data')
+    self._print('Dropped rows with missing data')
 
     data_keys = list(data)
 
-    if filter_outlier_percent != None:
+    if filter_outlier_percent is not None:
         for key in data_keys:
-            data = filter_float_by_outlier(data, key, filter_outlier_percent, in_place=False, verbose=False)
+            data = filter_float_by_outlier(data, key, filter_outlier_percent,
+                                           in_place=False, verbose=False)
 
-        data = data.dropna() #To actually remove the outliers
-        self.print('Filtered data for outliers with value: ', filter_outlier_percent)
+        data = data.dropna()  # To actually remove the outliers
+        self._print('Filtered data for outliers with value: ',
+                    filter_outlier_percent)
 
-    if winsorize_val != None:
-        
+    if winsorize_val is not None:
         if type(winsorize_val) != tuple:
             winsorize_val = (winsorize_val)
 
         data[data_keys] = winsorize(data[data_keys], winsorize_val, axis=0)
-        self.print('Winsorized data with value: ', winsorize_val)
+        self._print('Winsorized data with value: ', winsorize_val)
 
-    self.print('loaded shape: ', data.shape)
+    self._print('loaded shape: ', data.shape)
 
-    #If other data is already loaded, merge this data with existing loaded data
+    # If other data is already loaded,
+    # merge this data with existing loaded data
     self.data = self.merge_existing(self.data, data)
     self.process_new()
+
 
 def load_custom_data(self):
         print('Not implemented!')
@@ -135,7 +162,7 @@ def load_covars(self,
     if dummy_code_categorical:
         drop = 'first'
 
-    self.print('Reading covariates from', loc)
+    self._print('Reading covariates from', loc)
     covars, col_names = self.common_load(loc, col_names=col_names)
 
     if type(data_types) != list:
@@ -145,7 +172,7 @@ def load_covars(self,
 
     for key, d_type in zip(col_names, data_types):
 
-        self.print('load:', key)
+        self._print('load:', key)
 
         if d_type == 'binary' or d_type == 'b':
             covars, encoder = process_binary_input(covars, key, self.verbose)
@@ -212,7 +239,7 @@ def load_scores(self,
 
     self.score_key = self.original_score_key
 
-    self.print('Loading ', loc)
+    self._print('Loading ', loc)
     scores = self.common_load(loc, col_name=col_name)
     
     #Rename the column with score to default score key name
@@ -235,7 +262,7 @@ def load_scores(self,
             scores = filter_float_by_outlier(scores, self.score_key, filter_outlier_percent,
                                                         in_place=True, verbose=self.verbose)
             
-    self.print('Final shape: ', scores.shape)
+    self._print('Final shape: ', scores.shape)
     self.scores = scores #By default on store one scores, so don't merge
     self.process_new()
 
@@ -268,7 +295,7 @@ def load_custom_scores(self,
     if 'src_subject_id' not in column_names:
         
         scores = scores.rename({column_names[subject_ind]: 'src_subject_id'}, axis=1)
-        self.print(column_names[subject_ind], 'renamed to: src_subject_id')
+        self._print(column_names[subject_ind], 'renamed to: src_subject_id')
 
     #Perform common corrections on the scores dataframe
     scores = self.proc_df(scores)
@@ -277,20 +304,20 @@ def load_custom_scores(self,
     if 'score' not in column_names:
         
         scores = scores.rename({column_names[score_ind]: 'score'}, axis=1)
-        self.print(column_names[score_ind], 'renamed to: score')
+        self._print(column_names[score_ind], 'renamed to: score')
 
     #Dropping missing scores, or scores that are NaN
     invalid_score_inds = scores[np.isnan(scores.score)].index
     scores = scores.drop(index=invalid_score_inds)
-    self.print('Dropped', len(invalid_score_inds), 'scores/subjects for NaN scores')
-    self.print('Min-Max Score (before outlier filtering):', np.min(scores.score), np.max(scores.score))
+    self._print('Dropped', len(invalid_score_inds), 'scores/subjects for NaN scores')
+    self._print('Min-Max Score (before outlier filtering):', np.min(scores.score), np.max(scores.score))
 
     if filter_outlier_percent != None:
         scores = self.filter_by_outlier(scores, 'score', filter_outlier_percent)
-        self.print('Filtered score for outliers, dropping rows with params: ', filter_outlier_percent)
-        self.print('Min-Max Score (post outlier filtering):', np.min(scores.score), np.max(scores.score))
+        self._print('Filtered score for outliers, dropping rows with params: ', filter_outlier_percent)
+        self._print('Min-Max Score (post outlier filtering):', np.min(scores.score), np.max(scores.score))
 
-    self.print('Final shape: ', scores.shape)
+    self._print('Final shape: ', scores.shape)
     self.scores = scores
     self.process_new()
 
@@ -305,7 +332,7 @@ def load_strat_values(self,
     strat_col_names -- list of column names to load
     '''
     
-    self.print('Reading stratification values from', loc)
+    self._print('Reading stratification values from', loc)
     strat, col_names = self.common_load(loc, col_names=col_names)
 
     #Encode each column into unique values
@@ -334,7 +361,7 @@ def load_exclusions(self,
     '''
 
     self.exclusions.update(self.load_set_of_subjects(loc=loc, subjects=exclusions))
-    self.print('Total excluded subjects: ', len(self.exclusions))
+    self._print('Total excluded subjects: ', len(self.exclusions))
     self.process_new()
 
 def clear_exclusions(self):
@@ -383,7 +410,7 @@ def merge_existing(self,
     #If other covars data is already loaded, merge with it
     if len(class_data) > 0:
         class_data = pd.merge(class_data, local_data, on='src_subject_id')
-        self.print('Merged with existing!')
+        self._print('Merged with existing!')
         return class_data
     else:
         return local_data
@@ -467,7 +494,7 @@ def drop_na(self,
     
     missing_values = data.isna().any(axis=1)
     data = data.dropna()
-    self.print('Dropped', sum(missing_values), 'rows for missing values')
+    self._print('Dropped', sum(missing_values), 'rows for missing values')
 
     return data
 
@@ -511,7 +538,7 @@ def process_new(self):
     overlap = set.intersection(*valid_subjects)
     overlap = overlap - self.exclusions
 
-    self.print('Removing non overlapping + excluded subjects')
+    self._print('Removing non overlapping + excluded subjects')
 
     if len(self.data) > 0:
         self.data = self.data[self.data.index.isin(overlap)]
@@ -522,8 +549,8 @@ def process_new(self):
     if len(self.strat) > 0:
         self.strat = self.strat[self.strat.index.isin(overlap)]
 
-    self.print('Total subjects = ', len(overlap))
-    self.print()
+    self._print('Total subjects = ', len(overlap))
+    self._print()
 
 def prepare_data(self):
     '''

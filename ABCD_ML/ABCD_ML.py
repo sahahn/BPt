@@ -35,7 +35,7 @@ class ABCD_ML():
         default_na_values : list, optional (default = ['777', '999'])
             Additional values to treat as NaN, by default ABCD specific
             values of '777' and '999' are treated as NaN,
-            and those set to default by Pandas 'read_csv' function.
+            and those set to default by pandas 'read_csv' function.
             Note: if new values are passed here,
             it will override these default '777' and '999' NaN values.
 
@@ -91,28 +91,27 @@ class ABCD_ML():
     # Data loader functionality
     from ABCD_ML._Data import (load_name_mapping,
                                load_data,
-                               load_custom_data,
                                load_covars,
                                load_scores,
-                               load_custom_scores,
                                load_strat_values,
                                load_exclusions,
                                clear_exclusions,
-                               common_load,
-                               merge_existing,
-                               proc_df,
-                               load_set_of_subjects,
-                               process_subject_name,
-                               drop_na,
-                               filter_by_eventname,
-                               process_new,
-                               prepare_data)
+                               _common_load,
+                               _merge_existing,
+                               _proc_df,
+                               _load_set_of_subjects,
+                               _process_subject_name,
+                               _drop_na,
+                               _filter_by_eventname,
+                               _process_new,
+                               _prepare_data)
 
     # Validation / CV functionality
     def define_validation_strategy(self, groups=None,
                                    stratify=None):
         '''Define a validation stratagy to be used during different train/test splits,
         in addition to model selection and model hyperparameter CV.
+        See Notes for more info.
 
         Parameters
         ----------
@@ -168,14 +167,14 @@ class ABCD_ML():
 
         if groups is not None:
 
-            if type(groups) is str:
+            if isinstance(groups, str):
                 self.CV = CV(groups=self.strat[groups])
-            elif type(groups) is list:
+            elif isinstance(groups, list):
                 self.CV = CV(groups=get_unique_combo(self.strat, groups))
 
         elif stratify is not None:
 
-            if type(stratify) is str:
+            if isinstance(stratify, str):
 
                 if stratify == self.original_score_key:
                     self.strat[self.score_key] = self.scores[self.score_key]
@@ -183,7 +182,7 @@ class ABCD_ML():
 
                 self.CV = CV(stratify=self.strat[stratify])
 
-            elif type(stratify) is list:
+            elif isinstance(stratify, list):
 
                 if self.original_score_key in list:
                     self.strat[self.score_key] = self.scores[self.score_key]
@@ -210,21 +209,21 @@ class ABCD_ML():
         test_subjects : list, set, array-like or None, optional (default=None)
             An explicit list of subjects to constitute the testing set
 
-        random_state : int or None, optional (default=None)
+        random_state : int or None, optional (default = None)
             If using test_size, then can optionally provide a random state, in
             order to be able to recreate an exact test set.
         '''
 
         if self.all_data is None:
-            self.prepare_data()
+            self._prepare_data()
 
         if test_size is not None:
             self.train_subjects, self.test_subjects = self.CV.train_test_split(
                                  self.all_data.index, test_size, random_state)
 
         else:
-            test_subjects = self.load_set_of_subjects(loc=test_loc,
-                                                      subjects=test_subjects)
+            test_subjects = self._load_set_of_subjects(loc=test_loc,
+                                                       subjects=test_subjects)
             train_subjects = [subject for subject in self.all_data.index
                               if subject not in test_subjects]
 
@@ -240,9 +239,9 @@ class ABCD_ML():
     # Machine Learning functionality
     from ABCD_ML._ML import (evaluate_model,
                              test_model,
-                             premodel_check,
-                             split_data,
-                             get_trained_model)
+                             _premodel_check,
+                             _split_data,
+                             _get_trained_model)
 
     def show_model_types(self, problem_type=None):
         '''Print out the avaliable machine learning models,
@@ -253,6 +252,10 @@ class ABCD_ML():
         problem_type : {binary, categorical, regression, None}, optional
         (default = None), where `problem_type` is the underlying ML problem
         '''
+        pass
+
+    def show_data_scalers(self):
+        '''Print out the avaliable data scalers'''
         pass
 
     def show_metrics(self, problem_type=None):

@@ -62,3 +62,63 @@ def Train_Light_GBM(X, y, int_cv=3, regression=True, n_params=10, test_size=.2, 
     model.fit(X_train, y_train, eval_set=(X_val, y_val), verbose=False, early_stopping_rounds=int(e_stop_rounds*2))
 
     return model
+
+
+
+
+    '''
+def load_custom_scores(self,
+                        scores_loc,
+                        subject_ind=0,
+                        score_ind=1,
+                        filter_outlier_percent = None
+                        ):
+
+
+    Loads in a set of subject ids and associated scores from a custom csv scores dataset
+
+    scores_loc -- The location of the scores csv file
+    subject_ind -- The column index within the csv where subject is saved, if not already named src_subject_id
+    score_ind -- The column index within the csv where the score is saved, if not already named score
+    filter_outlier_percent -- A percent of values to exclude from either end of the score distribution,
+        provided as either 1 number, or a tuple (% from lower, % from higher). None, to perform no filtering.
+
+
+    print('Not implemented!')
+    pass
+
+    #Old version below~
+
+    scores = pd.read_csv(scores_loc, na_values=self.default_na_values)
+    column_names = list(scores)
+
+    #Rename subject column to src_subject_id
+    if 'src_subject_id' not in column_names:
+
+        scores = scores.rename({column_names[subject_ind]: 'src_subject_id'}, axis=1)
+        self._print(column_names[subject_ind], 'renamed to: src_subject_id')
+
+    #Perform common corrections on the scores dataframe
+    scores = self.proc_df(scores)
+
+    #Rename the column with score, to score
+    if 'score' not in column_names:
+
+        scores = scores.rename({column_names[score_ind]: 'score'}, axis=1)
+        self._print(column_names[score_ind], 'renamed to: score')
+
+    #Dropping missing scores, or scores that are NaN
+    invalid_score_inds = scores[np.isnan(scores.score)].index
+    scores = scores.drop(index=invalid_score_inds)
+    self._print('Dropped', len(invalid_score_inds), 'scores/subjects for NaN scores')
+    self._print('Min-Max Score (before outlier filtering):', np.min(scores.score), np.max(scores.score))
+
+    if filter_outlier_percent != None:
+        scores = self.filter_by_outlier(scores, 'score', filter_outlier_percent)
+        self._print('Filtered score for outliers, dropping rows with params: ', filter_outlier_percent)
+        self._print('Min-Max Score (post outlier filtering):', np.min(scores.score), np.max(scores.score))
+
+    self._print('Final shape: ', scores.shape)
+    self.scores = scores
+    self._process_new()
+'''

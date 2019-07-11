@@ -40,11 +40,11 @@ def scorer_from_string(scorer):
     elif scorer == 'micro roc auc':
         return make_scorer(roc_auc_score_wrapper, greater_is_better=True, needs_proba=True, average='micro')
 
-    #Binary, multilabel, multiclass?
+    # Binary, multilabel, multiclass?
     elif scorer == 'weighted roc auc':
         return make_scorer(roc_auc_score_wrapper, greater_is_better=True, needs_proba=True, average='weighted')
 
-    #Binary, multiclass
+    # Binary, multiclass
     elif scorer == 'bas':
         return make_scorer(balanced_accuracy_score, greater_is_better=True)
 
@@ -59,6 +59,7 @@ def scorer_from_string(scorer):
         
     print('No scorer function defined')
     return None
+
 
 def roc_auc_score_wrapper(y_true, y_score, average='macro', sample_weight=None, max_fpr=None):
     y_score = mutlilabel_compat(y_score)

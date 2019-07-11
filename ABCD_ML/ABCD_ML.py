@@ -19,42 +19,48 @@ class ABCD_ML():
 
         Parameters
         ----------
-        eventname : str or None, optional (default = baseline_year_1_arm_1)
+        eventname : str or None, optional
             Optional value to provide, specifying to keep certain rows
             when reading data based on the eventname flag.
             As ABCD is a longitudinal study, this flag lets you select only
             one specific time point, or if set to None, will load everything.
+            (default = baseline_year_1_arm_1)
 
-        use_default_subject_ids : bool, optional (default = True)
+        use_default_subject_ids : bool, optional
             Flag to determine the usage of 'default' subject id behavior.
             If set to True, this will convert input NDAR subject ids
             into upper case, with prepended NDAR_ - type format.
             If set to False, then all input subject names must be entered
             explicitly the same, no preprocessing will be done on them.
+            (default = True)
 
-        default_na_values : list, optional (default = ['777', '999'])
+        default_na_values : list, optional
             Additional values to treat as NaN, by default ABCD specific
             values of '777' and '999' are treated as NaN,
             and those set to default by pandas 'read_csv' function.
             Note: if new values are passed here,
             it will override these default '777' and '999' NaN values.
+            (default = ['777', '999'])
 
-        n_jobs : int, optional (default = 1)
-            Number of additionally processors to use during training
+        n_jobs : int, optional
+            Number of processors to use during training
             of machine learning models. This default parameter can
             still be overriden if n_jobs is passed in
             extra params in a specific training instance.
+            (default = 1)
 
-        original_score_key : str, optional (default = 'score')
+        original_score_key : str, optional
             This parameter refers to the column name / key, that the
             target variable of interest will be stored under. There are not a
             lot of reasons to change this setting, except in the case of
             a naming conflict - or just for further customization.
+            (default = 'score')
 
-        verbose: bool, optional (default = True)
+        verbose: bool, optional
             If set to true will display diagnostic and other output during
             dataloading and model training ect... if set to False this output
             will be muted.
+            (default = True)
         '''
 
         # Set class parameters
@@ -115,7 +121,7 @@ class ABCD_ML():
 
         Parameters
         ----------
-        groups : str, list or None, optional (default = None)
+        groups : str, list or None, optional
             In the case of str input, will assume the str to refer
             to a column key within the loaded strat data,
             and will assign it as a value to preserve groups by
@@ -123,8 +129,9 @@ class ABCD_ML():
             If a list is passed, then each element should be a str,
             and they will be combined into all unique
             combinations of the elements of the list.
+            (default = None)
 
-        stratify : str, list or None, optional (default = None)
+        stratify : str, list or None, optional
             In the case of str input, will assume the str to refer
             to a column key within the loaded strat data,
             and will assign it as a value to preserve
@@ -134,6 +141,7 @@ class ABCD_ML():
             If a list is passed, then each element should be a str,
             and they will be combined into all unique combinations of
             the elements of the list.
+            (default = None)
 
         Notes
         ----------
@@ -195,23 +203,27 @@ class ABCD_ML():
                          test_subjects=None, random_state=None):
         '''Define the overarching train / test split, highly reccomended.
 
-        test_size: float, int or None, optional (default = None)
+        test_size: float, int or None, optional
             If float, should be between 0.0 and 1.0 and represent
             the proportion of the dataset to be included in the test split.
             If int, represents the absolute number (or target number) to
             include in the testing group.
             Set to None if using test_loc or test_subjects.
+            (default = None)
 
-        test_loc : str, Path or None, optional (default = None)
+        test_loc : str, Path or None, optional
             Location of a file to load in test subjects from.
             The file should be formatted as one subject per line.
+            (default = None)
 
-        test_subjects : list, set, array-like or None, optional (default=None)
+        test_subjects : list, set, array-like or None, optional
             An explicit list of subjects to constitute the testing set
+            (default=None)
 
-        random_state : int or None, optional (default = None)
+        random_state : int or None, optional
             If using test_size, then can optionally provide a random state, in
             order to be able to recreate an exact test set.
+            (default = None)
         '''
 
         if self.all_data is None:
@@ -250,7 +262,8 @@ class ABCD_ML():
         Parameters
         ----------
         problem_type : {binary, categorical, regression, None}, optional
-        (default = None), where `problem_type` is the underlying ML problem
+            Where `problem_type` is the underlying ML problem
+            (default = None)
         '''
         pass
 
@@ -265,6 +278,7 @@ class ABCD_ML():
         Parameters
         ----------
         problem_type : {binary, categorical, regression, None}, optional
-        (default = None), where `problem_type` is the underlying ML problem
+            Where `problem_type` is the underlying ML problem
+            (default = None)
         '''
         pass

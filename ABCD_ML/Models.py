@@ -1,5 +1,11 @@
+"""
+Models.py
+====================================
+This file contains the different models avaliable for training,
+with additional information on which work with which problem types
+and default params.
+"""
 import ABCD_ML.Default_Params as DP
-
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB

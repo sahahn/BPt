@@ -21,8 +21,11 @@ def evaluate_model(self, problem_type, model_type,
     Parameters
     ----------
     problem_type : {'regression', 'binary', 'categorical'}
-        Regression for float or ordinal target data, binary for binary,
-        categorical for categorical.
+
+        - 'regression' : For ML on float or ordinal target score data
+        - 'binary' : For ML on binary target score data
+        - 'categorical' : For ML on categorical target score data,
+                          as either multilabel or multiclass.
 
     model_type : str or list of str,
         Each string refers to a type of model to train.
@@ -31,32 +34,36 @@ def evaluate_model(self, problem_type, model_type,
         For a full list of supported options call:
         self.show_model_types(), with optional problem type parameter.
 
-    data_scaler : str, optional (default = 'standard')
+    data_scaler : str, optional
         `data_scaler` refers to the type of scaling to apply
         to the saved data during model evaluation.
         For a full list of supported options call:
         self.show_data_scalers()
+        (default = 'standard')
 
-    n_splits : int, optional (default = 3)
+    n_splits : int, optional
         evaluate_model performs a repeated k-fold model evaluation,
         `n_splits` refers to the k. E.g., if set to 3, then a 3-fold
         repeated CV will be performed. This parameter is typically
         chosen as a trade off between bias and variance, in addition to
         as a function of sample size.
+        (default = 3)
 
-    n_repeats : int, optional (default = 2)
+    n_repeats : int, optional
         evaluate_model performs a repeated k-fold model evaluation,
         `n_repeats` refers to the number of times to repeat the
         k-fold CV. This parameter is typical chosen as a balance between
         run time, and accuratly accessing model performance.
+        (default = 2)
 
-    int_cv : int, optional (default = 3)
+    int_cv : int, optional
         The number of internal folds to use during
         model k-fold parameter selection, if the chosen model requires
         parameter selection. A value greater
         then 2 must be passed.
+        (default = 3)
 
-    metric : str, optional (default = 'default'),
+    metric : str, optional
         Indicator for which metric to use for calculating
         score and during model parameter selection.
         If `metric` left as 'default', then the default metric/scorer
@@ -67,17 +74,20 @@ def evaluate_model(self, problem_type, model_type,
         Note, some metrics are only avaliable for certain problem types.
         For a full list of supported metrics call:
         self.show_metrics, with optional problem type parameter.
+        (default = 'default')
 
-    class weight : {dict, 'balanced', None}, optional (default = 'balanced')
-        Only avaliable for binary and categorical problem types.
+    class weight : {dict, 'balanced', None}, optional
+        Only used for binary and categorical problem types.
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
+        (default = 'balanced')
 
-    random_state : int, RandomState instance or None, optional (default = None)
+    random_state : int, RandomState instance or None, optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
+        (default = None)
 
-    extra_params : dict, optional (default = {})
+    extra_params : dict, optional
         Any extra params being passed. Typically, extra params are
         added when the user wants to provide a specific model/classifier,
         or data scaler, with updated (or new) parameters.
@@ -85,6 +95,7 @@ def evaluate_model(self, problem_type, model_type,
         E.g., extra_params[model_name] = {'model_param' : new_value}
         Where model param is a valid argument for that model, and model_name in
         this case is the str indicator passed to model_type.
+        (default = {})
 
     Returns
     ----------
@@ -144,39 +155,46 @@ def test_model(self, problem_type, model_type, train_subjects=None,
     Parameters
     ----------
     problem_type : {'regression', 'binary', 'categorical'}
-        Regression for float or ordinal target data, binary for binary,
-        categorical for categorical.
 
-    model_type : str or list of str,
+        - 'regression' : For ML on float or ordinal target score data
+        - 'binary' : For ML on binary target score data
+        - 'categorical' : For ML on categorical target score data,
+                          as either multilabel or multiclass.
+
+    model_type : str or list of str
         Each string refers to a type of model to train.
         If a list of strings is passed then an ensemble model
         will be created over all individual models.
         For a full list of supported options call:
         self.show_model_types(), with optional problem type parameter.
 
-    train_subjects : array-like or None, optional (default = None)
+    train_subjects : array-like or None, optional
         If passed None, (default), then the class defined train subjects will
         be used. Otherwise, an array or pandas Index of
         valid subjects should be passed.
+        (default = None)
 
-    test_subjects : array-like or None, optional (default = None)
+    test_subjects : array-like or None, optional
         If passed None, (default), then the class defined test subjects will
         be used. Otherwise, an array or pandas Index of
         valid subjects should be passed.
+        (default = None)
 
-    data_scaler : str, optional (default = 'standard')
+    data_scaler : str, optional
         `data_scaler` refers to the type of scaling to apply
         to the saved data during model evaluation.
         For a full list of supported options call:
         self.show_data_scalers()
+        (default = 'standard')
 
-    int_cv : int, optional (default = 3)
+    int_cv : int, optional
         The number of internal folds to use during
         model k-fold parameter selection, if the chosen model requires
         parameter selection. A value greater
         then 2 must be passed.
+        (default = 3)
 
-    metric : str, optional (default = 'default'),
+    metric : str, optional
         Indicator for which metric to use for calculating
         score and during model parameter selection.
         If `metric` left as 'default', then the default metric/scorer
@@ -187,22 +205,26 @@ def test_model(self, problem_type, model_type, train_subjects=None,
         Note, some metrics are only avaliable for certain problem types.
         For a full list of supported metrics call:
         self.show_metrics, with optional problem type parameter.
+        (default = 'default')
 
-    class weight : {dict, 'balanced', None}, optional (default = 'balanced')
-        Only avaliable for binary and categorical problem types.
+    class weight : {dict, 'balanced', None}, optional
+        Only used for binary and categorical problem types.
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
+        (default = 'balanced')
 
-    random_state : int, RandomState instance or None, optional (default = None)
+    random_state : int, RandomState instance or None, optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
+        (default = None)
 
-    return_model : bool, optional (default = False)
+    return_model : bool, optional
         If `return_model` is True, then model constructed and tested
         will be returned in addition to the score. If False,
         just the score will be returned.
+        (default = False)
 
-    extra_params : dict, optional (default = {})
+    extra_params : dict, optional
         Any extra params being passed. Typically, extra params are
         added when the user wants to provide a specific model/classifier,
         or data scaler, with updated (or new) parameters.
@@ -210,6 +232,7 @@ def test_model(self, problem_type, model_type, train_subjects=None,
         E.g., extra_params[model_name] = {'model_param' : new_value}
         Where model param is a valid argument for that model, and model_name in
         this case is the str indicator passed to model_type.
+        (default = {})
 
     Returns
     ----------
@@ -292,15 +315,17 @@ def _split_data(self, train_subjects, test_subjects):
 
     Parameters
     ----------
-    train_subjects : array-like or None, optional (default = None)
+    train_subjects : array-like or None, optional
         If passed None, (default), then the class defined train subjects will
         be used. Otherwise, an array or pandas Index of
         valid subjects should be passed.
+        (default = None)
 
-    test_subjects : array-like or None, optional (default = None)
+    test_subjects : array-like or None, optional
         If passed None, (default), then the class defined test subjects will
         be used. Otherwise, an array or pandas Index of
         valid subjects should be passed.
+        (default = None)
 
     Returns
     ----------
@@ -333,8 +358,11 @@ def _get_trained_model(self, problem_type, data, model_type,
     Parameters
     ----------
     problem_type : {'regression', 'binary', 'categorical'}
-        Regression for float or ordinal target data, binary for binary,
-        categorical for categorical.
+
+        - 'regression' : For ML on float or ordinal target score data
+        - 'binary' : For ML on binary target score data
+        - 'categorical' : For ML on categorical target score data,
+                          as either multilabel or multiclass.
 
     data : pandas DataFrame,
         ABCD_ML formatted df.
@@ -359,21 +387,24 @@ def _get_trained_model(self, problem_type, data, model_type,
         For a full list of supported metrics call:
         self.show_metrics, with optional problem type parameter.
 
-    class weight : {dict, 'balanced', None}, optional (default = 'balanced')
-        Only avaliable for binary and categorical problem types.
+    class weight : {dict, 'balanced', None}, optional
+        Only used for binary and categorical problem types.
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
+        (default = 'balanced')
 
-    random_state : int, RandomState instance or None, optional (default = None)
+    random_state : int, RandomState instance or None, optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
+        (default = None)
 
-    score_encoder : sklearn encoder, optional (default=None)
+    score_encoder : sklearn encoder, optional
         A sklearn api encoder, for optionally transforming the target
         variable. Used in the case of categorical data in converting from
         one-hot encoding to ordinal.
+        (default=None)
 
-    extra_params : dict, optional (default = {})
+    extra_params : dict, optional
         Any extra params being passed. Typically, extra params are
         added when the user wants to provide a specific model/classifier,
         or data scaler, with updated (or new) parameters.
@@ -381,6 +412,7 @@ def _get_trained_model(self, problem_type, data, model_type,
         E.g., extra_params[model_name] = {'model_param' : new_value}
         Where model param is a valid argument for that model, and model_name in
         this case is the str indicator passed to model_type.
+        (default = {})
 
     Returns
     -------

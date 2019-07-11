@@ -24,11 +24,13 @@ def load_name_mapping(self,
     loc : str, Path or None
         The location of the csv file which contains the mapping.
 
-    existing_name_col : str, optional (default = "NDAR name")
-        The column name with the file which lists names to be changed,
+    existing_name_col : str, optional
+        The column name with the file which lists names to be changed.
+        (default = "NDAR name")
 
-    changed_name_col : str, optional (default = "REDCap name/NDA alias")
+    changed_name_col : str, optional
         The column name within the file which lists the new name.
+        (default = "REDCap name/NDA alias")
     '''
 
     mapping = pd.read_csv(loc)
@@ -52,20 +54,22 @@ def load_data(self, loc, drop_keys=[], filter_outlier_percent=None,
     loc : str, Path or None
         The location of the csv file to load data load from.
 
-    drop_keys : list, optional (default = [])
+    drop_keys : list, optional
         A list of keys to drop columns by, where if any key given in a columns
         name, then that column will be dropped.
         (Note: if a name mapping exists, this drop step will be
         conducted after renaming)
+        (default = [])
 
-    filter_outlier_percent : int, tuple or None, optional (default = None)
+    filter_outlier_percent : int, tuple or None, optional
         For float / ordinal data only.
         A percent of values to exclude from either end of the
         score distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
+        (default = None)
 
-    winsorize_val : int, tuple or None, optional (default = None)
+    winsorize_val : int, tuple or None, optional
         The (limits[0])th lowest values are set to
         the (limits[0])th percentile, and the (limits[1])th highest values
         are set to the (1 - limits[1])th percentile.
@@ -73,6 +77,7 @@ def load_data(self, loc, drop_keys=[], filter_outlier_percent=None,
         If None, then no winsorization performed.
         Note: Winsorizing will be performed after
         filtering for outliers if values are passed for both.
+        (default = None)
     """
 
     self._print('Loading', loc)
@@ -149,26 +154,30 @@ def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
         'o' for 'ordinal'
         'f' for 'float'
 
-    dummy_code_categorical: bool, optional (default = True)
+    dummy_code_categorical: bool, optional
         If True, then categorical variables are dummy coded.
         If False, then categorical variables are one-hot encoded.
+        (default = True)
 
-    filter_float_outlier_percent, tuple or None, optional (default = None)
+    filter_float_outlier_percent, tuple or None, optional
         For float datatypes only.
         A percent of values to exclude from either end of the
         score distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_float_outlier_percent` to None for no filtering.
+        (default = None)
 
-    standardize : bool, optional (default = True)
+    standardize : bool, optional
         If True, scales any float/ordinal covariate loaded to have
         a mean of 0 and std of 1.
         Note: Computed before normalization, both set to True.
+        (default = True)
 
-    normalize : bool, optional (default = False)
+    normalize : bool, optional
         If True, scales any float/ordinal covariates loaded
         to be between 0 and 1.
         Note: Computed after standardization, if both set to True.
+        (default = False)
     '''
 
     drop = None
@@ -242,19 +251,22 @@ def load_scores(self, loc, col_name, data_type='float',
 
     data_type : {'binary', 'categorical', 'ordinal', 'float'}
         The data type of the score column.
-        Short hand options for datatypes are,
-        'b' for 'binary',
-        'c' for 'categorical'
-        'o' for 'ordinal'
-        'f' for 'float'
+        Shorthands for datatypes can be used as well
+
+        - 'binary' or 'b', : Binary input
+        - 'categorical' or 'c' : Categorical input
+        - 'ordinal' or 'o' : Ordinal input
+        - 'float' or 'f' : Float numerical input
+
         Datatypes are explained further in Notes.
 
-    filter_outlier_percent: tuple or None, optional (default = None)
+    filter_outlier_percent : tuple or None, optional
         For float or ordinal datatypes only.
         A percent of values to exclude from either end of the
         score distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
+        (default = None).
 
     Notes
     ----------
@@ -358,12 +370,14 @@ def load_exclusions(self, loc=None, exclusions=None):
 
     Parameters
     ----------
-    loc : str, Path or None, optional (default = None)
+    loc : str, Path or None, optional
         Location of a file to load in excluded subjects from.
         The file should be formatted as one subject per line.
+        (default = None)
 
-    exclusions : list, set, array-like or None, optional (default=None)
+    exclusions : list, set, array-like or None, optional
         An explicit list of subjects to add to exclusions.
+        (default = None)
 
     Notes
     ----------
@@ -390,8 +404,9 @@ def _common_load(self, loc, col_name=None, col_names=None):
 
     Parameters
     ----------
-    loc : str, Path or None, optional (default = None)
+    loc : str, Path or None, optional
         Location of a csv file to load in selected columns from.
+        (default = None)
 
     col_name : str
         The name of the column to load.
@@ -495,11 +510,14 @@ def _load_set_of_subjects(self, loc=None, subjects=None):
 
     Parameters
     ----------
-    loc : str, Path or None, optional (default = None)
+    loc : str, Path or None, optional
         Location of a file to load in subjects from.
         The file should be formatted as one subject per line.
-    subjects : list, set, array-like or None, optional (default=None)
+        (default = None)
+
+    subjects : list, set, array-like or None, optional
         An explicit list of subjects to add to exclusions.
+        (default = None)
 
     Returns
     ----------

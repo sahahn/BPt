@@ -3,7 +3,6 @@ CV.py
 ====================================
 Class for performing train test splits and other cross validation for ABCD_ML
 """
-
 import sklearn.model_selection as MS
 import numpy as np
 
@@ -52,15 +51,17 @@ class CV():
             `subjects` should be a pandas index or numpy array of subjects.
             They should correspond to any subject indexed groups or stratify.
 
-        test_size : float, int or None, optional (default = .2)
+        test_size : float, int or None, optional
             If float, should be between 0.0 and 1.0 and represent
             the proportion of the dataset to be included in the test split.
             If int, represents the absolute number (or target number) to
             include in the testing group.
+            (default = .2)
 
-        random_state : int or None, optional (default=None)
+        random_state : int or None, optional
             Optionally can provide a random state, in
             order to be able to recreate exact splits.
+            (default=None)
 
         Returns
         ----------
@@ -112,13 +113,15 @@ class CV():
             The number of splits to compute within each repeated split.
             Or rather the k in k-fold.
 
-        random_state : int or None, optional (default = None)
+        random_state : int or None, optional
             Optionally can provide a random state, in
             order to be able to recreate exact splits.
+            (default = None)
 
-        return_index : bool, optional (default = False)
+        return_index : bool, optional
             If true, then instead of returning subject ID's, this function
             will return the numerical index of the subject.
+            (default = False)
 
         Returns
         ----------
@@ -162,13 +165,15 @@ class CV():
             The number of splits to compute within each fold.
             Or rather the k in k-fold.
 
-        random_state : int or None, optional (default = None)
+        random_state : int or None, optional
             Optionally can provide a random state, in
             order to be able to recreate exact splits.
+            (default = None)
 
-        return_index : bool, optional (default = False)
+        return_index : bool, optional
             If true, then instead of returning subject ID's, this function
             will return the numerical index of the subject.
+            (default = False)
 
         Returns
         ----------

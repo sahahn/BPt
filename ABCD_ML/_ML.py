@@ -4,17 +4,14 @@ _ML.py
 Main class extension file for the Machine Learning functionality
 """
 import numpy as np
-from ABCD_ML.Ensemble_Model import Ensemble_Model
-from ABCD_ML.Train_Models import train_model
-from ABCD_ML.ML_Helpers import (scale_data, compute_macro_micro,
-                                process_model_type)
-from ABCD_ML.Scoring import get_score
+from ABCD_ML.ML_Helpers import compute_macro_micro
+from Model import Regression_Model, Binary_Model, Categorical_Model
 
 
-def evaluate_model(self, problem_type, model_type,
-                   data_scaler='standard', n_splits=3, n_repeats=2,
-                   int_cv=3, metric='default', class_weight='balanced',
-                   random_state=None, extra_params={}):
+def Evaluate(self, problem_type, model_type,
+             data_scaler='standard', n_splits=3, n_repeats=2,
+             int_cv=3, metric='default', class_weight='balanced',
+             random_state=None, extra_params={}):
     '''Class method to be called during the model selection phase.
     Used to evaluated different combination of models and scaling, ect...
 
@@ -119,33 +116,27 @@ def evaluate_model(self, problem_type, model_type,
     # Perform pre-modeling data check
     self._premodel_check()
 
-    # Setup the desired splits, using the class defined train subjects
-    subject_splits = self.CV.repeated_k_fold(subjects=self.train_subjects,
-                                             n_repeats=n_repeats,
-                                             n_splits=n_splits,
-                                             random_state=random_state)
+    # Init the Model object with modeling params
+    self._init_model(problem_type, model_type, data_scaler, int_cv, metric,
+                     class_weight, random_state, extra_params)
 
-    scores = []
+    # Evaluate the model
+    scores = self.Model.evaluate_model(self.all_data, self.train_subjects,
+                                       n_splits, n_repeats)
 
-    # For each split with the repeated K-fold
-    for train_subjects, test_subjects in subject_splits:
+    # Compute macro / micro summary of scores
+    summary_scores = compute_macro_micro(scores, n_repeats, n_splits)
 
-        score = self.test_model(problem_type=problem_type,
-                                model_type=model_type,
-                                train_subjects=train_subjects,
-                                test_subjects=test_subjects,
-                                data_scaler=data_scaler, int_cv=int_cv,
-                                metric=metric, class_weight=class_weight,
-                                random_state=random_state, return_model=False,
-                                extra_params=extra_params)
-
-        scores.append(score)
+    self._print('Macro mean score: ', summary_scores[0])
+    self._print('Macro std in score: ', summary_scores[1])
+    self._print('Micro mean score: ', summary_scores[2])
+    self._print('Micro std in score: ', summary_scores[3])
 
     # Return the computed macro and micro means and stds
-    return compute_macro_micro(scores, n_repeats, n_splits)
+    return summary_scores
 
 
-def test_model(self, problem_type, model_type, train_subjects=None,
+def Test(self, problem_type, model_type, train_subjects=None,
                test_subjects=None, data_scaler='standard', int_cv=3,
                metric='default', class_weight='balanced',
                random_state=None, return_model=False, extra_params={}):
@@ -247,46 +238,22 @@ def test_model(self, problem_type, model_type, train_subjects=None,
     # Perform pre-modeling data check
     self._premodel_check()
 
-    assert problem_type in ['binary', 'regression', 'categorical'], \
-        "Invalid problem type!"
+    # Init the Model object with modeling params
+    self._init_model(problem_type, model_type, data_scaler, int_cv, metric,
+                     class_weight, random_state, extra_params)
 
-    default_metrics = {'regression': 'r2',
-                       'binary': 'roc',
-                       'categorical': 'weighted roc auc'}
+    # If not train subjects or test subjects passed, use class
+    if train_subjects is None:
+        train_subjects = self.train_subjects
+    if test_subjects is None:
+        test_subjects = self.test_subjects
 
-    # Set default metric based on problem type, if no metric passed
-    if metric == 'default':
-        metric = default_metrics[problem_type]
+    # Train the model w/ selected parameters and test on test subjects
+    score = self.Model.test_model(self.all_data, train_subjects, test_subjects)
 
-    # Split the data to train/test
-    train_data, test_data = self._split_data(train_subjects, test_subjects)
-
-    # If passed a data scaler, scale and transform the data
-    train_data, test_data = scale_data(train_data, test_data, data_scaler,
-                                       self.data_keys, extra_params)
-
-    # Process model_type, and get the cat_conv flag
-    model_type, extra_params, cat_conv_flag = process_model_type(problem_type,
-                                                                 model_type,
-                                                                 extra_params)
-
-    score_encoder = None
-    if cat_conv_flag:
-        score_encoder = self.score_encoder[1]
-
-    # Create a trained model based on the provided parameters
-    model = self._get_trained_model(problem_type=problem_type, data=train_data,
-                                    model_type=model_type, int_cv=int_cv,
-                                    metric=metric, class_weight=class_weight,
-                                    random_state=random_state,
-                                    score_encoder=score_encoder,
-                                    extra_params=extra_params)
-
-    # Compute the score of the trained model on the testing data
-    score = get_score(problem_type, model, test_data, self.score_key, metric)
-
+    # Optionally return the model object itself
     if return_model:
-        return score, model
+        return score, self.Model.model
 
     return score
 
@@ -309,130 +276,18 @@ def _premodel_check(self):
         self.train_test_split(test_size=.25)
 
 
-def _split_data(self, train_subjects, test_subjects):
-    '''Function to create train_data and test_data from self.all_data,
-       based on input.
+def _init_model(self, problem_type, model_type, data_scaler, int_cv,
+                metric, class_weight, random_state, extra_params):
 
-    Parameters
-    ----------
-    train_subjects : array-like or None, optional
-        If passed None, (default), then the class defined train subjects will
-        be used. Otherwise, an array or pandas Index of
-        valid subjects should be passed.
-        (default = None)
+    problem_types = {'binary': Binary_Model, 'regression': Regression_Model,
+                     'categorical': Categorical_Model}
 
-    test_subjects : array-like or None, optional
-        If passed None, (default), then the class defined test subjects will
-        be used. Otherwise, an array or pandas Index of
-        valid subjects should be passed.
-        (default = None)
+    assert problem_type in problem_types, \
+        "Invalid problem type!"
 
-    Returns
-    ----------
-    pandas DataFrame
-        ABCD_ML formatted, with just the subset of training subjects
+    Model = problem_types[problem_type]
 
-    pandas DataFrame
-        ABCD_ML formatted, with just the subset of testing subjects
-    '''
-
-    if train_subjects is None:
-        train_subjects = self.train_subjects
-    if test_subjects is None:
-        test_subjects = self.test_subjects
-
-    train_data = self.all_data.loc[train_subjects]
-    test_data = self.all_data.loc[test_subjects]
-
-    return train_data, test_data
-
-
-def _get_trained_model(self, problem_type, data, model_type,
-                       int_cv, metric, class_weight='balanced',
-                       random_state=None, score_encoder=None,
-                       extra_params={}):
-    '''
-    Helper function for training either an ensemble or one single model.
-    Handles model type additionally.
-
-    Parameters
-    ----------
-    problem_type : {'regression', 'binary', 'categorical'}
-
-        - 'regression' : For ML on float or ordinal target score data
-        - 'binary' : For ML on binary target score data
-        - 'categorical' : For ML on categorical target score data,
-                          as either multilabel or multiclass.
-
-    data : pandas DataFrame,
-        ABCD_ML formatted df.
-
-    model_type : str or list of str,
-        Each string refers to a type of model to train.
-        If a list of strings is passed then an ensemble model
-        will be created over all individual models.
-        For a full list of supported options call:
-        self.show_model_types(), with optional problem type parameter.
-
-    int_cv : int
-        The number of internal folds to use during
-        model k-fold parameter selection, if the chosen model requires
-        parameter selection. A value greater
-        then 2 must be passed.
-
-    metric : str
-        Indicator for which metric to use for calculating
-        score and during model parameter selection.
-        Note, some metrics are only avaliable for certain problem types.
-        For a full list of supported metrics call:
-        self.show_metrics, with optional problem type parameter.
-
-    class weight : {dict, 'balanced', None}, optional
-        Only used for binary and categorical problem types.
-        Follows sklearn api class weight behavior. Typically, either use
-        'balanced' in the case of class distribution imbalance, or None.
-        (default = 'balanced')
-
-    random_state : int, RandomState instance or None, optional
-        Random state, either as int for a specific seed, or if None then
-        the random seed is set by np.random.
-        (default = None)
-
-    score_encoder : sklearn encoder, optional
-        A sklearn api encoder, for optionally transforming the target
-        variable. Used in the case of categorical data in converting from
-        one-hot encoding to ordinal.
-        (default=None)
-
-    extra_params : dict, optional
-        Any extra params being passed. Typically, extra params are
-        added when the user wants to provide a specific model/classifier,
-        or data scaler, with updated (or new) parameters.
-        These can be supplied by creating another dict within extra_params.
-        E.g., extra_params[model_name] = {'model_param' : new_value}
-        Where model param is a valid argument for that model, and model_name in
-        this case is the str indicator passed to model_type.
-        (default = {})
-
-    Returns
-    -------
-    model : returns a trained model object.
-    '''
-    model_params = {'data': data,
-                    'score_key': self.score_key,
-                    'CV': self.CV,
-                    'model_type': model_type,
-                    'int_cv': int_cv,
-                    'metric': metric,
-                    'class_weight': class_weight,
-                    'random_state': random_state,
-                    'score_encoder': score_encoder,
-                    'n_jobs': self.n_jobs,
-                    'extra_params': extra_params}
-
-    if type(model_type) == list:
-        model = Ensemble_Model(**model_params)
-    else:
-        model = train_model(**model_params)
-
-    return model
+    self.Model = Model(self.CV, model_type, data_scaler, self.data_keys,
+                       self.score_keys, self.score_encoder, int_cv, metric,
+                       class_weight, random_state, self.n_jobs, extra_params,
+                       self.verbose)

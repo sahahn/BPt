@@ -249,11 +249,10 @@ class ABCD_ML():
                     len(self.test_subjects))
 
     # Machine Learning functionality
-    from ABCD_ML._ML import (evaluate_model,
-                             test_model,
+    from ABCD_ML._ML import (Evaluate,
+                             Test,
                              _premodel_check,
-                             _split_data,
-                             _get_trained_model)
+                             _init_model)
 
     def show_model_types(self, problem_type=None):
         '''Print out the avaliable machine learning models,

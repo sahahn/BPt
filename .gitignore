@@ -6,6 +6,7 @@ __pycache__/
 .vscode
 Data/*
 
+ABCD_ML/old_temp_stuff.py
 
 # C extensions
 *.so

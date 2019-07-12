@@ -2,8 +2,8 @@
 File with functions related to calculating score from ML models
 '''
 import numpy as np
-from sklearn.metrics import (roc_auc_score, mean_squared_error, r2_score, balanced_accuracy_score,
-                             f1_score, log_loss, make_scorer)
+from sklearn.metrics import (roc_auc_score, mean_squared_error, r2_score,
+                             balanced_accuracy_score, f1_score, log_loss, make_scorer)
 
 def scorer_from_string(scorer):
     ''' 
@@ -80,50 +80,3 @@ def mutlilabel_compat(y_score):
 
     return y_score
 
-def get_score(problem_type,
-              model,
-              test_data,
-              score_key,
-              metric,
-              score_encoder=None
-              ):
-    '''
-    Computes a score for a given model with given test data.
-
-    Parameters
-    ----------
-    problem_type : str, either 'regression', 'binary' or 'categorical'
-
-    model : sklearn model,
-        A trained model must be passed in to be evaluated.
-
-    test_data : pandas DataFrame,
-        ABCD_ML formatted df.
-
-    score_key : str or numpy array,
-        The score column key or keys within test_data
-
-    metric : str,
-        Indicator for which metric to use for parameter selection
-        and model evaluation. For a full list of supported metrics,
-        call self.show_metrics(problem_type=problem_type)
-
-    score_encoder : sklearn encoder, optional (default=None)
-        A sklearn api encoder, for optionally transforming the target
-        variable. Used in the case of categorical data in converting from
-        one-hot encoding to ordinal.
-
-    Returns
-    -------
-    score : returns a score for whatever metric was passed
-    '''
-
-    X_test = np.array(test_data.drop(score_key, axis=1))
-    y_test = np.array(test_data[score_key])
-
-    #If a score encoder is passed, transform the encoded y back for testing
-    if score_encoder is not None:
-        y_test = score_encoder.inverse_transform(y_test).squeeze()
-
-    score_func = scorer_from_string(metric)
-    return score_func(model, X_test, y_test)

@@ -146,11 +146,12 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
     key : str
         Column key of the column to process within `data` input.
 
-    filter_outlier_percent : tuple or None
+    filter_outlier_percent : int, float, tuple or None
         A percent of values to exclude from either end of the
         score distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
+        If over 1, then treated as a percent.
 
     in_place : bool
         Defines if rows with float outliers should be removed right away,

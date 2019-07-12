@@ -68,6 +68,7 @@ class ABCD_ML():
             data, and doesn't want automatic drops to occur.
             If set to True, individual dataframes self.data, self.covars ect...
             will also be deleted from memory as soon as modeling begins.
+            (default = False)
 
         verbose: bool, optional
             If set to true will display diagnostic and other output during
@@ -111,13 +112,13 @@ class ABCD_ML():
             print(*args)
 
     # Data loader functionality
-    from ABCD_ML._Data import (load_name_mapping,
+    from ABCD_ML._Data import (load_name_map,
                                load_data,
                                load_covars,
                                load_targets,
                                load_strat_values,
                                load_exclusions,
-                               clear_name_mapping,
+                               clear_name_map,
                                clear_data,
                                clear_covars,
                                clear_targets,

@@ -13,10 +13,10 @@ from ABCD_ML.Data_Helpers import (process_binary_input,
                                   filter_float_by_outlier)
 
 
-def load_name_mapping(self,
-                      loc,
-                      source_name_col="NDAR name",
-                      target_name_col="REDCap name/NDA alias"):
+def load_name_map(self,
+                  loc,
+                  source_name_col="NDAR name",
+                  target_name_col="REDCap name/NDA alias"):
     '''Loads a mapping dictionary for loading column names
 
     Parameters
@@ -44,15 +44,35 @@ def load_name_mapping(self,
     self._print('Loaded map file')
 
 
-def load_data(self, loc, drop_keys=[], filter_outlier_percent=None,
-              winsorize_val=None):
-    """Load a 2.0_ABCD_Data_Explorer release formatted
-    neuroimaging dataset of ROI's
+def load_data(self, loc, dataset_type, drop_keys=[],
+              filter_outlier_percent=None, winsorize_val=None):
+    """Load a ABCD2p0NDA (default) or 2.0_ABCD_Data_Explorer (explorer)
+    release formatted neuroimaging dataset - of derived ROI level info.
 
     Parameters
     ----------
     loc : str, Path or None
         The location of the csv file to load data load from.
+
+    dataset_type : {'default', 'explorer', 'custom'}, optional
+        The type of dataset to load from. Where,
+
+        - 'default' : ABCD2p0NDA style, (.txt and tab seperated)
+            The 4 columns before 'src_subject_id' and the 4 after,
+            (typically the default columns, and therefore not neuroimaging
+            data - also not including the eventname column), will be dropped.
+
+        - 'explorer' : 2.0_ABCD_Data_Explorer tyle (.csv and comma seperated)
+            The first 2 columns before 'src_subject_id'
+            (typically the default columns, and therefore not neuroimaging
+            data - also not including the eventname column), will be dropped.
+
+        - 'custom' : A user-defined custom dataset. Right now this is only
+            supported as a comma seperated file, with the subject names in a
+            column called 'src_subject_id'. No columns will be dropped,
+            unless specific drop keys are passed.
+
+        (default = 'default')
 
     drop_keys : list, optional
         A list of keys to drop columns by, where if any key given in a columns
@@ -61,33 +81,60 @@ def load_data(self, loc, drop_keys=[], filter_outlier_percent=None,
         conducted after renaming)
         (default = [])
 
-    filter_outlier_percent : int, tuple or None, optional
+    filter_outlier_percent : int, float, tuple or None, optional
         For float / ordinal data only.
         A percent of values to exclude from either end of the
         targets distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
         (default = None)
+        If over 1 then treated as a percent, if under 1, then
+        used directly.
 
-    winsorize_val : int, tuple or None, optional
-        The (limits[0])th lowest values are set to
-        the (limits[0])th percentile, and the (limits[1])th highest values
-        are set to the (1 - limits[1])th percentile.
+    winsorize_val : float, tuple or None, optional
+        The (winsorize_val[0])th lowest values are set to
+        the (winsorize_val[0])th percentile,
+        and the (winsorize_val[1])th highest values
+        are set to the (1 - winsorize_val[1])th percentile.
         If one value passed, used for both ends.
         If None, then no winsorization performed.
         Note: Winsorizing will be performed after
         filtering for outliers if values are passed for both.
         (default = None)
+
+    Notes
+    ----------
+    For loading a truly custom dataset, an advanced user can
+    load all the data themselves into a pandas DataFrame.
+    They will need to have the DataFrame indexed by 'src_subject_id'
+    e.g., data = data.set_index('src_subject_id')
+    and subject ids will need to be in the correct style...
+    but if they do all this, then they can just set
+    self.data = whatever_they_loaded_their_data_as
     """
 
-    self._print('Loading', loc)
-    data = pd.read_csv(loc, na_values=self.default_na_values)
+    self._print('Loading', loc, 'assumed to be dataset type:', dataset_type)
 
-    # Drop the first two columns by default
-    # typically specific id, then dataset id for NDA tyle csv
-    first_cols = list(data)[:2]
-    data = data.drop(first_cols, axis=1)
-    self._print('dropped', first_cols, 'columns by default')
+    if dataset_type == 'default':
+        pd.read_csv(loc, sep='\t', skiprows=[1],
+                    na_values=self.default_na_values)
+    else:
+        data = pd.read_csv(loc, na_values=self.default_na_values)
+
+    # If dataset type is default or explorer, drop some cols by default
+    if dataset_type == 'default' or dataset_type == 'explorer':
+
+        if dataset_type == 'default':
+            non_data_cols = list(data)[:4] + list(data)[5:8] + [list(data)[9]]
+        else:
+            non_data_cols = list(data)[:2]
+
+        data = data.drop(non_data_cols, axis=1)
+        extra = [col for col in list(data) if 'visitid' in col]
+        data = data.drop(extra, axis=1)
+
+        self._print('dropped', non_data_cols + extra, 'columns by default due '
+                    'to dataset type')
 
     # Perform common operations
     # (check subject id, drop duplicate subjects ect...)
@@ -148,18 +195,19 @@ def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
     data_types : {'binary', 'categorical', 'ordinal', 'float'} or list of
         The data types of the different columns to load,
         in the same order as the column names passed in.
-        Short hand options for datatypes are
-        'b' for 'binary',
-        'c' for 'categorical'
-        'o' for 'ordinal'
-        'f' for 'float'
+        Shorthands for datatypes can be used as well
+
+        - 'binary' or 'b' : Binary input
+        - 'categorical' or 'c' : Categorical input
+        - 'ordinal' or 'o' : Ordinal input
+        - 'float' or 'f' : Float numerical input
 
     dummy_code_categorical: bool, optional
         If True, then categorical variables are dummy coded.
         If False, then categorical variables are one-hot encoded.
         (default = True)
 
-    filter_float_outlier_percent, tuple or None, optional
+    filter_float_outlier_percent, float, int, tuple or None, optional
         For float datatypes only.
         A percent of values to exclude from either end of the
         targets distribution, provided as either 1 number,
@@ -253,14 +301,14 @@ def load_targets(self, loc, col_name, data_type='float',
         The data type of the targets column.
         Shorthands for datatypes can be used as well
 
-        - 'binary' or 'b', : Binary input
+        - 'binary' or 'b' : Binary input
         - 'categorical' or 'c' : Categorical input
         - 'ordinal' or 'o' : Ordinal input
         - 'float' or 'f' : Float numerical input
 
         Datatypes are explained further in Notes.
 
-    filter_outlier_percent : tuple or None, optional
+    filter_outlier_percent : float, tuple or None, optional
         For float or ordinal datatypes only.
         A percent of values to exclude from either end of the
         target distribution, provided as either 1 number,
@@ -392,7 +440,7 @@ def load_exclusions(self, loc=None, exclusions=None):
     self._process_new()
 
 
-def clear_name_mapping(self):
+def clear_name_map(self):
     '''Reset name mapping'''
     self.name_map = {}
 
@@ -633,8 +681,13 @@ def _filter_by_eventname(self, data):
 
     # Filter data by eventname
     if self.eventname:
-        data = data[data['eventname'] == self.eventname]
-        data = data.drop('eventname', axis=1)
+        
+        if 'eventname' in list(data):
+            data = data[data['eventname'] == self.eventname]
+            data = data.drop('eventname', axis=1)
+        else:
+            self._print('Warning: filter by eventname =', eventname, 'is set \
+                but this data does not have a column with eventname.')
 
     # If eventname none, but still exists, take out the column
     else:

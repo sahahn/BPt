@@ -15,8 +15,8 @@ from ABCD_ML.Data_Helpers import (process_binary_input,
 
 def load_name_mapping(self,
                       loc,
-                      existing_name_col="NDAR name",
-                      changed_name_col="REDCap name/NDA alias"):
+                      source_name_col="NDAR name",
+                      target_name_col="REDCap name/NDA alias"):
     '''Loads a mapping dictionary for loading column names
 
     Parameters
@@ -24,11 +24,11 @@ def load_name_mapping(self,
     loc : str, Path or None
         The location of the csv file which contains the mapping.
 
-    existing_name_col : str, optional
+    source_name_col : str, optional
         The column name with the file which lists names to be changed.
         (default = "NDAR name")
 
-    changed_name_col : str, optional
+    target_name_col : str, optional
         The column name within the file which lists the new name.
         (default = "REDCap name/NDA alias")
     '''
@@ -36,8 +36,8 @@ def load_name_mapping(self,
     mapping = pd.read_csv(loc)
 
     try:
-        self.name_map = dict(zip(mapping[existing_name_col],
-                                 mapping[changed_name_col]))
+        self.name_map = dict(zip(mapping[source_name_col],
+                                 mapping[target_name_col]))
     except KeyError:
         print('Error: One or both provided column names do not exist!')
 
@@ -64,7 +64,7 @@ def load_data(self, loc, drop_keys=[], filter_outlier_percent=None,
     filter_outlier_percent : int, tuple or None, optional
         For float / ordinal data only.
         A percent of values to exclude from either end of the
-        score distribution, provided as either 1 number,
+        targets distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
         (default = None)
@@ -162,7 +162,7 @@ def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
     filter_float_outlier_percent, tuple or None, optional
         For float datatypes only.
         A percent of values to exclude from either end of the
-        score distribution, provided as either 1 number,
+        targets distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_float_outlier_percent` to None for no filtering.
         (default = None)
@@ -199,13 +199,13 @@ def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
 
         if d_type == 'binary' or d_type == 'b':
             covars, encoder = process_binary_input(covars, key, self.verbose)
-            self.covar_encoders[key] = encoder
+            self.covars_encoders[key] = encoder
 
         elif d_type == "categorical" or d_type == 'c':
             covars, new_keys, encoder = process_categorical_input(covars, key,
                                                                   drop,
                                                                   self.verbose)
-            self.covar_encoders[key] = encoder
+            self.covars_encoders[key] = encoder
 
         elif (d_type == 'float' or d_type == 'ordinal' or
                 d_type == 'f' or d_type == 'o'):
@@ -235,22 +235,22 @@ def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
     self._process_new()
 
 
-def load_scores(self, loc, col_name, data_type='float',
-                filter_outlier_percent=None):
-    '''Loads in a set of subject ids and associated scores from a
+def load_targets(self, loc, col_name, data_type='float',
+                 filter_outlier_percent=None):
+    '''Loads in a set of subject ids and associated targets from a
     2.0_ABCD_Data_Explorer release formatted csv.
     See Notes for more info.
 
     Parameters
     ----------
     loc : str, Path or None
-        The location of the csv file to load scores load from.
+        The location of the csv file to load targets load from.
 
     col_name : str
         The name of the column to load.
 
     data_type : {'binary', 'categorical', 'ordinal', 'float'}
-        The data type of the score column.
+        The data type of the targets column.
         Shorthands for datatypes can be used as well
 
         - 'binary' or 'b', : Binary input
@@ -263,68 +263,68 @@ def load_scores(self, loc, col_name, data_type='float',
     filter_outlier_percent : tuple or None, optional
         For float or ordinal datatypes only.
         A percent of values to exclude from either end of the
-        score distribution, provided as either 1 number,
+        target distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
         (default = None).
 
     Notes
     ----------
-    Scores can be either 'binary', 'categorical', 'ordinal' or 'float',
+    Targets can be either 'binary', 'categorical', 'ordinal' or 'float',
     where ordinal and float are treated the same.
 
-    For binary: scores are read in and label encoded to be 0 or 1,
+    For binary: targets are read in and label encoded to be 0 or 1,
         Will also work if passed column of unique string also, e.g. 'M' and 'F'
 
-    For categorical: scores are read in and by default one-hot encoded,
-        Note: This function is designed only to work with categorical scores
+    For categorical: targets are read in and by default one-hot encoded,
+        Note: This function is designed only to work with categorical targets
         read in from one column!
-        Reading multiple scores from multiple places is not
+        Reading multiple targets from multiple places is not
         supported as of now.
 
-    For ordinal and float: scores are read in as a floating point number,
+    For ordinal and float: targets are read in as a floating point number,
         and optionally then filtered for outliers with the
         filter_outlier_percent flag.
     '''
 
-    # By default set the score key to be the class original score key
-    self.score_key = self.original_score_key
+    # By default set the target key to be the class original target key
+    self.targets_key = self.original_targets_key
 
     self._print('Loading ', loc)
-    scores = self._common_load(loc, col_name=col_name)
+    targets = self._common_load(loc, col_name=col_name)
 
-    # Rename the column with score to default score key name
-    scores = scores.rename({col_name: self.score_key}, axis=1)
+    # Rename the column with targets to default targets key name
+    targets = targets.rename({col_name: self.targets_key}, axis=1)
 
     if data_type == 'binary' or data_type == 'b':
 
         # Processing for binary, with some tolerance to funky input
-        scores, self.score_encoder = process_binary_input(scores,
-                                                          self.score_key,
-                                                          self.verbose)
+        targets, self.targets_encoder = process_binary_input(targets,
+                                                             self.targets_key,
+                                                             self.verbose)
 
     elif data_type == 'categorical' or data_type == 'c':
 
         # Processing for categorical input,
-        # score encoder is a tuple with encoder to ordinal
+        # targets encoder is a tuple with encoder to ordinal
         # then encoder from ordinal to sparse.
-        scores, self.score_key, self.score_encoder = \
-            process_categorical_input(scores, self.score_key, drop=None,
+        targets, self.targets_key, self.targets_encoder = \
+            process_categorical_input(targets, self.targets_key, drop=None,
                                       verbose=self.verbose)
 
     elif (data_type == 'float' or data_type == 'ordinal' or
             data_type == 'f' or data_type == 'o'):
 
         if filter_outlier_percent is not None:
-            scores = filter_float_by_outlier(scores, self.score_key,
-                                             filter_outlier_percent,
-                                             in_place=True,
-                                             verbose=self.verbose)
+            targets = filter_float_by_outlier(targets, self.targets_key,
+                                              filter_outlier_percent,
+                                              in_place=True,
+                                              verbose=self.verbose)
 
-    self._print('Final shape: ', scores.shape)
+    self._print('Final shape: ', targets.shape)
 
-    # By default only load one set of scores note now, so no merging
-    self.scores = scores
+    # By default only load one set of targets note now, so no merging
+    self.targets = targets
     self._process_new()
 
 
@@ -392,9 +392,36 @@ def load_exclusions(self, loc=None, exclusions=None):
     self._process_new()
 
 
+def clear_name_mapping(self):
+    '''Reset name mapping'''
+    self.name_map = {}
+
+
+def clear_data(self):
+    '''Reset data'''
+    self.data = []
+
+
+def clear_covars(self):
+    '''Reset covars'''
+    self.covars = []
+    self.covars_encoders = {}
+
+
+def clear_targets(self):
+    '''Reset targets'''
+    self.targets = []
+    self.targets_encoder = None
+
+
+def clear_strat_values(self):
+    '''Reset strat'''
+    self.strat = []
+    self.strat_encoders = {}
+
+
 def clear_exclusions(self):
     '''Resets exclusions to be an empty set'''
-
     self.exclusions = set()
 
 
@@ -628,27 +655,32 @@ def _process_new(self):
         valid_subjects.append(set(self.data.index))
     if len(self.covars) > 0:
         valid_subjects.append(set(self.covars.index))
-    if len(self.scores) > 0:
-        valid_subjects.append(set(self.scores.index))
+    if len(self.targets) > 0:
+        valid_subjects.append(set(self.targets.index))
     if len(self.strat) > 0:
         valid_subjects.append(set(self.strat.index))
 
     overlap = set.intersection(*valid_subjects)
     overlap = overlap - self.exclusions
 
-    self._print('Removing non overlapping + excluded subjects')
-
-    if len(self.data) > 0:
-        self.data = self.data[self.data.index.isin(overlap)]
-    if len(self.covars) > 0:
-        self.covars = self.covars[self.covars.index.isin(overlap)]
-    if len(self.scores) > 0:
-        self.scores = self.scores[self.scores.index.isin(overlap)]
-    if len(self.strat) > 0:
-        self.strat = self.strat[self.strat.index.isin(overlap)]
-
-    self._print('Total subjects = ', len(overlap))
     self._print()
+    self._print('Total valid (overlapping subjects / not in exclusions) \
+        subjects =', len(overlap))
+    self._print()
+
+    if self.low_memory_mode:
+
+        self._print('Low memory mode is on! \
+            Removing non overlapping + excluded subjects')
+
+        if len(self.data) > 0:
+            self.data = self.data[self.data.index.isin(overlap)]
+        if len(self.covars) > 0:
+            self.covars = self.covars[self.covars.index.isin(overlap)]
+        if len(self.targets) > 0:
+            self.targets = self.targets[self.targets.index.isin(overlap)]
+        if len(self.strat) > 0:
+            self.strat = self.strat[self.strat.index.isin(overlap)]
 
 
 def _prepare_data(self):
@@ -659,8 +691,8 @@ def _prepare_data(self):
 
     dfs = []
 
-    assert len(self.scores > 0), \
-        'Scores must be loaded!'
+    assert len(self.targets > 0), \
+        'Targets must be loaded!'
     assert len(self.data) > 0 or len(self.covars) > 0, \
         'Some data must be loaded!'
 
@@ -672,8 +704,17 @@ def _prepare_data(self):
         dfs.append(self.covars)
         self.covars_keys = list(self.covars)
 
-    dfs.append(self.scores)
+    dfs.append(self.targets)
 
     self.all_data = dfs[0]
     for i in range(1, len(dfs)):
         self.all_data = pd.merge(self.all_data, dfs[i], on='src_subject_id')
+
+    self._print('Final data for modeling loaded shape:', self.all_data.shape)
+
+    if self.low_memory_mode:
+        self._print('Low memory mode is on! Clearing self.data, self.covars, \
+            self.targets from memory! Note: Final data, self.all_data, the \
+            merged dataframe is still in memory')
+
+        self.data, self.targets, self.covars = [], [], []

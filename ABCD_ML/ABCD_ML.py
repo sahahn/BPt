@@ -14,7 +14,8 @@ class ABCD_ML():
     def __init__(self, eventname='baseline_year_1_arm_1',
                  use_default_subject_ids=True,
                  default_na_values=['777', '999'], n_jobs=1,
-                 original_score_key='score', verbose=True):
+                 original_targets_key='targets', low_memory_mode=False,
+                 verbose=True):
         '''Main class init
 
         Parameters
@@ -49,12 +50,24 @@ class ABCD_ML():
             extra params in a specific training instance.
             (default = 1)
 
-        original_score_key : str, optional
+        original_targets_key : str, optional
             This parameter refers to the column name / key, that the
             target variable of interest will be stored under. There are not a
             lot of reasons to change this setting, except in the case of
             a naming conflict - or just for further customization.
-            (default = 'score')
+            (default = 'targets')
+
+        low_memory_mode : bool, optional
+            This parameter dictates behavior around loading in data,
+            specifically, if `low_memory_mode` is set to True,
+            then when loading data from multiple sources, only common
+            subjects will be saved as each data source is loaded.
+            For comparison, when low memory mode if off, the dropping
+            of non-common subjects occurs later. Non low memory mode
+            behavior is useful when the user wants to try loading different
+            data, and doesn't want automatic drops to occur.
+            If set to True, individual dataframes self.data, self.covars ect...
+            will also be deleted from memory as soon as modeling begins.
 
         verbose: bool, optional
             If set to true will display diagnostic and other output during
@@ -68,18 +81,21 @@ class ABCD_ML():
         self.use_default_subject_ids = use_default_subject_ids
         self.default_na_values = default_na_values
         self.n_jobs = n_jobs
-        self.original_score_key = original_score_key
+        self.original_targets_key = original_targets_key
+        self.low_memory_mode = low_memory_mode
         self.verbose = verbose
 
         # Initialze various variables
         self.data, self.covars = [], []
-        self.scores, self.strat = [], []
+        self.targets, self.strat = [], []
         self.name_map, self.exclusions = {}, set()
-        self.covar_encoders, self.score_encoder = {}, None
+        self.covars_encoders, self.targets_encoder = {}, None
         self.strat_encoders = {}
         self.all_data, self.train_subjects = None, None
         self.test_subjects = None
         self.CV = CV()
+
+        self._print('ABCD_ML object initialized')
 
     def _print(self, *args):
         '''Overriding the print function to allow for
@@ -98,9 +114,14 @@ class ABCD_ML():
     from ABCD_ML._Data import (load_name_mapping,
                                load_data,
                                load_covars,
-                               load_scores,
+                               load_targets,
                                load_strat_values,
                                load_exclusions,
+                               clear_name_mapping,
+                               clear_data,
+                               clear_covars,
+                               clear_targets,
+                               clear_strat_values,
                                clear_exclusions,
                                _common_load,
                                _merge_existing,
@@ -136,7 +157,7 @@ class ABCD_ML():
             to a column key within the loaded strat data,
             and will assign it as a value to preserve
             distribution of groups by during any train/test or K-fold splits.
-            'score' or whatever the value of self.original_score_key,
+            'targets' or whatever the value of self.original_targets_key,
             can also be passed in the case of binary/categorical problems.
             If a list is passed, then each element should be a str,
             and they will be combined into all unique combinations of
@@ -167,7 +188,7 @@ class ABCD_ML():
         but the logistics become more complicated).
         Though, within one strategy it is certainly possible to
         provide multiple values
-        e.g., for stratification you can stratify by score
+        e.g., for stratification you can stratify by target
         (the dependent variable to be predicted)
         as well as say sex, though with addition of unique value,
         the size of the smallest unique group decreases.
@@ -184,17 +205,21 @@ class ABCD_ML():
 
             if isinstance(stratify, str):
 
-                if stratify == self.original_score_key:
-                    self.strat[self.score_key] = self.scores[self.score_key]
-                    stratify = self.score_key
+                if stratify == self.original_targets_key:
+                    self.strat[self.targets_key] = \
+                        self.targets[self.targets_key]
+                    stratify = self.targets_key
 
                 self.CV = CV(stratify=self.strat[stratify])
 
             elif isinstance(stratify, list):
 
-                if self.original_score_key in list:
-                    self.strat[self.score_key] = self.scores[self.score_key]
-                    stratify = [self.score_key if s == self.original_score_key
+                if self.original_targets_key in list:
+                    self.strat[self.targets_key] = \
+                        self.targets[self.targets_key]
+
+                    stratify = [self.targets_key if
+                                s == self.original_targets_key
                                 else s for s in stratify]
 
                 self.CV = CV(stratify=get_unique_combo(self.strat, stratify))

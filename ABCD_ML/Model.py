@@ -9,7 +9,7 @@ from ABCD_ML.Ensemble_Model import Ensemble_Model
 class Model():
 
     def __init__(self, CV, model_types, data_scaler, data_keys,
-                 score_keys, score_encoder, int_cv, metric,
+                 targets_key, scores_encoder, int_cv, metric,
                  class_weight='balanced', random_state=None, n_jobs=1,
                  extra_params={}, verbose=True):
 
@@ -17,8 +17,8 @@ class Model():
         self.model_types = model_types
         self.data_scaler = data_scaler
         self.data_keys = data_keys
-        self.score_key = score_key
-        self.score_encoder = score_encoder
+        self.targets_key = targets_key
+        self.scores_encoder = scores_encoder
         self.int_cv = int_cv
         self.metric = metric
         self.class_weight = class_weight
@@ -82,7 +82,7 @@ class Model():
                         for m in conv_model_types]).all(), \
             "Selected model type(s) not avaliable."
 
-        conv_model_types = [AVALIABLE[problem_type][m]
+        conv_model_types = [AVALIABLE[self.problem_type][m]
                             for m in conv_model_types]
         return conv_model_types
 
@@ -155,7 +155,7 @@ class Model():
             train_data[self.data_keys] = \
                 self.data_scaler.fit_transform(train_data[self.data_keys])
 
-            test_data[data_keys] = \
+            test_data[self.data_keys] = \
                 self.data_scaler.transform(test_data[self.data_keys])
 
         return train_data, test_data
@@ -202,8 +202,8 @@ class Model():
 
     def get_X_y(self, data):
 
-        X = np.array(data.drop(self.score_key, axis=1))
-        y = np.array(data[self.score_key])
+        X = np.array(data.drop(self.targets_key, axis=1))
+        y = np.array(data[self.targets_key])
 
         # Convert/decode y/score if needed
         y = self.conv_score(y)

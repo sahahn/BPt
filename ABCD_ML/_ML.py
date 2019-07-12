@@ -5,7 +5,7 @@ Main class extension file for the Machine Learning functionality
 """
 import numpy as np
 from ABCD_ML.ML_Helpers import compute_macro_micro
-from Model import Regression_Model, Binary_Model, Categorical_Model
+from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
 
 def Evaluate(self, problem_type, model_type,
@@ -19,9 +19,9 @@ def Evaluate(self, problem_type, model_type,
     ----------
     problem_type : {'regression', 'binary', 'categorical'}
 
-        - 'regression' : For ML on float or ordinal target score data
-        - 'binary' : For ML on binary target score data
-        - 'categorical' : For ML on categorical target score data,
+        - 'regression' : For ML on float or ordinal target data
+        - 'binary' : For ML on binary target data
+        - 'categorical' : For ML on categorical target data,
                           as either multilabel or multiclass.
 
     model_type : str or list of str,
@@ -147,9 +147,9 @@ def Test(self, problem_type, model_type, train_subjects=None,
     ----------
     problem_type : {'regression', 'binary', 'categorical'}
 
-        - 'regression' : For ML on float or ordinal target score data
-        - 'binary' : For ML on binary target score data
-        - 'categorical' : For ML on categorical target score data,
+        - 'regression' : For ML on float or ordinal target data
+        - 'binary' : For ML on binary target data
+        - 'categorical' : For ML on categorical target data,
                           as either multilabel or multiclass.
 
     model_type : str or list of str
@@ -288,6 +288,6 @@ def _init_model(self, problem_type, model_type, data_scaler, int_cv,
     Model = problem_types[problem_type]
 
     self.Model = Model(self.CV, model_type, data_scaler, self.data_keys,
-                       self.score_keys, self.score_encoder, int_cv, metric,
+                       self.targets_key, self.target_encoder, int_cv, metric,
                        class_weight, random_state, self.n_jobs, extra_params,
                        self.verbose)

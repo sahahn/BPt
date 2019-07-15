@@ -4,6 +4,7 @@ ABCD_ML.py
 The main file for the ABCD_ML project.
 """
 import pandas as pd
+import numpy as np
 from ABCD_ML.Data_Helpers import get_unique_combo
 from ABCD_ML.CV import CV
 
@@ -63,7 +64,9 @@ class ABCD_ML():
             then when loading data from multiple sources, only common
             subjects will be saved as each data source is loaded.
             For comparison, when low memory mode if off, the dropping
-            of non-common subjects occurs later. Non low memory mode
+            of non-common subjects occurs later. Though regardless of if low
+            memory mode is on or off, subjects will be dropped right away
+            when exclusions or strat is loaded. Non low memory mode
             behavior is useful when the user wants to try loading different
             data, and doesn't want automatic drops to occur.
             If set to True, individual dataframes self.data, self.covars ect...
@@ -116,14 +119,16 @@ class ABCD_ML():
                                load_data,
                                load_covars,
                                load_targets,
-                               load_strat_values,
+                               load_strat,
                                load_exclusions,
                                clear_name_map,
                                clear_data,
                                clear_covars,
                                clear_targets,
-                               clear_strat_values,
+                               clear_strat,
                                clear_exclusions,
+                               _load_datasets,
+                               _load_dataset,
                                _common_load,
                                _merge_existing,
                                _proc_df,
@@ -202,6 +207,9 @@ class ABCD_ML():
             elif isinstance(groups, list):
                 self.CV = CV(groups=get_unique_combo(self.strat, groups))
 
+            self._print('CV defined with group preserving behavior, over',
+                        len(np.unique(self.CV.groups)), 'unique values.')
+
         elif stratify is not None:
 
             if isinstance(stratify, str):
@@ -215,7 +223,7 @@ class ABCD_ML():
 
             elif isinstance(stratify, list):
 
-                if self.original_targets_key in list:
+                if self.original_targets_key in stratify:
                     self.strat[self.targets_key] = \
                         self.targets[self.targets_key]
 
@@ -224,6 +232,9 @@ class ABCD_ML():
                                 else s for s in stratify]
 
                 self.CV = CV(stratify=get_unique_combo(self.strat, stratify))
+
+            self._print('CV defined with stratifying behavior, over',
+                        len(np.unique(self.CV.groups)), 'unique values.')
 
     def train_test_split(self, test_size=None, test_loc=None,
                          test_subjects=None, random_state=None):

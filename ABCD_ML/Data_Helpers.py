@@ -51,8 +51,8 @@ def process_binary_input(data, key, verbose=True):
         data.drop(data.index[~data[key].isin(keep_vals)], inplace=True)
 
         if verbose:
-            print('More than two unique score values found, \
-                  filtered all but', keep_vals)
+            print('More than two unique score values found,',
+                  'filtered all but', keep_vals)
 
     # Perform actual binary encoding
     encoder = LabelEncoder()

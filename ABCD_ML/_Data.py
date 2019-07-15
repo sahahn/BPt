@@ -51,11 +51,23 @@ def load_data(self, loc, dataset_type, drop_keys=[],
 
     Parameters
     ----------
-    loc : str, Path or None
+    loc : str, Path or list of
         The location of the csv file to load data load from.
+        If passed a list, then will load each loc in the list,
+        and will assume them all to be of the same dataset_type if one
+        dataset_type is passed, or if they differ in type, a list must be
+        passed to dataset_type with the different types in order.
+        Note: some proc will be done on each loaded dataset before merging
+        with the rest (duplicate subjects, proc for eventname ect...), but
+        other dataset loading behavior won't occur until after the merge,
+        e.g., dropping cols by key, filtering for outlier, ect...
 
-    dataset_type : {'default', 'explorer', 'custom'}, optional
-        The type of dataset to load from. Where,
+    dataset_type : {'default', 'explorer', 'custom'} or list of, optional
+        The type of dataset to load from. If a list is passed, then loc must
+        also be a list, and the indices should correspond.
+        Likewise, if loc is a list and dataset_type is not,
+        it is assumed all datasets are the same type.
+        Where each dataset type is,
 
         - 'default' : ABCD2p0NDA style, (.txt and tab seperated)
             The 4 columns before 'src_subject_id' and the 4 after,
@@ -113,32 +125,11 @@ def load_data(self, loc, dataset_type, drop_keys=[],
     self.data = whatever_they_loaded_their_data_as
     """
 
-    self._print('Loading', loc, 'assumed to be dataset type:', dataset_type)
-
-    if dataset_type == 'default':
-        pd.read_csv(loc, sep='\t', skiprows=[1],
-                    na_values=self.default_na_values)
+    # Load in the dataset & proc. dataset type
+    if isinstance(loc, list):
+        data = self._load_datasets(loc, dataset_type)
     else:
-        data = pd.read_csv(loc, na_values=self.default_na_values)
-
-    # If dataset type is default or explorer, drop some cols by default
-    if dataset_type == 'default' or dataset_type == 'explorer':
-
-        if dataset_type == 'default':
-            non_data_cols = list(data)[:4] + list(data)[5:8] + [list(data)[9]]
-        else:
-            non_data_cols = list(data)[:2]
-
-        data = data.drop(non_data_cols, axis=1)
-        extra = [col for col in list(data) if 'visitid' in col]
-        data = data.drop(extra, axis=1)
-
-        self._print('dropped', non_data_cols + extra, 'columns by default due '
-                    'to dataset type')
-
-    # Perform common operations
-    # (check subject id, drop duplicate subjects ect...)
-    data = self._proc_df(data)
+        data = self._load_dataset(loc, dataset_type)
 
     # Drop any columns if any of the drop keys occur in the column name
     column_names = list(data)
@@ -147,7 +138,7 @@ def load_data(self, loc, dataset_type, drop_keys=[],
     data = data.drop(to_drop, axis=1)
     self._print('Dropped', len(to_drop), 'columns, per drop_keys argument')
 
-    # Drop any rows with missing data
+    # Drop any cols with all missing and rows with and missing data
     data = self._drop_na(data)
     self._print('Dropped rows with missing data')
 
@@ -174,7 +165,7 @@ def load_data(self, loc, dataset_type, drop_keys=[],
     # If other data is already loaded,
     # merge this data with existing loaded data
     self.data = self._merge_existing(self.data, data)
-    self._process_new()
+    self._process_new(self.low_memory_mode)
 
 
 def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
@@ -280,10 +271,10 @@ def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
     # If other data is already loaded,
     # merge this data with existing loaded data.
     self.covars = self._merge_existing(self.covars, covars)
-    self._process_new()
+    self._process_new(self.low_memory_mode)
 
 
-def load_targets(self, loc, col_name, data_type='float',
+def load_targets(self, loc, col_name, data_type,
                  filter_outlier_percent=None):
     '''Loads in a set of subject ids and associated targets from a
     2.0_ABCD_Data_Explorer release formatted csv.
@@ -373,10 +364,10 @@ def load_targets(self, loc, col_name, data_type='float',
 
     # By default only load one set of targets note now, so no merging
     self.targets = targets
-    self._process_new()
+    self._process_new(self.low_memory_mode)
 
 
-def load_strat_values(self, loc, col_names):
+def load_strat(self, loc, col_names):
     '''Load stratification values from a 2.0_ABCD_Data_Explorer
     release formatted csv.
     See Notes for more details on what stratification values are.
@@ -409,7 +400,7 @@ def load_strat_values(self, loc, col_names):
         self.strat_encoders[col] = label_encoder
 
     self.strat = self._merge_existing(self.strat, strat)
-    self._process_new()
+    self._process_new(remove=True)  # Regardless of low memory mode, remove
 
 
 def load_exclusions(self, loc=None, exclusions=None):
@@ -437,40 +428,170 @@ def load_exclusions(self, loc=None, exclusions=None):
     self.exclusions.update(self._load_set_of_subjects(loc=loc,
                                                       subjects=exclusions))
     self._print('Total excluded subjects: ', len(self.exclusions))
-    self._process_new()
+    self._process_new(remove=True)  # Regardless of low memory mode, remove
 
 
 def clear_name_map(self):
     '''Reset name mapping'''
     self.name_map = {}
+    self._print('cleared name map.')
 
 
 def clear_data(self):
     '''Reset data'''
     self.data = []
+    self._print('cleared data.')
 
 
 def clear_covars(self):
     '''Reset covars'''
     self.covars = []
     self.covars_encoders = {}
+    self._print('cleared covars.')
 
 
 def clear_targets(self):
     '''Reset targets'''
     self.targets = []
     self.targets_encoder = None
+    self._print('cleared targets.')
 
 
-def clear_strat_values(self):
+def clear_strat(self):
     '''Reset strat'''
     self.strat = []
     self.strat_encoders = {}
+    self._print('cleared strat.')
 
 
 def clear_exclusions(self):
     '''Resets exclusions to be an empty set'''
     self.exclusions = set()
+    self._print('cleared exclusions.')
+
+
+def _load_datasets(self, locs, dataset_types):
+    '''Helper function to load in multiple datasets with default
+    load and drop behavior based on type. And calls proc_df on each
+    before merging.
+
+    Parameters
+    ----------
+    locs : list of str, Path
+        The location of the csv files to load data load from.
+
+    dataset_type : {'default', 'explorer', 'custom'} or list of, optional
+        The type of dataset to load from. If a list is passed, then loc must
+        also be a list, and the indices should correspond.
+        Likewise, if loc is a list and dataset_type is not,
+        it is assumed all datasets are the same type.
+        Where each dataset type is,
+
+        - 'default' : ABCD2p0NDA style, (.txt and tab seperated)
+            The 4 columns before 'src_subject_id' and the 4 after,
+            (typically the default columns, and therefore not neuroimaging
+            data - also not including the eventname column), will be dropped.
+
+        - 'explorer' : 2.0_ABCD_Data_Explorer tyle (.csv and comma seperated)
+            The first 2 columns before 'src_subject_id'
+            (typically the default columns, and therefore not neuroimaging
+            data - also not including the eventname column), will be dropped.
+
+        - 'custom' : A user-defined custom dataset. Right now this is only
+            supported as a comma seperated file, with the subject names in a
+            column called 'src_subject_id'. No columns will be dropped,
+            unless specific drop keys are passed.
+
+        (default = 'default')
+
+    Returns
+    ----------
+    pandas DataFrame
+        ABCD ML formatted pd DataFrame, with the loaded
+        and merged minimally proc'ed data.
+    '''
+
+    # If only one dataset type, use it for all
+    if not isinstance(dataset_types, list):
+        dataset_types = [dataset_types for i in range(len(locs))]
+
+    # Load the first loc
+    data = self._load_dataset(locs[0], dataset_types[0])
+
+    # For the rest
+    for loc, dataset_type in zip(locs[1:], dataset_types[1:]):
+
+        # Load & Merge
+        more_data = self._load_dataset(loc, dataset_type)
+        data = pd.merge(data, more_data, on='src_subject_id')
+
+    return data
+
+
+def _load_dataset(self, loc, dataset_type):
+    '''Helper function to load in a dataset with default
+    load and drop behavior based on type. And calls proc_df.
+
+    Parameters
+    ----------
+    loc : str, Path or None
+        The location of the csv file to load data load from.
+
+    dataset_type : {'default', 'explorer', 'custom'}, optional
+        The type of dataset to load from. Where,
+
+        - 'default' : ABCD2p0NDA style, (.txt and tab seperated)
+            The 4 columns before 'src_subject_id' and the 4 after,
+            (typically the default columns, and therefore not neuroimaging
+            data - also not including the eventname column), will be dropped.
+
+        - 'explorer' : 2.0_ABCD_Data_Explorer tyle (.csv and comma seperated)
+            The first 2 columns before 'src_subject_id'
+            (typically the default columns, and therefore not neuroimaging
+            data - also not including the eventname column), will be dropped.
+
+        - 'custom' : A user-defined custom dataset. Right now this is only
+            supported as a comma seperated file, with the subject names in a
+            column called 'src_subject_id'. No columns will be dropped,
+            unless specific drop keys are passed.
+
+        (default = 'default')
+
+    Returns
+    ----------
+    pandas DataFrame
+        ABCD ML formatted pd DataFrame, with the loaded
+        minimally proc'ed data.
+    '''
+
+    self._print('Loading', loc, 'assumed to be dataset type:', dataset_type)
+
+    if dataset_type == 'default':
+        pd.read_csv(loc, sep='\t', skiprows=[1],
+                    na_values=self.default_na_values)
+    else:
+        data = pd.read_csv(loc, na_values=self.default_na_values)
+
+    # If dataset type is default or explorer, drop some cols by default
+    if dataset_type == 'default' or dataset_type == 'explorer':
+
+        if dataset_type == 'default':
+            non_data_cols = list(data)[:4] + list(data)[5:8] + [list(data)[9]]
+        else:
+            non_data_cols = list(data)[:2]
+
+        data = data.drop(non_data_cols, axis=1)
+        extra = [col for col in list(data) if 'visitid' in col]
+        data = data.drop(extra, axis=1)
+
+        self._print('dropped', non_data_cols + extra, 'columns by default due '
+                    'to dataset type')
+
+    # Perform common operations
+    # (check subject id, drop duplicate subjects ect...)
+    data = self._proc_df(data)
+
+    return data
 
 
 def _common_load(self, loc, col_name=None, col_names=None):
@@ -657,6 +778,12 @@ def _drop_na(self, data):
         Input df, with dropped rows for NaN values
     '''
 
+    # First drop any columns with all NaN
+    missing_values = data.isna().all(axis=0)
+    data = data.dropna(axis=1, how='all')
+    self._print('Dropped', sum(missing_values), 'cols for all missing values')
+
+    # Next drop rows with any missing vals
     missing_values = data.isna().any(axis=1)
     data = data.dropna()
     self._print('Dropped', sum(missing_values), 'rows for missing values')
@@ -681,13 +808,14 @@ def _filter_by_eventname(self, data):
 
     # Filter data by eventname
     if self.eventname:
-        
+
         if 'eventname' in list(data):
             data = data[data['eventname'] == self.eventname]
             data = data.drop('eventname', axis=1)
         else:
-            self._print('Warning: filter by eventname =', eventname, 'is set \
-                but this data does not have a column with eventname.')
+            self._print('Warning: filter by eventname =', eventname,
+                        'is set but this data does not have a column with',
+                        'eventname.')
 
     # If eventname none, but still exists, take out the column
     else:
@@ -697,9 +825,16 @@ def _filter_by_eventname(self, data):
     return data
 
 
-def _process_new(self):
+def _process_new(self, remove=False):
     '''Internal helper function to handle keeping an overlapping subject list,
     with additional useful print statements.
+
+    Parameters
+    ----------
+    remove : bool, optional
+        If True, remove non overlapping subjects - exclusions
+        from all data in place.
+
     '''
 
     valid_subjects = []
@@ -717,14 +852,12 @@ def _process_new(self):
     overlap = overlap - self.exclusions
 
     self._print()
-    self._print('Total valid (overlapping subjects / not in exclusions) \
-        subjects =', len(overlap))
+    self._print('Total valid (overlapping subjects / not in exclusions)',
+                'subjects =', len(overlap))
     self._print()
 
-    if self.low_memory_mode:
-
-        self._print('Low memory mode is on! \
-            Removing non overlapping + excluded subjects')
+    if remove:
+        self._print('Removing non overlapping + excluded subjects')
 
         if len(self.data) > 0:
             self.data = self.data[self.data.index.isin(overlap)]
@@ -766,8 +899,10 @@ def _prepare_data(self):
     self._print('Final data for modeling loaded shape:', self.all_data.shape)
 
     if self.low_memory_mode:
-        self._print('Low memory mode is on! Clearing self.data, self.covars, \
-            self.targets from memory! Note: Final data, self.all_data, the \
-            merged dataframe is still in memory')
+        self._print('Low memory mode is on!')
+        self._print('Clearing self.data, self.covars, self.targets',
+                    'from memory!')
+        self._print('Note: Final data, self.all_data, the',
+                    'merged dataframe is still in memory')
 
         self.data, self.targets, self.covars = [], [], []

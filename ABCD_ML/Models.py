@@ -184,3 +184,105 @@ MODELS = {
     'gp regressor': (GaussianProcessRegressor, {'n_restarts_optimizer': 5,
                                                 'normalize_y': True})
     }
+
+
+def show_model_types(self, problem_type=None, show_model_help=False,
+                     show_default_params=False, show_grid_params=False):
+        '''Print out the avaliable machine learning models,
+        optionally restricted by problem type.
+
+        Parameters
+        ----------
+        problem_type : {binary, categorical, regression, None}, optional
+            Where `problem_type` is the underlying ML problem
+            (default = None)
+        '''
+
+        print('Note: gs and rs are  Grid Search and Random Search')
+        print('Models with gs or rs will have their hyper-parameters',
+              'tuned accordingly.')
+        print()
+
+        avaliable_by_type = get_avaliable_by_type()
+
+        if problem_type is None:
+                for pt in avaliable_by_type:
+                        show_type(pt, avaliable_by_type, show_model_help,
+                                  show_default_params, show_grid_params)
+        else:
+                show_type(problem_type, avaliable_by_type, show_model_help,
+                          show_default_params, show_grid_params)
+
+
+def get_avaliable_by_type():
+
+        avaliable_by_type = {}
+
+        for pt in AVALIABLE:
+
+                avaliable_by_type[pt] = set()
+
+                if pt == 'categorical':
+                        for st in AVALIABLE[pt]:
+                                for model in AVALIABLE[pt][st]:
+                                        avaliable_by_type[pt].add(st + ' ' +
+                                                                  AVALIABLE[pt]
+                                                                  [st][model])
+
+                else:
+                        for model in AVALIABLE[pt]:
+                                avaliable_by_type[pt].add(AVALIABLE[pt][model])
+
+                avaliable_by_type[pt] = list(avaliable_by_type[pt])
+                avaliable_by_type[pt].sort()
+        
+        return avaliable_by_type
+
+
+def show_type(problem_type, avaliable_by_type, show_model_help,
+              show_default_params, show_grid_params):
+
+        print('Problem Type:', problem_type)
+        print('----------------------')
+        print('Avaliable models: ')
+        print()
+
+        for model in avaliable_by_type[problem_type]:
+                show_model(model, show_model_help, show_default_params,
+                           show_grid_params)
+                print()
+
+
+def show_model(model, show_model_help, show_default_params, show_grid_params):
+
+        multilabel, multiclass = False, False
+
+        if 'multilabel ' in model:
+                multilabel = True
+        elif 'multiclass ' in model:
+                multiclass = True
+
+        model = model.replace('multilabel ', '')
+        model = model.replace('multiclass ', '')
+
+        print('Model str indicator: ', model)
+
+        if multilabel:
+                print('(MultiLabel)')
+        elif multiclass:
+                print('(MultiClass)')
+
+        M = MODELS[model]
+        print('Model object: ', M[0])
+
+        if show_model_help:
+                print(help(M[0]))
+
+        if show_default_params:
+                print('Default Params: ')
+                for p in M[1]:
+                        if (p == 'param_distributions' or p == 'param_grid') \
+                                and show_grid_params is False:
+                                print('Param grid not shown.')
+                        else:
+                                print(p, ':', M[1][p])

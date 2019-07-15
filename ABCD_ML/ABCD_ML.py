@@ -291,17 +291,7 @@ class ABCD_ML():
                              _premodel_check,
                              _init_model)
 
-    def show_model_types(self, problem_type=None):
-        '''Print out the avaliable machine learning models,
-        optionally restricted by problem type.
-
-        Parameters
-        ----------
-        problem_type : {binary, categorical, regression, None}, optional
-            Where `problem_type` is the underlying ML problem
-            (default = None)
-        '''
-        pass
+    from ABCD_ML.Models import show_model_types
 
     def show_data_scalers(self):
         '''Print out the avaliable data scalers'''

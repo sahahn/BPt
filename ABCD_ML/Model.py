@@ -1,10 +1,10 @@
 import numpy as np
-from ABCD_ML.ML_Helpers import get_scaler, proc_input
+from ABCD_ML.ML_Helpers import (get_scaler, proc_input,
+                                get_model_possible_params)
 from ABCD_ML.Models import AVALIABLE, MODELS
 from ABCD_ML.Scoring import AVALIABLE as AVALIABLE_SCORERS
-from ABCD_ML.Scoring import SCORERS
+from ABCD_ML.Scoring import get_scorer
 from ABCD_ML.Ensemble_Model import Ensemble_Model
-from sklearn.metrics import make_scorer
 
 
 class Model():
@@ -101,11 +101,11 @@ class Model():
         # Set problem type info and proc. model_type
         self._set_default_params()
         self._process_model_type()
+        self._scorer_from_string()
 
         # Get the data scaler and scorer
         self.data_scaler = get_scaler(self.data_scaler, self.extra_params)
-        self.scorer = self._scorer_from_string(self.metric)
-
+        
     def _print(self, *args):
         '''Overriding the print function to allow for
         customizable verbosity within class methods
@@ -204,8 +204,7 @@ class Model():
             "Selected metric is not avaliable with this (sub)problem type."
         scorer_str = avaliable_scorers[conv_metric]
 
-        scorer_params = SCORERS[scorer_str]
-        self.scorer = make_scorer(**scorer_params)
+        self.scorer = get_scorer(scorer_str)
 
     def Evaluate_Model(self, data, train_subjects):
         '''Method to perform a full repeated k-fold evaluation
@@ -409,9 +408,11 @@ class Model():
 
         # Grab the right model and params
         model = MODELS[model_type][0]
+        possible_params = get_model_possible_params(model)
+
         model_params = MODELS[model_type][1].copy()
-        model_params = self._replace_params(model_params, base_int_cv,
-                                            estimator=estimator,
+        model_params = self._replace_params(model_params, possible_params,
+                                            base_int_cv, estimator=estimator,
                                             base_model=base_model)
 
         # Check to see if there are any user passed model params to update
@@ -424,8 +425,8 @@ class Model():
         model = model(**model_params)
         return model
 
-    def _replace_params(self, params, base_int_cv, estimator=None,
-                        base_model=False):
+    def _replace_params(self, params, possible_params, base_int_cv,
+                        estimator=None, base_model=False):
         '''Helper method to replace default values with provided params,
         with actual values saved within the class.
 
@@ -453,28 +454,23 @@ class Model():
             The input dictionary with applicable values transformed.
         '''
 
-        if 'cv' in params:
-            if params['cv'] == 'base_int_cv':
-                params['cv'] = base_int_cv
+        if 'cv' in possible_params:
+            params['cv'] = base_int_cv
 
-        if 'scoring' in params:
-            if params['scoring'] == 'scorer':
-                params['scoring'] = self.scorer
+        if 'scoring' in possible_params:
+            params['scoring'] = self.scorer
 
-        if 'class_weight' in params:
-            if params['class_weight'] == 'class_weight':
-                params['class_weight'] = self.class_weight
+        if 'class_weight' in possible_params:
+            params['class_weight'] = self.class_weight
 
-        if 'n_jobs' in params:
-            if params['n_jobs'] == 'n_jobs':
-                if base_model:
-                    del params['n_jobs']
-                else:
-                    params['n_jobs'] = self.n_jobs
+        if 'n_jobs' in possible_params and not base_model:
+            params['n_jobs'] = self.n_jobs
 
-        if 'n_iter' in params:
-            if params['n_iter'] == 'n_iter':
-                params['n_iter'] = self.n_iter
+        if 'n_iter' in possible_params:
+            params['n_iter'] = self.n_iter
+
+        if 'random_state' in possible_params:
+            params['random_state'] = self.random_state
 
         if 'estimator' in params:
             if type(params['estimator']) == str and estimator is not None:

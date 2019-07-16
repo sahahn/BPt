@@ -197,7 +197,8 @@ class CV():
             groups = self.groups.loc[subjects]
 
             unique_groups = np.unique(groups)
-            splitter = MS.KFold(n_splits=n_splits, random_state=random_state)
+            splitter = MS.KFold(n_splits=n_splits, shuffle=True,
+                                random_state=random_state)
 
             [*inds] = splitter.split(unique_groups)
 
@@ -216,13 +217,15 @@ class CV():
         elif self.stratify is not None:
 
             splitter = MS.StratifiedKFold(n_splits=n_splits,
+                                          shuffle=True,
                                           random_state=random_state)
             [*inds] = splitter.split(subjects, y=stratify.loc[subjects])
 
         # If no groups or stratify, just use random k-fold
         else:
 
-            splitter = MS.KFold(n_splits=n_splits, random_state=random_state)
+            splitter = MS.KFold(n_splits=n_splits, shuffle=True,
+                                random_state=random_state)
             [*inds] = splitter.split(subjects)
 
         if return_index:

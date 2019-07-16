@@ -5,6 +5,7 @@ File with various ML helper functions for ABCD_ML.
 These are non-class functions that are used in _ML.py and Scoring.py
 """
 import numpy as np
+import inspect
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer)
 from ABCD_ML.Models import AVALIABLE
@@ -119,3 +120,6 @@ def proc_str_input(in_str):
     return in_str
 
 
+def get_model_possible_params(model):
+    stuff = dict(inspect.getmembers(model.__init__.__code__))
+    return stuff['co_varnames']

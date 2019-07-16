@@ -108,23 +108,11 @@ AVALIABLE = {
 
 # The different models below are contained in a dictionary,
 # where each entry has a saved model and default params.
-# There are a number of keywords in the params, that simply signify
-# that value to be replaced based on a specified setting later on, these are:
-# 'cv' == 'base_int_cv', to replace with actual int cv
-# 'scoring' == 'scorer', to replace with actual scorer
-# 'class weight' == 'class weight', to replace with actual class weight
-# 'n_jobs' == 'n_jobs', to replace with actual n_jobs,
-# 'n_iter' == 'n_iter', to replace with actual num random searches
 MODELS = {
-    'logistic': (LogisticRegression, {'n_jobs': 'n_jobs',
-                                      'solver': 'lbfgs',
-                                      'max_iter': 5000,
-                                      'class_weight': 'class_weight'}),
+    'logistic': (LogisticRegression, {'solver': 'lbfgs',
+                                      'max_iter': 5000}),
 
-    'logistic cv': (LogisticRegressionCV, {'cv': 'base_int_cv',
-                                           'class_weight': 'class_weight',
-                                           'max_iter': 5000,
-                                           'n_jobs': 'n_jobs'}),
+    'logistic cv': (LogisticRegressionCV, {'max_iter': 5000}),
 
     'gaussian nb': (GaussianNB, {}),
 
@@ -132,97 +120,59 @@ MODELS = {
 
     'knn classifier gs': (GridSearchCV, {'estimator': 'knn classifier',
                                          'param_grid': DG.KNN_GRID1,
-                                         'scoring': 'scorer',
-                                         'cv': 'base_int_cv',
-                                         'iid': False,
-                                         'n_jobs': 'n_jobs'}),
+                                         'iid': False}),
 
-    'knn regressor': (KNeighborsRegressor, {'n_jobs': 'n_jobs'}),
+    'knn regressor': (KNeighborsRegressor, {}),
 
     'knn regressor gs': (GridSearchCV, {'estimator': 'knn regressor',
                                         'param_grid': DG.KNN_GRID1,
-                                        'scoring': 'scorer',
-                                        'cv': 'base_int_cv',
-                                        'iid': False,
-                                        'n_jobs': 'n_jobs'}),
+                                        'iid': False}),
 
-    'dt classifier': (DecisionTreeClassifier, {'class_weight':
-                                               'class_weight'}),
+    'dt classifier': (DecisionTreeClassifier, {}),
 
     'dt classifier gs': (GridSearchCV, {'estimator': 'dt classifier',
                                         'param_grid': DG.DTC_GRID1,
-                                        'scoring': 'scorer',
-                                        'cv': 'base_int_cv',
-                                        'iid': False,
-                                        'n_jobs': 'n_jobs'}),
+                                        'iid': False}),
 
-    'linear regressor': (LinearRegression, {'fit_intercept': True,
-                                            'n_jobs': 'n_jobs'}),
+    'linear regressor': (LinearRegression, {'fit_intercept': True}),
 
-    'elastic net cv': (ElasticNetCV, {'cv': 'base_int_cv',
-                                      'max_iter': 5000,
-                                      'n_jobs': 'n_jobs'}),
+    'elastic net cv': (ElasticNetCV, {'max_iter': 5000}),
 
-    'omp cv': (OrthogonalMatchingPursuitCV, {'cv': 'base_int_cv',
-                                             'n_jobs': 'n_jobs'}),
+    'omp cv': (OrthogonalMatchingPursuitCV, {}),
 
-    'lars cv': (LarsCV, {'cv': 'base_int_cv',
-                         'n_jobs': 'n_jobs'}),
+    'lars cv': (LarsCV, {}),
 
-    'ridge cv': (RidgeCV, {'cv': 'base_int_cv',
-                           'n_jobs': 'n_jobs'}),
+    'ridge cv': (RidgeCV, {}),
 
-    'rf regressor': (RandomForestRegressor, {'n_estimators': 100,
-                                             'n_jobs': 'n_jobs'}),
+    'rf regressor': (RandomForestRegressor, {'n_estimators': 100}),
 
     'rf regressor rs': (RandomizedSearchCV, {'estimator': 'rf regressor',
                                              'param_distributions':
                                              DG.RF_GRID1,
-                                             'n_iter': 'n_iter',
-                                             'scoring': 'scorer',
-                                             'cv': 'base_int_cv',
-                                             'iid': False,
-                                             'n_jobs': 'n_jobs'}),
+                                             'iid': False}),
 
-    'rf classifier': (RandomForestClassifier, {'n_estimators': 100,
-                                               'n_jobs': 'n_jobs',
-                                               'class_weight':
-                                               'class_weight'}),
+    'rf classifier': (RandomForestClassifier, {'n_estimators': 100})
 
     'rf classifier rs': (RandomizedSearchCV, {'estimator': 'rf classifier',
                                               'param_distributions':
                                               DG.RF_GRID1,
-                                              'n_iter': 'n_iter',
-                                              'scoring': 'scorer',
-                                              'cv': 'base_int_cv',
-                                              'iid': False,
-                                              'n_jobs': 'n_jobs'}),
+                                              'iid': False}),
 
-    'lgbm regressor': (LGBMRegressor, {'silent': True,
-                                       'n_jobs': 'n_jobs'}),
+    'lgbm regressor': (LGBMRegressor, {'silent': True}),
 
     'lgbm regressor rs': (RandomizedSearchCV, {'estimator':
                                                'lightgbm regressor',
                                                'param_distributions':
                                                DG.LIGHT_GRID1,
-                                               'n_iter': 'n_iter',
-                                               'scoring': 'scorer',
-                                               'cv': 'base_int_cv',
-                                               'iid': False,
-                                               'n_jobs': 'n_jobs'}),
+                                               'iid': False}),
 
-    'lgbm classifier': (LGBMClassifier, {'silent': True,
-                                         'n_jobs': 'n_jobs'}),
+    'lgbm classifier': (LGBMClassifier, {'silent': True}),
 
     'lgbm classifier rs': (RandomizedSearchCV, {'estimator':
                                                 'lightgbm classifier',
                                                 'param_distributions':
                                                 DG.LIGHT_GRID1,
-                                                'n_iter': 'n_iter',
-                                                'scoring': 'scorer',
-                                                'cv': 'base_int_cv',
-                                                'iid': False,
-                                                'n_jobs': 'n_jobs'}),
+                                                'iid': False}),
 
     'gp regressor': (GaussianProcessRegressor, {'n_restarts_optimizer': 5,
                                                 'normalize_y': True})

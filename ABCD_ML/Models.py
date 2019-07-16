@@ -5,7 +5,7 @@ This file contains the different models avaliable for training,
 with additional information on which work with which problem types
 and default params.
 """
-import ABCD_ML.Default_Params as DP
+import ABCD_ML.Default_Grids as DG
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -60,7 +60,8 @@ AVALIABLE = {
                         'rf rs':              'rf regressor rs',
                         'rf regressor rs':    'rf regressor rs',
                         'gp':                 'gp regressor',
-                        'gp regressor':       'gp regressor'
+                        'gp regressor':       'gp regressor',
+                        'lgbm regressor':     'lgbm regressor',
         },
         'categorical': {
                 'multilabel': {
@@ -99,9 +100,19 @@ AVALIABLE = {
         }
 }
 
+# The different models below are contained in a dictionary,
+# where each entry has a saved model and default params.
+# There are a number of keywords in the params, that simply signify
+# that value to be replaced based on a specified setting later on, these are:
+# 'cv' == 'base_int_cv', to replace with actual int cv
+# 'scoring' == 'scorer', to replace with actual scorer
+# 'class weight' == 'class weight', to replace with actual class weight
+# 'n_jobs' == 'n_jobs', to replace with actual n_jobs,
+# 'n_iter' == 'n_iter', to replace with actual num random searches
 MODELS = {
 
     'logistic': (LogisticRegression, {'n_jobs': 'n_jobs',
+                                      'solver': 'lbfgs',
                                       'class_weight': 'class_weight'}),
 
     'logistic cv': (LogisticRegressionCV, {'cv': 'base_int_cv',
@@ -114,7 +125,7 @@ MODELS = {
     'knn classifier': (KNeighborsClassifier, {'n_jobs': 'n_jobs'}),
 
     'knn classifier gs': (GridSearchCV, {'estimator': 'knn classifier',
-                                         'param_grid': DP.KNN_GRID1,
+                                         'param_grid': DG.KNN_GRID1,
                                          'scoring': 'scorer',
                                          'cv': 'base_int_cv',
                                          'iid': False,
@@ -123,7 +134,7 @@ MODELS = {
     'knn regressor': (KNeighborsRegressor, {'n_jobs': 'n_jobs'}),
 
     'knn regressor gs': (GridSearchCV, {'estimator': 'knn regressor',
-                                        'param_grid': DP.KNN_GRID1,
+                                        'param_grid': DG.KNN_GRID1,
                                         'scoring': 'scorer',
                                         'cv': 'base_int_cv',
                                         'iid': False,
@@ -133,7 +144,7 @@ MODELS = {
                                                'class_weight'}),
 
     'dt classifier gs': (GridSearchCV, {'estimator': 'dt classifier',
-                                        'param_grid': DP.DTC_GRID1,
+                                        'param_grid': DG.DTC_GRID1,
                                         'scoring': 'scorer',
                                         'cv': 'base_int_cv',
                                         'iid': False,
@@ -160,8 +171,8 @@ MODELS = {
 
     'rf regressor rs': (RandomizedSearchCV, {'estimator': 'rf regressor',
                                              'param_distributions':
-                                             DP.RF_GRID1,
-                                             'n_iter': 10,
+                                             DG.RF_GRID1,
+                                             'n_iter': 'n_iter',
                                              'scoring': 'scorer',
                                              'cv': 'base_int_cv',
                                              'iid': False,
@@ -174,12 +185,25 @@ MODELS = {
 
     'rf classifier rs': (RandomizedSearchCV, {'estimator': 'rf classifier',
                                               'param_distributions':
-                                              DP.RF_GRID1,
-                                              'n_iter': 10,
+                                              DG.RF_GRID1,
+                                              'n_iter': 'n_iter',
                                               'scoring': 'scorer',
                                               'cv': 'base_int_cv',
                                               'iid': False,
                                               'n_jobs': 'n_jobs'}),
+
+    'lgbm regressor': (LGBMRegressor, {'silent': True,
+                                       'n_jobs': 'n_jobs'}),
+
+    'lgbm regressor rs': (RandomizedSearchCV, {'estimator':
+                                               'lightgbm regressor',
+                                               'param_distributions':
+                                               DG.LIGHT_GRID1,
+                                               'n_iter': 'n_iter',
+                                               'scoring': 'scorer',
+                                               'cv': 'base_int_cv',
+                                               'iid': False,
+                                               'n_jobs': 'n_jobs'}),
 
     'gp regressor': (GaussianProcessRegressor, {'n_restarts_optimizer': 5,
                                                 'normalize_y': True})

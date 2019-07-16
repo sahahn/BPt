@@ -44,13 +44,6 @@ class ABCD_ML():
             it will override these default '777' and '999' NaN values.
             (default = ['777', '999'])
 
-        n_jobs : int, optional
-            Number of processors to use during training
-            of machine learning models. This default parameter can
-            still be overriden if n_jobs is passed in
-            extra params in a specific training instance.
-            (default = 1)
-
         original_targets_key : str, optional
             This parameter refers to the column name / key, that the
             target variable of interest will be stored under. There are not a
@@ -73,6 +66,11 @@ class ABCD_ML():
             will also be deleted from memory as soon as modeling begins.
             (default = False)
 
+        random_state : int, RandomState instance or None, optional
+            Random state, either as int for a specific seed, or if None then
+            the random seed is set by np.random.
+            (default = None)
+
         verbose: bool, optional
             If set to true will display diagnostic and other output during
             dataloading and model training ect... if set to False this output
@@ -84,9 +82,9 @@ class ABCD_ML():
         self.eventname = eventname
         self.use_default_subject_ids = use_default_subject_ids
         self.default_na_values = default_na_values
-        self.n_jobs = n_jobs
         self.original_targets_key = original_targets_key
         self.low_memory_mode = low_memory_mode
+        self.random_state = random_state
         self.verbose = verbose
 
         # Initialze various variables
@@ -98,6 +96,7 @@ class ABCD_ML():
         self.all_data, self.train_subjects = None, None
         self.test_subjects = None
         self.CV = CV()
+        self.default_ML_params = None  # This dict is kept at none until set
 
         self._print('ABCD_ML object initialized')
 
@@ -286,9 +285,11 @@ class ABCD_ML():
                     len(self.test_subjects))
 
     # Machine Learning functionality
-    from ABCD_ML._ML import (Evaluate,
+    from ABCD_ML._ML import (set_default_ML_params,
+                             Evaluate,
                              Test,
                              _premodel_check,
+                             _make_ML_params,
                              _init_model)
 
     from ABCD_ML.Models import show_model_types

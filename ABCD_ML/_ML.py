@@ -8,57 +8,29 @@ from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
 
-def Evaluate(self, problem_type, model_type,
-             data_scaler='standard', n_splits=3, n_repeats=2,
-             int_cv=3, metric='default', class_weight='balanced',
-             random_state=None, extra_params={}):
-    '''Class method to be called during the model selection phase.
-    Used to evaluated different combination of models and scaling, ect...
+def set_default_ML_params(self, problem_type='default', metric='default',
+                          data_scaler='default', n_splits='default',
+                          n_repeats='default', int_cv='default',
+                          class_weight='default', n_jobs='default',
+                          n_iter='default', random_state='default',
+                          extra_params='default'):
+    '''Sets the self.default_ML_params dictionary with user passed or default
+    values. In general, if any argument is left as 'default' and it has
+    not been previously defined, it will be set to a default value,
+    sometimes passed on other values.
+    See notes for rationale behind default ML params.
 
     Parameters
     ----------
-    problem_type : {'regression', 'binary', 'categorical'}
+    problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
 
         - 'regression' : For ML on float or ordinal target data
         - 'binary' : For ML on binary target data
         - 'categorical' : For ML on categorical target data,
                           as either multilabel or multiclass.
+        - 'default' : Use 'regression' if nothing else already defined
 
-    model_type : str or list of str,
-        Each string refers to a type of model to train.
-        If a list of strings is passed then an ensemble model
-        will be created over all individual models.
-        For a full list of supported options call:
-        self.show_model_types(), with optional problem type parameter.
-
-    data_scaler : str, optional
-        `data_scaler` refers to the type of scaling to apply
-        to the saved data during model evaluation.
-        For a full list of supported options call:
-        self.show_data_scalers()
-        (default = 'standard')
-
-    n_splits : int, optional
-        evaluate_model performs a repeated k-fold model evaluation,
-        `n_splits` refers to the k. E.g., if set to 3, then a 3-fold
-        repeated CV will be performed. This parameter is typically
-        chosen as a trade off between bias and variance, in addition to
-        as a function of sample size.
-        (default = 3)
-
-    n_repeats : int, optional
-        evaluate_model performs a repeated k-fold model evaluation,
-        `n_repeats` refers to the number of times to repeat the
-        k-fold CV. This parameter is typical chosen as a balance between
-        run time, and accuratly accessing model performance.
-        (default = 2)
-
-    int_cv : int, optional
-        The number of internal folds to use during
-        model k-fold parameter selection, if the chosen model requires
-        parameter selection. A value greater
-        then 2 must be passed.
-        (default = 3)
+        (default = 'default')
 
     metric : str, optional
         Indicator for which metric to use for calculating
@@ -71,20 +43,72 @@ def Evaluate(self, problem_type, model_type,
         Note, some metrics are only avaliable for certain problem types.
         For a full list of supported metrics call:
         self.show_metrics, with optional problem type parameter.
+        If 'default', and not already defined, set to default
+        metric for the problem type.
         (default = 'default')
 
-    class weight : {dict, 'balanced', None}, optional
+    data_scaler : str, optional
+        `data_scaler` refers to the type of scaling to apply
+        to the saved data during model evaluation.
+        If 'default', and not already defined, set to 'standard'
+        For a full list of supported options call:
+        self.show_data_scalers()
+        (default = 'default')
+
+    n_splits : int or 'default', optional
+        evaluate_model performs a repeated k-fold model evaluation,
+        `n_splits` refers to the k. E.g., if set to 3, then a 3-fold
+        repeated CV will be performed. This parameter is typically
+        chosen as a trade off between bias and variance, in addition to
+        as a function of sample size.
+        If 'default', and not already defined, set to 3
+        (default = 'default')
+
+    n_repeats : int or 'default', optional
+        evaluate_model performs a repeated k-fold model evaluation,
+        `n_repeats` refers to the number of times to repeat the
+        k-fold CV. This parameter is typical chosen as a balance between
+        run time, and accuratly accessing model performance.
+        If 'default', and not already defined, set to 2
+        (default = 2)
+
+    int_cv : int or 'default', optional
+        The number of internal folds to use during
+        model k-fold parameter selection, if the chosen model requires
+        parameter selection. A value greater
+        then 2 must be passed.
+        If 'default', and not already defined, set to 3
+        (default = 'default')
+
+    class weight : {dict, 'balanced', None, 'default'}, optional
         Only used for binary and categorical problem types.
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
-        (default = 'balanced')
+        If 'default', and not already defined, set to 'balanced'
+        (default = 'default')
 
-    random_state : int, RandomState instance or None, optional
+    n_jobs : int or 'default', optional
+        The number of jobs to use (if avaliable) during training ML models.
+        This should be the number of procesors avaliable, if wanting to run
+        as fast as possible.
+        if 'default', and not already defined, set to 1.
+        (default = 'default')
+
+    n_iter : int or 'default', optional
+        The number of random search parameters to try, used
+        only if using random search.
+        if 'default', and not already defined, set to 10.
+        (default = 'default')
+
+    random_state : int, RandomState instance, None or 'default', optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
-        (default = None)
+        If 'default', use the saved value within self,
+        (defined when initing ABCD_ML class) ^,
+        Or can define a different random state for use in ML.
+        (default = 'default')
 
-    extra_params : dict, optional
+    extra_params : dict or 'default', optional
         Any extra params being passed. Typically, extra params are
         added when the user wants to provide a specific model/classifier,
         or data scaler, with updated (or new) parameters.
@@ -92,7 +116,223 @@ def Evaluate(self, problem_type, model_type,
         E.g., extra_params[model_name] = {'model_param' : new_value}
         Where model param is a valid argument for that model, and model_name in
         this case is the str indicator passed to model_type.
-        (default = {})
+        If 'default', and not already defined, set to empty dict.
+        (default = 'default')
+    '''
+
+    default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
+                       'categorical': 'weighted roc auc'}
+
+    if problem_type != 'default':
+        problem_type = problem_type.lower()
+        assert problem in default_metrics, 'Invalid problem type passed!'
+        self.default_ML_params['problem_type'] = problem_type
+
+    elif 'problem_type' not in self.default_ML_params:
+        self.default_ML_params['problem_type'] = 'regression'
+        self._print('No default problem type passed, set to regression.')
+
+    if metric != 'default':
+        self.default_ML_params['metric'] = metric
+
+    elif 'metric' not in self.default_ML_params:
+
+        self.default_ML_params['metric'] = \
+            default_metrics[self.default_ML_params['problem_type']]
+
+        self._print('No default metric passed, set to,',
+                    self.default_ML_params['metric'],
+                    'based on default problem type.')
+
+    if data_scaler != 'default':
+        self.default_ML_params['data_scaler'] = data_scaler
+
+    elif 'data_scaler' not in self.default_ML_params:
+        self.default_ML_params['data_scaler'] = 'standard'
+        self._print('No default data scaler passed, set to standard')
+
+    if n_splits != 'default':
+        assert isinstance(n_splits, int), 'n_splits must be int'
+        assert n_splits > 1, 'n_splits must be greater than 1'
+        self.default_ML_params['n_splits'] = n_splits
+
+    elif 'n_splits' not in self.default_ML_params:
+        self.default_ML_params['n_splits'] = 3
+        self._print('No default num CV splits passed, set to 3')
+
+    if n_repeats != 'default':
+        assert isinstance(n_repeats, int), 'n_repeats must be int'
+        assert n_repeats > 0, 'n_repeats must be greater than 0'
+        self.default_ML_params['n_repeats'] = n_repeats
+
+    elif 'n_repeats' not in self.default_ML_params:
+        self.default_ML_params['n_repeats'] = 2
+        self._print('No default num CV repeats passed, set to 2')
+
+    if int_cv != 'default':
+        assert isinstance(int_cv, int), 'int_cv must be int'
+        assert int_cv > 1, 'int_cv must be greater than 1'
+        self.default_ML_params['int_cv'] = int_cv
+
+    elif 'int_cv' not in self.default_ML_params:
+        self.default_ML_params['int_cv'] = 3
+        self._print('No default num internal CV splits passed, set to 3')
+
+    if class_weight != 'default':
+        self.default_ML_params['class_weight'] = class_weight
+
+    elif 'class_weight' not in self.default_ML_params:
+        self.default_ML_params['class_weight'] = 'balanced'
+        self._print('No default class weight setting passed, set to balanced')
+
+    if n_jobs != 'default':
+        assert isinstance(n_jobs, int), 'n_jobs must be int'
+        self.default_ML_params['n_jobs'] = n_jobs
+
+    elif 'n_jobs' not in self.default_ML_params:
+        self.default_ML_params['n_jobs'] = 1
+        self._print('No default number of jobs passed, set to 1')
+
+    if n_iter != 'default':
+        assert isinstance(n_iter, int), 'n_iter must be int'
+        assert n_iter > 0, 'n_iter must be greater than 0'
+        self.default_ML_params['n_iter'] = n_iter
+
+    elif 'n_iter' not in self.default_ML_params:
+        self.default_ML_params['n_iter'] = 10
+        self._print('No default number of random search iters passed,',
+                    'set to 10')
+
+    if random_state != 'default':
+        self.default_ML_params['random_state'] = random_state
+
+    elif extra_params not in self.default_ML_params:
+        self.default_ML_params['random_state'] = self.random_state
+        self._print('No default random state passed, using class random',
+                    'state value of', self.random_state)
+
+    if extra_params != 'default':
+        assert isinstance(extra_params, dict), 'extra params must be dict'
+        self.default_ML_params['extra_params'] = extra_params
+
+    elif extra_params not in self.default_ML_params:
+        self.default_ML_params['extra_params'] = {}
+        self._print('No default extra params passed, set to empty dict')
+
+
+def Evaluate(self, model_type, problem_type='default', data_scaler='default',
+             n_splits='default', n_repeats='default', int_cv='default',
+             metric='default', class_weight='default', n_jobs='default',
+             n_iter='default', random_state='default', extra_params='default'):
+
+    '''Class method to be called during the model selection phase.
+    Used to evaluated different combination of models and scaling, ect...
+
+    Parameters
+    ----------
+    model_type : str or list of str,
+        Each string refers to a type of model to train.
+        If a list of strings is passed then an ensemble model
+        will be created over all individual models.
+        For a full list of supported options call:
+        self.show_model_types(), with optional problem type parameter.
+
+    problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
+
+        - 'regression' : For ML on float or ordinal target data
+        - 'binary' : For ML on binary target data
+        - 'categorical' : For ML on categorical target data,
+                          as either multilabel or multiclass.
+        - 'default' : Use the name problem type within self.default_ML_params.
+
+        (default = 'default')
+
+    data_scaler : str, optional
+        `data_scaler` refers to the type of scaling to apply
+        to the saved data during model evaluation.
+        If 'default', use the saved value within self.default_ML_params.
+        For a full list of supported options call:
+        self.show_data_scalers()
+        (default = 'default')
+
+    n_splits : int or 'default', optional
+        evaluate_model performs a repeated k-fold model evaluation,
+        `n_splits` refers to the k. E.g., if set to 3, then a 3-fold
+        repeated CV will be performed. This parameter is typically
+        chosen as a trade off between bias and variance, in addition to
+        as a function of sample size.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    n_repeats : int or 'default', optional
+        evaluate_model performs a repeated k-fold model evaluation,
+        `n_repeats` refers to the number of times to repeat the
+        k-fold CV. This parameter is typical chosen as a balance between
+        run time, and accuratly accessing model performance.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 2)
+
+    int_cv : int or 'default', optional
+        The number of internal folds to use during
+        model k-fold parameter selection, if the chosen model requires
+        parameter selection. A value greater
+        then 2 must be passed.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    metric : str, optional
+        Indicator for which metric to use for calculating
+        score and during model parameter selection.
+        If `metric` left as 'default', then the default metric/scorer
+        for that problem types will be used.
+        'regression'  : 'r2',
+        'binary'      : 'roc',
+        'categorical' : 'weighted roc auc'
+        Note, some metrics are only avaliable for certain problem types.
+        For a full list of supported metrics call:
+        self.show_metrics, with optional problem type parameter.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    class weight : {dict, 'balanced', None, 'default'}, optional
+        Only used for binary and categorical problem types.
+        Follows sklearn api class weight behavior. Typically, either use
+        'balanced' in the case of class distribution imbalance, or None.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    n_jobs : int or 'default', optional
+        The number of jobs to use (if avaliable) during training ML models.
+        This should be the number of procesors avaliable, if wanting to run
+        as fast as possible.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    n_iter : int or 'default', optional
+        The number of random search parameters to try, used
+        only if using random search.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    random_state : int, RandomState instance, None or 'default', optional
+        Random state, either as int for a specific seed, or if None then
+        the random seed is set by np.random.
+        If 'default', use the saved value within self,
+        (defined when initing ABCD_ML class) ^,
+        Or a different ML params random state is used, if defined when
+        calling set default ML params.
+        (default = 'default')
+
+    extra_params : dict or 'default', optional
+        Any extra params being passed. Typically, extra params are
+        added when the user wants to provide a specific model/classifier,
+        or data scaler, with updated (or new) parameters.
+        These can be supplied by creating another dict within extra_params.
+        E.g., extra_params[model_name] = {'model_param' : new_value}
+        Where model param is a valid argument for that model, and model_name in
+        this case is the str indicator passed to model_type.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
 
     Returns
     ----------
@@ -113,16 +353,20 @@ def Evaluate(self, problem_type, model_type,
         across each fold with the repeated K-fold.
     '''
 
-    # Perform pre-modeling data check
-    self._premodel_check()
+    # Perform pre-modeling check
+    self._premodel_check(problem_type)
+
+    # Create the set of ML_params from passed args + default args
+    ML_params = self._make_ML_params(args=locals())
+
+    # Print the params being used
+    self._print_model_params(model_type, ML_params, test=False)
 
     # Init the Model object with modeling params
-    self._init_model(problem_type, model_type, data_scaler, int_cv, metric,
-                     class_weight, random_state, extra_params)
+    self._init_model(model_type, ML_params)
 
     # Evaluate the model
-    scores = self.Model.evaluate_model(self.all_data, self.train_subjects,
-                                       n_splits, n_repeats)
+    scores = self.Model.evaluate_model(self.all_data, self.train_subjects)
 
     # Compute macro / micro summary of scores
     summary_scores = compute_macro_micro(scores, n_repeats, n_splits)
@@ -136,28 +380,30 @@ def Evaluate(self, problem_type, model_type,
     return summary_scores
 
 
-def Test(self, problem_type, model_type, train_subjects=None,
-               test_subjects=None, data_scaler='standard', int_cv=3,
-               metric='default', class_weight='balanced',
-               random_state=None, return_model=False, extra_params={}):
+def Test(self, model_type, problem_type='default', train_subjects=None,
+         test_subjects=None, data_scaler='default', int_cv='default',
+         metric='default', class_weight='default', n_jobs='default',
+         n_iter='default', random_state='default', return_model=False,
+         extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
 
-    Parameters
-    ----------
-    problem_type : {'regression', 'binary', 'categorical'}
-
-        - 'regression' : For ML on float or ordinal target data
-        - 'binary' : For ML on binary target data
-        - 'categorical' : For ML on categorical target data,
-                          as either multilabel or multiclass.
-
-    model_type : str or list of str
+    model_type : str or list of str,
         Each string refers to a type of model to train.
         If a list of strings is passed then an ensemble model
         will be created over all individual models.
         For a full list of supported options call:
         self.show_model_types(), with optional problem type parameter.
+
+    problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
+
+        - 'regression' : For ML on float or ordinal target data
+        - 'binary' : For ML on binary target data
+        - 'categorical' : For ML on categorical target data,
+                          as either multilabel or multiclass.
+        - 'default' : Use the name problem type within self.default_ML_params.
+
+        (default = 'default')
 
     train_subjects : array-like or None, optional
         If passed None, (default), then the class defined train subjects will
@@ -174,16 +420,18 @@ def Test(self, problem_type, model_type, train_subjects=None,
     data_scaler : str, optional
         `data_scaler` refers to the type of scaling to apply
         to the saved data during model evaluation.
+        If 'default', use the saved value within self.default_ML_params.
         For a full list of supported options call:
         self.show_data_scalers()
-        (default = 'standard')
+        (default = 'default')
 
-    int_cv : int, optional
+    int_cv : int or 'default', optional
         The number of internal folds to use during
         model k-fold parameter selection, if the chosen model requires
         parameter selection. A value greater
         then 2 must be passed.
-        (default = 3)
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
 
     metric : str, optional
         Indicator for which metric to use for calculating
@@ -196,18 +444,37 @@ def Test(self, problem_type, model_type, train_subjects=None,
         Note, some metrics are only avaliable for certain problem types.
         For a full list of supported metrics call:
         self.show_metrics, with optional problem type parameter.
+        If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
-    class weight : {dict, 'balanced', None}, optional
+    class weight : {dict, 'balanced', None, 'default'}, optional
         Only used for binary and categorical problem types.
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
-        (default = 'balanced')
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
 
-    random_state : int, RandomState instance or None, optional
+    n_jobs : int or 'default', optional
+        The number of jobs to use (if avaliable) during training ML models.
+        This should be the number of procesors avaliable, if wanting to run
+        as fast as possible.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    n_iter : int or 'default', optional
+        The number of random search parameters to try, used
+        only if using random search.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    random_state : int, RandomState instance, None or 'default', optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
-        (default = None)
+        If 'default', use the saved value within self,
+        (defined when initing ABCD_ML class) ^,
+        Or a different ML params random state is used, if defined when
+        calling set default ML params.
+        (default = 'default')
 
     return_model : bool, optional
         If `return_model` is True, then model constructed and tested
@@ -215,7 +482,7 @@ def Test(self, problem_type, model_type, train_subjects=None,
         just the score will be returned.
         (default = False)
 
-    extra_params : dict, optional
+    extra_params : dict or 'default', optional
         Any extra params being passed. Typically, extra params are
         added when the user wants to provide a specific model/classifier,
         or data scaler, with updated (or new) parameters.
@@ -223,7 +490,8 @@ def Test(self, problem_type, model_type, train_subjects=None,
         E.g., extra_params[model_name] = {'model_param' : new_value}
         Where model param is a valid argument for that model, and model_name in
         this case is the str indicator passed to model_type.
-        (default = {})
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
 
     Returns
     ----------
@@ -235,12 +503,17 @@ def Test(self, problem_type, model_type, train_subjects=None,
         The sklearn api trained model object.
     '''
 
-    # Perform pre-modeling data check
+    # Perform pre-modeling check
     self._premodel_check()
 
+    # Create the set of ML_params from passed args + default args
+    ML_params = self._make_ML_params(args=locals())
+
+    # Print the params being used
+    self._print_model_params(model_type, ML_params, test=True)
+
     # Init the Model object with modeling params
-    self._init_model(problem_type, model_type, data_scaler, int_cv, metric,
-                     class_weight, random_state, extra_params)
+    self._init_model(model_type, ML_params)
 
     # If not train subjects or test subjects passed, use class
     if train_subjects is None:
@@ -258,9 +531,47 @@ def Test(self, problem_type, model_type, train_subjects=None,
     return score
 
 
-def _premodel_check(self):
+def _print_model_params(self, model_type, ML_params, test=False):
+
+    if test:
+        self._print('Running Test with:')
+    else:
+        self._print('Running Evaluate with:')
+
+    self._print('model_type =', model_type)
+    self._print('problem_type =', ML_params['problem_type'])
+    self._print('metric =', ML_params['metric'])
+    self._print('data_scaler =', ML_params['data_scaler'])
+
+    if not test:
+        self._print('n_splits =', ML_params['n_splits'])
+        self._print('n_repeats =', ML_params['n_repeats'])
+
+    self._print('int_cv =', ML_params['int_cv'])
+
+    if ML_params['problem_type'] != 'regression':
+        self._print('class_weight =', ML_params['class_weight'])
+
+    self._print('n_jobs =', ML_params['n_jobs'])
+    self._print('n_iter =', ML_params['n_iter'])
+    self._print('random_state =', ML_params['random_state'])
+    self._print('extra_params =', ML_params['extra_params'])
+
+
+def _premodel_check(self, problem_type='default'):
     '''Internal helper function to ensure that self._prepare_data()
-       has been called, and to force a train/test split if not already done.
+    has been called, and to force a train/test split if not already done.
+    Will also call set_default_ML_params if not already called.
+
+    Parameters
+    ----------
+    problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
+
+        - 'regression' : For ML on float or ordinal target data
+        - 'binary' : For ML on binary target data
+        - 'categorical' : For ML on categorical target data,
+                          as either multilabel or multiclass.
+        - 'default' : Use the name problem type within self.default_ML_params.
     '''
 
     if self.all_data is None:
@@ -275,19 +586,46 @@ def _premodel_check(self):
 
         self.train_test_split(test_size=.25)
 
+    if self.default_ML_params is None:
 
-def _init_model(self, problem_type, model_type, data_scaler, int_cv,
-                metric, class_weight, random_state, extra_params):
+        self._print('Setting default ML params.')
+        self._print('Note, if the following values are not desired,',
+                    'call self.set_default_ML_params()')
+        self._print('Or just pass values everytime to Evaluate',
+                    'or Test, and these default values will be ignored')
+
+        self.set_default_ML_params(problem_type=problem_type)
+
+
+def _make_ML_params(self, args):
+
+    ML_params = {}
+
+    # If passed param is default use default value.
+    # Otherwise use passed value.
+    for key in args:
+        if args[key] == 'default':
+            ML_params[key] = self.default_ML_params[key]
+        elif key != 'self':
+            ML_params[key] = args[key]
+
+    # Fill in any missing params w/ default value.
+    for key in self.default_ML_params:
+        if key not in ML_params:
+            ML_params[key] = self.default_ML_params[key]
+
+    return ML_params
+
+
+def _init_model(self, model_type, ML_params):
 
     problem_types = {'binary': Binary_Model, 'regression': Regression_Model,
                      'categorical': Categorical_Model}
 
-    assert problem_type in problem_types, \
+    assert ML_params['problem_type'] in problem_types, \
         "Invalid problem type!"
 
     Model = problem_types[problem_type]
 
-    self.Model = Model(self.CV, model_type, data_scaler, self.data_keys,
-                       self.targets_key, self.target_encoder, int_cv, metric,
-                       class_weight, random_state, self.n_jobs, extra_params,
-                       self.verbose)
+    self.Model = Model(model_type, ML_params, self.CV, self.data_keys,
+                       self.targets_key, self.targets_encoder, self.verbose)

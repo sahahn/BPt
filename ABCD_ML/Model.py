@@ -1,35 +1,39 @@
 import numpy as np
 from ABCD_ML.ML_Helpers import get_scaler
 from ABCD_ML.Scoring import scorer_from_string
-from ABCD_ML.Models import AVALIABLE
-from ABCD_ML.Train_Models import get_model
+from ABCD_ML.Models import AVALIABLE, MODELS
 from ABCD_ML.Ensemble_Model import Ensemble_Model
 
 
 class Model():
 
-    def __init__(self, CV, model_types, data_scaler, data_keys,
-                 targets_key, scores_encoder, int_cv, metric,
-                 class_weight='balanced', random_state=None, n_jobs=1,
-                 extra_params={}, verbose=True):
+    def __init__(self, model_types, ML_params, CV, data_keys, targets_key,
+                 targets_encoder, verbose=True):
 
-        self.CV = CV
         self.model_types = model_types
-        self.data_scaler = data_scaler
+        self.CV = CV
         self.data_keys = data_keys
         self.targets_key = targets_key
-        self.scores_encoder = scores_encoder
-        self.int_cv = int_cv
-        self.metric = metric
-        self.class_weight = class_weight
-        self.random_state = random_state
-        self.n_jobs = n_jobs
-        self.extra_params = extra_params
+        self.targets_encoder = targets_encoder
         self.verbose = verbose
 
+        # Un-pack ML_params
+        self.metric = ML_params['metric']
+        self.data_scaler = ML_params['data_scaler']
+        self.n_splits = ML_params['n_splits']
+        self.n_repeats = ML_params['n_repeats']
+        self.int_cv = ML_params['int_cv']
+        self.class_weight = ML_params['class_weight']
+        self.n_jobs = ML_params['n_jobs']
+        self.n_iter = ML_params['n_iter']
+        self.random_state = ML_params['random_state']
+        self.extra_params = ML_params['extra_params']
+
+        # Set problem type info and proc. model_type
         self.set_default_params()
-        self.check_default_metric()
         self.process_model_type()
+
+        # Get the data scaler and scorer
         self.data_scaler = get_scaler(self.data_scaler, self.extra_params)
         self.scorer = scorer_from_string(self.metric)
 
@@ -48,13 +52,6 @@ class Model():
 
     def set_default_params(self):
         pass
-
-    def check_default_metric(self):
-
-        if self.metric == 'default':
-            self.metric = self.default_metric
-            self._print('Default metric passed, setting metric ' +
-                        self.default_metric + '.')
 
     def process_model_type(self):
 
@@ -94,12 +91,13 @@ class Model():
                 self.extra_params[conv_model_types[m]] = \
                     self.extra_params[self.model_types[m]]
 
-    def evaluate_model(self, data, train_subjects, n_splits, n_repeats):
+    def evaluate_model(self, data, train_subjects):
 
         # Setup the desired splits, using the passed in train subjects
         subject_splits = self.CV.repeated_k_fold(train_subjects,
-                                                 n_repeats, n_splits,
-                                                 self.random_state, False)
+                                                 self.n_repeats, self.n_splits,
+                                                 self.random_state,
+                                                 return_index=False)
 
         scores = []
 
@@ -180,8 +178,7 @@ class Model():
                                      return_index=True)
 
         # Create the model
-        model = get_model(model_type, base_int_cv, self.scorer,
-                          self.class_weight, self.n_jobs, self.extra_params)
+        model = self.get_model(model_type, base_int_cv)
 
         # Data, score split
         X, y = self.get_X_y(train_data)
@@ -190,6 +187,65 @@ class Model():
         model.fit(X, y)
 
         return model
+
+    def get_model(self, model_type, base_int_cv, base_model=False):
+
+        estimator = None
+
+        # If gs or rs in name (grid or random search)
+        # recursively build the base_model / estimator.
+        if ' gs' in model_type or ' rs' in model_type:
+
+            base_model_type = MODELS[model_type][1]['estimator']
+            estimator = self.get_model(base_model_type, base_int_cv,
+                                       base_model=True)
+
+        # Grab the right model and params
+        model = MODELS[model_type][0]
+        model_params = MODELS[model_type][1].copy()
+        model_params = self.replace(model_params, base_int_cv,
+                                    estimator=estimator, base_model=base_model)
+
+        # Check to see if there are any user passed model params to update
+        extra_model_params = {}
+        if model_type in self.extra_params:
+            extra_model_params = self.extra_params[model_type]
+        model_params.update(extra_model_params)
+
+        # Create model
+        model = model(**model_params)
+        return model
+
+    def replace(self, params, base_int_cv, estimator=None, base_model=False):
+
+        if 'cv' in params:
+            if params['cv'] == 'base_int_cv':
+                params['cv'] = base_int_cv
+
+        if 'scoring' in params:
+            if params['scoring'] == 'scorer':
+                params['scoring'] = self.scorer
+
+        if 'class_weight' in params:
+            if params['class_weight'] == 'class_weight':
+                params['class_weight'] = self.class_weight
+
+        if 'n_jobs' in params:
+            if params['n_jobs'] == 'n_jobs':
+                if base_model:
+                    del params['n_jobs']
+                else:
+                    params['n_jobs'] = self.n_jobs
+
+        if 'n_iter' in params:
+            if params['n_iter'] == 'n_iter':
+                params['n_iter'] = self.n_iter
+
+        if 'estimator' in params:
+            if type(params['estimator']) == str and estimator is not None:
+                params['estimator'] = estimator
+
+        return params
 
     def get_score(self, test_data):
 
@@ -218,14 +274,12 @@ class Regression_Model(Model):
 
     def set_default_params(self):
         self.problem_type = 'regression'
-        self.default_metric = 'r2 score'
 
 
 class Binary_Model(Model):
 
     def set_default_params(self):
         self.problem_type = 'binary'
-        self.default_metric = 'roc auc'
 
 
 class Categorical_Model(Model):
@@ -233,7 +287,6 @@ class Categorical_Model(Model):
     def set_default_params(self):
         self.problem_type = 'categorical'
         self.sub_problem_type = 'multilabel'
-        self.default_metric = 'weighted roc auc'
 
     def get_conv_model_types(self):
 
@@ -268,7 +321,7 @@ class Categorical_Model(Model):
 
         # If multiclass, convert to correct score format
         if self.sub_problem_type == 'multiclass':
-            y = self.score_encoder[1].inverse_transform(y).squeeze()
+            y = self.targets_encoder[1].inverse_transform(y).squeeze()
 
         return y
 

@@ -1,8 +1,10 @@
 import numpy as np
-from ABCD_ML.ML_Helpers import get_scaler
-from ABCD_ML.Scoring import scorer_from_string
+from ABCD_ML.ML_Helpers import get_scaler, proc_input
 from ABCD_ML.Models import AVALIABLE, MODELS
+from ABCD_ML.Scoring import AVALIABLE as AVALIABLE_SCORERS
+from ABCD_ML.Scoring import SCORERS
 from ABCD_ML.Ensemble_Model import Ensemble_Model
+from sklearn.metrics import make_scorer
 
 
 class Model():
@@ -102,7 +104,7 @@ class Model():
 
         # Get the data scaler and scorer
         self.data_scaler = get_scaler(self.data_scaler, self.extra_params)
-        self.scorer = scorer_from_string(self.metric)
+        self.scorer = self._scorer_from_string(self.metric)
 
     def _print(self, *args):
         '''Overriding the print function to allow for
@@ -152,9 +154,7 @@ class Model():
         '''
 
         # Base behavior for binary / regression
-
-        conv_model_types = [m.replace('_', ' ').lower()
-                            for m in self.model_types]
+        conv_model_types = proc_input(self.model_types)
 
         assert np.array([m in AVALIABLE[self.problem_type]
                         for m in conv_model_types]).all(), \
@@ -181,6 +181,31 @@ class Model():
 
                 self.extra_params[conv_model_types[m]] = \
                     self.extra_params[self.model_types[m]]
+
+    def _get_avaliable_scorers(self):
+        '''Get the avaliable scorers by problem type.
+
+        Returns
+        ----------
+        dict
+            Dictionary of avaliable scorers, with value as final str
+            indicator.
+        '''
+
+        return AVALIABLE_SCORERS[self.problem_type]
+
+    def _scorer_from_string(self):
+        '''Process self.metric and set self.scorer'''
+
+        conv_metric = proc_input(self.metric)
+        avaliable_scorers = self._get_avaliable_scorers()
+
+        assert conv_metric in avaliable_scorers, \
+            "Selected metric is not avaliable with this (sub)problem type."
+        scorer_str = avaliable_scorers[conv_metric]
+
+        scorer_params = SCORERS[scorer_str]
+        self.scorer = make_scorer(**scorer_params)
 
     def Evaluate_Model(self, data, train_subjects):
         '''Method to perform a full repeated k-fold evaluation
@@ -555,8 +580,7 @@ class Categorical_Model(Model):
             in the same index should represent the converted version.
         '''
 
-        conv_model_types = [m.replace('_', ' ').lower()
-                            for m in self.model_types]
+        conv_model_types = proc_input(self.model_types)
 
         # Check first to see if all model names are in multilabel
         if np.array([m in AVALIABLE['categorical']['multilabel']
@@ -581,6 +605,19 @@ class Categorical_Model(Model):
             assert 0 == 1, "Selected model type(s) not avaliable."
 
         return conv_model_types
+
+    def _get_avaliable_scorers(self):
+        '''Overrides parent method, adding subproblem_type
+        Get the avaliable scorers by problem type.
+
+        Returns
+        ----------
+        dict
+            Dictionary of avaliable scorers, with value as final str
+            indicator.
+        '''
+
+        return AVALIABLE_SCORERS[self.problem_type][self.sub_problem_type]
 
     def _conv_targets(self, y):
         '''Overrides parent method, if the sub problem type

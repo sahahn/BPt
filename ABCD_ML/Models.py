@@ -41,7 +41,9 @@ AVALIABLE = {
                         'rf':                 'rf classifier',
                         'rf classifier':      'rf classifier',
                         'rf rs':              'rf classifier rs',
-                        'rf classifier rs':   'rf classifier rs'
+                        'rf classifier rs':   'rf classifier rs',
+                        'lgbm classifier':    'lgbm classifier',
+                        'lgbm classifier rs': 'lgbm classifier rs'
         },
         'regression': {
                         'linear':             'linear regressor',
@@ -76,7 +78,9 @@ AVALIABLE = {
                         'rf':                 'rf classifier',
                         'rf classifier':      'rf classifier',
                         'rf rs':              'rf classifier rs',
-                        'rf classifier rs':   'rf classifier rs'
+                        'rf classifier rs':   'rf classifier rs',
+                        'lgbm classifier':    'lgbm classifier',
+                        'lgbm classifier rs': 'lgbm classifier rs'
                 },
                 'multiclass': {
                         'logistic':           'logistic',
@@ -95,7 +99,9 @@ AVALIABLE = {
                         'rf':                 'rf classifier',
                         'rf classifier':      'rf classifier',
                         'rf rs':              'rf classifier rs',
-                        'rf classifier rs':   'rf classifier rs'
+                        'rf classifier rs':   'rf classifier rs',
+                        'lgbm classifier':    'lgbm classifier',
+                        'lgbm classifier rs': 'lgbm classifier rs'
                 }
         }
 }

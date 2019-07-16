@@ -96,3 +96,26 @@ def compute_macro_micro(scores, n_repeats, n_splits):
 
     return (np.mean(macro_scores), np.std(macro_scores),
             np.mean(scores), np.std(scores))
+
+
+def proc_input(in_vals):
+    '''Performs common preproc on a list of str's or
+    a single str.'''
+
+    if isinstance(in_vals, list):
+        in_vals = [proc_str_input(x) for x in in_vals]
+    else:
+        in_vals = proc_str_input(in_vals)
+
+    return in_vals
+
+
+def proc_str_input(in_str):
+    '''Perform common preprocs on a str.'''
+
+    in_str = in_str.replace('_', ' ')
+    in_str = in_str.lower()
+
+    return in_str
+
+

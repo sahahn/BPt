@@ -205,6 +205,19 @@ MODELS = {
                                                'iid': False,
                                                'n_jobs': 'n_jobs'}),
 
+    'lgbm classifier': (LGBMClassifier, {'silent': True,
+                                         'n_jobs': 'n_jobs'}),
+
+    'lgbm classifier rs': (RandomizedSearchCV, {'estimator':
+                                                'lightgbm classifier',
+                                                'param_distributions':
+                                                DG.LIGHT_GRID1,
+                                                'n_iter': 'n_iter',
+                                                'scoring': 'scorer',
+                                                'cv': 'base_int_cv',
+                                                'iid': False,
+                                                'n_jobs': 'n_jobs'}),
+
     'gp regressor': (GaussianProcessRegressor, {'n_restarts_optimizer': 5,
                                                 'normalize_y': True})
     }
@@ -213,13 +226,30 @@ MODELS = {
 def show_model_types(self, problem_type=None, show_model_help=False,
                      show_default_params=False, show_grid_params=False):
         '''Print out the avaliable machine learning models,
-        optionally restricted by problem type.
+        optionally restricted by problem type + other diagnostic args.
 
         Parameters
         ----------
         problem_type : {binary, categorical, regression, None}, optional
             Where `problem_type` is the underlying ML problem
             (default = None)
+
+        show_model_help : bool, optional
+            Flag, if set to True, then will display the full docstring
+            for each model, note: this is pretty terrible to read.
+            (default = False)
+
+        show_default_params : bool, optional
+            Flag, if set to True, then will display the ABCD_ML
+            default parameters for each model.
+            (default = False)
+
+        show_grid_params : bool, optional
+            Flag, if set to True, and `show_default_params` set to True, then
+            when displaying default params for each model will print out the
+            grid params also, by default it will skip these as the output is
+            messy.
+            (default = False)
         '''
 
         print('Note: gs and rs are  Grid Search and Random Search')
@@ -259,7 +289,7 @@ def get_avaliable_by_type():
 
                 avaliable_by_type[pt] = list(avaliable_by_type[pt])
                 avaliable_by_type[pt].sort()
-        
+
         return avaliable_by_type
 
 

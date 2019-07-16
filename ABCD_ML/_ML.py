@@ -121,9 +121,10 @@ def set_default_ML_params(self, problem_type='default', metric='default',
 
     Notes
     ----------
-    `default_ML_params` are used in the case where the same settings are being set over
-    and over. For example, if only exploring a binary problem_type, the default type should
-    be set to 'binary', and then the user won't have to pass it as an argument everytime they call
+    `default_ML_params` are used in the case where the same settings
+    are being set over and over. For example, if only exploring a binary
+    problem_type, the default type should be set to 'binary',
+    and then the user won't have to pass it as an argument everytime they call
     Evaluate().
     '''
 

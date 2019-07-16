@@ -387,7 +387,7 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
     self._init_model(model_type, ML_params)
 
     # Evaluate the model
-    scores = self.Model.evaluate_model(self.all_data, self.train_subjects)
+    scores = self.Model.Evaluate_Model(self.all_data, self.train_subjects)
 
     # Compute macro / micro summary of scores
     summary_scores = compute_macro_micro(scores, ML_params['n_repeats'],
@@ -544,7 +544,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         test_subjects = self.test_subjects
 
     # Train the model w/ selected parameters and test on test subjects
-    score = self.Model.test_model(self.all_data, train_subjects, test_subjects)
+    score = self.Model.Test_Model(self.all_data, train_subjects, test_subjects)
 
     # Optionally return the model object itself
     if return_model:

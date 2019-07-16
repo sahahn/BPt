@@ -14,9 +14,9 @@ class ABCD_ML():
 
     def __init__(self, eventname='baseline_year_1_arm_1',
                  use_default_subject_ids=True,
-                 default_na_values=['777', '999'], n_jobs=1,
+                 default_na_values=['777', '999'],
                  original_targets_key='targets', low_memory_mode=False,
-                 verbose=True):
+                 random_state=None, verbose=True):
         '''Main class init
 
         Parameters
@@ -290,6 +290,7 @@ class ABCD_ML():
                              Test,
                              _premodel_check,
                              _make_ML_params,
+                             _print_model_params,
                              _init_model)
 
     from ABCD_ML.Models import show_model_types

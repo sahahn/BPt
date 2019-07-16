@@ -1,9 +1,10 @@
-''' 
+'''
 File with functions related to calculating score from ML models
 '''
 import numpy as np
 from sklearn.metrics import (roc_auc_score, mean_squared_error, r2_score,
-                             balanced_accuracy_score, f1_score, log_loss, make_scorer)
+                             balanced_accuracy_score, f1_score, log_loss,
+                             make_scorer)
 
 def scorer_from_string(scorer):
     ''' 
@@ -21,8 +22,6 @@ def scorer_from_string(scorer):
 
     if scorer in conv_dict:
         scorer = conv_dict[scorer]
-
-    print('using scorer / metric: ', scorer)
 
     #Regression
     if scorer == 'r2':

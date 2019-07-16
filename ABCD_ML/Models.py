@@ -110,9 +110,9 @@ AVALIABLE = {
 # 'n_jobs' == 'n_jobs', to replace with actual n_jobs,
 # 'n_iter' == 'n_iter', to replace with actual num random searches
 MODELS = {
-
     'logistic': (LogisticRegression, {'n_jobs': 'n_jobs',
                                       'solver': 'lbfgs',
+                                      'max_iter': 5000,
                                       'class_weight': 'class_weight'}),
 
     'logistic cv': (LogisticRegressionCV, {'cv': 'base_int_cv',

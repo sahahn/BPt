@@ -118,14 +118,23 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         this case is the str indicator passed to model_type.
         If 'default', and not already defined, set to empty dict.
         (default = 'default')
+
+    Notes
+    ----------
+    `default_ML_params` are used in the case where the same settings are being set over
+    and over. For example, if only exploring a binary problem_type, the default type should
+    be set to 'binary', and then the user won't have to pass it as an argument everytime they call
+    Evaluate().
     '''
+
+    self.default_ML_params = {}
 
     default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
                        'categorical': 'weighted roc auc'}
 
     if problem_type != 'default':
         problem_type = problem_type.lower()
-        assert problem in default_metrics, 'Invalid problem type passed!'
+        assert problem_type in default_metrics, 'Invalid problem type passed!'
         self.default_ML_params['problem_type'] = problem_type
 
     elif 'problem_type' not in self.default_ML_params:
@@ -218,6 +227,9 @@ def set_default_ML_params(self, problem_type='default', metric='default',
     elif extra_params not in self.default_ML_params:
         self.default_ML_params['extra_params'] = {}
         self._print('No default extra params passed, set to empty dict')
+
+    self._print('Default params set.')
+    self._print()
 
 
 def Evaluate(self, model_type, problem_type='default', data_scaler='default',
@@ -336,6 +348,14 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
 
     Returns
     ----------
+    list of floats
+        The raw score as computed for each fold within each repeat,
+        e.g., list will have a length of `n_repeats` * `n_splits`
+
+    Notes
+    ----------
+    Prints by default the following,
+
     float
         The mean macro score (as set by input metric) across each
         repeated K-fold.
@@ -351,6 +371,7 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
     float
         The standard deviation of the micro score (as set by input metric)
         across each fold with the repeated K-fold.
+
     '''
 
     # Perform pre-modeling check
@@ -369,15 +390,16 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
     scores = self.Model.evaluate_model(self.all_data, self.train_subjects)
 
     # Compute macro / micro summary of scores
-    summary_scores = compute_macro_micro(scores, n_repeats, n_splits)
+    summary_scores = compute_macro_micro(scores, ML_params['n_repeats'],
+                                         ML_params['n_splits'])
 
     self._print('Macro mean score: ', summary_scores[0])
     self._print('Macro std in score: ', summary_scores[1])
     self._print('Micro mean score: ', summary_scores[2])
     self._print('Micro std in score: ', summary_scores[3])
 
-    # Return the computed macro and micro means and stds
-    return summary_scores
+    # Return the raw scores from each fold
+    return scores
 
 
 def Test(self, model_type, problem_type='default', train_subjects=None,
@@ -531,33 +553,6 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
     return score
 
 
-def _print_model_params(self, model_type, ML_params, test=False):
-
-    if test:
-        self._print('Running Test with:')
-    else:
-        self._print('Running Evaluate with:')
-
-    self._print('model_type =', model_type)
-    self._print('problem_type =', ML_params['problem_type'])
-    self._print('metric =', ML_params['metric'])
-    self._print('data_scaler =', ML_params['data_scaler'])
-
-    if not test:
-        self._print('n_splits =', ML_params['n_splits'])
-        self._print('n_repeats =', ML_params['n_repeats'])
-
-    self._print('int_cv =', ML_params['int_cv'])
-
-    if ML_params['problem_type'] != 'regression':
-        self._print('class_weight =', ML_params['class_weight'])
-
-    self._print('n_jobs =', ML_params['n_jobs'])
-    self._print('n_iter =', ML_params['n_iter'])
-    self._print('random_state =', ML_params['random_state'])
-    self._print('extra_params =', ML_params['extra_params'])
-
-
 def _premodel_check(self, problem_type='default'):
     '''Internal helper function to ensure that self._prepare_data()
     has been called, and to force a train/test split if not already done.
@@ -617,6 +612,34 @@ def _make_ML_params(self, args):
     return ML_params
 
 
+def _print_model_params(self, model_type, ML_params, test=False):
+
+    if test:
+        self._print('Running Test with:')
+    else:
+        self._print('Running Evaluate with:')
+
+    self._print('model_type =', model_type)
+    self._print('problem_type =', ML_params['problem_type'])
+    self._print('metric =', ML_params['metric'])
+    self._print('data_scaler =', ML_params['data_scaler'])
+
+    if not test:
+        self._print('n_splits =', ML_params['n_splits'])
+        self._print('n_repeats =', ML_params['n_repeats'])
+
+    self._print('int_cv =', ML_params['int_cv'])
+
+    if ML_params['problem_type'] != 'regression':
+        self._print('class_weight =', ML_params['class_weight'])
+
+    self._print('n_jobs =', ML_params['n_jobs'])
+    self._print('n_iter =', ML_params['n_iter'])
+    self._print('random_state =', ML_params['random_state'])
+    self._print('extra_params =', ML_params['extra_params'])
+    self._print()
+
+
 def _init_model(self, model_type, ML_params):
 
     problem_types = {'binary': Binary_Model, 'regression': Regression_Model,
@@ -625,7 +648,7 @@ def _init_model(self, model_type, ML_params):
     assert ML_params['problem_type'] in problem_types, \
         "Invalid problem type!"
 
-    Model = problem_types[problem_type]
+    Model = problem_types[ML_params['problem_type']]
 
     self.Model = Model(model_type, ML_params, self.CV, self.data_keys,
                        self.targets_key, self.targets_encoder, self.verbose)

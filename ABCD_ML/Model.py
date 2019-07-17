@@ -30,8 +30,9 @@ class Model():
             (See the docstring for ABCD_ML.set_default_ML_params for a more
             detailed description of all parameters contained within ML_params)
 
-            - metric : str
-                Metric / scorer str indicator
+            - metrics : str or list of str,
+                Metric / scorer str indicator, or list of. The first one is
+                used for choosing a model.
             - data_scaler : str or None
                 str indicator for what type of data scaling to use if any.
             - n_splits : int
@@ -87,7 +88,7 @@ class Model():
         self.verbose = verbose
 
         # Un-pack ML_params
-        self.metric = ML_params['metric']
+        self.metrics = ML_params['metric']
         self.data_scaler = ML_params['data_scaler']
         self.n_splits = ML_params['n_splits']
         self.n_repeats = ML_params['n_repeats']
@@ -105,7 +106,7 @@ class Model():
 
         # Get the data scaler and scorer
         self.data_scaler = get_scaler(self.data_scaler, self.extra_params)
-   
+
     def _print(self, *args):
         '''Overriding the print function to allow for
         customizable verbosity within class methods
@@ -197,14 +198,24 @@ class Model():
     def _scorer_from_string(self):
         '''Process self.metric and set self.scorer'''
 
-        conv_metric = proc_input(self.metric)
+        # If not a list of metrics, convert to list
+        if not isinstance(self.metrics, list):
+            self.metrics = [self.metrics]
+
+        conv_metrics = proc_input(self.metrics)
         avaliable_scorers = self._get_avaliable_scorers()
 
-        assert conv_metric in avaliable_scorers, \
-            "Selected metric is not avaliable with this (sub)problem type."
-        scorer_str = avaliable_scorers[conv_metric]
+        assert np.array([m in avaliable_scorers for m in conv_metrics]).all(),\
+            "Selected metric(s) not avaliable with this (sub)problem type."
 
-        self.scorer = get_scorer(scorer_str)
+        self.scorer_strs = [avaliable_scorers[conv_metric]
+                            for conv_metric in conv_metrics]
+
+        self.scorers = [get_scorer(scorer_str)
+                        for scorer_str in self.scorer_strs]
+
+        # Define the scorer to be used in model selection
+        self.scorer = self.scorers[0]
 
     def Evaluate_Model(self, data, train_subjects):
         '''Method to perform a full repeated k-fold evaluation
@@ -221,9 +232,14 @@ class Model():
 
         Returns
         ----------
-        list of floats
-            The raw score as computed for each fold within each repeat,
-            e.g., list will have a length of `n_repeats` * `n_splits`
+        array-like of array-like
+            numpy array of numpy arrays,
+            where each internal array contains the raw scores as computed for
+            all passed in metrics, computed for each fold within
+            each repeat.
+            e.g., array will have a length of `n_repeats` * `n_splits`,
+            and each internal array will have the same length as the number of
+            metrics.
         '''
 
         # Setup the desired splits, using the passed in train subjects
@@ -232,16 +248,16 @@ class Model():
                                                  self.random_state,
                                                  return_index=False)
 
-        scores = []
+        all_scores = []
 
         # For each split with the repeated K-fold
         for train_subjects, test_subjects in subject_splits:
 
-            score = self.Test_Model(data, train_subjects, test_subjects)
-            scores.append(score)
+            scores = self.Test_Model(data, train_subjects, test_subjects)
+            all_scores.append(scores)
 
-        # Return the list of scores
-        return scores
+        # Return all scores
+        return np.array(all_scores)
 
     def Test_Model(self, data, train_subjects, test_subjects):
         '''Method to test given input data, training a model on train_subjects
@@ -260,9 +276,9 @@ class Model():
 
         Returns
         ----------
-        float
-            The score as determined by the passed metric/scorer on the
-            provided testing set.
+        array-like
+            A numpy array of scores as determined by the passed
+            metric/scorer(s) on the provided testing set.
         '''
 
         # Assume the train_subjects and test_subjects passed here are final.
@@ -276,8 +292,8 @@ class Model():
         self._train_models(train_data)
 
         # Get the score on the test set
-        score = self._get_score(test_data)
-        return score
+        scores = self._get_scores(test_data)
+        return scores
 
     def _scale_data(self, train_data, test_data):
         '''Wrapper function to take in train/test data,
@@ -491,9 +507,10 @@ class Model():
 
         return params
 
-    def _get_score(self, test_data):
-        '''Helper method to get the score of
+    def _get_scores(self, test_data):
+        '''Helper method to get the scores of
         the trained model saved in the class on input test data.
+        For all metrics/scorers.
 
         Parameters
         ----------
@@ -509,9 +526,11 @@ class Model():
         # Data, score split
         X_test, y_test = self._get_X_y(test_data)
 
-        # Get the score
-        score = self.scorer(self.model, X_test, y_test)
-        return score
+        # Get the scores
+        scores = [scorer(self.model, X_test, y_test)
+                  for scorer in self.scorers]
+
+        return np.array(scores)
 
     def _get_X_y(self, data):
         '''Helper method to get X,y data from ABCD ML formatted df.

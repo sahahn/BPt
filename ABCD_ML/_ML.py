@@ -349,13 +349,18 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
 
     Returns
     ----------
-    list of floats
-        The raw score as computed for each fold within each repeat,
-        e.g., list will have a length of `n_repeats` * `n_splits`
+    array-like of array-like
+        numpy array of numpy arrays,
+        where each internal array contains the raw scores as computed for
+        all passed in metrics, computed for each fold within
+        each repeat.
+        e.g., array will have a length of `n_repeats` * `n_splits`,
+        and each internal array will have the same length as the number of
+        metrics.
 
     Notes
     ----------
-    Prints by default the following,
+    Prints by default the following for each metric,
 
     float
         The mean macro score (as set by input metric) across each
@@ -390,14 +395,21 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
     # Evaluate the model
     scores = self.Model.Evaluate_Model(self.all_data, self.train_subjects)
 
-    # Compute macro / micro summary of scores
-    summary_scores = compute_macro_micro(scores, ML_params['n_repeats'],
-                                         ML_params['n_splits'])
+    # Print out summary stats for all passed metrics
+    scorer_strs = self.Model.scorer_strs
+    for i in range(len(scorer_strs)):
+        self._print('Metric: ', scorer_strs[i])
 
-    self._print('Macro mean score: ', summary_scores[0])
-    self._print('Macro std in score: ', summary_scores[1])
-    self._print('Micro mean score: ', summary_scores[2])
-    self._print('Micro std in score: ', summary_scores[3])
+        # Compute macro / micro summary of scores
+        summary_scores = compute_macro_micro(scores[:, i],
+                                             ML_params['n_repeats'],
+                                             ML_params['n_splits'])
+
+        self._print('Macro mean score: ', summary_scores[0])
+        self._print('Macro std in score: ', summary_scores[1])
+        self._print('Micro mean score: ', summary_scores[2])
+        self._print('Micro std in score: ', summary_scores[3])
+        self._print()
 
     # Return the raw scores from each fold
     return scores
@@ -518,9 +530,9 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
     Returns
     ----------
-    float
-        The score as determined by the passed metric/scorer on the
-        provided testing set.
+    array-like
+        A numpy array of scores as determined by the passed
+        metric/scorer(s) on the provided testing set.
 
     model (if return_model == True)
         The sklearn api trained model object.
@@ -545,13 +557,20 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         test_subjects = self.test_subjects
 
     # Train the model w/ selected parameters and test on test subjects
-    score = self.Model.Test_Model(self.all_data, train_subjects, test_subjects)
+    scores = self.Model.Test_Model(self.all_data, train_subjects,
+                                   test_subjects)
+
+    # Print out score for all passed metrics
+    scorer_strs = self.Model.scorer_strs
+    for i in range(len(scorer_strs)):
+        self._print('Metric: ', scorer_strs[i])
+        self._print('Score: ', scores[i])
 
     # Optionally return the model object itself
     if return_model:
-        return score, self.Model.model
-
-    return score
+        return scores, self.Model.model
+    
+    return scores
 
 
 def _premodel_check(self, problem_type='default'):

@@ -49,7 +49,8 @@ AVALIABLE = {
                         'log': 'log'
             },
         'regression': {
-                        'r2': 'r2'
+                        'r2': 'r2',
+                        'mse': 'mse'
             },
         'categorical': {
             'multilabel': {

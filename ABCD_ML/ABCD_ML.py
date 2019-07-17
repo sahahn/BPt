@@ -163,6 +163,7 @@ class ABCD_ML():
             and will assign it as a value to preserve
             distribution of groups by during any train/test or K-fold splits.
             'targets' or whatever the value of self.original_targets_key,
+            (self.original_targets_key can just be passed).
             can also be passed in the case of binary/categorical problems.
             If a list is passed, then each element should be a str,
             and they will be combined into all unique combinations of
@@ -211,29 +212,42 @@ class ABCD_ML():
 
         elif stratify is not None:
 
+            # Proc either one input or a list of multiple to merge
             if isinstance(stratify, str):
 
                 if stratify == self.original_targets_key:
-                    self.strat[self.targets_key] = \
-                        self.targets[self.targets_key]
-                    stratify = self.targets_key
+                    self.strat[self.original_targets_key] =\
+                        self._get_one_col_targets()
 
                 self.CV = CV(stratify=self.strat[stratify])
 
             elif isinstance(stratify, list):
 
                 if self.original_targets_key in stratify:
-                    self.strat[self.targets_key] = \
-                        self.targets[self.targets_key]
-
-                    stratify = [self.targets_key if
-                                s == self.original_targets_key
-                                else s for s in stratify]
+                    self.strat[self.original_targets_key] =\
+                        self._get_one_col_targets()
 
                 self.CV = CV(stratify=get_unique_combo(self.strat, stratify))
 
             self._print('CV defined with stratifying behavior, over',
                         len(np.unique(self.CV.groups)), 'unique values.')
+
+    def _get_one_col_targets(self):
+        '''Helper method that returns targets as one column,
+        if orginally multicolumn, then converts back to one column.'''
+
+        try:
+            self.targets_key
+        except NameError:
+            print('Targets must be loaded before a validation strategy can',
+                  'be defined with targets included...')
+
+        if isinstance(self.targets_key, list):
+            targets = self.targets_encoder[1].inverse_transform(self.targets)
+            targets = np.squeeze(targets)
+            return targets
+
+        return self.targets
 
     def train_test_split(self, test_size=None, test_loc=None,
                          test_subjects=None, random_state=None):

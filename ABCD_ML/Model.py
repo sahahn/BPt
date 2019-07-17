@@ -105,7 +105,7 @@ class Model():
 
         # Get the data scaler and scorer
         self.data_scaler = get_scaler(self.data_scaler, self.extra_params)
-        
+   
     def _print(self, *args):
         '''Overriding the print function to allow for
         customizable verbosity within class methods
@@ -463,8 +463,11 @@ class Model():
         if 'class_weight' in possible_params:
             params['class_weight'] = self.class_weight
 
-        if 'n_jobs' in possible_params and not base_model:
-            params['n_jobs'] = self.n_jobs
+        if 'n_jobs' in possible_params:
+            if base_model:
+                params['n_jobs'] = self.n_jobs
+            else:
+                params['n_jobs'] = 1
 
         if 'n_iter' in possible_params:
             params['n_iter'] = self.n_iter

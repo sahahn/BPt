@@ -19,7 +19,7 @@ def f1_score_wrapper(y_true, y_pred, labels=None, pos_label=1,
                      average='binary'):
     '''Wrapper around sklearn f1_score to support multilabel'''
 
-    y_score = mutlilabel_compat(y_score)
+    y_pred = mutlilabel_compat(y_pred)
     return f1_score(y_true, y_pred, labels, pos_label, average)
 
 
@@ -27,7 +27,7 @@ def log_loss_wrapper(y_true, y_pred, eps=1e-15, normalize=True,
                      sample_weight=None):
     '''Wrapper around sklearn log_loss to support multilabel'''
 
-    y_score = mutlilabel_compat(y_score)
+    y_pred = mutlilabel_compat(y_pred)
     return log_loss(y_true, y_pred, eps, normalize, sample_weight)
 
 

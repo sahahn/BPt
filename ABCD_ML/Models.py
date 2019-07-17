@@ -151,7 +151,7 @@ MODELS = {
                                              DG.RF_GRID1,
                                              'iid': False}),
 
-    'rf classifier': (RandomForestClassifier, {'n_estimators': 100})
+    'rf classifier': (RandomForestClassifier, {'n_estimators': 100}),
 
     'rf classifier rs': (RandomizedSearchCV, {'estimator': 'rf classifier',
                                               'param_distributions':
@@ -169,7 +169,7 @@ MODELS = {
     'lgbm classifier': (LGBMClassifier, {'silent': True}),
 
     'lgbm classifier rs': (RandomizedSearchCV, {'estimator':
-                                                'lightgbm classifier',
+                                                'lgbm classifier',
                                                 'param_distributions':
                                                 DG.LIGHT_GRID1,
                                                 'iid': False}),

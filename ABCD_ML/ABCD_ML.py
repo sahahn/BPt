@@ -230,7 +230,7 @@ class ABCD_ML():
                 self.CV = CV(stratify=get_unique_combo(self.strat, stratify))
 
             self._print('CV defined with stratifying behavior, over',
-                        len(np.unique(self.CV.groups)), 'unique values.')
+                        len(np.unique(self.CV.stratify)), 'unique values.')
 
     def _get_one_col_targets(self):
         '''Helper method that returns targets as one column,

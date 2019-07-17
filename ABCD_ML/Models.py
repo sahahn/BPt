@@ -16,7 +16,7 @@ from sklearn.ensemble import (GradientBoostingClassifier, AdaBoostClassifier,
 from sklearn.linear_model import (LogisticRegression, LogisticRegressionCV,
                                   ElasticNetCV, LinearRegression,
                                   OrthogonalMatchingPursuitCV, LarsCV, RidgeCV)
-from sklearn.svm import SVC, LinearSVR
+from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from xgboost import XGBRegressor
@@ -39,7 +39,9 @@ AVALIABLE = {
                         'random forest cal':  'random forest classifier cal',
                         'random forest rs':   'random forest classifier rs',
                         'light gbm':          'light gbm classifier',
-                        'light gbm rs':       'light gbm classifier rs'
+                        'light gbm rs':       'light gbm classifier rs',
+                        'svm':                'svm classifier',
+                        'svm gs':             'svm classifier gs',
         },
         'regression': {
                         'linear':             'linear regressor',
@@ -54,6 +56,8 @@ AVALIABLE = {
                         'random forest rs':   'random forest regressor rs',
                         'gp':                 'gp regressor',
                         'light gbm':          'light gbm regressor',
+                        'svm':                'svm regressor',
+                        'svm gs':             'svm regressor gs',
         },
         'categorical': {
                 'multilabel': {
@@ -78,7 +82,9 @@ AVALIABLE = {
                         'random forest cal':  'random forest classifier cal',
                         'random forest rs':   'random forest classifier rs',
                         'light gbm':          'light gbm classifier',
-                        'light gbm rs':       'light gbm classifier rs'
+                        'light gbm rs':       'light gbm classifier rs',
+                        'svm':                'svm classifier',
+                        'svm gs':             'svm classifier gs',
                 }
         }
 }
@@ -98,19 +104,19 @@ MODELS = {
     'knn classifier': (KNeighborsClassifier, {'n_jobs': 'n_jobs'}),
 
     'knn classifier gs': (GridSearchCV, {'estimator': 'knn classifier',
-                                         'param_grid': DG.KNN_GRID1,
+                                         'param_grid': DG.KNN1,
                                          'iid': False}),
 
     'knn regressor': (KNeighborsRegressor, {}),
 
     'knn regressor gs': (GridSearchCV, {'estimator': 'knn regressor',
-                                        'param_grid': DG.KNN_GRID1,
+                                        'param_grid': DG.KNN1,
                                         'iid': False}),
 
     'dt classifier': (DecisionTreeClassifier, {}),
 
     'dt classifier gs': (GridSearchCV, {'estimator': 'dt classifier',
-                                        'param_grid': DG.DTC_GRID1,
+                                        'param_grid': DG.DTC1,
                                         'iid': False}),
 
     'linear regressor': (LinearRegression, {'fit_intercept': True}),
@@ -127,7 +133,7 @@ MODELS = {
 
     'random forest regressor rs': (RandomizedSearchCV,
                                    {'estimator': 'random forest regressor',
-                                    'param_distributions': DG.RF_GRID1,
+                                    'param_distributions': DG.RF1,
                                     'iid': False}),
 
     'random forest classifier': (RandomForestClassifier,
@@ -139,7 +145,7 @@ MODELS = {
 
     'random forest classifier rs': (RandomizedSearchCV,
                                     {'estimator': 'random forest classifier',
-                                     'param_distributions': DG.RF_GRID1,
+                                     'param_distributions': DG.RF1,
                                      'iid': False}),
 
     'light gbm regressor': (LGBMRegressor, {'silent': True}),
@@ -147,24 +153,38 @@ MODELS = {
     'light gbm regressor rs': (RandomizedSearchCV, {'estimator':
                                                     'light gbm regressor',
                                                     'param_distributions':
-                                                    DG.LIGHT_GRID1,
+                                                    DG.LIGHT1,
                                                     'iid': False}),
 
     'light gbm classifier': (LGBMClassifier, {'silent': True}),
 
     'light gbm classifier rs': (RandomizedSearchCV, {'estimator':
-                                                'light gbm classifier',
-                                                'param_distributions':
-                                                DG.LIGHT_GRID1,
-                                                'iid': False}),
+                                                     'light gbm classifier',
+                                                     'param_distributions':
+                                                     DG.LIGHT1,
+                                                     'iid': False}),
 
     'gp regressor': (GaussianProcessRegressor, {'n_restarts_optimizer': 5,
-                                                'normalize_y': True})
+                                                'normalize_y': True}),
+
+    'svm regressor': (SVR, {'kernel': 'rbf'}),
+
+    'svm regressor rs': (RandomizedSearchCV, {'estimator':
+                                              'svm regressor',
+                                              'param_distributions':
+                                              DG.SVM1, 'iid': False}),
+
+    'svm classifier': (SVC, {'kernel': 'rbf'}),
+
+    'svm classifier rs': (RandomizedSearchCV, {'estimator':
+                                               'svm classifier',
+                                               'param_distributions':
+                                               DG.SVM1, 'iid': False}),
     }
 
 
 def show_model_types(self, problem_type=None, show_model_help=False,
-                     show_default_params=False, show_grid_params=False):
+                     show_default_params=False, show__params=False):
         '''Print out the avaliable machine learning models,
         optionally restricted by problem type + other diagnostic args.
 

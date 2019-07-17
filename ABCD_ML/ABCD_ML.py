@@ -88,8 +88,8 @@ class ABCD_ML():
         self.verbose = verbose
 
         # Initialze various variables
-        self.data, self.covars = [], []
-        self.targets, self.strat = [], []
+        self.data, self.covars = pd.DataFrame(), pd.DataFrame()
+        self.targets, self.strat = pd.DataFrame(), pd.DataFrame()
         self.name_map, self.exclusions = {}, set()
         self.covars_encoders, self.targets_encoder = {}, None
         self.strat_encoders = {}
@@ -243,11 +243,25 @@ class ABCD_ML():
                   'be defined with targets included...')
 
         if isinstance(self.targets_key, list):
-            targets = self.targets_encoder[1].inverse_transform(self.targets)
-            targets = np.squeeze(targets)
-            return targets
 
-        return self.targets
+            encoded = self.targets_encoder[1].inverse_transform(self.targets)
+            encoded = np.squeeze(encoded)
+
+            # To preserve subject index, set to col in self.targets
+            self.targets[self.original_targets_key] = encoded
+            targets = self.targets[self.original_targets_key]
+
+            # Then remove.
+            self.targets.drop(self.original_targets_key, axis=1)
+
+        else:
+            targets = self.targets[self.original_targets_key]
+
+        assert targets.dtype != float, \
+            "Stratify by targets can only be used by binary or categorical \
+             target types."
+
+        return targets
 
     def train_test_split(self, test_size=None, test_loc=None,
                          test_subjects=None, random_state=None):

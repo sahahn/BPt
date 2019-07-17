@@ -32,8 +32,8 @@ def set_default_ML_params(self, problem_type='default', metric='default',
 
         (default = 'default')
 
-    metric : str, optional
-        Indicator for which metric to use for calculating
+    metric : str or list, optional
+        Indicator for which metric(s) to use for calculating
         score and during model parameter selection.
         If `metric` left as 'default', then the default metric/scorer
         for that problem types will be used.
@@ -293,8 +293,8 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
-    metric : str, optional
-        Indicator for which metric to use for calculating
+    metric : str or list, optional
+        Indicator for which metric(s) to use for calculating
         score and during model parameter selection.
         If `metric` left as 'default', then the default metric/scorer
         for that problem types will be used.
@@ -468,8 +468,8 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
-    metric : str, optional
-        Indicator for which metric to use for calculating
+    metric : str or list, optional
+        Indicator for which metric(s) to use for calculating
         score and during model parameter selection.
         If `metric` left as 'default', then the default metric/scorer
         for that problem types will be used.

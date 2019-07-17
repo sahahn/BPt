@@ -406,6 +406,12 @@ class Model():
             estimator = self._get_model(base_model_type, base_int_cv,
                                         base_model=True)
 
+        if ' cal' in model_type:
+
+            base_model_type = MODELS[model_type][1]['base_estimator']
+            estimator = self._get_model(base_model_type, base_int_cv,
+                                        base_model=True)
+
         # Grab the right model and params
         model = MODELS[model_type][0]
         possible_params = get_model_possible_params(model)
@@ -478,6 +484,10 @@ class Model():
         if 'estimator' in params:
             if type(params['estimator']) == str and estimator is not None:
                 params['estimator'] = estimator
+
+        if 'base_estimator' in params:
+            if type(params['base_estimator']) == str and estimator is not None:
+                params['base_estimator'] = estimator
 
         return params
 
@@ -597,8 +607,8 @@ class Categorical_Model(Model):
 
             # Set the cat conv flag to be true
             self.sub_problem_type = 'multiclass'
-            self._print('Not all model types passed have multilabel support, \
-                using multiclass instead.')
+            self._print('Not all model types passed have multilabel support!',
+                        'Using multiclass instead.')
 
         else:
             assert 0 == 1, "Selected model type(s) not avaliable."

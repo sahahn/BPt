@@ -3,11 +3,16 @@ File with functions related to calculating score from ML models
 '''
 import numpy as np
 import sklearn.metrics as M
+from sklearn.preprocessing import label_binarize
 
 
 def roc_auc_score_wrapper(y_true, y_score, average='macro', sample_weight=None,
-                          max_fpr=None):
-    '''Wrapper around sklearn roc_auc_score to support multilabel'''
+                          max_fpr=None, multiclass=False):
+    '''Wrapper around sklearn roc_auc_score to support multilabel and
+       multiclass.'''
+
+    if multiclass:
+        y_true = binarize(y_true)
 
     y_score = mutlilabel_compat(y_score)
     return M.roc_auc_score(y_true, y_score, average, sample_weight, max_fpr)
@@ -18,6 +23,7 @@ def f1_score_wrapper(y_true, y_pred, labels=None, pos_label=1,
     '''Wrapper around sklearn f1_score to support multilabel'''
 
     y_pred = mutlilabel_compat(y_pred)
+
     return M.f1_score(y_true, y_pred, labels, pos_label, average)
 
 
@@ -72,6 +78,13 @@ def mutlilabel_compat(y_score):
         y_score = np.stack([s[:, 1] for s in y_score], axis=1)
 
     return y_score
+
+
+def binarize(y_true):
+
+    classes = np.unique(y_true)
+    y_true = label_binarize(y_true, classes)
+    return y_true
 
 
 AVALIABLE = {
@@ -133,6 +146,10 @@ AVALIABLE = {
                         'samples jaccard': 'samples jaccard',
             },
             'multiclass': {
+                        'weighted roc auc': 'multiclass weighted roc auc',
+                        'macro roc auc': 'multiclass macro roc auc',
+                        'micro roc auc': 'multiclass micro roc auc',
+                        'samples roc auc': 'multiclass samples roc auc',
                         'balanced accuracy': 'balanced accuracy',
                         'accuracy': 'accuracy',
                         'log': 'log',
@@ -189,6 +206,26 @@ SCORERS = {
     'samples roc auc': {'score_func': roc_auc_score_wrapper,
                         'greater_is_better': True, 'needs_proba': True,
                         'average': 'samples'},
+
+    'multiclass weighted roc auc': {'score_func': roc_auc_score_wrapper,
+                                    'greater_is_better': True,
+                                    'needs_proba': True, 'average': 'weighted',
+                                    'multiclass': True},
+
+    'multiclass macro roc auc': {'score_func': roc_auc_score_wrapper,
+                                 'greater_is_better': True,
+                                 'needs_proba': True, 'average': 'macro',
+                                 'multiclass': True},
+
+    'multiclass micro roc auc': {'score_func': roc_auc_score_wrapper,
+                                 'greater_is_better': True,
+                                 'needs_proba': True, 'average': 'micro',
+                                 'multiclass': True},
+
+    'multiclass samples roc auc': {'score_func': roc_auc_score_wrapper,
+                                   'greater_is_better': True,
+                                   'needs_proba': True, 'average': 'samples',
+                                   'multiclass': True},
 
     'balanced accuracy': {'score_func': M.balanced_accuracy_score,
                           'greater_is_better': True},

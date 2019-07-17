@@ -22,6 +22,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor, LGBMClassifier
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.calibration import CalibratedClassifierCV
 
 AVALIABLE = {
         'binary': {
@@ -31,56 +32,37 @@ AVALIABLE = {
                         'linear cv':          'logistic cv',
                         'gaussian nb':        'gaussian nb',
                         'knn':                'knn classifier',
-                        'knn classifier':     'knn classifier',
                         'knn gs':             'knn classifier gs',
-                        'knn classifier gs':  'knn classifier gs',
                         'dt':                 'dt classifier',
-                        'dt classifier':      'dt classifier',
                         'dt gs':              'dt classifier gs',
-                        'dt classifier gs':   'dt classifier gs',
-                        'rf':                 'rf classifier',
-                        'rf classifier':      'rf classifier',
-                        'rf rs':              'rf classifier rs',
-                        'rf classifier rs':   'rf classifier rs',
-                        'lgbm classifier':    'lgbm classifier',
-                        'lgbm classifier rs': 'lgbm classifier rs'
+                        'random forest':      'random forest classifier',
+                        'random forest cal':  'random forest classifier cal',
+                        'random forest rs':   'random forest classifier rs',
+                        'light gbm':          'light gbm classifier',
+                        'light gbm rs':       'light gbm classifier rs'
         },
         'regression': {
                         'linear':             'linear regressor',
-                        'linear regressor':   'linear regressor',
                         'knn':                'knn regressor',
-                        'knn regressor':      'knn regressor',
                         'knn gs':             'knn regressor gs',
-                        'knn regressor gs':   'knn regressor gs',
                         'elastic cv':         'elastic net cv',
                         'elastic net cv':     'elastic net cv',
                         'omp cv':             'omp cv',
                         'lars cv':            'lars cv',
                         'ridge cv':           'ridge cv',
-                        'rf':                 'rf regressor',
-                        'rf regressor':       'rf regressor',
-                        'rf rs':              'rf regressor rs',
-                        'rf regressor rs':    'rf regressor rs',
+                        'random forest':      'random forest regressor',
+                        'random forest rs':   'random forest regressor rs',
                         'gp':                 'gp regressor',
-                        'gp regressor':       'gp regressor',
-                        'lgbm regressor':     'lgbm regressor',
+                        'light gbm':          'light gbm regressor',
         },
         'categorical': {
                 'multilabel': {
                         'knn':                'knn classifier',
-                        'knn classifier':     'knn classifier',
                         'knn gs':             'knn classifier gs',
-                        'knn classifier gs':  'knn classifier gs',
                         'dt':                 'dt classifier',
-                        'dt classifier':      'dt classifier',
                         'dt gs':              'dt classifier gs',
-                        'dt classifier gs':   'dt classifier gs',
-                        'rf':                 'rf classifier',
-                        'rf classifier':      'rf classifier',
-                        'rf rs':              'rf classifier rs',
-                        'rf classifier rs':   'rf classifier rs',
-                        'lgbm classifier':    'lgbm classifier',
-                        'lgbm classifier rs': 'lgbm classifier rs'
+                        'random forest':      'random forest classifier',
+                        'random forest rs':   'random forest classifier rs',
                 },
                 'multiclass': {
                         'logistic':           'logistic',
@@ -89,19 +71,14 @@ AVALIABLE = {
                         'linear cv':          'logistic cv',
                         'gaussian nb':        'gaussian nb',
                         'knn':                'knn classifier',
-                        'knn classifier':     'knn classifier',
                         'knn gs':             'knn classifier gs',
-                        'knn classifier gs':  'knn classifier gs',
                         'dt':                 'dt classifier',
-                        'dt classifier':      'dt classifier',
                         'dt gs':              'dt classifier gs',
-                        'dt classifier gs':   'dt classifier gs',
-                        'rf':                 'rf classifier',
-                        'rf classifier':      'rf classifier',
-                        'rf rs':              'rf classifier rs',
-                        'rf classifier rs':   'rf classifier rs',
-                        'lgbm classifier':    'lgbm classifier',
-                        'lgbm classifier rs': 'lgbm classifier rs'
+                        'random forest':      'random forest classifier',
+                        'random forest cal':  'random forest classifier cal',
+                        'random forest rs':   'random forest classifier rs',
+                        'light gbm':          'light gbm classifier',
+                        'light gbm rs':       'light gbm classifier rs'
                 }
         }
 }
@@ -110,9 +87,11 @@ AVALIABLE = {
 # where each entry has a saved model and default params.
 MODELS = {
     'logistic': (LogisticRegression, {'solver': 'lbfgs',
-                                      'max_iter': 5000}),
+                                      'max_iter': 5000,
+                                      'multi_class': 'auto'}),
 
-    'logistic cv': (LogisticRegressionCV, {'max_iter': 5000}),
+    'logistic cv': (LogisticRegressionCV, {'max_iter': 5000,
+                                           'multi_class': 'auto'}),
 
     'gaussian nb': (GaussianNB, {}),
 
@@ -144,32 +123,37 @@ MODELS = {
 
     'ridge cv': (RidgeCV, {}),
 
-    'rf regressor': (RandomForestRegressor, {'n_estimators': 100}),
+    'random forest regressor': (RandomForestRegressor, {'n_estimators': 100}),
 
-    'rf regressor rs': (RandomizedSearchCV, {'estimator': 'rf regressor',
-                                             'param_distributions':
-                                             DG.RF_GRID1,
-                                             'iid': False}),
+    'random forest regressor rs': (RandomizedSearchCV,
+                                   {'estimator': 'random forest regressor',
+                                    'param_distributions': DG.RF_GRID1,
+                                    'iid': False}),
 
-    'rf classifier': (RandomForestClassifier, {'n_estimators': 100}),
+    'random forest classifier': (RandomForestClassifier,
+                                 {'n_estimators': 100}),
 
-    'rf classifier rs': (RandomizedSearchCV, {'estimator': 'rf classifier',
-                                              'param_distributions':
-                                              DG.RF_GRID1,
-                                              'iid': False}),
+    'random forest classifier cal': (CalibratedClassifierCV,
+                                     {'base_estimator':
+                                      'random forest classifier'}),
 
-    'lgbm regressor': (LGBMRegressor, {'silent': True}),
+    'random forest classifier rs': (RandomizedSearchCV,
+                                    {'estimator': 'random forest classifier',
+                                     'param_distributions': DG.RF_GRID1,
+                                     'iid': False}),
 
-    'lgbm regressor rs': (RandomizedSearchCV, {'estimator':
-                                               'lightgbm regressor',
-                                               'param_distributions':
-                                               DG.LIGHT_GRID1,
-                                               'iid': False}),
+    'light gbm regressor': (LGBMRegressor, {'silent': True}),
 
-    'lgbm classifier': (LGBMClassifier, {'silent': True}),
+    'light gbm regressor rs': (RandomizedSearchCV, {'estimator':
+                                                    'light gbm regressor',
+                                                    'param_distributions':
+                                                    DG.LIGHT_GRID1,
+                                                    'iid': False}),
 
-    'lgbm classifier rs': (RandomizedSearchCV, {'estimator':
-                                                'lgbm classifier',
+    'light gbm classifier': (LGBMClassifier, {'silent': True}),
+
+    'light gbm classifier rs': (RandomizedSearchCV, {'estimator':
+                                                'light gbm classifier',
                                                 'param_distributions':
                                                 DG.LIGHT_GRID1,
                                                 'iid': False}),

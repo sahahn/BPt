@@ -219,7 +219,7 @@ class CV():
             splitter = MS.StratifiedKFold(n_splits=n_splits,
                                           shuffle=True,
                                           random_state=random_state)
-            [*inds] = splitter.split(subjects, y=stratify.loc[subjects])
+            [*inds] = splitter.split(subjects, y=self.stratify.loc[subjects])
 
         # If no groups or stratify, just use random k-fold
         else:

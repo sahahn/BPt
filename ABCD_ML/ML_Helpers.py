@@ -117,6 +117,55 @@ def proc_str_input(in_str):
     in_str = in_str.replace('_', ' ')
     in_str = in_str.lower()
 
+    chunk_replace_dict = {' regressor': '',
+                          ' classifier': '',
+                          ' classifer': ''}
+
+    for chunk in chunk_replace_dict:
+        in_str = in_str.replace(chunk, chunk_replace_dict[chunk])
+
+    # This is a dict of of values to replace, if the str ends with that value
+    endwith_replace_dict = {' score': '',
+                            ' loss': '',
+                            ' corrcoef': '',
+                            ' ap': ' average precision',
+                            ' jac': ' jaccard',
+                            ' iou': ' jaccard',
+                            ' intersection over union': 'jaccard',
+                            }
+
+    for chunk in endwith_replace_dict:
+        if in_str.endswith(chunk):
+            in_str = in_str.replace(chunk, endwith_replace_dict[chunk])
+
+    startwith_replace_dict = {'rf ': 'random forest ',
+                              'lgbm ': 'light gbm ',
+                              }
+
+    for chunk in startwith_replace_dict:
+        if in_str.startswith(chunk):
+            in_str = in_str.replace(chunk, startwith_replace_dict[chunk])
+
+    # This is a dict where if the input is exactly one
+    # of the keys, the value will be replaced.
+    replace_dict = {'acc': 'accuarcy',
+                    'bas': 'balanced accuracy',
+                    'ap': 'average precision',
+                    'jac': 'jaccard',
+                    'iou': 'jaccard',
+                    'intersection over union': 'jaccard',
+                    'mse': 'mean squared error',
+                    'ev': 'explained variance',
+                    'mae': 'mean absolute error',
+                    'msle': 'mean squared log error',
+                    'med ae': 'median absolute error',
+                    'rf': 'random forest',
+                    'lgbm': 'light gbm',
+                    }
+
+    if in_str in replace_dict:
+        in_str = replace_dict[in_str]
+
     return in_str
 
 

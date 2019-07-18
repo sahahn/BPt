@@ -64,6 +64,7 @@ def proc_str_input(in_str):
 
     in_str = in_str.replace('_', ' ')
     in_str = in_str.lower()
+    in_str = in_str.rstrip()
 
     chunk_replace_dict = {' regressor': '',
                           ' classifier': '',
@@ -135,3 +136,28 @@ def get_model_possible_params(model):
     '''
     pos_params = dict(inspect.getmembers(model.__init__.__code__))
     return pos_params['co_varnames']
+
+
+def get_avaliable_by_type(AVALIABLE):
+
+    avaliable_by_type = {}
+
+    for pt in AVALIABLE:
+
+            avaliable_by_type[pt] = set()
+
+            if pt == 'categorical':
+                    for st in AVALIABLE[pt]:
+                            for select in AVALIABLE[pt][st]:
+                                    avaliable_by_type[pt].add(st + ' ' +
+                                                              AVALIABLE[pt]
+                                                              [st][select])
+
+            else:
+                    for select in AVALIABLE[pt]:
+                            avaliable_by_type[pt].add(AVALIABLE[pt][select])
+
+            avaliable_by_type[pt] = list(avaliable_by_type[pt])
+            avaliable_by_type[pt].sort()
+
+    return avaliable_by_type

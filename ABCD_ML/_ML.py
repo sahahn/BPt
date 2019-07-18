@@ -47,9 +47,11 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         metric for the problem type.
         (default = 'default')
 
-    data_scaler : str, optional
+    data_scaler : str, list or None optional
         `data_scaler` refers to the type of scaling to apply
-        to the saved data during model evaluation.
+        to the saved data (just data, not covars) during model evaluation.
+        If a list is passed, then scalers will be applied in that order.
+        If None, then no scaling will be applied.
         If 'default', and not already defined, set to 'standard'
         For a full list of supported options call:
         self.show_data_scalers()
@@ -233,9 +235,9 @@ def set_default_ML_params(self, problem_type='default', metric='default',
     self._print()
 
 
-def Evaluate(self, model_type, problem_type='default', data_scaler='default',
-             n_splits='default', n_repeats='default', int_cv='default',
-             metric='default', class_weight='default', n_jobs='default',
+def Evaluate(self, model_type, problem_type='default', metric='default',
+             data_scaler='default', n_splits='default', n_repeats='default',
+             int_cv='default', class_weight='default', n_jobs='default',
              n_iter='default', random_state='default', extra_params='default'):
 
     '''Class method to be called during the model selection phase.
@@ -260,9 +262,25 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
 
         (default = 'default')
 
-    data_scaler : str, optional
+    metric : str or list, optional
+        Indicator for which metric(s) to use for calculating
+        score and during model parameter selection.
+        If `metric` left as 'default', then the default metric/scorer
+        for that problem types will be used.
+        'regression'  : 'r2',
+        'binary'      : 'roc',
+        'categorical' : 'weighted roc auc'
+        Note, some metrics are only avaliable for certain problem types.
+        For a full list of supported metrics call:
+        self.show_metrics, with optional problem type parameter.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    data_scaler : str, list or None optional
         `data_scaler` refers to the type of scaling to apply
-        to the saved data during model evaluation.
+        to the saved data (just data, not covars) during model evaluation.
+        If a list is passed, then scalers will be applied in that order.
+        If None, then no scaling will be applied.
         If 'default', use the saved value within self.default_ML_params.
         For a full list of supported options call:
         self.show_data_scalers()
@@ -290,20 +308,6 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
         model k-fold parameter selection, if the chosen model requires
         parameter selection. A value greater
         then 2 must be passed.
-        If 'default', use the saved value within self.default_ML_params.
-        (default = 'default')
-
-    metric : str or list, optional
-        Indicator for which metric(s) to use for calculating
-        score and during model parameter selection.
-        If `metric` left as 'default', then the default metric/scorer
-        for that problem types will be used.
-        'regression'  : 'r2',
-        'binary'      : 'roc',
-        'categorical' : 'weighted roc auc'
-        Note, some metrics are only avaliable for certain problem types.
-        For a full list of supported metrics call:
-        self.show_metrics, with optional problem type parameter.
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
@@ -418,8 +422,8 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
 
 
 def Test(self, model_type, problem_type='default', train_subjects=None,
-         test_subjects=None, data_scaler='default', int_cv='default',
-         metric='default', class_weight='default', n_jobs='default',
+         test_subjects=None, metric='default', data_scaler='default',
+         int_cv='default', class_weight='default', n_jobs='default',
          n_iter='default', random_state='default', return_model=False,
          extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
@@ -454,22 +458,6 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         valid subjects should be passed.
         (default = None)
 
-    data_scaler : str, optional
-        `data_scaler` refers to the type of scaling to apply
-        to the saved data during model evaluation.
-        If 'default', use the saved value within self.default_ML_params.
-        For a full list of supported options call:
-        self.show_data_scalers()
-        (default = 'default')
-
-    int_cv : int or 'default', optional
-        The number of internal folds to use during
-        model k-fold parameter selection, if the chosen model requires
-        parameter selection. A value greater
-        then 2 must be passed.
-        If 'default', use the saved value within self.default_ML_params.
-        (default = 'default')
-
     metric : str or list, optional
         Indicator for which metric(s) to use for calculating
         score and during model parameter selection.
@@ -481,6 +469,24 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         Note, some metrics are only avaliable for certain problem types.
         For a full list of supported metrics call:
         self.show_metrics, with optional problem type parameter.
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    data_scaler : str, list or None optional
+        `data_scaler` refers to the type of scaling to apply
+        to the saved data (just data, not covars) during model evaluation.
+        If a list is passed, then scalers will be applied in that order.
+        If None, then no scaling will be applied.
+        If 'default', use the saved value within self.default_ML_params.
+        For a full list of supported options call:
+        self.show_data_scalers()
+        (default = 'default')
+
+    int_cv : int or 'default', optional
+        The number of internal folds to use during
+        model k-fold parameter selection, if the chosen model requires
+        parameter selection. A value greater
+        then 2 must be passed.
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
@@ -573,7 +579,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
     # Optionally return the model object itself
     if return_model:
         return scores, self.Model.model
-    
+
     return scores
 
 

@@ -252,7 +252,7 @@ class ABCD_ML():
             targets = self.targets[self.original_targets_key]
 
             # Then remove.
-            self.targets.drop(self.original_targets_key, axis=1)
+            self.targets = self.targets.drop(self.original_targets_key, axis=1)
 
         else:
             targets = self.targets[self.original_targets_key]
@@ -322,19 +322,9 @@ class ABCD_ML():
                              _init_model)
 
     from ABCD_ML.Models import show_model_types
-
+    from ABCD_ML.Scoring import show_metrics
+    
     def show_data_scalers(self):
         '''Print out the avaliable data scalers'''
         pass
 
-    def show_metrics(self, problem_type=None):
-        '''Print out the avaliable metrics/scorers,
-        optionally resitricted by problem type
-
-        Parameters
-        ----------
-        problem_type : {binary, categorical, regression, None}, optional
-            Where `problem_type` is the underlying ML problem
-            (default = None)
-        '''
-        pass

@@ -5,7 +5,8 @@ This file contains the different models avaliable for training,
 with additional information on which work with which problem types
 and default params.
 """
-import ABCD_ML.Default_Grids as DG
+from ABCD_ML.Default_Grids import get
+from ABCD_ML.ML_Helpers import get_avaliable_by_type
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -41,7 +42,7 @@ AVALIABLE = {
                         'light gbm':          'light gbm classifier',
                         'light gbm rs':       'light gbm classifier rs',
                         'svm':                'svm classifier',
-                        'svm gs':             'svm classifier gs',
+                        'svm rs':             'svm classifier rs',
         },
         'regression': {
                         'linear':             'linear regressor',
@@ -57,7 +58,7 @@ AVALIABLE = {
                         'gp':                 'gp regressor',
                         'light gbm':          'light gbm regressor',
                         'svm':                'svm regressor',
-                        'svm gs':             'svm regressor gs',
+                        'svm rs':             'svm regressor rs',
         },
         'categorical': {
                 'multilabel': {
@@ -84,7 +85,7 @@ AVALIABLE = {
                         'light gbm':          'light gbm classifier',
                         'light gbm rs':       'light gbm classifier rs',
                         'svm':                'svm classifier',
-                        'svm gs':             'svm classifier gs',
+                        'svm rs':             'svm classifier rs',
                 }
         }
 }
@@ -104,19 +105,22 @@ MODELS = {
     'knn classifier': (KNeighborsClassifier, {'n_jobs': 'n_jobs'}),
 
     'knn classifier gs': (GridSearchCV, {'estimator': 'knn classifier',
-                                         'param_grid': DG.KNN1,
+                                         'param_grid':
+                                         get('KNN1', 'knn classifier'),
                                          'iid': False}),
 
     'knn regressor': (KNeighborsRegressor, {}),
 
     'knn regressor gs': (GridSearchCV, {'estimator': 'knn regressor',
-                                        'param_grid': DG.KNN1,
+                                        'param_grid':
+                                        get('KNN1', 'knn regressor'),
                                         'iid': False}),
 
     'dt classifier': (DecisionTreeClassifier, {}),
 
     'dt classifier gs': (GridSearchCV, {'estimator': 'dt classifier',
-                                        'param_grid': DG.DTC1,
+                                        'param_grid':
+                                        get('DTC1', 'dt classifier'),
                                         'iid': False}),
 
     'linear regressor': (LinearRegression, {'fit_intercept': True}),
@@ -133,7 +137,8 @@ MODELS = {
 
     'random forest regressor rs': (RandomizedSearchCV,
                                    {'estimator': 'random forest regressor',
-                                    'param_distributions': DG.RF1,
+                                    'param_distributions':
+                                    get('RF1', 'random forest regressor'),
                                     'iid': False}),
 
     'random forest classifier': (RandomForestClassifier,
@@ -145,24 +150,25 @@ MODELS = {
 
     'random forest classifier rs': (RandomizedSearchCV,
                                     {'estimator': 'random forest classifier',
-                                     'param_distributions': DG.RF1,
+                                     'param_distributions':
+                                     get('RF1', 'random forest classifier'),
                                      'iid': False}),
 
     'light gbm regressor': (LGBMRegressor, {'silent': True}),
 
-    'light gbm regressor rs': (RandomizedSearchCV, {'estimator':
-                                                    'light gbm regressor',
-                                                    'param_distributions':
-                                                    DG.LIGHT1,
-                                                    'iid': False}),
+    'light gbm regressor rs': (RandomizedSearchCV,
+                               {'estimator': 'light gbm regressor',
+                                'param_distributions':
+                                get('LIGHT1', 'light gbm regressor'),
+                                'iid': False}),
 
     'light gbm classifier': (LGBMClassifier, {'silent': True}),
 
-    'light gbm classifier rs': (RandomizedSearchCV, {'estimator':
-                                                     'light gbm classifier',
-                                                     'param_distributions':
-                                                     DG.LIGHT1,
-                                                     'iid': False}),
+    'light gbm classifier rs': (RandomizedSearchCV,
+                                {'estimator': 'light gbm classifier',
+                                 'param_distributions':
+                                 get('LIGHT1', 'light gbm classifier'),
+                                 'iid': False}),
 
     'gp regressor': (GaussianProcessRegressor, {'n_restarts_optimizer': 5,
                                                 'normalize_y': True}),
@@ -172,19 +178,21 @@ MODELS = {
     'svm regressor rs': (RandomizedSearchCV, {'estimator':
                                               'svm regressor',
                                               'param_distributions':
-                                              DG.SVM1, 'iid': False}),
+                                              get('SVM1', 'svm regressor'),
+                                              'iid': False}),
 
     'svm classifier': (SVC, {'kernel': 'rbf'}),
 
     'svm classifier rs': (RandomizedSearchCV, {'estimator':
                                                'svm classifier',
                                                'param_distributions':
-                                               DG.SVM1, 'iid': False}),
+                                               get('SVM1', 'svm classifier'),
+                                               'iid': False}),
     }
 
 
 def show_model_types(self, problem_type=None, show_model_help=False,
-                     show_default_params=False, show__params=False):
+                     show_default_params=False, show_grid_params=False):
         '''Print out the avaliable machine learning models,
         optionally restricted by problem type + other diagnostic args.
 
@@ -217,7 +225,7 @@ def show_model_types(self, problem_type=None, show_model_help=False,
               'tuned accordingly.')
         print()
 
-        avaliable_by_type = get_avaliable_by_type()
+        avaliable_by_type = get_avaliable_by_type(AVALIABLE)
 
         if problem_type is None:
                 for pt in avaliable_by_type:
@@ -226,31 +234,6 @@ def show_model_types(self, problem_type=None, show_model_help=False,
         else:
                 show_type(problem_type, avaliable_by_type, show_model_help,
                           show_default_params, show_grid_params)
-
-
-def get_avaliable_by_type():
-
-        avaliable_by_type = {}
-
-        for pt in AVALIABLE:
-
-                avaliable_by_type[pt] = set()
-
-                if pt == 'categorical':
-                        for st in AVALIABLE[pt]:
-                                for model in AVALIABLE[pt][st]:
-                                        avaliable_by_type[pt].add(st + ' ' +
-                                                                  AVALIABLE[pt]
-                                                                  [st][model])
-
-                else:
-                        for model in AVALIABLE[pt]:
-                                avaliable_by_type[pt].add(AVALIABLE[pt][model])
-
-                avaliable_by_type[pt] = list(avaliable_by_type[pt])
-                avaliable_by_type[pt].sort()
-
-        return avaliable_by_type
 
 
 def show_type(problem_type, avaliable_by_type, show_model_help,

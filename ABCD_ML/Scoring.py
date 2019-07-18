@@ -4,6 +4,7 @@ File with functions related to calculating score from ML models
 import numpy as np
 import sklearn.metrics as M
 from sklearn.preprocessing import label_binarize
+from ABCD_ML.ML_Helpers import get_avaliable_by_type
 
 
 def roc_auc_score_wrapper(y_true, y_score, average='macro', sample_weight=None,
@@ -23,7 +24,6 @@ def f1_score_wrapper(y_true, y_pred, labels=None, pos_label=1,
     '''Wrapper around sklearn f1_score to support multilabel'''
 
     y_pred = mutlilabel_compat(y_pred)
-
     return M.f1_score(y_true, y_pred, labels, pos_label, average)
 
 
@@ -54,8 +54,11 @@ def log_loss_wrapper(y_true, y_pred, eps=1e-15, normalize=True,
 
 
 def ap_score_wrapper(y_true, y_score, average="macro", pos_label=1,
-                     sample_weight=None):
+                     sample_weight=None, multiclass=False):
     '''Wrapper around sklearn average_precision score to support multilabel'''
+
+    if multiclass:
+        y_true = binarize(y_true)
 
     y_score = mutlilabel_compat(y_score)
     return M.average_precision_score(y_true, y_score, average, pos_label,
@@ -152,6 +155,14 @@ AVALIABLE = {
                         'samples roc auc': 'multiclass samples roc auc',
                         'balanced accuracy': 'balanced accuracy',
                         'accuracy': 'accuracy',
+                        'macro average precision':
+                        'multiclass macro average precision',
+                        'micro average precision':
+                        'multiclass micro average precision',
+                        'weighted average precision':
+                        'multiclass weighted average precision',
+                        'samples average precision':
+                        'multiclass samples average precision',
                         'log': 'log',
                         'hamming': 'hamming',
                         'weighted f1': 'weighted f1',
@@ -294,6 +305,30 @@ SCORERS = {
                                   'greater_is_better': True,
                                   'needs_proba': True, 'average': 'samples'},
 
+    'multiclass macro average precision': {'score_func': ap_score_wrapper,
+                                           'greater_is_better': True,
+                                           'needs_proba': True,
+                                           'average': 'macro',
+                                           'multiclass': True},
+
+    'multiclass micro average precision': {'score_func': ap_score_wrapper,
+                                           'greater_is_better': True,
+                                           'needs_proba': True,
+                                           'average': 'micro',
+                                           'multiclass': True},
+
+    'multiclass weighted average precision': {'score_func': ap_score_wrapper,
+                                              'greater_is_better': True,
+                                              'needs_proba': True,
+                                              'average': 'weighted',
+                                              'multiclass': True},
+
+    'multiclass samples average precision': {'score_func': ap_score_wrapper,
+                                             'greater_is_better': True,
+                                             'needs_proba': True,
+                                             'average': 'samples',
+                                             'multiclass': True},
+
     'brier': {'score_func': M.brier_score_loss,
               'greater_is_better': False,
               'needs_proba': True},
@@ -328,3 +363,60 @@ def get_scorer(scorer_str):
     scorer_params = SCORERS[scorer_str]
     scorer = M.make_scorer(**scorer_params)
     return scorer
+
+
+def show_metrics(self, problem_type=None):
+    '''Print out the avaliable metrics,
+    optionally restricted by problem type
+
+    Parameters
+    ----------
+    problem_type : {binary, categorical, regression, None}, optional
+        Where `problem_type` is the underlying ML problem
+        (default = None)
+    '''
+    print('Visit: ')
+    print('https://scikit-learn.org/stable/modules/model_evaluation.html')
+    print('For more detailed information on a given metric.')
+    print('Note:')
+    print('(MultiClass) or (MultiLabel) are not part of the metric',
+          'str indicator.')
+
+    avaliable_by_type = get_avaliable_by_type(AVALIABLE)
+
+    if problem_type is None:
+        for pt in avaliable_by_type:
+            show_type(pt, avaliable_by_type)
+    else:
+        show_type(problem_type, avaliable_by_type)
+
+
+def show_type(problem_type, avaliable_by_type):
+
+        print('Problem Type:', problem_type)
+        print('----------------------')
+        print('Avaliable metrics: ')
+        print()
+
+        for metric in avaliable_by_type[problem_type]:
+
+            multilabel, multiclass = False, False
+
+            if 'multilabel ' in metric:
+                multilabel = True
+            elif 'multiclass ' in metric:
+                multiclass = True
+
+            metric = metric.replace('multilabel ', '')
+            metric = metric.replace('multiclass ', '')
+
+            print(metric, end='')
+
+            if multilabel:
+                print('  (MultiLabel)')
+            elif multiclass:
+                print('  (MultiClass)')
+            else:
+                print()
+
+        print()

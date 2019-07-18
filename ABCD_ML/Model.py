@@ -114,7 +114,7 @@ class Model():
 
         # Default params just sets (sub)problem type for now
         self._set_default_params()
-        self.col_data_scalers = None
+        self.col_data_scalers = []
 
         # Process model_types, scorers and scalers from str indicator input
         self._process_model_types()
@@ -249,7 +249,8 @@ class Model():
             self._update_extra_params(self.data_scalers, conv_scaler_strs)
 
             # Set data scalers to list of (name, scaler) tuples.
-            self.data_scalers = [(name, get_data_scaler(name))
+            self.data_scalers = [(name,
+                                  get_data_scaler(name, self.extra_params))
                                  for name in conv_scaler_strs]
 
     def Evaluate_Model(self, data, train_subjects):
@@ -334,7 +335,12 @@ class Model():
     def _set_col_data_scalers(self, data):
         '''Convert the data scaler to column specific data scalers,
         based on the numerical index of the data keys within data.
-        Save that to self.col_data_scalers
+        Save that to self.col_data_scalers.
+
+        Parameters
+        ----------
+        data : pandas DataFrame
+            ABCD ML formatted, the data to base the column indices from.
         '''
 
         # Grab the numerical indices for the data-only keys
@@ -370,38 +376,6 @@ class Model():
                      for k in self.data_keys]
 
         return data_inds
-
-    def _scale_data(self, train_data, test_data):
-        '''Wrapper function to take in train/test data,
-        and if not None, fit + transform a data scaler on the train data,
-        and then transform the test data.
-
-        Parameters
-        ----------
-        train_data : pandas DataFrame
-            ABCD_ML formatted df, with the subset of training data only
-
-        test_data : pandas DataFrame
-            ABCD_ML formatted df, with the subset of testing data only
-
-        Returns
-        ----------
-        pandas DataFrame
-            ABCD_ML formatted, the scaled training data
-
-        pandas DataFrame
-            ABCD_ML formatted, the scaled testing data
-        '''
-
-        if self.data_scaler is not None:
-
-            train_data[self.data_keys] = \
-                self.data_scaler.fit_transform(train_data[self.data_keys])
-
-            test_data[self.data_keys] = \
-                self.data_scaler.transform(test_data[self.data_keys])
-
-        return train_data, test_data
 
     def _train_models(self, train_data):
         '''Given training data, train the model(s), from the
@@ -516,7 +490,7 @@ class Model():
         # is the base model. In that case, we set the model to be a Pipeline
         # object with the proceeding data scalers, as this should be applied
         # on the base estimator.
-        if estimator is None and self.col_data_scalers is not None:
+        if estimator is None:
             model = self._make_model_pipeline(model, model_type)
 
         return model
@@ -582,7 +556,24 @@ class Model():
     def _make_model_pipeline(self, model, model_type):
         '''Provided a model & model type (model str indicator),
         return a sklearn pipeline with proceeding self.col_data_scalers,
-        and then the model.'''
+        and then the model.
+
+        Parameters
+        ----------
+        model : sklearn api model
+            The base model, w/ parameters already provided
+
+        model_type : str
+            The final str indicator for this model, also
+            the name that the model will be saved under within
+            the Pipeline object.
+
+        Returns
+        ----------
+        sklearn Pipeline
+            Pipeline object with all relevant column specific data
+            scalers, and then the passed in model.
+        '''
 
         steps = self.col_data_scalers + [(model_type, model)]
         model_pipeline = Pipeline(steps)

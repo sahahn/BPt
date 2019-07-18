@@ -114,6 +114,7 @@ class Model():
 
         # Default params just sets (sub)problem type for now
         self._set_default_params()
+        self.col_data_scalers = None
 
         # Process model_types, scorers and scalers from str indicator input
         self._process_model_types()
@@ -237,17 +238,19 @@ class Model():
         '''Processes self.data_scaler to be a list of
         (name, scaler) tuples.'''
 
-        # If not a list of data scalers, convert to list
-        if not isinstance(self.data_scalers, list):
-            self.data_scalers = [self.data_scalers]
+        if self.data_scalers is not None:
 
-        # Get converted scaler str and update extra params
-        conv_scaler_strs = proc_input(self.data_scalers)
-        self._update_extra_params(self.data_scalers, conv_scaler_strs)
+            # If not a list of data scalers, convert to list
+            if not isinstance(self.data_scalers, list):
+                self.data_scalers = [self.data_scalers]
 
-        # Set data scalers to list of (name, scaler) tuples.
-        self.data_scalers = [(name, get_data_scaler(name))
-                             for name in conv_scaler_strs]
+            # Get converted scaler str and update extra params
+            conv_scaler_strs = proc_input(self.data_scalers)
+            self._update_extra_params(self.data_scalers, conv_scaler_strs)
+
+            # Set data scalers to list of (name, scaler) tuples.
+            self.data_scalers = [(name, get_data_scaler(name))
+                                 for name in conv_scaler_strs]
 
     def Evaluate_Model(self, data, train_subjects):
         '''Method to perform a full repeated k-fold evaluation
@@ -318,7 +321,8 @@ class Model():
         test_data = data.loc[test_subjects]
 
         # Set column specific data scalers
-        self._set_col_data_scalers(train_data)
+        if self.data_scalers is not None:
+            self._set_col_data_scalers(train_data)
 
         # Train the model(s)
         self._train_models(train_data)
@@ -512,7 +516,7 @@ class Model():
         # is the base model. In that case, we set the model to be a Pipeline
         # object with the proceeding data scalers, as this should be applied
         # on the base estimator.
-        if estimator is None:
+        if estimator is None and self.col_data_scalers is not None:
             model = self._make_model_pipeline(model, model_type)
 
         return model

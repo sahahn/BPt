@@ -15,6 +15,7 @@ from ABCD_ML.Data_Helpers import (process_binary_input,
 
 def load_name_map(self,
                   loc,
+                  dataset_type='default',
                   source_name_col="NDAR name",
                   target_name_col="REDCap name/NDA alias"):
     '''Loads a mapping dictionary for loading column names
@@ -23,6 +24,20 @@ def load_name_map(self,
     ----------
     loc : str, Path or None
         The location of the csv file which contains the mapping.
+
+    dataset_type : {'default', 'explorer', 'custom'}, optional
+        The type of file to load from.
+        Dataset types are,
+
+        - 'default' : ABCD2p0NDA style, (.txt and tab seperated)
+
+        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
+
+        - 'custom' : A user-defined custom dataset. Right now this is only
+            supported as a comma seperated file, with the subject names in a
+            column called 'src_subject_id'.
+
+        (default = 'default')
 
     source_name_col : str, optional
         The column name with the file which lists names to be changed.
@@ -33,18 +48,26 @@ def load_name_map(self,
         (default = "REDCap name/NDA alias")
     '''
 
-    mapping = pd.read_csv(loc)
+    if dataset_type == 'default':
+        mapping = pd.read_csv(loc, sep='\t', skiprows=[1],
+                              na_values=self.default_na_values)
+
+    # Same loading for explorer and custom, just comma seperated
+    else:
+        mapping = pd.read_csv(loc)
 
     try:
         self.name_map = dict(zip(mapping[source_name_col],
                                  mapping[target_name_col]))
+        self._print('Loaded map file')
+
     except KeyError:
         print('Error: One or both provided column names do not exist!')
+        print('Name map not loaded!')
 
-    self._print('Loaded map file')
 
 
-def load_data(self, loc, dataset_type, drop_keys=[],
+def load_data(self, loc, dataset_type='default', drop_keys=[],
               filter_outlier_percent=None, winsorize_val=None):
     """Load a ABCD2p0NDA (default) or 2.0_ABCD_Data_Explorer (explorer)
     release formatted neuroimaging dataset - of derived ROI level info.
@@ -74,7 +97,7 @@ def load_data(self, loc, dataset_type, drop_keys=[],
             (typically the default columns, and therefore not neuroimaging
             data - also not including the eventname column), will be dropped.
 
-        - 'explorer' : 2.0_ABCD_Data_Explorer tyle (.csv and comma seperated)
+        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
             The first 2 columns before 'src_subject_id'
             (typically the default columns, and therefore not neuroimaging
             data - also not including the eventname column), will be dropped.

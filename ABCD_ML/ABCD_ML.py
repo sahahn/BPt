@@ -324,5 +324,3 @@ class ABCD_ML():
     from ABCD_ML.Models import show_model_types
     from ABCD_ML.Scorers import show_metrics
     from ABCD_ML.Scalers import show_data_scalers
-    
-    

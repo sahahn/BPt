@@ -196,7 +196,8 @@ class Model():
 
         for i in range(len(orig_strs)):
             if orig_strs[i] in self.extra_params:
-                self.extra_params[conv_strs[i]] = self.extra_params[orig_strs[i]]
+                self.extra_params[conv_strs[i]] =\
+                    self.extra_params[orig_strs[i]]
 
     def _get_avaliable_scorers(self):
         '''Get the avaliable scorers by problem type.
@@ -467,7 +468,7 @@ class Model():
 
         # Set estimator,
         if base_model_type is not None:
-            estimator = self._get_model(base_model_type, base_int_cv)                
+            estimator = self._get_model(base_model_type, base_int_cv)
 
         # Grab the right model and params
         model = MODELS[model_type][0]

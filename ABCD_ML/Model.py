@@ -1,10 +1,15 @@
 import numpy as np
-from ABCD_ML.ML_Helpers import (get_scaler, proc_input,
-                                get_model_possible_params)
+
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from ABCD_ML.Ensemble_Model import Ensemble_Model
+
+from ABCD_ML.Scoring import get_scorer
+from ABCD_ML.Scalers import get_data_scaler
+from ABCD_ML.ML_Helpers import proc_input, get_model_possible_params
+
 from ABCD_ML.Models import AVALIABLE, MODELS
 from ABCD_ML.Scoring import AVALIABLE as AVALIABLE_SCORERS
-from ABCD_ML.Scoring import get_scorer
-from ABCD_ML.Ensemble_Model import Ensemble_Model
 
 
 class Model():
@@ -30,11 +35,12 @@ class Model():
             (See the docstring for ABCD_ML.set_default_ML_params for a more
             detailed description of all parameters contained within ML_params)
 
-            - metrics : str or list of str,
-                Metric / scorer str indicator, or list of. The first one is
-                used for choosing a model.
-            - data_scaler : str or None
-                str indicator for what type of data scaling to use if any.
+            - metrics : str or list,
+                Metric / scorer str indicator, or list of. If list, the
+                metric in the first index will be used during model selection.
+            - data_scalers : str, list or None
+                str indicator (or list of) for what type of data scaling
+                to use if any. If list, data will scaled in list order.
             - n_splits : int
                 The number of folds to use during the Evaluate_Model repeated
                 k-fold.
@@ -77,6 +83,13 @@ class Model():
 
         verbose : bool
             If set to true will display extra diagnostic / print output.
+
+        Notes
+        ----------
+        The Model class processes model_type, metric/scorer and data_scaler,
+        as model_types, metrics/scorers and data_scalers (the plural...).
+        This design decision was made to support both single str indicator
+        input for any of these options, or a list of str indicators.
         '''
 
         # Set class parameters
@@ -89,7 +102,7 @@ class Model():
 
         # Un-pack ML_params
         self.metrics = ML_params['metric']
-        self.data_scaler = ML_params['data_scaler']
+        self.data_scalers = ML_params['data_scaler']
         self.n_splits = ML_params['n_splits']
         self.n_repeats = ML_params['n_repeats']
         self.int_cv = ML_params['int_cv']
@@ -99,13 +112,13 @@ class Model():
         self.random_state = ML_params['random_state']
         self.extra_params = ML_params['extra_params']
 
-        # Set problem type info and proc. model_type
+        # Default params just sets (sub)problem type for now
         self._set_default_params()
-        self._process_model_type()
-        self._scorer_from_string()
 
-        # Get the data scaler and scorer
-        self.data_scaler = get_scaler(self.data_scaler, self.extra_params)
+        # Process model_types, scorers and scalers from str indicator input
+        self._process_model_types()
+        self._process_scorers()
+        self._process_data_scalers()
 
     def _print(self, *args):
         '''Overriding the print function to allow for
@@ -124,7 +137,7 @@ class Model():
         '''Overriden by child classes'''
         pass
 
-    def _process_model_type(self):
+    def _process_model_types(self):
         '''Class function to convert input model types to final
         str indicator, based on problem type and common input correction.
         Also handles updating extra params, if applicable.'''
@@ -137,7 +150,7 @@ class Model():
         conv_model_types = self._get_conv_model_types()
 
         # If any extra params passed for the model, change to conv'ed name
-        self._update_extra_params(conv_model_types)
+        self._update_extra_params(self.model_types, conv_model_types)
 
         # Set model type to the conv'ed version
         self.model_types = conv_model_types
@@ -165,23 +178,24 @@ class Model():
                             for m in conv_model_types]
         return conv_model_types
 
-    def _update_extra_params(self, conv_model_types):
+    def _update_extra_params(self, orig_strs, conv_strs):
         '''Helper method to update class extra params in the case
-        that get_conv_model_types changed any input str indicators.
+        where model_types or data_scaler str indicators change,
+        and they were refered to in extra params as the original name.
 
         Parameters
         ----------
-        conv_model_types : list
-            List of final str indicator model_types, indices should
-            correspond to the order os self.model_types, where the str
-            in the same index should represent the converted version.
+        orig_strs : list
+            List of original str indicators.
+
+        conv_strs : list
+            List of final-proccesed str indicators, indices should
+            correspond to the order of orig_strs
         '''
 
-        for m in range(len(conv_model_types)):
-            if self.model_types[m] in self.extra_params:
-
-                self.extra_params[conv_model_types[m]] = \
-                    self.extra_params[self.model_types[m]]
+        for i in range(len(orig_strs)):
+            if orig_strs[i] in self.extra_params:
+                self.extra_params[conv_strs[i]] = self.extra_params[orig_strs[i]]
 
     def _get_avaliable_scorers(self):
         '''Get the avaliable scorers by problem type.
@@ -195,8 +209,10 @@ class Model():
 
         return AVALIABLE_SCORERS[self.problem_type]
 
-    def _scorer_from_string(self):
-        '''Process self.metric and set self.scorer'''
+    def _process_scorers(self):
+        '''Process self.metrics and set self.scorers and self.scorer,
+        as well as save the str processed final scorer_strs for verbose output.
+        '''
 
         # If not a list of metrics, convert to list
         if not isinstance(self.metrics, list):
@@ -216,6 +232,22 @@ class Model():
 
         # Define the scorer to be used in model selection
         self.scorer = self.scorers[0]
+
+    def _process_data_scalers(self):
+        '''Processes self.data_scaler to be a list of
+        (name, scaler) tuples.'''
+
+        # If not a list of data scalers, convert to list
+        if not isinstance(self.data_scalers, list):
+            self.data_scalers = [self.data_scalers]
+
+        # Get converted scaler str and update extra params
+        conv_scaler_strs = proc_input(self.data_scalers)
+        self._update_extra_params(self.data_scalers, conv_scaler_strs)
+
+        # Set data scalers to list of (name, scaler) tuples.
+        self.data_scalers = [(name, get_data_scaler(name))
+                             for name in conv_scaler_strs]
 
     def Evaluate_Model(self, data, train_subjects):
         '''Method to perform a full repeated k-fold evaluation
@@ -285,8 +317,8 @@ class Model():
         train_data = data.loc[train_subjects]
         test_data = data.loc[test_subjects]
 
-        # Scale the data
-        train_data, test_data = self._scale_data(train_data, test_data)
+        # Set column specific data scalers
+        self._set_col_data_scalers(train_data)
 
         # Train the model(s)
         self._train_models(train_data)
@@ -294,6 +326,46 @@ class Model():
         # Get the score on the test set
         scores = self._get_scores(test_data)
         return scores
+
+    def _set_col_data_scalers(self, data):
+        '''Convert the data scaler to column specific data scalers,
+        based on the numerical index of the data keys within data.
+        Save that to self.col_data_scalers
+        '''
+
+        # Grab the numerical indices for the data-only keys
+        data_inds = self._get_data_inds(data)
+
+        # Create a list of tuples (just like self.data_scalers), but
+        # with column versions of the scalers.
+        self.col_data_scalers = [('col_' + name,
+                                 ColumnTransformer([(name, scaler, data_inds)],
+                                                   remainder='passthrough',
+                                                   sparse_threshold=0)
+                                  )
+                                 for name, scaler in self.data_scalers]
+
+    def _get_data_inds(self, data):
+        '''Grabs the numerical column indices for the data keys
+        within data minus targets.
+
+        Parameters
+        ----------
+        data : pandas DataFrame
+            ABCD_ML formatted, assumed to still contain targets
+
+        Returns
+        ----------
+        list
+            The numerical indices for the data keys within data minus
+            targets.
+        '''
+
+        data_without_targets = data.drop(self.targets_key, axis=1)
+        data_inds = [data_without_targets.columns.get_loc(k)
+                     for k in self.data_keys]
+
+        return data_inds
 
     def _scale_data(self, train_data, test_data):
         '''Wrapper function to take in train/test data,
@@ -387,7 +459,7 @@ class Model():
 
         return model
 
-    def _get_model(self, model_type, base_int_cv, base_model=False):
+    def _get_model(self, model_type, base_int_cv):
         '''Get a model object from a given model type, called recursively to
         build any model that has a base model (e.g. Grid Search)
 
@@ -400,11 +472,6 @@ class Model():
         base_int_cv : CV output list of tuples
             The internal cv index output to be passed to a classifier
 
-        base_model : bool, optional
-            Flag to determine if the passed params are for the final model,
-            or if they are for a base_model (the model object within a grid or
-            random search). Set to False if final model, True if base model.
-
         Returns
         ----------
         sklearn api compatible model object
@@ -412,21 +479,17 @@ class Model():
             and ready to be fit.
         '''
 
-        estimator = None
+        estimator, base_model_type = None, None
 
-        # If gs or rs in name (grid or random search)
-        # recursively build the base_model / estimator.
+        # Check for if a base model should be created
         if ' gs' in model_type or ' rs' in model_type:
-
             base_model_type = MODELS[model_type][1]['estimator']
-            estimator = self._get_model(base_model_type, base_int_cv,
-                                        base_model=True)
-
         if ' cal' in model_type:
-
             base_model_type = MODELS[model_type][1]['base_estimator']
-            estimator = self._get_model(base_model_type, base_int_cv,
-                                        base_model=True)
+
+        # Set estimator,
+        if base_model_type is not None:
+            estimator = self._get_model(base_model_type, base_int_cv)                
 
         # Grab the right model and params
         model = MODELS[model_type][0]
@@ -434,8 +497,7 @@ class Model():
 
         model_params = MODELS[model_type][1].copy()
         model_params = self._replace_params(model_params, possible_params,
-                                            base_int_cv, estimator=estimator,
-                                            base_model=base_model)
+                                            base_int_cv, estimator=estimator)
 
         # Check to see if there are any user passed model params to update
         extra_model_params = {}
@@ -445,10 +507,18 @@ class Model():
 
         # Create model
         model = model(**model_params)
+
+        # In the case that estimator is None, that means this model is
+        # is the base model. In that case, we set the model to be a Pipeline
+        # object with the proceeding data scalers, as this should be applied
+        # on the base estimator.
+        if estimator is None:
+            model = self._make_model_pipeline(model, model_type)
+
         return model
 
     def _replace_params(self, params, possible_params, base_int_cv,
-                        estimator=None, base_model=False):
+                        estimator=None):
         '''Helper method to replace default values with provided params,
         with actual values saved within the class.
 
@@ -463,12 +533,10 @@ class Model():
         estimator : model or None, optional
             Either a model object passed to be set for the estimator param
             or None if not applicable.
+            Specifically, if estimator is None, then this is the final model,
+            if has a specific value then it means these are the params for
+            a grid search or calibrated overarching-esque object.
             (default = None)
-
-        base_model : bool, optional
-            Flag to determine if the passed params are for the final model,
-            or if they are for a base_model (the model object within a grid or
-            random search). Set to False if final model, True if base model.
 
         Returns
         ----------
@@ -486,7 +554,7 @@ class Model():
             params['class_weight'] = self.class_weight
 
         if 'n_jobs' in possible_params:
-            if base_model:
+            if estimator is None:
                 params['n_jobs'] = self.n_jobs
             else:
                 params['n_jobs'] = 1
@@ -506,6 +574,16 @@ class Model():
                 params['base_estimator'] = estimator
 
         return params
+
+    def _make_model_pipeline(self, model, model_type):
+        '''Provided a model & model type (model str indicator),
+        return a sklearn pipeline with proceeding self.col_data_scalers,
+        and then the model.'''
+
+        steps = self.col_data_scalers + [(model_type, model)]
+        model_pipeline = Pipeline(steps)
+
+        return model_pipeline
 
     def _get_scores(self, test_data):
         '''Helper method to get the scores of

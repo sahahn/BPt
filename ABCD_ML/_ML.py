@@ -397,6 +397,8 @@ def Evaluate(self, model_type, problem_type='default', data_scaler='default',
 
     # Print out summary stats for all passed metrics
     scorer_strs = self.Model.scorer_strs
+    self._print()
+    
     for i in range(len(scorer_strs)):
         self._print('Metric: ', scorer_strs[i])
 
@@ -562,6 +564,8 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
     # Print out score for all passed metrics
     scorer_strs = self.Model.scorer_strs
+    self._print()
+
     for i in range(len(scorer_strs)):
         self._print('Metric: ', scorer_strs[i])
         self._print('Score: ', scores[i])

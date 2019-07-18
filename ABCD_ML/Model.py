@@ -4,12 +4,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from ABCD_ML.Ensemble_Model import Ensemble_Model
 
-from ABCD_ML.Scoring import get_scorer
+from ABCD_ML.Scorers import get_scorer
 from ABCD_ML.Scalers import get_data_scaler
 from ABCD_ML.ML_Helpers import proc_input, get_model_possible_params
 
 from ABCD_ML.Models import AVALIABLE, MODELS
-from ABCD_ML.Scoring import AVALIABLE as AVALIABLE_SCORERS
+from ABCD_ML.Scorers import AVALIABLE as AVALIABLE_SCORERS
 
 
 class Model():

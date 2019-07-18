@@ -322,9 +322,7 @@ class ABCD_ML():
                              _init_model)
 
     from ABCD_ML.Models import show_model_types
-    from ABCD_ML.Scoring import show_metrics
+    from ABCD_ML.Scorers import show_metrics
+    from ABCD_ML.Scalers import show_data_scalers
     
-    def show_data_scalers(self):
-        '''Print out the avaliable data scalers'''
-        pass
-
+    

@@ -413,10 +413,9 @@ def show_type(problem_type, avaliable_by_type):
             print(metric, end='')
 
             if multilabel:
-                print('  (MultiLabel)')
+                print(' - (MultiLabel)')
             elif multiclass:
-                print('  (MultiClass)')
+                print(' - (MultiClass)')
             else:
                 print()
-
         print()

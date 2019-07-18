@@ -5,6 +5,8 @@ __pycache__/
 
 Examples/*
 
+ABCD_ML/Train_Light_GBM.py
+
 .vscode
 Data/*
 

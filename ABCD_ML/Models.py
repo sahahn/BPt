@@ -191,6 +191,14 @@ MODELS = {
     }
 
 
+def show_models(self, problem_type=None, show_model_help=False,
+                show_default_params=False, show_grid_params=False):
+        '''Just calls show_model_types.'''
+
+        self.show_model_types(problem_type, show_model_help,
+                              show_default_params, show_grid_params)
+
+
 def show_model_types(self, problem_type=None, show_model_help=False,
                      show_default_params=False, show_grid_params=False):
         '''Print out the avaliable machine learning models,

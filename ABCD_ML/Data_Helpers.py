@@ -182,7 +182,7 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
 
         fop = (fop, 1-fop)
 
-    elif fop[0] >= 1:
+    elif fop[0] >= 1 or fop[1] >= 1:
         fop = tuple([f/100 for f in fop])
 
     if in_place:

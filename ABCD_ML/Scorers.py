@@ -365,8 +365,14 @@ def get_scorer(scorer_str):
     return scorer
 
 
+def show_scorers(self, problem_type=None):
+    '''Just calls show_metrics.'''
+
+    self.show_metrics(problem_type)
+
+
 def show_metrics(self, problem_type=None):
-    '''Print out the avaliable metrics,
+    '''Print out the avaliable metrics / scorers,
     optionally restricted by problem type
 
     Parameters
@@ -377,10 +383,13 @@ def show_metrics(self, problem_type=None):
     '''
     print('Visit: ')
     print('https://scikit-learn.org/stable/modules/model_evaluation.html')
-    print('For more detailed information on a given metric.')
-    print('Note:')
-    print('(MultiClass) or (MultiLabel) are not part of the metric',
-          'str indicator.')
+    print('For more detailed information on different metrics.')
+
+    if problem_type is None or problem_type == 'categorical':
+        print('Note:')
+        print('(MultiClass) or (MultiLabel) are not part of the metric',
+              'str indicator.')
+    print()
 
     avaliable_by_type = get_avaliable_by_type(AVALIABLE)
 

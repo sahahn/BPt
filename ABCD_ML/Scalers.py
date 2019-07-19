@@ -58,7 +58,13 @@ def get_data_scaler(scaler_str, extra_params):
     return scaler(**params)
 
 
-def show_data_scalers(self, show_scaler_help, show_default_params):
+def show_scalers(self, show_scaler_help=False, show_default_params=False):
+    '''Just calls show_data_scalers'''
+
+    self.show_data_scalers()
+
+
+def show_data_scalers(self, show_scaler_help=False, show_default_params=False):
     '''Print out the avaliable data scalers.
 
     Parameters

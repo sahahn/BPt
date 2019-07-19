@@ -67,6 +67,7 @@ def proc_str_input(in_str):
     in_str = in_str.rstrip()
 
     chunk_replace_dict = {' regressor': '',
+                          ' regresure': '',
                           ' classifier': '',
                           ' classifer': ''}
 
@@ -80,7 +81,7 @@ def proc_str_input(in_str):
                             ' ap': ' average precision',
                             ' jac': ' jaccard',
                             ' iou': ' jaccard',
-                            ' intersection over union': 'jaccard',
+                            ' intersection over union': ' jaccard',
                             }
 
     for chunk in endwith_replace_dict:
@@ -99,7 +100,7 @@ def proc_str_input(in_str):
 
     # This is a dict where if the input is exactly one
     # of the keys, the value will be replaced.
-    replace_dict = {'acc': 'accuarcy',
+    replace_dict = {'acc': 'accuracy',
                     'bas': 'balanced accuracy',
                     'ap': 'average precision',
                     'jac': 'jaccard',

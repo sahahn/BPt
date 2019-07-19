@@ -91,9 +91,8 @@ def load_data(self, loc, dataset_type='default', drop_keys=[],
             if not set by the user this is 'basic'.
 
         - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
-            The 4 columns before 'src_subject_id' and the 4 after,
-            (typically the default columns, and therefore not neuroimaging
-            data - also not including the eventname column), will be dropped.
+            Typically the default columns, and therefore not neuroimaging
+            data, will be dropped, also not including the eventname column.
 
         - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
             The first 2 columns before 'src_subject_id'
@@ -102,8 +101,9 @@ def load_data(self, loc, dataset_type='default', drop_keys=[],
 
         - 'custom' : A user-defined custom dataset. Right now this is only
             supported as a comma seperated file, with the subject names in a
-            column called 'src_subject_id'. No columns will be dropped,
-            unless specific drop keys are passed.
+            column called 'src_subject_id', and can optionally have
+            'eventname'. No columns will be dropped,
+            (except eventname) or unless specific drop keys are passed.
 
         (default = 'default')
 
@@ -154,6 +154,9 @@ def load_data(self, loc, dataset_type='default', drop_keys=[],
 
     # Drop any columns if any of the drop keys occur in the column name
     column_names = list(data)
+
+    assert isinstance(drop_keys, list), "drop_keys must be list!"
+
     to_drop = [name for name in column_names for drop_key in drop_keys
                if drop_key in name]
     data = data.drop(to_drop, axis=1)
@@ -512,27 +515,27 @@ def clear_name_map(self):
 
 def clear_data(self):
     '''Reset data'''
-    self.data = []
+    self.data = pd.DataFrame()
     self._print('cleared data.')
 
 
 def clear_covars(self):
     '''Reset covars'''
-    self.covars = []
+    self.covars = pd.DataFrame()
     self.covars_encoders = {}
     self._print('cleared covars.')
 
 
 def clear_targets(self):
     '''Reset targets'''
-    self.targets = []
+    self.targets = pd.DataFrame()
     self.targets_encoder = None
     self._print('cleared targets.')
 
 
 def clear_strat(self):
     '''Reset strat'''
-    self.strat = []
+    self.strat = pd.DataFrame()
     self.strat_encoders = {}
     self._print('cleared strat.')
 
@@ -564,9 +567,8 @@ def _load_datasets(self, locs, dataset_types):
             if not set by the user this is 'basic'.
 
         - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
-            The 4 columns before 'src_subject_id' and the 4 after,
-            (typically the default columns, and therefore not neuroimaging
-            data - also not including the eventname column), will be dropped.
+            Typically the default columns, and therefore not neuroimaging
+            data, will be dropped, also not including the eventname column.
 
         - 'explorer' : 2.0_ABCD_Data_Explorer tyle (.csv and comma seperated)
             The first 2 columns before 'src_subject_id'
@@ -597,6 +599,15 @@ def _load_datasets(self, locs, dataset_types):
 
         # Load & Merge
         more_data = self._load_dataset(loc, dataset_type)
+
+        repeat_col_names = set(list(data)).intersection(set(list(more_data)))
+
+        if len(repeat_col_names) > 0:
+            self._print('Warning,', repeat_col_names,
+                        'exist in both dataframes!')
+            self._print('By default repeats will be added as new unique',
+                        'columns within merged data.')
+
         data = pd.merge(data, more_data, on='src_subject_id')
 
     return data
@@ -618,9 +629,8 @@ def _load_dataset(self, loc, dataset_type):
             if not set by the user this is 'basic'.
 
         - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
-            The 4 columns before 'src_subject_id' and the 4 after,
-            (typically the default columns, and therefore not neuroimaging
-            data - also not including the eventname column), will be dropped.
+            Typically the default columns, and therefore not neuroimaging
+            data, will be dropped, also not including the eventname column.
 
         - 'explorer' : 2.0_ABCD_Data_Explorer tyle (.csv and comma seperated)
             The first 2 columns before 'src_subject_id'
@@ -648,7 +658,7 @@ def _load_dataset(self, loc, dataset_type):
     if dataset_type == 'basic' or dataset_type == 'explorer':
 
         if dataset_type == 'basic':
-            non_data_cols = list(data)[:4] + list(data)[5:8] + [list(data)[9]]
+            non_data_cols = list(data)[:4] + list(data)[5:8]
         else:
             non_data_cols = list(data)[:2]
 

@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+cover/*
 Examples/*
 
 ABCD_ML/Train_Light_GBM.py

@@ -29,9 +29,21 @@ AVALIABLE = {
         'binary': {
                         'logistic':           'logistic',
                         'linear':             'logistic',
+                        'lasso':              'lasso logistic',
+                        'lasso logistic':     'lasso logistic',
+                        'lasso rs':           'lasso logistic rs',
+                        'lasso logistic':     'lasso logistic',
+                        'lasso logistic rs':  'lasso logistic rs',
+                        'ridge':              'ridge logistic',
+                        'ridge rs':           'ridge logistic rs',
+                        'ridge logistic':     'ridge logistic',
+                        'ridge logistic rs':  'ridge logistic rs',
+                        'elastic net':        'elastic net logistic',
+                        'elastic net logistic': 'elastic net logistic',
+                        'elastic net rs':     'elastic net logistic rs',
+                        'elastic net logistic rs': 'elastic net logistic rs',
                         'logistic cv':        'logistic cv',
                         'linear cv':          'logistic cv',
-                        'elastic net logistic cv': 'elastic net logistic cv',
                         'gaussian nb':        'gaussian nb',
                         'knn':                'knn classifier',
                         'knn gs':             'knn classifier gs',
@@ -70,70 +82,84 @@ AVALIABLE = {
                         'dt gs':              'dt classifier gs',
                         'random forest':      'random forest classifier',
                         'random forest rs':   'random forest classifier rs',
-                },
-                'multiclass': {
-                        'logistic':           'logistic',
-                        'linear':             'logistic',
-                        'logistic cv':        'logistic cv',
-                        'elastic net logistic cv': 'elastic net logistic cv',
-                        'linear cv':          'logistic cv',
-                        'gaussian nb':        'gaussian nb',
-                        'knn':                'knn classifier',
-                        'knn gs':             'knn classifier gs',
-                        'dt':                 'dt classifier',
-                        'dt gs':              'dt classifier gs',
-                        'random forest':      'random forest classifier',
-                        'random forest cal':  'random forest classifier cal',
-                        'random forest rs':   'random forest classifier rs',
-                        'gp':                 'gp classifier',
-                        'light gbm':          'light gbm classifier',
-                        'light gbm rs':       'light gbm classifier rs',
-                        'svm':                'svm classifier',
-                        'svm rs':             'svm classifier rs',
                 }
         }
 }
 
-# The different models below are contained in a dictionary,
-# where each entry has a saved model and default params.
+AVALIABLE['categorical']['multiclass'] = AVALIABLE['binary'].copy()
+
+
+def get_search_params(grid_name, model_name, gs=False):
+
+        params = {}
+        params['iid'] = False
+        params['estimator'] = model_name
+
+        if gs:
+                params['param_grid'] = get(grid_name, model_name)
+        else:
+                params['param_distributions'] = get(grid_name, model_name)
+
+        return params
+
+
+def get_rs_tuple(grid_name, model_name):
+        return (RandomizedSearchCV, get_search_params(grid_name, model_name,
+                gs=False))
+
+
+def get_gs_tuple(grid_name, model_name):
+        return (GrisSearchCV, get_search_params(grid_name, model_name,
+                gs=True))
+
+
+logistic_params = {'solver': 'saga',
+                   'max_iter': 5000,
+                   'multi_class': 'auto',
+                   'penalty': 'none'}
+
+lasso_params = logistic_params.copy()
+lasso_params['penalty'] = 'l1'
+
+ridge_params = logistic_params.copy()
+ridge_params['penalty'] = 'l2'
+
+elastic_params = logistic_params.copy()
+elastic_params['penalty'] = 'elasticnet'
+elastic_params['l1_ratio'] = .5
+
+
 MODELS = {
-    'logistic': (LogisticRegression, {'solver': 'lbfgs',
-                                      'penalty': 'none',
-                                      'max_iter': 5000,
-                                      'multi_class': 'auto'}),
+    'logistic': (LogisticRegression, logistic_params),
+
+    'lasso logistic': (LogisticRegression, lasso_params),
+
+    'ridge logistic': (LogisticRegression, ridge_params),
+
+    'elastic net logistic': (LogisticRegression, elastic_params),
+
+    'lasso logistic rs': get_rs_tuple('REGRESSION1', 'lasso logistic'),
+
+    'ridge logistic rs': get_rs_tuple('REGRESSION1', 'ridge logistic'),
+
+    'elastic net logistic rs': get_rs_tuple('ELASTIC1', 'elastic net logistic'),
 
     'logistic cv': (LogisticRegressionCV, {'max_iter': 5000,
                                            'multi_class': 'auto'}),
-
-    'elastic net logistic cv': (LogisticRegressionCV, {'max_iter': 5000,
-                                                       'multi_class': 'auto',
-                                                       'penalty': 'elasticnet',
-                                                       'solver': 'saga',
-                                                       'l1_ratios':
-                                                       [.3, .5, .8]}),
 
     'gaussian nb': (GaussianNB, {}),
 
     'knn classifier': (KNeighborsClassifier, {'n_jobs': 'n_jobs'}),
 
-    'knn classifier gs': (GridSearchCV, {'estimator': 'knn classifier',
-                                         'param_grid':
-                                         get('KNN1', 'knn classifier'),
-                                         'iid': False}),
+    'knn classifier gs': get_gs_tuple('KNN1', 'knn classifier')
 
     'knn regressor': (KNeighborsRegressor, {}),
 
-    'knn regressor gs': (GridSearchCV, {'estimator': 'knn regressor',
-                                        'param_grid':
-                                        get('KNN1', 'knn regressor'),
-                                        'iid': False}),
+    'knn regressor gs': get_gs_tuple('KNN1', 'knn regressor')
 
     'dt classifier': (DecisionTreeClassifier, {}),
 
-    'dt classifier gs': (GridSearchCV, {'estimator': 'dt classifier',
-                                        'param_grid':
-                                        get('DTC1', 'dt classifier'),
-                                        'iid': False}),
+    'dt classifier gs': get_gs_tuple('DTC1', 'dt classifier')
 
     'linear regressor': (LinearRegression, {'fit_intercept': True}),
 
@@ -147,11 +173,8 @@ MODELS = {
 
     'random forest regressor': (RandomForestRegressor, {'n_estimators': 100}),
 
-    'random forest regressor rs': (RandomizedSearchCV,
-                                   {'estimator': 'random forest regressor',
-                                    'param_distributions':
-                                    get('RF1', 'random forest regressor'),
-                                    'iid': False}),
+    'random forest regressor rs': get_rs_tuple('RF1',
+                                               'random forest regressor')
 
     'random forest classifier': (RandomForestClassifier,
                                  {'n_estimators': 100}),
@@ -160,27 +183,16 @@ MODELS = {
                                      {'base_estimator':
                                       'random forest classifier'}),
 
-    'random forest classifier rs': (RandomizedSearchCV,
-                                    {'estimator': 'random forest classifier',
-                                     'param_distributions':
-                                     get('RF1', 'random forest classifier'),
-                                     'iid': False}),
+    'random forest classifier rs': get_rs_tuple('RF1',
+                                                'random forest classifier')
 
     'light gbm regressor': (LGBMRegressor, {'silent': True}),
 
-    'light gbm regressor rs': (RandomizedSearchCV,
-                               {'estimator': 'light gbm regressor',
-                                'param_distributions':
-                                get('LIGHT1', 'light gbm regressor'),
-                                'iid': False}),
+    'light gbm regressor rs': get_rs_tuple('LIGHT1', 'light gbm regressor')
 
     'light gbm classifier': (LGBMClassifier, {'silent': True}),
 
-    'light gbm classifier rs': (RandomizedSearchCV,
-                                {'estimator': 'light gbm classifier',
-                                 'param_distributions':
-                                 get('LIGHT1', 'light gbm classifier'),
-                                 'iid': False}),
+    'light gbm classifier rs': get_rs_tuple('LIGHT1', 'light gbm classifier')
 
     'gp regressor': (GaussianProcessRegressor, {'n_restarts_optimizer': 5,
                                                 'normalize_y': True}),
@@ -189,19 +201,11 @@ MODELS = {
 
     'svm regressor': (SVR, {'kernel': 'rbf'}),
 
-    'svm regressor rs': (RandomizedSearchCV, {'estimator':
-                                              'svm regressor',
-                                              'param_distributions':
-                                              get('SVM1', 'svm regressor'),
-                                              'iid': False}),
+    'svm regressor rs': get_rs_tuple('SVM1', 'svm regressor')
 
     'svm classifier': (SVC, {'kernel': 'rbf'}),
 
-    'svm classifier rs': (RandomizedSearchCV, {'estimator':
-                                               'svm classifier',
-                                               'param_distributions':
-                                               get('SVM1', 'svm classifier'),
-                                               'iid': False}),
+    'svm classifier rs': get_rs_tuple('SVM1', 'svm classifier')
     }
 
 

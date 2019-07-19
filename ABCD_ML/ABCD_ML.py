@@ -14,6 +14,7 @@ class ABCD_ML():
 
     def __init__(self, eventname='baseline_year_1_arm_1',
                  use_default_subject_ids=True,
+                 default_dataset_type='basic',
                  default_na_values=['777', '999'],
                  original_targets_key='targets', low_memory_mode=False,
                  random_state=None, verbose=True):
@@ -35,6 +36,21 @@ class ABCD_ML():
             If set to False, then all input subject names must be entered
             explicitly the same, no preprocessing will be done on them.
             (default = True)
+
+        default_dataset_type : {'basic', 'explorer', 'custom'}, optional
+            The default dataset_type / file-type to load from.
+            Dataset types are,
+
+            - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
+
+            - 'explorer' : 2.0_ABCD_Data_Explorer style
+                 (.csv and comma seperated)
+
+            - 'custom' : A user-defined custom dataset. Right now this is only
+                supported as a comma seperated file, with the subject names in
+                a column called 'src_subject_id'.
+
+            (default = 'basic')
 
         default_na_values : list, optional
             Additional values to treat as NaN, by default ABCD specific
@@ -81,6 +97,7 @@ class ABCD_ML():
         # Set class parameters
         self.eventname = eventname
         self.use_default_subject_ids = use_default_subject_ids
+        self.default_dataset_type = default_dataset_type
         self.default_na_values = default_na_values
         self.original_targets_key = original_targets_key
         self.low_memory_mode = low_memory_mode
@@ -129,6 +146,7 @@ class ABCD_ML():
                                _load_datasets,
                                _load_dataset,
                                _common_load,
+                               _load,
                                _merge_existing,
                                _proc_df,
                                _load_set_of_subjects,

@@ -13,9 +13,7 @@ from ABCD_ML.Data_Helpers import (process_binary_input,
                                   filter_float_by_outlier)
 
 
-def load_name_map(self,
-                  loc,
-                  dataset_type='default',
+def load_name_map(self, loc, dataset_type='default',
                   source_name_col="NDAR name",
                   target_name_col="REDCap name/NDA alias"):
     '''Loads a mapping dictionary for loading column names
@@ -25,11 +23,14 @@ def load_name_map(self,
     loc : str, Path or None
         The location of the csv file which contains the mapping.
 
-    dataset_type : {'default', 'explorer', 'custom'}, optional
+    dataset_type : {'default', 'basic', 'explorer', 'custom'}, optional
         The type of file to load from.
         Dataset types are,
 
-        - 'default' : ABCD2p0NDA style, (.txt and tab seperated)
+        - 'default' : Use the class defined default dataset type,
+            if not set by the user this is 'basic'.
+
+        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
 
         - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
 
@@ -48,13 +49,8 @@ def load_name_map(self,
         (default = "REDCap name/NDA alias")
     '''
 
-    if dataset_type == 'default':
-        mapping = pd.read_csv(loc, sep='\t', skiprows=[1],
-                              na_values=self.default_na_values)
-
-    # Same loading for explorer and custom, just comma seperated
-    else:
-        mapping = pd.read_csv(loc)
+    # Load mapping based on dataset type
+    mapping = self._load(loc, dataset_type)
 
     try:
         self.name_map = dict(zip(mapping[source_name_col],
@@ -64,7 +60,6 @@ def load_name_map(self,
     except KeyError:
         print('Error: One or both provided column names do not exist!')
         print('Name map not loaded!')
-
 
 
 def load_data(self, loc, dataset_type='default', drop_keys=[],
@@ -85,14 +80,17 @@ def load_data(self, loc, dataset_type='default', drop_keys=[],
         other dataset loading behavior won't occur until after the merge,
         e.g., dropping cols by key, filtering for outlier, ect...
 
-    dataset_type : {'default', 'explorer', 'custom'} or list of, optional
+    dataset_type : {'default', 'basic', 'explorer', 'custom'} or list, optional
         The type of dataset to load from. If a list is passed, then loc must
         also be a list, and the indices should correspond.
         Likewise, if loc is a list and dataset_type is not,
         it is assumed all datasets are the same type.
         Where each dataset type is,
 
-        - 'default' : ABCD2p0NDA style, (.txt and tab seperated)
+        - 'default' : Use the class defined default dataset type,
+            if not set by the user this is 'basic'.
+
+        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
             The 4 columns before 'src_subject_id' and the 4 after,
             (typically the default columns, and therefore not neuroimaging
             data - also not including the eventname column), will be dropped.
@@ -191,9 +189,9 @@ def load_data(self, loc, dataset_type='default', drop_keys=[],
     self._process_new(self.low_memory_mode)
 
 
-def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
-                filter_float_outlier_percent=None, standardize=True,
-                normalize=False):
+def load_covars(self, loc, col_names, data_types, dataset_type='default',
+                dummy_code_categorical=True, filter_float_outlier_percent=None,
+                standardize=True, normalize=False):
     '''Load a covariate or covariates from a 2.0_ABCD_Data_Explorer
     release formatted csv.
 
@@ -215,6 +213,23 @@ def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
         - 'categorical' or 'c' : Categorical input
         - 'ordinal' or 'o' : Ordinal input
         - 'float' or 'f' : Float numerical input
+
+    dataset_type : {'default', 'basic', 'explorer', 'custom'}, optional
+        The type of file to load from.
+        Dataset types are,
+
+        - 'default' : Use the class defined default dataset type,
+            if not set by the user this is 'basic'.
+
+        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
+
+        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
+
+        - 'custom' : A user-defined custom dataset. Right now this is only
+            supported as a comma seperated file, with the subject names in a
+            column called 'src_subject_id'.
+
+        (default = 'default')
 
     dummy_code_categorical: bool, optional
         If True, then categorical variables are dummy coded.
@@ -246,8 +261,9 @@ def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
     if dummy_code_categorical:
         drop = 'first'
 
-    self._print('Reading covariates from', loc)
-    covars, col_names = self._common_load(loc, col_names=col_names)
+    self._print('Loading covariates!')
+    covars, col_names = self._common_load(loc, dataset_type,
+                                          col_names=col_names)
 
     if not isinstance(data_types, list):
         data_types = list([data_types])
@@ -297,7 +313,7 @@ def load_covars(self, loc, col_names, data_types, dummy_code_categorical=True,
     self._process_new(self.low_memory_mode)
 
 
-def load_targets(self, loc, col_name, data_type,
+def load_targets(self, loc, col_name, data_type, dataset_type='default',
                  filter_outlier_percent=None):
     '''Loads in a set of subject ids and associated targets from a
     2.0_ABCD_Data_Explorer release formatted csv.
@@ -321,6 +337,23 @@ def load_targets(self, loc, col_name, data_type,
         - 'float' or 'f' : Float numerical input
 
         Datatypes are explained further in Notes.
+
+    dataset_type : {'default', 'basic', 'explorer', 'custom'}, optional
+        The type of file to load from.
+        Dataset types are,
+
+        - 'default' : Use the class defined default dataset type,
+            if not set by the user this is 'basic'.
+
+        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
+
+        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
+
+        - 'custom' : A user-defined custom dataset. Right now this is only
+            supported as a comma seperated file, with the subject names in a
+            column called 'src_subject_id'.
+
+        (default = 'default')
 
     filter_outlier_percent : float, tuple or None, optional
         For float or ordinal datatypes only.
@@ -352,8 +385,8 @@ def load_targets(self, loc, col_name, data_type,
     # By default set the target key to be the class original target key
     self.targets_key = self.original_targets_key
 
-    self._print('Loading ', loc)
-    targets = self._common_load(loc, col_name=col_name)
+    self._print('Loading targets!')
+    targets = self._common_load(loc, dataset_type, col_name=col_name)
 
     # Rename the column with targets to default targets key name
     targets = targets.rename({col_name: self.targets_key}, axis=1)
@@ -390,9 +423,8 @@ def load_targets(self, loc, col_name, data_type,
     self._process_new(self.low_memory_mode)
 
 
-def load_strat(self, loc, col_names):
-    '''Load stratification values from a 2.0_ABCD_Data_Explorer
-    release formatted csv.
+def load_strat(self, loc, col_names, dataset_type='default'):
+    '''Load stratification values from a file.
     See Notes for more details on what stratification values are.
 
     Parameters
@@ -403,6 +435,23 @@ def load_strat(self, loc, col_names):
     col_names : str or list
         The name(s) of the column(s) to load.
 
+    dataset_type : {'default', 'basic', 'explorer', 'custom'}, optional
+        The type of file to load from.
+        Dataset types are,
+
+        - 'default' : Use the class defined default dataset type,
+            if not set by the user this is 'basic'.
+
+        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
+
+        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
+
+        - 'custom' : A user-defined custom dataset. Right now this is only
+            supported as a comma seperated file, with the subject names in a
+            column called 'src_subject_id'.
+
+        (default = 'default')
+
     Notes
     ----------
     Stratification values are categorical variables which are loaded for the
@@ -412,8 +461,9 @@ def load_strat(self, loc, col_names):
     that any validation splits retain the same distribution of each sex.
     '''
 
-    self._print('Reading stratification values from', loc)
-    strat, col_names = self._common_load(loc, col_names=col_names)
+    self._print('Reading strat/stratification values!')
+    strat, col_names = self._common_load(loc, dataset_type,
+                                         col_names=col_names)
 
     # Encode each column into unique values
     for col in col_names:
@@ -503,14 +553,17 @@ def _load_datasets(self, locs, dataset_types):
     locs : list of str, Path
         The location of the csv files to load data load from.
 
-    dataset_type : {'default', 'explorer', 'custom'} or list of, optional
-        The type of dataset to load from. If a list is passed, then loc must
+    dataset_types : {'default', 'basic' 'explorer', 'custom'} or list
+        The type of dataset to load from. If a list is passed, then locs must
         also be a list, and the indices should correspond.
-        Likewise, if loc is a list and dataset_type is not,
+        Likewise, if locs is a list and dataset_type is not,
         it is assumed all datasets are the same type.
         Where each dataset type is,
 
-        - 'default' : ABCD2p0NDA style, (.txt and tab seperated)
+        - 'default': Use the class defined default dataset type,
+            if not set by the user this is 'basic'.
+
+        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
             The 4 columns before 'src_subject_id' and the 4 after,
             (typically the default columns, and therefore not neuroimaging
             data - also not including the eventname column), will be dropped.
@@ -524,8 +577,6 @@ def _load_datasets(self, locs, dataset_types):
             supported as a comma seperated file, with the subject names in a
             column called 'src_subject_id'. No columns will be dropped,
             unless specific drop keys are passed.
-
-        (default = 'default')
 
     Returns
     ----------
@@ -558,12 +609,15 @@ def _load_dataset(self, loc, dataset_type):
     Parameters
     ----------
     loc : str, Path or None
-        The location of the csv file to load data load from.
+        The location of the csv/txt file to load data load from.
 
-    dataset_type : {'default', 'explorer', 'custom'}, optional
+    dataset_type : {'default', 'basic', 'explorer', 'custom'}
         The type of dataset to load from. Where,
 
-        - 'default' : ABCD2p0NDA style, (.txt and tab seperated)
+        - 'default' : Use the class defined default dataset type,
+            if not set by the user this is 'basic'.
+
+        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
             The 4 columns before 'src_subject_id' and the 4 after,
             (typically the default columns, and therefore not neuroimaging
             data - also not including the eventname column), will be dropped.
@@ -578,8 +632,6 @@ def _load_dataset(self, loc, dataset_type):
             column called 'src_subject_id'. No columns will be dropped,
             unless specific drop keys are passed.
 
-        (default = 'default')
-
     Returns
     ----------
     pandas DataFrame
@@ -587,18 +639,15 @@ def _load_dataset(self, loc, dataset_type):
         minimally proc'ed data.
     '''
 
-    self._print('Loading', loc, 'assumed to be dataset type:', dataset_type)
-
     if dataset_type == 'default':
-        pd.read_csv(loc, sep='\t', skiprows=[1],
-                    na_values=self.default_na_values)
-    else:
-        data = pd.read_csv(loc, na_values=self.default_na_values)
+        dataset_type = self.default_dataset_type
 
-    # If dataset type is default or explorer, drop some cols by default
-    if dataset_type == 'default' or dataset_type == 'explorer':
+    data = self._load(loc, dataset_type)
 
-        if dataset_type == 'default':
+    # If dataset type is basic or explorer, drop some cols by default
+    if dataset_type == 'basic' or dataset_type == 'explorer':
+
+        if dataset_type == 'basic':
             non_data_cols = list(data)[:4] + list(data)[5:8] + [list(data)[9]]
         else:
             non_data_cols = list(data)[:2]
@@ -617,7 +666,8 @@ def _load_dataset(self, loc, dataset_type):
     return data
 
 
-def _common_load(self, loc, col_name=None, col_names=None):
+def _common_load(self, loc, dataset_type, col_name=None,
+                 col_names=None):
     '''Internal helper function to perform set of commonly used loading functions,
     on 2.0_ABCD_Data_Explorer release formatted csv'
 
@@ -626,6 +676,21 @@ def _common_load(self, loc, col_name=None, col_names=None):
     loc : str, Path or None, optional
         Location of a csv file to load in selected columns from.
         (default = None)
+
+    dataset_type : {'default', 'basic', 'explorer', 'custom'}
+        The type of file to load from.
+        Dataset types are,
+
+        - 'default' : Use the class defined default dataset type,
+            if not set by the user this is 'basic'.
+
+        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
+
+        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
+
+        - 'custom' : A user-defined custom dataset. Right now this is only
+            supported as a comma seperated file, with the subject names in a
+            column called 'src_subject_id'.
 
     col_name : str
         The name of the column to load.
@@ -642,7 +707,7 @@ def _common_load(self, loc, col_name=None, col_names=None):
     '''
 
     # Read csv data from loc
-    data = pd.read_csv(loc, na_values=self.default_na_values)
+    data = self._load(loc, dataset_type)
 
     # Perform common df corrections
     data = self._proc_df(data)
@@ -657,6 +722,50 @@ def _common_load(self, loc, col_name=None, col_names=None):
     # Drop rows with NaN
     data = data[col_names].dropna()
     return data, col_names
+
+
+def _load(self, loc, dataset_type):
+    '''Base load helper function, for simply loading file
+    into memory based on dataset type.
+
+    Parameters
+    ----------
+    loc : str, Path or None
+        The location of the csv/txt file to load data load from.
+
+    dataset_type : {'default', 'basic', 'explorer', 'custom'}
+        The type of file to load from.
+        Dataset types are,
+
+        - 'default' : Use the class defined default dataset type,
+            if not set by the user this is 'basic'.
+
+        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
+
+        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
+
+        - 'custom' : A user-defined custom dataset. Right now this is only
+            supported as a comma seperated file, with the subject names in a
+            column called 'src_subject_id'.
+
+    Returns
+    ----------
+    pandas DataFrame
+        Loaded DataFrame.
+    '''
+
+    if dataset_type == 'default':
+        dataset_type = self.default_dataset_type
+
+    self._print('Loading', loc, 'assumed to be dataset type:', dataset_type)
+
+    if dataset_type == 'basic':
+        data = pd.read_csv(loc, sep='\t', skiprows=[1],
+                           na_values=self.default_na_values)
+    else:
+        data = pd.read_csv(loc, na_values=self.default_na_values)
+
+    return data
 
 
 def _merge_existing(self, class_data, local_data):

@@ -113,7 +113,7 @@ class ABCD_ML():
         self.all_data, self.train_subjects = None, None
         self.test_subjects = None
         self.CV = CV()
-        self.default_ML_params = None  # This dict is kept at none until set
+        self.default_ML_params = {}
 
         self._print('ABCD_ML object initialized')
 
@@ -339,6 +339,6 @@ class ABCD_ML():
                              _print_model_params,
                              _init_model)
 
-    from ABCD_ML.Models import show_model_types
-    from ABCD_ML.Scorers import show_metrics
-    from ABCD_ML.Scalers import show_data_scalers
+    from ABCD_ML.Models import show_model_types, show_models
+    from ABCD_ML.Scorers import show_metrics, show_scorers
+    from ABCD_ML.Scalers import show_data_scalers, show_scalers

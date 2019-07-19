@@ -130,8 +130,6 @@ def set_default_ML_params(self, problem_type='default', metric='default',
     Evaluate().
     '''
 
-    self.default_ML_params = {}
-
     default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
                        'categorical': 'weighted roc auc'}
 
@@ -218,7 +216,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
     if random_state != 'default':
         self.default_ML_params['random_state'] = random_state
 
-    elif extra_params not in self.default_ML_params:
+    elif 'random_state' not in self.default_ML_params:
         self.default_ML_params['random_state'] = self.random_state
         self._print('No default random state passed, using class random',
                     'state value of', self.random_state)
@@ -227,7 +225,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         assert isinstance(extra_params, dict), 'extra params must be dict'
         self.default_ML_params['extra_params'] = extra_params
 
-    elif extra_params not in self.default_ML_params:
+    elif 'extra_params' not in self.default_ML_params:
         self.default_ML_params['extra_params'] = {}
         self._print('No default extra params passed, set to empty dict')
 
@@ -402,7 +400,7 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
     # Print out summary stats for all passed metrics
     scorer_strs = self.Model.scorer_strs
     self._print()
-    
+
     for i in range(len(scorer_strs)):
         self._print('Metric: ', scorer_strs[i])
 
@@ -611,7 +609,7 @@ def _premodel_check(self, problem_type='default'):
 
         self.train_test_split(test_size=.25)
 
-    if self.default_ML_params is None:
+    if self.default_ML_params == {}:
 
         self._print('Setting default ML params.')
         self._print('Note, if the following values are not desired,',

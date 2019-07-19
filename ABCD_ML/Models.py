@@ -31,6 +31,7 @@ AVALIABLE = {
                         'linear':             'logistic',
                         'logistic cv':        'logistic cv',
                         'linear cv':          'logistic cv',
+                        'elastic net logistic cv': 'elastic net logistic cv',
                         'gaussian nb':        'gaussian nb',
                         'knn':                'knn classifier',
                         'knn gs':             'knn classifier gs',
@@ -39,6 +40,7 @@ AVALIABLE = {
                         'random forest':      'random forest classifier',
                         'random forest cal':  'random forest classifier cal',
                         'random forest rs':   'random forest classifier rs',
+                        'gp':                 'gp classifier',
                         'light gbm':          'light gbm classifier',
                         'light gbm rs':       'light gbm classifier rs',
                         'svm':                'svm classifier',
@@ -73,6 +75,7 @@ AVALIABLE = {
                         'logistic':           'logistic',
                         'linear':             'logistic',
                         'logistic cv':        'logistic cv',
+                        'elastic net logistic cv': 'elastic net logistic cv',
                         'linear cv':          'logistic cv',
                         'gaussian nb':        'gaussian nb',
                         'knn':                'knn classifier',
@@ -82,6 +85,7 @@ AVALIABLE = {
                         'random forest':      'random forest classifier',
                         'random forest cal':  'random forest classifier cal',
                         'random forest rs':   'random forest classifier rs',
+                        'gp':                 'gp classifier',
                         'light gbm':          'light gbm classifier',
                         'light gbm rs':       'light gbm classifier rs',
                         'svm':                'svm classifier',
@@ -94,11 +98,19 @@ AVALIABLE = {
 # where each entry has a saved model and default params.
 MODELS = {
     'logistic': (LogisticRegression, {'solver': 'lbfgs',
+                                      'penalty': 'none',
                                       'max_iter': 5000,
                                       'multi_class': 'auto'}),
 
     'logistic cv': (LogisticRegressionCV, {'max_iter': 5000,
                                            'multi_class': 'auto'}),
+
+    'elastic net logistic cv': (LogisticRegressionCV, {'max_iter': 5000,
+                                                       'multi_class': 'auto',
+                                                       'penalty': 'elasticnet',
+                                                       'solver': 'saga',
+                                                       'l1_ratios':
+                                                       [.3, .5, .8]}),
 
     'gaussian nb': (GaussianNB, {}),
 
@@ -172,6 +184,8 @@ MODELS = {
 
     'gp regressor': (GaussianProcessRegressor, {'n_restarts_optimizer': 5,
                                                 'normalize_y': True}),
+
+    'gp classifier': (GaussianProcessClassifier, {'n_restarts_optimizer': 5}),
 
     'svm regressor': (SVR, {'kernel': 'rbf'}),
 

@@ -1,0 +1,5 @@
+"collection_id"	"abcd_smrip101_id"	"dataset_id"	"subjectkey"	"src_subject_id"	"interview_date"	"interview_age"	"gender"	"eventname"	"smri_visitid"	"oname1"	"oname2"	"oname3"
+"desrc"	"desrc"	"desrc"	"desrc"	"desrc"	"desrc"	"desrc"	"desrc"	"desrc"	"desrc"	"desrc"	"desrc"	"descr"
+"0"	"0"	"0"	"0"	"NDAR_1"	"0"	"0"	"0"	"baseline_year_1_arm_1"	"0"	"1"	"1"	"1"
+"0"	"0"	"0"	"0"	"NDAR_2"	"0"	"0"	"1"	"not_baseline_year_1"	"0"	"2"	"2"	"2"
+"0"	"0"	"0"	"0"	"NDAR_3"	"0"	"0"	"1"	"baseline_year_1_arm_1"	"0"	"3"	"3"	"3"

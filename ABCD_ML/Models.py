@@ -86,6 +86,7 @@ AVALIABLE = {
         }
 }
 
+# Should be the same
 AVALIABLE['categorical']['multiclass'] = AVALIABLE['binary'].copy()
 
 
@@ -109,7 +110,7 @@ def get_rs_tuple(grid_name, model_name):
 
 
 def get_gs_tuple(grid_name, model_name):
-        return (GrisSearchCV, get_search_params(grid_name, model_name,
+        return (GridSearchCV, get_search_params(grid_name, model_name,
                 gs=True))
 
 
@@ -142,7 +143,8 @@ MODELS = {
 
     'ridge logistic rs': get_rs_tuple('REGRESSION1', 'ridge logistic'),
 
-    'elastic net logistic rs': get_rs_tuple('ELASTIC1', 'elastic net logistic'),
+    'elastic net logistic rs': get_rs_tuple('ELASTIC1',
+                                            'elastic net logistic'),
 
     'logistic cv': (LogisticRegressionCV, {'max_iter': 5000,
                                            'multi_class': 'auto'}),
@@ -151,15 +153,15 @@ MODELS = {
 
     'knn classifier': (KNeighborsClassifier, {'n_jobs': 'n_jobs'}),
 
-    'knn classifier gs': get_gs_tuple('KNN1', 'knn classifier')
+    'knn classifier gs': get_gs_tuple('KNN1', 'knn classifier'),
 
     'knn regressor': (KNeighborsRegressor, {}),
 
-    'knn regressor gs': get_gs_tuple('KNN1', 'knn regressor')
+    'knn regressor gs': get_gs_tuple('KNN1', 'knn regressor'),
 
     'dt classifier': (DecisionTreeClassifier, {}),
 
-    'dt classifier gs': get_gs_tuple('DTC1', 'dt classifier')
+    'dt classifier gs': get_gs_tuple('DTC1', 'dt classifier'),
 
     'linear regressor': (LinearRegression, {'fit_intercept': True}),
 
@@ -174,7 +176,7 @@ MODELS = {
     'random forest regressor': (RandomForestRegressor, {'n_estimators': 100}),
 
     'random forest regressor rs': get_rs_tuple('RF1',
-                                               'random forest regressor')
+                                               'random forest regressor'),
 
     'random forest classifier': (RandomForestClassifier,
                                  {'n_estimators': 100}),
@@ -184,15 +186,15 @@ MODELS = {
                                       'random forest classifier'}),
 
     'random forest classifier rs': get_rs_tuple('RF1',
-                                                'random forest classifier')
+                                                'random forest classifier'),
 
     'light gbm regressor': (LGBMRegressor, {'silent': True}),
 
-    'light gbm regressor rs': get_rs_tuple('LIGHT1', 'light gbm regressor')
+    'light gbm regressor rs': get_rs_tuple('LIGHT1', 'light gbm regressor'),
 
     'light gbm classifier': (LGBMClassifier, {'silent': True}),
 
-    'light gbm classifier rs': get_rs_tuple('LIGHT1', 'light gbm classifier')
+    'light gbm classifier rs': get_rs_tuple('LIGHT1', 'light gbm classifier'),
 
     'gp regressor': (GaussianProcessRegressor, {'n_restarts_optimizer': 5,
                                                 'normalize_y': True}),
@@ -201,11 +203,11 @@ MODELS = {
 
     'svm regressor': (SVR, {'kernel': 'rbf'}),
 
-    'svm regressor rs': get_rs_tuple('SVM1', 'svm regressor')
+    'svm regressor rs': get_rs_tuple('SVM1', 'svm regressor'),
 
     'svm classifier': (SVC, {'kernel': 'rbf'}),
 
-    'svm classifier rs': get_rs_tuple('SVM1', 'svm classifier')
+    'svm classifier rs': get_rs_tuple('SVM1', 'svm classifier'),
     }
 
 

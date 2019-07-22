@@ -38,6 +38,9 @@ def process_binary_input(data, key, verbose=True):
 
     unique_vals, counts = np.unique(data[key], return_counts=True)
 
+    assert len(unique_vals) != 1, \
+        "Binary input passed with only 1 unique value!"
+
     # Preform check for mistaken values
     # Assuming should be binary, so 2 unique values
     if len(unique_vals) != 2:
@@ -61,6 +64,33 @@ def process_binary_input(data, key, verbose=True):
     assert len(np.unique(data[key])) == 2, \
         "Error: Binary type, but more than two unique values"
     return data, encoder
+
+
+def process_ordinal_input(data, key):
+    '''Helper function to perform processing on ordinal input
+
+    Parameters
+    ----------
+    data : pandas DataFrame
+        ABCD_ML formatted df. Must contain a column with `key`
+
+    key : str
+        Column key of the column to process within `data` input.
+
+    Returns
+    ----------
+    pandas DataFrame
+        The post-processed ABCD_ML formatted input df.
+
+    sklearn LabelEncoder
+        The sklearn labelencoder object mapping input to
+        transformed ordinal label
+    '''
+
+    label_encoder = LabelEncoder()
+    data[key] = label_encoder.fit_transform(data[key])
+
+    return data, label_encoder
 
 
 def process_categorical_input(data, key, drop=None, verbose=True):
@@ -101,8 +131,7 @@ def process_categorical_input(data, key, drop=None, verbose=True):
     # First convert to label encoder style,
     # want to be able to do reverse transform w/ 1-hot encoder
     # between label encoded results.
-    label_encoder = LabelEncoder()
-    data[key] = label_encoder.fit_transform(data[key])
+    data, label_encoder = process_ordinal_input(data, key)
 
     # Now convert to one hot or dummy encoded
     vals = np.array(data[key]).reshape(-1, 1)

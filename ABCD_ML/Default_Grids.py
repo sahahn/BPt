@@ -8,6 +8,11 @@ for various classifiers within ABCD_ML.
 from scipy.stats import (randint as sp_randint, uniform as sp_uniform)
 
 GRIDS = {
+        'REGRESSION1': {'C': sp_uniform(loc=1e-4, scale=1e+4)},
+
+        'ELASTIC1': {'C': sp_uniform(loc=1e-4, scale=1e+4),
+                     'l1_ratio': sp_uniform()},
+
         'RF1': {'n_estimators': list(range(3, 500)),
                 'max_depth': [None] + list(range(2, 100, 5)),
                 'max_features': sp_uniform(),

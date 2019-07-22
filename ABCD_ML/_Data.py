@@ -6,9 +6,9 @@ the ABCD_ML class.
 """
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
 from scipy.stats.mstats import winsorize
 from ABCD_ML.Data_Helpers import (process_binary_input,
+                                  process_ordinal_input,
                                   process_categorical_input,
                                   filter_float_by_outlier)
 
@@ -250,7 +250,8 @@ def load_covars(self, loc, col_names, data_types, dataset_type='default',
     standardize : bool, optional
         If True, scales any float/ordinal covariate loaded to have
         a mean of 0 and std of 1.
-        Note: Computed before normalization, both set to True.
+        Note: Computed before normalization, if both set to True,
+        and both computed after filter_float_outlier_percent.
         (default = True)
 
     normalize : bool, optional
@@ -295,7 +296,7 @@ def load_covars(self, loc, col_names, data_types, dataset_type='default',
                     (d_type == 'float' or d_type == 'f'):
 
                 covars = filter_float_by_outlier(covars, key,
-                                                 filter_outlier_percent,
+                                                 filter_float_outlier_percent,
                                                  in_place=False,
                                                  verbose=self.verbose)
 
@@ -426,7 +427,8 @@ def load_targets(self, loc, col_name, data_type, dataset_type='default',
     self._process_new(self.low_memory_mode)
 
 
-def load_strat(self, loc, col_names, dataset_type='default'):
+def load_strat(self, loc, col_names, dataset_type='default',
+               binary_col_inds=None):
     '''Load stratification values from a file.
     See Notes for more details on what stratification values are.
 
@@ -455,6 +457,18 @@ def load_strat(self, loc, col_names, dataset_type='default'):
 
         (default = 'default')
 
+    binary_col_inds : int, list or None, optional
+        Strat values are loaded as ordinal categorical, but there still
+        exists the case where the user would like to load a binary set of
+        values, and would like to ensure they are binary (filtering out
+        all values but the top 2 most frequent). This input should be
+        either None, for just loading in all cols as ordinal,
+        or an int or list of ints, where each int refers to the
+        numerical index within the passed `col_names` of a column
+        which should be loaded explicitly as binary.
+
+        (default = None)
+
     Notes
     ----------
     Stratification values are categorical variables which are loaded for the
@@ -468,12 +482,23 @@ def load_strat(self, loc, col_names, dataset_type='default'):
     strat, col_names = self._common_load(loc, dataset_type,
                                          col_names=col_names)
 
+    binary_col_names = []
+
+    if binary_col_inds is not None:
+
+        if isinstance(binary_col_inds, int):
+            binary_col_inds = [binary_col_inds]
+
+        binary_col_names = [col_names[i] for i in binary_col_inds]
+
     # Encode each column into unique values
     for col in col_names:
 
-        label_encoder = LabelEncoder()
-        strat[col] = label_encoder.fit_transform(strat[col])
-        self.strat_encoders[col] = label_encoder
+        if col not in binary_col_names:
+            strat, self.strat_encoders[col] = process_ordinal_input(strat, col)
+        else:
+            strat, self.strat_encoders[col] =\
+                process_binary_input(strat, col, self.verbose)
 
     self.strat = self._merge_existing(self.strat, strat)
     self._process_new(remove=True)  # Regardless of low memory mode, remove
@@ -874,6 +899,11 @@ def _load_set_of_subjects(self, loc=None, subjects=None):
                 loaded_subjects.add(self._process_subject_name(subject))
 
     if subjects is not None:
+
+        if isinstance(subjects, str):
+            self._print('Subjects passed as str, assuming just one subject')
+            subjects = [subjects]
+
         loaded_subjects = set([self._process_subject_name(s)
                                for s in subjects])
 
@@ -955,7 +985,7 @@ def _filter_by_eventname(self, data):
             data = data[data['eventname'] == self.eventname]
             data = data.drop('eventname', axis=1)
         else:
-            self._print('Warning: filter by eventname =', eventname,
+            self._print('Warning: filter by eventname =', self.eventname,
                         'is set but this data does not have a column with',
                         'eventname.')
 
@@ -1047,4 +1077,6 @@ def _prepare_data(self):
         self._print('Note: Final data, self.all_data, the',
                     'merged dataframe is still in memory')
 
-        self.data, self.targets, self.covars = [], [], []
+        self.data = pd.DataFrame()
+        self.targets = pd.DataFrame()
+        self.covars = pd.DataFrame()

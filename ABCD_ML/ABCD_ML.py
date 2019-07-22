@@ -182,6 +182,8 @@ class ABCD_ML():
             distribution of groups by during any train/test or K-fold splits.
             'targets' or whatever the value of self.original_targets_key,
             (self.original_targets_key can just be passed).
+            Warning: Passing self.targets_key can lead to error
+            specifically when self.targets_key is a list.
             can also be passed in the case of binary/categorical problems.
             If a list is passed, then each element should be a str,
             and they will be combined into all unique combinations of
@@ -256,7 +258,7 @@ class ABCD_ML():
 
         try:
             self.targets_key
-        except NameError:
+        except AttributeError:
             print('Targets must be loaded before a validation strategy can',
                   'be defined with targets included...')
 
@@ -318,6 +320,7 @@ class ABCD_ML():
         else:
             test_subjects = self._load_set_of_subjects(loc=test_loc,
                                                        subjects=test_subjects)
+
             train_subjects = [subject for subject in self.all_data.index
                               if subject not in test_subjects]
 

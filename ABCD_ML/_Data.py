@@ -536,7 +536,7 @@ def load_strat(self, loc, col_names, dataset_type='default',
                 process_binary_input(strat, col, self.verbose)
 
     self.strat = self._merge_existing(self.strat, strat)
-    self._process_new(remove=True)  # Regardless of low memory mode, remove
+    self._process_new(self.low_memory_mode)
 
 
 def load_exclusions(self, loc=None, exclusions=None):
@@ -564,7 +564,8 @@ def load_exclusions(self, loc=None, exclusions=None):
     self.exclusions.update(self._load_set_of_subjects(loc=loc,
                                                       subjects=exclusions))
     self._print('Total excluded subjects: ', len(self.exclusions))
-    self._process_new(remove=True)  # Regardless of low memory mode, remove
+    self._filter_excluded()
+    self._process_new(self.low_memory_mode)
 
 
 def clear_name_map(self):
@@ -851,9 +852,11 @@ def _load(self, loc, dataset_type):
 
     if dataset_type == 'basic':
         data = pd.read_csv(loc, sep='\t', skiprows=[1],
-                           na_values=self.default_na_values)
+                           na_values=self.default_na_values,
+                           low_memory=self.low_memory_mode)
     else:
-        data = pd.read_csv(loc, na_values=self.default_na_values)
+        data = pd.read_csv(loc, na_values=self.default_na_values,
+                           low_memory=self.low_memory_mode)
 
     return data
 
@@ -918,6 +921,9 @@ def _proc_df(self, data):
         data = data.rename(self.name_map, axis=1)
 
     data = data.set_index('src_subject_id')
+
+    # Drop excluded subjects, if any
+    data = self._drop_excluded(data)
 
     return data
 
@@ -1052,6 +1058,44 @@ def _filter_by_eventname(self, data):
     return data
 
 
+def _drop_excluded(self, data):
+    '''Wrapper to drop subjects from a df,
+    if any overlap with existing.
+
+    Parameters
+    ----------
+    data : pandas DataFrame
+        ABCD_ML formatted.
+
+    Returns
+    ----------
+    pandas DataFrame
+        Input df, with dropped excluded subjects
+    '''
+
+    overlap = set(data.index).intersection(self.exclusions)
+    data = data.drop(overlap)
+
+    return data
+
+
+def _filter_excluded(self):
+    '''This method is called after loading any new
+    exclusions, it retroactively removes subjects from any
+    loaded sources.'''
+
+    if len(self.data) > 0:
+        self.data = self._drop_excluded(self.data)
+    if len(self.covars) > 0:
+        self.covars = self._drop_excluded(self.covars)
+    if len(self.targets) > 0:
+        self.targets = self._drop_excluded(self.targets)
+    if len(self.strat) > 0:
+        self.strat = self._drop_excluded(self.strat)
+
+    self._print('Removed excluded subjects from loaded dfs')
+
+
 def _process_new(self, remove=False):
     '''Internal helper function to handle keeping an overlapping subject list,
     with additional useful print statements.
@@ -1076,15 +1120,13 @@ def _process_new(self, remove=False):
         valid_subjects.append(set(self.strat.index))
 
     overlap = set.intersection(*valid_subjects)
-    overlap = overlap - self.exclusions
 
     self._print()
-    self._print('Total valid (overlapping subjects / not in exclusions)',
-                'subjects =', len(overlap))
+    self._print('Total valid overlapping subjects =', len(overlap))
     self._print()
 
     if remove:
-        self._print('Removing non overlapping + excluded subjects')
+        self._print('Removing non overlapping subjects')
 
         if len(self.data) > 0:
             self.data = self.data[self.data.index.isin(overlap)]

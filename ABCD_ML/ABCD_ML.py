@@ -80,6 +80,9 @@ class ABCD_ML():
             data, and doesn't want automatic drops to occur.
             If set to True, individual dataframes self.data, self.covars ect...
             will also be deleted from memory as soon as modeling begins.
+
+            This parameter also controls the pandas read_csv behavior,
+            which also has a low_memory flag.
             (default = False)
 
         random_state : int, RandomState instance or None, optional
@@ -154,6 +157,8 @@ class ABCD_ML():
                                _process_subject_name,
                                _drop_na,
                                _filter_by_eventname,
+                               _drop_excluded,
+                               _filter_excluded,
                                _process_new,
                                _prepare_data)
 
@@ -350,3 +355,5 @@ class ABCD_ML():
     from ABCD_ML.Models import show_model_types, show_models
     from ABCD_ML.Scorers import show_metrics, show_scorers
     from ABCD_ML.Scalers import show_data_scalers, show_scalers
+
+    from ABCD_ML._Plotting import show_targets_dist

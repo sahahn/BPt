@@ -83,8 +83,8 @@ class ABCD_ML():
             (default = False)
 
         random_state : int, RandomState instance or None, optional
-            Random state, either as int for a specific seed, or if None then
-            the random seed is set by np.random.
+            The default random state, either as int for a specific seed,
+            or if None then the random seed is set by np.random.
             (default = None)
 
         verbose: bool, optional
@@ -302,16 +302,20 @@ class ABCD_ML():
 
         test_subjects : list, set, array-like or None, optional
             An explicit list of subjects to constitute the testing set
-            (default=None)
+            (default = None)
 
-        random_state : int or None, optional
+        random_state : int None or 'default', optional
             If using test_size, then can optionally provide a random state, in
             order to be able to recreate an exact test set.
-            (default = None)
+            If set to default, will use the value saved in self.random_state
+            (default = 'default')
         '''
 
         if self.all_data is None:
             self._prepare_data()
+
+        if random_state == 'default':
+            random_state = self.random_state
 
         if test_size is not None:
             self.train_subjects, self.test_subjects = self.CV.train_test_split(

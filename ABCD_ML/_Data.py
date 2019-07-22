@@ -1119,23 +1119,24 @@ def _process_new(self, remove=False):
     if len(self.strat) > 0:
         valid_subjects.append(set(self.strat.index))
 
-    overlap = set.intersection(*valid_subjects)
+    if len(valid_subjects) > 0:
+        overlap = set.intersection(*valid_subjects)
 
-    self._print()
-    self._print('Total valid overlapping subjects =', len(overlap))
-    self._print()
+        self._print()
+        self._print('Total valid overlapping subjects =', len(overlap))
+        self._print()
 
-    if remove:
-        self._print('Removing non overlapping subjects')
+        if remove:
+            self._print('Removing non overlapping subjects')
 
-        if len(self.data) > 0:
-            self.data = self.data[self.data.index.isin(overlap)]
-        if len(self.covars) > 0:
-            self.covars = self.covars[self.covars.index.isin(overlap)]
-        if len(self.targets) > 0:
-            self.targets = self.targets[self.targets.index.isin(overlap)]
-        if len(self.strat) > 0:
-            self.strat = self.strat[self.strat.index.isin(overlap)]
+            if len(self.data) > 0:
+                self.data = self.data[self.data.index.isin(overlap)]
+            if len(self.covars) > 0:
+                self.covars = self.covars[self.covars.index.isin(overlap)]
+            if len(self.targets) > 0:
+                self.targets = self.targets[self.targets.index.isin(overlap)]
+            if len(self.strat) > 0:
+                self.strat = self.strat[self.strat.index.isin(overlap)]
 
 
 def _prepare_data(self):

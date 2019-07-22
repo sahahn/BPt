@@ -143,6 +143,7 @@ class ABCD_ML():
                                clear_targets,
                                clear_strat,
                                clear_exclusions,
+                               drop_data_duplicates,
                                _load_datasets,
                                _load_dataset,
                                _common_load,

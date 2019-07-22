@@ -254,3 +254,41 @@ def get_unique_combo(data, keys):
     combo[data.index] = label_encoder.fit_transform(combo)
 
     return combo
+
+
+def drop_col_duplicates(data, corr_thresh):
+    '''Drop duplicates columns within data based on
+    if two data columns are >= to a certain correlation threshold.
+
+    Parameters
+    ----------
+    data : pandas DataFrame
+        ABCD_ML formatted df.
+
+    corr_thresh : float
+        A value between 0 and 1, where if two columns within .data
+        are correlated >= to `corr_thresh`, the second column is removed.
+        A value of 1 acts like dropping exact repeats.
+
+    Returns
+    ----------
+    pandas DataFrame
+        ABCD_ML formatted df with duplicates removes
+
+    list
+        The list of columns which were dropped from `data`
+    '''
+
+    dropped = []
+
+    for col1 in data:
+        for col2 in data:
+
+            if col1 != col2 and col1 in list(data) and col2 in list(data):
+
+                corr = np.corrcoef(data[col1], data[col2])[0][1]
+                if corr >= corr_thresh:
+                    data = data.drop(col2, axis=1)
+                    dropped.append(col2)
+
+    return data, dropped

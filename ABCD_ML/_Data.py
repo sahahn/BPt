@@ -10,7 +10,8 @@ from scipy.stats.mstats import winsorize
 from ABCD_ML.Data_Helpers import (process_binary_input,
                                   process_ordinal_input,
                                   process_categorical_input,
-                                  filter_float_by_outlier)
+                                  filter_float_by_outlier,
+                                  drop_col_duplicates)
 
 
 def load_name_map(self, loc, dataset_type='default',
@@ -63,7 +64,8 @@ def load_name_map(self, loc, dataset_type='default',
 
 
 def load_data(self, loc, dataset_type='default', drop_keys=[],
-              filter_outlier_percent=None, winsorize_val=None):
+              filter_outlier_percent=None, winsorize_val=None,
+              drop_col_duplicates=None):
     """Load a ABCD2p0NDA (default) or 2.0_ABCD_Data_Explorer (explorer)
     release formatted neuroimaging dataset - of derived ROI level info.
 
@@ -135,6 +137,19 @@ def load_data(self, loc, dataset_type='default', drop_keys=[],
         filtering for outliers if values are passed for both.
         (default = None)
 
+    drop_col_duplicates : float or None/False, optional
+        If set to None, will not drop any.
+        If float, then pass a value between 0 and 1,
+        where if two columns within data
+        are correlated >= to `corr_thresh`, the second column is removed.
+        A value of 1 acts like dropping exact duplicated.
+
+        Note: just drops duplicated within just loaded data.
+        Call self.drop_data_duplicates() to drop duplicates across
+        all loaded data.
+        (default = None)
+
+
     Notes
     ----------
     For loading a truly custom dataset, an advanced user can
@@ -185,6 +200,26 @@ def load_data(self, loc, dataset_type='default', drop_keys=[],
         self._print('Winsorized data with value: ', winsorize_val)
 
     self._print('loaded shape: ', data.shape)
+
+    # Check for questionable loaded columns & print warning
+    warn_thresh = len(data) / 5
+    unique_counts = [len(np.unique(data[x])) for x in data]
+
+    if (np.array(unique_counts) < warn_thresh).any():
+
+        self._print()
+        self._print('The following columns have a questionable number',
+                    'of unique values: ')
+        for col, count in zip(list(data), unique_counts):
+            if count < warn_thresh:
+                self._print(col, 'unique vals:', count)
+        self._print()
+
+    if drop_col_duplicates is False:
+        drop_col_duplicates = None
+    if drop_col_duplicates is not None:
+        data, dropped = drop_col_duplicates(data, drop_col_duplicates)
+        self._print('Dropped', len(dropped), 'columns as duplicate cols!')
 
     # If other data is already loaded,
     # merge this data with existing loaded data
@@ -571,6 +606,22 @@ def clear_exclusions(self):
     self._print('cleared exclusions.')
 
 
+def drop_data_duplicates(self, corr_thresh):
+    '''Drop duplicates columns within self.data based on
+    if two data columns are >= to a certain correlation threshold.
+
+    Parameters
+    ----------
+    corr_thresh : float
+        A value between 0 and 1, where if two columns within self.data
+        are correlated >= to `corr_thresh`, the second column is removed.
+        A value of 1 acts like dropping exact repeats.
+    '''
+
+    self.data, dropped = drop_col_duplicates(self.data, corr_thresh)
+    self._print('Dropped', len(dropped), 'columns as duplicate cols!')
+
+
 def _load_datasets(self, locs, dataset_types):
     '''Helper function to load in multiple datasets with default
     load and drop behavior based on type. And calls proc_df on each
@@ -688,11 +739,15 @@ def _load_dataset(self, loc, dataset_type):
             non_data_cols = list(data)[:2]
 
         data = data.drop(non_data_cols, axis=1)
-        extra = [col for col in list(data) if 'visitid' in col]
-        data = data.drop(extra, axis=1)
 
-        self._print('dropped', non_data_cols + extra, 'columns by default due '
-                    'to dataset type')
+        # Drop extra by presence of extra drop keys
+        extra_drop_keys = ['visitid', 'collection_title', 'study_cohort_name']
+        to_drop = [name for name in list(data) for drop_key in extra_drop_keys
+                   if drop_key in name]
+        data = data.drop(to_drop, axis=1)
+
+        self._print('dropped', non_data_cols + to_drop, 'columns by default',
+                    ' due to dataset type')
 
     # Perform common operations
     # (check subject id, drop duplicate subjects ect...)

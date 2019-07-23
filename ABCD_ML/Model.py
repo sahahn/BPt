@@ -454,7 +454,7 @@ class Model():
 
         return model
 
-    def _get_model(self, model_type, base_int_cv):
+    def _get_model(self, model_type, base_int_cv, base_model_flag=False):
         '''Get a model object from a given model type, called recursively to
         build any model that has a base model (e.g. Grid Search)
 
@@ -466,6 +466,11 @@ class Model():
 
         base_int_cv : CV output list of tuples
             The internal cv index output to be passed to a classifier
+
+        base_model_flag : bool, optional
+            If this flag is set to True, it means this method
+            was called recursively.
+            (default = False)
 
         Returns
         ----------
@@ -494,7 +499,7 @@ class Model():
 
         # Set estimator,
         if base_model_type is not None:
-            estimator = self._get_model(base_model_type, base_int_cv)
+            estimator = self._get_model(base_model_type, base_int_cv, True)
 
         # Grab the right model and params
         model = MODELS[model_type][0]
@@ -502,7 +507,8 @@ class Model():
 
         model_params = MODELS[model_type][1].copy()
         model_params = self._replace_params(model_params, possible_params,
-                                            base_int_cv, estimator=estimator)
+                                            base_int_cv, estimator,
+                                            base_model_flag)
 
         # Check to see if there are any user passed model params to update
         extra_model_params = {}
@@ -523,7 +529,7 @@ class Model():
         return model
 
     def _replace_params(self, params, possible_params, base_int_cv,
-                        estimator=None):
+                        estimator, base_model_flag):
         '''Helper method to replace default values with provided params,
         with actual values saved within the class.
 
@@ -535,13 +541,18 @@ class Model():
         base_int_cv : CV output list of tuples
             The internal cv index output to be passed to a classifier
 
-        estimator : model or None, optional
+        estimator : model or None
             Either a model object passed to be set for the estimator param
             or None if not applicable.
             Specifically, if estimator is None, then this is the final model,
             if has a specific value then it means these are the params for
             a grid search or calibrated overarching-esque object.
-            (default = None)
+
+        base_model_flag : bool
+            If set to True, then that means we are
+            replacing the parameters for a base model within
+            another estimator. In that case, we set n_jobs if
+            avaliable to 1. 
 
         Returns
         ----------
@@ -559,10 +570,10 @@ class Model():
             params['class_weight'] = self.class_weight
 
         if 'n_jobs' in possible_params:
-            if estimator is None:
-                params['n_jobs'] = self.n_jobs
-            else:
+            if base_model_flag:
                 params['n_jobs'] = 1
+            else:
+                params['n_jobs'] = self.n_jobs
 
         if 'n_iter' in possible_params:
             params['n_iter'] = self.n_iter

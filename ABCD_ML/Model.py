@@ -115,6 +115,7 @@ class Model():
         # Default params just sets (sub)problem type for now
         self._set_default_params()
         self.col_data_scalers = []
+        self.user_passed_models, self.upmi = [], 0
 
         # Process model_types, scorers and scalers from str indicator input
         self._process_model_types()
@@ -147,6 +148,8 @@ class Model():
         if not isinstance(self.model_types, list):
             self.model_types = [self.model_types]
 
+        self._check_user_passed_models()
+
         # Get the converted version of the model type passed in
         conv_model_types = self._get_conv_model_types()
 
@@ -178,6 +181,16 @@ class Model():
         conv_model_types = [AVALIABLE[self.problem_type][m]
                             for m in conv_model_types]
         return conv_model_types
+
+    def _check_user_passed_models(self):
+        '''If not str passed as model type, assume it
+        to be a user passed model.'''
+
+        for m in range(len(self.model_types)):
+            if not isinstance(self.model_types[m], str):
+
+                self.user_passed_models.append(self.model_types[m])
+                self.model_types[m] = 'user passed'
 
     def _update_extra_params(self, orig_strs, conv_strs):
         '''Helper method to update class extra params in the case
@@ -393,6 +406,9 @@ class Model():
             The trained single model, or Ensemble_Model of models.
         '''
 
+        # Reset user passed model index to 0
+        self.upmi = 0
+
         models = []
         for model_type in self.model_types:
             models.append(self._train_model(train_data, model_type))
@@ -457,6 +473,16 @@ class Model():
             The requested model object initialized with parameters,
             and ready to be fit.
         '''
+
+        # Check for user passed model
+        if model_type == 'user passed':
+
+            user_model = self.user_passed_models[self.upmi]
+            user_model_type = 'user passed' + str(self.upmi)
+            self.upmi += 1
+
+            model = self._make_model_pipeline(user_model, user_model_type)
+            return model
 
         estimator, base_model_type = None, None
 

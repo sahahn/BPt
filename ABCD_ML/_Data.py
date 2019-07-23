@@ -536,7 +536,7 @@ def load_strat(self, loc, col_names, dataset_type='default',
                 process_binary_input(strat, col, self.verbose)
 
     self.strat = self._merge_existing(self.strat, strat)
-    self._process_new(self.low_memory_mode)
+    self._process_new(True)  # Regardless of low mem-mode
 
 
 def load_exclusions(self, loc=None, exclusions=None):
@@ -565,7 +565,6 @@ def load_exclusions(self, loc=None, exclusions=None):
                                                       subjects=exclusions))
     self._print('Total excluded subjects: ', len(self.exclusions))
     self._filter_excluded()
-    self._process_new(self.low_memory_mode)
 
 
 def clear_name_map(self):

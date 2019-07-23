@@ -43,8 +43,6 @@ AVALIABLE = {
                         'elastic net logistic': 'elastic net logistic',
                         'elastic net rs':     'elastic net logistic rs',
                         'elastic net logistic rs': 'elastic net logistic rs',
-                        'logistic cv':        'logistic cv',
-                        'linear cv':          'logistic cv',
                         'gaussian nb':        'gaussian nb',
                         'knn':                'knn classifier',
                         'knn gs':             'knn classifier gs',
@@ -98,6 +96,7 @@ def get_search_params(grid_name, model_name, gs=False):
         params = {}
         params['iid'] = False
         params['estimator'] = model_name
+        params['pre_dispatch'] = 'n_jobs - 2'
 
         if gs:
                 params['param_grid'] = get(grid_name, model_name)

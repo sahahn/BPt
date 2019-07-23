@@ -62,6 +62,9 @@ def proc_str_input(in_str):
     Speicifcally this function is is used to process user str input,
     as referencing a model_type, metric, or scaler.'''
 
+    if not isinstance(in_str, str):
+        return in_str
+
     in_str = in_str.replace('_', ' ')
     in_str = in_str.lower()
     in_str = in_str.rstrip()

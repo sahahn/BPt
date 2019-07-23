@@ -13,6 +13,9 @@ GRIDS = {
         'ELASTIC1': {'C': sp_uniform(loc=1e-4, scale=1e+4),
                      'l1_ratio': sp_uniform()},
 
+        'ELASTIC2': {'alpha': sp_uniform(loc=1e-4, scale=1e+4),
+                     'l1_ratio': sp_uniform()},
+
         'RF1': {'n_estimators': list(range(3, 500)),
                 'max_depth': [None] + list(range(2, 100, 5)),
                 'max_features': sp_uniform(),

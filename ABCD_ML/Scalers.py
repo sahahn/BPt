@@ -5,6 +5,7 @@ File containing the various input data scalers.
 """
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer)
+from sklearn.decomposition import PCA
 
 # Scalers differs from scorers and models in that the types are not restricted
 # by a given problem type. Therefore no AVALIABLE dictionary is neccisary,
@@ -16,7 +17,10 @@ SCALERS = {
 
     'robust': (RobustScaler, {'quantile_range': (5, 95)}),
 
-    'power': (PowerTransformer, {'method': 'yeo-johnson', 'standardize': True})
+    'power': (PowerTransformer, {'method': 'yeo-johnson',
+                                 'standardize': True}),
+
+    'pca': (PCA, {})
     }
 
 

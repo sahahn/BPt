@@ -14,8 +14,8 @@ from sklearn.gaussian_process import (GaussianProcessClassifier,
                                       GaussianProcessRegressor)
 from sklearn.ensemble import (GradientBoostingClassifier, AdaBoostClassifier,
                               RandomForestRegressor, RandomForestClassifier)
-from sklearn.linear_model import (LogisticRegression, LogisticRegressionCV,
-                                  ElasticNetCV, LinearRegression,
+from sklearn.linear_model import (LogisticRegression, ElasticNet,
+                                  LinearRegression, HuberRegressor,
                                   OrthogonalMatchingPursuitCV, LarsCV, RidgeCV)
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
@@ -27,6 +27,7 @@ from sklearn.calibration import CalibratedClassifierCV
 
 AVALIABLE = {
         'binary': {
+                        'user passed':        'user passed',
                         'logistic':           'logistic',
                         'linear':             'logistic',
                         'lasso':              'lasso logistic',
@@ -59,11 +60,12 @@ AVALIABLE = {
                         'svm rs':             'svm classifier rs',
         },
         'regression': {
+                        'user passed':        'user passed',
                         'linear':             'linear regressor',
                         'knn':                'knn regressor',
                         'knn gs':             'knn regressor gs',
-                        'elastic cv':         'elastic net cv',
-                        'elastic net cv':     'elastic net cv',
+                        'elastic net':        'elastic net',
+                        'elastic net rs':     'elastic net rs',
                         'omp cv':             'omp cv',
                         'lars cv':            'lars cv',
                         'ridge cv':           'ridge cv',
@@ -76,6 +78,7 @@ AVALIABLE = {
         },
         'categorical': {
                 'multilabel': {
+                        'user passed':        'user passed',
                         'knn':                'knn classifier',
                         'knn gs':             'knn classifier gs',
                         'dt':                 'dt classifier',
@@ -146,8 +149,11 @@ MODELS = {
     'elastic net logistic rs': get_rs_tuple('ELASTIC1',
                                             'elastic net logistic'),
 
-    'logistic cv': (LogisticRegressionCV, {'max_iter': 5000,
-                                           'multi_class': 'auto'}),
+    'elastic net': (ElasticNet, {'max_iter': 5000}),
+
+    'elastic net rs': get_rs_tuple('ELASTIC2', 'elastic net'),
+
+    'huber': (HuberRegressor, {}),
 
     'gaussian nb': (GaussianNB, {}),
 
@@ -164,8 +170,6 @@ MODELS = {
     'dt classifier gs': get_gs_tuple('DTC1', 'dt classifier'),
 
     'linear regressor': (LinearRegression, {'fit_intercept': True}),
-
-    'elastic net cv': (ElasticNetCV, {'max_iter': 5000}),
 
     'omp cv': (OrthogonalMatchingPursuitCV, {}),
 
@@ -273,9 +277,10 @@ def show_type(problem_type, avaliable_by_type, show_model_help,
         print()
 
         for model in avaliable_by_type[problem_type]:
-                show_model(model, show_model_help, show_default_params,
-                           show_grid_params)
-                print()
+                if model != 'user passed':
+                        show_model(model, show_model_help, show_default_params,
+                                   show_grid_params)
+                        print()
 
 
 def show_model(model, show_model_help, show_default_params, show_grid_params):

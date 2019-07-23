@@ -14,7 +14,7 @@ import ABCD_ML
 ML = ABCD_ML.ABCD_ML()
 
 
-Data Loader Phase (2):
+Data Loading Phase (2):
 -----------
 
 -Load a column name mapping (1) (optional) 
@@ -46,7 +46,7 @@ ML.define_validation_strategy()
 ML.train_test_split()
 
 
-Modeling Phase (3):
+Modeling Phase (4):
 -----------
 
 -Set default ML parameters for calls to Evaluate and Test (1) (optional)
@@ -56,7 +56,7 @@ ML.set_default_ML_params()
 ML.Evaluate()
 
 
-Testing Phase (4):
+Testing Phase (5):
 -----------
 
 -Test a final model/scaling stratagy as trained on the train set and evalauted on the test set

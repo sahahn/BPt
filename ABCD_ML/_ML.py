@@ -193,7 +193,9 @@ def set_default_ML_params(self, problem_type='default', metric='default',
 
     elif 'class_weight' not in self.default_ML_params:
         self.default_ML_params['class_weight'] = 'balanced'
-        self._print('No default class weight setting passed, set to balanced')
+        if self.default_ML_params['problem_type'] != 'regression':
+            self._print('No default class weight setting passed,',
+                        'set to balanced')
 
     if n_jobs != 'default':
         assert isinstance(n_jobs, int), 'n_jobs must be int'
@@ -373,10 +375,6 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         across each repeated K-fold.
 
     float
-        The mean micro score (as set by input metric) across each
-        fold with the repeated K-fold.
-
-    float
         The standard deviation of the micro score (as set by input metric)
         across each fold with the repeated K-fold.
 
@@ -409,10 +407,9 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
                                              ML_params['n_repeats'],
                                              ML_params['n_splits'])
 
-        self._print('Macro mean score: ', summary_scores[0])
+        self._print('Mean score: ', summary_scores[0])
         self._print('Macro std in score: ', summary_scores[1])
-        self._print('Micro mean score: ', summary_scores[2])
-        self._print('Micro std in score: ', summary_scores[3])
+        self._print('Micro std in score: ', summary_scores[2])
         self._print()
 
     # Return the raw scores from each fold

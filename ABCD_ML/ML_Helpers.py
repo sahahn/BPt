@@ -32,9 +32,6 @@ def compute_macro_micro(scores, n_repeats, n_splits):
         The standard deviation of the macro score
 
     float
-        The mean micro score
-
-    float
         The standard deviation of the micro score
     '''
 
@@ -42,7 +39,7 @@ def compute_macro_micro(scores, n_repeats, n_splits):
     macro_scores = np.mean(np.reshape(scores, (n_repeats, n_splits)), axis=1)
 
     return (np.mean(macro_scores), np.std(macro_scores),
-            np.mean(scores), np.std(scores))
+            np.std(scores))
 
 
 def proc_input(in_vals):

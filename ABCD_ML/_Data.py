@@ -511,6 +511,11 @@ def load_strat(self, loc, col_names, dataset_type='default',
 
     For example: Sex might be loaded here, and used later to ensure
     that any validation splits retain the same distribution of each sex.
+
+    There is a reason strat is loaded after data, covars and targets,
+    If you re-load any of them for whatever reason, after strat is already
+    loaded, it could potentially lead to weird bugs.
+    The easiest option is to just load strat last.
     '''
 
     self._print('Reading strat/stratification values!')
@@ -556,6 +561,9 @@ def load_exclusions(self, loc=None, exclusions=None):
 
     Notes
     ----------
+    For best/most reliable performance across all data loading cases,
+    exclusions should be loaded before data, covars and targets.
+
     If default subject id behavior is set to False,
     reading subjects from a exclusion loc might not
     function as expected.

@@ -71,6 +71,7 @@ AVALIABLE = {
                         'random forest rs':   'random forest regressor rs',
                         'gp':                 'gp regressor',
                         'light gbm':          'light gbm regressor',
+                        'light gbm rs':       'light gbm regressor rs',
                         'svm':                'svm regressor',
                         'svm rs':             'svm regressor rs',
         },
@@ -96,7 +97,7 @@ def get_search_params(grid_name, model_name, gs=False):
         params = {}
         params['iid'] = False
         params['estimator'] = model_name
-        params['pre_dispatch'] = 'n_jobs - 2'
+        params['pre_dispatch'] = 'n_jobs - 1'
 
         if gs:
                 params['param_grid'] = get(grid_name, model_name)
@@ -204,11 +205,11 @@ MODELS = {
 
     'gp classifier': (GaussianProcessClassifier, {'n_restarts_optimizer': 5}),
 
-    'svm regressor': (SVR, {'kernel': 'rbf'}),
+    'svm regressor': (SVR, {'kernel': 'rbf', 'gamma': 'scale'}),
 
     'svm regressor rs': get_rs_tuple('SVM1', 'svm regressor'),
 
-    'svm classifier': (SVC, {'kernel': 'rbf'}),
+    'svm classifier': (SVC, {'kernel': 'rbf', 'gamma': 'scale'}),
 
     'svm classifier rs': get_rs_tuple('SVM1', 'svm classifier'),
     }

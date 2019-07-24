@@ -1,6 +1,11 @@
-Install
-============
+Pip Installation
+================
 
-Nothing right now.
+Make sure you have pip installed, then:
+::
+
+    pip install ABCD_ML
+
+
 
 

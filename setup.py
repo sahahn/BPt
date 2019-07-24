@@ -4,7 +4,7 @@ setup(name='ABCD_ML',
       version='0.1',
       description='Python based Machine Learning library, for tabular ' +
                   'Neuroimaging data, specifically geared towards the' +
-                  'ABCD dataset.',
+                  ' ABCD dataset.',
       url='http://github.com/sahahn/ABCD_ML',
       author='Sage Hahn',
       author_email='sahahn@euvm.edu',

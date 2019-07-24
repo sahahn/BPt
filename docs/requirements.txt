@@ -1,6 +1,6 @@
-'scikit-learn',
-'lightgbm',
-'xgboost',
-'numpy',
-'scipy',
-'pandas'
+scikit-learn
+lightgbm
+xgboost
+numpy
+scipy
+pandas

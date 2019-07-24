@@ -28,15 +28,15 @@ def Load_Name_Map(self, loc, dataset_type='default',
         The type of file to load from.
         Dataset types are,
 
-        - 'default' : Use the class defined default dataset type,
+        - 'default' : Use the class defined default dataset type,\
             if not set by the user this is 'basic'.
 
-        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
+        - 'basic' : ABCD2p0NDA style (.txt and tab seperated)
 
         - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
 
-        - 'custom' : A user-defined custom dataset. Right now this is only
-            supported as a comma seperated file, with the subject names in a
+        - 'custom' : A user-defined custom dataset. Right now this is only\
+            supported as a comma seperated file, with the subject names in a\
             column called 'src_subject_id'.
 
         (default = 'default')
@@ -77,6 +77,7 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         and will assume them all to be of the same dataset_type if one
         dataset_type is passed, or if they differ in type, a list must be
         passed to dataset_type with the different types in order.
+
         Note: some proc will be done on each loaded dataset before merging
         with the rest (duplicate subjects, proc for eventname ect...), but
         other dataset loading behavior won't occur until after the merge,
@@ -89,22 +90,22 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         it is assumed all datasets are the same type.
         Where each dataset type is,
 
-        - 'default' : Use the class defined default dataset type,
+        - 'default' : Use the class defined default dataset type,\
             if not set by the user this is 'basic'.
 
-        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
-            Typically the default columns, and therefore not neuroimaging
+        - 'basic' : ABCD2p0NDA style (.txt and tab seperated)\
+            Typically the default columns, and therefore not neuroimaging\
             data, will be dropped, also not including the eventname column.
 
-        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
-            The first 2 columns before 'src_subject_id'
-            (typically the default columns, and therefore not neuroimaging
-            data - also not including the eventname column), will be dropped.
+        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)\
+            The first 2 columns before 'src_subject_id'\
+            (typically the default columns, and therefore not neuroimaging\
+            data - also not including the eventname column), will be dropped.\
 
-        - 'custom' : A user-defined custom dataset. Right now this is only
-            supported as a comma seperated file, with the subject names in a
-            column called 'src_subject_id', and can optionally have
-            'eventname'. No columns will be dropped,
+        - 'custom' : A user-defined custom dataset. Right now this is only\
+            supported as a comma seperated file, with the subject names in a\
+            column called 'src_subject_id', and can optionally have\
+            'eventname'. No columns will be dropped,\
             (except eventname) or unless specific drop keys are passed.
 
         (default = 'default')
@@ -114,17 +115,19 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         name, then that column will be dropped.
         (Note: if a name mapping exists, this drop step will be
         conducted after renaming)
+
         (default = [])
 
     filter_outlier_percent : int, float, tuple or None, optional
-        For float / ordinal data only.
+        *For float / ordinal data only.*
         A percent of values to exclude from either end of the
         targets distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
-        (default = None)
         If over 1 then treated as a percent, if under 1, then
         used directly.
+
+        (default = None)
 
     winsorize_val : float, tuple or None, optional
         The (winsorize_val[0])th lowest values are set to
@@ -133,8 +136,10 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         are set to the (1 - winsorize_val[1])th percentile.
         If one value passed, used for both ends.
         If None, then no winsorization performed.
+
         Note: Winsorizing will be performed after
         filtering for outliers if values are passed for both.
+
         (default = None)
 
     drop_col_duplicates : float or None/False, optional
@@ -147,6 +152,7 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         Note: just drops duplicated within just loaded data.
         Call self.Drop_Data_Duplicates() to drop duplicates across
         all loaded data.
+
         (default = None)
 
 
@@ -155,10 +161,15 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
     For loading a truly custom dataset, an advanced user can
     load all the data themselves into a pandas DataFrame.
     They will need to have the DataFrame indexed by 'src_subject_id'
-    e.g., data = data.set_index('src_subject_id')
+    e.g., ::
+
+        data = data.set_index('src_subject_id')
+
     and subject ids will need to be in the correct style...
-    but if they do all this, then they can just set
-    self.data = whatever_they_loaded_their_data_as
+    but if they do all this, then they can just set ::
+
+        self.data = data
+
     """
 
     # Load in the dataset & proc. dataset type
@@ -240,6 +251,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
     col_names : str or list
         The name(s) of the column(s) to load.
+
         Note: Must be in the same order as data types passed in.
 
     data_types : {'binary', 'categorical', 'ordinal', 'float'} or list of
@@ -256,15 +268,15 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         The type of file to load from.
         Dataset types are,
 
-        - 'default' : Use the class defined default dataset type,
+        - 'default' : Use the class defined default dataset type,\
             if not set by the user this is 'basic'.
 
-        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
+        - 'basic' : ABCD2p0NDA style (.txt and tab seperated)
 
         - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
 
-        - 'custom' : A user-defined custom dataset. Right now this is only
-            supported as a comma seperated file, with the subject names in a
+        - 'custom' : A user-defined custom dataset. Right now this is only\
+            supported as a comma seperated file, with the subject names in a\
             column called 'src_subject_id'.
 
         (default = 'default')
@@ -272,6 +284,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
     dummy_code_categorical: bool, optional
         If True, then categorical variables are dummy coded.
         If False, then categorical variables are one-hot encoded.
+
         (default = True)
 
     filter_float_outlier_percent, float, int, tuple or None, optional
@@ -280,19 +293,24 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         targets distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_float_outlier_percent` to None for no filtering.
+
         (default = None)
 
     standardize : bool, optional
         If True, scales any float/ordinal covariate loaded to have
         a mean of 0 and std of 1.
+
         Note: Computed before normalization, if both set to True,
         and both computed after filter_float_outlier_percent.
+
         (default = True)
 
     normalize : bool, optional
         If True, scales any float/ordinal covariates loaded
         to be between 0 and 1.
+
         Note: Computed after standardization, if both set to True.
+
         (default = False)
     '''
 
@@ -381,15 +399,15 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
         The type of file to load from.
         Dataset types are,
 
-        - 'default' : Use the class defined default dataset type,
-            if not set by the user this is 'basic'.
+        - 'default' : Use the class defined default dataset type,\
+            if not set by the user this is 'basic'.\
 
         - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
 
         - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
 
-        - 'custom' : A user-defined custom dataset. Right now this is only
-            supported as a comma seperated file, with the subject names in a
+        - 'custom' : A user-defined custom dataset. Right now this is only\
+            supported as a comma seperated file, with the subject names in a\
             column called 'src_subject_id'.
 
         (default = 'default')
@@ -400,6 +418,7 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
         target distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
+
         (default = None).
 
     Notes
@@ -407,17 +426,17 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
     Targets can be either 'binary', 'categorical', 'ordinal' or 'float',
     where ordinal and float are treated the same.
 
-    For binary: targets are read in and label encoded to be 0 or 1,
-        Will also work if passed column of unique string also, e.g. 'M' and 'F'
+    - Binary : Targets are read in and label encoded to be 0 or 1, \
+    Will also work if passed column of unique string also, e.g. 'M' and 'F'
 
-    For categorical: targets are read in and by default one-hot encoded,
-        Note: This function is designed only to work with categorical targets
-        read in from one column!
-        Reading multiple targets from multiple places is not
+    - Categorical : Targets are read in and by default one-hot encoded,\
+        Note: This function is designed only to work with categorical targets\
+        read in from one column!\
+        Reading multiple targets from multiple places is not\
         supported as of now.
 
-    For ordinal and float: targets are read in as a floating point number,
-        and optionally then filtered for outliers with the
+    - Ordinal and Float : Targets are read in as a floating point number,\
+        and optionally then filtered for outliers with the\
         filter_outlier_percent flag.
     '''
 
@@ -479,15 +498,15 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
         The type of file to load from.
         Dataset types are,
 
-        - 'default' : Use the class defined default dataset type,
+        - 'default' : Use the class defined default dataset type,\
             if not set by the user this is 'basic'.
 
-        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
+        - 'basic' : ABCD2p0NDA style (.txt and tab seperated)
 
         - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
 
-        - 'custom' : A user-defined custom dataset. Right now this is only
-            supported as a comma seperated file, with the subject names in a
+        - 'custom' : A user-defined custom dataset. Right now this is only\
+            supported as a comma seperated file, with the subject names in a\
             column called 'src_subject_id'.
 
         (default = 'default')

@@ -58,3 +58,5 @@ html_static_path = ['_static']
 
 html_logo = 'logo/HG.jpg'
 autoclass_content = 'both'
+
+html_theme_options = {'collapse_navigation': False}

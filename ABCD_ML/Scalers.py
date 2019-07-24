@@ -76,11 +76,13 @@ def Show_Data_Scalers(self, show_scaler_help=False, show_default_params=False):
     show_scaler_help : bool, optional
         Flag, if set to True, then will display the full docstring
         for each scaler.
+
         (default = False)
 
     show_default_params : bool, optional
         Flag, if set to True, then will display the ABCD_ML
         default parameters for each scaler.
+
         (default = False)'''
 
     print('Visit: ')

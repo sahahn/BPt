@@ -43,7 +43,7 @@ class ABCD_ML():
             The default dataset_type / file-type to load from.
             Dataset types are,
 
-            - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
+            - 'basic' : ABCD2p0NDA style (.txt and tab seperated)
 
             - 'explorer' : 2.0_ABCD_Data_Explorer style \
                            (.csv and comma seperated)
@@ -186,6 +186,7 @@ class ABCD_ML():
             If a list is passed, then each element should be a str,
             and they will be combined into all unique
             combinations of the elements of the list.
+
             (default = None)
 
         stratify : str, list or None, optional
@@ -201,24 +202,25 @@ class ABCD_ML():
             If a list is passed, then each element should be a str,
             and they will be combined into all unique combinations of
             the elements of the list.
+
             (default = None)
 
         Notes
         ----------
         Validation stratagy choices are explained in more detail:
 
-            Random: Just make splits randomly
+        - Random : Just make validation splits randomly.
 
-            Group Preserving: Make splits that ensure subjects that are
-                part of specific group are all within the same fold
-                e.g., split by family, so that people with the same family id
+        - Group Preserving : Make splits that ensure subjects that are\
+                part of specific group are all within the same fold\
+                e.g., split by family, so that people with the same family id\
                 are always a part of the same fold.
 
-            Stratifying: Make splits such that the distribution of a given
-                group is as equally split between two folds as possible,
-                so simmilar to matched halves or
-                e.g., in a binary or categorical predictive context,
-                splits could be done to ensure roughly equal distribution
+        - Stratifying : Make splits such that the distribution of a given \
+                group is as equally split between two folds as possible, \
+                so simmilar to matched halves or \
+                e.g., in a binary or categorical predictive context, \
+                splits could be done to ensure roughly equal distribution \
                 of the dependent class.
 
         For now, it is possible to define only one overarching stratagy
@@ -298,29 +300,35 @@ class ABCD_ML():
 
     def Train_Test_Split(self, test_size=None, test_loc=None,
                          test_subjects=None, random_state=None):
-        '''Define the overarching train / test split, highly reccomended.
+        '''Define the overarching train / test split, *highly reccomended*.
 
-        test_size: float, int or None, optional
+        Parameters
+        ----------
+        test_size : float, int or None, optional
             If float, should be between 0.0 and 1.0 and represent
             the proportion of the dataset to be included in the test split.
             If int, represents the absolute number (or target number) to
             include in the testing group.
             Set to None if using test_loc or test_subjects.
+
             (default = None)
 
         test_loc : str, Path or None, optional
             Location of a file to load in test subjects from.
             The file should be formatted as one subject per line.
+
             (default = None)
 
         test_subjects : list, set, array-like or None, optional
             An explicit list of subjects to constitute the testing set
+
             (default = None)
 
         random_state : int None or 'default', optional
             If using test_size, then can optionally provide a random state, in
             order to be able to recreate an exact test set.
             If set to default, will use the value saved in self.random_state
+
             (default = 'default')
         '''
 
@@ -351,7 +359,7 @@ class ABCD_ML():
                     len(self.test_subjects))
 
     # Machine Learning functionality
-    from ABCD_ML._ML import (set_default_ML_params,
+    from ABCD_ML._ML import (Set_Default_ML_Params,
                              Evaluate,
                              Test,
                              _premodel_check,

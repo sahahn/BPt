@@ -8,7 +8,7 @@ from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
 
-def set_default_ML_params(self, problem_type='default', metric='default',
+def Set_Default_ML_Params(self, problem_type='default', metric='default',
                           data_scaler='default', n_splits='default',
                           n_repeats='default', int_cv='default',
                           class_weight='default', n_jobs='default',
@@ -26,7 +26,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
 
         - 'regression' : For ML on float or ordinal target data
         - 'binary' : For ML on binary target data
-        - 'categorical' : For ML on categorical target data,
+        - 'categorical' : For ML on categorical target data,\
                           as either multilabel or multiclass.
         - 'default' : Use 'regression' if nothing else already defined
 
@@ -37,14 +37,19 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         score and during model parameter selection.
         If `metric` left as 'default', then the default metric/scorer
         for that problem types will be used.
-        'regression'  : 'r2',
-        'binary'      : 'roc',
-        'categorical' : 'weighted roc auc'
         Note, some metrics are only avaliable for certain problem types.
         For a full list of supported metrics call:
         self.Show_Metrics, with optional problem type parameter.
         If 'default', and not already defined, set to default
         metric for the problem type.
+
+        - 'regression'  : 'r2',
+        - 'binary'      : 'roc',
+        - 'categorical' : 'weighted roc auc'
+
+        For a full list of supported metrics call:
+        :func:`Show_Metrics`
+
         (default = 'default')
 
     data_scaler : str, list or None optional
@@ -53,8 +58,10 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         If a list is passed, then scalers will be applied in that order.
         If None, then no scaling will be applied.
         If 'default', and not already defined, set to 'standard'
+
         For a full list of supported options call:
-        self.Show_Data_Scalers()
+        :func:`Show_Data_Scalers`
+
         (default = 'default')
 
     n_splits : int or 'default', optional
@@ -64,6 +71,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         chosen as a trade off between bias and variance, in addition to
         as a function of sample size.
         If 'default', and not already defined, set to 3
+
         (default = 'default')
 
     n_repeats : int or 'default', optional
@@ -72,6 +80,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         k-fold CV. This parameter is typical chosen as a balance between
         run time, and accuratly accessing model performance.
         If 'default', and not already defined, set to 2
+
         (default = 2)
 
     int_cv : int or 'default', optional
@@ -80,6 +89,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         parameter selection. A value greater
         then 2 must be passed.
         If 'default', and not already defined, set to 3
+
         (default = 'default')
 
     class weight : {dict, 'balanced', None, 'default'}, optional
@@ -87,6 +97,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
         If 'default', and not already defined, set to 'balanced'
+
         (default = 'default')
 
     n_jobs : int or 'default', optional
@@ -94,12 +105,14 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         This should be the number of procesors avaliable, if wanting to run
         as fast as possible.
         if 'default', and not already defined, set to 1.
+
         (default = 'default')
 
     n_iter : int or 'default', optional
         The number of random search parameters to try, used
         only if using random search.
         if 'default', and not already defined, set to 10.
+
         (default = 'default')
 
     random_state : int, RandomState instance, None or 'default', optional
@@ -108,6 +121,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         If 'default', use the saved value within self,
         (defined when initing ABCD_ML class) ^,
         Or can define a different random state for use in ML.
+
         (default = 'default')
 
     extra_params : dict or 'default', optional
@@ -115,10 +129,14 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         added when the user wants to provide a specific model/classifier,
         or data scaler, with updated (or new) parameters.
         These can be supplied by creating another dict within extra_params.
-        E.g., extra_params[model_name] = {'model_param' : new_value}
+        E.g., ::
+
+            extra_params[model_name] = {'model_param' : new_value}
+
         Where model param is a valid argument for that model, and model_name in
         this case is the str indicator passed to model_type.
         If 'default', and not already defined, set to empty dict.
+
         (default = 'default')
 
     Notes
@@ -127,7 +145,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
     are being set over and over. For example, if only exploring a binary
     problem_type, the default type should be set to 'binary',
     and then the user won't have to pass it as an argument everytime they call
-    Evaluate().
+    ``Evaluate``.
     '''
 
     default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
@@ -318,7 +336,7 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
         (default = 'default')
 
-    class weight : {dict, 'balanced', None, 'default'}, optional
+    class_weight : {dict, 'balanced', None, 'default'}, optional
         Only used for binary and categorical problem types.
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
@@ -357,7 +375,10 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         or data scaler, with updated (or new) parameters.
         These can be supplied by creating another dict within extra_params.
 
-        E.g., extra_params[model_name] = {'model_param' : new_value}
+        E.g., ::
+
+            extra_params[model_name] = {'model_param' : new_value}
+
         Where model param is a valid argument for that model, and model_name in
         this case is the str indicator passed to model_type.
         If 'default', use the saved value within self.default_ML_params.
@@ -439,12 +460,14 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
     Parameters
     ----------
+
     model_type : str or list of str
         Each string refers to a type of model to train.
         If a list of strings is passed then an ensemble model
         will be created over all individual models.
+
         For a full list of supported options call:
-        self.Show_Model_Types(), with optional problem type parameter.
+        :func:`Show_Model_Types`
 
     problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
 
@@ -471,15 +494,16 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
     metric : str or list, optional
         Indicator for which metric(s) to use for calculating
         score and during model parameter selection.
-        If `metric` left as 'default', then the default metric/scorer
-        for that problem types will be used.
-        'regression'  : 'r2',
-        'binary'      : 'roc',
-        'categorical' : 'weighted roc auc'
-        Note, some metrics are only avaliable for certain problem types.
-        For a full list of supported metrics call:
-        self.Show_Metrics, with optional problem type parameter.
         If 'default', use the saved value within self.default_ML_params.
+        Note, some metrics are only avaliable for certain problem types.
+
+        - 'regression'  : 'r2',
+        - 'binary'      : 'roc',
+        - 'categorical' : 'weighted roc auc'
+
+        For a full list of supported metrics call:
+        :func:`Show_Metrics`
+
         (default = 'default')
 
     data_scaler : str, list or None optional
@@ -488,8 +512,10 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         If a list is passed, then scalers will be applied in that order.
         If None, then no scaling will be applied.
         If 'default', use the saved value within self.default_ML_params.
+
         For a full list of supported options call:
-        self.Show_Data_Scalers()
+        :func:`Show_Data_Scalers`
+
         (default = 'default')
 
     int_cv : int or 'default', optional
@@ -498,6 +524,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         parameter selection. A value greater
         then 2 must be passed.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     class weight : {dict, 'balanced', None, 'default'}, optional
@@ -505,6 +532,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     n_jobs : int or 'default', optional
@@ -512,12 +540,14 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         This should be the number of procesors avaliable, if wanting to run
         as fast as possible.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     n_iter : int or 'default', optional
         The number of random search parameters to try, used
         only if using random search.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     random_state : int, RandomState instance, None or 'default', optional
@@ -527,12 +557,14 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         (defined when initing ABCD_ML class) ^,
         Or a different ML params random state is used, if defined when
         calling set default ML params.
+
         (default = 'default')
 
     return_model : bool, optional
         If `return_model` is True, then model constructed and tested
         will be returned in addition to the score. If False,
         just the score will be returned.
+
         (default = False)
 
     extra_params : dict or 'default', optional
@@ -540,10 +572,14 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         added when the user wants to provide a specific model/classifier,
         or data scaler, with updated (or new) parameters.
         These can be supplied by creating another dict within extra_params.
-        E.g., extra_params[model_name] = {'model_param' : new_value}
+        E.g., ::
+
+            extra_params[model_name] = {'model_param' : new_value}
+
         Where model param is a valid argument for that model, and model_name in
         this case is the str indicator passed to model_type.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     Returns
@@ -596,7 +632,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 def _premodel_check(self, problem_type='default'):
     '''Internal helper function to ensure that self._prepare_data()
     has been called, and to force a train/test split if not already done.
-    Will also call set_default_ML_params if not already called.
+    Will also call Set_Default_ML_Params if not already called.
 
     Parameters
     ----------
@@ -625,11 +661,11 @@ def _premodel_check(self, problem_type='default'):
 
         self._print('Setting default ML params.')
         self._print('Note, if the following values are not desired,',
-                    'call self.set_default_ML_params()')
+                    'call self.Set_Default_ML_Params()')
         self._print('Or just pass values everytime to Evaluate',
                     'or Test, and these default values will be ignored')
 
-        self.set_default_ML_params(problem_type=problem_type)
+        self.Set_Default_ML_Params(problem_type=problem_type)
 
 
 def _make_ML_params(self, args):

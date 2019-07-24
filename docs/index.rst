@@ -7,11 +7,11 @@ This is a project.
    :maxdepth: 1
    :caption: Intall
 
-   installation/install
+   install
 
 .. toctree::
-   :maxdepth: 1
-   :caption: ABCD_ML
+   :maxdepth: 2
+   :caption: ABCD_ML Class Usage
 
    ABCD_ML_class_docs
 

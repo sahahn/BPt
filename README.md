@@ -50,7 +50,7 @@ Modeling Phase (4):
 -----------
 
 -Set default ML parameters for calls to Evaluate and Test (1) (optional)
-ML.set_default_ML_params()
+ML.Set_Default_ML_Params()
 
 -Evaluate different choices of models and data scaling over different metrics on the training set (2)
 ML.Evaluate()

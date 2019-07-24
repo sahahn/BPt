@@ -232,16 +232,19 @@ def Show_Model_Types(self, problem_type=None, show_model_help=False,
         ----------
         problem_type : {binary, categorical, regression, None}, optional
             Where `problem_type` is the underlying ML problem
+
             (default = None)
 
         show_model_help : bool, optional
             Flag, if set to True, then will display the full docstring
             for each model, note: this is pretty terrible to read.
+
             (default = False)
 
         show_default_params : bool, optional
             Flag, if set to True, then will display the ABCD_ML
             default parameters for each model.
+
             (default = False)
 
         show_grid_params : bool, optional
@@ -249,6 +252,7 @@ def Show_Model_Types(self, problem_type=None, show_model_help=False,
             when displaying default params for each model will print out the
             grid params also, by default it will skip these as the output is
             messy.
+
             (default = False)
         '''
 

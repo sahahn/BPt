@@ -32,7 +32,7 @@ class Model():
 
         ML_params : dict
             Dictionary of different ML params, the following must be included,
-            (See the docstring for ABCD_ML.set_default_ML_params for a more
+            (See the docstring for ABCD_ML.Set_Default_ML_Params for a more
             detailed description of all parameters contained within ML_params)
 
             - metrics : str or list,

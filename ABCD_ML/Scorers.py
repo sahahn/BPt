@@ -379,6 +379,7 @@ def Show_Metrics(self, problem_type=None):
     ----------
     problem_type : {binary, categorical, regression, None}, optional
         Where `problem_type` is the underlying ML problem
+
         (default = None)
     '''
     print('Visit: ')

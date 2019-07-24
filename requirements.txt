@@ -4,3 +4,4 @@ xgboost
 numpy
 scipy
 pandas
+matplotlib

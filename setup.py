@@ -16,7 +16,8 @@ setup(name='ABCD_ML',
           'xgboost',
           'numpy',
           'scipy',
-          'pandas'
+          'pandas',
+          'matplotlib'
       ],
       test_suite='nose.collector',
       tests_require=['nose'],

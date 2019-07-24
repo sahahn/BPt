@@ -18,32 +18,32 @@ Data Loading Phase (2):
 -----------
 
 -Load a column name mapping (1) (optional) 
-ML.load_name_map()
+ML.Load_Name_Map()
 
 -Load in subjects to exclude from all analysis (1) (optional) 
-ML.load_exclusions()
+ML.Load_Exclusions()
 
 -Load in neuroimaging ROI data (2)
-ML.load_data()
+ML.Load_Data()
 
 -Load in target data / the data you want to predict (2)
-ML.load_targets()
+ML.Load_Targets()
 
 -Load in 'co-variate' type data (2) (optional) 
-ML.load_covars()
+ML.Load_Covars()
 
 -Load in potential stratification values, for use in different CV stratagies (3) (optional)
-ML.load_strat()
+ML.Load_Strat()
 
 
 Validation Phase (3):
 -----------
 
 -Define an overarching validation stratagy (1) (optional)
-ML.define_validation_strategy()
+ML.Define_Validation_Strategy()
 
 -Define a global train/test split (2) (required, but if the user really wants no testing set, then can set test_size=0)
-ML.train_test_split()
+ML.Train_Test_Split()
 
 
 Modeling Phase (4):

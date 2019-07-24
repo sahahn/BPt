@@ -33,7 +33,7 @@ def get_data_scaler(scaler_str, extra_params):
         `scaler_str` refers to the type of scaling to apply
         to the saved data during model evaluation.
         For a full list of supported options call:
-        self.show_data_scalers()
+        self.Show_Data_Scalers()
 
     extra_params : dict, optional
         Any extra params being passed.
@@ -62,13 +62,13 @@ def get_data_scaler(scaler_str, extra_params):
     return scaler(**params)
 
 
-def show_scalers(self, show_scaler_help=False, show_default_params=False):
-    '''Just calls show_data_scalers'''
+def Show_Scalers(self, show_scaler_help=False, show_default_params=False):
+    '''Just calls Show_Data_Scalers'''
 
-    self.show_data_scalers()
+    self.Show_Data_Scalers()
 
 
-def show_data_scalers(self, show_scaler_help=False, show_default_params=False):
+def Show_Data_Scalers(self, show_scaler_help=False, show_default_params=False):
     '''Print out the avaliable data scalers.
 
     Parameters

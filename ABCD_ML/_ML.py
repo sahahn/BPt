@@ -42,7 +42,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         'categorical' : 'weighted roc auc'
         Note, some metrics are only avaliable for certain problem types.
         For a full list of supported metrics call:
-        self.show_metrics, with optional problem type parameter.
+        self.Show_Metrics, with optional problem type parameter.
         If 'default', and not already defined, set to default
         metric for the problem type.
         (default = 'default')
@@ -54,7 +54,7 @@ def set_default_ML_params(self, problem_type='default', metric='default',
         If None, then no scaling will be applied.
         If 'default', and not already defined, set to 'standard'
         For a full list of supported options call:
-        self.show_data_scalers()
+        self.Show_Data_Scalers()
         (default = 'default')
 
     n_splits : int or 'default', optional
@@ -245,18 +245,19 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
     Parameters
     ----------
-    model_type : str or list of str,
+    model_type : str or list of str
         Each string refers to a type of model to train.
         If a list of strings is passed then an ensemble model
         will be created over all individual models.
+
         For a full list of supported options call:
-        self.show_model_types(), with optional problem type parameter.
+        :func:`Show_Model_Types`
 
     problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
 
         - 'regression' : For ML on float or ordinal target data
         - 'binary' : For ML on binary target data
-        - 'categorical' : For ML on categorical target data,
+        - 'categorical' : For ML on categorical target data, \
                           as either multilabel or multiclass.
         - 'default' : Use the name problem type within self.default_ML_params.
 
@@ -265,15 +266,16 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
     metric : str or list, optional
         Indicator for which metric(s) to use for calculating
         score and during model parameter selection.
-        If `metric` left as 'default', then the default metric/scorer
-        for that problem types will be used.
-        'regression'  : 'r2',
-        'binary'      : 'roc',
-        'categorical' : 'weighted roc auc'
-        Note, some metrics are only avaliable for certain problem types.
-        For a full list of supported metrics call:
-        self.show_metrics, with optional problem type parameter.
         If 'default', use the saved value within self.default_ML_params.
+        Note, some metrics are only avaliable for certain problem types.
+
+        - 'regression'  : 'r2',
+        - 'binary'      : 'roc',
+        - 'categorical' : 'weighted roc auc'
+
+        For a full list of supported metrics call:
+        :func:`Show_Metrics`
+
         (default = 'default')
 
     data_scaler : str, list or None optional
@@ -282,25 +284,29 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         If a list is passed, then scalers will be applied in that order.
         If None, then no scaling will be applied.
         If 'default', use the saved value within self.default_ML_params.
+
         For a full list of supported options call:
-        self.show_data_scalers()
+        :func:`Show_Data_Scalers`
+
         (default = 'default')
 
     n_splits : int or 'default', optional
-        evaluate_model performs a repeated k-fold model evaluation,
+        ``Evaluate`` performs a repeated k-fold model evaluation,
         `n_splits` refers to the k. E.g., if set to 3, then a 3-fold
         repeated CV will be performed. This parameter is typically
         chosen as a trade off between bias and variance, in addition to
         as a function of sample size.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     n_repeats : int or 'default', optional
-        evaluate_model performs a repeated k-fold model evaluation,
+        ``Evaluate`` performs a repeated k-fold model evaluation,
         `n_repeats` refers to the number of times to repeat the
         k-fold CV. This parameter is typical chosen as a balance between
         run time, and accuratly accessing model performance.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 2)
 
     int_cv : int or 'default', optional
@@ -309,6 +315,7 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         parameter selection. A value greater
         then 2 must be passed.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     class weight : {dict, 'balanced', None, 'default'}, optional
@@ -316,6 +323,7 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     n_jobs : int or 'default', optional
@@ -323,21 +331,24 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         This should be the number of procesors avaliable, if wanting to run
         as fast as possible.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     n_iter : int or 'default', optional
         The number of random search parameters to try, used
         only if using random search.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     random_state : int, RandomState instance, None or 'default', optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
         If 'default', use the saved value within self,
-        (defined when initing ABCD_ML class) ^,
+        (defined when initing ABCD_ML class).
         Or a different ML params random state is used, if defined when
         calling set default ML params.
+
         (default = 'default')
 
     extra_params : dict or 'default', optional
@@ -345,10 +356,12 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         added when the user wants to provide a specific model/classifier,
         or data scaler, with updated (or new) parameters.
         These can be supplied by creating another dict within extra_params.
+
         E.g., extra_params[model_name] = {'model_param' : new_value}
         Where model param is a valid argument for that model, and model_name in
         this case is the str indicator passed to model_type.
         If 'default', use the saved value within self.default_ML_params.
+
         (default = 'default')
 
     Returns
@@ -424,18 +437,20 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
 
-    model_type : str or list of str,
+    Parameters
+    ----------
+    model_type : str or list of str
         Each string refers to a type of model to train.
         If a list of strings is passed then an ensemble model
         will be created over all individual models.
         For a full list of supported options call:
-        self.show_model_types(), with optional problem type parameter.
+        self.Show_Model_Types(), with optional problem type parameter.
 
     problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
 
         - 'regression' : For ML on float or ordinal target data
         - 'binary' : For ML on binary target data
-        - 'categorical' : For ML on categorical target data,
+        - 'categorical' : For ML on categorical target data, \
                           as either multilabel or multiclass.
         - 'default' : Use the name problem type within self.default_ML_params.
 
@@ -463,7 +478,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         'categorical' : 'weighted roc auc'
         Note, some metrics are only avaliable for certain problem types.
         For a full list of supported metrics call:
-        self.show_metrics, with optional problem type parameter.
+        self.Show_Metrics, with optional problem type parameter.
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
@@ -474,7 +489,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         If None, then no scaling will be applied.
         If 'default', use the saved value within self.default_ML_params.
         For a full list of supported options call:
-        self.show_data_scalers()
+        self.Show_Data_Scalers()
         (default = 'default')
 
     int_cv : int or 'default', optional
@@ -602,9 +617,9 @@ def _premodel_check(self, problem_type='default'):
         print('No train-test set defined! \
               Performing one automatically with default test split =.25')
         print('If no test set is intentional, \
-              call self.train_test_split(test_size=0)')
+              call self.Train_Test_Split(test_size=0)')
 
-        self.train_test_split(test_size=.25)
+        self.Train_Test_Split(test_size=.25)
 
     if self.default_ML_params == {}:
 

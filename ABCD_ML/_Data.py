@@ -14,7 +14,7 @@ from ABCD_ML.Data_Helpers import (process_binary_input,
                                   drop_col_duplicates)
 
 
-def load_name_map(self, loc, dataset_type='default',
+def Load_Name_Map(self, loc, dataset_type='default',
                   source_name_col="NDAR name",
                   target_name_col="REDCap name/NDA alias"):
     '''Loads a mapping dictionary for loading column names
@@ -63,7 +63,7 @@ def load_name_map(self, loc, dataset_type='default',
         print('Name map not loaded!')
 
 
-def load_data(self, loc, dataset_type='default', drop_keys=[],
+def Load_Data(self, loc, dataset_type='default', drop_keys=[],
               filter_outlier_percent=None, winsorize_val=None,
               drop_col_duplicates=None):
     """Load a ABCD2p0NDA (default) or 2.0_ABCD_Data_Explorer (explorer)
@@ -145,7 +145,7 @@ def load_data(self, loc, dataset_type='default', drop_keys=[],
         A value of 1 acts like dropping exact duplicated.
 
         Note: just drops duplicated within just loaded data.
-        Call self.drop_data_duplicates() to drop duplicates across
+        Call self.Drop_Data_Duplicates() to drop duplicates across
         all loaded data.
         (default = None)
 
@@ -227,7 +227,7 @@ def load_data(self, loc, dataset_type='default', drop_keys=[],
     self._process_new(self.low_memory_mode)
 
 
-def load_covars(self, loc, col_names, data_types, dataset_type='default',
+def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
                 dummy_code_categorical=True, filter_float_outlier_percent=None,
                 standardize=True, normalize=False):
     '''Load a covariate or covariates from a 2.0_ABCD_Data_Explorer
@@ -352,7 +352,7 @@ def load_covars(self, loc, col_names, data_types, dataset_type='default',
     self._process_new(self.low_memory_mode)
 
 
-def load_targets(self, loc, col_name, data_type, dataset_type='default',
+def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
                  filter_outlier_percent=None):
     '''Loads in a set of subject ids and associated targets from a
     2.0_ABCD_Data_Explorer release formatted csv.
@@ -462,7 +462,7 @@ def load_targets(self, loc, col_name, data_type, dataset_type='default',
     self._process_new(self.low_memory_mode)
 
 
-def load_strat(self, loc, col_names, dataset_type='default',
+def Load_Strat(self, loc, col_names, dataset_type='default',
                binary_col_inds=None):
     '''Load stratification values from a file.
     See Notes for more details on what stratification values are.
@@ -544,7 +544,7 @@ def load_strat(self, loc, col_names, dataset_type='default',
     self._process_new(True)  # Regardless of low mem-mode
 
 
-def load_exclusions(self, loc=None, exclusions=None):
+def Load_Exclusions(self, loc=None, exclusions=None):
     '''Loads in a set of excluded subjects,
     from either a file or as directly passed in.
 
@@ -575,46 +575,46 @@ def load_exclusions(self, loc=None, exclusions=None):
     self._filter_excluded()
 
 
-def clear_name_map(self):
+def Clear_Name_Map(self):
     '''Reset name mapping'''
     self.name_map = {}
     self._print('cleared name map.')
 
 
-def clear_data(self):
+def Clear_Data(self):
     '''Reset data'''
     self.data = pd.DataFrame()
     self._print('cleared data.')
 
 
-def clear_covars(self):
+def Clear_Covars(self):
     '''Reset covars'''
     self.covars = pd.DataFrame()
     self.covars_encoders = {}
     self._print('cleared covars.')
 
 
-def clear_targets(self):
+def Clear_Targets(self):
     '''Reset targets'''
     self.targets = pd.DataFrame()
     self.targets_encoder = None
     self._print('cleared targets.')
 
 
-def clear_strat(self):
+def Clear_Strat(self):
     '''Reset strat'''
     self.strat = pd.DataFrame()
     self.strat_encoders = {}
     self._print('cleared strat.')
 
 
-def clear_exclusions(self):
+def Clear_Exclusions(self):
     '''Resets exclusions to be an empty set'''
     self.exclusions = set()
     self._print('cleared exclusions.')
 
 
-def drop_data_duplicates(self, corr_thresh):
+def Drop_Data_Duplicates(self, corr_thresh):
     '''Drop duplicates columns within self.data based on
     if two data columns are >= to a certain correlation threshold.
 

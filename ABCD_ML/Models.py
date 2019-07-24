@@ -215,15 +215,15 @@ MODELS = {
     }
 
 
-def show_models(self, problem_type=None, show_model_help=False,
+def Show_Models(self, problem_type=None, show_model_help=False,
                 show_default_params=False, show_grid_params=False):
-        '''Just calls show_model_types.'''
+        '''Just calls Show_Model_Types.'''
 
-        self.show_model_types(problem_type, show_model_help,
+        self.Show_Model_Types(problem_type, show_model_help,
                               show_default_params, show_grid_params)
 
 
-def show_model_types(self, problem_type=None, show_model_help=False,
+def Show_Model_Types(self, problem_type=None, show_model_help=False,
                      show_default_params=False, show_grid_params=False):
         '''Print out the avaliable machine learning models,
         optionally restricted by problem type + other diagnostic args.

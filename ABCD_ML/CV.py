@@ -35,14 +35,14 @@ class CV():
 
         See Also
         --------
-        ABCD_ML.define_validation_strategy : Main location to define CV object
+        ABCD_ML.Define_Validation_Strategy : Main location to define CV object
 
         '''
 
         self.groups = groups
         self.stratify = stratify
 
-    def train_test_split(self, subjects, test_size=.2, random_state=None):
+    def Train_Test_Split(self, subjects, test_size=.2, random_state=None):
         '''Define a train test split on input subjects, with a given target test size.
 
         Parameters

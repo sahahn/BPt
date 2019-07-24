@@ -28,7 +28,7 @@ class Model():
             If a list of strings is passed then an ensemble model
             will be created over all individual models.
             For a full list of supported options call:
-            ABCD_ML.show_model_types(), with optional problem type parameter.
+            ABCD_ML.Show_Model_Types(), with optional problem type parameter.
 
         ML_params : dict
             Dictionary of different ML params, the following must be included,
@@ -552,7 +552,7 @@ class Model():
             If set to True, then that means we are
             replacing the parameters for a base model within
             another estimator. In that case, we set n_jobs if
-            avaliable to 1. 
+            avaliable to 1.
 
         Returns
         ----------

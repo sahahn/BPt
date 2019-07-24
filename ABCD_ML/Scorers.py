@@ -365,13 +365,13 @@ def get_scorer(scorer_str):
     return scorer
 
 
-def show_scorers(self, problem_type=None):
-    '''Just calls show_metrics.'''
+def Show_Scorers(self, problem_type=None):
+    '''Just calls Show_Metrics.'''
 
-    self.show_metrics(problem_type)
+    self.Show_Metrics(problem_type)
 
 
-def show_metrics(self, problem_type=None):
+def Show_Metrics(self, problem_type=None):
     '''Print out the avaliable metrics / scorers,
     optionally restricted by problem type
 

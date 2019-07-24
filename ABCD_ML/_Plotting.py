@@ -8,7 +8,7 @@ import seaborn as sns
 import numpy as np
 
 
-def show_targets_dist(self):
+def Show_Targets_Dist(self):
 
     assert self.targets.shape[1] == 1, \
         "This function is not yet avaliable for categorical targets"

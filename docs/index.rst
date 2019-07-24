@@ -1,17 +1,18 @@
-Welcome to ABCD_ML's documentation!
-===================================
+Welcome to the ABCD_ML user documentation!
+==========================================
 
-.. automodule:: ABCD_ML.ABCD_ML
-   :members:
+This is a project.
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: Intall
+
+   installation/install
+
+.. toctree::
+   :maxdepth: 1
+   :caption: ABCD_ML
+
+   ABCD_ML_class_docs
 
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

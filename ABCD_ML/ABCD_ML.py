@@ -1,7 +1,7 @@
 """
 ABCD_ML.py
 ====================================
-The main file for the ABCD_ML project.
+The main project class.
 """
 import pandas as pd
 import numpy as np
@@ -27,14 +27,16 @@ class ABCD_ML():
             when reading data based on the eventname flag.
             As ABCD is a longitudinal study, this flag lets you select only
             one specific time point, or if set to None, will load everything.
+
             (default = baseline_year_1_arm_1)
 
         use_default_subject_ids : bool, optional
             Flag to determine the usage of 'default' subject id behavior.
             If set to True, this will convert input NDAR subject ids
-            into upper case, with prepended NDAR_ - type format.
+            into upper case, with prepended NDAR - type format.
             If set to False, then all input subject names must be entered
             explicitly the same, no preprocessing will be done on them.
+
             (default = True)
 
         default_dataset_type : {'basic', 'explorer', 'custom'}, optional
@@ -43,11 +45,11 @@ class ABCD_ML():
 
             - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
 
-            - 'explorer' : 2.0_ABCD_Data_Explorer style
-                 (.csv and comma seperated)
+            - 'explorer' : 2.0_ABCD_Data_Explorer style \
+                           (.csv and comma seperated)
 
-            - 'custom' : A user-defined custom dataset. Right now this is only
-                supported as a comma seperated file, with the subject names in
+            - 'custom' : A user-defined custom dataset. Right now this is only\
+                supported as a comma seperated file, with the subject names in\
                 a column called 'src_subject_id'.
 
             (default = 'basic')
@@ -58,6 +60,7 @@ class ABCD_ML():
             and those set to default by pandas 'read_csv' function.
             Note: if new values are passed here,
             it will override these default '777' and '999' NaN values.
+
             (default = ['777', '999'])
 
         original_targets_key : str, optional
@@ -65,6 +68,7 @@ class ABCD_ML():
             target variable of interest will be stored under. There are not a
             lot of reasons to change this setting, except in the case of
             a naming conflict - or just for further customization.
+
             (default = 'targets')
 
         low_memory_mode : bool, optional
@@ -75,7 +79,7 @@ class ABCD_ML():
             For comparison, when low memory mode if off, the dropping
             of non-common subjects occurs later. Though regardless of if low
             memory mode is on or off, subjects will be dropped right away
-            when exclusions or strat is loaded. Non low memory mode
+            when exclusions or strat is loaded. Non-low memory mode
             behavior is useful when the user wants to try loading different
             data, and doesn't want automatic drops to occur.
             If set to True, individual dataframes self.data, self.covars ect...
@@ -83,17 +87,20 @@ class ABCD_ML():
 
             This parameter also controls the pandas read_csv behavior,
             which also has a low_memory flag.
+
             (default = False)
 
         random_state : int, RandomState instance or None, optional
             The default random state, either as int for a specific seed,
             or if None then the random seed is set by np.random.
+
             (default = None)
 
         verbose: bool, optional
             If set to true will display diagnostic and other output during
             dataloading and model training ect... if set to False this output
             will be muted.
+
             (default = True)
         '''
 
@@ -134,19 +141,19 @@ class ABCD_ML():
             print(*args)
 
     # Data loader functionality
-    from ABCD_ML._Data import (load_name_map,
-                               load_data,
-                               load_covars,
-                               load_targets,
-                               load_strat,
-                               load_exclusions,
-                               clear_name_map,
-                               clear_data,
-                               clear_covars,
-                               clear_targets,
-                               clear_strat,
-                               clear_exclusions,
-                               drop_data_duplicates,
+    from ABCD_ML._Data import (Load_Name_Map,
+                               Load_Data,
+                               Load_Covars,
+                               Load_Targets,
+                               Load_Strat,
+                               Load_Exclusions,
+                               Clear_Name_Map,
+                               Clear_Data,
+                               Clear_Covars,
+                               Clear_Targets,
+                               Clear_Strat,
+                               Clear_Exclusions,
+                               Drop_Data_Duplicates,
                                _load_datasets,
                                _load_dataset,
                                _common_load,
@@ -163,7 +170,7 @@ class ABCD_ML():
                                _prepare_data)
 
     # Validation / CV functionality
-    def define_validation_strategy(self, groups=None,
+    def Define_Validation_Strategy(self, groups=None,
                                    stratify=None):
         '''Define a validation stratagy to be used during different train/test splits,
         in addition to model selection and model hyperparameter CV.
@@ -289,7 +296,7 @@ class ABCD_ML():
 
         return targets
 
-    def train_test_split(self, test_size=None, test_loc=None,
+    def Train_Test_Split(self, test_size=None, test_loc=None,
                          test_subjects=None, random_state=None):
         '''Define the overarching train / test split, highly reccomended.
 
@@ -324,7 +331,7 @@ class ABCD_ML():
             random_state = self.random_state
 
         if test_size is not None:
-            self.train_subjects, self.test_subjects = self.CV.train_test_split(
+            self.train_subjects, self.test_subjects = self.CV.Train_Test_Split(
                                  self.all_data.index, test_size, random_state)
 
         else:
@@ -352,8 +359,8 @@ class ABCD_ML():
                              _print_model_params,
                              _init_model)
 
-    from ABCD_ML.Models import show_model_types, show_models
-    from ABCD_ML.Scorers import show_metrics, show_scorers
-    from ABCD_ML.Scalers import show_data_scalers, show_scalers
+    from ABCD_ML.Models import Show_Model_Types, Show_Models
+    from ABCD_ML.Scorers import Show_Metrics, Show_Scorers
+    from ABCD_ML.Scalers import Show_Data_Scalers, Show_Scalers
 
-    from ABCD_ML._Plotting import show_targets_dist
+    from ABCD_ML._Plotting import Show_Targets_Dist

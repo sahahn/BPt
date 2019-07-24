@@ -5,7 +5,7 @@ This is a project.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Intall
+   :caption: Install
 
    install
 

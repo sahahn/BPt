@@ -278,37 +278,6 @@ class ABCD_ML():
             self._print('CV defined with stratifying behavior, over',
                         len(np.unique(self.CV.stratify)), 'unique values.')
 
-    def _get_one_col_targets(self):
-        '''Helper method that returns targets as one column,
-        if orginally multicolumn, then converts back to one column.'''
-
-        try:
-            self.targets_key
-        except AttributeError:
-            print('Targets must be loaded before a validation strategy can',
-                  'be defined with targets included...')
-
-        if isinstance(self.targets_key, list):
-
-            encoded = self.targets_encoder[1].inverse_transform(self.targets)
-            encoded = np.squeeze(encoded)
-
-            # To preserve subject index, set to col in self.targets
-            self.targets[self.original_targets_key] = encoded
-            targets = self.targets[self.original_targets_key]
-
-            # Then remove.
-            self.targets = self.targets.drop(self.original_targets_key, axis=1)
-
-        else:
-            targets = self.targets[self.original_targets_key]
-
-        assert targets.dtype != float, \
-            "Stratify by targets can only be used by binary or categorical \
-             target types."
-
-        return targets
-
     def Train_Test_Split(self, test_size=None, test_loc=None,
                          test_subjects=None, random_state=None):
         '''Define the overarching train / test split, *highly reccomended*.
@@ -368,6 +337,37 @@ class ABCD_ML():
         self._print('Performed train/test split, train size:',
                     len(self.train_subjects), 'test size: ',
                     len(self.test_subjects))
+
+    def _get_one_col_targets(self):
+        '''Helper method that returns targets as one column,
+        if orginally multicolumn, then converts back to one column.'''
+
+        try:
+            self.targets_key
+        except AttributeError:
+            print('Targets must be loaded before a validation strategy can',
+                  'be defined with targets included...')
+
+        if isinstance(self.targets_key, list):
+
+            encoded = self.targets_encoder[1].inverse_transform(self.targets)
+            encoded = np.squeeze(encoded)
+
+            # To preserve subject index, set to col in self.targets
+            self.targets[self.original_targets_key] = encoded
+            targets = self.targets[self.original_targets_key]
+
+            # Then remove.
+            self.targets = self.targets.drop(self.original_targets_key, axis=1)
+
+        else:
+            targets = self.targets[self.original_targets_key]
+
+        assert targets.dtype != float, \
+            "Stratify by targets can only be used by binary or categorical \
+             target types."
+
+        return targets
 
     # Machine Learning functionality
     from ABCD_ML._ML import (Set_Default_ML_Params,

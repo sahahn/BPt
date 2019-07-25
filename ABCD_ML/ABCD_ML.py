@@ -12,7 +12,8 @@ from ABCD_ML.CV import CV
 class ABCD_ML():
     '''The main class used in ABCD_ML project'''
 
-    def __init__(self, eventname='baseline_year_1_arm_1',
+    def __init__(self, subject_id='src_subject_id',
+                 eventname='baseline_year_1_arm_1',
                  use_default_subject_ids=True,
                  default_dataset_type='basic',
                  default_na_values=['777', '999'],
@@ -22,13 +23,22 @@ class ABCD_ML():
 
         Parameters
         ----------
+        subject_id : str, optional
+            The name of the column with unique subject ids in different dataset,
+            for default ABCD datasets this is 'src_subject_id', but if a user wanted
+            to load and work with a different dataset, they just need to change this
+            accordingly (in addition to setting eventname most likely to None and
+            use_default_subject_ids to False)
+
+            (default = 'src_subject_id')
+
         eventname : str or None, optional
             Optional value to provide, specifying to keep certain rows
             when reading data based on the eventname flag.
             As ABCD is a longitudinal study, this flag lets you select only
             one specific time point, or if set to None, will load everything.
 
-            (default = baseline_year_1_arm_1)
+            (default = 'baseline_year_1_arm_1')
 
         use_default_subject_ids : bool, optional
             Flag to determine the usage of 'default' subject id behavior.
@@ -50,7 +60,7 @@ class ABCD_ML():
 
             - 'custom' : A user-defined custom dataset. Right now this is only\
                 supported as a comma seperated file, with the subject names in\
-                a column called 'src_subject_id'.
+                a column called self.subject_id.
 
             (default = 'basic')
 
@@ -105,6 +115,7 @@ class ABCD_ML():
         '''
 
         # Set class parameters
+        self.subject_id = subject_id
         self.eventname = eventname
         self.use_default_subject_ids = use_default_subject_ids
         self.default_dataset_type = default_dataset_type
@@ -350,9 +361,9 @@ class ABCD_ML():
                               if subject not in test_subjects]
 
             self.train_subjects = pd.Index(train_subjects,
-                                           name='src_subject_id')
+                                           name=self.subject_id)
             self.test_subjects = pd.Index(test_subjects,
-                                          name='src_subject_id')
+                                          name=self.subject_id)
 
         self._print('Performed train/test split, train size:',
                     len(self.train_subjects), 'test size: ',

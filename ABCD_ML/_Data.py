@@ -37,7 +37,7 @@ def Load_Name_Map(self, loc, dataset_type='default',
 
         - 'custom' : A user-defined custom dataset. Right now this is only\
             supported as a comma seperated file, with the subject names in a\
-            column called 'src_subject_id'.
+            column called self.subject_id.
 
         (default = 'default')
 
@@ -98,13 +98,13 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
             data, will be dropped, also not including the eventname column.
 
         - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)\
-            The first 2 columns before 'src_subject_id'\
+            The first 2 columns before self.subject_id\
             (typically the default columns, and therefore not neuroimaging\
             data - also not including the eventname column), will be dropped.\
 
         - 'custom' : A user-defined custom dataset. Right now this is only\
             supported as a comma seperated file, with the subject names in a\
-            column called 'src_subject_id', and can optionally have\
+            column called self.subject_id, and can optionally have\
             'eventname'. No columns will be dropped,\
             (except eventname) or unless specific drop keys are passed.
 
@@ -160,10 +160,10 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
     ----------
     For loading a truly custom dataset, an advanced user can
     load all the data themselves into a pandas DataFrame.
-    They will need to have the DataFrame indexed by 'src_subject_id'
+    They will need to have the DataFrame indexed by self.subject_id
     e.g., ::
 
-        data = data.set_index('src_subject_id')
+        data = data.set_index(self.subject_id)
 
     and subject ids will need to be in the correct style...
     but if they do all this, then they can just set ::
@@ -277,7 +277,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
         - 'custom' : A user-defined custom dataset. Right now this is only\
             supported as a comma seperated file, with the subject names in a\
-            column called 'src_subject_id'.
+            column called self.subject_id.
 
         (default = 'default')
 
@@ -408,7 +408,7 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
 
         - 'custom' : A user-defined custom dataset. Right now this is only\
             supported as a comma seperated file, with the subject names in a\
-            column called 'src_subject_id'.
+            column called self.subject_id.
 
         (default = 'default')
 
@@ -507,7 +507,7 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
 
         - 'custom' : A user-defined custom dataset. Right now this is only\
             supported as a comma seperated file, with the subject names in a\
-            column called 'src_subject_id'.
+            column called self.subject_id.
 
         (default = 'default')
 
@@ -674,13 +674,13 @@ def _load_datasets(self, locs, dataset_types):
             data, will be dropped, also not including the eventname column.
 
         - 'explorer' : 2.0_ABCD_Data_Explorer tyle (.csv and comma seperated)
-            The first 2 columns before 'src_subject_id'
+            The first 2 columns before self.subject_id
             (typically the default columns, and therefore not neuroimaging
             data - also not including the eventname column), will be dropped.
 
         - 'custom' : A user-defined custom dataset. Right now this is only
             supported as a comma seperated file, with the subject names in a
-            column called 'src_subject_id'. No columns will be dropped,
+            column called self.subject_id. No columns will be dropped,
             unless specific drop keys are passed.
 
     Returns
@@ -711,7 +711,7 @@ def _load_datasets(self, locs, dataset_types):
             self._print('By default repeats will be added as new unique',
                         'columns within merged data.')
 
-        data = pd.merge(data, more_data, on='src_subject_id')
+        data = pd.merge(data, more_data, on=self.subject_id)
 
     return data
 
@@ -736,13 +736,13 @@ def _load_dataset(self, loc, dataset_type):
             data, will be dropped, also not including the eventname column.
 
         - 'explorer' : 2.0_ABCD_Data_Explorer tyle (.csv and comma seperated)
-            The first 2 columns before 'src_subject_id'
+            The first 2 columns before self.subject_id
             (typically the default columns, and therefore not neuroimaging
             data - also not including the eventname column), will be dropped.
 
         - 'custom' : A user-defined custom dataset. Right now this is only
             supported as a comma seperated file, with the subject names in a
-            column called 'src_subject_id'. No columns will be dropped,
+            column called self.subject_id. No columns will be dropped,
             unless specific drop keys are passed.
 
     Returns
@@ -807,7 +807,7 @@ def _common_load(self, loc, dataset_type, col_name=None,
 
         - 'custom' : A user-defined custom dataset. Right now this is only
             supported as a comma seperated file, with the subject names in a
-            column called 'src_subject_id'.
+            column called self.subject_id.
 
     col_name : str
         The name of the column to load.
@@ -863,7 +863,7 @@ def _load(self, loc, dataset_type):
 
         - 'custom' : A user-defined custom dataset. Right now this is only
             supported as a comma seperated file, with the subject names in a
-            column called 'src_subject_id'.
+            column called self.subject_id.
 
     Returns
     ----------
@@ -907,7 +907,7 @@ def _merge_existing(self, class_data, local_data):
 
     # If other data is already loaded, merge with it
     if len(class_data) > 0:
-        class_data = pd.merge(class_data, local_data, on='src_subject_id')
+        class_data = pd.merge(class_data, local_data, on=self.subject_id)
         self._print('Merged with existing!')
         return class_data
     else:
@@ -929,7 +929,7 @@ def _proc_df(self, data):
         The df post-processing
     '''
 
-    assert 'src_subject_id' in data, "Missing subject id column!"
+    assert self.subject_id in data, "Missing subject id column!"
 
     # Perform corrects on subject ID
     data.src_subject_id = data.src_subject_id.apply(self._process_subject_name)
@@ -940,13 +940,13 @@ def _proc_df(self, data):
     # Drop any duplicate subjects, default behavior for now
     # though, could imagine a case where you wouldn't want to when
     # there are future releases.
-    data = data.drop_duplicates(subset='src_subject_id')
+    data = data.drop_duplicates(subset=self.subject_id)
 
     # Rename columns if loaded name map
     if self.name_map:
         data = data.rename(self.name_map, axis=1)
 
-    data = data.set_index('src_subject_id')
+    data = data.set_index(self.subject_id)
 
     # Drop excluded subjects, if any
     data = self._drop_excluded(data)
@@ -1190,7 +1190,7 @@ def _prepare_data(self):
 
     self.all_data = dfs[0]
     for i in range(1, len(dfs)):
-        self.all_data = pd.merge(self.all_data, dfs[i], on='src_subject_id')
+        self.all_data = pd.merge(self.all_data, dfs[i], on=self.subject_id)
 
     self._print('Final data for modeling loaded shape:', self.all_data.shape)
 

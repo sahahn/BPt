@@ -27,12 +27,12 @@ AVALIABLE = {
 
 SELECTORS = {
     'univariate select half regression': (SelectPercentile,
-                                          {score_func: f_regression,
-                                           percentile: 50}),
+                                          {'score_func': f_regression,
+                                           'percentile': 50}),
 
     'univariate select half classification': (SelectPercentile,
-                                              {score_func: f_classif,
-                                               percentile: 50}),
+                                              {'score_func': f_classif,
+                                               'percentile': 50}),
 }
 
 

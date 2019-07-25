@@ -219,12 +219,15 @@ class Model():
                                                       self.extra_params))
                                    for fs_str in feat_selector_strs]
 
+        else:
+            self.feat_selectors = []
+
     def _proc_type_dep_str(self, in_str, avaliable):
 
         in_strs = conv_to_list(in_str)
         conv_strs = proc_input(in_strs)
 
-        assert self.check_avaliable(conv_strs, avaliable),\
+        assert self._check_avaliable(conv_strs, avaliable),\
             "Error " + conv_strs + ' are not avaliable for this problem type'
 
         avaliable_by_type = self._get_avaliable_by_type(avaliable)
@@ -609,7 +612,9 @@ class Model():
             scalers, and then the passed in model.
         '''
 
-        steps = self.col_data_scalers + [(model_type, model)]
+        steps = self.col_data_scalers + self.feat_selectors \
+            + [(model_type, model)]
+
         model_pipeline = Pipeline(steps)
 
         return model_pipeline

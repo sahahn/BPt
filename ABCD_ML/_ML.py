@@ -744,6 +744,7 @@ def _print_model_params(self, model_type, ML_params, test=False):
     self._print('problem_type =', ML_params['problem_type'])
     self._print('metric =', ML_params['metric'])
     self._print('data_scaler =', ML_params['data_scaler'])
+    self._print('feat_selector =', ML_params['feat_selector'])
 
     if not test:
         self._print('n_splits =', ML_params['n_splits'])

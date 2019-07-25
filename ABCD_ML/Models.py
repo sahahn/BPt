@@ -281,7 +281,7 @@ def show_type(problem_type, avaliable_by_type, show_model_help,
         print()
 
         for model in avaliable_by_type[problem_type]:
-                if model != 'user passed':
+                if 'user passed' not in model:
                         show_model(model, show_model_help, show_default_params,
                                    show_grid_params)
                         print()

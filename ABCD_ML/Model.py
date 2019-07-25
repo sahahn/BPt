@@ -3,13 +3,18 @@ import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from ABCD_ML.Ensemble_Model import Ensemble_Model
+from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
+                                get_model_possible_params)
 
+from ABCD_ML.Models import MODELS
+
+from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
+from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
+from ABCD_ML.Scorers import AVALIABLE as AVALIABLE_SCORERS
+
+from ABCD_ML.Feature_Selectors import get_feat_selector
 from ABCD_ML.Scorers import get_scorer
 from ABCD_ML.Scalers import get_data_scaler
-from ABCD_ML.ML_Helpers import proc_input, get_model_possible_params
-
-from ABCD_ML.Models import AVALIABLE, MODELS
-from ABCD_ML.Scorers import AVALIABLE as AVALIABLE_SCORERS
 
 
 class Model():
@@ -41,6 +46,10 @@ class Model():
             - data_scalers : str, list or None
                 str indicator (or list of) for what type of data scaling
                 to use if any. If list, data will scaled in list order.
+            - feat_selectors : str, list or None
+                str indicator (or list of) for what type of feat selector(s)
+                to use if any. If list, selectors will be applied in that
+                order.
             - n_splits : int
                 The number of folds to use during the Evaluate_Model repeated
                 k-fold.
@@ -103,6 +112,7 @@ class Model():
         # Un-pack ML_params
         self.metrics = ML_params['metric']
         self.data_scalers = ML_params['data_scaler']
+        self.feat_selectors = ML_params['feat_selector']
         self.n_splits = ML_params['n_splits']
         self.n_repeats = ML_params['n_repeats']
         self.int_cv = ML_params['int_cv']
@@ -119,6 +129,7 @@ class Model():
 
         # Process model_types, scorers and scalers from str indicator input
         self._process_model_types()
+        self._process_feat_selectors()
         self._process_scorers()
         self._process_data_scalers()
 
@@ -144,43 +155,11 @@ class Model():
         str indicator, based on problem type and common input correction.
         Also handles updating extra params, if applicable.'''
 
-        # If not a list of model types, convert to list
-        if not isinstance(self.model_types, list):
-            self.model_types = [self.model_types]
-
+        self.model_types = conv_to_list(self.model_types)
         self._check_user_passed_models()
 
-        # Get the converted version of the model type passed in
-        conv_model_types = self._get_conv_model_types()
-
-        # If any extra params passed for the model, change to conv'ed name
-        self._update_extra_params(self.model_types, conv_model_types)
-
-        # Set model type to the conv'ed version
-        self.model_types = conv_model_types
-
-    def _get_conv_model_types(self):
-        '''Method to grab the converted version of the model_names saved
-        in self.model_types.
-
-        Returns
-        ----------
-        list
-            List of final str indicator model_types, indices should
-            correspond to the order os self.model_types, where the str
-            in the same index should represent the converted version.
-        '''
-
-        # Base behavior for binary / regression
-        conv_model_types = proc_input(self.model_types)
-
-        assert np.array([m in AVALIABLE[self.problem_type]
-                        for m in conv_model_types]).all(), \
-            "Selected model type(s) not avaliable."
-
-        conv_model_types = [AVALIABLE[self.problem_type][m]
-                            for m in conv_model_types]
-        return conv_model_types
+        self.model_types = self._proc_type_dep_str(self.model_types,
+                                                   AVALIABLE_MODELS)
 
     def _check_user_passed_models(self):
         '''If not str passed as model type, assume it
@@ -212,41 +191,59 @@ class Model():
                 self.extra_params[conv_strs[i]] =\
                     self.extra_params[orig_strs[i]]
 
-    def _get_avaliable_scorers(self):
-        '''Get the avaliable scorers by problem type.
-
-        Returns
-        ----------
-        dict
-            Dictionary of avaliable scorers, with value as final str
-            indicator.
-        '''
-
-        return AVALIABLE_SCORERS[self.problem_type]
-
     def _process_scorers(self):
         '''Process self.metrics and set self.scorers and self.scorer,
         as well as save the str processed final scorer_strs for verbose output.
         '''
 
-        # If not a list of metrics, convert to list
-        if not isinstance(self.metrics, list):
-            self.metrics = [self.metrics]
-
-        conv_metrics = proc_input(self.metrics)
-        avaliable_scorers = self._get_avaliable_scorers()
-
-        assert np.array([m in avaliable_scorers for m in conv_metrics]).all(),\
-            "Selected metric(s) not avaliable with this (sub)problem type."
-
-        self.scorer_strs = [avaliable_scorers[conv_metric]
-                            for conv_metric in conv_metrics]
+        self.scorer_strs = self._proc_type_dep_str(self.metrics,
+                                                   AVALIABLE_SCORERS)
 
         self.scorers = [get_scorer(scorer_str)
                         for scorer_str in self.scorer_strs]
 
         # Define the scorer to be used in model selection
         self.scorer = self.scorers[0]
+
+    def _process_feat_selectors(self):
+
+        if self.feat_selectors is not None:
+
+            feat_selector_strs =\
+                self._proc_type_dep_str(self.feat_selectors,
+                                        AVALIABLE_SELECTORS)
+
+            # Set feat selectors to list of (name, scaler) tuples.
+            self.feat_selectors = [(fs_str,
+                                    get_feat_selector(fs_str,
+                                                      self.extra_params))
+                                   for fs_str in feat_selector_strs]
+
+    def _proc_type_dep_str(self, in_str, avaliable):
+
+        in_strs = conv_to_list(in_str)
+        conv_strs = proc_input(in_strs)
+
+        assert self.check_avaliable(conv_strs, avaliable),\
+            "Error " + conv_strs + ' are not avaliable for this problem type'
+
+        avaliable_by_type = self._get_avaliable_by_type(avaliable)
+        final_strs = [avaliable_by_type[conv_str] for conv_str in conv_strs]
+
+        self._update_extra_params(in_strs, final_strs)
+        return final_strs
+
+    def _get_avaliable_by_type(self, avaliable):
+        return avaliable[self.problem_type]
+
+    def _check_avaliable(self, in_strs, avaliable):
+
+        avaliable_by_type = self._get_avaliable_by_type(avaliable)
+
+        check = np.array([m in avaliable_by_type for
+                          m in in_strs]).all()
+
+        return check
 
     def _process_data_scalers(self):
         '''Processes self.data_scaler to be a list of
@@ -255,8 +252,7 @@ class Model():
         if self.data_scalers is not None:
 
             # If not a list of data scalers, convert to list
-            if not isinstance(self.data_scalers, list):
-                self.data_scalers = [self.data_scalers]
+            self.data_scalers = conv_to_list(self.data_scalers)
 
             # Get converted scaler str and update extra params
             conv_scaler_strs = proc_input(self.data_scalers)
@@ -722,18 +718,20 @@ class Categorical_Model(Model):
         conv_model_types = proc_input(self.model_types)
 
         # Check first to see if all model names are in multilabel
-        if np.array([m in AVALIABLE['categorical']['multilabel']
+        if np.array([m in AVALIABLE_MODELS['categorical']['multilabel']
                     for m in conv_model_types]).all():
 
-            conv_model_types = [AVALIABLE['categorical']['multilabel'][m]
-                                for m in conv_model_types]
+            conv_model_types =\
+                [AVALIABLE_MODELS['categorical']['multilabel'][m]
+                 for m in conv_model_types]
 
         # Then check for multiclass, if multilabel not avaliable
-        elif np.array([m in AVALIABLE['categorical']['multiclass']
+        elif np.array([m in AVALIABLE_MODELS['categorical']['multiclass']
                       for m in conv_model_types]).all():
 
-            conv_model_types = [AVALIABLE['categorical']['multiclass'][m]
-                                for m in conv_model_types]
+            conv_model_types =\
+                [AVALIABLE_MODELS['categorical']['multiclass'][m]
+                 for m in conv_model_types]
 
             # Set the cat conv flag to be true
             self.sub_problem_type = 'multiclass'
@@ -757,6 +755,22 @@ class Categorical_Model(Model):
         '''
 
         return AVALIABLE_SCORERS[self.problem_type][self.sub_problem_type]
+
+    def _get_avaliable_by_type(self, avaliable):
+        return avaliable[self.problem_type][self.sub_problem_type]
+
+    def _check_avaliable(self, in_strs, avaliable):
+
+        check = super()._check_avaliable(in_strs, avaliable)
+
+        if not check and self.sub_problem_type == 'multilabel':
+            self._print('Not all input supports multilabel,')
+            self._print('Checking compatability with multiclass!')
+
+            self.sub_problem_type = 'multiclass'
+            check = super()._check_avaliable(in_strs, avaliable)
+
+        return check
 
     def _conv_targets(self, y):
         '''Overrides parent method, if the sub problem type

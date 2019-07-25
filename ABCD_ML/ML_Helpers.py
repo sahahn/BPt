@@ -42,6 +42,14 @@ def compute_macro_micro(scores, n_repeats, n_splits):
             np.std(scores))
 
 
+def conv_to_list(in_val):
+
+    if not isinstance(in_val, list):
+        in_val = [in_val]
+
+    return in_val
+
+
 def proc_input(in_vals):
     '''Performs common preproc on a list of str's or
     a single str.'''

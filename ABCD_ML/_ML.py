@@ -9,11 +9,11 @@ from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
 
 def Set_Default_ML_Params(self, problem_type='default', metric='default',
-                          data_scaler='default', n_splits='default',
-                          n_repeats='default', int_cv='default',
-                          class_weight='default', n_jobs='default',
-                          n_iter='default', random_state='default',
-                          extra_params='default'):
+                          data_scaler='default', feat_selector='default',
+                          n_splits='default', n_repeats='default',
+                          int_cv='default', class_weight='default',
+                          n_jobs='default', n_iter='default',
+                          random_state='default', extra_params='default'):
     '''Sets the self.default_ML_params dictionary with user passed or default
     values. In general, if any argument is left as 'default' and it has
     not been previously defined, it will be set to a default value,
@@ -61,6 +61,18 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 
         For a full list of supported options call:
         :func:`Show_Data_Scalers`
+
+        (default = 'default')
+
+    feat_selector : str, list or None, optional
+        `feat_selector` should be a str indicator or list of,
+        for which feature selection to use, if a list, they will
+        be applied in order.
+        If None, then no feature selection will be used.
+        If 'default', and not already defined, set to None
+
+        For a full list of supported options call:
+        :func:`Show_Feat_Selectors`
 
         (default = 'default')
 
@@ -179,6 +191,13 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self.default_ML_params['data_scaler'] = 'standard'
         self._print('No default data scaler passed, set to standard')
 
+    if feat_selector != 'default':
+        self.default_ML_params['feat_selector'] = feat_selector
+
+    elif 'feat_selector' not in self.default_ML_params:
+        self.default_ML_params['feat_selector'] = None
+        self._print('No default feat selector passed, set to None')
+
     if n_splits != 'default':
         assert isinstance(n_splits, int), 'n_splits must be int'
         assert n_splits > 1, 'n_splits must be greater than 1'
@@ -254,9 +273,10 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 
 
 def Evaluate(self, model_type, problem_type='default', metric='default',
-             data_scaler='default', n_splits='default', n_repeats='default',
-             int_cv='default', class_weight='default', n_jobs='default',
-             n_iter='default', random_state='default', extra_params='default'):
+             data_scaler='default', feat_selector='default',
+             n_splits='default', n_repeats='default', int_cv='default',
+             class_weight='default', n_jobs='default', n_iter='default',
+             random_state='default', extra_params='default'):
 
     '''Class method to be called during the model selection phase.
     Used to evaluated different combination of models and scaling, ect...
@@ -296,7 +316,7 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
         (default = 'default')
 
-    data_scaler : str, list or None optional
+    data_scaler : str, list or None, optional
         `data_scaler` refers to the type of scaling to apply
         to the saved data (just data, not covars) during model evaluation.
         If a list is passed, then scalers will be applied in that order.
@@ -307,6 +327,19 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         :func:`Show_Data_Scalers`
 
         (default = 'default')
+
+    feat_selector : str, list or None, optional
+        `feat_selector` should be a str indicator or list of,
+        for which feature selection to use, if a list, they will
+        be applied in order.
+        If None, then no feature selection will be used.
+        If 'default', use the saved value within self.default_ML_params.
+
+        For a full list of supported options call:
+        :func:`Show_Feat_Selectors`
+
+        (default = 'default')
+
 
     n_splits : int or 'default', optional
         ``Evaluate`` performs a repeated k-fold model evaluation,
@@ -452,9 +485,9 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
 def Test(self, model_type, problem_type='default', train_subjects=None,
          test_subjects=None, metric='default', data_scaler='default',
-         int_cv='default', class_weight='default', n_jobs='default',
-         n_iter='default', random_state='default', return_model=False,
-         extra_params='default'):
+         feat_selector='default', int_cv='default', class_weight='default',
+         n_jobs='default', n_iter='default', random_state='default',
+         return_model=False, extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
 
@@ -515,6 +548,18 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
         For a full list of supported options call:
         :func:`Show_Data_Scalers`
+
+        (default = 'default')
+
+    feat_selector : str, list or None, optional
+        `feat_selector` should be a str indicator or list of,
+        for which feature selection to use, if a list, they will
+        be applied in order.
+        If None, then no feature selection will be used.
+        If 'default', use the saved value within self.default_ML_params.
+
+        For a full list of supported options call:
+        :func:`Show_Feat_Selectors`
 
         (default = 'default')
 

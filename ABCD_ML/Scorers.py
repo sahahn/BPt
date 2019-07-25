@@ -1,6 +1,8 @@
-'''
+"""
+Scorers.py
+====================================
 File with functions related to calculating score from ML models
-'''
+"""
 import numpy as np
 import sklearn.metrics as M
 from sklearn.preprocessing import label_binarize

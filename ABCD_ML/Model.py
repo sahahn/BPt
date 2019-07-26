@@ -242,7 +242,7 @@ class Model():
             self.feat_selectors = []
             self.feat_selector_params = {}
 
-    def _proc_type_dep_str(self, in_str, avaliable):
+    def _proc_type_dep_str(self, in_strs, avaliable):
 
         conv_strs = proc_input(in_strs)
 
@@ -297,8 +297,8 @@ class Model():
         objs = [(c[0], c[1][0]) for c in objs_and_params]
 
         # Grab the params, and merge them into one dict of all params
-        params = {k: v for params in objs_and_params for prm in params[1][1]
-                  for k, v in prm.items()}
+        params = {k: v for params in objs_and_params
+                  for k, v in params[1][1].items()}
 
         return objs, params
 
@@ -459,8 +459,10 @@ class Model():
         self.upmi = 0
 
         models = []
-        for model_type, model_type_param_ind in
-        zip(self.model_types, self.model_type_param_inds):
+
+        mt_and_mt_params = zip(self.model_types, self.model_type_param_inds)
+        for model_type, model_type_param_ind in mt_and_mt_params:
+
             models.append(self._train_model(train_data, model_type,
                                             model_type_param_ind))
 
@@ -525,7 +527,6 @@ class Model():
         search_params['pre_dispatch'] = 'n_jobs - 1'
         search_params['cv'] = base_int_cv
         search_params['scoring'] = self.scorer
-        search_params['random_state'] = self.random_state
 
         # Set search type specific params
         if self.search_type is None:
@@ -544,7 +545,8 @@ class Model():
         all_params.update(self.feat_selector_params)
 
         # Create the search model
-        if self.search == 'random':
+        if self.search_type == 'random':
+            search_params['random_state'] = self.random_state
             search_params['param_distributions'] = all_params
             search_model = RandomizedSearchCV(**search_params)
 

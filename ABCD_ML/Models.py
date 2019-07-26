@@ -45,7 +45,7 @@ AVALIABLE = {
                         'linear':             'linear regressor',
                         'knn':                'knn regressor',
                         'dt':                 'dt regressor',
-                        'elastic':            'elastic net regressor'
+                        'elastic':            'elastic net regressor',
                         'elastic net':        'elastic net regressor',
                         'random forest':      'random forest regressor',
                         'gp':                 'gp regressor',
@@ -64,32 +64,6 @@ AVALIABLE = {
 
 # Should be the same
 AVALIABLE['categorical']['multiclass'] = AVALIABLE['binary'].copy()
-
-
-def get_search_params(grid_name, model_name, gs=False):
-
-        params = {}
-        params['iid'] = False
-        params['estimator'] = model_name
-        params['pre_dispatch'] = 'n_jobs - 1'
-
-        if gs:
-                params['param_grid'] = get(grid_name, model_name)
-        else:
-                params['param_distributions'] = get(grid_name, model_name)
-
-        return params
-
-
-def get_rs_tuple(grid_name, model_name):
-        return (RandomizedSearchCV, get_search_params(grid_name, model_name,
-                gs=False))
-
-
-def get_gs_tuple(grid_name, model_name):
-        return (GridSearchCV, get_search_params(grid_name, model_name,
-                gs=True))
-
 
 MODELS = {
     'logistic': (LogisticRegression, ['base logistic']),
@@ -125,8 +99,8 @@ MODELS = {
     'gp regressor': (GaussianProcessRegressor, ['base gp regressor']),
     'gp classifier': (GaussianProcessClassifier,  ['base gp classifier']),
 
-    'svm regressor': (SVR, {'kernel': 'rbf', 'gamma': 'scale'}),
-    'svm classifier': (SVC, {'kernel': 'rbf', 'gamma': 'scale'}),
+    'svm regressor': (SVR, ['base svm', 'svm rs']),
+    'svm classifier': (SVC, ['base svm', 'svm rs']),
     }
 
 

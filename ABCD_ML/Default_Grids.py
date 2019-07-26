@@ -79,8 +79,8 @@ GRIDS['base gp regressor'] = {'n_restarts_optimizer': [5],
 GRIDS['base gp classifier'] = {'n_restarts_optimizer': [5]}
 
 
-GRIDS['base svm'] = {'kernel': 'rbf',
-                     'gamma': 'scale'}
+GRIDS['base svm'] = {'kernel': ['rbf'],
+                     'gamma': ['scale']}
 
 GRIDS['svm rs'] = GRIDS['base svm'].copy()
 GRIDS['svm rs']['C'] = [.0001, .001, .10, .1, 1, 5, 10, 25, 50, 100, 500,

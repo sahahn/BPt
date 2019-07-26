@@ -5,7 +5,9 @@ This file contains the different models avaliable for training,
 with additional information on which work with which problem types
 and default params.
 """
-from ABCD_ML.ML_Helpers import get_avaliable_by_type
+from ABCD_ML.ML_Helpers import (get_avaliable_by_type, show_param_options,
+                                get_possible_init_params)
+
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB
@@ -104,108 +106,136 @@ MODELS = {
     }
 
 
-def Show_Models(self, problem_type=None, show_model_help=False,
-                show_default_params=False, show_grid_params=False):
+def Show_Models(self, problem_type=None, model_type=None,
+                show_param_ind_options=True, show_model_object=False,
+                show_all_possible_params=False):
         '''Just calls Show_Model_Types.'''
 
-        self.Show_Model_Types(problem_type, show_model_help,
-                              show_default_params, show_grid_params)
+        self.Show_Model_Types(problem_type, show_param_ind_options,
+                              show_model_object, show_all_possible_params)
 
 
-def Show_Model_Types(self, problem_type=None, show_model_help=False,
-                     show_default_params=False, show_grid_params=False):
+def Show_Model_Types(self, problem_type=None, model_type=None,
+                     show_param_ind_options=True, show_model_object=False,
+                     show_all_possible_params=False):
         '''Print out the avaliable machine learning models,
         optionally restricted by problem type + other diagnostic args.
 
         Parameters
         ----------
         problem_type : {binary, categorical, regression, None}, optional
-            Where `problem_type` is the underlying ML problem
+                Where `problem_type` is the underlying ML problem
 
-            (default = None)
+                (default = None)
 
-        show_model_help : bool, optional
-            Flag, if set to True, then will display the full docstring
-            for each model, note: this is pretty terrible to read.
+        model_type : str or list, optional
+                If model type is passed, will just show the specific
+                model, according to the rest of the params passed.
+                Note : You must pass the specific model indicator str
+                limited preproc will be done on this input!
+                If list, will show all models within list
 
-            (default = False)
+                (default = None)
 
-        show_default_params : bool, optional
+        show_param_ind_options : bool, optional
             Flag, if set to True, then will display the ABCD_ML
-            default parameters for each model.
+            param ind options for each model.
 
-            (default = False)
+                (default = True)
 
-        show_grid_params : bool, optional
-            Flag, if set to True, and `show_default_params` set to True, then
-            when displaying default params for each model will print out the
-            grid params also, by default it will skip these as the output is
-            messy.
+        show_model_object : bool, optional
+                Flag, if set to True, then will print the
+                raw model object.
 
-            (default = False)
+                (default = False)
+
+        show_all_possible_params: bool, optional
+                Flag, if set to True, then will print all
+                possible arguments to the classes __init__
+
+                (default = False)
         '''
 
-        print('Note: gs and rs are  Grid Search and Random Search')
-        print('Models with gs or rs will have their hyper-parameters',
-              'tuned accordingly.')
+        print('Note: Param distributions with a Rand Distribution')
+        print('cannot be used in search_type = "grid"')
         print()
+
+        if model_type is not None:
+                if isinstance(model_type, str):
+                        model_type = [model_type]
+                for model_str in model_type:
+                        show_model(model_str, show_param_ind_options,
+                                   show_model_object, show_all_possible_params)
+                return
 
         avaliable_by_type = get_avaliable_by_type(AVALIABLE)
 
         if problem_type is None:
                 for pt in avaliable_by_type:
-                        show_type(pt, avaliable_by_type, show_model_help,
-                                  show_default_params, show_grid_params)
+                        show_type(pt, avaliable_by_type,
+                                  show_param_ind_options, show_model_object,
+                                  show_all_possible_params)
         else:
-                show_type(problem_type, avaliable_by_type, show_model_help,
-                          show_default_params, show_grid_params)
+                show_type(problem_type, avaliable_by_type,
+                          show_param_ind_options, show_model_object,
+                          show_all_possible_params)
 
 
-def show_type(problem_type, avaliable_by_type, show_model_help,
-              show_default_params, show_grid_params):
+def show_type(problem_type, avaliable_by_type, show_param_ind_options,
+              show_model_object, show_all_possible_params):
 
         print('Problem Type:', problem_type)
-        print('----------------------')
+        print('----------------------------------------')
+        print()
         print('Avaliable models: ')
         print()
 
-        for model in avaliable_by_type[problem_type]:
-                if 'user passed' not in model:
-                        show_model(model, show_model_help, show_default_params,
-                                   show_grid_params)
-                        print()
+        for model_str in avaliable_by_type[problem_type]:
+                if 'user passed' not in model_str:
+                        show_model(model_str, show_param_ind_options,
+                                   show_model_object, show_all_possible_params)
 
 
-def show_model(model, show_model_help, show_default_params, show_grid_params):
+def show_model(model_str, show_param_ind_options, show_model_object,
+               show_all_possible_params):
 
         multilabel, multiclass = False, False
 
-        if 'multilabel ' in model:
+        if 'multilabel ' in model_str:
                 multilabel = True
-        elif 'multiclass ' in model:
+        elif 'multiclass ' in model_str:
                 multiclass = True
 
-        model = model.replace('multilabel ', '')
-        model = model.replace('multiclass ', '')
+        model_str = model_str.replace('multilabel ', '')
+        model_str = model_str.replace('multiclass ', '')
 
-        print('Model str indicator: ', model)
+        print('- - - - - - - - - - - - - - - - - - - - ')
+        M = MODELS[model_str]
+        print(M[0].__name__, end='')
+        print(' ("', model_str, '")', sep='')
+        print('- - - - - - - - - - - - - - - - - - - - ')
+        print()
 
         if multilabel:
                 print('(MultiLabel)')
         elif multiclass:
                 print('(MultiClass)')
 
-        M = MODELS[model]
-        print('Model object: ', M[0])
+        if show_model_object:
+                print('Model Object: ', M[0])
 
-        if show_model_help:
-                print(help(M[0]))
+        print()
+        if show_param_ind_options:
+                show_param_options(M[1])
 
-        if show_default_params:
-                print('Default Params: ')
-                for p in M[1]:
-                        if (p == 'param_distributions' or p == 'param_grid') \
-                                and show_grid_params is False:
-                                print('Param grid not shown.')
-                        else:
-                                print(p, ':', M[1][p])
+        if show_all_possible_params:
+                possible_params = get_possible_init_params(M[0])
+                print('All Possible Params:', possible_params)
+        print()
+
+
+
+
+
+
+

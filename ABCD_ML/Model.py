@@ -4,7 +4,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from ABCD_ML.Ensemble_Model import Ensemble_Model
 from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
-                                get_model_possible_params)
+                                get_possible_init_params)
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
 from ABCD_ML.Models import MODELS
@@ -574,7 +574,7 @@ class Model():
             get_obj_and_params(model_type, MODELS, self.extra_params,
                                model_type_param_ind)
 
-        possible_params = get_model_possible_params(model)
+        possible_params = get_possible_init_params(model)
 
         # Get param values from class
         if 'class_weight' in possible_params:

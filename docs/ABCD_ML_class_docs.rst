@@ -111,6 +111,10 @@ Show_Data_Scalers
 =================
 .. automethod:: ABCD_ML.Show_Data_Scalers
 
+Show_Feat_Selectors
+=================
+.. automethod:: ABCD_ML.Show_Feat_Selectors
+
 
 *************
 Testing Phase

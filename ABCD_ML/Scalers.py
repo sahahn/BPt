@@ -3,7 +3,8 @@ Scalers.py
 ====================================
 File containing the various input data scalers.
 """
-from ABCD_ML.ML_Helpers import get_obj_and_params
+from ABCD_ML.ML_Helpers import (show_param_options, get_possible_init_params,
+                                get_obj_and_params)
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer)
 from sklearn.decomposition import PCA
@@ -65,42 +66,75 @@ def Show_Scalers(self, show_scaler_help=False, show_default_params=False):
     self.Show_Data_Scalers()
 
 
-def Show_Data_Scalers(self, show_scaler_help=False, show_default_params=False):
+def Show_Data_Scalers(self, data_scaler=None, show_param_ind_options=True,
+                      show_scaler_object=False,
+                      show_all_possible_params=False):
     '''Print out the avaliable data scalers.
 
     Parameters
     ----------
-    show_scaler_help : bool, optional
-        Flag, if set to True, then will display the full docstring
-        for each scaler.
+    data_scaler : str or list, optional
+        Provide a str or list of strs, where
+        each str is the exact data_scaler str indicator
+        in order to show information for only that (or those)
+        data scalers
+
+    show_param_ind_options : bool, optional
+        Flag, if set to True, then will display the ABCD_ML
+        param ind options for each data scaler.
+
+        (default = True)
+
+    show_scaler_object : bool, optional
+        Flag, if set to True, then will print the raw data scaler
+        object.
 
         (default = False)
 
-    show_default_params : bool, optional
-        Flag, if set to True, then will display the ABCD_ML
-        default parameters for each scaler.
+    show_all_possible_params: bool, optional
+        Flag, if set to True, then will print all
+        possible arguments to the classes __init__
 
-        (default = False)'''
+        (default = False)
+    '''
 
     print('Visit: ')
     print('https://scikit-learn.org/stable/modules/preprocessing.html')
     print('For more detailed information on different scalers',
           '/ preprocessing.')
+    print()
+
+    if data_scaler is not None:
+        if isinstance(data_scaler, str):
+                data_scaler = [data_scaler]
+        for scaler_str in data_scaler:
+                show_scaler(scaler_str, show_param_ind_options,
+                            show_scaler_object, show_all_possible_params)
+        return
 
     for scaler in SCALERS:
-        print('str indicator: ', scaler)
+        show_scaler(scaler, show_param_ind_options,
+                    show_scaler_object, show_all_possible_params)
 
-        S = SCALERS[scaler]
-        print('Scaler object: ', S[0])
 
-        if show_scaler_help:
-            print(help(S[0]))
-            print()
+def show_scaler(scaler, show_param_ind_options, show_scaler_object,
+                show_all_possible_params):
 
-        if show_default_params:
-                print('Default Params: ')
+    print('- - - - - - - - - - - - - - - - - - - - ')
+    S = SCALERS[scaler]
+    print(S[0].__name__, end='')
+    print(' ("', scaler, '")', sep='')
+    print('- - - - - - - - - - - - - - - - - - - - ')
+    print()
 
-                for p in S[1]:
-                    print(p, ':', S[1][p])
+    if show_scaler_object:
+        print('Scaler Object: ', S[0])
 
-        print()
+    print()
+    if show_param_ind_options:
+        show_param_options(S[1])
+
+    if show_all_possible_params:
+            possible_params = get_possible_init_params(S[0])
+            print('All Possible Params:', possible_params)
+    print()

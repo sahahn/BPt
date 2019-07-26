@@ -6,7 +6,7 @@ These are non-class functions that are used in _ML.py and Scoring.py
 """
 import numpy as np
 import inspect
-from ABCD_ML.Default_Grids import get
+from ABCD_ML.Default_Params import get, show
 
 
 def compute_macro_micro(scores, n_repeats, n_splits):
@@ -179,8 +179,9 @@ def get_obj_and_params(obj_str, OBJS, extra_params, param_ind):
     return obj, extra_obj_params, params
 
 
-def get_model_possible_params(model):
-    '''Helper function to grab the names of valid arguments to a model
+def get_possible_init_params(model):
+    '''Helper function to grab the names of valid arguments to
+    classes init function
 
     Parameters
     ----------
@@ -218,3 +219,19 @@ def get_avaliable_by_type(AVALIABLE):
             avaliable_by_type[pt].sort()
 
     return avaliable_by_type
+
+
+def show_param_options(param_options):
+
+    print('Param Indices')
+    print('-------------')
+
+    for ind in range(len(param_options)):
+
+        print()
+        print(ind, ":", sep='')
+        print()
+        print('"', param_options[ind], '"', sep='')
+        show(param_options[ind])
+        print()
+    print('-------------')

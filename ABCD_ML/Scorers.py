@@ -367,13 +367,13 @@ def get_scorer(scorer_str):
     return scorer
 
 
-def Show_Scorers(self, problem_type=None):
+def Show_Scorers(self, problem_type=None, metric=None):
     '''Just calls Show_Metrics.'''
 
-    self.Show_Metrics(problem_type)
+    self.Show_Metrics(problem_type, metric)
 
 
-def Show_Metrics(self, problem_type=None):
+def Show_Metrics(self, problem_type=None, metric=None):
     '''Print out the avaliable metrics / scorers,
     optionally restricted by problem type
 
@@ -383,6 +383,9 @@ def Show_Metrics(self, problem_type=None):
         Where `problem_type` is the underlying ML problem
 
         (default = None)
+
+    metric : str or list
+        Where metric is the specific metric / scorer indicator str
     '''
     print('Visit: ')
     print('https://scikit-learn.org/stable/modules/model_evaluation.html')
@@ -393,6 +396,13 @@ def Show_Metrics(self, problem_type=None):
         print('(MultiClass) or (MultiLabel) are not part of the metric',
               'str indicator.')
     print()
+
+    if metric is not None:
+        if isinstance(metric, str):
+                metric = [metric]
+        for metric_str in metric:
+                show_metric(metric_str)
+        return
 
     avaliable_by_type = get_avaliable_by_type(AVALIABLE)
 
@@ -406,28 +416,35 @@ def Show_Metrics(self, problem_type=None):
 def show_type(problem_type, avaliable_by_type):
 
         print('Problem Type:', problem_type)
-        print('----------------------')
+        print('----------------------------------------')
+        print()
         print('Avaliable metrics: ')
         print()
 
-        for metric in avaliable_by_type[problem_type]:
+        for metric_str in avaliable_by_type[problem_type]:
+            if 'user passed' not in metric_str:
+                show_metric(metric_str)
 
-            multilabel, multiclass = False, False
 
-            if 'multilabel ' in metric:
+def show_metric(metric_str):
+
+        multilabel, multiclass = False, False
+
+        if 'multilabel ' in metric_str:
                 multilabel = True
-            elif 'multiclass ' in metric:
+        elif 'multiclass ' in metric_str:
                 multiclass = True
 
-            metric = metric.replace('multilabel ', '')
-            metric = metric.replace('multiclass ', '')
+        metric_str = metric_str.replace('multilabel ', '')
+        metric_str = metric_str.replace('multiclass ', '')
 
-            print(metric, end='')
+        print(metric_str, end='')
 
-            if multilabel:
-                print(' - (MultiLabel)')
-            elif multiclass:
-                print(' - (MultiClass)')
-            else:
-                print()
-        print()
+        if multilabel:
+            print(' (MultiLabel)')
+        elif multiclass:
+            print(' (MultiClass)')
+        else:
+            print()
+        
+

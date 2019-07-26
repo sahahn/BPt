@@ -24,10 +24,11 @@ class ABCD_ML():
         Parameters
         ----------
         subject_id : str, optional
-            The name of the column with unique subject ids in different dataset,
-            for default ABCD datasets this is 'src_subject_id', but if a user wanted
-            to load and work with a different dataset, they just need to change this
-            accordingly (in addition to setting eventname most likely to None and
+            The name of the column with unique subject ids in different
+            dataset, for default ABCD datasets this is 'src_subject_id',
+            but if a user wanted to load and work with a different dataset,
+            they just need to change this accordingly
+            (in addition to setting eventname most likely to None and
             use_default_subject_ids to False)
 
             (default = 'src_subject_id')

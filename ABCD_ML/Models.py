@@ -5,10 +5,9 @@ This file contains the different models avaliable for training,
 with additional information on which work with which problem types
 and default params.
 """
-from ABCD_ML.Default_Grids import get
 from ABCD_ML.ML_Helpers import get_avaliable_by_type
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB
 from sklearn.gaussian_process import (GaussianProcessClassifier,
                                       GaussianProcessRegressor)
@@ -23,7 +22,6 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor, LGBMClassifier
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from sklearn.calibration import CalibratedClassifierCV
 
 AVALIABLE = {
         'binary': {
@@ -31,59 +29,35 @@ AVALIABLE = {
                         'logistic':           'logistic',
                         'linear':             'logistic',
                         'lasso':              'lasso logistic',
-                        'lasso logistic':     'lasso logistic',
-                        'lasso rs':           'lasso logistic rs',
-                        'lasso logistic':     'lasso logistic',
-                        'lasso logistic rs':  'lasso logistic rs',
                         'ridge':              'ridge logistic',
-                        'ridge rs':           'ridge logistic rs',
-                        'ridge logistic':     'ridge logistic',
-                        'ridge logistic rs':  'ridge logistic rs',
+                        'elastic':            'elastic net logistic',
                         'elastic net':        'elastic net logistic',
-                        'elastic net logistic': 'elastic net logistic',
-                        'elastic net rs':     'elastic net logistic rs',
-                        'elastic net logistic rs': 'elastic net logistic rs',
                         'gaussian nb':        'gaussian nb',
                         'knn':                'knn classifier',
-                        'knn gs':             'knn classifier gs',
                         'dt':                 'dt classifier',
-                        'dt gs':              'dt classifier gs',
                         'random forest':      'random forest classifier',
-                        'random forest cal':  'random forest classifier cal',
-                        'random forest rs':   'random forest classifier rs',
                         'gp':                 'gp classifier',
                         'light gbm':          'light gbm classifier',
-                        'light gbm rs':       'light gbm classifier rs',
                         'svm':                'svm classifier',
-                        'svm rs':             'svm classifier rs',
         },
         'regression': {
                         'user passed':        'user passed',
                         'linear':             'linear regressor',
                         'knn':                'knn regressor',
-                        'knn gs':             'knn regressor gs',
-                        'elastic net':        'elastic net',
-                        'elastic net rs':     'elastic net rs',
-                        'omp cv':             'omp cv',
-                        'lars cv':            'lars cv',
-                        'ridge cv':           'ridge cv',
+                        'dt':                 'dt regressor',
+                        'elastic':            'elastic net regressor'
+                        'elastic net':        'elastic net regressor',
                         'random forest':      'random forest regressor',
-                        'random forest rs':   'random forest regressor rs',
                         'gp':                 'gp regressor',
                         'light gbm':          'light gbm regressor',
-                        'light gbm rs':       'light gbm regressor rs',
                         'svm':                'svm regressor',
-                        'svm rs':             'svm regressor rs',
         },
         'categorical': {
                 'multilabel': {
                         'user passed':        'user passed',
                         'knn':                'knn classifier',
-                        'knn gs':             'knn classifier gs',
                         'dt':                 'dt classifier',
-                        'dt gs':              'dt classifier gs',
                         'random forest':      'random forest classifier',
-                        'random forest rs':   'random forest classifier rs',
                 }
         }
 }
@@ -117,101 +91,42 @@ def get_gs_tuple(grid_name, model_name):
                 gs=True))
 
 
-logistic_params = {'solver': 'saga',
-                   'max_iter': 5000,
-                   'multi_class': 'auto',
-                   'penalty': 'none'}
-
-lasso_params = logistic_params.copy()
-lasso_params['penalty'] = 'l1'
-
-ridge_params = logistic_params.copy()
-ridge_params['penalty'] = 'l2'
-
-elastic_params = logistic_params.copy()
-elastic_params['penalty'] = 'elasticnet'
-elastic_params['l1_ratio'] = .5
-
-
 MODELS = {
-    'logistic': (LogisticRegression, logistic_params),
+    'logistic': (LogisticRegression, ['base logistic']),
 
-    'lasso logistic': (LogisticRegression, lasso_params),
+    'lasso logistic': (LogisticRegression, ['base lasso', 'lasso C']),
 
-    'ridge logistic': (LogisticRegression, ridge_params),
+    'ridge logistic': (LogisticRegression, ['base ridge', 'ridge C']),
 
-    'elastic net logistic': (LogisticRegression, elastic_params),
+    'elastic net logistic': (LogisticRegression, ['base elastic',
+                                                  'elastic classifier']),
 
-    'lasso logistic rs': get_rs_tuple('REGRESSION1', 'lasso logistic'),
+    'elastic net regressor': (ElasticNet, ['base elastic net',
+                                           'elastic regression']),
 
-    'ridge logistic rs': get_rs_tuple('REGRESSION1', 'ridge logistic'),
+    'huber': (HuberRegressor, ['base huber']),
 
-    'elastic net logistic rs': get_rs_tuple('ELASTIC1',
-                                            'elastic net logistic'),
+    'gaussian nb': (GaussianNB, ['base gnb']),
 
-    'elastic net': (ElasticNet, {'max_iter': 5000}),
+    'knn classifier': (KNeighborsClassifier, ['base knn', 'knn rs']),
+    'knn regressor': (KNeighborsRegressor, ['base knn', 'knn rs']),
 
-    'elastic net rs': get_rs_tuple('ELASTIC2', 'elastic net'),
+    'dt classifier': (DecisionTreeClassifier, ['base dt', 'dt rs']),
+    'dt regressor':  (DecisionTreeRegressor, ['base dt', 'dt rs']),
 
-    'huber': (HuberRegressor, {}),
+    'linear regressor': (LinearRegression, ['base linear']),
 
-    'gaussian nb': (GaussianNB, {}),
+    'random forest regressor': (RandomForestRegressor, ['base rf', 'rf rs']),
+    'random forest classifier': (RandomForestClassifier, ['base rf', 'rf rs']),
 
-    'knn classifier': (KNeighborsClassifier, {'n_jobs': 'n_jobs'}),
+    'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm rs']),
+    'light gbm classifier': (LGBMClassifier, ['base lgbm', 'lgbm rs']),
 
-    'knn classifier gs': get_gs_tuple('KNN1', 'knn classifier'),
-
-    'knn regressor': (KNeighborsRegressor, {}),
-
-    'knn regressor gs': get_gs_tuple('KNN1', 'knn regressor'),
-
-    'dt classifier': (DecisionTreeClassifier, {}),
-
-    'dt classifier gs': get_gs_tuple('DTC1', 'dt classifier'),
-
-    'linear regressor': (LinearRegression, {'fit_intercept': True}),
-
-    'omp cv': (OrthogonalMatchingPursuitCV, {}),
-
-    'lars cv': (LarsCV, {}),
-
-    'ridge cv': (RidgeCV, {}),
-
-    'random forest regressor': (RandomForestRegressor, {'n_estimators': 100}),
-
-    'random forest regressor rs': get_rs_tuple('RF1',
-                                               'random forest regressor'),
-
-    'random forest classifier': (RandomForestClassifier,
-                                 {'n_estimators': 100}),
-
-    'random forest classifier cal': (CalibratedClassifierCV,
-                                     {'base_estimator':
-                                      'random forest classifier'}),
-
-    'random forest classifier rs': get_rs_tuple('RF1',
-                                                'random forest classifier'),
-
-    'light gbm regressor': (LGBMRegressor, {'silent': True}),
-
-    'light gbm regressor rs': get_rs_tuple('LIGHT1', 'light gbm regressor'),
-
-    'light gbm classifier': (LGBMClassifier, {'silent': True}),
-
-    'light gbm classifier rs': get_rs_tuple('LIGHT1', 'light gbm classifier'),
-
-    'gp regressor': (GaussianProcessRegressor, {'n_restarts_optimizer': 5,
-                                                'normalize_y': True}),
-
-    'gp classifier': (GaussianProcessClassifier, {'n_restarts_optimizer': 5}),
+    'gp regressor': (GaussianProcessRegressor, ['base gp regressor']),
+    'gp classifier': (GaussianProcessClassifier,  ['base gp classifier']),
 
     'svm regressor': (SVR, {'kernel': 'rbf', 'gamma': 'scale'}),
-
-    'svm regressor rs': get_rs_tuple('SVM1', 'svm regressor'),
-
     'svm classifier': (SVC, {'kernel': 'rbf', 'gamma': 'scale'}),
-
-    'svm classifier rs': get_rs_tuple('SVM1', 'svm classifier'),
     }
 
 

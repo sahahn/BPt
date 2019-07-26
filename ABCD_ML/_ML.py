@@ -11,9 +11,12 @@ from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 def Set_Default_ML_Params(self, problem_type='default', metric='default',
                           data_scaler='default', feat_selector='default',
                           n_splits='default', n_repeats='default',
-                          int_cv='default', class_weight='default',
-                          n_jobs='default', n_iter='default',
-                          random_state='default', extra_params='default'):
+                          int_cv='default', search_type='default',
+                          data_scaler_param_ind='default',
+                          feat_selector_param_ind='default',
+                          class_weight='default', n_jobs='default',
+                          n_iter='default', random_state='default',
+                          extra_params='default'):
     '''Sets the self.default_ML_params dictionary with user passed or default
     values. In general, if any argument is left as 'default' and it has
     not been previously defined, it will be set to a default value,
@@ -30,6 +33,7 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
                           as either multilabel or multiclass.
         - 'default' : Use 'regression' if nothing else already defined
 
+        If 'default', and not already defined, set to 'regression'
         (default = 'default')
 
     metric : str or list, optional
@@ -40,15 +44,16 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         Note, some metrics are only avaliable for certain problem types.
         For a full list of supported metrics call:
         self.Show_Metrics, with optional problem type parameter.
-        If 'default', and not already defined, set to default
+
+        For a full list of supported metrics call:
+        :func:`Show_Metrics`
+
+         If 'default', and not already defined, set to default
         metric for the problem type.
 
         - 'regression'  : 'r2',
         - 'binary'      : 'roc',
         - 'categorical' : 'weighted roc auc'
-
-        For a full list of supported metrics call:
-        :func:`Show_Metrics`
 
         (default = 'default')
 
@@ -57,11 +62,11 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         to the saved data (just data, not covars) during model evaluation.
         If a list is passed, then scalers will be applied in that order.
         If None, then no scaling will be applied.
-        If 'default', and not already defined, set to 'standard'
 
         For a full list of supported options call:
         :func:`Show_Data_Scalers`
 
+        If 'default', and not already defined, set to 'standard'
         (default = 'default')
 
     feat_selector : str, list or None, optional
@@ -69,11 +74,11 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         for which feature selection to use, if a list, they will
         be applied in order.
         If None, then no feature selection will be used.
-        If 'default', and not already defined, set to None
 
         For a full list of supported options call:
         :func:`Show_Feat_Selectors`
 
+        If 'default', and not already defined, set to None
         (default = 'default')
 
     n_splits : int or 'default', optional
@@ -82,8 +87,8 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         repeated CV will be performed. This parameter is typically
         chosen as a trade off between bias and variance, in addition to
         as a function of sample size.
-        If 'default', and not already defined, set to 3
 
+        If 'default', and not already defined, set to 3
         (default = 'default')
 
     n_repeats : int or 'default', optional
@@ -91,8 +96,8 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         `n_repeats` refers to the number of times to repeat the
         k-fold CV. This parameter is typical chosen as a balance between
         run time, and accuratly accessing model performance.
-        If 'default', and not already defined, set to 2
 
+        If 'default', and not already defined, set to 2
         (default = 2)
 
     int_cv : int or 'default', optional
@@ -100,8 +105,60 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         model k-fold parameter selection, if the chosen model requires
         parameter selection. A value greater
         then 2 must be passed.
-        If 'default', and not already defined, set to 3
 
+        If 'default', and not already defined, set to 3
+        (default = 'default')
+
+    search_type : {'random', 'grid', None, 'default'}
+        The type of parameter search to conduct if any.
+
+        - 'random' : Uses sklearn RandomizedSearchCV
+        - 'grid' : Uses sklearn GridSearchCV
+        - None : Still technically used sklearn GridSearchCV, but \
+            forces all param inds to default = 0, such that only one \
+            fixed setting is used.
+
+        .. WARNING::
+            If search type is set to grid, and any of model_type_param_ind,
+            data_scaler_param_ind and feat_selector_param_ind are set
+            to a random distribution (rather then discrete values),
+            this will lead to an error.
+
+        If 'default', and not already defined, set to None
+        (default = 'default')
+
+    data_scaler_param_ind : int, str, or list of
+        Each `data_scaler` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `data_scaler_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `data_scaler`.
+        Likewise with `data_scaler`, if passed list input, this means
+        a list was passed to `data_scaler` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `data_scaler`, can be shown by calling :func:`Show_Data_Scalers`
+
+        If 'default', and not already defined, set to 0
+        (default = 'default')
+
+    feat_selector_param_ind : int, str, or list of
+         Each `feat_selector` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `feat_selector_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `feat_selector` param option.
+        Likewise with `feat_selector`, if passed list input, this means
+        a list was passed to `feat_selector` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `feat_selector`, can be shown by calling :func:`Show_Feat_Selectors`
+
+        If 'default', and not already defined, set to 0
         (default = 'default')
 
     class weight : {dict, 'balanced', None, 'default'}, optional
@@ -225,6 +282,28 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self.default_ML_params['int_cv'] = 3
         self._print('No default num internal CV splits passed, set to 3')
 
+    if search_type != 'default':
+        self.default_ML_params['search_type'] = search_type
+
+    elif 'search_type' not in self.default_ML_params:
+        self.default_ML_params['search_type'] = None
+        self._print('No default search type passed, set to None')
+
+    if data_scaler_param_ind != 'default':
+        self.default_ML_params['data_scaler_param_ind'] = data_scaler_param_ind
+
+    elif 'data_scaler_param_ind' not in self.default_ML_params:
+        self.default_ML_params['data_scaler_param_ind'] = 0
+        self._print('No default data scaler param ind passed, set to 0')
+
+    if feat_selector_param_ind != 'default':
+        self.default_ML_params['feat_selector_param_ind'] =\
+            feat_selector_param_ind
+
+    elif 'feat_selector_param_ind' not in self.default_ML_params:
+        self.default_ML_params['feat_selector_param_ind'] = 0
+        self._print('No default feat selector param ind passed, set to 0')
+
     if class_weight != 'default':
         self.default_ML_params['class_weight'] = class_weight
 
@@ -275,8 +354,11 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 def Evaluate(self, model_type, problem_type='default', metric='default',
              data_scaler='default', feat_selector='default',
              n_splits='default', n_repeats='default', int_cv='default',
-             class_weight='default', n_jobs='default', n_iter='default',
-             random_state='default', extra_params='default'):
+             search_type='default', model_type_param_ind=0,
+             data_scaler_param_ind='default',
+             feat_selector_param_ind='default', class_weight='default',
+             n_jobs='default', n_iter='default', random_state='default',
+             extra_params='default'):
 
     '''Class method to be called during the model selection phase.
     Used to evaluated different combination of models and scaling, ect...
@@ -304,16 +386,12 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
     metric : str or list, optional
         Indicator for which metric(s) to use for calculating
         score and during model parameter selection.
-        If 'default', use the saved value within self.default_ML_params.
         Note, some metrics are only avaliable for certain problem types.
-
-        - 'regression'  : 'r2',
-        - 'binary'      : 'roc',
-        - 'categorical' : 'weighted roc auc'
 
         For a full list of supported metrics call:
         :func:`Show_Metrics`
 
+        If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
     data_scaler : str, list or None, optional
@@ -321,11 +399,11 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         to the saved data (just data, not covars) during model evaluation.
         If a list is passed, then scalers will be applied in that order.
         If None, then no scaling will be applied.
-        If 'default', use the saved value within self.default_ML_params.
 
         For a full list of supported options call:
         :func:`Show_Data_Scalers`
 
+        If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
     feat_selector : str, list or None, optional
@@ -333,13 +411,12 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         for which feature selection to use, if a list, they will
         be applied in order.
         If None, then no feature selection will be used.
-        If 'default', use the saved value within self.default_ML_params.
 
         For a full list of supported options call:
         :func:`Show_Feat_Selectors`
 
+        If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
-
 
     n_splits : int or 'default', optional
         ``Evaluate`` performs a repeated k-fold model evaluation,
@@ -347,8 +424,8 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         repeated CV will be performed. This parameter is typically
         chosen as a trade off between bias and variance, in addition to
         as a function of sample size.
-        If 'default', use the saved value within self.default_ML_params.
 
+        If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
     n_repeats : int or 'default', optional
@@ -356,8 +433,8 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         `n_repeats` refers to the number of times to repeat the
         k-fold CV. This parameter is typical chosen as a balance between
         run time, and accuratly accessing model performance.
-        If 'default', use the saved value within self.default_ML_params.
 
+        If 'default', use the saved value within self.default_ML_params.
         (default = 2)
 
     int_cv : int or 'default', optional
@@ -365,8 +442,76 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         model k-fold parameter selection, if the chosen model requires
         parameter selection. A value greater
         then 2 must be passed.
-        If 'default', use the saved value within self.default_ML_params.
 
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    search_type : {'random', 'grid', None, 'default'}
+        The type of parameter search to conduct if any.
+
+        - 'random' : Uses sklearn RandomizedSearchCV
+        - 'grid' : Uses sklearn GridSearchCV
+        - None : Still technically used sklearn GridSearchCV, but \
+            forces all param inds to default = 0, such that only one \
+            fixed setting is used.
+
+        .. WARNING::
+            If search type is set to grid, and any of model_type_param_ind,
+            data_scaler_param_ind and feat_selector_param_ind are set
+            to a random distribution (rather then discrete values),
+            this will lead to an error.
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    model_type_param_ind : int, str, or list of
+        Each `model_type` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `model_type_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `model_type`.
+        Likewise with `model_type`, if passed list input, this means
+        a list was passed to `model_type` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `model_type`, can be shown by calling :func:`Show_Model_Types`
+
+        (default = 0)
+
+    data_scaler_param_ind : int, str, or list of
+        Each `data_scaler` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `data_scaler_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `data_scaler`.
+        Likewise with `data_scaler`, if passed list input, this means
+        a list was passed to `data_scaler` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `data_scaler`, can be shown by calling :func:`Show_Data_Scalers`
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    feat_selector_param_ind : int, str, or list of
+         Each `feat_selector` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `feat_selector_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `feat_selector` param option.
+        Likewise with `feat_selector`, if passed list input, this means
+        a list was passed to `feat_selector` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `feat_selector`, can be shown by calling :func:`Show_Feat_Selectors`
+
+        If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
     class_weight : {dict, 'balanced', None, 'default'}, optional
@@ -454,10 +599,11 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
     ML_params = self._make_ML_params(args=locals())
 
     # Print the params being used
-    self._print_model_params(model_type, ML_params, test=False)
+    self._print_model_params(model_type, ML_params, model_type_param_ind,
+                             test=False)
 
     # Init the Model object with modeling params
-    self._init_model(model_type, ML_params)
+    self._init_model(model_type, ML_params, model_type_param_ind)
 
     # Evaluate the model
     scores = self.Model.Evaluate_Model(self.all_data, self.train_subjects)
@@ -485,7 +631,9 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
 def Test(self, model_type, problem_type='default', train_subjects=None,
          test_subjects=None, metric='default', data_scaler='default',
-         feat_selector='default', int_cv='default', class_weight='default',
+         feat_selector='default', int_cv='default', search_type='default',
+         model_type_param_ind=0, data_scaler_param_ind='default',
+         feat_selector_param_ind='default', class_weight='default',
          n_jobs='default', n_iter='default', random_state='default',
          return_model=False, extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
@@ -572,6 +720,74 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
         (default = 'default')
 
+    search_type : {'random', 'grid', None, 'default'}
+        The type of parameter search to conduct if any.
+
+        - 'random' : Uses sklearn RandomizedSearchCV
+        - 'grid' : Uses sklearn GridSearchCV
+        - None : Still technically used sklearn GridSearchCV, but \
+            forces all param inds to default = 0, such that only one \
+            fixed setting is used.
+
+        .. WARNING::
+            If search type is set to grid, and any of model_type_param_ind,
+            data_scaler_param_ind and feat_selector_param_ind are set
+            to a random distribution (rather then discrete values),
+            this will lead to an error.
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    model_type_param_ind : int, str, or list of
+        Each `model_type` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `model_type_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `model_type`.
+        Likewise with `model_type`, if passed list input, this means
+        a list was passed to `model_type` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `model_type`, can be shown by calling :func:`Show_Model_Types`
+
+        (default = 0)
+
+    data_scaler_param_ind : int, str, or list of
+        Each `data_scaler` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `data_scaler_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `data_scaler`.
+        Likewise with `data_scaler`, if passed list input, this means
+        a list was passed to `data_scaler` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `data_scaler`, can be shown by calling :func:`Show_Data_Scalers`
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    feat_selector_param_ind : int, str, or list of
+         Each `feat_selector` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `feat_selector_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `feat_selector` param option.
+        Likewise with `feat_selector`, if passed list input, this means
+        a list was passed to `feat_selector` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `feat_selector`, can be shown by calling :func:`Show_Feat_Selectors`
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
     class weight : {dict, 'balanced', None, 'default'}, optional
         Only used for binary and categorical problem types.
         Follows sklearn api class weight behavior. Typically, either use
@@ -644,10 +860,11 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
     ML_params = self._make_ML_params(args=locals())
 
     # Print the params being used
-    self._print_model_params(model_type, ML_params, test=True)
+    self._print_model_params(model_type, ML_params, model_type_param_ind,
+                             test=True)
 
     # Init the Model object with modeling params
-    self._init_model(model_type, ML_params)
+    self._init_model(model_type, ML_params, model_type_param_ind)
 
     # If not train subjects or test subjects passed, use class
     if train_subjects is None:
@@ -733,7 +950,8 @@ def _make_ML_params(self, args):
     return ML_params
 
 
-def _print_model_params(self, model_type, ML_params, test=False):
+def _print_model_params(self, model_type, ML_params, model_type_param_ind,
+                        test=False):
 
     if test:
         self._print('Running Test with:')
@@ -752,6 +970,12 @@ def _print_model_params(self, model_type, ML_params, test=False):
 
     self._print('int_cv =', ML_params['int_cv'])
 
+    self._print('search_type =', ML_params['search_type'])
+    self._print('model_type_param_ind =', model_type_param_ind)
+    self._print('data_scaler_param_ind =', ML_params['data_scaler_param_ind'])
+    self._print('feat_selector_param_ind =',
+                ML_params['feat_selector_param_ind'])
+
     if ML_params['problem_type'] != 'regression':
         self._print('class_weight =', ML_params['class_weight'])
 
@@ -762,7 +986,7 @@ def _print_model_params(self, model_type, ML_params, test=False):
     self._print()
 
 
-def _init_model(self, model_type, ML_params):
+def _init_model(self, model_type, ML_params, model_type_param_ind):
 
     problem_types = {'binary': Binary_Model, 'regression': Regression_Model,
                      'categorical': Categorical_Model}
@@ -772,5 +996,6 @@ def _init_model(self, model_type, ML_params):
 
     Model = problem_types[ML_params['problem_type']]
 
-    self.Model = Model(model_type, ML_params, self.CV, self.data_keys,
-                       self.targets_key, self.targets_encoder, self.verbose)
+    self.Model = Model(model_type, ML_params, model_type_param_ind, self.CV,
+                       self.data_keys, self.targets_key, self.targets_encoder,
+                       self.verbose)

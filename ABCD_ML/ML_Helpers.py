@@ -6,6 +6,7 @@ These are non-class functions that are used in _ML.py and Scoring.py
 """
 import numpy as np
 import inspect
+from ABCD_ML.Default_Grids import get
 
 
 def compute_macro_micro(scores, n_repeats, n_splits):
@@ -43,6 +44,9 @@ def compute_macro_micro(scores, n_repeats, n_splits):
 
 
 def conv_to_list(in_val):
+
+    if in_val is None:
+        return None
 
     if not isinstance(in_val, list):
         in_val = [in_val]
@@ -90,6 +94,7 @@ def proc_str_input(in_str):
                             ' jac': ' jaccard',
                             ' iou': ' jaccard',
                             ' intersection over union': ' jaccard',
+                            ' logistic': '',
                             }
 
     for chunk in endwith_replace_dict:
@@ -129,6 +134,49 @@ def proc_str_input(in_str):
         in_str = replace_dict[in_str]
 
     return in_str
+
+
+def get_obj_and_params(obj_str, OBJS, extra_params, param_ind):
+
+    try:
+        obj, param_names = OBJS[obj_str]
+    except KeyError:
+        print('Requested:', obj_str, 'does not exist!')
+
+    # If param ind is a str, change it to the relevant index
+    if isinstance(param_ind, str):
+        try:
+            param_ind = param_names.index(param_ind)
+        except ValueError:
+            print('str', param_ind, 'passed, but not found as an option for',
+                  obj_str)
+            print('Setting to default base params setting instead!')
+            param_ind = 0
+
+    # Get the actual params
+    try:
+        param_name = param_names[param_ind]
+    except IndexError:
+        print('Invalid param ind', param_ind, 'passed for', obj_str)
+        print('There are only', len(param_names), 'valid param options.')
+        print('Setting to default base params setting instead!')
+        param_name = param_names[0]
+
+    params = get(param_name, obj_str)
+
+    # Update with extra params if applicable
+    extra_obj_params = {}
+    if obj_str in extra_params:
+        extra_obj_params = extra_params[obj_str]
+
+        # If any user passed args, and also in param grid, remove.
+        for ex_param in extra_obj_params:
+            key = obj_str + '__' + ex_param
+
+            if key in params:
+                del params[key]
+
+    return obj, extra_obj_params, params
 
 
 def get_model_possible_params(model):

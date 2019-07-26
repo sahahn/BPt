@@ -5,8 +5,10 @@ from sklearn.compose import ColumnTransformer
 from ABCD_ML.Ensemble_Model import Ensemble_Model
 from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
                                 get_model_possible_params)
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
 from ABCD_ML.Models import MODELS
+from ABCD_ML.ML_Helpers import get_obj_and_params
 
 from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
@@ -22,8 +24,8 @@ class Model():
     training, scaling, handling different datatypes ect...
     '''
 
-    def __init__(self, model_types, ML_params, CV, data_keys, targets_key,
-                 targets_encoder, verbose=True):
+    def __init__(self, model_types, ML_params, model_type_param_ind, CV,
+                 data_keys, targets_key, targets_encoder, verbose=True):
         ''' Init function for Model
 
         Parameters
@@ -59,6 +61,12 @@ class Model():
             - int_cv : int
                 The number of internal folds to use during modeling training
                 / parameter selection
+            - search_type : {'random', 'grid', None}
+                The type of parameter search to conduct if any.
+            - data_scaler_param_ind : int, str or list of
+                The index or str name of the param index for `data_scaler`
+            - feat_selector_param_ind : int, str or list of
+                The index or str name of the param index for `feat_selector`
             - class_weight : str or None
                 For categorical / binary problem_types, for setting different
                 class weights.
@@ -72,6 +80,9 @@ class Model():
             - extra_params : dict
                 The dictionary of any extra params to be passed to models or
                 data scalers.
+
+        model_type_param_ind : int, str or list of
+            The index or str name of the param index for `model_type`
 
         CV : ABCD_ML CV
             The class defined ABCD_ML CV object for defining
@@ -102,7 +113,7 @@ class Model():
         '''
 
         # Set class parameters
-        self.model_types = model_types
+        self.model_types = conv_to_list(model_types)
         self.CV = CV
         self.data_keys = data_keys
         self.targets_key = targets_key
@@ -110,9 +121,9 @@ class Model():
         self.verbose = verbose
 
         # Un-pack ML_params
-        self.metrics = ML_params['metric']
-        self.data_scalers = ML_params['data_scaler']
-        self.feat_selectors = ML_params['feat_selector']
+        self.metrics = conv_to_list(ML_params['metric'])
+        self.data_scalers = conv_to_list(ML_params['data_scaler'])
+        self.feat_selectors = conv_to_list(ML_params['feat_selector'])
         self.n_splits = ML_params['n_splits']
         self.n_repeats = ML_params['n_repeats']
         self.int_cv = ML_params['int_cv']
@@ -122,9 +133,18 @@ class Model():
         self.random_state = ML_params['random_state']
         self.extra_params = ML_params['extra_params']
 
+        # Un-pack param search ML_params
+        self.search_type = ML_params['search_type']
+
+        self.model_type_param_inds =\
+            conv_to_list(ML_params['model_type_param_ind'])
+        self.data_scaler_param_inds =\
+            conv_to_list(ML_params['data_scaler_param_ind'])
+        self.feat_selector_param_inds =\
+            conv_to_list(ML_params['feat_selector_param_ind'])
+
         # Default params just sets (sub)problem type for now
         self._set_default_params()
-        self.col_data_scalers = []
         self.user_passed_models, self.upmi = [], 0
 
         # Process model_types, scorers and scalers from str indicator input
@@ -155,7 +175,6 @@ class Model():
         str indicator, based on problem type and common input correction.
         Also handles updating extra params, if applicable.'''
 
-        self.model_types = conv_to_list(self.model_types)
         self._check_user_passed_models()
 
         self.model_types = self._proc_type_dep_str(self.model_types,
@@ -213,18 +232,18 @@ class Model():
                 self._proc_type_dep_str(self.feat_selectors,
                                         AVALIABLE_SELECTORS)
 
-            # Set feat selectors to list of (name, scaler) tuples.
-            self.feat_selectors = [(fs_str,
-                                    get_feat_selector(fs_str,
-                                                      self.extra_params))
-                                   for fs_str in feat_selector_strs]
+            # Get the feat_selectors tuple, and merged params grid / distr dict
+            self.feat_selectors, self.feat_selector_params =\
+                self._get_objs_and_params(get_feat_selector,
+                                          feat_selector_strs,
+                                          self.feat_selector_param_inds)
 
         else:
             self.feat_selectors = []
+            self.feat_selector_params = {}
 
     def _proc_type_dep_str(self, in_str, avaliable):
 
-        in_strs = conv_to_list(in_str)
         conv_strs = proc_input(in_strs)
 
         assert self._check_avaliable(conv_strs, avaliable),\
@@ -254,17 +273,34 @@ class Model():
 
         if self.data_scalers is not None:
 
-            # If not a list of data scalers, convert to list
-            self.data_scalers = conv_to_list(self.data_scalers)
-
             # Get converted scaler str and update extra params
-            conv_scaler_strs = proc_input(self.data_scalers)
-            self._update_extra_params(self.data_scalers, conv_scaler_strs)
+            conv_data_scaler_strs = proc_input(self.data_scalers)
+            self._update_extra_params(self.data_scalers, conv_data_scaler_strs)
 
-            # Set data scalers to list of (name, scaler) tuples.
-            self.data_scalers = [(name,
-                                  get_data_scaler(name, self.extra_params))
-                                 for name in conv_scaler_strs]
+            # Get the data_scalers tuple, and data_scaler_params grid / distr
+            self.data_scalers, self.data_scaler_params =\
+                self._get_objs_and_params(get_data_scaler,
+                                          conv_data_scaler_strs,
+                                          self.data_scaler_param_inds)
+
+    def _get_objs_and_params(self, get_func, names, param_inds):
+
+        # If search type is None, ensure that grids are set to default 0
+        if self.search_type is None:
+            param_inds = [0 for x in range(len(param_inds))]
+
+        # Grab necc. info w/ given get_func
+        objs_and_params = [(name, get_func(name, self.extra_params, ind))
+                           for name, ind in zip(names, param_inds)]
+
+        # Construct the obj as list of (name, obj) tuples
+        objs = [(c[0], c[1][0]) for c in objs_and_params]
+
+        # Grab the params, and merge them into one dict of all params
+        params = {k: v for params in objs_and_params for prm in params[1][1]
+                  for k, v in prm.items()}
+
+        return objs, params
 
     def Evaluate_Model(self, data, train_subjects):
         '''Method to perform a full repeated k-fold evaluation
@@ -334,9 +370,12 @@ class Model():
         train_data = data.loc[train_subjects]
         test_data = data.loc[test_subjects]
 
-        # Set column specific data scalers
+        # Set column specific data scalers or set to empty
         if self.data_scalers is not None:
             self._set_col_data_scalers(train_data)
+        else:
+            self.col_data_scalers = []
+            self.col_data_scaler_params = {}
 
         # Train the model(s)
         self._train_models(train_data)
@@ -367,6 +406,17 @@ class Model():
                                                    sparse_threshold=0)
                                   )
                                  for name, scaler in self.data_scalers]
+
+        # Create col_data_scaler_params from data_scaler_params
+        self.col_data_scaler_params = {}
+
+        for key in self.data_scaler_params:
+
+            name = key.split('__')[0]
+            new_name = 'col_' + name + '__' + key
+
+            self.col_data_scaler_params[new_name] =\
+                self.data_scaler_params[key]
 
     def _get_data_inds(self, data):
         '''Grabs the numerical column indices for the data keys
@@ -405,12 +455,14 @@ class Model():
             The trained single model, or Ensemble_Model of models.
         '''
 
-        # Reset user passed model index to 0
+        # User passed model index should be 0
         self.upmi = 0
 
         models = []
-        for model_type in self.model_types:
-            models.append(self._train_model(train_data, model_type))
+        for model_type, model_type_param_ind in
+        zip(self.model_types, self.model_type_param_inds):
+            models.append(self._train_model(train_data, model_type,
+                                            model_type_param_ind))
 
         # Set self.model to be either an ensemble or single model
         if len(models) == 1:
@@ -418,7 +470,7 @@ class Model():
         else:
             self.model = Ensemble_Model(models)
 
-    def _train_model(self, train_data, model_type):
+    def _train_model(self, train_data, model_type, model_type_param_ind):
         '''Helper method to train a single model type given
         a str indicator and training data.
 
@@ -431,19 +483,23 @@ class Model():
             The final processed str indicator for which model_type to load from
             MODELS constant.
 
+        model_type_param_ind : int
+            The index of the param grid / search space for the given model
+            type.
+
         Returns
         ----------
         sklearn api compatible model object
             The trained model.
         '''
 
-        # Create the internal base k-fold
+        # Create the internal base k-fold indices to pass to model
         base_int_cv = self.CV.k_fold(train_data.index, self.int_cv,
                                      random_state=self.random_state,
                                      return_index=True)
 
         # Create the model
-        model = self._get_model(model_type, base_int_cv)
+        model = self._get_model(model_type, model_type_param_ind, base_int_cv)
 
         # Data, score split
         X, y = self._get_X_y(train_data)
@@ -453,30 +509,52 @@ class Model():
 
         return model
 
-    def _get_model(self, model_type, base_int_cv, base_model_flag=False):
-        '''Get a model object from a given model type, called recursively to
-        build any model that has a base model (e.g. Grid Search)
+    def _get_model(self, model_type, model_type_param_ind, base_int_cv):
 
-        Parameters
-        ----------
-        model_type : str
-            The final processed str indicator for which model_type to load from
-            MODELS constant.
+        # Grab the base model, model if changed, and model params grid/distr
+        model, model_type, model_type_params =\
+            self._get_base_model(model_type, model_type_param_ind)
 
-        base_int_cv : CV output list of tuples
-            The internal cv index output to be passed to a classifier
+        # Create the model pipeline object
+        model = self._make_model_pipeline(model, model_type)
 
-        base_model_flag : bool, optional
-            If this flag is set to True, it means this method
-            was called recursively.
-            (default = False)
+        # Set the search params
+        search_params = {}
+        search_params['iid'] = False
+        search_params['estimator'] = model
+        search_params['pre_dispatch'] = 'n_jobs - 1'
+        search_params['cv'] = base_int_cv
+        search_params['scoring'] = self.scorer
+        search_params['random_state'] = self.random_state
 
-        Returns
-        ----------
-        sklearn api compatible model object
-            The requested model object initialized with parameters,
-            and ready to be fit.
-        '''
+        # Set search type specific params
+        if self.search_type is None:
+            search_params['n_jobs'] = 1
+        else:
+            search_params['n_jobs'] = self.n_jobs
+
+        if self.search_type == 'random':
+            search_params['n_iter'] = self.n_iter
+
+        # Merge the different params / grids of params
+        # into one dict.
+        all_params = {}
+        all_params.update(model_type_params)
+        all_params.update(self.col_data_scaler_params)
+        all_params.update(self.feat_selector_params)
+
+        # Create the search model
+        if self.search == 'random':
+            search_params['param_distributions'] = all_params
+            search_model = RandomizedSearchCV(**search_params)
+
+        else:
+            search_params['param_grid'] = all_params
+            search_model = GridSearchCV(**search_params)
+
+        return search_model
+
+    def _get_base_model(self, model_type, model_type_param_ind):
 
         # Check for user passed model
         if model_type == 'user passed':
@@ -485,115 +563,41 @@ class Model():
             user_model_type = 'user passed' + str(self.upmi)
             self.upmi += 1
 
-            model = self._make_model_pipeline(user_model, user_model_type)
-            return model
+            return user_model, user_model_type, {}
 
-        estimator, base_model_type = None, None
+        if self.search_type is None:
+            model_type_param_ind = 0
 
-        # Check for if a base model should be created
-        if ' gs' in model_type or ' rs' in model_type:
-            base_model_type = MODELS[model_type][1]['estimator']
-        if ' cal' in model_type:
-            base_model_type = MODELS[model_type][1]['base_estimator']
+        model, extra_model_params, model_type_params =\
+            get_obj_and_params(model_type, MODELS, self.extra_params,
+                               model_type_param_ind)
 
-        # Set estimator,
-        if base_model_type is not None:
-            estimator = self._get_model(base_model_type, base_int_cv, True)
-
-        # Grab the right model and params
-        model = MODELS[model_type][0]
         possible_params = get_model_possible_params(model)
 
-        model_params = MODELS[model_type][1].copy()
-        model_params = self._replace_params(model_params, possible_params,
-                                            base_int_cv, estimator,
-                                            base_model_flag)
-
-        # Check to see if there are any user passed model params to update
-        extra_model_params = {}
-        if model_type in self.extra_params:
-            extra_model_params = self.extra_params[model_type]
-        model_params.update(extra_model_params)
-
-        # Create model
-        model = model(**model_params)
-
-        # In the case that estimator is None, that means this model is
-        # is the base model. In that case, we set the model to be a Pipeline
-        # object with the proceeding data scalers, as this should be applied
-        # on the base estimator.
-        if estimator is None:
-            model = self._make_model_pipeline(model, model_type)
-
-        return model
-
-    def _replace_params(self, params, possible_params, base_int_cv,
-                        estimator, base_model_flag):
-        '''Helper method to replace default values with provided params,
-        with actual values saved within the class.
-
-        Parameters
-        ----------
-        params : dict
-            Dictionary with parameter values to be replaced.
-
-        base_int_cv : CV output list of tuples
-            The internal cv index output to be passed to a classifier
-
-        estimator : model or None
-            Either a model object passed to be set for the estimator param
-            or None if not applicable.
-            Specifically, if estimator is None, then this is the final model,
-            if has a specific value then it means these are the params for
-            a grid search or calibrated overarching-esque object.
-
-        base_model_flag : bool
-            If set to True, then that means we are
-            replacing the parameters for a base model within
-            another estimator. In that case, we set n_jobs if
-            avaliable to 1.
-
-        Returns
-        ----------
-        dict
-            The input dictionary with applicable values transformed.
-        '''
-
-        if 'cv' in possible_params:
-            params['cv'] = base_int_cv
-
-        if 'scoring' in possible_params:
-            params['scoring'] = self.scorer
-
+        # Get param values from class
         if 'class_weight' in possible_params:
-            params['class_weight'] = self.class_weight
+            extra_model_params['class_weight'] = self.class_weight
 
         if 'n_jobs' in possible_params:
-            if base_model_flag:
-                params['n_jobs'] = 1
+            if self.search_type is None:
+                extra_model_params['n_jobs'] = self.n_jobs
             else:
-                params['n_jobs'] = self.n_jobs
-
-        if 'n_iter' in possible_params:
-            params['n_iter'] = self.n_iter
+                extra_model_params['n_jobs'] = 1
 
         if 'random_state' in possible_params:
-            params['random_state'] = self.random_state
+            extra_model_params['random_state'] = self.random_state
 
-        if 'estimator' in params:
-            if type(params['estimator']) == str and estimator is not None:
-                params['estimator'] = estimator
+        # Init model, w/ any user passed params + class params
+        model = model(**extra_model_params)
 
-        if 'base_estimator' in params:
-            if type(params['base_estimator']) == str and estimator is not None:
-                params['base_estimator'] = estimator
-
-        return params
+        return model, model_type, model_type_params
 
     def _make_model_pipeline(self, model, model_type):
         '''Provided a model & model type (model str indicator),
         return a sklearn pipeline with proceeding self.col_data_scalers,
-        and then the model.
+        and then self.feat_selectors (which should both just be and
+        empty list if None) and then the model, w/ model_type
+        as its unique name.
 
         Parameters
         ----------

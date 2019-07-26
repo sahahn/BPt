@@ -3,63 +3,60 @@ Scalers.py
 ====================================
 File containing the various input data scalers.
 """
+from ABCD_ML.ML_Helpers import get_obj_and_params
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer)
 from sklearn.decomposition import PCA
+
 
 # Scalers differs from scorers and models in that the types are not restricted
 # by a given problem type. Therefore no AVALIABLE dictionary is neccisary,
 # all avaliable scalers are as indexed by SCALERS.
 SCALERS = {
-    'standard': (StandardScaler, {'with_mean': True, 'with_std': True}),
+    'standard': (StandardScaler, ['base standard']),
 
-    'minmax': (MinMaxScaler, {'feature_range': (0, 1)}),
+    'minmax': (MinMaxScaler, ['base minmax']),
 
-    'robust': (RobustScaler, {'quantile_range': (5, 95)}),
+    'robust': (RobustScaler, ['base robust']),
 
-    'power': (PowerTransformer, {'method': 'yeo-johnson',
-                                 'standardize': True}),
+    'power': (PowerTransformer, ['base power']),
 
-    'pca': (PCA, {})
+    'pca': (PCA, ['base pca'])
     }
 
 
-def get_data_scaler(scaler_str, extra_params):
+def get_data_scaler(data_scaler_str, extra_params, param_ind):
     '''Returns a scaler based on proced str indicator input,
 
     Parameters
     ----------
-    scaler_str : str
-        `scaler_str` refers to the type of scaling to apply
+    data_scaler_str : str
+        `data_scaler_str` refers to the type of scaling to apply
         to the saved data during model evaluation.
-        For a full list of supported options call:
-        self.Show_Data_Scalers()
 
-    extra_params : dict, optional
+    extra_params : dict
         Any extra params being passed.
         These can be supplied by creating another dict within extra_params.
         E.g., extra_params[method] = {'method param' : new_value}
         Where method param is a valid argument for that method,
         and method in this case is the str indicator.
-        (default = {})
+
+    param_ind : int
+        The index of the params to use.
 
     Returns
     ----------
     scaler
         A scaler object with fit and transform methods.
+
+    dict
+        The params for this scaler
     '''
 
-    try:
-        scaler, params = SCALERS[scaler_str]
-    except KeyError:
-        print('Requested scaler with str indicator', scaler_str,
-              'does not exist!')
+    data_scaler, extra_data_scaler_params, data_scaler_params =\
+        get_obj_and_params(data_scaler_str, SCALERS, extra_params, param_ind)
 
-    # Update with extra params if applicable
-    if scaler_str in extra_params:
-        params.update(extra_params[scaler_str])
-
-    return scaler(**params)
+    return data_scaler(**extra_data_scaler_params), data_scaler_params
 
 
 def Show_Scalers(self, show_scaler_help=False, show_default_params=False):

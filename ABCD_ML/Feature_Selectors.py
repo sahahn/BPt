@@ -9,29 +9,34 @@ from sklearn.feature_selection import *
 
 AVALIABLE = {
         'binary': {
-            'univariate select half':
-            'univariate select half classification',
+            'univariate selection':
+            'univariate selection classification',
         },
         'regression': {
-            'univariate select half':
-            'univariate select half regression',
+            'univariate selection':
+            'univariate selection regression',
+            'linear svm rfe': 'linear svm rfe regression',
         },
         'categorical': {
             'multilabel': {
             },
             'multiclass': {
-                'univariate select half':
-                'univariate select half classification',
+                'univariate selection':
+                'univariate selection classification',
             }
         }
 }
 
 SELECTORS = {
-    'univariate select half regression': (SelectPercentile,
-                                          ['base univar fs regression']),
+    'univariate selection regression': (SelectPercentile,
+                                        ['base univar fs regression',
+                                         'univar fs regression gs']),
 
-    'univariate select half classification': (SelectPercentile,
-                                              ['base univar fs classifier']),
+    'univariate selection classification': (SelectPercentile,
+                                            ['base univar fs classifier',
+                                             'univar fs classifier gs']),
+
+    'linear svm rfe regression': (RFE, ['base linear svm rfe regression'])
 }
 
 
@@ -66,6 +71,11 @@ def get_feat_selector(feat_selector_str, extra_params, param_ind):
     feat_selector, extra_feat_selector_params, feat_selector_params =\
         get_obj_and_params(feat_selector_str, SELECTORS, extra_params,
                            param_ind)
+
+    # Need to check for estimator, as RFE needs a default param for estimator
+    possible_params = get_possible_init_params(feat_selector)
+    if 'estimator' in possible_params:
+            extra_feat_selector_params['estimator'] = None
 
     return feat_selector(**extra_feat_selector_params), feat_selector_params
 

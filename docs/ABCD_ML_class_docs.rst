@@ -70,6 +70,10 @@ Clear_Strat
 ===========
 .. automethod:: ABCD_ML.Clear_Strat
 
+Drop_Data_Duplicates
+====================
+.. automethod:: ABCD_ML.Drop_Data_Duplicates
+
 Show_Targets_Dist
 =================
 .. automethod:: ABCD_ML.Show_Targets_Dist

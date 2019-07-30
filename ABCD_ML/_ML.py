@@ -998,4 +998,4 @@ def _init_model(self, model_type, ML_params, model_type_param_ind):
 
     self.Model = Model(model_type, ML_params, model_type_param_ind, self.CV,
                        self.data_keys, self.targets_key, self.targets_encoder,
-                       self.verbose)
+                       self._print)

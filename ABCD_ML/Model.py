@@ -25,7 +25,7 @@ class Model():
     '''
 
     def __init__(self, model_types, ML_params, model_type_param_ind, CV,
-                 data_keys, targets_key, targets_encoder, verbose=True):
+                 data_keys, targets_key, targets_encoder, _print=print):
         ''' Init function for Model
 
         Parameters
@@ -101,8 +101,9 @@ class Model():
             The encoder or list of encoders, used in the case of targets
             needing to be transformed in some way.
 
-        verbose : bool
-            If set to true will display extra diagnostic / print output.
+        _print : func, optioanl
+            The print function to use, by default the python print,
+            but designed to be passed ABCD_ML._print
 
         Notes
         ----------
@@ -118,7 +119,7 @@ class Model():
         self.data_keys = data_keys
         self.targets_key = targets_key
         self.targets_encoder = targets_encoder
-        self.verbose = verbose
+        self._print = _print
 
         # Un-pack ML_params
         self.metrics = conv_to_list(ML_params['metric'])
@@ -152,19 +153,6 @@ class Model():
         self._process_feat_selectors()
         self._process_scorers()
         self._process_data_scalers()
-
-    def _print(self, *args):
-        '''Overriding the print function to allow for
-        customizable verbosity within class methods
-
-        Parameters
-        ----------
-        args
-            Anything that would be passed to default python print
-        '''
-
-        if self.verbose:
-            print(*args)
 
     def _set_default_params(self):
         '''Overriden by child classes'''

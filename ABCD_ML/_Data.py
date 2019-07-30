@@ -197,7 +197,8 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
     if filter_outlier_percent is not None:
         for key in data_keys:
             data = filter_float_by_outlier(data, key, filter_outlier_percent,
-                                           in_place=False, verbose=False)
+                                           in_place=False,
+                                           _print=self._print_nothing)
 
         data = data.dropna()  # To actually remove the outliers
         self._print('Filtered data for outliers with value: ',
@@ -333,13 +334,13 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         self._print('load:', key)
 
         if d_type == 'binary' or d_type == 'b':
-            covars, encoder = process_binary_input(covars, key, self.verbose)
+            covars, encoder = process_binary_input(covars, key, self._print)
             self.covars_encoders[key] = encoder
 
         elif d_type == "categorical" or d_type == 'c':
             covars, new_keys, encoder = process_categorical_input(covars, key,
                                                                   drop,
-                                                                  self.verbose)
+                                                                  self._print)
             self.covars_encoders[key] = encoder
 
         elif (d_type == 'float' or d_type == 'ordinal' or
@@ -351,7 +352,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
                 covars = filter_float_by_outlier(covars, key,
                                                  filter_float_outlier_percent,
                                                  in_place=False,
-                                                 verbose=self.verbose)
+                                                 _print=self._print)
 
             if standardize:
                 covars[key] -= np.mean(covars[key])
@@ -454,7 +455,7 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
         # Processing for binary, with some tolerance to funky input
         targets, self.targets_encoder = process_binary_input(targets,
                                                              self.targets_key,
-                                                             self.verbose)
+                                                             self._print)
 
     elif data_type == 'categorical' or data_type == 'c':
 
@@ -463,7 +464,7 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
         # then encoder from ordinal to sparse.
         targets, self.targets_key, self.targets_encoder = \
             process_categorical_input(targets, self.targets_key, drop=None,
-                                      verbose=self.verbose)
+                                      _print=self._print)
 
     elif (data_type == 'float' or data_type == 'ordinal' or
             data_type == 'f' or data_type == 'o'):
@@ -472,7 +473,7 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
             targets = filter_float_by_outlier(targets, self.targets_key,
                                               filter_outlier_percent,
                                               in_place=True,
-                                              verbose=self.verbose)
+                                              _print=self._print)
 
     self._print('Final shape: ', targets.shape)
 
@@ -557,7 +558,7 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
             strat, self.strat_encoders[col] = process_ordinal_input(strat, col)
         else:
             strat, self.strat_encoders[col] =\
-                process_binary_input(strat, col, self.verbose)
+                process_binary_input(strat, col, self._print)
 
     self.strat = self._merge_existing(self.strat, strat)
     self._process_new(True)  # Regardless of low mem-mode

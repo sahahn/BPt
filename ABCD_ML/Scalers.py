@@ -18,7 +18,7 @@ SCALERS = {
 
     'minmax': (MinMaxScaler, ['base minmax']),
 
-    'robust': (RobustScaler, ['base robust']),
+    'robust': (RobustScaler, ['base robust', 'robust gs']),
 
     'power': (PowerTransformer, ['base power']),
 
@@ -60,10 +60,13 @@ def get_data_scaler(data_scaler_str, extra_params, param_ind):
     return data_scaler(**extra_data_scaler_params), data_scaler_params
 
 
-def Show_Scalers(self, show_scaler_help=False, show_default_params=False):
+def Show_Scalers(self, data_scaler=None, show_param_ind_options=True,
+                 show_scaler_object=False,
+                 show_all_possible_params=False):
     '''Just calls Show_Data_Scalers'''
 
-    self.Show_Data_Scalers()
+    self.Show_Data_Scalers(data_scaler, show_param_ind_options,
+                           show_scaler_object, show_all_possible_params)
 
 
 def Show_Data_Scalers(self, data_scaler=None, show_param_ind_options=True,

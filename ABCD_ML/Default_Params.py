@@ -7,6 +7,7 @@ for various classifiers within ABCD_ML.
 
 from scipy.stats import (randint as sp_randint, uniform as sp_uniform)
 from sklearn.feature_selection import f_regression, f_classif
+from sklearn.svm import SVR
 
 PARAMS = {}
 
@@ -95,17 +96,35 @@ PARAMS['base minmax'] = {'feature_range': [(0, 1)]}
 
 PARAMS['base robust'] = {'quantile_range': [(5, 95)]}
 
+PARAMS['robust gs'] = {'quantile_range': [(1, 99), (5, 95), (10, 90), (15, 85),
+                                          (20, 80), (25, 75), (30, 70),
+                                          (35, 65), (40, 60)]}
+
 PARAMS['base power'] = {'method': ['yeo-johnson'],
                         'standardize': [True]}
 
 PARAMS['base pca'] = {}
 
+PARAMS['pca rs'] = {'n_components': sp_uniform()}
+
 # Feat Selectors
 PARAMS['base univar fs regression'] = {'score_func': [f_regression],
                                        'percentile': [50]}
 
+PARAMS['univar fs regression gs'] = {'score_func': [f_regression],
+                                     'percentile': [10, 20, 30, 40, 50, 60, 70,
+                                                    80, 90]}
+
 PARAMS['base univar fs classifier'] = {'score_func': [f_classif],
                                        'percentile': [50]}
+
+PARAMS['univar fs classifier gs'] = {'score_func': [f_classif],
+                                     'percentile':  [10, 20, 30, 40, 50, 60,
+                                                     70, 80, 90]}
+
+PARAMS['base linear svm rfe regression'] = {'estimator':
+                                            [SVR(kernel="linear")],
+                                            'n_features_to_select': [None]}
 
 
 def get(str_indicator, preprend):

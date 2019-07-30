@@ -5,6 +5,8 @@ The main project class.
 """
 import pandas as pd
 import numpy as np
+import shutil
+import os
 from ABCD_ML.Data_Helpers import get_unique_combo
 from ABCD_ML.CV import CV
 
@@ -12,7 +14,8 @@ from ABCD_ML.CV import CV
 class ABCD_ML():
     '''The main class used in ABCD_ML project'''
 
-    def __init__(self, subject_id='src_subject_id',
+    def __init__(self, exp_name='some_exp', log_dr='', existing_log='new',
+                 notebook=True, subject_id='src_subject_id',
                  eventname='baseline_year_1_arm_1',
                  use_default_subject_ids=True,
                  default_dataset_type='basic',
@@ -23,6 +26,42 @@ class ABCD_ML():
 
         Parameters
         ----------
+        exp_name : str, optional
+            The name of this experimental run,
+            used explicitly in saving logs, and figures.
+            If log_dr is not set to None-
+            (if not None then saves logs and figures)
+            then a folder is created within the log dr
+            with the exp_name.
+
+            (default = 'some_exp')
+
+        log_dr : str, Path or None, optional
+            The directory in which to store logs...
+            If set to None, then will not save any logs!
+            If set to '', will save in the current dr.
+
+            (default = '')
+
+        existing_log : {'new', 'append', 'overwrite'}, optional
+            By default, if an exp_name folder already
+            exists within the log_dr, then the exp_name will
+            be incremented until a free name is avaliable.
+            This behavior is existing_log is 'new',
+            If existing_log is 'append' then log entries
+            and new figures will be added to the existing folder.
+            If existing_log is 'overwrite', then the existing
+            log folder with the same exp_name will be cleared
+            upon __init__.
+
+            (default = 'new')
+
+        notebook : bool, optional
+            If True, then assumes the user is running
+            the code in an interactive notebook. In this case,
+            any plots will be showed interactively
+            (as well as saved as long as log_dr != None)
+
         subject_id : str, optional
             The name of the column with unique subject ids in different
             dataset, for default ABCD datasets this is 'src_subject_id',
@@ -108,14 +147,23 @@ class ABCD_ML():
             (default = None)
 
         verbose: bool, optional
-            If set to true will display diagnostic and other output during
+            If set to true will print diagnostic and other output during
             dataloading and model training ect... if set to False this output
-            will be muted.
+            will not print. If log_dr is not None, then will still
+            record as log output.
 
             (default = True)
         '''
 
-        # Set class parameters
+        # Load logging class params
+        self.exp_name = exp_name
+        self.log_dr = log_dr
+        self.existing_log = existing_log
+
+        self._init_logs()
+
+        # Set rest of class params
+        self.notebook = notebook
         self.subject_id = subject_id
         self.eventname = eventname
         self.use_default_subject_ids = use_default_subject_ids
@@ -139,9 +187,53 @@ class ABCD_ML():
 
         self._print('ABCD_ML object initialized')
 
-    def _print(self, *args):
+    def _init_logs(self):
+
+        if log_dr is not None:
+
+            # Ensure log_dr exists, if not make it
+            os.makedirs(log_dr, exist_ok=True)
+
+            # Get exp_log_dr name
+            self.exp_log_dr = os.path.join(log_dr, exp_name)
+
+            if os.path.isdir(self.exp_log_dr):
+
+                if self.existing_log == 'new':
+                    cnt = 1
+
+                    while os.path.isdir(self.exp_log_dr +
+                                        '(' + str(cnt) + ')'):
+                        cnt += 1
+
+                    self.exp_log_dr += '(' + str(cnt) + ')'
+
+                elif self.existing_log == 'overwrite':
+
+                    # If overwrite, delete everything, then make new blank
+                    shutil.rmtree(self.exp_log_dr)
+
+                if self.existing_log != 'append':
+
+                    # Make the new dr
+                    os.mkdir(self.exp_log_dr)
+
+            # If the dr doesn't already exist, regardless of existing log
+            # Just make new dr.
+            else:
+                os.mkdir(self.exp_log_dr)
+
+            # Make the log file if not already made.
+            self.log_file = os.path.join(self.exp_log_dr, 'logs.txt')
+
+        else:
+            self.exp_log_dr = None
+            self.log_file = None
+
+    def _print(self, *args, **kwargs):
         '''Overriding the print function to allow for
-        customizable verbosity within class methods
+        customizable verbosity within class methods. Will also
+        take care of logging behavior.
 
         Parameters
         ----------
@@ -150,7 +242,15 @@ class ABCD_ML():
         '''
 
         if self.verbose:
-            print(*args)
+            print(*args, **kwargs)
+
+        if self.log_file is not None:
+            log = open(self.log_file, 'a')
+            print(*args, **kwargs, file=log)
+            log.close()
+
+    def _print_nothing(self, *args, **kwargs):
+        pass
 
     # Data loader functionality
     from ABCD_ML._Data import (Load_Name_Map,

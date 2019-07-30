@@ -11,7 +11,7 @@ from operator import add
 from functools import reduce
 
 
-def process_binary_input(data, key, verbose=True):
+def process_binary_input(data, key, _print=print):
     '''Helper function to perform processing on binary input
 
     Parameters
@@ -22,9 +22,11 @@ def process_binary_input(data, key, verbose=True):
     key : str
         Column key of the column to process within `data` input.
 
-    verbose : bool, optional
-        Add optional print statements if True.
-        (default = True)
+    _print : print func, optional
+        Either python print statement or overriden print
+        func.
+
+        (default = print)
 
     Returns
     ----------
@@ -53,9 +55,8 @@ def process_binary_input(data, key, verbose=True):
         # Only keep rows with those scores
         data.drop(data.index[~data[key].isin(keep_vals)], inplace=True)
 
-        if verbose:
-            print('More than two unique score values found,',
-                  'filtered all but', keep_vals)
+        _print('More than two unique score values found,',
+               'filtered all but', keep_vals)
 
     # Perform actual binary encoding
     encoder = LabelEncoder()
@@ -93,7 +94,7 @@ def process_ordinal_input(data, key):
     return data, label_encoder
 
 
-def process_categorical_input(data, key, drop=None, verbose=True):
+def process_categorical_input(data, key, drop=None, _print=print):
     '''Helper function to perform processing on categorical input
 
     Parameters
@@ -109,9 +110,11 @@ def process_categorical_input(data, key, drop=None, verbose=True):
         Otherwise if None (default), perform one-hot encoding
         (default = None)
 
-    verbose : bool, optional
-        Add optional print statements if True.
-        (default = True)
+    _print : print func, optional
+        Either python print statement or overriden print
+        func.
+
+        (default = print)
 
     Returns
     ----------
@@ -156,14 +159,13 @@ def process_categorical_input(data, key, drop=None, verbose=True):
     # Remove the original key column from the dataframe
     data = data.drop(key, axis=1)
 
-    if verbose:
-        print('Encoded to', len(categories), 'categories')
+    _print('Encoded to', len(categories), 'categories')
 
     return data, new_keys, (label_encoder, encoder)
 
 
 def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
-                            verbose=True):
+                            _print=print):
     '''Helper function to perform filtering on a dataframe,
     by setting values to be NaN, then optionally removing rows inplace
 
@@ -189,6 +191,12 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
         remove rows with missing values after all columns have been checked.
         If only filtering one column, this can be set to True.
 
+    _print : print func, optional
+        Either python print statement or overriden print
+        func.
+
+        (default = print)
+
     Returns
     ----------
     pandas DataFrame
@@ -198,10 +206,9 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
     # For length of code / readability
     fop = filter_outlier_percent
 
-    if verbose:
-        print('Filtering for outliers, dropping rows with params: ', fop)
-        print('Min-Max Score (before outlier filtering):',
-              np.nanmin(data[key]), np.nanmax(data[key]))
+    _print('Filtering for outliers, dropping rows with params: ', fop)
+    _print('Min-Max Score (before outlier filtering):',
+           np.nanmin(data[key]), np.nanmax(data[key]))
 
     if type(fop) != tuple:
 
@@ -221,9 +228,8 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
         data.loc[data[key] < data[key].quantile(fop[0]), key] = np.nan
         data.loc[data[key] > data[key].quantile(fop[1]), key] = np.nan
 
-    if verbose:
-        print('Min-Max Score (post outlier filtering):',
-              np.nanmin(data[key]), np.nanmax(data[key]))
+    _print('Min-Max Score (post outlier filtering):',
+           np.nanmin(data[key]), np.nanmax(data[key]))
 
     return data
 

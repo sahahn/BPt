@@ -111,7 +111,7 @@ def Show_Models(self, problem_type=None, model_type=None,
                 show_all_possible_params=False):
         '''Just calls Show_Model_Types.'''
 
-        self.Show_Model_Types(problem_type, show_param_ind_options,
+        self.Show_Model_Types(problem_type, model_type, show_param_ind_options,
                               show_model_object, show_all_possible_params)
 
 

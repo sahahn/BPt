@@ -88,6 +88,34 @@ PARAMS['svm rs']['C'] = [.0001, .001, .10, .1, 1, 5, 10, 25, 50, 100, 500,
                          1000, 5000, 10000]
 PARAMS['svm rs']['gamma'] = ['auto', 1e-2, 1e-3, 1e-4, 1e-5, 1e-6]
 
+PARAMS['base mlp'] = {}
+
+NNs = []
+for x in range(2, 150):
+    NNs.append((x))
+    for y in range(2, 150):
+        NNs.append((x, y))
+        for z in range(2, 150):
+            NNs.append((x, y, z))
+
+PARAMS['mlp rs'] = {'hidden_layer_sizes': NNs,
+                    'activation': ['identity', 'logistic', 'tanh', 'relu'],
+                    'alpha': [.000001, .00001, .00005, .0001, .0005, .001, .10,
+                              .1, 1, 5, 10, 25, 50, 100],
+                    'batch_size': sp_randint(2, 200),
+                    'learning_rate': ['constant', 'invscaling', 'adaptive'],
+                    'learning_rate_init': [.00001, .00005, .0001, .0005, .001,
+                                           .005],
+                    'max_iter': [100, 200, 300, 500],
+                    'beta_1': sp_uniform(loc=0.5, scale=0.5),
+                    'beta_2': sp_uniform(loc=0.5, scale=0.5)}
+
+PARAMS['mlp rs es'] = PARAMS['mlp rs'].copy()
+PARAMS['mlp rs es']['early_stopping'] = [True]
+PARAMS['mlp rs es']['n_iter_no_change'] = sp_randint(5, 50)
+
+PARAMS['mlp layers search'] = {'hidden_layer_sizes': NNs}
+
 # Scalers
 PARAMS['base standard'] = {'with_mean': [True],
                            'with_std': [True]}
@@ -165,13 +193,8 @@ def show(str_indicator):
                         else:
                                 print(value[0])
 
+                elif len(value) > 50:
+                        print('Too many params to print')
+
                 else:
                         print(value)
-
-
-
-
-
-
-
-

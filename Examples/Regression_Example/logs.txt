@@ -1,0 +1,107 @@
+exp_name = Regression_Example
+log_dr = /home/sage/ABCD_ML/Examples
+existing_log = overwrite
+verbose = True
+exp log dr setup at: /home/sage/ABCD_ML/Examples/Regression_Example
+log file at: /home/sage/ABCD_ML/Examples/Regression_Example/logs.txt
+notebook = True
+default subject id col = src_subject_id
+eventname = baseline_year_1_arm_1
+use default subject ids = True
+default dataset type = basic
+default NaN values = ['777', '999']
+original targets key col = targets
+low memory mode = False
+random state = 1
+ABCD_ML object initialized
+Total excluded subjects:  1137
+Removed excluded subjects from loaded dfs
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_betnet02.txt assumed to be dataset type: basic
+dropped ['collection_id', 'abcd_betnet02_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'gender', 'rsfmri_c_ngd_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
+Dropped 0 columns, per drop_keys argument
+Dropped 0 cols for all missing values
+Dropped 604 rows for missing values
+Dropped rows with missing data
+loaded shape:  (9295, 181)
+
+The following columns have a questionable number of unique values: 
+rsfmri_c_ngd_tr unique vals: 10
+rsfmri_c_ngd_numtrs unique vals: 117
+rsfmri_c_ngd_nvols unique vals: 104
+rsfmri_c_ngd_stnvols unique vals: 1257
+rsfmri_c_ngd_stcontignvols unique vals: 1354
+rsfmri_c_ngd_ntpoints unique vals: 1403
+
+
+Total valid overlapping subjects = 9295
+
+cleared data.
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_betnet02.txt assumed to be dataset type: basic
+dropped ['collection_id', 'abcd_betnet02_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'gender', 'rsfmri_c_ngd_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
+Dropped 12 columns, per drop_keys argument
+Dropped 0 cols for all missing values
+Dropped 550 rows for missing values
+Dropped rows with missing data
+loaded shape:  (9349, 169)
+
+Total valid overlapping subjects = 9349
+
+Dropped 78 columns as duplicate cols!
+Loading targets!
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
+Final shape:  (10604, 1)
+
+Total valid overlapping subjects = 9231
+
+Loading covariates!
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_betnet02.txt assumed to be dataset type: basic
+load: interview_age
+load: gender
+
+Total valid overlapping subjects = 9229
+
+Loading targets!
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
+Filtering for outliers, dropping rows with params:  1
+Min-Max Score (before outlier filtering): 0.0 208.0
+Min-Max Score (post outlier filtering): 77.0 152.0
+Final shape:  (10262, 1)
+
+Total valid overlapping subjects = 8937
+
+Loading targets!
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
+Filtering for outliers, dropping rows with params:  0.005
+Min-Max Score (before outlier filtering): 0.0 208.0
+Min-Max Score (post outlier filtering): 71.0 155.0
+Final shape:  (10466, 1)
+
+Total valid overlapping subjects = 9116
+
+Final data for modeling loaded shape: (9116, 94)
+Performed train/test split, train size: 6837 test size:  2279
+No default feat selector passed, set to None
+No default search type passed, set to None
+No default data scaler param ind passed, set to 0
+No default feat selector param ind passed, set to 0
+No default extra params passed, set to empty dict
+Default params set.
+
+Running Evaluate with:
+model_type = mlp
+problem_type = regression
+metric = ['r2', 'mse']
+data_scaler = standard
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+int_cv = 3
+search_type = random
+model_type_param_ind = 2
+data_scaler_param_ind = 0
+feat_selector_param_ind = 0
+n_jobs = 8
+n_iter = 20
+random_state = 1
+extra_params = {}
+

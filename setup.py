@@ -18,7 +18,7 @@ setup(name='ABCD_ML',
           'scipy>=1.2',
           'pandas>=0.24',
           'matplotlib>=3',
-          'seaborn'
+          'seaborn',
       ],
       test_suite='nose.collector',
       tests_require=['nose'],

@@ -7,7 +7,7 @@ and default params.
 """
 from ABCD_ML.ML_Helpers import (get_avaliable_by_type, show_param_options,
                                 get_possible_init_params)
-
+from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB
@@ -41,6 +41,7 @@ AVALIABLE = {
                         'gp':                 'gp classifier',
                         'light gbm':          'light gbm classifier',
                         'svm':                'svm classifier',
+                        'mlp':                'mlp classifier',
         },
         'regression': {
                         'user passed':        'user passed',
@@ -53,6 +54,7 @@ AVALIABLE = {
                         'gp':                 'gp regressor',
                         'light gbm':          'light gbm regressor',
                         'svm':                'svm regressor',
+                        'mlp':                'mlp regressor',
         },
         'categorical': {
                 'multilabel': {
@@ -60,6 +62,7 @@ AVALIABLE = {
                         'knn':                'knn classifier',
                         'dt':                 'dt classifier',
                         'random forest':      'random forest classifier',
+                        'mlp':                'mlp classifier',
                 }
         }
 }
@@ -103,6 +106,11 @@ MODELS = {
 
     'svm regressor': (SVR, ['base svm', 'svm rs']),
     'svm classifier': (SVC, ['base svm', 'svm rs']),
+
+    'mlp regressor': (MLPRegressor, ['base mlp', 'mlp rs', 'mlp rs es',
+                                     'mlp layers search']),
+    'mlp classifier': (MLPClassifier, ['base mlp', 'mlp rs', 'mlp rs es',
+                                       'mlp layers search']),
     }
 
 
@@ -232,10 +240,3 @@ def show_model(model_str, show_param_ind_options, show_model_object,
                 possible_params = get_possible_init_params(M[0])
                 print('All Possible Params:', possible_params)
         print()
-
-
-
-
-
-
-

@@ -22,7 +22,7 @@ SCALERS = {
 
     'power': (PowerTransformer, ['base power']),
 
-    'pca': (PCA, ['base pca'])
+    'pca': (PCA, ['base pca', 'pca rs'])
     }
 
 

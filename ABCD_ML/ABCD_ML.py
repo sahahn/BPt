@@ -15,13 +15,13 @@ class ABCD_ML():
     '''The main class used in ABCD_ML project'''
 
     def __init__(self, exp_name='some_exp', log_dr='', existing_log='new',
-                 notebook=True, subject_id='src_subject_id',
+                 verbose=True, notebook=True, subject_id='src_subject_id',
                  eventname='baseline_year_1_arm_1',
                  use_default_subject_ids=True,
                  default_dataset_type='basic',
                  default_na_values=['777', '999'],
                  original_targets_key='targets', low_memory_mode=False,
-                 random_state=None, verbose=True):
+                 random_state=None):
         '''Main class init
 
         Parameters
@@ -55,6 +55,14 @@ class ABCD_ML():
             upon __init__.
 
             (default = 'new')
+
+        verbose: bool, optional
+            If set to true will print diagnostic and other output during
+            dataloading and model training ect... if set to False this output
+            will not print. If log_dr is not None, then will still
+            record as log output.
+
+            (default = True)
 
         notebook : bool, optional
             If True, then assumes the user is running
@@ -145,22 +153,22 @@ class ABCD_ML():
             or if None then the random seed is set by np.random.
 
             (default = None)
-
-        verbose: bool, optional
-            If set to true will print diagnostic and other output during
-            dataloading and model training ect... if set to False this output
-            will not print. If log_dr is not None, then will still
-            record as log output.
-
-            (default = True)
         '''
 
         # Load logging class params
         self.exp_name = exp_name
         self.log_dr = log_dr
         self.existing_log = existing_log
+        self.verbose = verbose
 
         self._init_logs()
+
+        self._print('exp_name =', self.exp_name)
+        self._print('log_dr =', self.log_dr)
+        self._print('existing_log =', self.existing_log)
+        self._print('verbose =', self.verbose)
+        self._print('exp log dr setup at:', self.exp_log_dr)
+        self._print('log file at:', self.log_file)
 
         # Set rest of class params
         self.notebook = notebook
@@ -172,7 +180,16 @@ class ABCD_ML():
         self.original_targets_key = original_targets_key
         self.low_memory_mode = low_memory_mode
         self.random_state = random_state
-        self.verbose = verbose
+
+        self._print('notebook =', self.notebook)
+        self._print('default subject id col =', self.subject_id)
+        self._print('eventname =', self.eventname)
+        self._print('use default subject ids =', self.use_default_subject_ids)
+        self._print('default dataset type =', self.default_dataset_type)
+        self._print('default NaN values =', self.default_na_values)
+        self._print('original targets key col =', self.original_targets_key)
+        self._print('low memory mode =', self.low_memory_mode)
+        self._print('random state =', self.random_state)
 
         # Initialze various variables
         self.data, self.covars = pd.DataFrame(), pd.DataFrame()
@@ -189,13 +206,16 @@ class ABCD_ML():
 
     def _init_logs(self):
 
-        if log_dr is not None:
+        if self.log_dr is not None:
+
+            if self.log_dr == '':
+                self.log_dr = os.getcwd()
 
             # Ensure log_dr exists, if not make it
-            os.makedirs(log_dr, exist_ok=True)
+            os.makedirs(self.log_dr, exist_ok=True)
 
             # Get exp_log_dr name
-            self.exp_log_dr = os.path.join(log_dr, exp_name)
+            self.exp_log_dr = os.path.join(self.log_dr, self.exp_name)
 
             if os.path.isdir(self.exp_log_dr):
 

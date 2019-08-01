@@ -14,72 +14,78 @@ original targets key col = targets
 low memory mode = False
 random state = 1
 ABCD_ML object initialized
-Total excluded subjects:  1137
-Removed excluded subjects from loaded dfs
-Loading /mnt/sdb2/ABCD2p0NDA/abcd_betnet02.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_betnet02_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'gender', 'rsfmri_c_ngd_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
+Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_betnet02.txt assumed to be dataset type: basic
+dropped ['collection_id', 'abcd_betnet02_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'sex', 'rsfmri_c_ngd_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
 Dropped 0 columns, per drop_keys argument
 Dropped 0 cols for all missing values
-Dropped 604 rows for missing values
+Dropped 690 rows for missing values
 Dropped rows with missing data
-loaded shape:  (9295, 181)
+loaded shape:  (10276, 181)
 
 The following columns have a questionable number of unique values: 
-rsfmri_c_ngd_tr unique vals: 10
-rsfmri_c_ngd_numtrs unique vals: 117
-rsfmri_c_ngd_nvols unique vals: 104
-rsfmri_c_ngd_stnvols unique vals: 1257
-rsfmri_c_ngd_stcontignvols unique vals: 1354
-rsfmri_c_ngd_ntpoints unique vals: 1403
+rsfmri_c_ngd_tr unique vals: 11
+rsfmri_c_ngd_numtrs unique vals: 118
+rsfmri_c_ngd_nvols unique vals: 105
+rsfmri_c_ngd_stnvols unique vals: 1280
+rsfmri_c_ngd_stcontignvols unique vals: 1364
+rsfmri_c_ngd_ntpoints unique vals: 1407
 
 
-Total valid overlapping subjects = 9295
+Total valid overlapping subjects = 10276
 
 cleared data.
-Loading /mnt/sdb2/ABCD2p0NDA/abcd_betnet02.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_betnet02_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'gender', 'rsfmri_c_ngd_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
+Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_betnet02.txt assumed to be dataset type: basic
+dropped ['collection_id', 'abcd_betnet02_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'sex', 'rsfmri_c_ngd_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
 Dropped 12 columns, per drop_keys argument
 Dropped 0 cols for all missing values
-Dropped 550 rows for missing values
+Dropped 633 rows for missing values
 Dropped rows with missing data
-loaded shape:  (9349, 169)
+loaded shape:  (10333, 169)
 
-Total valid overlapping subjects = 9349
+Total valid overlapping subjects = 10333
 
 Dropped 78 columns as duplicate cols!
 Loading targets!
 Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
-Final shape:  (10604, 1)
+Final shape:  (11718, 1)
 
-Total valid overlapping subjects = 9231
+Total valid overlapping subjects = 10201
 
 Loading covariates!
-Loading /mnt/sdb2/ABCD2p0NDA/abcd_betnet02.txt assumed to be dataset type: basic
+Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_betnet02.txt assumed to be dataset type: basic
+Loading targets!
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
+Final shape:  (11718, 1)
+
+Total valid overlapping subjects = 10201
+
+Loading covariates!
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
 load: interview_age
 load: gender
 
-Total valid overlapping subjects = 9229
+Total valid overlapping subjects = 10198
 
 Loading targets!
 Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
 Filtering for outliers, dropping rows with params:  1
 Min-Max Score (before outlier filtering): 0.0 208.0
 Min-Max Score (post outlier filtering): 77.0 152.0
-Final shape:  (10262, 1)
+Final shape:  (11347, 1)
 
-Total valid overlapping subjects = 8937
+Total valid overlapping subjects = 9883
 
 Loading targets!
 Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
 Filtering for outliers, dropping rows with params:  0.005
 Min-Max Score (before outlier filtering): 0.0 208.0
 Min-Max Score (post outlier filtering): 71.0 155.0
-Final shape:  (10466, 1)
+Final shape:  (11569, 1)
 
-Total valid overlapping subjects = 9116
+Total valid overlapping subjects = 10076
 
-Final data for modeling loaded shape: (9116, 94)
-Performed train/test split, train size: 6837 test size:  2279
+Final data for modeling loaded shape: (10076, 94)
+Performed train/test split, train size: 7557 test size:  2519
 No default feat selector passed, set to None
 No default search type passed, set to None
 No default data scaler param ind passed, set to 0
@@ -88,7 +94,123 @@ No default extra params passed, set to empty dict
 Default params set.
 
 Running Evaluate with:
-model_type = mlp
+model_type = svm
+problem_type = regression
+metric = ['r2', 'mse']
+data_scaler = standard
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+int_cv = 3
+search_type = None
+model_type_param_ind = 1
+data_scaler_param_ind = 0
+feat_selector_param_ind = 0
+n_jobs = 8
+n_iter = 20
+random_state = 1
+extra_params = {}
+
+
+Metric:  r2
+Mean score:  0.049610702000910514
+Macro std in score:  7.91338589407227e-05
+Micro std in score:  0.007117263487304466
+
+Metric:  mean squared error
+Mean score:  -238.0951037724008
+Macro std in score:  0.07898830131858858
+Micro std in score:  8.303676552202848
+
+Running Evaluate with:
+model_type = elastic
+problem_type = regression
+metric = ['r2', 'mse']
+data_scaler = standard
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+int_cv = 3
+search_type = None
+model_type_param_ind = 1
+data_scaler_param_ind = 0
+feat_selector_param_ind = 0
+n_jobs = 8
+n_iter = 20
+random_state = 1
+extra_params = {}
+
+
+Metric:  r2
+Mean score:  0.017149043054053736
+Macro std in score:  0.0007307128314970601
+Micro std in score:  0.001888735469487467
+
+Metric:  mean squared error
+Mean score:  -246.1846409759735
+Macro std in score:  0.07624324464319443
+Micro std in score:  7.0870228683795125
+
+Running Evaluate with:
+model_type = elastic
+problem_type = regression
+metric = ['r2', 'mse']
+data_scaler = standard
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+int_cv = 3
+search_type = None
+model_type_param_ind = 1
+data_scaler_param_ind = 0
+feat_selector_param_ind = 0
+n_jobs = 8
+n_iter = 50
+random_state = 1
+extra_params = {}
+
+
+Metric:  r2
+Mean score:  0.017149043054053736
+Macro std in score:  0.0007307128314970601
+Micro std in score:  0.001888735469487467
+
+Metric:  mean squared error
+Mean score:  -246.1846409759735
+Macro std in score:  0.07624324464319443
+Micro std in score:  7.0870228683795125
+
+Running Evaluate with:
+model_type = elastic
+problem_type = regression
+metric = ['r2', 'mse']
+data_scaler = standard
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+int_cv = 3
+search_type = None
+model_type_param_ind = 1
+data_scaler_param_ind = 0
+feat_selector_param_ind = 0
+n_jobs = 8
+n_iter = 500
+random_state = 1
+extra_params = {}
+
+
+Metric:  r2
+Mean score:  0.017149043054053736
+Macro std in score:  0.0007307128314970601
+Micro std in score:  0.001888735469487467
+
+Metric:  mean squared error
+Mean score:  -246.1846409759735
+Macro std in score:  0.07624324464319443
+Micro std in score:  7.0870228683795125
+
+Running Evaluate with:
+model_type = svm
 problem_type = regression
 metric = ['r2', 'mse']
 data_scaler = standard
@@ -97,11 +219,80 @@ n_splits = 3
 n_repeats = 2
 int_cv = 3
 search_type = random
-model_type_param_ind = 2
+model_type_param_ind = 1
 data_scaler_param_ind = 0
 feat_selector_param_ind = 0
 n_jobs = 8
 n_iter = 20
 random_state = 1
 extra_params = {}
+
+
+Metric:  r2
+Mean score:  0.05425756216481174
+Macro std in score:  0.0016849024229779914
+Micro std in score:  0.00730014403478727
+
+Metric:  mean squared error
+Mean score:  -236.91547940335002
+Macro std in score:  0.36579226545336496
+Micro std in score:  7.837604161557836
+
+Running Evaluate with:
+model_type = elastic
+problem_type = regression
+metric = ['r2', 'mse']
+data_scaler = standard
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+int_cv = 3
+search_type = random
+model_type_param_ind = 1
+data_scaler_param_ind = 0
+feat_selector_param_ind = 0
+n_jobs = 8
+n_iter = 20
+random_state = 1
+extra_params = {}
+
+
+Metric:  r2
+Mean score:  0.020796700989608213
+Macro std in score:  0.000818950770907434
+Micro std in score:  0.001921254408910877
+
+Metric:  mean squared error
+Mean score:  -245.2732717935848
+Macro std in score:  0.09838723262437554
+Micro std in score:  7.142843351355315
+
+Running Evaluate with:
+model_type = light gbm
+problem_type = regression
+metric = ['r2', 'mse']
+data_scaler = standard
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+int_cv = 3
+search_type = random
+model_type_param_ind = 1
+data_scaler_param_ind = 0
+feat_selector_param_ind = 0
+n_jobs = 8
+n_iter = 20
+random_state = 1
+extra_params = {}
+
+
+Metric:  r2
+Mean score:  -0.04976040267204833
+Macro std in score:  0.013521479097770909
+Micro std in score:  0.020438460635520083
+
+Metric:  mean squared error
+Mean score:  -262.9837350366232
+Macro std in score:  3.5109314131864835
+Micro std in score:  10.209375300337618
 

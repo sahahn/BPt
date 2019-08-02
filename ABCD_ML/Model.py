@@ -1,22 +1,24 @@
 import numpy as np
 
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
-from ABCD_ML.Ensemble_Model import Ensemble_Model
-from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
-                                get_possible_init_params)
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
 from ABCD_ML.Models import MODELS
-from ABCD_ML.ML_Helpers import get_obj_and_params
+from ABCD_ML.Ensemble_Model import Ensemble_Model
+from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
+                                get_possible_init_params,
+                                get_obj_and_params)
 
 from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
 from ABCD_ML.Scorers import AVALIABLE as AVALIABLE_SCORERS
+from ABCD_ML.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
 
-from ABCD_ML.Feature_Selectors import get_feat_selector
+from ABCD_ML.Feature_Selectors import get_feat_selector_and_params
 from ABCD_ML.Scorers import get_scorer
-from ABCD_ML.Scalers import get_data_scaler
+from ABCD_ML.Scalers import get_data_scaler_and_params
+from ABCD_ML.Ensembles import get_ensemble_and_params
 
 
 class Model():
@@ -25,7 +27,8 @@ class Model():
     '''
 
     def __init__(self, model_types, ML_params, model_type_param_ind, CV,
-                 data_keys, targets_key, targets_encoder, _print=print):
+                 data_keys, targets_key, targets_encoder, ensemble_type,
+                 ensemble_split, _print=print):
         ''' Init function for Model
 
         Parameters
@@ -101,7 +104,17 @@ class Model():
             The encoder or list of encoders, used in the case of targets
             needing to be transformed in some way.
 
-        _print : func, optioanl
+        ensemble_type : str or list of str,
+            Each string refers to a type of ensemble to train,
+            or 'basic ensemble' for base behavior.
+
+        ensemble_split : float, int or None
+            If a an ensemble_type that requires fitting is passed,
+            i.e., not "basic ensemble", then this param is
+            the porportion of the train_data within each fold to
+            use towards fitting the ensemble.
+
+        _print : func, optional
             The print function to use, by default the python print,
             but designed to be passed ABCD_ML._print
 
@@ -144,29 +157,117 @@ class Model():
         self.feat_selector_param_inds =\
             conv_to_list(ML_params['feat_selector_param_ind'])
 
+        self.ensemble_types = conv_to_list(ensemble_type)
+        self.ensemble_split = ensemble_split
+
         # Default params just sets (sub)problem type for now
         self._set_default_params()
-        self.user_passed_models, self.upmi = [], 0
 
         # Process model_types, scorers and scalers from str indicator input
         self._process_model_types()
         self._process_feat_selectors()
         self._process_scorers()
         self._process_data_scalers()
+        self._process_ensemble_types()
 
     def _set_default_params(self):
-        '''Overriden by child classes'''
-        pass
+        self.user_passed_models = []
+        self.upmi = 0
 
     def _process_model_types(self):
         '''Class function to convert input model types to final
         str indicator, based on problem type and common input correction.
-        Also handles updating extra params, if applicable.'''
+        '''
 
         self._check_user_passed_models()
 
         self.model_types = self._proc_type_dep_str(self.model_types,
                                                    AVALIABLE_MODELS)
+
+        if self.search_type is None:
+            self.model_type_param_inds =\
+                [0 for i in range(len(self.model_types))]
+
+    def _process_feat_selectors(self):
+        '''Class function to convert input feat selectors to a final
+        set of feat_selector objects along with parameters,
+        based on problem type and common input correction.
+        '''
+
+        if self.feat_selectors is not None:
+
+            feat_selector_strs =\
+                self._proc_type_dep_str(self.feat_selectors,
+                                        AVALIABLE_SELECTORS)
+
+            # Get the feat_selectors tuple, and merged params grid / distr dict
+            self.feat_selectors, self.feat_selector_params =\
+                self._get_objs_and_params(get_feat_selector_and_params,
+                                          feat_selector_strs,
+                                          self.feat_selector_param_inds)
+
+        else:
+            self.feat_selectors = []
+            self.feat_selector_params = {}
+
+    def _process_scorers(self):
+        '''Process self.metrics and set self.scorers and self.scorer,
+        as well as save the str processed final scorer_strs for verbose output.
+        '''
+
+        self.scorer_strs = self._proc_type_dep_str(self.metrics,
+                                                   AVALIABLE_SCORERS)
+
+        self.scorers = [get_scorer(scorer_str)
+                        for scorer_str in self.scorer_strs]
+
+        # Define the scorer to be used in model selection
+        self.scorer = self.scorers[0]
+
+    def _process_data_scalers(self):
+        '''Processes self.data_scaler to be a list of
+        (name, scaler) tuples.'''
+
+        if self.data_scalers is not None:
+
+            # Get converted scaler str and update extra params
+            conv_data_scaler_strs = proc_input(self.data_scalers)
+            self._update_extra_params(self.data_scalers, conv_data_scaler_strs)
+
+            # Get the data_scalers tuple, and data_scaler_params grid / distr
+            self.data_scalers, self.data_scaler_params =\
+                self._get_objs_and_params(get_data_scaler_and_params,
+                                          conv_data_scaler_strs,
+                                          self.data_scaler_param_inds)
+
+    def _process_ensemble_types(self):
+        '''Processes ensemble types to be a list of
+        (ensemble, ensemble params) tuples.
+        '''
+
+        self.ensemble_strs = self._proc_type_dep_str(self.ensemble_types,
+                                                     AVALIABLE_ENSEMBLES)
+
+        # If basic ensemble is in any of the ensemble_strs,
+        # ensure it is the only one.
+        if np.array(['basic ensemble' in ensemble_str for
+                     ensemble_str in self.ensemble_strs]).any():
+
+            if len(self.ensemble_strs) > 1:
+
+                self._print('Warning! "basic ensemble" ensemble type passed',
+                            'within a list of ensemble types.')
+                self._print('In order to use multiple ensembles',
+                            'they cannot include "basic ensemble".')
+                self._print('Setting to just "basic ensemble" ensemble type!')
+
+                self.ensemble_strs = ['basic ensemble']
+
+        # Grab the ensembles to use as a list of tuples with,
+        # (ensemble, ensemble params).
+        self.ensembles = [get_ensemble_and_params(ensemble_str,
+                                                  self.extra_params)
+                          for ensemble_str in self.ensemble_strs]
 
     def _check_user_passed_models(self):
         '''If not str passed as model type, assume it
@@ -177,6 +278,35 @@ class Model():
 
                 self.user_passed_models.append(self.model_types[m])
                 self.model_types[m] = 'user passed'
+
+    def _proc_type_dep_str(self, in_strs, avaliable):
+        '''Helper function to perform str correction on
+        underlying proble type dependent input, e.g., for
+        scorer or ensemble_types, and to update extra params
+        and check to make sure input is valid ect...'''
+
+        conv_strs = proc_input(in_strs)
+
+        assert self._check_avaliable(conv_strs, avaliable),\
+            "Error " + conv_strs + ' are not avaliable for this problem type'
+
+        avaliable_by_type = self._get_avaliable_by_type(avaliable)
+        final_strs = [avaliable_by_type[conv_str] for conv_str in conv_strs]
+
+        self._update_extra_params(in_strs, final_strs)
+        return final_strs
+
+    def _check_avaliable(self, in_strs, avaliable):
+
+        avaliable_by_type = self._get_avaliable_by_type(avaliable)
+
+        check = np.array([m in avaliable_by_type for
+                          m in in_strs]).all()
+
+        return check
+
+    def _get_avaliable_by_type(self, avaliable):
+        return avaliable[self.problem_type]
 
     def _update_extra_params(self, orig_strs, conv_strs):
         '''Helper method to update class extra params in the case
@@ -198,84 +328,13 @@ class Model():
                 self.extra_params[conv_strs[i]] =\
                     self.extra_params[orig_strs[i]]
 
-    def _process_scorers(self):
-        '''Process self.metrics and set self.scorers and self.scorer,
-        as well as save the str processed final scorer_strs for verbose output.
-        '''
-
-        self.scorer_strs = self._proc_type_dep_str(self.metrics,
-                                                   AVALIABLE_SCORERS)
-
-        self.scorers = [get_scorer(scorer_str)
-                        for scorer_str in self.scorer_strs]
-
-        # Define the scorer to be used in model selection
-        self.scorer = self.scorers[0]
-
-    def _process_feat_selectors(self):
-
-        if self.feat_selectors is not None:
-
-            feat_selector_strs =\
-                self._proc_type_dep_str(self.feat_selectors,
-                                        AVALIABLE_SELECTORS)
-
-            # Get the feat_selectors tuple, and merged params grid / distr dict
-            self.feat_selectors, self.feat_selector_params =\
-                self._get_objs_and_params(get_feat_selector,
-                                          feat_selector_strs,
-                                          self.feat_selector_param_inds)
-
-        else:
-            self.feat_selectors = []
-            self.feat_selector_params = {}
-
-    def _proc_type_dep_str(self, in_strs, avaliable):
-
-        conv_strs = proc_input(in_strs)
-
-        assert self._check_avaliable(conv_strs, avaliable),\
-            "Error " + conv_strs + ' are not avaliable for this problem type'
-
-        avaliable_by_type = self._get_avaliable_by_type(avaliable)
-        final_strs = [avaliable_by_type[conv_str] for conv_str in conv_strs]
-
-        self._update_extra_params(in_strs, final_strs)
-        return final_strs
-
-    def _get_avaliable_by_type(self, avaliable):
-        return avaliable[self.problem_type]
-
-    def _check_avaliable(self, in_strs, avaliable):
-
-        avaliable_by_type = self._get_avaliable_by_type(avaliable)
-
-        check = np.array([m in avaliable_by_type for
-                          m in in_strs]).all()
-
-        return check
-
-    def _process_data_scalers(self):
-        '''Processes self.data_scaler to be a list of
-        (name, scaler) tuples.'''
-
-        if self.data_scalers is not None:
-
-            # Get converted scaler str and update extra params
-            conv_data_scaler_strs = proc_input(self.data_scalers)
-            self._update_extra_params(self.data_scalers, conv_data_scaler_strs)
-
-            # Get the data_scalers tuple, and data_scaler_params grid / distr
-            self.data_scalers, self.data_scaler_params =\
-                self._get_objs_and_params(get_data_scaler,
-                                          conv_data_scaler_strs,
-                                          self.data_scaler_param_inds)
-
     def _get_objs_and_params(self, get_func, names, param_inds):
+        '''Helper function to grab data_scaler / feat_selectors and
+        their relevant parameter grids'''
 
         # If search type is None, ensure that grids are set to default 0
         if self.search_type is None:
-            param_inds = [0 for x in range(len(param_inds))]
+            param_inds = [0 for x in range(len(names))]
 
         # Grab necc. info w/ given get_func
         objs_and_params = [(name, get_func(name, self.extra_params, ind))
@@ -440,25 +499,93 @@ class Model():
         Returns
         ----------
         sklearn api compatible model object
-            The trained single model, or Ensemble_Model of models.
+            The trained single model, or some ensemble of models.
+            Ensemble objects with predict funcs.
         '''
 
-        # User passed model index should be 0
+        # Split the train data further, if nec. for ensemble split
+        train_data, ensemble_Xy = self._get_ensemble_split(train_data)
+
+        # User passed model index should be reset to 0 here
         self.upmi = 0
 
+        # Train all of the models
         models = []
-
         mt_and_mt_params = zip(self.model_types, self.model_type_param_inds)
         for model_type, model_type_param_ind in mt_and_mt_params:
 
             models.append(self._train_model(train_data, model_type,
                                             model_type_param_ind))
 
-        # Set self.model to be either an ensemble or single model
-        if len(models) == 1:
-            self.model = models[0]
-        else:
-            self.model = Ensemble_Model(models)
+        # If special ensemble passed, fit each one seperate
+        if ensemble_Xy:
+            models = [self._fit_ensemble(models, ensemble_Xy, i)
+                      for i in range(len(self.ensembles))]
+
+        # If multiple base models, or ensembles of models,
+        # either make a basic ensemble or if len == 1, use just that 1st model
+        self.model = self._get_one_or_basic_ensemble(models)
+
+    def _get_ensemble_split(self, train_data):
+        '''Split the train subjects further only if an ensemble split
+        is defined and ensemble type has been changed from basic ensemble!'''
+
+        ensemble_data = None
+
+        if (self.ensemble_split is not None and
+           self.ensemble_strs[0] != 'basic ensemble'):
+
+            train_subjects, ensemble_subjects =\
+                self.CV.train_test_split(train_data.index,
+                                         test_size=self.ensemble_split,
+                                         random_state=self.random_state)
+
+            # Set ensemble data to X_y
+            ensemble_data = self._get_X_y(train_data.loc[ensemble_subjects])
+
+            # Set train_data to new smaller set
+            train_data = train_data.loc[train_subjects]
+
+        return train_data, ensemble_data
+
+    def _get_X_y(self, data):
+        '''Helper method to get X,y data from ABCD ML formatted df.
+
+        Parameters
+        ----------
+        data : pandas DataFrame
+            ABCD ML formatted.
+
+        Returns
+        ----------
+        array-like
+            X data for ML
+        array-like
+            y target for ML
+        '''
+
+        X = np.array(data.drop(self.targets_key, axis=1))
+        y = np.array(data[self.targets_key])
+
+        # Convert/decode y/score if needed
+        y = self._conv_targets(y)
+
+        return X, y
+
+    def _conv_targets(self, y):
+        '''Returns y, overriden by Categorical_Model
+
+        Parameters
+        ----------
+        y : array-like
+            ML target
+
+        Returns
+        ----------
+        array-like
+            input y as is
+        '''
+        return y
 
     def _train_model(self, train_data, model_type, model_type_param_ind):
         '''Helper method to train a single model type given
@@ -555,9 +682,6 @@ class Model():
 
             return user_model, user_model_type, {}
 
-        if self.search_type is None:
-            model_type_param_ind = 0
-
         model, extra_model_params, model_type_params =\
             get_obj_and_params(model_type, MODELS, self.extra_params,
                                model_type_param_ind)
@@ -613,6 +737,29 @@ class Model():
 
         return model_pipeline
 
+    def _fit_ensemble(self, models, ensemble_Xy, i):
+
+        # Grab ensemble + params from ind (i)
+        ensemble_model = self.ensembles[i][0]
+        ensemble_params = self.ensembles[i][1]
+
+        # Init the ensemble model
+        ensemble_model = ensemble_model(models, **ensemble_params)
+
+        # Fit the ensemble model
+        ensemble_model.fit(ensemble_Xy[0], ensemble_Xy[1])
+
+        return ensemble_model
+
+    def _get_one_or_basic_ensemble(self, models):
+
+        if len(models) == 1:
+            model = models[0]
+        else:
+            model = Ensemble_Model(models)
+
+        return model
+
     def _get_scores(self, test_data):
         '''Helper method to get the scores of
         the trained model saved in the class on input test data.
@@ -638,51 +785,14 @@ class Model():
 
         return np.array(scores)
 
-    def _get_X_y(self, data):
-        '''Helper method to get X,y data from ABCD ML formatted df.
-
-        Parameters
-        ----------
-        data : pandas DataFrame
-            ABCD ML formatted.
-
-        Returns
-        ----------
-        array-like
-            X data for ML
-        array-like
-            y target for ML
-        '''
-
-        X = np.array(data.drop(self.targets_key, axis=1))
-        y = np.array(data[self.targets_key])
-
-        # Convert/decode y/score if needed
-        y = self._conv_targets(y)
-
-        return X, y
-
-    def _conv_targets(self, y):
-        '''Returns y, overriden by Categorical_Model
-
-        Parameters
-        ----------
-        y : array-like
-            ML target
-
-        Returns
-        ----------
-        array-like
-            input y as is
-        '''
-        return y
-
 
 class Regression_Model(Model):
     '''Child class of Model for regression problem types.'''
 
     def _set_default_params(self):
-        '''Overrides parent method'''
+        '''Set default params'''
+
+        super()._set_default_params()
         self.problem_type = 'regression'
 
 
@@ -690,7 +800,9 @@ class Binary_Model(Model):
     '''Child class of Model for binary problem types.'''
 
     def _set_default_params(self):
-        '''Overrides parent method'''
+        '''Set default params'''
+
+        super()._set_default_params()
         self.problem_type = 'binary'
 
 
@@ -698,65 +810,11 @@ class Categorical_Model(Model):
     '''Child class of Model for categorical problem types.'''
 
     def _set_default_params(self):
-        '''Overrides parent method'''
+        '''Set default params'''
+
+        super()._set_default_params()
         self.problem_type = 'categorical'
         self.sub_problem_type = 'multilabel'
-
-    def _get_conv_model_types(self):
-        '''Overrides parent method, categorical models have
-        a special case with sub_problem_type, this method handles that.
-
-        Returns
-        ----------
-        list
-            List of final str indicator model_types, indices should
-            correspond to the order os self.model_types, where the str
-            in the same index should represent the converted version.
-        '''
-
-        conv_model_types = proc_input(self.model_types)
-
-        # Check first to see if all model names are in multilabel
-        if np.array([m in AVALIABLE_MODELS['categorical']['multilabel']
-                    for m in conv_model_types]).all():
-
-            conv_model_types =\
-                [AVALIABLE_MODELS['categorical']['multilabel'][m]
-                 for m in conv_model_types]
-
-        # Then check for multiclass, if multilabel not avaliable
-        elif np.array([m in AVALIABLE_MODELS['categorical']['multiclass']
-                      for m in conv_model_types]).all():
-
-            conv_model_types =\
-                [AVALIABLE_MODELS['categorical']['multiclass'][m]
-                 for m in conv_model_types]
-
-            # Set the cat conv flag to be true
-            self.sub_problem_type = 'multiclass'
-            self._print('Not all model types passed have multilabel support!',
-                        'Using multiclass instead.')
-
-        else:
-            assert 0 == 1, "Selected model type(s) not avaliable."
-
-        return conv_model_types
-
-    def _get_avaliable_scorers(self):
-        '''Overrides parent method, adding subproblem_type
-        Get the avaliable scorers by problem type.
-
-        Returns
-        ----------
-        dict
-            Dictionary of avaliable scorers, with value as final str
-            indicator.
-        '''
-
-        return AVALIABLE_SCORERS[self.problem_type][self.sub_problem_type]
-
-    def _get_avaliable_by_type(self, avaliable):
-        return avaliable[self.problem_type][self.sub_problem_type]
 
     def _check_avaliable(self, in_strs, avaliable):
 
@@ -770,6 +828,9 @@ class Categorical_Model(Model):
             check = super()._check_avaliable(in_strs, avaliable)
 
         return check
+
+    def _get_avaliable_by_type(self, avaliable):
+        return avaliable[self.problem_type][self.sub_problem_type]
 
     def _conv_targets(self, y):
         '''Overrides parent method, if the sub problem type

@@ -33,7 +33,8 @@ class Ensemble_Model():
                 vote_results = np.zeros(preds[0].shape)
 
                 for i in range(len(vote_results)):
-                    mx = np.argmax(np.bincount(np.argmax(preds[:, i], axis=1)))
+                    mx = np.argmax(np.bincount(np.argmax(preds[:, i],
+                                   axis=1)))
                     vote_results[i][mx] = 1
 
                 return vote_results

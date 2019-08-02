@@ -165,7 +165,7 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         Only used for binary and categorical problem types.
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
-        If 'default', and not already defined, set to 'balanced'
+        If 'default', and not already defined, set to None
 
         (default = 'default')
 
@@ -308,10 +308,10 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self.default_ML_params['class_weight'] = class_weight
 
     elif 'class_weight' not in self.default_ML_params:
-        self.default_ML_params['class_weight'] = 'balanced'
+        self.default_ML_params['class_weight'] = None
         if self.default_ML_params['problem_type'] != 'regression':
             self._print('No default class weight setting passed,',
-                        'set to balanced')
+                        'set to None')
 
     if n_jobs != 'default':
         assert isinstance(n_jobs, int), 'n_jobs must be int'
@@ -358,7 +358,7 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
              data_scaler_param_ind='default',
              feat_selector_param_ind='default', class_weight='default',
              n_jobs='default', n_iter='default', random_state='default',
-             extra_params='default'):
+             extra_params='default', ensemble_type='basic', ensemble_split=.2):
 
     '''Class method to be called during the model selection phase.
     Used to evaluated different combination of models and scaling, ect...
@@ -603,7 +603,8 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
                              test=False)
 
     # Init the Model object with modeling params
-    self._init_model(model_type, ML_params, model_type_param_ind)
+    self._init_model(model_type, ML_params, model_type_param_ind,
+                     ensemble_type, ensemble_split)
 
     # Evaluate the model
     scores = self.Model.Evaluate_Model(self.all_data, self.train_subjects)
@@ -986,7 +987,8 @@ def _print_model_params(self, model_type, ML_params, model_type_param_ind,
     self._print()
 
 
-def _init_model(self, model_type, ML_params, model_type_param_ind):
+def _init_model(self, model_type, ML_params, model_type_param_ind,
+                ensemble_type, ensemble_split):
 
     problem_types = {'binary': Binary_Model, 'regression': Regression_Model,
                      'categorical': Categorical_Model}
@@ -998,4 +1000,4 @@ def _init_model(self, model_type, ML_params, model_type_param_ind):
 
     self.Model = Model(model_type, ML_params, model_type_param_ind, self.CV,
                        self.data_keys, self.targets_key, self.targets_encoder,
-                       self._print)
+                       ensemble_type, ensemble_split, self._print)

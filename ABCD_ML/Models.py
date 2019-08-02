@@ -24,6 +24,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor, LGBMClassifier
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from ABCD_ML.Early_Stop import EarlyStopLGBMRegressor
 
 AVALIABLE = {
         'binary': {
@@ -53,6 +54,8 @@ AVALIABLE = {
                         'random forest':      'random forest regressor',
                         'gp':                 'gp regressor',
                         'light gbm':          'light gbm regressor',
+                        'light gbm early stop':
+                        'light gbm regressor early stop',
                         'svm':                'svm regressor',
                         'mlp':                'mlp regressor',
         },
@@ -101,11 +104,14 @@ MODELS = {
     'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm rs']),
     'light gbm classifier': (LGBMClassifier, ['base lgbm', 'lgbm rs']),
 
+    'light gbm regressor early stop': (EarlyStopLGBMRegressor, ['base lgbm es',
+                                                                'lgbm es rs']),
+
     'gp regressor': (GaussianProcessRegressor, ['base gp regressor']),
     'gp classifier': (GaussianProcessClassifier,  ['base gp classifier']),
 
     'svm regressor': (SVR, ['base svm', 'svm rs']),
-    'svm classifier': (SVC, ['base svm', 'svm rs']),
+    'svm classifier': (SVC, ['base svm classifier', 'svm classifier rs']),
 
     'mlp regressor': (MLPRegressor, ['base mlp', 'mlp rs', 'mlp rs es',
                                      'mlp layers search']),

@@ -446,5 +446,3 @@ def show_metric(metric_str):
             print(' (MultiClass)')
         else:
             print()
-        
-

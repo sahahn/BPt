@@ -440,7 +440,7 @@ class ABCD_ML():
             random_state = self.random_state
 
         if test_size is not None:
-            self.train_subjects, self.test_subjects = self.CV.Train_Test_Split(
+            self.train_subjects, self.test_subjects = self.CV.train_test_split(
                                  self.all_data.index, test_size, random_state)
 
         else:

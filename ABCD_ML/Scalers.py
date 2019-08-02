@@ -26,7 +26,7 @@ SCALERS = {
     }
 
 
-def get_data_scaler(data_scaler_str, extra_params, param_ind):
+def get_data_scaler_and_params(data_scaler_str, extra_params, param_ind):
     '''Returns a scaler based on proced str indicator input,
 
     Parameters

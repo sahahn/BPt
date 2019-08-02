@@ -5,7 +5,7 @@ File with different saved default parameter grids,
 for various classifiers within ABCD_ML.
 """
 
-from scipy.stats import (randint as sp_randint, uniform as sp_uniform)
+from scipy.stats import randint, uniform, reciprocal
 from sklearn.feature_selection import f_regression, f_classif
 from sklearn.svm import SVR
 
@@ -28,65 +28,79 @@ PARAMS['base elastic']['penalty'] = ['elasticnet']
 PARAMS['base elastic']['l1_ratio'] = [.5]
 
 PARAMS['lasso C'] = PARAMS['base lasso'].copy()
-PARAMS['lasso C']['C'] = sp_uniform(loc=1e-4, scale=1e+4)
+PARAMS['lasso C']['C'] = reciprocal(a=1e-4, b=1e+4)
 
 PARAMS['ridge C'] = PARAMS['base ridge'].copy()
-PARAMS['ridge C']['C'] = sp_uniform(loc=1e-4, scale=1e+4)
+PARAMS['ridge C']['C'] = reciprocal(a=1e-4, b=1e+4)
 
 PARAMS['elastic classifier'] = PARAMS['base elastic'].copy()
-PARAMS['elastic classifier']['C'] = sp_uniform(loc=1e-4, scale=1e+4)
-PARAMS['elastic classifier']['l1_ratio'] = sp_uniform()
+PARAMS['elastic classifier']['C'] = reciprocal(a=1e-4, b=1e+4)
+PARAMS['elastic classifier']['l1_ratio'] = uniform()
 
 PARAMS['base elastic net'] = {'max_iter': [5000]}
 PARAMS['elastic regression'] = PARAMS['base elastic net'].copy()
-PARAMS['elastic regression']['alpha'] = sp_uniform(loc=1e-4, scale=1e+4)
-PARAMS['elastic regression']['l1_ratio'] = sp_uniform()
+PARAMS['elastic regression']['alpha'] = reciprocal(a=1e-6, b=1e+2)
+PARAMS['elastic regression']['l1_ratio'] = uniform()
 
 PARAMS['base huber'] = {'epsilon': [1.35]}
 PARAMS['base gnb'] = {'var_smoothing': [1e-9]}
 
 PARAMS['base knn'] = {'n_neighbors': [5]}
 PARAMS['knn rs'] = {'weights': ['uniform', 'distance'],
-                    'n_neighbors': sp_randint(2, 20)}
+                    'n_neighbors': randint(2, 20)}
 
 PARAMS['base dt'] = {}
-PARAMS['dt rs'] = {'max_depth': sp_randint(1, 20),
-                   'min_samples_split': sp_randint(2, 50)}
+PARAMS['dt rs'] = {'max_depth': randint(1, 20),
+                   'min_samples_split': randint(2, 50)}
 
 PARAMS['base linear'] = {'fit_intercept': [True]}
 
 PARAMS['base rf'] = {'n_estimators': [100]}
-PARAMS['rf rs'] = {'n_estimators': sp_randint(3, 500),
-                   'max_depth': sp_randint(2, 200),
-                   'max_features': sp_uniform(),
-                   'min_samples_split': sp_uniform(),
+PARAMS['rf rs'] = {'n_estimators': randint(3, 500),
+                   'max_depth': randint(2, 200),
+                   'max_features': uniform(),
+                   'min_samples_split': uniform(),
                    'bootstrap': [True]}
 
 PARAMS['base lgbm'] = {'silent': [True]}
 PARAMS['lgbm rs'] = {'silent': [True],
                      'boosting_type': ['gbdt', 'dart', 'goss'],
-                     'n_estimators': sp_randint(3, 500),
-                     'num_leaves': sp_randint(6, 50),
-                     'min_child_samples': sp_randint(100, 500),
-                     'min_child_weight': [1e-5, 1e-3, 1e-2, 1e-1, 1, 1e1,
-                                          1e2, 1e3, 1e4],
-                     'subsample': sp_uniform(loc=0.2, scale=0.8),
-                     'colsample_bytree': sp_uniform(loc=0.4, scale=0.6),
-                     'reg_alpha': [0, 1e-1, 1, 2, 5, 7, 10, 50, 100],
-                     'reg_lambda': [0, 1e-1, 1, 5, 10, 20, 50, 100]}
+                     'n_estimators': randint(3, 500),
+                     'num_leaves': randint(6, 50),
+                     'min_child_samples': randint(100, 500),
+                     'min_child_weight': reciprocal(a=1e-5, b=1e+4),
+                     'subsample': uniform(loc=0.2, scale=0.8),
+                     'colsample_bytree': uniform(loc=0.4, scale=0.6),
+                     'reg_alpha': reciprocal(a=1e-1, b=1e+2),
+                     'reg_lambda': reciprocal(a=1e-1, b=1e+2)}
+
+PARAMS['base lgbm es'] = {'silent': [True],
+                          'val_split_percent': [.1],
+                          'early_stop_rounds': [50],
+                          }
+
+PARAMS['lgbm es rs'] = PARAMS['lgbm rs'].copy()
+PARAMS['lgbm es rs']['val_split_percent'] = uniform(loc=.05, scale=.2)
+PARAMS['lgbm es rs']['early_stop_rounds'] = randint(10, 150)
+
 
 PARAMS['base gp regressor'] = {'n_restarts_optimizer': [5],
                                'normalize_y': [True]}
 PARAMS['base gp classifier'] = {'n_restarts_optimizer': [5]}
 
-
+# probability = True
 PARAMS['base svm'] = {'kernel': ['rbf'],
                       'gamma': ['scale']}
 
 PARAMS['svm rs'] = PARAMS['base svm'].copy()
-PARAMS['svm rs']['C'] = [.0001, .001, .10, .1, 1, 5, 10, 25, 50, 100, 500,
-                         1000, 5000, 10000]
-PARAMS['svm rs']['gamma'] = ['auto', 1e-2, 1e-3, 1e-4, 1e-5, 1e-6]
+PARAMS['svm rs']['C'] = reciprocal(a=1e-4, b=1e+4)
+PARAMS['svm rs']['gamma'] = reciprocal(a=1e-6, b=1e-1)
+
+PARAMS['base svm classifier'] = PARAMS['base svm'].copy()
+PARAMS['base svm classifier']['probability'] = [True]
+
+PARAMS['svm classifier rs'] = PARAMS['svm rs'].copy()
+PARAMS['svm classifier rs']['probability'] = [True]
 
 PARAMS['base mlp'] = {}
 
@@ -100,19 +114,17 @@ for x in range(2, 150):
 
 PARAMS['mlp rs'] = {'hidden_layer_sizes': NNs,
                     'activation': ['identity', 'logistic', 'tanh', 'relu'],
-                    'alpha': [.000001, .00001, .00005, .0001, .0005, .001, .10,
-                              .1, 1, 5, 10, 25, 50, 100],
-                    'batch_size': sp_randint(2, 200),
+                    'alpha': reciprocal(a=1e-5, b=1e+2),
+                    'batch_size': randint(2, 200),
                     'learning_rate': ['constant', 'invscaling', 'adaptive'],
-                    'learning_rate_init': [.00001, .00005, .0001, .0005, .001,
-                                           .005],
-                    'max_iter': [100, 200, 300, 500],
-                    'beta_1': sp_uniform(loc=0.5, scale=0.5),
-                    'beta_2': sp_uniform(loc=0.5, scale=0.5)}
+                    'learning_rate_init': reciprocal(a=1e-5, b=1e-2),
+                    'max_iter': randint(100, 500),
+                    'beta_1': uniform(loc=0.5, scale=0.5),
+                    'beta_2': uniform(loc=0.5, scale=0.5)}
 
 PARAMS['mlp rs es'] = PARAMS['mlp rs'].copy()
 PARAMS['mlp rs es']['early_stopping'] = [True]
-PARAMS['mlp rs es']['n_iter_no_change'] = sp_randint(5, 50)
+PARAMS['mlp rs es']['n_iter_no_change'] = randint(5, 50)
 
 PARAMS['mlp layers search'] = {'hidden_layer_sizes': NNs}
 
@@ -133,7 +145,7 @@ PARAMS['base power'] = {'method': ['yeo-johnson'],
 
 PARAMS['base pca'] = {}
 
-PARAMS['pca rs'] = {'n_components': sp_uniform()}
+PARAMS['pca rs'] = {'n_components': uniform()}
 
 # Feat Selectors
 PARAMS['base univar fs regression'] = {'score_func': [f_regression],
@@ -184,7 +196,7 @@ def show(str_indicator):
                                       value.a, ', ', value.b, ')', sep='')
 
                         else:
-                                print('Random Uniform Distribution',
+                                print('Uniform/Reciprocal Distribution Over',
                                       value.interval(1))
 
                 elif len(value) == 1:

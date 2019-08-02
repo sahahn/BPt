@@ -42,7 +42,7 @@ class CV():
         self.groups = groups
         self.stratify = stratify
 
-    def Train_Test_Split(self, subjects, test_size=.2, random_state=None):
+    def train_test_split(self, subjects, test_size=.2, random_state=None):
         '''Define a train test split on input subjects, with a given target test size.
 
         Parameters

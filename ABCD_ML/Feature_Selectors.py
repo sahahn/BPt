@@ -40,7 +40,7 @@ SELECTORS = {
 }
 
 
-def get_feat_selector(feat_selector_str, extra_params, param_ind):
+def get_feat_selector_and_params(feat_selector_str, extra_params, param_ind):
     '''Returns a scaler based on proced str indicator input,
 
     Parameters

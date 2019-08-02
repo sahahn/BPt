@@ -170,7 +170,11 @@ PARAMS['base linear svm rfe regression'] = {'estimator':
 def get(str_indicator, preprend):
 
         params = PARAMS[str_indicator].copy()
-        params = {preprend + '__' + key: params[key] for key in params}
+
+        if preprend != '':
+                preprend = preprend + '__'
+
+        params = {preprend + key: params[key] for key in params}
 
         return params
 

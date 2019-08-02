@@ -40,7 +40,8 @@ SELECTORS = {
 }
 
 
-def get_feat_selector_and_params(feat_selector_str, extra_params, param_ind):
+def get_feat_selector_and_params(feat_selector_str, extra_params, param_ind,
+                                 search_type):
     '''Returns a scaler based on proced str indicator input,
 
     Parameters
@@ -70,7 +71,7 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, param_ind):
 
     feat_selector, extra_feat_selector_params, feat_selector_params =\
         get_obj_and_params(feat_selector_str, SELECTORS, extra_params,
-                           param_ind)
+                           param_ind, search_type)
 
     # Need to check for estimator, as RFE needs a default param for estimator
     possible_params = get_possible_init_params(feat_selector)

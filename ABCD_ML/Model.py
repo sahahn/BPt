@@ -332,12 +332,9 @@ class Model():
         '''Helper function to grab data_scaler / feat_selectors and
         their relevant parameter grids'''
 
-        # If search type is None, ensure that grids are set to default 0
-        if self.search_type is None:
-            param_inds = [0 for x in range(len(names))]
-
         # Grab necc. info w/ given get_func
-        objs_and_params = [(name, get_func(name, self.extra_params, ind))
+        objs_and_params = [(name, get_func(name, self.extra_params, ind,
+                            self.search_type))
                            for name, ind in zip(names, param_inds)]
 
         # Construct the obj as list of (name, obj) tuples
@@ -635,6 +632,9 @@ class Model():
         # Create the model pipeline object
         model = self._make_model_pipeline(model, model_type)
 
+        if self.search_type is None:
+            return model
+
         # Set the search params
         search_params = {}
         search_params['iid'] = False
@@ -642,12 +642,7 @@ class Model():
         search_params['pre_dispatch'] = 'n_jobs - 1'
         search_params['cv'] = base_int_cv
         search_params['scoring'] = self.scorer
-
-        # Set search type specific params
-        if self.search_type is None:
-            search_params['n_jobs'] = 1
-        else:
-            search_params['n_jobs'] = self.n_jobs
+        search_params['n_jobs'] = self.n_jobs
 
         if self.search_type == 'random':
             search_params['n_iter'] = self.n_iter
@@ -684,7 +679,7 @@ class Model():
 
         model, extra_model_params, model_type_params =\
             get_obj_and_params(model_type, MODELS, self.extra_params,
-                               model_type_param_ind)
+                               model_type_param_ind, self.search_type)
 
         possible_params = get_possible_init_params(model)
 

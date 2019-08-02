@@ -26,7 +26,8 @@ SCALERS = {
     }
 
 
-def get_data_scaler_and_params(data_scaler_str, extra_params, param_ind):
+def get_data_scaler_and_params(data_scaler_str, extra_params, param_ind,
+                               search_type):
     '''Returns a scaler based on proced str indicator input,
 
     Parameters
@@ -55,7 +56,8 @@ def get_data_scaler_and_params(data_scaler_str, extra_params, param_ind):
     '''
 
     data_scaler, extra_data_scaler_params, data_scaler_params =\
-        get_obj_and_params(data_scaler_str, SCALERS, extra_params, param_ind)
+        get_obj_and_params(data_scaler_str, SCALERS, extra_params, param_ind,
+                           search_type)
 
     return data_scaler(**extra_data_scaler_params), data_scaler_params
 

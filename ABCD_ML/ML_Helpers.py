@@ -136,7 +136,7 @@ def proc_str_input(in_str):
     return in_str
 
 
-def get_obj_and_params(obj_str, OBJS, extra_params, param_ind):
+def get_obj_and_params(obj_str, OBJS, extra_params, param_ind, search_type):
 
     try:
         obj, param_names = OBJS[obj_str]
@@ -161,6 +161,14 @@ def get_obj_and_params(obj_str, OBJS, extra_params, param_ind):
         print('There are only', len(param_names), 'valid param options.')
         print('Setting to default base params setting instead!')
         param_name = param_names[0]
+
+    if search_type is None:
+        params = get(param_name, '')
+
+        if obj_str in extra_params:
+            params.update(extra_params[obj_str])
+
+        return obj, params, {}
 
     params = get(param_name, obj_str)
 

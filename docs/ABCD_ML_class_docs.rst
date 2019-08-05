@@ -119,6 +119,11 @@ Show_Feat_Selectors
 =================
 .. automethod:: ABCD_ML.Show_Feat_Selectors
 
+Show_Ensemble_Types
+=================
+.. automethod:: ABCD_ML.Show_Ensemble_Types
+
+
 
 *************
 Testing Phase

@@ -206,6 +206,9 @@ class Model():
                                           feat_selector_strs,
                                           self.feat_selector_param_inds)
 
+            # If any base estimators, replace with a model
+            self._replace_base_estimator()
+
         else:
             self.feat_selectors = []
             self.feat_selector_params = {}
@@ -345,6 +348,28 @@ class Model():
                   for k, v in params[1][1].items()}
 
         return objs, params
+
+    def _replace_base_estimator(self):
+        '''Check feat selectors for a RFE model'''
+
+        for i in range(len(self.feat_selectors)):
+
+            try:
+                base_model_str = self.feat_selectors[i][1].estimator
+
+                # Default behavior is use linear
+                if base_model_str is None:
+                    base_model_str = 'linear'
+
+                base_model_str =\
+                    self._proc_type_dep_str([base_model_str],
+                                            AVALIABLE_MODELS)[0]
+
+                self.feat_selectors[i][1].estimator =\
+                    self._get_base_model(base_model_str, 0, None)[0]
+
+            except AttributeError:
+                pass
 
     def Evaluate_Model(self, data, train_subjects):
         '''Method to perform a full repeated k-fold evaluation
@@ -627,7 +652,8 @@ class Model():
 
         # Grab the base model, model if changed, and model params grid/distr
         model, model_type, model_type_params =\
-            self._get_base_model(model_type, model_type_param_ind)
+            self._get_base_model(model_type, model_type_param_ind,
+                                 self.search_type)
 
         # Create the model pipeline object
         model = self._make_model_pipeline(model, model_type)
@@ -666,7 +692,7 @@ class Model():
 
         return search_model
 
-    def _get_base_model(self, model_type, model_type_param_ind):
+    def _get_base_model(self, model_type, model_type_param_ind, search_type):
 
         # Check for user passed model
         if model_type == 'user passed':
@@ -679,7 +705,7 @@ class Model():
 
         model, extra_model_params, model_type_params =\
             get_obj_and_params(model_type, MODELS, self.extra_params,
-                               model_type_param_ind, self.search_type)
+                               model_type_param_ind, search_type)
 
         possible_params = get_possible_init_params(model)
 

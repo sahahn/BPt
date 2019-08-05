@@ -7,15 +7,34 @@ from ABCD_ML.ML_Helpers import (get_obj_and_params, get_avaliable_by_type,
                                 show_param_options, get_possible_init_params)
 from sklearn.feature_selection import *
 
+
+class RFE(RFE):
+    def fit(self, X, y):
+        '''Override the fit function for slight added functionality,
+           specifically allow passing in float % to keep.
+        '''
+
+        if isinstance(self.n_features_to_select, float):
+
+            if self.n_features_to_select <= 0:
+                self.n_features_to_select = 1
+
+            if self.n_features_to_select < 1:
+                divide_by = self.n_features_to_select ** -1
+                self.n_features_to_select = X.shape[1] // divide_by
+
+        return self._fit(X, y)
+
 AVALIABLE = {
         'binary': {
             'univariate selection':
             'univariate selection classification',
+            'rfe': 'rfe',
         },
         'regression': {
             'univariate selection':
             'univariate selection regression',
-            'linear svm rfe': 'linear svm rfe regression',
+            'rfe': 'rfe',
         },
         'categorical': {
             'multilabel': {
@@ -23,6 +42,7 @@ AVALIABLE = {
             'multiclass': {
                 'univariate selection':
                 'univariate selection classification',
+                'rfe': 'rfe',
             }
         }
 }
@@ -30,13 +50,15 @@ AVALIABLE = {
 SELECTORS = {
     'univariate selection regression': (SelectPercentile,
                                         ['base univar fs regression',
+                                         'univar fs regression rs',
                                          'univar fs regression gs']),
 
     'univariate selection classification': (SelectPercentile,
                                             ['base univar fs classifier',
+                                             'univar fs classifier rs',
                                              'univar fs classifier gs']),
 
-    'linear svm rfe regression': (RFE, ['base linear svm rfe regression'])
+    'rfe': (RFE, ['base rfe', 'rfe num feats rs'])
 }
 
 
@@ -74,9 +96,11 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, param_ind,
                            param_ind, search_type)
 
     # Need to check for estimator, as RFE needs a default param for estimator
+    # Though, only replaced if not passed in user extra params already.
     possible_params = get_possible_init_params(feat_selector)
     if 'estimator' in possible_params:
-            extra_feat_selector_params['estimator'] = None
+            if 'estimator' not in extra_feat_selector_params:
+                extra_feat_selector_params['estimator'] = None
 
     return feat_selector(**extra_feat_selector_params), feat_selector_params
 

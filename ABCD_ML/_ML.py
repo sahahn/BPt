@@ -468,6 +468,9 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         object passed will be fitted independly and then averaged
         using the 'basic ensemble' behvaior... so an ensemble of ensembles.
 
+        For a full list of supported options call:
+        :func:`Show_Ensemble_Types`
+
     ensemble_split : float, int or None
         If a an ensemble_type(s) that requires fitting is passed,
         i.e., not "basic ensemble", then this param is
@@ -774,6 +777,9 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         a non 'basic ensemble' ensemble type, and each ensemble
         object passed will be fitted independly and then averaged
         using the 'basic ensemble' behvaior... so an ensemble of ensembles.
+
+        For a full list of supported options call:
+        :func:`Show_Ensemble_Types`
 
     ensemble_split : float, int or None
         If a an ensemble_type(s) that requires fitting is passed,

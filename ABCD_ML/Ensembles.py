@@ -106,3 +106,79 @@ def get_ensemble_and_params(ensemble_str, extra_params):
         params.update(extra_params[ensemble_str])
 
     return ensemble, params
+
+
+def Show_Ensemble_Types(self, problem_type=None, ensemble_type=None):
+    '''Print out the avaliable ensemble types,
+    optionally restricted by problem type
+
+    Parameters
+    ----------
+    problem_type : {binary, categorical, regression, None}, optional
+        Where `problem_type` is the underlying ML problem
+
+        (default = None)
+
+    ensemble_type : str or list
+        Where ensemble_yype is a specific str indicator
+    '''
+    print('Visit: ')
+    print('https://deslib.readthedocs.io/en/latest/api.html')
+    print('For actual descriptions about the different ensemble types,')
+    print('as this is the base library used for this functionality!')
+
+    if problem_type is None or problem_type == 'categorical':
+        print('Note:')
+        print('(MultiClass) or (MultiLabel) are not part of the metric',
+              'str indicator.')
+    print()
+
+    if ensemble_type is not None:
+        if isinstance(ensemble_type, str):
+                ensemble_type = [ensemble_type]
+        for ensemble_str in ensemble_type:
+                show_metric(ensemble_str)
+        return
+
+    avaliable_by_type = get_avaliable_by_type(AVALIABLE)
+
+    if problem_type is None:
+        for pt in avaliable_by_type:
+            show_type(pt, avaliable_by_type)
+    else:
+        show_type(problem_type, avaliable_by_type)
+
+
+def show_type(problem_type, avaliable_by_type):
+
+        print('Problem Type:', problem_type)
+        print('----------------------------------------')
+        print()
+        print('Avaliable ensemble types: ')
+        print()
+
+        for ensemble_str in avaliable_by_type[problem_type]:
+            if 'basic ensemble' not in ensemble_str:
+                show_ensemble(ensemble_str)
+
+
+def show_ensemble(ensemble_str):
+
+        multilabel, multiclass = False, False
+
+        if 'multilabel ' in ensemble_str:
+                multilabel = True
+        elif 'multiclass ' in ensemble_str:
+                multiclass = True
+
+        ensemble_str = ensemble_str.replace('multilabel ', '')
+        ensemble_str = ensemble_str.replace('multiclass ', '')
+
+        print(ensemble_str, end='')
+
+        if multilabel:
+            print(' (MultiLabel)')
+        elif multiclass:
+            print(' (MultiClass)')
+        else:
+            print()

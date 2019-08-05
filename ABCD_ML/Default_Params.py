@@ -39,7 +39,7 @@ PARAMS['elastic classifier']['l1_ratio'] = uniform()
 
 PARAMS['base elastic net'] = {'max_iter': [5000]}
 PARAMS['elastic regression'] = PARAMS['base elastic net'].copy()
-PARAMS['elastic regression']['alpha'] = reciprocal(a=1e-6, b=1e+2)
+PARAMS['elastic regression']['alpha'] = reciprocal(a=1e-5, b=1e+2)
 PARAMS['elastic regression']['l1_ratio'] = uniform()
 
 PARAMS['base huber'] = {'epsilon': [1.35]}
@@ -155,6 +155,9 @@ PARAMS['univar fs regression gs'] = {'score_func': [f_regression],
                                      'percentile': [10, 20, 30, 40, 50, 60, 70,
                                                     80, 90]}
 
+PARAMS['univar fs regression rs'] = {'score_func': [f_regression],
+                                     'percentile': randint(1, 99)}
+
 PARAMS['base univar fs classifier'] = {'score_func': [f_classif],
                                        'percentile': [50]}
 
@@ -162,19 +165,31 @@ PARAMS['univar fs classifier gs'] = {'score_func': [f_classif],
                                      'percentile':  [10, 20, 30, 40, 50, 60,
                                                      70, 80, 90]}
 
-PARAMS['base linear svm rfe regression'] = {'estimator':
-                                            [SVR(kernel="linear")],
-                                            'n_features_to_select': [None]}
+PARAMS['univar fs classifier rs'] = {'score_func': [f_classif],
+                                     'percentile':  randint(1, 99)}
+
+
+PARAMS['base rfe'] = {'n_features_to_select': [None]}
+
+PARAMS['rfe num feats rs'] = {'n_features_to_select': uniform()}
 
 
 def get(str_indicator, preprend):
 
-        params = PARAMS[str_indicator].copy()
+        base_params = PARAMS[str_indicator].copy()
 
         if preprend != '':
-                preprend = preprend + '__'
+                params = {preprend + '__' + key: base_params[key] for key in
+                          base_params}
 
-        params = {preprend + key: params[key] for key in params}
+        else:
+                params = {}
+                for key in base_params:
+
+                        if isinstance(base_params[key], list):
+                                params[key] = base_params[key][0]
+                        else:
+                                params[key] = base_params[key]
 
         return params
 

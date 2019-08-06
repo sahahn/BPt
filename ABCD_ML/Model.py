@@ -551,7 +551,7 @@ class Model():
         '''
 
         # Split the train data further, if nec. for ensemble split
-        train_data, ensemble_Xy = self._get_ensemble_split(train_data)
+        train_data, ensemble_data = self._get_ensemble_split(train_data)
 
         # User passed model index should be reset to 0 here
         self.upmi = 0
@@ -565,8 +565,8 @@ class Model():
                                             model_type_param_ind))
 
         # If special ensemble passed, fit each one seperate
-        if ensemble_Xy:
-            models = [self._fit_ensemble(models, ensemble_Xy, i)
+        if ensemble_data:
+            models = [self._fit_ensemble(models, ensemble_data, i)
                       for i in range(len(self.ensembles))]
 
         # If multiple base models, or ensembles of models,
@@ -588,7 +588,7 @@ class Model():
                                          random_state=self.random_state)
 
             # Set ensemble data to X_y
-            ensemble_data = self._get_X_y(train_data.loc[ensemble_subjects])
+            ensemble_data = train_data.loc[ensemble_subjects]
 
             # Set train_data to new smaller set
             train_data = train_data.loc[train_subjects]
@@ -611,6 +611,7 @@ class Model():
             y target for ML
         '''
 
+        #X = data.drop(self.targets_key, axis=1)
         X = np.array(data.drop(self.targets_key, axis=1))
         y = np.array(data[self.targets_key])
 
@@ -784,7 +785,7 @@ class Model():
 
         return model_pipeline
 
-    def _fit_ensemble(self, models, ensemble_Xy, i):
+    def _fit_ensemble(self, models, ensemble_data, i):
 
         # Grab ensemble + params from ind (i)
         ensemble_model = self.ensembles[i][0]
@@ -794,7 +795,8 @@ class Model():
         ensemble_model = ensemble_model(models, **ensemble_params)
 
         # Fit the ensemble model
-        ensemble_model.fit(ensemble_Xy[0], ensemble_Xy[1])
+        ensemble_X, ensemble_y = self._get_X_y(ensemble_data)
+        ensemble_model.fit(ensemble_X, ensemble_y)
 
         return ensemble_model
 

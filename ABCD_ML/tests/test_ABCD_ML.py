@@ -18,7 +18,7 @@ class Test_ABCD_ML(TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_ABCD_ML, self).__init__(*args, **kwargs)
 
-        self.ML = ABCD_ML()
+        self.ML = ABCD_ML(log_dr=None)
 
     def test_init(self):
 
@@ -147,7 +147,7 @@ class Test_ABCD_ML(TestCase):
 
         loc = get_file_path('custom_covars1.csv')
         self.ML.Load_Covars(loc, ['sex', 'age', 'education'], ['b', 'f', 'o'],
-                            dataset_type='custom', dummy_code_categorical=True,
+                            dataset_type='custom', code_categorical_as='dummy',
                             standardize=False, normalize=False
                             )
 
@@ -160,14 +160,14 @@ class Test_ABCD_ML(TestCase):
         self.ML.Clear_Covars()
 
         self.ML.Load_Covars(loc, 'education', 'c',
-                            dataset_type='custom', dummy_code_categorical=True,
+                            dataset_type='custom', code_categorical_as='dummy',
                             standardize=False, normalize=False
                             )
         self.assertTrue(self.ML.covars.shape == (6, 2))
         self.ML.Clear_Covars()
 
         self.ML.Load_Covars(loc, 'age', 'f',
-                            dataset_type='custom', dummy_code_categorical=True,
+                            dataset_type='custom', code_categorical_as='dummy',
                             filter_float_outlier_percent=.01,
                             standardize=True, normalize=True
                             )

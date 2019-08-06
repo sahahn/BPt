@@ -240,7 +240,7 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
 
 
 def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
-                dummy_code_categorical=True, filter_float_outlier_percent=None,
+                code_categorical_as='dummy', filter_float_outlier_percent=None,
                 standardize=True, normalize=False):
     '''Load a covariate or covariates from a 2.0_ABCD_Data_Explorer
     release formatted csv.
@@ -282,11 +282,17 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
         (default = 'default')
 
-    dummy_code_categorical: bool, optional
-        If True, then categorical variables are dummy coded.
-        If False, then categorical variables are one-hot encoded.
+    code_categorical_as: {'dummy', 'one hot', 'ordinal'}
+        How to code categorical data,
 
-        (default = True)
+        - 'dummy' : perform dummy coding, to len(unique classes)-1 columns
+
+        - 'one hot' : for one hot encoding, to len(unique classes) columns
+
+        - 'ordinal' : for just ordinal, one column values 0 to \
+            len(unique classes) -1
+
+        (default = 'dummy')
 
     filter_float_outlier_percent, float, int, tuple or None, optional
         For float datatypes only.
@@ -315,10 +321,6 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         (default = False)
     '''
 
-    drop = None
-    if dummy_code_categorical:
-        drop = 'first'
-
     self._print('Loading covariates!')
     covars, col_names = self._common_load(loc, dataset_type,
                                           col_names=col_names)
@@ -338,9 +340,21 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
             self.covars_encoders[key] = encoder
 
         elif d_type == "categorical" or d_type == 'c':
-            covars, new_keys, encoder = process_categorical_input(covars, key,
-                                                                  drop,
-                                                                  self._print)
+
+            if code_categorical_as == 'ordinal':
+                covars, encoder = process_ordinal_input(covars, key)
+
+            # If using one hot or dummy coding, encoder will
+            # contain 2 transformers
+            else:
+
+                drop = 'first'
+                if code_categorical_as == 'one hot':
+                    drop = None
+
+                covars, new_keys, encoder =\
+                    process_categorical_input(covars, key, drop, self._print)
+
             self.covars_encoders[key] = encoder
 
         elif (d_type == 'float' or d_type == 'ordinal' or
@@ -1174,7 +1188,7 @@ def _prepare_data(self):
 
     dfs = []
 
-    assert len(self.targets > 0), \
+    assert len(self.targets) > 0, \
         'Targets must be loaded!'
     assert len(self.data) > 0 or len(self.covars) > 0, \
         'Some data must be loaded!'

@@ -61,6 +61,7 @@ def process_binary_input(data, key, _print=print):
     # Perform actual binary encoding
     encoder = LabelEncoder()
     data[key] = encoder.fit_transform(np.array(data[key]))
+    data[key] = data[key].astype('category')
 
     assert len(np.unique(data[key])) == 2, \
         "Error: Binary type, but more than two unique values"
@@ -90,6 +91,7 @@ def process_ordinal_input(data, key):
 
     label_encoder = LabelEncoder()
     data[key] = label_encoder.fit_transform(data[key])
+    data[key] = data[key].astype('category')
 
     return data, label_encoder
 
@@ -154,6 +156,7 @@ def process_categorical_input(data, key, drop=None, _print=print):
     for i in range(len(categories)):
         k = key + '_' + str(categories[i])
         data[k] = vals[:, i]
+        data[k] = data[k].astype('category')
         new_keys.append(k)
 
     # Remove the original key column from the dataframe

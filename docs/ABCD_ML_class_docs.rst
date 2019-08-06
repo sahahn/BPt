@@ -115,6 +115,10 @@ Show_Data_Scalers
 =================
 .. automethod:: ABCD_ML.Show_Data_Scalers
 
+Show_Samplers
+=============
+.. automethod:: ABCD_ML.Show_Samplers
+
 Show_Feat_Selectors
 =================
 .. automethod:: ABCD_ML.Show_Feat_Selectors

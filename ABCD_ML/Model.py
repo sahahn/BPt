@@ -396,6 +396,19 @@ class Model():
             except AttributeError:
                 pass
 
+    def _check_for_random_state(self, objs):
+        '''Provided a list of tuples [(name, obj)],
+        go through and check each of the objects to see if it
+        has a random state parameter. If so change it to the class value'''
+
+        for i in range(len(objs)):
+
+            poss_params = objs[i][1]
+
+
+
+
+
     def Evaluate_Model(self, data, train_subjects):
         '''Method to perform a full repeated k-fold evaluation
         on a provided model type and training subjects, according to
@@ -611,7 +624,6 @@ class Model():
             y target for ML
         '''
 
-        #X = data.drop(self.targets_key, axis=1)
         X = np.array(data.drop(self.targets_key, axis=1))
         y = np.array(data[self.targets_key])
 

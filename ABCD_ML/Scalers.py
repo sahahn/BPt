@@ -7,7 +7,6 @@ from ABCD_ML.ML_Helpers import (show_param_options, get_possible_init_params,
                                 get_obj_and_params)
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer)
-from sklearn.decomposition import PCA
 
 
 # Scalers differs from scorers and models in that the types are not restricted
@@ -20,9 +19,7 @@ SCALERS = {
 
     'robust': (RobustScaler, ['base robust', 'robust gs']),
 
-    'power': (PowerTransformer, ['base power']),
-
-    'pca': (PCA, ['base pca', 'pca rs'])
+    'power': (PowerTransformer, ['base power'])
     }
 
 

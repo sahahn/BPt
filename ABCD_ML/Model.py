@@ -1,7 +1,7 @@
 import numpy as np
 
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from sklearn.pipeline import Pipeline
+from imblearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 
 from ABCD_ML.Models import MODELS
@@ -11,10 +11,12 @@ from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
                                 get_obj_and_params)
 
 from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
+from ABCD_ML.Samplers import AVALIABLE as AVALIABLE_SAMPLERS
 from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
 from ABCD_ML.Scorers import AVALIABLE as AVALIABLE_SCORERS
 from ABCD_ML.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
 
+from ABCD_ML.Samplers import get_sampler_and_params
 from ABCD_ML.Feature_Selectors import get_feat_selector_and_params
 from ABCD_ML.Scorers import get_scorer
 from ABCD_ML.Scalers import get_data_scaler_and_params
@@ -137,6 +139,7 @@ class Model():
         # Un-pack ML_params
         self.metrics = conv_to_list(ML_params['metric'])
         self.data_scalers = conv_to_list(ML_params['data_scaler'])
+        self.samplers = conv_to_list(ML_params['sampler'])
         self.feat_selectors = conv_to_list(ML_params['feat_selector'])
         self.n_splits = ML_params['n_splits']
         self.n_repeats = ML_params['n_repeats']
@@ -154,6 +157,8 @@ class Model():
             conv_to_list(ML_params['model_type_param_ind'])
         self.data_scaler_param_inds =\
             conv_to_list(ML_params['data_scaler_param_ind'])
+        self.sampler_param_inds =\
+            conv_to_list(ML_params['sampler_param_ind'])
         self.feat_selector_param_inds =\
             conv_to_list(ML_params['feat_selector_param_ind'])
 
@@ -163,11 +168,12 @@ class Model():
         # Default params just sets (sub)problem type for now
         self._set_default_params()
 
-        # Process model_types, scorers and scalers from str indicator input
+        # Process inputs
         self._process_model_types()
         self._process_feat_selectors()
         self._process_scorers()
         self._process_data_scalers()
+        self._process_samplers()
         self._process_ensemble_types()
 
     def _set_default_params(self):
@@ -242,6 +248,25 @@ class Model():
                 self._get_objs_and_params(get_data_scaler_and_params,
                                           conv_data_scaler_strs,
                                           self.data_scaler_param_inds)
+
+    def _process_samplers(self):
+        '''Class function to convert input sampler strs to
+        a resampling object.
+        '''
+
+        if self.samplers is not None:
+
+            sampler_strs =\
+                self._proc_type_dep_str(self.samplers, AVALIABLE_SAMPLERS)
+
+            self.samplers, self.sampler_params =\
+                self._get_objs_and_params(get_sampler_and_params,
+                                          sampler_strs,
+                                          self.sampler_param_inds)
+
+        else:
+            self.samplers = []
+            self.sampler_params = {}
 
     def _process_ensemble_types(self):
         '''Processes ensemble types to be a list of
@@ -676,9 +701,10 @@ class Model():
         # Merge the different params / grids of params
         # into one dict.
         all_params = {}
-        all_params.update(model_type_params)
         all_params.update(self.col_data_scaler_params)
+        all_params.update(self.sampler_params)
         all_params.update(self.feat_selector_params)
+        all_params.update(model_type_params)
 
         # Create the search model
         if self.search_type == 'random':
@@ -730,9 +756,9 @@ class Model():
     def _make_model_pipeline(self, model, model_type):
         '''Provided a model & model type (model str indicator),
         return a sklearn pipeline with proceeding self.col_data_scalers,
-        and then self.feat_selectors (which should both just be and
-        empty list if None) and then the model, w/ model_type
-        as its unique name.
+        and then self.samplers, then self.feat_selectors
+        (which should all just be empty list if None) and then the model,
+        w/ model_type as its unique name.
 
         Parameters
         ----------
@@ -751,7 +777,7 @@ class Model():
             scalers, and then the passed in model.
         '''
 
-        steps = self.col_data_scalers + self.feat_selectors \
+        steps = self.col_data_scalers + self.samplers + self.feat_selectors \
             + [(model_type, model)]
 
         model_pipeline = Pipeline(steps)

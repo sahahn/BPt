@@ -11,6 +11,8 @@ from sklearn.svm import SVR
 
 PARAMS = {}
 
+PARAMS['default'] = {}
+
 # Models
 PARAMS['base logistic'] = {'solver': ['saga'],
                            'max_iter': [5000],
@@ -173,6 +175,8 @@ PARAMS['base rfe'] = {'n_features_to_select': [None]}
 
 PARAMS['rfe num feats rs'] = {'n_features_to_select': uniform()}
 
+# Samplers
+
 
 def get(str_indicator, preprend):
 
@@ -215,7 +219,7 @@ def show(str_indicator):
                                       value.a, ', ', value.b, ')', sep='')
 
                         else:
-                                print('Uniform/Reciprocal Distribution Over',
+                                print('Distribution Over',
                                       value.interval(1))
 
                 elif len(value) == 1:

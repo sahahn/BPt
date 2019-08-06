@@ -9,10 +9,12 @@ from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
 
 def Set_Default_ML_Params(self, problem_type='default', metric='default',
-                          data_scaler='default', feat_selector='default',
-                          n_splits='default', n_repeats='default',
-                          int_cv='default', search_type='default',
+                          data_scaler='default', sampler='default',
+                          feat_selector='default', n_splits='default',
+                          n_repeats='default', int_cv='default',
+                          search_type='default',
                           data_scaler_param_ind='default',
+                          sampler_param_ind='default',
                           feat_selector_param_ind='default',
                           class_weight='default', n_jobs='default',
                           n_iter='default', random_state='default',
@@ -67,6 +69,21 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         :func:`Show_Data_Scalers`
 
         If 'default', and not already defined, set to 'standard'
+        (default = 'default')
+
+    sampler : str, list or none optional
+        `sampler` refers optional to the type of resampling
+        to apply within the model pipeline - to correct for
+        imbalanced class distributions. These are different
+        techniques for over sampling under distributed classed
+        and under sampling over distributed ones.
+        If a list is passed, then samplers will be fit and applied
+        in that order.
+
+        For a full list of supported options call:
+        :func:`Show_Samplers`
+
+        If 'default', and not already defined, set to None
         (default = 'default')
 
     feat_selector : str, list or None, optional
@@ -140,6 +157,23 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 
         The different parameter distributions avaliable for each
         `data_scaler`, can be shown by calling :func:`Show_Data_Scalers`
+
+        If 'default', and not already defined, set to 0
+        (default = 'default')
+
+    sampler_param_ind :  int, str, or list of
+        Each `sampler` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `sampler_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `sampler`.
+        Likewise with `sampler`, if passed list input, this means
+        a list was passed to `sampler` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `sampler`, can be shown by calling :func:`Show_Samplers`
 
         If 'default', and not already defined, set to 0
         (default = 'default')
@@ -248,6 +282,13 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self.default_ML_params['data_scaler'] = 'standard'
         self._print('No default data scaler passed, set to standard')
 
+    if sampler != 'default':
+        self.default_ML_params['sampler'] = sampler
+
+    elif 'sampler' not in self.default_ML_params:
+        self.default_ML_params['sampler'] = None
+        self._print('No default sampler passed, set to None')
+
     if feat_selector != 'default':
         self.default_ML_params['feat_selector'] = feat_selector
 
@@ -295,6 +336,13 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
     elif 'data_scaler_param_ind' not in self.default_ML_params:
         self.default_ML_params['data_scaler_param_ind'] = 0
         self._print('No default data scaler param ind passed, set to 0')
+
+    if sampler_param_ind != 'default':
+        self.default_ML_params['sampler_param_ind'] = sampler_param_ind
+
+    elif 'sampler_param_ind' not in self.default_ML_params:
+        self.default_ML_params['sampler_param_ind'] = 0
+        self._print('No default sampler param ind passed, set to 0')
 
     if feat_selector_param_ind != 'default':
         self.default_ML_params['feat_selector_param_ind'] =\
@@ -352,11 +400,11 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 
 
 def Evaluate(self, model_type, problem_type='default', metric='default',
-             data_scaler='default', feat_selector='default',
+             data_scaler='default', sampler='default', feat_selector='default',
              n_splits='default', n_repeats='default', int_cv='default',
              ensemble_type='basic ensemble', ensemble_split=.2,
              search_type='default', model_type_param_ind=0,
-             data_scaler_param_ind='default',
+             data_scaler_param_ind='default', sampler_param_ind='default',
              feat_selector_param_ind='default', class_weight='default',
              n_jobs='default', n_iter='default', random_state='default',
              extra_params='default'):
@@ -403,6 +451,21 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
         For a full list of supported options call:
         :func:`Show_Data_Scalers`
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    sampler : str, list or none optional
+        `sampler` refers optional to the type of resampling
+        to apply within the model pipeline - to correct for
+        imbalanced class distributions. These are different
+        techniques for over sampling under distributed classed
+        and under sampling over distributed ones.
+        If a list is passed, then samplers will be fit and applied
+        in that order.
+
+        For a full list of supported options call:
+        :func:`Show_Samplers`
 
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
@@ -526,6 +589,23 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
         The different parameter distributions avaliable for each
         `data_scaler`, can be shown by calling :func:`Show_Data_Scalers`
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    sampler_param_ind :  int, str, or list of
+        Each `sampler` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `sampler_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `sampler`.
+        Likewise with `sampler`, if passed list input, this means
+        a list was passed to `sampler` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `sampler`, can be shown by calling :func:`Show_Samplers`
 
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
@@ -666,10 +746,10 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
 def Test(self, model_type, problem_type='default', train_subjects=None,
          test_subjects=None, metric='default', data_scaler='default',
-         feat_selector='default', int_cv='default',
+         sampler='default', feat_selector='default', int_cv='default',
          ensemble_type='basic ensemble', ensemble_split=.2,
          search_type='default', model_type_param_ind=0,
-         data_scaler_param_ind='default',
+         data_scaler_param_ind='default', sampler_param_ind='default',
          feat_selector_param_ind='default', class_weight='default',
          n_jobs='default', n_iter='default', random_state='default',
          return_model=False, extra_params='default'):
@@ -734,6 +814,21 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         For a full list of supported options call:
         :func:`Show_Data_Scalers`
 
+        (default = 'default')
+
+    sampler : str, list or none optional
+        `sampler` refers optional to the type of resampling
+        to apply within the model pipeline - to correct for
+        imbalanced class distributions. These are different
+        techniques for over sampling under distributed classed
+        and under sampling over distributed ones.
+        If a list is passed, then samplers will be fit and applied
+        in that order.
+
+        For a full list of supported options call:
+        :func:`Show_Samplers`
+
+        If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
     feat_selector : str, list or None, optional
@@ -836,6 +931,23 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
         The different parameter distributions avaliable for each
         `data_scaler`, can be shown by calling :func:`Show_Data_Scalers`
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    sampler_param_ind :  int, str, or list of
+        Each `sampler` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `sampler_param_ind` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `sampler`.
+        Likewise with `sampler`, if passed list input, this means
+        a list was passed to `sampler` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `sampler`, can be shown by calling :func:`Show_Samplers`
 
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
@@ -1033,6 +1145,7 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
     self._print('problem_type =', ML_params['problem_type'])
     self._print('metric =', ML_params['metric'])
     self._print('data_scaler =', ML_params['data_scaler'])
+    self._print('sampler =', ML_params['sampler'])
     self._print('feat_selector =', ML_params['feat_selector'])
 
     if not test:
@@ -1047,6 +1160,7 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
     self._print('search_type =', ML_params['search_type'])
     self._print('model_type_param_ind =', model_type_param_ind)
     self._print('data_scaler_param_ind =', ML_params['data_scaler_param_ind'])
+    self._print('sampler_param_ind =', ML_params['sampler_param_ind'])
     self._print('feat_selector_param_ind =',
                 ML_params['feat_selector_param_ind'])
 

@@ -210,23 +210,98 @@ def get_avaliable_by_type(AVALIABLE):
 
     for pt in AVALIABLE:
 
-            avaliable_by_type[pt] = set()
-
             if pt == 'categorical':
                     for st in AVALIABLE[pt]:
+                            avaliable_by_type[pt + ' ' + st] = set()
+
+                            key = pt + ' ' + st
+
                             for select in AVALIABLE[pt][st]:
-                                    avaliable_by_type[pt].add(st + ' ' +
-                                                              AVALIABLE[pt]
-                                                              [st][select])
+                                    avaliable_by_type[key].add(
+                                        AVALIABLE[pt][st][select])
+
+                            avaliable_by_type[key] =\
+                                list(avaliable_by_type[key])
+                            avaliable_by_type[key].sort()
 
             else:
+                    avaliable_by_type[pt] = set()
                     for select in AVALIABLE[pt]:
                             avaliable_by_type[pt].add(AVALIABLE[pt][select])
 
-            avaliable_by_type[pt] = list(avaliable_by_type[pt])
-            avaliable_by_type[pt].sort()
+                    avaliable_by_type[pt] = list(avaliable_by_type[pt])
+                    avaliable_by_type[pt].sort()
 
     return avaliable_by_type
+
+
+def show_objects(problem_type=None, obj=None,
+                 show_param_ind_options=True, show_object=False,
+                 show_all_possible_params=False, AVALIABLE=None, OBJS=None):
+
+        if obj is not None:
+            objs = conv_to_list(obj)
+
+            for obj in objs:
+                show_obj(obj, show_param_ind_options, show_object,
+                         show_all_possible_params, OBJS)
+            return
+
+        avaliable_by_type = get_avaliable_by_type(AVALIABLE)
+
+        if problem_type is not None:
+            if problem_type == 'categorical':
+                problem_types = ['categorical multilabel',
+                                 'categorical multilabel']
+
+            else:
+                problem_types = [problem_type]
+
+        else:
+            problem_types = list(avaliable_by_type)
+
+        for pt in problem_types:
+                show_type(pt, avaliable_by_type,
+                          show_param_ind_options,
+                          show_object,
+                          show_all_possible_params, OBJS)
+
+
+def show_type(problem_type, avaliable_by_type, show_param_ind_options,
+              show_object, show_all_possible_params, OBJS):
+
+        print('Avaliable for Problem Type:', problem_type)
+        print('----------------------------------------')
+        print()
+        print()
+
+        for obj_str in avaliable_by_type[problem_type]:
+            if 'user passed' not in obj_str:
+                show_obj(obj_str, show_param_ind_options, show_object,
+                         show_all_possible_params, OBJS)
+
+
+def show_obj(obj_str, show_param_ind_options, show_object,
+             show_all_possible_params, OBJS):
+
+        print('- - - - - - - - - - - - - - - - - - - - ')
+        O = OBJS[obj_str]
+        print(O[0].__name__, end='')
+        print(' ("', obj_str, '")', sep='')
+        print('- - - - - - - - - - - - - - - - - - - - ')
+        print()
+
+        if show_object:
+                print('Object: ', O[0])
+
+        print()
+        if show_param_ind_options:
+                show_param_options(O[1])
+
+        if show_all_possible_params:
+                possible_params = get_possible_init_params(O[0])
+                print('All Possible Params:', possible_params)
+        print()
 
 
 def show_param_options(param_options):

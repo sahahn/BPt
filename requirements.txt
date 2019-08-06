@@ -8,3 +8,4 @@ matplotlib>=3
 seaborn
 sphinx==2.0.1
 deslib
+imbalanced-learn

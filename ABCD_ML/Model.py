@@ -4,6 +4,9 @@ from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from imblearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 
+import shap
+import pandas as pd
+
 from ABCD_ML.Models import MODELS
 from ABCD_ML.Ensemble_Model import Ensemble_Model
 from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
@@ -186,6 +189,7 @@ class Model():
     def _set_default_params(self):
         self.user_passed_models = []
         self.upmi = 0
+        self.shap_dfs = []
 
     def _process_model_types(self):
         '''Class function to convert input model types to final
@@ -488,17 +492,20 @@ class Model():
                                                  return_index=False)
 
         all_scores = []
+        fold_ind = 0
 
         # For each split with the repeated K-fold
         for train_subjects, test_subjects in subject_splits:
 
-            scores = self.Test_Model(data, train_subjects, test_subjects)
+            scores = self.Test_Model(data, train_subjects, test_subjects,
+                                     fold_ind)
+            fold_ind += 1
             all_scores.append(scores)
 
         # Return all scores
         return np.array(all_scores)
 
-    def Test_Model(self, data, train_subjects, test_subjects):
+    def Test_Model(self, data, train_subjects, test_subjects, fold_ind='test'):
         '''Method to test given input data, training a model on train_subjects
         and testing the model on test_subjects.
 
@@ -527,8 +534,25 @@ class Model():
         # Train the model(s)
         self._train_models(train_data)
 
+        # If fold ind test, init with test_data
+        # Otherwise, using Evaluate, init with all data only every n_splits
+        if fold_ind == 'test':
+            self._init_shap_df(test_data)
+        elif fold_ind % self.n_splits == 0:
+            self._init_shap_df(pd.concat([train_data, test_data]))
+
+        # Compute feature importance
+        self._feature_importance(train_data, test_data)
+
+        # Need a check to add self.shap_df to self.shap_dfs
+        # Only during Evalaute, not for test
+        if isinstance(fold_ind, int):
+            if fold_ind % self.n_splits == self.n_splits-1:
+                self.shap_dfs.append(self.shap_df)
+
         # Get the score on the test set
         scores = self._get_scores(test_data)
+
         return scores
 
     def _train_models(self, train_data):
@@ -592,13 +616,26 @@ class Model():
 
         return train_data, ensemble_data
 
-    def _get_X_y(self, data):
+    def _get_X_y(self, data, X_as_df=False, copy=False):
         '''Helper method to get X,y data from ABCD ML formatted df.
 
         Parameters
         ----------
         data : pandas DataFrame
             ABCD ML formatted.
+
+        X_as_df : bool, optional
+            If True, return X as a pd DataFrame,
+            otherwise, return as a numpy array
+
+            (default = False)
+
+        copy : bool, optional
+            If True, return a copy of X
+
+            (default = False)
+
+
 
         Returns
         ----------
@@ -608,7 +645,14 @@ class Model():
             y target for ML
         '''
 
-        X = np.array(data.drop(self.targets_key, axis=1))
+        if copy:
+            X = data.drop(self.targets_key, axis=1).copy()
+        else:
+            X = data.drop(self.targets_key, axis=1)
+
+        if not X_as_df:
+            X = np.array(X)
+
         y = np.array(data[self.targets_key])
 
         # Convert/decode y/score if needed
@@ -839,6 +883,117 @@ class Model():
                   for scorer in self.scorers]
 
         return np.array(scores)
+
+    def _init_shap_df(self, data):
+
+        self.shap_df, y = self._get_X_y(data, X_as_df=True, copy=True)
+
+        for col in self.shap_df.columns:
+            self.shap_df[col].values[:] = 0
+
+    def _feature_importance(self, train_data, test_data):
+
+        # Try grabbing a base model, if it doesnt exist,
+        # it means there is some type of ensemble being used
+        try:
+            base_model = self.model[self.model_types[0]]
+            ensemble = False
+        except AttributeError:
+            ensemble = True
+
+        linear, tree = False, False
+
+        if not ensemble:
+
+            try:
+                base_model.coef_
+                linear = True
+            except AttributeError:
+                pass
+
+            try:
+                base_model.feature_importances_
+                tree = True
+            except AttributeError:
+                pass
+
+        if tree or linear:
+
+            # Grab names of scalers + feat selectors
+            col_data_scaler_names = [n[0] for n in self.col_data_scalers]
+            feat_selector_names = [n[0] for n in self.feat_selectors]
+
+            # Grab the objects themselves from the model pipeline
+            scalers = [self.model[t] for t in col_data_scaler_names]
+            feat_selectors = [self.model[f] for f in feat_selector_names]
+
+            # Grab the test data, X as df + copy
+            X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
+
+            feat_names = list(X_test)
+
+            # Apply all data scalers, in place
+            for scaler in scalers:
+                X_test[feat_names] = scaler.transform(X_test)
+
+            # Apply all feature selectors, in place
+            for feat_selector in feat_selectors:
+
+                feat_mask = feat_selector.get_support()
+                feat_names = np.array(feat_names)[feat_mask]
+
+                X_test[feat_names] = feat_selector.transform(X_test)
+                X_test = X_test[feat_names]
+
+            if linear:
+
+                # If linear, need to proc the train dataset
+                sampler_names = [n[0] for n in self.samplers]
+                samplers = [self.model[s] for s in sampler_names]
+
+                X, y = self._get_X_y(train_data)
+
+                for scaler in scalers:
+                    X = scaler.transform(X)
+                for sampler in samplers:
+                    X, y = sampler.fit_resample(X, y)
+                for feat_selector in feat_selectors:
+                    X = feat_selector.transform(X)
+
+                # (1, n_feats) for binary
+                feat_importance = base_model.coef_
+
+                explainer = shap.LinearExplainer(base_model, X)
+                shap_values = explainer.shap_values(X_test)
+
+            elif tree:
+
+                # (n_feats,) for binary
+                feat_importance = base_model.feature_importances_
+
+                explainer = shap.TreeExplainer(base_model)
+                shap_values = explainer.shap_values(X_test)
+
+        else:
+            # Optional kernel strategy
+
+            X_train, y_train = self._get_X_y(train_data)
+            X_test, y_test = self._get_X_y(test_data, X_as_df=True)
+
+            X_train_summary = shap.kmeans(X_train, 10)
+
+            explainer = shap.KernelExplainer(self.model.predict_proba,
+                                             X_train_summary,
+                                             link='logit')
+
+            shap_values = explainer.shap_values(X_test, l1_reg='aic',
+                                                n_samples='auto')
+
+        # Set to df
+        shap_df = X_test.copy()
+        shap_df[list(X_test)] = shap_values[1]
+
+        self.shap_df.update(shap_df)
 
 
 class Regression_Model(Model):

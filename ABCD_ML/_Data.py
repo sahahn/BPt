@@ -1188,8 +1188,6 @@ def _prepare_data(self):
 
     dfs = []
 
-    assert len(self.targets) > 0, \
-        'Targets must be loaded!'
     assert len(self.data) > 0 or len(self.covars) > 0, \
         'Some data must be loaded!'
 
@@ -1201,13 +1199,19 @@ def _prepare_data(self):
         dfs.append(self.covars)
         self.covars_keys = list(self.covars)
 
+    assert len(self.targets) > 0, \
+        'Targets must be loaded!'
+
     dfs.append(self.targets)
 
     self.all_data = dfs[0]
     for i in range(1, len(dfs)):
         self.all_data = pd.merge(self.all_data, dfs[i], on=self.subject_id)
 
-    self._print('Final data for modeling loaded shape:', self.all_data.shape)
+    self._print('Final data (w/ target) for modeling loaded shape:',
+                self.all_data.shape)
+
+    self._set_data_and_cat_inds()
 
     if self.low_memory_mode:
         self._print('Low memory mode is on!')
@@ -1219,3 +1223,22 @@ def _prepare_data(self):
         self.data = pd.DataFrame()
         self.targets = pd.DataFrame()
         self.covars = pd.DataFrame()
+
+
+def _set_data_and_cat_inds(self):
+    '''Determines and sets the column index for data and
+    all categorical features if any. Also sets the class
+    cat_keys attribute.'''
+
+    # First determine which columns contain categorical
+    self.cat_keys = list(self.all_data.select_dtypes(include='category'))
+
+    # If target is categorical exclude it
+    try:
+        self.cat_keys.remove(self.targets_key)
+    except ValueError:
+        pass
+
+    # Grab the col inds
+    self.data_inds = [self.all_data.columns.get_loc(k) for k in self.data_keys]
+    self.cat_inds = [self.all_data.columns.get_loc(k) for k in self.cat_keys]

@@ -189,18 +189,35 @@ def get_obj_and_params(obj_str, OBJS, extra_params, param_ind, search_type):
 
 def get_possible_init_params(model):
     '''Helper function to grab the names of valid arguments to
-    classes init function
+    classes init
 
     Parameters
     ----------
-    model : sklearn api model reference
-        The model object to inspect
+    model : object
+        The object to inspect
 
     Returns
     ----------
         All valid parameters to the model
     '''
     pos_params = dict(inspect.getmembers(model.__init__.__code__))
+    return pos_params['co_varnames']
+
+
+def get_possible_fit_params(model):
+    '''Helper function to grab the names of valid arguments to
+    classes fit method
+
+    Parameters
+    ----------
+    model : object w/ fit method
+        The model object to inspect
+
+    Returns
+    ----------
+        All valid parameters to the model
+    '''
+    pos_params = dict(inspect.getmembers(model.fit.__code__))
     return pos_params['co_varnames']
 
 

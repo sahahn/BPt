@@ -299,7 +299,8 @@ class ABCD_ML():
                                _drop_excluded,
                                _filter_excluded,
                                _process_new,
-                               _prepare_data)
+                               _prepare_data,
+                               _set_data_and_cat_inds)
 
     # Validation / CV functionality
     def Define_Validation_Strategy(self, groups=None,

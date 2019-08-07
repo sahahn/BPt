@@ -8,6 +8,7 @@ from ABCD_ML.Models import MODELS
 from ABCD_ML.Ensemble_Model import Ensemble_Model
 from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
                                 get_possible_init_params,
+                                get_possible_fit_params,
                                 get_obj_and_params)
 
 from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
@@ -29,8 +30,8 @@ class Model():
     '''
 
     def __init__(self, model_types, ML_params, model_type_param_ind, CV,
-                 data_keys, targets_key, targets_encoder, ensemble_type,
-                 ensemble_split, _print=print):
+                 data_inds, cat_inds, targets_key, targets_encoder,
+                 ensemble_type, ensemble_split, _print=print):
         ''' Init function for Model
 
         Parameters
@@ -93,10 +94,15 @@ class Model():
             The class defined ABCD_ML CV object for defining
             custom validation splits.
 
-        data_keys : list
-            List of column keys within data passed to Evaluate_Model or
+        data_inds : list
+            List of column inds within data, as passed to Evaluate_Model or
             Test_Model, that correspond to the columns which should be scaled
-            with the chosen data scaler (if any).
+            with the chosen data scaler(s) (if any).
+
+        cat_inds : list
+            List of column inds within data, as passed to Evaluate_Model or
+            Test_Model, that correspond to the columns within covars that
+            are categorical (binary or categorical).
 
         targets_key : str or list
             The str or list corresponding to the column keys for the targets
@@ -131,7 +137,8 @@ class Model():
         # Set class parameters
         self.model_types = conv_to_list(model_types)
         self.CV = CV
-        self.data_keys = data_keys
+        self.data_inds = data_inds
+        self.cat_inds = cat_inds
         self.targets_key = targets_key
         self.targets_encoder = targets_encoder
         self._print = _print
@@ -235,7 +242,8 @@ class Model():
 
     def _process_data_scalers(self):
         '''Processes self.data_scaler to be a list of
-        (name, scaler) tuples.'''
+        (name, scaler) tuples, and then creates col_data_scalers
+        from that.'''
 
         if self.data_scalers is not None:
 
@@ -244,10 +252,32 @@ class Model():
             self._update_extra_params(self.data_scalers, conv_data_scaler_strs)
 
             # Get the data_scalers tuple, and data_scaler_params grid / distr
-            self.data_scalers, self.data_scaler_params =\
+            data_scalers, data_scaler_params =\
                 self._get_objs_and_params(get_data_scaler_and_params,
                                           conv_data_scaler_strs,
                                           self.data_scaler_param_inds)
+
+            # Create a list of tuples (just like self.data_scalers), but
+            # with column versions of the scalers.
+            self.col_data_scalers =\
+                [('col_' + name, ColumnTransformer([(name, scaler,
+                                                    self.data_inds)],
+                 remainder='passthrough', sparse_threshold=0))
+                 for name, scaler in data_scalers]
+
+            # Create col_data_scaler_params from data_scaler_params
+            self.col_data_scaler_params = {}
+
+            for key in data_scaler_params:
+                name = key.split('__')[0]
+                new_name = 'col_' + name + '__' + key
+
+                self.col_data_scaler_params[new_name] =\
+                    data_scaler_params[key]
+
+        else:
+            self.col_data_scalers = []
+            self.col_data_scaler_params = {}
 
     def _process_samplers(self):
         '''Class function to convert input sampler strs to
@@ -263,6 +293,23 @@ class Model():
                 self._get_objs_and_params(get_sampler_and_params,
                                           sampler_strs,
                                           self.sampler_param_inds)
+
+            # Replace random state
+            self.samplers =\
+                self._check_and_replace(self.samplers, 'random_state',
+                                        self.random_state)
+
+            # Replace categorical feats
+            self.samplers =\
+                self._check_and_replace(self.samplers, 'categorical_features',
+                                        self.cat_inds)
+
+            # N jobs if search type is None
+            if self.search_type is None:
+                self.samplers =\
+                    self._check_and_replace(self.samplers,
+                                            'n_jobs',
+                                            self.n_jobs)
 
         else:
             self.samplers = []
@@ -396,18 +443,18 @@ class Model():
             except AttributeError:
                 pass
 
-    def _check_for_random_state(self, objs):
-        '''Provided a list of tuples [(name, obj)],
-        go through and check each of the objects to see if it
-        has a random state parameter. If so change it to the class value'''
+    def _check_and_replace(self, objs, param_name, replace_value):
 
         for i in range(len(objs)):
 
-            poss_params = objs[i][1]
+            try:
+                getattr(objs[i][1], param_name)
+                setattr(objs[i][1], param_name, replace_value)
 
+            except AttributeError:
+                pass
 
-
-
+        return objs
 
     def Evaluate_Model(self, data, train_subjects):
         '''Method to perform a full repeated k-fold evaluation
@@ -477,75 +524,12 @@ class Model():
         train_data = data.loc[train_subjects]
         test_data = data.loc[test_subjects]
 
-        # Set column specific data scalers or set to empty
-        if self.data_scalers is not None:
-            self._set_col_data_scalers(train_data)
-        else:
-            self.col_data_scalers = []
-            self.col_data_scaler_params = {}
-
         # Train the model(s)
         self._train_models(train_data)
 
         # Get the score on the test set
         scores = self._get_scores(test_data)
         return scores
-
-    def _set_col_data_scalers(self, data):
-        '''Convert the data scaler to column specific data scalers,
-        based on the numerical index of the data keys within data.
-        Save that to self.col_data_scalers.
-
-        Parameters
-        ----------
-        data : pandas DataFrame
-            ABCD ML formatted, the data to base the column indices from.
-        '''
-
-        # Grab the numerical indices for the data-only keys
-        data_inds = self._get_data_inds(data)
-
-        # Create a list of tuples (just like self.data_scalers), but
-        # with column versions of the scalers.
-        self.col_data_scalers = [('col_' + name,
-                                 ColumnTransformer([(name, scaler, data_inds)],
-                                                   remainder='passthrough',
-                                                   sparse_threshold=0)
-                                  )
-                                 for name, scaler in self.data_scalers]
-
-        # Create col_data_scaler_params from data_scaler_params
-        self.col_data_scaler_params = {}
-
-        for key in self.data_scaler_params:
-
-            name = key.split('__')[0]
-            new_name = 'col_' + name + '__' + key
-
-            self.col_data_scaler_params[new_name] =\
-                self.data_scaler_params[key]
-
-    def _get_data_inds(self, data):
-        '''Grabs the numerical column indices for the data keys
-        within data minus targets.
-
-        Parameters
-        ----------
-        data : pandas DataFrame
-            ABCD_ML formatted, assumed to still contain targets
-
-        Returns
-        ----------
-        list
-            The numerical indices for the data keys within data minus
-            targets.
-        '''
-
-        data_without_targets = data.drop(self.targets_key, axis=1)
-        data_inds = [data_without_targets.columns.get_loc(k)
-                     for k in self.data_keys]
-
-        return data_inds
 
     def _train_models(self, train_data):
         '''Given training data, train the model(s), from the
@@ -682,7 +666,7 @@ class Model():
         X, y = self._get_X_y(train_data)
 
         # Fit the model
-        model.fit(X, y)
+        model.fit(X, y, **self.fit_params)
 
         return model
 
@@ -746,9 +730,9 @@ class Model():
             get_obj_and_params(model_type, MODELS, self.extra_params,
                                model_type_param_ind, search_type)
 
+        # Set class param values from possible model init params
         possible_params = get_possible_init_params(model)
 
-        # Get param values from class
         if 'class_weight' in possible_params:
             extra_model_params['class_weight'] = self.class_weight
 
@@ -760,6 +744,16 @@ class Model():
 
         if 'random_state' in possible_params:
             extra_model_params['random_state'] = self.random_state
+
+        # Set class param values from possible model fit params
+        possible_fit_params = get_possible_fit_params(model)
+
+        # This dict should reset here to empty every time
+        self.fit_params = {}
+
+        if 'categorical_feature' in possible_fit_params:
+            self.fit_params[model_type + '__' + 'categorical_feature'] =\
+                self.cat_inds
 
         # Init model, w/ any user passed params + class params
         model = model(**extra_model_params)

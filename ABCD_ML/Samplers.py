@@ -1,4 +1,5 @@
-from ABCD_ML.ML_Helpers import get_obj_and_params, show_objects
+from ABCD_ML.ML_Helpers import (get_obj_and_params, show_objects,
+                                get_possible_init_params)
 from imblearn.over_sampling import (RandomOverSampler, SMOTE, ADASYN,
                                     BorderlineSMOTE, SVMSMOTE, KMeansSMOTE,
                                     SMOTENC)
@@ -72,6 +73,12 @@ def get_sampler_and_params(sampler_str, extra_params, param_ind, search_type):
     sampler, extra_sampler_params, sampler_params =\
         get_obj_and_params(sampler_str, SAMPLERS, extra_params,
                            param_ind, search_type)
+
+    # Need to check if categorical features is a possible param
+    possible_params = get_possible_init_params(sampler)
+    if 'categorical_features' in possible_params:
+            if 'categorical_features' not in extra_sampler_params:
+                extra_sampler_params['categorical_features'] = None
 
     return sampler(**extra_sampler_params), sampler_params
 

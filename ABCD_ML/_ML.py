@@ -1186,5 +1186,6 @@ def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
     Model = problem_types[ML_params['problem_type']]
 
     self.Model = Model(model_type, ML_params, model_type_param_ind, self.CV,
-                       self.data_keys, self.targets_key, self.targets_encoder,
-                       ensemble_type, ensemble_split, self._print)
+                       self.data_inds, self.cat_inds, self.targets_key,
+                       self.targets_encoder, ensemble_type, ensemble_split,
+                       self._print)

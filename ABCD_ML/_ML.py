@@ -237,11 +237,11 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 
     calc_shap_feature_importances : bool or 'default, optional
         If set to True, will calculate SHapley Additive exPlanations
-        for the model when running Evaluate or Test. Note: any case
-        where the model isnt tree or linear based, e.g. an ensemble of
-        different methods, or non-linear svm, these values are estimated
-        by a kernel function which is very compute intensive.
-        `Example <http://www.example.com>`
+        for the model when running Evaluate or Test.
+        Note: For any case where the underlytin model is not tree or linear
+        based, e.g. an ensemble of different methods, or non-linear svm,
+        these values are estimated by a kernel explainer function which is
+        very compute intensive.
 
     extra_params : dict or 'default', optional
         Any extra params being passed. Typically, extra params are

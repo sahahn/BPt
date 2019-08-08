@@ -192,6 +192,8 @@ No default search type passed, set to None
 No default data scaler param ind passed, set to 0
 No default sampler param ind passed, set to 0
 No default feat selector param ind passed, set to 0
+No default calc_base_feature_importances passed, set to True
+No default calc_shap_feature_importances passed, set to False
 No default extra params passed, set to empty dict
 Default params set.
 
@@ -216,6 +218,8 @@ class_weight = balanced
 n_jobs = 8
 n_iter = 8
 random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = True
 extra_params = {}
 
 

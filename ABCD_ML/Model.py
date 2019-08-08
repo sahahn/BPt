@@ -6,6 +6,7 @@ from sklearn.compose import ColumnTransformer
 
 import shap
 import pandas as pd
+from collections import Counter
 
 from ABCD_ML.Models import MODELS
 from ABCD_ML.Ensemble_Model import Ensemble_Model
@@ -171,6 +172,10 @@ class Model():
         self.n_jobs = ML_params['n_jobs']
         self.n_iter = ML_params['n_iter']
         self.random_state = ML_params['random_state']
+        self.calc_base_feature_importances =\
+            ML_params['calc_base_feature_importances']
+        self.calc_shap_feature_importances =\
+            ML_params['calc_shap_feature_importances']
         self.extra_params = ML_params['extra_params']
 
         # Un-pack param search ML_params
@@ -203,7 +208,7 @@ class Model():
         self.user_passed_models = []
         self.upmi = 0
         self.shap_dfs = []
-        self.feature_importances = []
+        self.feature_importances = Counter()
 
         # Flags for feat importance things
         self.ensemble_flag = False
@@ -521,6 +526,9 @@ class Model():
             fold_ind += 1
             all_scores.append(scores)
 
+        # Average feature importances across folds / repeats
+        self._average_feature_importances()
+
         # Return all scores
         return np.array(all_scores)
 
@@ -553,12 +561,15 @@ class Model():
         # Train the model(s)
         self._train_models(train_data)
 
-        # If fold ind test, init with test_data
-        # Otherwise, using Evaluate, init with all data only every n_splits
-        if fold_ind == 'test':
-            self._init_shap_df(test_data)
-        elif fold_ind % self.n_splits == 0:
-            self._init_shap_df(pd.concat([train_data, test_data]))
+        if self.calc_shap_feature_importances:
+
+            # If fold ind test, init with test_data
+            if fold_ind == 'test':
+                self._init_shap_df(test_data)
+
+            # Otherwise, using Evaluate, init with all data only every n_splits
+            elif fold_ind % self.n_splits == 0:
+                self._init_shap_df(pd.concat([train_data, test_data]))
 
         # Compute feature importance
         self._get_feature_importance(train_data, test_data)
@@ -914,8 +925,11 @@ class Model():
 
         base_model = self._check_feat_importance_type()
 
-        self._get_base_feature_importance(base_model, test_data)
-        self._get_shap_feature_importance(base_model, train_data, test_data)
+        if self.calc_base_feature_importances:
+            self._get_base_feature_importance(base_model, test_data)
+        if self.calc_shap_feature_importances:
+            self._get_shap_feature_importance(base_model, train_data,
+                                              test_data)
 
     def _get_base_feature_importance(self, base_model, test_data):
 
@@ -1037,9 +1051,9 @@ class Model():
     def _add_to_feature_importances(self, feat_names, feat_importance):
 
         feat_importance_dict = {name: importance for name, importance in
-                                zip(feat_importance, feat_names)}
+                                zip(feat_names, feat_importance)}
 
-        self.feature_importances.append(feat_importance_dict)
+        self.feature_importances.update(feat_importance_dict)
 
     def _get_kernel_shap_values(self, train_data, test_data):
 
@@ -1063,6 +1077,29 @@ class Model():
                                          X_train_summary, link='logit')
 
         return explainer
+
+    def _average_feature_importances(self):
+
+        if self.calc_base_feature_importances:
+            for feat in self.feature_importances.keys():
+                self.feature_importances[feat] /=\
+                    self.n_repeats * self.n_splits
+
+        if self.calc_shap_feature_importances:
+
+            # Set to copy of 1st one to start, as base to fill
+            self.shap_df = self.shap_dfs[0].copy()
+
+            # Only need to average if more than one repeat
+            if len(self.shap_dfs) > 1:
+
+                shap_df_arrays = [np.array(df) for df in self.shap_dfs]
+                mean_shap_array = np.mean(shap_df_arrays, axis=1)
+
+                self.shap_df[list(self.shap_df)] = mean_shap_array
+
+            # Reset self.shap_dfs to clear memory
+            self.shap_dfs = []
 
 
 class Regression_Model(Model):

@@ -6,6 +6,7 @@ The main project class.
 import pandas as pd
 import numpy as np
 import shutil
+import shap
 import os
 from ABCD_ML.Data_Helpers import get_unique_combo
 from ABCD_ML.CV import CV
@@ -201,6 +202,9 @@ class ABCD_ML():
         self.test_subjects = None
         self.CV = CV()
         self.default_ML_params = {}
+
+        if self.notebook:
+            shap.initjs()
 
         self._print('ABCD_ML object initialized')
 

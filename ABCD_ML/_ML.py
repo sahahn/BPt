@@ -18,6 +18,8 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
                           feat_selector_param_ind='default',
                           class_weight='default', n_jobs='default',
                           n_iter='default', random_state='default',
+                          calc_base_feature_importances='default',
+                          calc_shap_feature_importances='default',
                           extra_params='default'):
     '''Sets the self.default_ML_params dictionary with user passed or default
     values. In general, if any argument is left as 'default' and it has
@@ -226,6 +228,20 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         Or can define a different random state for use in ML.
 
         (default = 'default')
+
+    calc_base_feature_importances : bool or 'default, optional
+        If set to True, will store the base feature importances
+        when running Evaluate or Test. Note, base feature importances
+        are only avaliable for tree-based or linear models, specifically
+        those with either coefs_ or feature_importance_ attributes.
+
+    calc_shap_feature_importances : bool or 'default, optional
+        If set to True, will calculate SHapley Additive exPlanations
+        for the model when running Evaluate or Test. Note: any case
+        where the model isnt tree or linear based, e.g. an ensemble of
+        different methods, or non-linear svm, these values are estimated
+        by a kernel function which is very compute intensive.
+        `Example <http://www.example.com>`
 
     extra_params : dict or 'default', optional
         Any extra params being passed. Typically, extra params are

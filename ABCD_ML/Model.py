@@ -115,7 +115,7 @@ class Model():
             The encoder or list of encoders, used in the case of targets
             needing to be transformed in some way.
 
-        ensemble_type : str or list of str,
+        ensemble_type : str or list of str
             Each string refers to a type of ensemble to train,
             or 'basic ensemble' for base behavior.
 
@@ -124,6 +124,19 @@ class Model():
             i.e., not "basic ensemble", then this param is
             the porportion of the train_data within each fold to
             use towards fitting the ensemble.
+
+        calc_base_feature_importances : bool
+            If set to True, will store the base feature importances
+            when running Evaluate or Test. Note, base feature importances
+            are only avaliable for tree-based or linear models, specifically
+            those with either coefs_ or feature_importance_ attributbes.
+
+        calc_shap_feature_importances : bool
+            If set to True, will calculate SHapley Additive exPlanations
+            for the model when running Evaluate or Test. Note: any case
+            where the model isnt tree or linear based, e.g. an ensemble of
+            different methods, or non-linear svm, these values are estimated
+            by a kernel function which is very compute intensive.
 
         _print : func, optional
             The print function to use, by default the python print,
@@ -190,6 +203,12 @@ class Model():
         self.user_passed_models = []
         self.upmi = 0
         self.shap_dfs = []
+        self.feature_importances = []
+
+        # Flags for feat importance things
+        self.ensemble_flag = False
+        self.linear_flag = False
+        self.tree_flag = False
 
     def _process_model_types(self):
         '''Class function to convert input model types to final
@@ -542,7 +561,7 @@ class Model():
             self._init_shap_df(pd.concat([train_data, test_data]))
 
         # Compute feature importance
-        self._feature_importance(train_data, test_data)
+        self._get_feature_importance(train_data, test_data)
 
         # Need a check to add self.shap_df to self.shap_dfs
         # Only during Evalaute, not for test
@@ -891,109 +910,159 @@ class Model():
         for col in self.shap_df.columns:
             self.shap_df[col].values[:] = 0
 
-    def _feature_importance(self, train_data, test_data):
+    def _get_feature_importance(self, train_data, test_data):
 
-        # Try grabbing a base model, if it doesnt exist,
-        # it means there is some type of ensemble being used
-        try:
-            base_model = self.model[self.model_types[0]]
-            ensemble = False
-        except AttributeError:
-            ensemble = True
+        base_model = self._check_feat_importance_type()
 
-        linear, tree = False, False
+        self._get_base_feature_importance(base_model, test_data)
+        self._get_shap_feature_importance(base_model, train_data, test_data)
 
-        if not ensemble:
+    def _get_base_feature_importance(self, base_model, test_data):
 
-            try:
-                base_model.coef_
-                linear = True
-            except AttributeError:
-                pass
+        if self.tree_flag or self.linear_flag:
 
-            try:
-                base_model.feature_importances_
-                tree = True
-            except AttributeError:
-                pass
+            X_test = self._proc_X_test(test_data)
 
-        if tree or linear:
-
-            # Grab names of scalers + feat selectors
-            col_data_scaler_names = [n[0] for n in self.col_data_scalers]
-            feat_selector_names = [n[0] for n in self.feat_selectors]
-
-            # Grab the objects themselves from the model pipeline
-            scalers = [self.model[t] for t in col_data_scaler_names]
-            feat_selectors = [self.model[f] for f in feat_selector_names]
-
-            # Grab the test data, X as df + copy
-            X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
-
-            feat_names = list(X_test)
-
-            # Apply all data scalers, in place
-            for scaler in scalers:
-                X_test[feat_names] = scaler.transform(X_test)
-
-            # Apply all feature selectors, in place
-            for feat_selector in feat_selectors:
-
-                feat_mask = feat_selector.get_support()
-                feat_names = np.array(feat_names)[feat_mask]
-
-                X_test[feat_names] = feat_selector.transform(X_test)
-                X_test = X_test[feat_names]
-
-            if linear:
-
-                # If linear, need to proc the train dataset
-                sampler_names = [n[0] for n in self.samplers]
-                samplers = [self.model[s] for s in sampler_names]
-
-                X, y = self._get_X_y(train_data)
-
-                for scaler in scalers:
-                    X = scaler.transform(X)
-                for sampler in samplers:
-                    X, y = sampler.fit_resample(X, y)
-                for feat_selector in feat_selectors:
-                    X = feat_selector.transform(X)
-
-                # (1, n_feats) for binary
-                feat_importance = base_model.coef_
-
-                explainer = shap.LinearExplainer(base_model, X)
-                shap_values = explainer.shap_values(X_test)
-
-            elif tree:
-
-                # (n_feats,) for binary
+            if self.linear_flag:
+                feat_importance = np.squeeze(base_model.coef_)
+            elif self.tree_flag:
                 feat_importance = base_model.feature_importances_
 
+            # For both
+            self._add_to_feature_importances(list(X_test), feat_importance)
+
+    def _get_shap_feature_importance(self, base_model, train_data, test_data):
+
+        if self.tree_flag or self.linear_flag:
+
+            X_test = self._proc_X_test(test_data)
+
+            if self.linear_flag:
+                X_train = self._proc_X_train(train_data)
+                explainer = shap.LinearExplainer(base_model, X)
+
+            elif self.tree_flag:
                 explainer = shap.TreeExplainer(base_model)
-                shap_values = explainer.shap_values(X_test)
+
+            # For both tree or linear
+            shap_values = explainer.shap_values(X_test)
 
         else:
-            # Optional kernel strategy
-
-            X_train, y_train = self._get_X_y(train_data)
-            X_test, y_test = self._get_X_y(test_data, X_as_df=True)
-
-            X_train_summary = shap.kmeans(X_train, 10)
-
-            explainer = shap.KernelExplainer(self.model.predict_proba,
-                                             X_train_summary,
-                                             link='logit')
-
-            shap_values = explainer.shap_values(X_test, l1_reg='aic',
-                                                n_samples='auto')
+            shap_values = self._get_kernel_shap_values(train_data, test_data)
 
         # Set to df
         shap_df = X_test.copy()
         shap_df[list(X_test)] = shap_values[1]
 
         self.shap_df.update(shap_df)
+
+    def _check_feat_importance_type(self):
+
+        base_model = None
+
+        # Try grabbing a base model, if it doesnt exist,
+        # it means there is some type of ensemble being used
+        try:
+            base_model = self.model[self.model_types[0]]
+        except:
+            self.ensemble_flag = True
+
+        if not self.ensemble_flag:
+
+            try:
+                base_model.coef_
+                self.linear_flag = True
+            except AttributeError:
+                pass
+
+            try:
+                base_model.feature_importances_
+                self.tree_flag = True
+            except AttributeError:
+                pass
+
+        return base_model
+
+    def _get_objs_from_pipeline(self, names_objs):
+        '''Assumes that the self.model is a pipeline object only,
+        no ensemble
+        '''
+
+        names = [n[0] for n in names_objs]
+        objs = [self.model[n] for n in names]
+        return objs
+
+    def _proc_X_test(self, test_data):
+
+        scalers = self._get_objs_from_pipeline(self.col_data_scalers)
+        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
+
+        # Grab the test data, X as df + copy
+        X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
+
+        feat_names = list(X_test)
+
+        # Apply all data scalers, in place
+        for scaler in scalers:
+            X_test[feat_names] = scaler.transform(X_test)
+
+        # Apply all feature selectors, in place
+        for feat_selector in feat_selectors:
+
+            feat_mask = feat_selector.get_support()
+            feat_names = np.array(feat_names)[feat_mask]
+
+            X_test[feat_names] = feat_selector.transform(X_test)
+            X_test = X_test[feat_names]
+
+        return X_test
+
+    def _proc_X_train(self, train_data):
+
+        scalers = self._get_objs_from_pipeline(self.col_data_scalers)
+        samplers = self._get_objs_from_pipeline(self.samplers)
+        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
+
+        X_train, y_train = self._get_X_y(train_data)
+
+        for scaler in scalers:
+            X_train = scaler.transform(X_train)
+        for sampler in samplers:
+            X_train, y_train = sampler.fit_resample(X_train, y_train)
+        for feat_selector in feat_selectors:
+            X_train = feat_selector.transform(X_train)
+
+        return X_train
+
+    def _add_to_feature_importances(self, feat_names, feat_importance):
+
+        feat_importance_dict = {name: importance for name, importance in
+                                zip(feat_importance, feat_names)}
+
+        self.feature_importances.append(feat_importance_dict)
+
+    def _get_kernel_shap_values(self, train_data, test_data):
+
+        X_train, y_train = self._get_X_y(train_data)
+        X_test, y_test = self._get_X_y(test_data, X_as_df=True)
+
+        # Generate summary of X_train, w/ k = 10 default
+        X_train_summary = shap.kmeans(X_train, 10)
+
+        explainer = self._get_kernel_explainer(self.model, X_train_summary)
+
+        shap_values = explainer.shap_values(X_test, l1_reg='aic',
+                                            n_samples='auto')
+
+        return shap_values
+
+    def _get_kernel_explainer(self, model, X_train_summary):
+        '''Base behavior for binary / multi-class'''
+
+        explainer = shap.KernelExplainer(model.predict_proba,
+                                         X_train_summary, link='logit')
+
+        return explainer
 
 
 class Regression_Model(Model):
@@ -1004,6 +1073,13 @@ class Regression_Model(Model):
 
         super()._set_default_params()
         self.problem_type = 'regression'
+
+    def _get_kernel_explainer(self, model, X_train_summary):
+
+        explainer = shap.KernelExplainer(model.predict, X_train_summary,
+                                         link='identity')
+
+        return explainer
 
 
 class Binary_Model(Model):

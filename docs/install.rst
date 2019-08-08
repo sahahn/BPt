@@ -9,7 +9,7 @@ Run on the command line,
 
 
 Github / Pip Installation
-================
+=========================
 
 You need git installed for this, but on the plus side you are ensured to have the latest version.
 Run on the command line, (In the location where you want ABCD_ML installed!)

@@ -197,36 +197,36 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         If 'default', and not already defined, set to 0
         (default = 'default')
 
-    class weight : {dict, 'balanced', None, 'default'}, optional
+    class_weight : {dict, 'balanced', None, 'default'}, optional
         Only used for binary and categorical problem types.
         Follows sklearn api class weight behavior. Typically, either use
         'balanced' in the case of class distribution imbalance, or None.
-        If 'default', and not already defined, set to None
 
+        If 'default', and not already defined, set to None
         (default = 'default')
 
     n_jobs : int or 'default', optional
         The number of jobs to use (if avaliable) during training ML models.
         This should be the number of procesors avaliable, if wanting to run
         as fast as possible.
-        if 'default', and not already defined, set to 1.
 
+        if 'default', and not already defined, set to 1.
         (default = 'default')
 
     n_iter : int or 'default', optional
         The number of random search parameters to try, used
         only if using random search.
-        if 'default', and not already defined, set to 10.
 
+        if 'default', and not already defined, set to 10.
         (default = 'default')
 
     random_state : int, RandomState instance, None or 'default', optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
+
         If 'default', use the saved value within self,
         (defined when initing ABCD_ML class) ^,
         Or can define a different random state for use in ML.
-
         (default = 'default')
 
     calc_base_feature_importances : bool or 'default, optional
@@ -235,13 +235,22 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         are only avaliable for tree-based or linear models, specifically
         those with either coefs_ or feature_importance_ attributes.
 
+        If 'default', and not already defined, set to True.
+        (default = 'default')
+
     calc_shap_feature_importances : bool or 'default, optional
-        If set to True, will calculate SHapley Additive exPlanations
+        If set to True, will calculate SHAP (SHapley Additive exPlanations)
         for the model when running Evaluate or Test.
         Note: For any case where the underlytin model is not tree or linear
         based, e.g. an ensemble of different methods, or non-linear svm,
         these values are estimated by a kernel explainer function which is
         very compute intensive.
+        Read more about shap on their github:
+
+        https://github.com/slundberg/shap
+
+        If 'default', and not already defined, set to False.
+        (default = 'default')
 
     extra_params : dict or 'default', optional
         Any extra params being passed. Typically, extra params are

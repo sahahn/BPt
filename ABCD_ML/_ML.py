@@ -412,6 +412,28 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self._print('No default random state passed, using class random',
                     'state value of', self.random_state)
 
+    if calc_base_feature_importances != 'default':
+        self.default_ML_params['calc_base_feature_importances'] =\
+            calc_base_feature_importances
+
+    elif 'calc_base_feature_importances' not in self.default_ML_params:
+        self.default_ML_params['calc_base_feature_importances'] = True
+
+        self._print('No default calc_base_feature_importances passed,',
+                    'set to',
+                    self.default_ML_params['calc_base_feature_importances'])
+
+    if calc_shap_feature_importances != 'default':
+        self.default_ML_params['calc_shap_feature_importances'] =\
+            calc_shap_feature_importances
+
+    elif 'calc_shap_feature_importances' not in self.default_ML_params:
+        self.default_ML_params['calc_shap_feature_importances'] = False
+
+        self._print('No default calc_shap_feature_importances passed,',
+                    'set to',
+                    self.default_ML_params['calc_shap_feature_importances'])
+
     if extra_params != 'default':
         assert isinstance(extra_params, dict), 'extra params must be dict'
         self.default_ML_params['extra_params'] = extra_params
@@ -432,7 +454,8 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
              data_scaler_param_ind='default', sampler_param_ind='default',
              feat_selector_param_ind='default', class_weight='default',
              n_jobs='default', n_iter='default', random_state='default',
-             extra_params='default'):
+             calc_base_feature_importances='default',
+             calc_shap_feature_importances='default', extra_params='default'):
 
     '''Class method to be called during the model selection phase.
     Used to evaluated different combination of models and scaling, ect...
@@ -685,6 +708,29 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
         (default = 'default')
 
+    calc_base_feature_importances : bool or 'default, optional
+        If set to True, will store the base feature importances
+        when running Evaluate or Test. Note, base feature importances
+        are only avaliable for tree-based or linear models, specifically
+        those with either coefs_ or feature_importance_ attributes.
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    calc_shap_feature_importances : bool or 'default, optional
+        If set to True, will calculate SHAP (SHapley Additive exPlanations)
+        for the model when running Evaluate or Test.
+        Note: For any case where the underlytin model is not tree or linear
+        based, e.g. an ensemble of different methods, or non-linear svm,
+        these values are estimated by a kernel explainer function which is
+        very compute intensive.
+        Read more about shap on their github:
+
+        https://github.com/slundberg/shap
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
     extra_params : dict or 'default', optional
         Any extra params being passed. Typically, extra params are
         added when the user wants to provide a specific model/classifier,
@@ -777,7 +823,8 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
          data_scaler_param_ind='default', sampler_param_ind='default',
          feat_selector_param_ind='default', class_weight='default',
          n_jobs='default', n_iter='default', random_state='default',
-         return_model=False, extra_params='default'):
+         return_model=False, calc_base_feature_importances='default',
+         calc_shap_feature_importances='default', extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
 
@@ -1027,6 +1074,29 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
         (default = 'default')
 
+    calc_base_feature_importances : bool or 'default, optional
+        If set to True, will store the base feature importances
+        when running Evaluate or Test. Note, base feature importances
+        are only avaliable for tree-based or linear models, specifically
+        those with either coefs_ or feature_importance_ attributes.
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
+    calc_shap_feature_importances : bool or 'default, optional
+        If set to True, will calculate SHAP (SHapley Additive exPlanations)
+        for the model when running Evaluate or Test.
+        Note: For any case where the underlytin model is not tree or linear
+        based, e.g. an ensemble of different methods, or non-linear svm,
+        these values are estimated by a kernel explainer function which is
+        very compute intensive.
+        Read more about shap on their github:
+
+        https://github.com/slundberg/shap
+
+        If 'default', use the saved value within self.default_ML_params.
+        (default = 'default')
+
     return_model : bool, optional
         If `return_model` is True, then model constructed and tested
         will be returned in addition to the score. If False,
@@ -1195,6 +1265,10 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
     self._print('n_jobs =', ML_params['n_jobs'])
     self._print('n_iter =', ML_params['n_iter'])
     self._print('random_state =', ML_params['random_state'])
+    self._print('calc_base_feature_importances =',
+                ML_params['calc_base_feature_importances'])
+    self._print('calc_shap_feature_importances =',
+                ML_params['calc_shap_feature_importances'])
     self._print('extra_params =', ML_params['extra_params'])
     self._print()
 

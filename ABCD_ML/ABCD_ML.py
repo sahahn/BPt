@@ -502,7 +502,9 @@ class ABCD_ML():
                              _premodel_check,
                              _make_ML_params,
                              _print_model_params,
-                             _init_model)
+                             _init_model,
+                             Get_Base_Feat_Importances,
+                             Get_Shap_Feat_Importances)
 
     from ABCD_ML.Models import Show_Model_Types, Show_Models
     from ABCD_ML.Scorers import Show_Metrics, Show_Scorers
@@ -511,4 +513,8 @@ class ABCD_ML():
     from ABCD_ML.Feature_Selectors import Show_Feat_Selectors
     from ABCD_ML.Ensembles import Show_Ensemble_Types
 
-    from ABCD_ML._Plotting import Show_Targets_Dist
+    from ABCD_ML._Plotting import (Show_Targets_Dist,
+                                   Plot_Base_Feat_Importances,
+                                   Plot_Shap_Feat_Importances,
+                                   Plot_Shap_Summary,
+                                   _plot_feature_importance)

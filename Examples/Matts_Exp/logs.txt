@@ -1,6 +1,6 @@
 exp_name = Matts_Exp
 log_dr = /home/sage/ABCD_ML/Examples
-existing_log = new
+existing_log = overwrite
 verbose = True
 exp log dr setup at: /home/sage/ABCD_ML/Examples/Matts_Exp
 log file at: /home/sage/ABCD_ML/Examples/Matts_Exp/logs.txt
@@ -16,80 +16,6 @@ random state = 1
 ABCD_ML object initialized
 Loading /mnt/sdb2/ABCDFixRelease2p0p1/Fix Release Notes 2.0.1_Public/24. ABCD_Release_2.0.1_Updates/abcd_2.0.1_mapping.csv assumed to be dataset type: explorer
 Loaded map file
-Subjects passed as str, assuming just one subject
-Total excluded subjects:  1
-Removed excluded subjects from loaded dfs
-Subjects passed as str, assuming just one subject
-Total excluded subjects:  1
-Removed excluded subjects from loaded dfs
-Total excluded subjects:  2
-Removed excluded subjects from loaded dfs
-Subjects passed as str, assuming just one subject
-Total excluded subjects:  3
-Removed excluded subjects from loaded dfs
-cleared exclusions.
-Subjects passed as str, assuming just one subject
-Total excluded subjects:  1
-Removed excluded subjects from loaded dfs
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp101_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp201.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp201_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Dropped 0 columns, per drop_keys argument
-Dropped 0 cols for all missing values
-Dropped 669 rows for missing values
-Dropped rows with missing data
-Filtered data for outliers with value:  0.001
-Winsorized data with value:  0.001
-loaded shape:  (6114, 1812)
-
-Total valid overlapping subjects = 6114
-
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp101_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp201.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp201_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Dropped 0 columns, per drop_keys argument
-Dropped 0 cols for all missing values
-Dropped 669 rows for missing values
-Dropped rows with missing data
-Filtered data for outliers with value:  0.0001
-Winsorized data with value:  0.001
-loaded shape:  (9416, 1812)
-Merged with existing!
-
-Total valid overlapping subjects = 6114
-
-cleared data.
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp101_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp201.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp201_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Dropped 0 columns, per drop_keys argument
-Dropped 0 cols for all missing values
-Dropped 669 rows for missing values
-Dropped rows with missing data
-Filtered data for outliers with value:  0.0001
-Winsorized data with value:  0.001
-loaded shape:  (9416, 1812)
-
-Total valid overlapping subjects = 9416
-
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp101_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp201.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp201_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Dropped 0 columns, per drop_keys argument
-Dropped 0 cols for all missing values
-Dropped 669 rows for missing values
-Dropped rows with missing data
-Winsorized data with value:  0.001
-loaded shape:  (10730, 1812)
-Merged with existing!
-
-Total valid overlapping subjects = 9416
-
-cleared data.
 Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
 dropped ['collection_id', 'abcd_ddtidp101_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
 Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp201.txt assumed to be dataset type: basic
@@ -100,92 +26,39 @@ Dropped 669 rows for missing values
 Dropped rows with missing data
 Filtered data for outliers with value:  0.0001
 Winsorized data with value:  0.001
-loaded shape:  (9757, 906)
+loaded shape:  (9758, 906)
 
-Total valid overlapping subjects = 9757
-
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp101_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp201.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp201_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Dropped 0 columns, per drop_keys argument
-Dropped 0 cols for all missing values
-Dropped 669 rows for missing values
-Dropped rows with missing data
-Filtered data for outliers with value:  0.0001
-Winsorized data with value:  0.001
-loaded shape:  (9416, 1812)
-Merged with existing!
-
-Total valid overlapping subjects = 9416
-
-cleared data.
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp101_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp201.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp201_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Dropped 0 columns, per drop_keys argument
-Dropped 0 cols for all missing values
-Dropped 669 rows for missing values
-Dropped rows with missing data
-Filtered data for outliers with value:  0.0001
-Winsorized data with value:  0.001
-loaded shape:  (9416, 1812)
-
-Total valid overlapping subjects = 9416
-
-cleared data.
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp101_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp201.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_ddtidp201_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Dropped 906 columns, per drop_keys argument
-Dropped 0 cols for all missing values
-Dropped 669 rows for missing values
-Dropped rows with missing data
-Filtered data for outliers with value:  0.0001
-Winsorized data with value:  0.001
-loaded shape:  (9757, 906)
-
-Total valid overlapping subjects = 9757
+Total valid overlapping subjects = 9758
 
 Loading targets!
 Loading /mnt/sdb2/ABCD2p0NDA/abcd_ksad01.txt assumed to be dataset type: basic
-Final shape:  (11709, 1)
+Final shape:  (11710, 1)
 
-Total valid overlapping subjects = 9611
+Total valid overlapping subjects = 9612
 
 Loading covariates!
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Other Non-Imaging/ABCD ACS Post Stratification Weights.csv assumed to be dataset type: explorer
 load: race_ethnicity
 Encoded to 5 categories
 
-Total valid overlapping subjects = 9597
+Total valid overlapping subjects = 9598
 
 Reading strat/stratification values!
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Other Non-Imaging/ABCD ACS Post Stratification Weights.csv assumed to be dataset type: explorer
 
-Total valid overlapping subjects = 9595
+Total valid overlapping subjects = 9596
 
 Removing non overlapping subjects
-CV defined with group preserving behavior, over 8305 unique values.
 Reading strat/stratification values!
 Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
 Merged with existing!
 
-Total valid overlapping subjects = 9595
+Total valid overlapping subjects = 9596
 
 Removing non overlapping subjects
 CV defined with stratifying behavior, over 2 unique values.
-CV defined with stratifying behavior, over 4 unique values.
-CV defined with stratifying behavior, over 2 unique values.
-Final data for modeling loaded shape: (9595, 912)
-Performed train/test split, train size: 7676 test size:  1919
-Setting default ML params.
-Note, if the following values are not desired, call self.Set_Default_ML_Params()
-Or just pass values everytime to Evaluate or Test, and these default values will be ignored
-No default metric passed, set to, r2 based on default problem type.
-No default data scaler passed, set to standard
+Final data (w/ target) for modeling loaded shape: (9596, 912)
+Performed train/test split, train size: 7676 test size:  1920
 No default sampler passed, set to None
 No default feat selector passed, set to None
 No default num CV splits passed, set to 3
@@ -195,16 +68,46 @@ No default search type passed, set to None
 No default data scaler param ind passed, set to 0
 No default sampler param ind passed, set to 0
 No default feat selector param ind passed, set to 0
-No default number of jobs passed, set to 1
-No default number of random search iters passed, set to 10
+No default class weight setting passed, set to None
 No default random state passed, using class random state value of 1
-No default extra params passed, set to empty dict
+No default calc_base_feature_importances passed, set to True
+No default calc_shap_feature_importances passed, set to False
 Default params set.
 
 Running Evaluate with:
-model_type = elastic
-problem_type = regression
-metric = r2
+model_type = light gbm classifier
+problem_type = binary
+metric = ['macro roc auc', 'f1', 'precision', 'recall']
+data_scaler = standard
+sampler = None
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+int_cv = 3
+ensemble_type = basic ensemble
+ensemble_split = 0.2
+search_type = random
+model_type_param_ind = 1
+data_scaler_param_ind = 0
+sampler_param_ind = 0
+feat_selector_param_ind = 0
+class_weight = None
+n_jobs = 8
+n_iter = 10
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {'base univar fs classifier': {'percentile': 20}}
+
+Running Evaluate on fold 0
+Default params set.
+
+Default params set.
+
+Running Evaluate with:
+model_type = light gbm classifier
+problem_type = binary
+metric = ['macro roc auc', 'f1', 'precision', 'recall']
 data_scaler = standard
 sampler = None
 feat_selector = None
@@ -218,145 +121,70 @@ model_type_param_ind = 0
 data_scaler_param_ind = 0
 sampler_param_ind = 0
 feat_selector_param_ind = 0
-n_jobs = 1
-n_iter = 10
-random_state = 1
-extra_params = {}
-
-
-Metric:  r2
-Mean score:  -2.7503736709603524e-06
-Macro std in score:  0.0
-Micro std in score:  1.925458904381924e-06
-
-Running Evaluate with:
-model_type = elastic
-problem_type = regression
-metric = r2
-data_scaler = standard
-sampler = None
-feat_selector = None
-n_splits = 3
-n_repeats = 2
-int_cv = 3
-ensemble_type = basic ensemble
-ensemble_split = 0.2
-search_type = None
-model_type_param_ind = 1
-data_scaler_param_ind = 0
-sampler_param_ind = 0
-feat_selector_param_ind = 0
-n_jobs = 1
-n_iter = 10
-random_state = 1
-extra_params = {}
-
-
-Metric:  r2
-Mean score:  -2.7503736709603524e-06
-Macro std in score:  0.0
-Micro std in score:  1.925458904381924e-06
-
-Running Evaluate with:
-model_type = elastic
-problem_type = regression
-metric = r2
-data_scaler = standard
-sampler = None
-feat_selector = None
-n_splits = 3
-n_repeats = 2
-int_cv = 3
-ensemble_type = basic ensemble
-ensemble_split = 0.2
-search_type = None
-model_type_param_ind = 1
-data_scaler_param_ind = 0
-sampler_param_ind = 0
-feat_selector_param_ind = 0
+class_weight = balanced
 n_jobs = 8
-n_iter = 500
+n_iter = 20
 random_state = 1
-extra_params = {}
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {'base univar fs classifier': {'percentile': 20}}
 
+Running Evaluate on fold 0
+Running Evaluate on fold 1
+Running Evaluate on fold 2
+Running Evaluate on fold 3
+Running Evaluate on fold 4
+Running Evaluate on fold 5
 
-Metric:  r2
-Mean score:  -2.7503736709603524e-06
+Metric:  macro roc auc
+Mean score:  0.5256378184021857
+Macro std in score:  0.011498331134700224
+Micro std in score:  0.027325495733424576
+
+Metric:  f1
+Mean score:  0.0
 Macro std in score:  0.0
-Micro std in score:  1.925458904381924e-06
+Micro std in score:  0.0
 
-Running Evaluate with:
-model_type = elastic
+Metric:  precision
+Mean score:  0.0
+Macro std in score:  0.0
+Micro std in score:  0.0
+
+Metric:  recall
+Mean score:  0.0
+Macro std in score:  0.0
+Micro std in score:  0.0
+
+Running Test with:
+model_type = light gbm classifier
 problem_type = binary
-metric = r2
+metric = ['macro roc auc', 'f1', 'precision', 'recall']
 data_scaler = standard
 sampler = None
 feat_selector = None
-n_splits = 3
-n_repeats = 2
 int_cv = 3
 ensemble_type = basic ensemble
 ensemble_split = 0.2
 search_type = None
-model_type_param_ind = 1
+model_type_param_ind = 0
 data_scaler_param_ind = 0
 sampler_param_ind = 0
 feat_selector_param_ind = 0
-class_weight = None
+class_weight = balanced
 n_jobs = 8
-n_iter = 500
+n_iter = 20
 random_state = 1
-extra_params = {}
-
-Running Evaluate with:
-model_type = elastic
-problem_type = binary
-metric = roc auc
-data_scaler = standard
-sampler = None
-feat_selector = None
-n_splits = 3
-n_repeats = 2
-int_cv = 3
-ensemble_type = basic ensemble
-ensemble_split = 0.2
-search_type = None
-model_type_param_ind = 1
-data_scaler_param_ind = 0
-sampler_param_ind = 0
-feat_selector_param_ind = 0
-class_weight = None
-n_jobs = 8
-n_iter = 500
-random_state = 1
-extra_params = {}
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {'base univar fs classifier': {'percentile': 20}}
 
 
 Metric:  macro roc auc
-Mean score:  0.5469187121539771
-Macro std in score:  0.007424240898369405
-Micro std in score:  0.016681533841306297
-
-Running Evaluate with:
-model_type = elastic
-problem_type = binary
-metric = roc auc
-data_scaler = standard
-sampler = None
-feat_selector = None
-n_splits = 3
-n_repeats = 2
-int_cv = 3
-ensemble_type = basic ensemble
-ensemble_split = 0.2
-search_type = None
-model_type_param_ind = 1
-data_scaler_param_ind = 0
-sampler_param_ind = 0
-feat_selector_param_ind = 0
-class_weight = None
-n_jobs = 8
-n_iter = 50
-random_state = 1
-extra_params = {}
-
+Score:  0.5350298323498293
+Metric:  f1
+Score:  0.0
+Metric:  precision
+Score:  0.0
+Metric:  recall
+Score:  0.0

@@ -26,28 +26,6 @@ Dropped 0 columns, per drop_keys argument
 Dropped 10 cols for all missing values
 Dropped 1084 rows for missing values
 Dropped rows with missing data
-Filtered data for outliers with value:  0.005
-Winsorized data with value:  0.01
-loaded shape:  (948, 1186)
-
-The following columns have a questionable number of unique values: 
-smri_area_cortdesikan_frontalpolelh unique vals: 140
-smri_area_cortdesikan_frontalpolerh unique vals: 182
-smri_vol_subcortaseg_wmhypointensitieslh unique vals: 1
-smri_vol_subcortaseg_wmhypointensitiesrh unique vals: 1
-
-
-Total valid overlapping subjects = 948
-
-cleared data.
-Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/MRI/ABCD sMRI Part 1.csv assumed to be dataset type: explorer
-dropped ['abcd_smrip101_id', 'dataset_id', 'smri_visitid'] columns by default  due to dataset type
-Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/MRI/ABCD sMRI Part 2.csv assumed to be dataset type: explorer
-dropped ['abcd_smrip201_id', 'dataset_id'] columns by default  due to dataset type
-Dropped 0 columns, per drop_keys argument
-Dropped 10 cols for all missing values
-Dropped 1084 rows for missing values
-Dropped rows with missing data
 Filtered data for outliers with value:  0.0005
 Winsorized data with value:  0.001
 loaded shape:  (6763, 1186)
@@ -222,6 +200,8 @@ calc_base_feature_importances = True
 calc_shap_feature_importances = True
 extra_params = {}
 
+Running Evaluate on fold 0
+Running Evaluate on fold 1
 
 Metric:  macro roc auc
 Mean score:  0.8071512336094206

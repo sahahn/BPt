@@ -76,7 +76,7 @@ Final shape:  (11569, 1)
 
 Total valid overlapping subjects = 10076
 
-Final data for modeling loaded shape: (10076, 94)
+Final data (w/ target) for modeling loaded shape: (10076, 94)
 Performed train/test split, train size: 7557 test size:  2519
 No default sampler passed, set to None
 No default feat selector passed, set to None
@@ -84,173 +84,10 @@ No default search type passed, set to None
 No default data scaler param ind passed, set to 0
 No default sampler param ind passed, set to 0
 No default feat selector param ind passed, set to 0
+No default calc_base_feature_importances passed, set to True
+No default calc_shap_feature_importances passed, set to False
 No default extra params passed, set to empty dict
 Default params set.
-
-Running Evaluate with:
-model_type = svm
-problem_type = regression
-metric = ['r2', 'mse']
-data_scaler = standard
-sampler = None
-feat_selector = rfe
-n_splits = 2
-n_repeats = 1
-int_cv = 2
-ensemble_type = basic ensemble
-ensemble_split = 0.2
-search_type = random
-model_type_param_ind = 1
-data_scaler_param_ind = 0
-sampler_param_ind = 0
-feat_selector_param_ind = 0
-n_jobs = 8
-n_iter = 100
-random_state = 1
-extra_params = {}
-
-
-Metric:  r2
-Mean score:  0.04332845360251042
-Macro std in score:  0.0
-Micro std in score:  0.0025610850761534354
-
-Metric:  mean squared error
-Mean score:  -239.72817756832782
-Macro std in score:  0.0
-Micro std in score:  2.419235869845636
-
-Running Evaluate with:
-model_type = svm
-problem_type = regression
-metric = ['r2', 'mse']
-data_scaler = standard
-sampler = None
-feat_selector = None
-n_splits = 2
-n_repeats = 1
-int_cv = 2
-ensemble_type = basic ensemble
-ensemble_split = 0.2
-search_type = random
-model_type_param_ind = 1
-data_scaler_param_ind = 0
-sampler_param_ind = 0
-feat_selector_param_ind = 0
-n_jobs = 8
-n_iter = 100
-random_state = 1
-extra_params = {}
-
-
-Metric:  r2
-Mean score:  0.04284303476068668
-Macro std in score:  0.0
-Micro std in score:  0.004188329531538637
-
-Metric:  mean squared error
-Mean score:  -239.85283754714186
-Macro std in score:  0.0
-Micro std in score:  2.8278938121483606
-
-Running Evaluate with:
-model_type = svm
-problem_type = regression
-metric = ['r2', 'mse']
-data_scaler = standard
-sampler = None
-feat_selector = None
-n_splits = 2
-n_repeats = 1
-int_cv = 2
-ensemble_type = basic ensemble
-ensemble_split = 0.2
-search_type = None
-model_type_param_ind = 0
-data_scaler_param_ind = 0
-sampler_param_ind = 0
-feat_selector_param_ind = 0
-n_jobs = 8
-n_iter = 20
-random_state = 1
-extra_params = {}
-
-
-Metric:  r2
-Mean score:  0.04220160605891293
-Macro std in score:  0.0
-Micro std in score:  0.0020934559039401113
-
-Metric:  mean squared error
-Mean score:  -240.00967496072985
-Macro std in score:  0.0
-Micro std in score:  2.3041506889176304
-
-Running Evaluate with:
-model_type = elastic
-problem_type = regression
-metric = ['r2', 'mse']
-data_scaler = standard
-sampler = None
-feat_selector = None
-n_splits = 2
-n_repeats = 1
-int_cv = 2
-ensemble_type = basic ensemble
-ensemble_split = 0.2
-search_type = random
-model_type_param_ind = 1
-data_scaler_param_ind = 0
-sampler_param_ind = 0
-feat_selector_param_ind = 0
-n_jobs = 8
-n_iter = 20
-random_state = 1
-extra_params = {}
-
-
-Metric:  r2
-Mean score:  0.023998135735595838
-Macro std in score:  0.0
-Micro std in score:  0.0005114905354582922
-
-Metric:  mean squared error
-Mean score:  -244.5662732297801
-Macro std in score:  0.0
-Micro std in score:  1.6852231037157708
-
-Running Evaluate with:
-model_type = elastic
-problem_type = regression
-metric = ['r2', 'mse']
-data_scaler = standard
-sampler = None
-feat_selector = None
-n_splits = 2
-n_repeats = 1
-int_cv = 2
-ensemble_type = basic ensemble
-ensemble_split = 0.2
-search_type = random
-model_type_param_ind = 1
-data_scaler_param_ind = 0
-sampler_param_ind = 0
-feat_selector_param_ind = 0
-n_jobs = 8
-n_iter = 200
-random_state = 1
-extra_params = {}
-
-
-Metric:  r2
-Mean score:  0.025630175385553844
-Macro std in score:  0.0
-Micro std in score:  0.0003945303400057498
-
-Metric:  mean squared error
-Mean score:  -244.15899897262273
-Macro std in score:  0.0
-Micro std in score:  1.9092221442229658
 
 Running Evaluate with:
 model_type = light gbm
@@ -258,7 +95,7 @@ problem_type = regression
 metric = ['r2', 'mse']
 data_scaler = standard
 sampler = None
-feat_selector = None
+feat_selector = univariate selection
 n_splits = 2
 n_repeats = 1
 int_cv = 2
@@ -268,20 +105,26 @@ search_type = random
 model_type_param_ind = 1
 data_scaler_param_ind = 0
 sampler_param_ind = 0
-feat_selector_param_ind = 0
+feat_selector_param_ind = 1
 n_jobs = 8
-n_iter = 100
+n_iter = 20
 random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = True
 extra_params = {}
 
+Running Evaluate on fold 0
+Computing Shap Feature Importance
+Running Evaluate on fold 1
+Computing Shap Feature Importance
 
 Metric:  r2
-Mean score:  0.03006958269797466
+Mean score:  0.029267412772599644
 Macro std in score:  0.0
-Micro std in score:  0.01024361584521949
+Micro std in score:  0.007159821480183626
 
 Metric:  mean squared error
-Mean score:  -243.02680373981852
+Mean score:  -243.23354166648863
 Macro std in score:  0.0
-Micro std in score:  0.7647402333762443
+Micro std in score:  0.00948951219653793
 

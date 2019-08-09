@@ -127,6 +127,13 @@ Show_Ensemble_Types
 ===================
 .. automethod:: ABCD_ML.Show_Ensemble_Types
 
+Get_Base_Feat_Importances
+=========================
+.. automethod:: ABCD_ML.Get_Base_Feat_Importances
+
+Get_Shap_Feat_Importances
+=========================
+.. automethod:: ABCD_ML.Get_Shap_Feat_Importances
 
 
 *************

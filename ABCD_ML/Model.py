@@ -208,7 +208,6 @@ class Model():
         self.user_passed_models = []
         self.upmi = 0
         self.shap_dfs = []
-        self.feature_importances = Counter()
 
         # Flags for feat importance things
         self.ensemble_flag = False
@@ -521,6 +520,8 @@ class Model():
         # For each split with the repeated K-fold
         for train_subjects, test_subjects in subject_splits:
 
+            self._print('Running Evaluate on fold', fold_ind)
+
             scores = self.Test_Model(data, train_subjects, test_subjects,
                                      fold_ind)
             fold_ind += 1
@@ -561,6 +562,10 @@ class Model():
         # Train the model(s)
         self._train_models(train_data)
 
+        if self.calc_base_feature_importances:
+            if fold_ind == 0 or fold_ind == 'test':
+                self._init_feature_importances(train_data)
+
         if self.calc_shap_feature_importances:
 
             # If fold ind test, init with test_data
@@ -576,7 +581,7 @@ class Model():
 
         # Need a check to add self.shap_df to self.shap_dfs
         # Only during Evalaute, not for test
-        if isinstance(fold_ind, int):
+        if isinstance(fold_ind, int) and self.calc_shap_feature_importances:
             if fold_ind % self.n_splits == self.n_splits-1:
                 self.shap_dfs.append(self.shap_df)
 
@@ -825,10 +830,6 @@ class Model():
         # This dict should reset here to empty every time
         self.fit_params = {}
 
-        if 'categorical_feature' in possible_fit_params:
-            self.fit_params[model_type + '__' + 'categorical_feature'] =\
-                self.cat_inds
-
         # Init model, w/ any user passed params + class params
         model = model(**extra_model_params)
 
@@ -914,6 +915,13 @@ class Model():
 
         return np.array(scores)
 
+    def _init_feature_importances(self, data):
+
+        X, y = self._get_X_y(data, X_as_df=True)
+        feat_names = list(X)
+
+        self.feature_importances = pd.DataFrame(columns=feat_names)
+
     def _init_shap_df(self, data):
 
         self.shap_df, y = self._get_X_y(data, X_as_df=True, copy=True)
@@ -958,15 +966,14 @@ class Model():
             elif self.tree_flag:
                 explainer = shap.TreeExplainer(base_model)
 
-            # For both tree or linear
-            shap_values = explainer.shap_values(X_test)
+            shap_values = self._get_shap_values(explainer, X_test)
 
         else:
             shap_values = self._get_kernel_shap_values(train_data, test_data)
 
         # Set to df
         shap_df = X_test.copy()
-        shap_df[list(X_test)] = shap_values[1]
+        shap_df[list(X_test)] = shap_values
 
         self.shap_df.update(shap_df)
 
@@ -980,6 +987,14 @@ class Model():
             base_model = self.model[self.model_types[0]]
         except:
             self.ensemble_flag = True
+
+        if self.ensemble_flag:
+
+            try:
+                base_model = self.model.best_estimator_[self.model_types[0]]
+                self.ensemble_flag = False
+            except:
+                self.ensemble_flag = True
 
         if not self.ensemble_flag:
 
@@ -999,11 +1014,16 @@ class Model():
 
     def _get_objs_from_pipeline(self, names_objs):
         '''Assumes that the self.model is a pipeline object only,
-        no ensemble
+        no ensemble, or within a search object
         '''
 
         names = [n[0] for n in names_objs]
-        objs = [self.model[n] for n in names]
+
+        try:
+            objs = [self.model[n] for n in names]
+        except TypeError:
+            objs = [self.model.best_estimator_[n] for n in names]
+
         return objs
 
     def _proc_X_test(self, test_data):
@@ -1053,7 +1073,18 @@ class Model():
         feat_importance_dict = {name: importance for name, importance in
                                 zip(feat_names, feat_importance)}
 
-        self.feature_importances.update(feat_importance_dict)
+        self.feature_importances =\
+            self.feature_importances.append(feat_importance_dict,
+                                            ignore_index=True)
+        self.feature_importances = self.feature_importances.fillna(0)
+
+    def _get_shap_values(self, explainer, X_test):
+
+        shap_values = explainer.shap_values(X_test)
+        return self._proc_shap_values(shap_values)
+
+    def _proc_shap_values(self, shap_values):
+        return shap_values
 
     def _get_kernel_shap_values(self, train_data, test_data):
 
@@ -1065,10 +1096,10 @@ class Model():
 
         explainer = self._get_kernel_explainer(self.model, X_train_summary)
 
-        shap_values = explainer.shap_values(X_test, l1_reg='aic',
+        shap_values = explainer.shap_values(np.array(X_test), l1_reg='aic',
                                             n_samples='auto')
 
-        return shap_values
+        return self._proc_shap_values(shap_values)
 
     def _get_kernel_explainer(self, model, X_train_summary):
         '''Base behavior for binary / multi-class'''
@@ -1079,11 +1110,6 @@ class Model():
         return explainer
 
     def _average_feature_importances(self):
-
-        if self.calc_base_feature_importances:
-            for feat in self.feature_importances.keys():
-                self.feature_importances[feat] /=\
-                    self.n_repeats * self.n_splits
 
         if self.calc_shap_feature_importances:
 
@@ -1127,6 +1153,9 @@ class Binary_Model(Model):
 
         super()._set_default_params()
         self.problem_type = 'binary'
+
+    def _proc_shap_values(self, shap_values):
+        return shap_values[1]
 
 
 class Categorical_Model(Model):

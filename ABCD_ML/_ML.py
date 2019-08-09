@@ -4,6 +4,7 @@ _ML.py
 Main class extension file for the Machine Learning functionality
 """
 import numpy as np
+import pandas as pd
 from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
@@ -830,7 +831,6 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
     Parameters
     ----------
-
     model_type : str or list of str
         Each string refers to a type of model to train.
         If a list of strings is passed then an ensemble model
@@ -1288,3 +1288,85 @@ def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
                        self.data_inds, self.cat_inds, self.targets_key,
                        self.targets_encoder, ensemble_type, ensemble_split,
                        self._print)
+
+
+def Get_Base_Feat_Importances(self, top_n=None):
+    '''Returns a pandas series with
+    the base feature importances as calculated from the
+    last run :func:`Evaluate` or :func:`test`.
+
+    .. WARNING::
+        `calc_base_feature_importances` must have been set to True,
+        during the last call to :func:`Evaluate` or :func:`test`,
+        AND the `model_type` must have been a linear or tree-based model
+        (with no extra ensembling).
+
+    Parameters
+    ----------
+    top_n : int or None, optional
+        If not None, then will only return the top_n
+        number of features, by base feature importance.
+
+    Returns
+    ----------
+    pandas Series
+        A sorted series containing the base feature importances,
+        as averaged over folds for Evaluate, and as is for Test.
+        Unless top_n is passed, then just a series with the top_n
+        features is returnes
+    '''
+
+    assert len(self.Model.feature_importances) > 0,\
+        "Either calc_base_feat_importances not set to True, or bad model_type!"
+
+    importances = np.mean(self.Model.feature_importances)
+    importances.sort_values(ascending=False, inplace=True)
+
+    if top_n:
+        return importances[:top_n]
+
+    return importances
+
+
+def Get_Shap_Feat_Importances(self, top_n=None):
+    '''Returns a pandas series with
+    the shap feature importances, specifically the
+    absolute mean shap value per feature, as calculated from the
+    last run :func:`Evaluate` or :func:`test`
+
+    .. WARNING::
+        `calc_shap_feature_importances` must have been set to True,
+        during the last call to :func:`Evaluate` or :func:`test`
+
+    Parameters
+    ----------
+    top_n : int or None, optional
+        If not None, then will only return the top_n
+        number of features, by abs mean shap feature importance.
+
+    Returns
+    ----------
+    pandas Series
+        A sorted series containing the abs mean shap feature importances,
+        as averaged over repeated folds for Evaluate, and as is for Test.
+        Unless top_n is passed, then just a series with just the top_n
+        features is returned.
+    '''
+    assert len(self.Model.shap_df) > 0, \
+        "calc_shap_feature_importances must be set to True!"
+
+    shap_importances = np.mean(np.abs(self.Model.shap_df))
+    shap_importances.sort_values(ascending=False, inplace=True)
+
+    if top_n:
+        return shap_importances[:top_n]
+
+    return shap_importances
+
+
+
+
+
+
+
+

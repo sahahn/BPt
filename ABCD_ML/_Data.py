@@ -239,8 +239,9 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
 
 
 def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
-                code_categorical_as='dummy', filter_float_outlier_percent=None,
-                standardize=True, normalize=False):
+                code_categorical_as='dummy', categorical_drop_percent=None,
+                filter_float_outlier_percent=None, standardize=True,
+                normalize=False):
     '''Load a covariate or covariates from a 2.0_ABCD_Data_Explorer
     release formatted csv.
 
@@ -293,6 +294,15 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
         (default = 'dummy')
 
+    categorical_drop_percent: float or None, optional
+        Optional percentage threshold for dropping categories when
+        loading categorical data. If a float is given, then a category
+        will be dropped if it makes up less than that % of the data points.
+        E.g. if .01 is passed, then any datapoints with a category with less
+        then 1% of total valid datapoints is dropped.
+
+        (default = None)
+
     filter_float_outlier_percent, float, int, tuple or None, optional
         For float datatypes only.
         A percent of values to exclude from either end of the
@@ -341,18 +351,18 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         elif d_type == "categorical" or d_type == 'c':
 
             if code_categorical_as == 'ordinal':
-                covars, encoder = process_ordinal_input(covars, key)
+                covars, encoder =\
+                    process_ordinal_input(covars, key,
+                                          categorical_drop_percent,
+                                          self._print)
 
             # If using one hot or dummy coding, encoder will
             # contain 2 transformers
             else:
-
-                drop = 'first'
-                if code_categorical_as == 'one hot':
-                    drop = None
-
                 covars, new_keys, encoder =\
-                    process_categorical_input(covars, key, drop, self._print)
+                    process_categorical_input(covars, key, code_categorical_as,
+                                              categorical_drop_percent,
+                                              self._print)
 
             self.covars_encoders[key] = encoder
 
@@ -385,7 +395,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
 
 def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
-                 filter_outlier_percent=None):
+                 filter_outlier_percent=None, categorical_drop_percent=None):
     '''Loads in a set of subject ids and associated targets from a
     2.0_ABCD_Data_Explorer release formatted csv.
     See Notes for more info.
@@ -435,6 +445,15 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
 
         (default = None).
 
+    categorical_drop_percent: float or None, optional
+        Optional percentage threshold for dropping categories when
+        loading categorical data. If a float is given, then a category
+        will be dropped if it makes up less than that % of the data points.
+        E.g. if .01 is passed, then any datapoints with a category with less
+        then 1% of total valid datapoints is dropped.
+
+        (default = None)
+
     Notes
     ----------
     Targets can be either 'binary', 'categorical', 'ordinal' or 'float',
@@ -476,7 +495,8 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
         # targets encoder is a tuple with encoder to ordinal
         # then encoder from ordinal to sparse.
         targets, self.targets_key, self.targets_encoder = \
-            process_categorical_input(targets, self.targets_key, drop=None,
+            process_categorical_input(targets, self.targets_key,
+                                      drop_percent=categorical_drop_percent,
                                       _print=self._print)
 
     elif (data_type == 'float' or data_type == 'ordinal' or
@@ -608,6 +628,38 @@ def Load_Exclusions(self, loc=None, exclusions=None):
     self._filter_excluded()
 
 
+def Load_Inclusions(self, loc=None, inclusions=None):
+    '''Loads in a set of subjects such that only these subjects
+    can be loaded in, and any subject not as an inclusion is dropped,
+    from either a file or as directly passed in.
+
+    Parameters
+    ----------
+    loc : str, Path or None, optional
+        Location of a file to load in inclusion subjects from.
+        The file should be formatted as one subject per line.
+        (default = None)
+
+    inclusions : list, set, array-like or None, optional
+        An explicit list of subjects to add to inclusions.
+        (default = None)
+
+    Notes
+    ----------
+    For best/most reliable performance across all data loading cases,
+    inclusions should be loaded before data, covars and targets.
+
+    If default subject id behavior is set to False,
+    reading subjects from a inclusion loc might not
+    function as expected.
+    '''
+
+    self.inclusions.update(self._load_set_of_subjects(loc=loc,
+                                                      subjects=inclusions))
+    self._print('Total inclusion subjects: ', len(self.inclusions))
+    self._filter_included()
+
+
 def Clear_Name_Map(self):
     '''Reset name mapping'''
     self.name_map = {}
@@ -645,6 +697,12 @@ def Clear_Exclusions(self):
     '''Resets exclusions to be an empty set'''
     self.exclusions = set()
     self._print('cleared exclusions.')
+
+
+def Clear_Inclusions(self):
+    '''Resets inclusions to be an empty set'''
+    self.inclusions = set()
+    self._print('cleared inclusions.')
 
 
 def Drop_Data_Duplicates(self, corr_thresh):
@@ -964,6 +1022,7 @@ def _proc_df(self, data):
 
     # Drop excluded subjects, if any
     data = self._drop_excluded(data)
+    data = self._drop_included(data)
 
     return data
 
@@ -1119,6 +1178,29 @@ def _drop_excluded(self, data):
     return data
 
 
+def _drop_included(self, data):
+    '''Wrapper to drop subjects from a df,
+    if any do not overlap with inclusions.
+
+    Parameters
+    ----------
+    data : pandas DataFrame
+        ABCD_ML formatted.
+
+    Returns
+    ----------
+    pandas DataFrame
+        Input df, with dropped non included subjects
+    '''
+
+    if len(self.inclusions) > 0:
+
+        to_drop = set(data.index) - self.inclusions
+        data = data.drop(to_drop)
+
+    return data
+
+
 def _filter_excluded(self):
     '''This method is called after loading any new
     exclusions, it retroactively removes subjects from any
@@ -1136,17 +1218,25 @@ def _filter_excluded(self):
     self._print('Removed excluded subjects from loaded dfs')
 
 
-def _process_new(self, remove=False):
-    '''Internal helper function to handle keeping an overlapping subject list,
-    with additional useful print statements.
+def _filter_included(self):
+    '''This method is called after loading any new
+    inclusions, it retroactively removes subjects from any
+    loaded sources.'''
 
-    Parameters
-    ----------
-    remove : bool, optional
-        If True, remove non overlapping subjects - exclusions
-        from all data in place.
+    if len(self.data) > 0:
+        self.data = self._drop_included(self.data)
+    if len(self.covars) > 0:
+        self.covars = self._drop_included(self.covars)
+    if len(self.targets) > 0:
+        self.targets = self._drop_included(self.targets)
+    if len(self.strat) > 0:
+        self.strat = self._drop_included(self.strat)
 
-    '''
+    if len(self.inclusions) > 0:
+        self._print('Removed subjects from loaded dfs based on inclusions')
+
+
+def _get_overlapping_subjects(self):
 
     valid_subjects = []
 
@@ -1162,6 +1252,26 @@ def _process_new(self, remove=False):
     if len(valid_subjects) > 0:
         overlap = set.intersection(*valid_subjects)
 
+        return overlap
+
+    return set()
+
+
+def _process_new(self, remove=False):
+    '''Internal helper function to handle keeping an overlapping subject list,
+    with additional useful print statements.
+
+    Parameters
+    ----------
+    remove : bool, optional
+        If True, remove non overlapping subjects - exclusions
+        from all data in place.
+
+    '''
+
+    overlap = self._get_overlapping_subjects()
+
+    if len(overlap) > 0:
         self._print()
         self._print('Total valid overlapping subjects =', len(overlap))
         self._print()
@@ -1241,3 +1351,30 @@ def _set_data_and_cat_inds(self):
     # Grab the col inds
     self.data_inds = [self.all_data.columns.get_loc(k) for k in self.data_keys]
     self.cat_inds = [self.all_data.columns.get_loc(k) for k in self.cat_keys]
+
+
+def _get_base_covar_names(self):
+
+    encoded = list(self.covars_encoders)
+    all_cols = list(self.covars)
+
+    base_covars = set()
+
+    for col in all_cols:
+        in_one_flag = False
+
+        for e in encoded:
+
+            if e == col:
+                base_covars.add(col)
+            elif e in col:
+                in_one_flag = True
+
+                col = col.replace(e + '_', '')
+                if col.isnumeric():
+                    base_covars.add(e)
+
+        if not in_one_flag:
+            base_covars.add(col)
+
+    return list(base_covars)

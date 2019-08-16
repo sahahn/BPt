@@ -68,7 +68,7 @@ def process_binary_input(data, key, _print=print):
     return data, encoder
 
 
-def process_ordinal_input(data, key):
+def process_ordinal_input(data, key, drop_percent=None, _print=print):
     '''Helper function to perform processing on ordinal input
 
     Parameters
@@ -89,6 +89,18 @@ def process_ordinal_input(data, key):
         transformed ordinal label
     '''
 
+    if drop_percent:
+
+        unique_vals, counts = np.unique(data[key], return_counts=True)
+
+        drop_inds = np.where(counts / len(data) < drop_percent)
+        drop_vals = unique_vals[drop_inds]
+
+        data.drop(data.index[data[key].isin(drop_vals)], inplace=True)
+
+        _print('Dropping', drop_vals, 'according to passed drop percent of',
+               drop_percent)
+
     label_encoder = LabelEncoder()
     data[key] = label_encoder.fit_transform(data[key])
     data[key] = data[key].astype('category')
@@ -96,7 +108,8 @@ def process_ordinal_input(data, key):
     return data, label_encoder
 
 
-def process_categorical_input(data, key, drop=None, _print=print):
+def process_categorical_input(data, key, drop='one hot', drop_percent=None,
+                              _print=print):
     '''Helper function to perform processing on categorical input
 
     Parameters
@@ -107,10 +120,10 @@ def process_categorical_input(data, key, drop=None, _print=print):
     key : str
         Column key of the column to process within `data` input.
 
-    drop : 'first' or None, optional
-        If 'first', then dummy code categorical variable,
-        Otherwise if None (default), perform one-hot encoding
-        (default = None)
+    drop : 'dummy' or 'one hot', optional
+        If 'dummy', then dummy code categorical variable,
+        Otherwise if None or one hot (default), perform one-hot encoding
+        (default = 'one hot')
 
     _print : print func, optional
         Either python print statement or overriden print
@@ -136,19 +149,18 @@ def process_categorical_input(data, key, drop=None, _print=print):
     # First convert to label encoder style,
     # want to be able to do reverse transform w/ 1-hot encoder
     # between label encoded results.
-    data, label_encoder = process_ordinal_input(data, key)
+    data, label_encoder = process_ordinal_input(data, key, drop_percent,
+                                                _print)
 
     # Now convert to one hot or dummy encoded
     vals = np.array(data[key]).reshape(-1, 1)
 
-    # If drop is set to 'first', then performs dummy coding
-    encoder = OneHotEncoder(categories='auto', sparse=False, drop=drop)
+    encoder = OneHotEncoder(categories='auto', sparse=False)
 
     vals = encoder.fit_transform(vals)
     categories = encoder.categories_[0]
 
-    if drop == 'first':
-        categories = categories[1:]
+    _print('Found', len(categories), 'categories')
 
     new_keys = []
 
@@ -162,7 +174,10 @@ def process_categorical_input(data, key, drop=None, _print=print):
     # Remove the original key column from the dataframe
     data = data.drop(key, axis=1)
 
-    _print('Encoded to', len(categories), 'categories')
+    if drop == 'dummy':
+        max_col = np.sum(data[new_keys]).idxmax()
+        data = data.drop(max_col, axis=1)
+        _print('dummy coding by dropping col', max_col)
 
     return data, new_keys, (label_encoder, encoder)
 
@@ -301,3 +316,15 @@ def drop_col_duplicates(data, corr_thresh):
                     dropped.append(col2)
 
     return data, dropped
+
+
+def get_original_cat_names(names, encoder, original_key):
+
+    if isinstance(names[0], (np.integer, int)):
+        base = names
+    else:
+        base = [int(name.replace(original_key + '_', '')) for name in names]
+
+    original = encoder.inverse_transform(base)
+
+    return original

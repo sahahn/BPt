@@ -195,7 +195,7 @@ class ABCD_ML():
         # Initialze various variables
         self.data, self.covars = pd.DataFrame(), pd.DataFrame()
         self.targets, self.strat = pd.DataFrame(), pd.DataFrame()
-        self.name_map, self.exclusions = {}, set()
+        self.name_map, self.exclusions, self.inclusions = {}, set(), set()
         self.covars_encoders, self.targets_encoder = {}, None
         self.strat_encoders = {}
         self.all_data, self.train_subjects = None, None
@@ -283,12 +283,14 @@ class ABCD_ML():
                                Load_Targets,
                                Load_Strat,
                                Load_Exclusions,
+                               Load_Inclusions,
                                Clear_Name_Map,
                                Clear_Data,
                                Clear_Covars,
                                Clear_Targets,
                                Clear_Strat,
                                Clear_Exclusions,
+                               Clear_Inclusions,
                                Drop_Data_Duplicates,
                                _load_datasets,
                                _load_dataset,
@@ -301,10 +303,14 @@ class ABCD_ML():
                                _drop_na,
                                _filter_by_eventname,
                                _drop_excluded,
+                               _drop_included,
                                _filter_excluded,
+                               _filter_included,
+                               _get_overlapping_subjects,
                                _process_new,
                                _prepare_data,
-                               _set_data_and_cat_inds)
+                               _set_data_and_cat_inds,
+                               _get_base_covar_names)
 
     # Validation / CV functionality
     def Define_Validation_Strategy(self, groups=None,
@@ -514,6 +520,9 @@ class ABCD_ML():
     from ABCD_ML.Ensembles import Show_Ensemble_Types
 
     from ABCD_ML._Plotting import (Show_Targets_Dist,
+                                   Show_Covars_Dist,
+                                   show_covar_dist,
+                                   show_dist,
                                    Plot_Base_Feat_Importances,
                                    Plot_Shap_Feat_Importances,
                                    Plot_Shap_Summary,

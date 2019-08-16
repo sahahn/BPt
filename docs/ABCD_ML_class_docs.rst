@@ -78,6 +78,11 @@ Show_Targets_Dist
 ==================
 .. automethod:: ABCD_ML.Show_Targets_Dist
 
+Show_Covars_Dist
+==================
+.. automethod:: ABCD_ML.Show_Covars_Dist
+
+
 ****************
 Validation Phase
 ****************

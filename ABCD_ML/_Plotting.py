@@ -8,8 +8,21 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 import shap
+import os
 from IPython.display import display
 from ABCD_ML.Data_Helpers import get_original_cat_names
+
+
+def plot(self, title):
+
+    if self.log_dr is not None:
+
+        save_spot = os.path.join(self.exp_log_dr,
+                                 title.replace(' ', '_') + '.png')
+        plt.savefig(save_spot, dpi=100)
+
+    if self.notebook:
+        plt.show()
 
 
 def Show_Targets_Dist(self, cat_show_original_name=True,
@@ -47,7 +60,8 @@ def Show_Targets_Dist(self, cat_show_original_name=True,
 
 def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
                      show_only_overlap=True):
-    '''
+    '''Plot a single or multiple covar distributions, along with
+    outputting useful summary statistics.
 
     Parameters
     ----------
@@ -133,6 +147,8 @@ def show_covar_dist(self, covar, covars_df, cat_show_original_name):
 def show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
               original_key=None):
 
+    self._print('Show', plot_key, 'distribution:')
+
     # Binary or categorical
     if data.dtypes[0].name == 'category':
 
@@ -159,30 +175,36 @@ def show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
 
         if self.notebook:
             display(display_df)
-        else:
-            self._print(display_df)
+
+        self._print(display_df, dont_print=self.notebook)
+        self._print(dont_print=self.notebook)
 
         display_names = sums.index
         if cat_show_original_name:
             display_names = original_names
 
         sns.barplot(x=sums.values, y=display_names, orient='h')
-        plt.title(plot_key + ' distributions')
-        plt.show()
 
     # Regression, float / ordinal
     else:
 
-        self._print(data.describe())
-        self._print()
+        summary = data.describe()
+
+        if self.notebook:
+            display(summary)
+
+        self._print(summary, dont_print=self.notebook)
+        self._print(dont_print=self.notebook)
 
         vals = data[plot_key]
         self._print('Num. of unique vals:', len(np.unique(vals)))
         self._print()
 
         sns.distplot(data)
-        plt.title(plot_key + ' distribution')
-        plt.show()
+
+    title = plot_key + ' distributions'
+    plt.title(title)
+    self.plot(title)
 
 
 def Plot_Base_Feat_Importances(self, top_n=10):
@@ -209,7 +231,7 @@ def _plot_feature_importance(self, data, title='Feature Importances',
     sns.barplot(orient='h', data=data)
     plt.title(title)
     plt.xlabel(xlabel)
-    plt.show()
+    self.plot(title)
 
 
 def Plot_Shap_Summary(self):

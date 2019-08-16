@@ -265,7 +265,9 @@ class ABCD_ML():
             Anything that would be passed to default python print
         '''
 
-        if self.verbose:
+        dont_print = kwargs.pop('dont_print', False)
+
+        if self.verbose and not dont_print:
             print(*args, **kwargs)
 
         if self.log_file is not None:
@@ -519,7 +521,8 @@ class ABCD_ML():
     from ABCD_ML.Feature_Selectors import Show_Feat_Selectors
     from ABCD_ML.Ensembles import Show_Ensemble_Types
 
-    from ABCD_ML._Plotting import (Show_Targets_Dist,
+    from ABCD_ML._Plotting import (plot,
+                                   Show_Targets_Dist,
                                    Show_Covars_Dist,
                                    show_covar_dist,
                                    show_dist,

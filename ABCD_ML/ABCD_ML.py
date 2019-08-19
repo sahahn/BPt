@@ -71,6 +71,8 @@ class ABCD_ML():
             any plots will be showed interactively
             (as well as saved as long as log_dr != None)
 
+            (default = True)
+
         subject_id : str, optional
             The name of the column with unique subject ids in different
             dataset, for default ABCD datasets this is 'src_subject_id',

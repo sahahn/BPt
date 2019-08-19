@@ -1004,7 +1004,8 @@ def _proc_df(self, data):
     assert self.subject_id in data, "Missing subject id column!"
 
     # Perform corrects on subject ID
-    data.src_subject_id = data.src_subject_id.apply(self._process_subject_name)
+    data[self.subject_id] =\
+        data[self.subject_id].apply(self._process_subject_name)
 
     # Filter by eventname is applicable
     data = self._filter_by_eventname(data)

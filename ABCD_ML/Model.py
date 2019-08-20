@@ -34,8 +34,8 @@ class Model():
     '''
 
     def __init__(self, model_types, ML_params, model_type_param_ind, CV,
-                 data_inds, cat_inds, targets_key, targets_encoder,
-                 ensemble_type, ensemble_split, _print=print):
+                 data_keys, covars_keys, cat_keys, targets_key,
+                 targets_encoder, ensemble_type, ensemble_split, _print=print):
         ''' Init function for Model
 
         Parameters
@@ -85,6 +85,9 @@ class Model():
             - n_iter : int
                 The number of random searches to conduct in random search
                 model types.
+            -data_to_use : {'all', 'data', 'covars'}
+                The subset of data to use, either all avaliable, just
+                the data, or just the covars.
             - random_state : int or None
                 The random state to use for CV splits / within modeling.
             - extra_params : dict
@@ -98,13 +101,18 @@ class Model():
             The class defined ABCD_ML CV object for defining
             custom validation splits.
 
-        data_inds : list
-            List of column inds within data, as passed to Evaluate_Model or
+        data_keys : list
+            List of column keys within data, as passed to Evaluate_Model or
             Test_Model, that correspond to the columns which should be scaled
-            with the chosen data scaler(s) (if any).
+            with the chosen data scaler(s) (if any) and are the neuroimaging
+            data.
 
-        cat_inds : list
-            List of column inds within data, as passed to Evaluate_Model or
+        covars_keys : list
+            List of column keys within data, as passed to Evaluate_Model or
+            Test_Model, that correspond to the columns which are covars
+
+        cat_keys : list
+            List of column keys within data, as passed to Evaluate_Model or
             Test_Model, that correspond to the columns within covars that
             are categorical (binary or categorical).
 
@@ -154,8 +162,9 @@ class Model():
         # Set class parameters
         self.model_types = conv_to_list(model_types)
         self.CV = CV
-        self.data_inds = data_inds
-        self.cat_inds = cat_inds
+        self.data_keys = data_keys
+        self.covars_keys = covars_keys
+        self.cat_keys = cat_keys
         self.targets_key = targets_key
         self.targets_encoder = targets_encoder
         self._print = _print
@@ -171,6 +180,7 @@ class Model():
         self.class_weight = ML_params['class_weight']
         self.n_jobs = ML_params['n_jobs']
         self.n_iter = ML_params['n_iter']
+        self.data_to_use = ML_params['data_to_use']
         self.random_state = ML_params['random_state']
         self.calc_base_feature_importances =\
             ML_params['calc_base_feature_importances']
@@ -196,6 +206,10 @@ class Model():
         # Default params just sets (sub)problem type for now
         self._set_default_params()
 
+        # Set all_keys then data and cat inds
+        self._set_all_keys()
+        self._set_inds()
+
         # Process inputs
         self._process_model_types()
         self._process_feat_selectors()
@@ -213,6 +227,29 @@ class Model():
         self.ensemble_flag = False
         self.linear_flag = False
         self.tree_flag = False
+
+    def _set_all_keys(self):
+
+        if isinstance(self.targets_key, str):
+            t_key = [self.targets_key]
+        else:
+            t_key = self.targets_key
+
+        if self.data_to_use == 'data':
+            self.all_keys = self.data_keys + t_key
+        elif self.data_to_use == 'covars':
+            self.all_keys = self.covars_keys + t_key
+        else:
+            self.all_keys =\
+                self.data_keys + self.covars_keys + t_key
+
+    def _set_inds(self):
+
+        self.data_inds = [self.all_keys.index(k) for k in self.data_keys
+                          if k in self.all_keys]
+
+        self.cat_inds = [self.all_keys.index(k) for k in self.cat_keys
+                         if k in self.all_keys]
 
     def _process_model_types(self):
         '''Class function to convert input model types to final
@@ -554,6 +591,9 @@ class Model():
             A numpy array of scores as determined by the passed
             metric/scorer(s) on the provided testing set.
         '''
+
+        # Ensure data being used is just the selected columns
+        data = data[self.all_keys]
 
         # Assume the train_subjects and test_subjects passed here are final.
         train_data = data.loc[train_subjects]
@@ -972,6 +1012,10 @@ class Model():
             shap_values = self._get_kernel_shap_values(train_data, test_data)
 
         # Set to df
+        self._add_new_shap_values(X_test, shap_values)
+
+    def _add_new_shap_values(self, X_test, shap_values):
+
         shap_df = X_test.copy()
         shap_df[list(X_test)] = shap_values
 
@@ -1120,7 +1164,7 @@ class Model():
             if len(self.shap_dfs) > 1:
 
                 shap_df_arrays = [np.array(df) for df in self.shap_dfs]
-                mean_shap_array = np.mean(shap_df_arrays, axis=1)
+                mean_shap_array = np.mean(shap_df_arrays, axis=0)
 
                 self.shap_df[list(self.shap_df)] = mean_shap_array
 
@@ -1204,3 +1248,46 @@ class Categorical_Model(Model):
             y = self.targets_encoder[1].inverse_transform(y).squeeze()
 
         return y
+
+    def _init_shap_df(self, data):
+
+        self.shap_df = []
+
+        for i in range(len(self.targets_key)):
+
+            shap_df, y = self._get_X_y(data, X_as_df=True, copy=True)
+
+            for col in shap_df.columns:
+                shap_df[col].values[:] = 0
+
+            self.shap_df.append(shap_df)
+
+    def _add_new_shap_values(self, X_test, shap_values):
+
+        for i in range(len(shap_values)):
+
+            shap_df = X_test.copy()
+            shap_df[list(X_test)] = shap_values[i]
+
+            self.shap_df[i].update(shap_df)
+
+    def _average_feature_importances(self):
+
+        if self.calc_shap_feature_importances:
+
+            # Set to copy of 1st one to start, as base to fill
+            self.shap_df = self.shap_dfs[0].copy()
+
+            # Only need to average if more than one repeat
+            if len(self.shap_dfs) > 1:
+
+                # For each class within the target variable
+                for i in range(len(self.shap_df)):
+
+                    shap_df_arrays = [np.array(df[i]) for df in self.shap_dfs]
+                    mean_shap_array = np.mean(shap_df_arrays, axis=0)
+
+                    self.shap_df[i][list(self.shap_df[i])] = mean_shap_array
+
+            # Reset self.shap_dfs to clear memory
+            self.shap_dfs = []

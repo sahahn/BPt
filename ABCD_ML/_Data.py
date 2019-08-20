@@ -1304,10 +1304,14 @@ def _prepare_data(self):
     if len(self.data) > 0:
         dfs.append(self.data)
         self.data_keys = list(self.data)
+    else:
+        self.data_keys = []
 
     if len(self.covars) > 0:
         dfs.append(self.covars)
         self.covars_keys = list(self.covars)
+    else:
+        self.covars_keys = []
 
     assert len(self.targets) > 0, \
         'Targets must be loaded!'
@@ -1345,13 +1349,15 @@ def _set_data_and_cat_inds(self):
 
     # If target is categorical exclude it
     try:
-        self.cat_keys.remove(self.targets_key)
+        if isinstance(self.targets_key, list):
+            for t_key in self.targets_key:
+                self.cat_keys.remove(t_key)
+
+        else:
+            self.cat_keys.remove(self.targets_key)
+
     except ValueError:
         pass
-
-    # Grab the col inds
-    self.data_inds = [self.all_data.columns.get_loc(k) for k in self.data_keys]
-    self.cat_inds = [self.all_data.columns.get_loc(k) for k in self.cat_keys]
 
 
 def _get_base_covar_names(self):

@@ -18,7 +18,8 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
                           sampler_param_ind='default',
                           feat_selector_param_ind='default',
                           class_weight='default', n_jobs='default',
-                          n_iter='default', random_state='default',
+                          n_iter='default', data_to_use='default',
+                          random_state='default',
                           calc_base_feature_importances='default',
                           calc_shap_feature_importances='default',
                           extra_params='default'):
@@ -221,6 +222,20 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         if 'default', and not already defined, set to 10.
         (default = 'default')
 
+    data_to_use : {'all', 'data', 'covars'}, optional
+
+        This setting allows the user to optionally
+        run an expiriment with either only the loaded
+        data and/or only the loaded covars. Likewise,
+        both can be used with the default param of 'all'.
+
+        - 'all' : Uses all data + covars loaded
+        - 'data' : Uses only the loaded data, and drops covars if any
+        - 'covars' : Uses only the loaded covars, and drops data if any
+
+        if 'default', and not already defined, set to 'all'.
+        (default = 'default')
+
     random_state : int, RandomState instance, None or 'default', optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
@@ -405,6 +420,16 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self._print('No default number of random search iters passed,',
                     'set to 10')
 
+    if data_to_use != 'default':
+        assert data_to_use in ['all', 'data', 'covars'], \
+            "data_to_use must be 'all', 'data' or 'covars'"
+        self.default_ML_params['data_to_use'] = data_to_use
+
+    elif 'data_to_use' not in self.default_ML_params:
+        self.default_ML_params['data_to_use'] = 'all'
+        self._print('No default data_to_use passed,',
+                    'set to all')
+
     if random_state != 'default':
         self.default_ML_params['random_state'] = random_state
 
@@ -454,8 +479,8 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
              search_type='default', model_type_param_ind=0,
              data_scaler_param_ind='default', sampler_param_ind='default',
              feat_selector_param_ind='default', class_weight='default',
-             n_jobs='default', n_iter='default', random_state='default',
-             calc_base_feature_importances='default',
+             n_jobs='default', n_iter='default', data_to_use='default',
+             random_state='default', calc_base_feature_importances='default',
              calc_shap_feature_importances='default', extra_params='default'):
 
     '''Class method to be called during the model selection phase.
@@ -699,6 +724,21 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
         (default = 'default')
 
+    data_to_use : {'all', 'data', 'covars'}, optional
+
+        This setting allows the user to optionally
+        run an expiriment with either only the loaded
+        data and/or only the loaded covars. Likewise,
+        both can be used with the default param of 'all'.
+
+        - 'all' : Uses all data + covars loaded
+        - 'data' : Uses only the loaded data, and drops covars if any
+        - 'covars' : Uses only the loaded covars, and drops data if any
+
+        If 'default', use the saved value within self.default_ML_params.
+
+        (default = 'default')
+
     random_state : int, RandomState instance, None or 'default', optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
@@ -823,8 +863,9 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
          search_type='default', model_type_param_ind=0,
          data_scaler_param_ind='default', sampler_param_ind='default',
          feat_selector_param_ind='default', class_weight='default',
-         n_jobs='default', n_iter='default', random_state='default',
-         return_model=False, calc_base_feature_importances='default',
+         n_jobs='default', n_iter='default', data_to_use='default',
+         random_state='default', return_model=False,
+         calc_base_feature_importances='default',
          calc_shap_feature_importances='default', extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
@@ -1064,6 +1105,21 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
         (default = 'default')
 
+    data_to_use : {'all', 'data', 'covars'}, optional
+
+        This setting allows the user to optionally
+        run an expiriment with either only the loaded
+        data and/or only the loaded covars. Likewise,
+        both can be used with the default param of 'all'.
+
+        - 'all' : Uses all data + covars loaded
+        - 'data' : Uses only the loaded data, and drops covars if any
+        - 'covars' : Uses only the loaded covars, and drops data if any
+
+        If 'default', use the saved value within self.default_ML_params.
+
+        (default = 'default')
+
     random_state : int, RandomState instance, None or 'default', optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
@@ -1264,6 +1320,7 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
 
     self._print('n_jobs =', ML_params['n_jobs'])
     self._print('n_iter =', ML_params['n_iter'])
+    self._print('data_to_use =', ML_params['data_to_use'])
     self._print('random_state =', ML_params['random_state'])
     self._print('calc_base_feature_importances =',
                 ML_params['calc_base_feature_importances'])
@@ -1274,7 +1331,7 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
 
 
 def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
-                model_type_param_ind,):
+                model_type_param_ind):
 
     problem_types = {'binary': Binary_Model, 'regression': Regression_Model,
                      'categorical': Categorical_Model}
@@ -1285,7 +1342,8 @@ def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
     Model = problem_types[ML_params['problem_type']]
 
     self.Model = Model(model_type, ML_params, model_type_param_ind, self.CV,
-                       self.data_inds, self.cat_inds, self.targets_key,
+                       self.data_keys,
+                       self.covars_keys, self.cat_keys, self.targets_key,
                        self.targets_encoder, ensemble_type, ensemble_split,
                        self._print)
 
@@ -1332,7 +1390,9 @@ def Get_Shap_Feat_Importances(self, top_n=None):
     '''Returns a pandas series with
     the shap feature importances, specifically the
     absolute mean shap value per feature, as calculated from the
-    last run :func:`Evaluate` or :func:`test`
+    last run :func:`Evaluate` or :func:`test`. If running this function
+    on categorical data, the average shap values will be computed
+    by further averaging over each target variables mean shap values.
 
     .. WARNING::
         `calc_shap_feature_importances` must have been set to True,
@@ -1355,7 +1415,26 @@ def Get_Shap_Feat_Importances(self, top_n=None):
     assert len(self.Model.shap_df) > 0, \
         "calc_shap_feature_importances must be set to True!"
 
-    shap_importances = np.mean(np.abs(self.Model.shap_df))
+    # for binary / regression
+    if 'pandas' not in str(type(self.Model.shap_df)):
+
+        # First grab copy of first ind as base
+        shap_df = self.Model.shap_df[0].copy()
+
+        # Get mean across list
+        shap_df_arrays = [np.array(df) for df in self.Model.shap_df]
+        mean_shap_array = np.mean(shap_df_arrays, axis=0)
+
+        # Set values in df
+        shap_df[list(shap_df)] = mean_shap_array
+
+        # Store in avg_shap_df - for plotting
+        self.avg_shap_df = shap_df
+
+    else:
+        shap_df = self.Model.shap_df
+
+    shap_importances = np.mean(np.abs(shap_df))
     shap_importances.sort_values(ascending=False, inplace=True)
 
     if top_n:

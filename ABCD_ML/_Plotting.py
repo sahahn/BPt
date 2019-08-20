@@ -219,7 +219,12 @@ def Plot_Base_Feat_Importances(self, top_n=10):
 def Plot_Shap_Feat_Importances(self, top_n=10):
 
     top_x = self.Get_Shap_Feat_Importances(top_n).index
-    just_top = np.abs(self.Model.shap_df)[top_x]
+
+    # For categorical support
+    try:
+        just_top = np.abs(self.avg_shap_df)[top_x]
+    except AttributeError:
+        just_top = np.abs(self.Model.shap_df)[top_x]
 
     self._plot_feature_importance(just_top, title='Shap Feature Importances',
                                   xlabel='Shap Feature Importance')

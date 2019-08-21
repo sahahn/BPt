@@ -84,7 +84,7 @@ def get_sampler_and_params(sampler_str, extra_params, param_ind, search_type):
 
 
 def Show_Samplers(self, problem_type=None, sampler_str=None,
-                  param_ind_options=True, show_object=False,
+                  param_ind_options=False, show_object=False,
                   possible_params=False):
     '''Print out the avaliable feature selectors,
     optionally restricted by problem type + other diagnostic args.
@@ -109,25 +109,31 @@ def Show_Samplers(self, problem_type=None, sampler_str=None,
         Flag, if set to True, then will display the ABCD_ML
         param ind options for each sampler.
 
-        (default = True)
+        (default = False)
 
     show_object : bool, optional
-            Flag, if set to True, then will print the
-            raw sampler object.
+        Flag, if set to True, then will print the
+        raw sampler object.
 
-            (default = False)
+        (default = False)
 
     possible_params: bool, optional
-            Flag, if set to True, then will print all
-            possible arguments to the classes __init__
+        Flag, if set to True, then will print all
+        possible arguments to the classes __init__
 
-            (default = False)
+        (default = False)
     '''
     print('These are the different implemented options for re-sampling',
           ' imbalanced data.')
     print('Please check out:')
     print('https://imbalanced-learn.readthedocs.io/en/stable/user_guide.html')
     print('For detailed use on the different samplers.')
+    print('More information through this function is avaliable')
+    print('By passing optional extra optional params! Please view',
+          'the help function for more info!')
+    print('Note: the str indicator actually passed during Evaluate / Test')
+    print('is listed as ("str indicator")')
+    print()
 
     show_objects(problem_type, sampler_str,
                  param_ind_options, show_object, possible_params,

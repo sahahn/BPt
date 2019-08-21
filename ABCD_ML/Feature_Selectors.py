@@ -106,7 +106,7 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, param_ind,
 
 
 def Show_Feat_Selectors(self, problem_type=None, feat_selector_str=None,
-                        show_param_ind_options=True, show_object=False,
+                        show_param_ind_options=False, show_object=False,
                         possible_params=False):
     '''Print out the avaliable feature selectors,
     optionally restricted by problem type + other diagnostic args.
@@ -131,23 +131,28 @@ def Show_Feat_Selectors(self, problem_type=None, feat_selector_str=None,
         Flag, if set to True, then will display the ABCD_ML
         param ind options for each feat selector.
 
-        (default = True)
+        (default = False)
 
     show_object : bool, optional
-            Flag, if set to True, then will print the
-            raw feat_selector object.
+        Flag, if set to True, then will print the
+        raw feat_selector object.
 
-            (default = False)
+        (default = False)
 
     possible_params: bool, optional
-            Flag, if set to True, then will print all
-            possible arguments to the classes __init__
+        Flag, if set to True, then will print all
+        possible arguments to the classes __init__
 
-            (default = False)
+        (default = False)
     '''
 
     print('Note: Param distributions with a Rand Distribution')
     print('cannot be used in search_type = "grid"')
+    print('More information through this function is avaliable')
+    print('By passing optional extra optional params! Please view',
+          'the help function for more info!')
+    print('Note: the str indicator actually passed during Evaluate / Test')
+    print('is listed as ("str indicator")')
     print()
 
     show_objects(problem_type, feat_selector_str,

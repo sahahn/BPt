@@ -293,7 +293,8 @@ def show_type(problem_type, avaliable_by_type, show_param_ind_options,
         print()
 
         for obj_str in avaliable_by_type[problem_type]:
-            if 'user passed' not in obj_str:
+            if ('user passed' not in obj_str and
+               'basic ensemble' not in obj_str):
                 show_obj(obj_str, show_param_ind_options, show_object,
                          show_all_possible_params, OBJS)
 

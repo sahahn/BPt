@@ -59,7 +59,7 @@ def get_data_scaler_and_params(data_scaler_str, extra_params, param_ind,
     return data_scaler(**extra_data_scaler_params), data_scaler_params
 
 
-def Show_Scalers(self, data_scaler=None, show_param_ind_options=True,
+def Show_Scalers(self, data_scaler=None, show_param_ind_options=False,
                  show_scaler_object=False,
                  show_all_possible_params=False):
     '''Just calls Show_Data_Scalers'''
@@ -68,7 +68,7 @@ def Show_Scalers(self, data_scaler=None, show_param_ind_options=True,
                            show_scaler_object, show_all_possible_params)
 
 
-def Show_Data_Scalers(self, data_scaler=None, show_param_ind_options=True,
+def Show_Data_Scalers(self, data_scaler=None, show_param_ind_options=False,
                       show_scaler_object=False,
                       show_all_possible_params=False):
     '''Print out the avaliable data scalers.
@@ -85,7 +85,7 @@ def Show_Data_Scalers(self, data_scaler=None, show_param_ind_options=True,
         Flag, if set to True, then will display the ABCD_ML
         param ind options for each data scaler.
 
-        (default = True)
+        (default = False)
 
     show_scaler_object : bool, optional
         Flag, if set to True, then will print the raw data scaler
@@ -104,6 +104,15 @@ def Show_Data_Scalers(self, data_scaler=None, show_param_ind_options=True,
     print('https://scikit-learn.org/stable/modules/preprocessing.html')
     print('For more detailed information on different scalers',
           '/ preprocessing.')
+    print('Note Scalers / Data_Scalers is used somewhat loosely.')
+    print('They describe any transformation on the data that does not')
+    print('change the number of columns or data points, and that do')
+    print('not require access to the target (y) variable.')
+    print('More information through this function is avaliable')
+    print('By passing optional extra optional params! Please view',
+          'the help function for more info!')
+    print('Note: the str indicator actually passed during Evaluate / Test')
+    print('is listed as ("str indicator")')
     print()
 
     if data_scaler is not None:

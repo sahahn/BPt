@@ -1,3 +1,6 @@
+from ABCD_ML.ML_Helpers import get_avaliable_by_type
+from ABCD_ML.ML_Helpers import show_objects
+
 from deslib.dcs.a_posteriori import APosteriori
 from deslib.dcs.a_priori import APriori
 from deslib.dcs.lca import LCA
@@ -72,6 +75,7 @@ ENSEMBLES = {
     'lca': (LCA, {}),
     'mcb': (MCB, {}),
     'mla': (MLA, {}),
+    'ola': (OLA, {}),
     'rank': (Rank, {}),
     'metades': (METADES, {}),
     'des clustering': (DESClustering, {}),
@@ -108,7 +112,8 @@ def get_ensemble_and_params(ensemble_str, extra_params):
     return ensemble, params
 
 
-def Show_Ensemble_Types(self, problem_type=None, ensemble_type=None):
+def Show_Ensemble_Types(self, problem_type=None, ensemble_type=None,
+                        show_object=False, possible_params=False):
     '''Print out the avaliable ensemble types,
     optionally restricted by problem type
 
@@ -120,65 +125,30 @@ def Show_Ensemble_Types(self, problem_type=None, ensemble_type=None):
         (default = None)
 
     ensemble_type : str or list
-        Where ensemble_yype is a specific str indicator
+        Where ensemble_type is a specific str indicator
+
+    show_object : bool, optional
+        Flag, if set to True, then will print the
+        raw sampler object.
+
+        (default = False)
+
+    possible_params: bool, optional
+        Flag, if set to True, then will print all
+        possible arguments to the classes __init__
+
+        (default = False)
     '''
     print('Visit: ')
     print('https://deslib.readthedocs.io/en/latest/api.html')
     print('For actual descriptions about the different ensemble types,')
     print('as this is the base library used for this functionality!')
-
-    if problem_type is None or problem_type == 'categorical':
-        print('Note:')
-        print('(MultiClass) or (MultiLabel) are not part of the metric',
-              'str indicator.')
+    print('More information through this function is avaliable')
+    print('By passing optional extra optional params! Please view',
+          'the help function for more info!')
+    print('Note: the str indicator actually passed during Evaluate / Test')
+    print('is listed as ("str indicator")')
     print()
 
-    if ensemble_type is not None:
-        if isinstance(ensemble_type, str):
-                ensemble_type = [ensemble_type]
-        for ensemble_str in ensemble_type:
-                show_metric(ensemble_str)
-        return
-
-    avaliable_by_type = get_avaliable_by_type(AVALIABLE)
-
-    if problem_type is None:
-        for pt in avaliable_by_type:
-            show_type(pt, avaliable_by_type)
-    else:
-        show_type(problem_type, avaliable_by_type)
-
-
-def show_type(problem_type, avaliable_by_type):
-
-        print('Problem Type:', problem_type)
-        print('----------------------------------------')
-        print()
-        print('Avaliable ensemble types: ')
-        print()
-
-        for ensemble_str in avaliable_by_type[problem_type]:
-            if 'basic ensemble' not in ensemble_str:
-                show_ensemble(ensemble_str)
-
-
-def show_ensemble(ensemble_str):
-
-        multilabel, multiclass = False, False
-
-        if 'multilabel ' in ensemble_str:
-                multilabel = True
-        elif 'multiclass ' in ensemble_str:
-                multiclass = True
-
-        ensemble_str = ensemble_str.replace('multilabel ', '')
-        ensemble_str = ensemble_str.replace('multiclass ', '')
-
-        print(ensemble_str, end='')
-
-        if multilabel:
-            print(' (MultiLabel)')
-        elif multiclass:
-            print(' (MultiClass)')
-        else:
-            print()
+    show_objects(problem_type, ensemble_type, False, show_object,
+                 possible_params, AVALIABLE, ENSEMBLES)

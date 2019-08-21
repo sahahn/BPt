@@ -390,27 +390,30 @@ def Show_Metrics(self, problem_type=None, metric=None):
     print('Visit: ')
     print('https://scikit-learn.org/stable/modules/model_evaluation.html')
     print('For more detailed information on different metrics.')
-
-    if problem_type is None or problem_type == 'categorical':
-        print('Note:')
-        print('(MultiClass) or (MultiLabel) are not part of the metric',
-              'str indicator.')
+    print('The str indicators avaliable are listed below.')
     print()
 
     if metric is not None:
         if isinstance(metric, str):
                 metric = [metric]
         for metric_str in metric:
-                show_metric(metric_str)
+                print(metric_str)
         return
 
     avaliable_by_type = get_avaliable_by_type(AVALIABLE)
 
-    if problem_type is None:
-        for pt in avaliable_by_type:
-            show_type(pt, avaliable_by_type)
+    if problem_type is not None:
+        if problem_type == 'categorical':
+            problem_types = ['categorical multilabel',
+                             'categorical multilabel']
+        else:
+            problem_types = [problem_type]
+
     else:
-        show_type(problem_type, avaliable_by_type)
+        problem_types = list(avaliable_by_type)
+
+    for pt in problem_types:
+        show_type(pt, avaliable_by_type)
 
 
 def show_type(problem_type, avaliable_by_type):
@@ -423,26 +426,6 @@ def show_type(problem_type, avaliable_by_type):
 
         for metric_str in avaliable_by_type[problem_type]:
             if 'user passed' not in metric_str:
-                show_metric(metric_str)
+                print(metric_str)
 
-
-def show_metric(metric_str):
-
-        multilabel, multiclass = False, False
-
-        if 'multilabel ' in metric_str:
-                multilabel = True
-        elif 'multiclass ' in metric_str:
-                multiclass = True
-
-        metric_str = metric_str.replace('multilabel ', '')
-        metric_str = metric_str.replace('multiclass ', '')
-
-        print(metric_str, end='')
-
-        if multilabel:
-            print(' (MultiLabel)')
-        elif multiclass:
-            print(' (MultiClass)')
-        else:
-            print()
+        print()

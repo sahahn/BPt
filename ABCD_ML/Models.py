@@ -72,6 +72,7 @@ AVALIABLE = {
 # Should be the same
 AVALIABLE['categorical']['multiclass'] = AVALIABLE['binary'].copy()
 
+
 MODELS = {
     'logistic': (LogisticRegression, ['base logistic']),
 
@@ -120,7 +121,7 @@ MODELS = {
 
 
 def Show_Models(self, problem_type=None, model_type_str=None,
-                param_ind_options=True, show_object=False,
+                param_ind_options=False, show_object=False,
                 possible_params=False):
         '''Just calls Show_Model_Types.'''
 
@@ -129,15 +130,23 @@ def Show_Models(self, problem_type=None, model_type_str=None,
 
 
 def Show_Model_Types(self, problem_type=None, model_type_str=None,
-                     param_ind_options=True, show_object=False,
+                     param_ind_options=False, show_object=False,
                      possible_params=False):
         '''Print out the avaliable machine learning models,
         optionally restricted by problem type + other diagnostic args.
 
+        :class:`GaussianNB`
+
+        :class:`sklearn.naive_bayes.GaussianNB`
+
         Parameters
         ----------
-        problem_type : {binary, categorical, regression, None}, optional
-                Where `problem_type` is the underlying ML problem
+        problem_type : str, optional
+                Where `problem_type` is the underlying ML problem or
+                rather type of problem...
+                Note enter either 'binary', 'regression',
+                'categorical multilabel', 'categorical multiclass'
+                or None.
 
                 (default = None)
 
@@ -154,7 +163,7 @@ def Show_Model_Types(self, problem_type=None, model_type_str=None,
             Flag, if set to True, then will display the ABCD_ML
             param ind options for each model.
 
-                (default = True)
+                (default = False)
 
         show_object : bool, optional
                 Flag, if set to True, then will print the
@@ -173,6 +182,11 @@ def Show_Model_Types(self, problem_type=None, model_type_str=None,
               'the dif. models')
         print('Note: Param distributions with a Rand Distribution')
         print('cannot be used in search_type = "grid"')
+        print('More information through this function is avaliable')
+        print('By passing optional extra optional params! Please view',
+              'the help function for more info!')
+        print('Note: the str indicator actually passed during Evaluate / Test')
+        print('is listed as ("str indicator")')
         print()
 
         show_objects(problem_type, model_type_str, param_ind_options,

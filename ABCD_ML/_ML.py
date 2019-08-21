@@ -790,7 +790,16 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
     Returns
     ----------
-    array-like of array-like
+    train_scores : array-like of array-like
+        numpy array of numpy arrays,
+        where each internal array contains the raw scores as computed for
+        all passed in metrics, computed for each fold within
+        each repeat.
+        e.g., array will have a length of `n_repeats` * `n_splits`,
+        and each internal array will have the same length as the number of
+        metrics.
+
+    validation_scores : array-like of array-like
         numpy array of numpy arrays,
         where each internal array contains the raw scores as computed for
         all passed in metrics, computed for each fold within
@@ -833,27 +842,32 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
                      model_type_param_ind)
 
     # Evaluate the model
-    scores = self.Model.Evaluate_Model(self.all_data, self.train_subjects)
+    train_scores, scores =\
+        self.Model.Evaluate_Model(self.all_data, self.train_subjects)
 
     # Print out summary stats for all passed metrics
     scorer_strs = self.Model.scorer_strs
     self._print()
 
-    for i in range(len(scorer_strs)):
-        self._print('Metric: ', scorer_strs[i])
+    for s, name in zip([train_scores, scores], ['Train', 'Validation']):
 
-        # Compute macro / micro summary of scores
-        summary_scores = compute_macro_micro(scores[:, i],
-                                             ML_params['n_repeats'],
-                                             ML_params['n_splits'])
+        self._print(name)
 
-        self._print('Mean score: ', summary_scores[0])
-        self._print('Macro std in score: ', summary_scores[1])
-        self._print('Micro std in score: ', summary_scores[2])
-        self._print()
+        for i in range(len(scorer_strs)):
+            self._print('Metric: ', scorer_strs[i])
+
+            # Compute macro / micro summary of scores
+            summary_scores = compute_macro_micro(s[:, i],
+                                                 ML_params['n_repeats'],
+                                                 ML_params['n_splits'])
+
+            self._print('Mean ' + name + ' score: ', summary_scores[0])
+            self._print('Macro std in ' + name + ' score: ', summary_scores[1])
+            self._print('Micro std in ' + name + ' score: ', summary_scores[2])
+            self._print()
 
     # Return the raw scores from each fold
-    return scores
+    return train_scores, scores
 
 
 def Test(self, model_type, problem_type='default', train_subjects=None,
@@ -1177,7 +1191,11 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
     Returns
     ----------
-    array-like
+    train_score : array-like
+        A numpy array of scores as determined by the passed
+        metric/scorer(s) on the provided testing set.
+
+    test_score : array-like
         A numpy array of scores as determined by the passed
         metric/scorer(s) on the provided testing set.
 
@@ -1207,22 +1225,24 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         test_subjects = self.test_subjects
 
     # Train the model w/ selected parameters and test on test subjects
-    scores = self.Model.Test_Model(self.all_data, train_subjects,
-                                   test_subjects)
+    train_scores, scores = self.Model.Test_Model(self.all_data, train_subjects,
+                                                 test_subjects)
 
     # Print out score for all passed metrics
     scorer_strs = self.Model.scorer_strs
     self._print()
 
-    for i in range(len(scorer_strs)):
-        self._print('Metric: ', scorer_strs[i])
-        self._print('Score: ', scores[i])
+    for s, name in zip([train_scores, scores], ['Train', 'Validation']):
+
+        for i in range(len(scorer_strs)):
+            self._print('Metric: ', scorer_strs[i])
+            self._print(name + 'Score: ', s[i])
 
     # Optionally return the model object itself
     if return_model:
-        return scores, self.Model.model
+        return train_scores, scores, self.Model.model
 
-    return scores
+    return train_scores, scores
 
 
 def _premodel_check(self, problem_type='default'):
@@ -1415,7 +1435,7 @@ def Get_Shap_Feat_Importances(self, top_n=None):
     assert len(self.Model.shap_df) > 0, \
         "calc_shap_feature_importances must be set to True!"
 
-    # for binary / regression
+    # for categorical
     if 'pandas' not in str(type(self.Model.shap_df)):
 
         # First grab copy of first ind as base

@@ -222,6 +222,7 @@ class Model():
         self.user_passed_models = []
         self.upmi = 0
         self.shap_dfs = []
+        self.fit_params = {}
 
         # Flags for feat importance things
         self.ensemble_flag = False
@@ -551,6 +552,7 @@ class Model():
                                                  self.random_state,
                                                  return_index=False)
 
+        all_train_scores = []
         all_scores = []
         fold_ind = 0
 
@@ -559,16 +561,18 @@ class Model():
 
             self._print('Running Evaluate on fold', fold_ind)
 
-            scores = self.Test_Model(data, train_subjects, test_subjects,
-                                     fold_ind)
+            train_scores, scores = self.Test_Model(data, train_subjects,
+                                                   test_subjects, fold_ind)
             fold_ind += 1
+
+            all_train_scores.append(train_scores)
             all_scores.append(scores)
 
         # Average feature importances across folds / repeats
         self._average_feature_importances()
 
         # Return all scores
-        return np.array(all_scores)
+        return np.array(all_train_scores), np.array(all_scores)
 
     def Test_Model(self, data, train_subjects, test_subjects, fold_ind='test'):
         '''Method to test given input data, training a model on train_subjects
@@ -625,10 +629,11 @@ class Model():
             if fold_ind % self.n_splits == self.n_splits-1:
                 self.shap_dfs.append(self.shap_df)
 
-        # Get the score on the test set
+        # Get the score on the train + test set
+        train_scores = self._get_scores(train_data)
         scores = self._get_scores(test_data)
 
-        return scores
+        return train_scores, scores
 
     def _train_models(self, train_data):
         '''Given training data, train the model(s), from the

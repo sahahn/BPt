@@ -263,7 +263,8 @@ def get_objects_by_type(problem_type, AVALIABLE=None, OBJS=None):
 
         if 'basic ensemble' not in obj_str and 'user passed' not in obj_str:
             obj = OBJS[obj_str][0]
-            objs.append((obj_str, obj))
+            obj_params = OBJS[obj_str][1]
+            objs.append((obj_str, obj, obj_params))
 
     return objs
 

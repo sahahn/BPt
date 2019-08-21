@@ -4,15 +4,16 @@ Model Types
 
 binary
 ======
-* **"dt classifier"**
+dt classifier
+*************
 
-  :class:`sklearn.tree.DecisionTreeClassifier`
+  Base Class Documenation: :class:`sklearn.tree.DecisionTreeClassifier`
 
   Param Distributions
 
 	0. "base dt" ::
 
-		Class Defaults Only
+		defaults only
 
 	1. "dt rs" ::
 
@@ -20,9 +21,10 @@ binary
 		min_samples_split: Random Integer Distribution (2, 49)
 
 
-* **"elastic net logistic"**
+elastic net logistic
+********************
 
-  :class:`sklearn.linear_model.LogisticRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
   Param Distributions
 
@@ -44,9 +46,10 @@ binary
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-* **"gaussian nb"**
+gaussian nb
+***********
 
-  :class:`sklearn.naive_bayes.GaussianNB`
+  Base Class Documenation: :class:`sklearn.naive_bayes.GaussianNB`
 
   Param Distributions
 
@@ -55,9 +58,10 @@ binary
 		var_smoothing: 1e-09
 
 
-* **"gp classifier"**
+gp classifier
+*************
 
-  :class:`sklearn.gaussian_process.GaussianProcessClassifier`
+  Base Class Documenation: :class:`sklearn.gaussian_process.GaussianProcessClassifier`
 
   Param Distributions
 
@@ -66,9 +70,10 @@ binary
 		n_restarts_optimizer: 5
 
 
-* **"knn classifier"**
+knn classifier
+**************
 
-  :class:`sklearn.neighbors.KNeighborsClassifier`
+  Base Class Documenation: :class:`sklearn.neighbors.KNeighborsClassifier`
 
   Param Distributions
 
@@ -82,9 +87,10 @@ binary
 		n_neighbors: Random Integer Distribution (2, 19)
 
 
-* **"lasso logistic"**
+lasso logistic
+**************
 
-  :class:`sklearn.linear_model.LogisticRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
   Param Distributions
 
@@ -104,9 +110,10 @@ binary
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-* **"light gbm classifier"**
+light gbm classifier
+********************
 
-  :class:`lightgbm.LGBMClassifier`
+  Base Class Documenation: :class:`lightgbm.LGBMClassifier`
 
   Param Distributions
 
@@ -122,15 +129,16 @@ binary
 		num_leaves: Random Integer Distribution (6, 49)
 		min_child_samples: Random Integer Distribution (100, 499)
 		min_child_weight: Random Reciprical Distribution (1e-05, 10000.0)
-		subsample: Random Reciprical Distribution (0.2, 1.0)
-		colsample_bytree: Random Reciprical Distribution (0.4, 1.0)
+		subsample: Random Uniform Distribution (0.2, 1.0)
+		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
 		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
 		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
 
 
-* **"logistic"**
+logistic
+********
 
-  :class:`sklearn.linear_model.LogisticRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
   Param Distributions
 
@@ -142,15 +150,16 @@ binary
 		penalty: none
 
 
-* **"mlp classifier"**
+mlp classifier
+**************
 
-  :class:`sklearn.neural_network.MLPClassifier`
+  Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
 
   Param Distributions
 
 	0. "base mlp" ::
 
-		Class Defaults Only
+		defaults only
 
 	1. "mlp rs" ::
 
@@ -161,8 +170,8 @@ binary
 		learning_rate: ['constant', 'invscaling', 'adaptive']
 		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
 		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Reciprical Distribution (0.5, 1.0)
-		beta_2: Random Reciprical Distribution (0.5, 1.0)
+		beta_1: Random Uniform Distribution (0.5, 1.0)
+		beta_2: Random Uniform Distribution (0.5, 1.0)
 
 	2. "mlp rs es" ::
 
@@ -173,8 +182,8 @@ binary
 		learning_rate: ['constant', 'invscaling', 'adaptive']
 		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
 		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Reciprical Distribution (0.5, 1.0)
-		beta_2: Random Reciprical Distribution (0.5, 1.0)
+		beta_1: Random Uniform Distribution (0.5, 1.0)
+		beta_2: Random Uniform Distribution (0.5, 1.0)
 		early_stopping: True
 		n_iter_no_change: Random Integer Distribution (5, 49)
 
@@ -183,9 +192,10 @@ binary
 		hidden_layer_sizes: Too many params to show
 
 
-* **"random forest classifier"**
+random forest classifier
+************************
 
-  :class:`sklearn.ensemble.RandomForestClassifier`
+  Base Class Documenation: :class:`sklearn.ensemble.RandomForestClassifier`
 
   Param Distributions
 
@@ -202,9 +212,10 @@ binary
 		bootstrap: True
 
 
-* **"ridge logistic"**
+ridge logistic
+**************
 
-  :class:`sklearn.linear_model.LogisticRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
   Param Distributions
 
@@ -224,9 +235,10 @@ binary
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-* **"svm classifier"**
+svm classifier
+**************
 
-  :class:`sklearn.svm.SVC`
+  Base Class Documenation: :class:`sklearn.svm.SVC`
 
   Param Distributions
 
@@ -247,15 +259,16 @@ binary
 
 regression
 ==========
-* **"dt regressor"**
+dt regressor
+************
 
-  :class:`sklearn.tree.DecisionTreeRegressor`
+  Base Class Documenation: :class:`sklearn.tree.DecisionTreeRegressor`
 
   Param Distributions
 
 	0. "base dt" ::
 
-		Class Defaults Only
+		defaults only
 
 	1. "dt rs" ::
 
@@ -263,9 +276,10 @@ regression
 		min_samples_split: Random Integer Distribution (2, 49)
 
 
-* **"elastic net regressor"**
+elastic net regressor
+*********************
 
-  :class:`sklearn.linear_model.ElasticNet`
+  Base Class Documenation: :class:`sklearn.linear_model.ElasticNet`
 
   Param Distributions
 
@@ -280,9 +294,10 @@ regression
 		l1_ratio: Random Uniform Distribution (0.0, 1.0)
 
 
-* **"gp regressor"**
+gp regressor
+************
 
-  :class:`sklearn.gaussian_process.GaussianProcessRegressor`
+  Base Class Documenation: :class:`sklearn.gaussian_process.GaussianProcessRegressor`
 
   Param Distributions
 
@@ -292,9 +307,10 @@ regression
 		normalize_y: True
 
 
-* **"knn regressor"**
+knn regressor
+*************
 
-  :class:`sklearn.neighbors.KNeighborsRegressor`
+  Base Class Documenation: :class:`sklearn.neighbors.KNeighborsRegressor`
 
   Param Distributions
 
@@ -308,9 +324,10 @@ regression
 		n_neighbors: Random Integer Distribution (2, 19)
 
 
-* **"light gbm regressor"**
+light gbm regressor
+*******************
 
-  :class:`lightgbm.LGBMRegressor`
+  Base Class Documenation: :class:`lightgbm.LGBMRegressor`
 
   Param Distributions
 
@@ -326,15 +343,16 @@ regression
 		num_leaves: Random Integer Distribution (6, 49)
 		min_child_samples: Random Integer Distribution (100, 499)
 		min_child_weight: Random Reciprical Distribution (1e-05, 10000.0)
-		subsample: Random Reciprical Distribution (0.2, 1.0)
-		colsample_bytree: Random Reciprical Distribution (0.4, 1.0)
+		subsample: Random Uniform Distribution (0.2, 1.0)
+		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
 		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
 		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
 
 
-* **"light gbm regressor early stop"**
+light gbm regressor early stop
+******************************
 
-  :class:`ABCD_ML.Early_Stop.EarlyStopLGBMRegressor`
+  Base Class Documenation: :class:`ABCD_ML.Early_Stop.EarlyStopLGBMRegressor`
 
   Param Distributions
 
@@ -352,17 +370,18 @@ regression
 		num_leaves: Random Integer Distribution (6, 49)
 		min_child_samples: Random Integer Distribution (100, 499)
 		min_child_weight: Random Reciprical Distribution (1e-05, 10000.0)
-		subsample: Random Reciprical Distribution (0.2, 1.0)
-		colsample_bytree: Random Reciprical Distribution (0.4, 1.0)
+		subsample: Random Uniform Distribution (0.2, 1.0)
+		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
 		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
 		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
-		val_split_percent: Random Reciprical Distribution (0.05, 0.25)
+		val_split_percent: Random Uniform Distribution (0.05, 0.25)
 		early_stop_rounds: Random Integer Distribution (10, 149)
 
 
-* **"linear regressor"**
+linear regressor
+****************
 
-  :class:`sklearn.linear_model.LinearRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.LinearRegression`
 
   Param Distributions
 
@@ -371,15 +390,16 @@ regression
 		fit_intercept: True
 
 
-* **"mlp regressor"**
+mlp regressor
+*************
 
-  :class:`sklearn.neural_network.MLPRegressor`
+  Base Class Documenation: :class:`sklearn.neural_network.MLPRegressor`
 
   Param Distributions
 
 	0. "base mlp" ::
 
-		Class Defaults Only
+		defaults only
 
 	1. "mlp rs" ::
 
@@ -390,8 +410,8 @@ regression
 		learning_rate: ['constant', 'invscaling', 'adaptive']
 		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
 		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Reciprical Distribution (0.5, 1.0)
-		beta_2: Random Reciprical Distribution (0.5, 1.0)
+		beta_1: Random Uniform Distribution (0.5, 1.0)
+		beta_2: Random Uniform Distribution (0.5, 1.0)
 
 	2. "mlp rs es" ::
 
@@ -402,8 +422,8 @@ regression
 		learning_rate: ['constant', 'invscaling', 'adaptive']
 		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
 		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Reciprical Distribution (0.5, 1.0)
-		beta_2: Random Reciprical Distribution (0.5, 1.0)
+		beta_1: Random Uniform Distribution (0.5, 1.0)
+		beta_2: Random Uniform Distribution (0.5, 1.0)
 		early_stopping: True
 		n_iter_no_change: Random Integer Distribution (5, 49)
 
@@ -412,9 +432,10 @@ regression
 		hidden_layer_sizes: Too many params to show
 
 
-* **"random forest regressor"**
+random forest regressor
+***********************
 
-  :class:`sklearn.ensemble.RandomForestRegressor`
+  Base Class Documenation: :class:`sklearn.ensemble.RandomForestRegressor`
 
   Param Distributions
 
@@ -431,9 +452,10 @@ regression
 		bootstrap: True
 
 
-* **"svm regressor"**
+svm regressor
+*************
 
-  :class:`sklearn.svm.SVR`
+  Base Class Documenation: :class:`sklearn.svm.SVR`
 
   Param Distributions
 
@@ -452,15 +474,16 @@ regression
 
 categorical multilabel
 ======================
-* **"dt classifier"**
+dt classifier
+*************
 
-  :class:`sklearn.tree.DecisionTreeClassifier`
+  Base Class Documenation: :class:`sklearn.tree.DecisionTreeClassifier`
 
   Param Distributions
 
 	0. "base dt" ::
 
-		Class Defaults Only
+		defaults only
 
 	1. "dt rs" ::
 
@@ -468,9 +491,10 @@ categorical multilabel
 		min_samples_split: Random Integer Distribution (2, 49)
 
 
-* **"knn classifier"**
+knn classifier
+**************
 
-  :class:`sklearn.neighbors.KNeighborsClassifier`
+  Base Class Documenation: :class:`sklearn.neighbors.KNeighborsClassifier`
 
   Param Distributions
 
@@ -484,15 +508,16 @@ categorical multilabel
 		n_neighbors: Random Integer Distribution (2, 19)
 
 
-* **"mlp classifier"**
+mlp classifier
+**************
 
-  :class:`sklearn.neural_network.MLPClassifier`
+  Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
 
   Param Distributions
 
 	0. "base mlp" ::
 
-		Class Defaults Only
+		defaults only
 
 	1. "mlp rs" ::
 
@@ -503,8 +528,8 @@ categorical multilabel
 		learning_rate: ['constant', 'invscaling', 'adaptive']
 		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
 		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Reciprical Distribution (0.5, 1.0)
-		beta_2: Random Reciprical Distribution (0.5, 1.0)
+		beta_1: Random Uniform Distribution (0.5, 1.0)
+		beta_2: Random Uniform Distribution (0.5, 1.0)
 
 	2. "mlp rs es" ::
 
@@ -515,8 +540,8 @@ categorical multilabel
 		learning_rate: ['constant', 'invscaling', 'adaptive']
 		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
 		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Reciprical Distribution (0.5, 1.0)
-		beta_2: Random Reciprical Distribution (0.5, 1.0)
+		beta_1: Random Uniform Distribution (0.5, 1.0)
+		beta_2: Random Uniform Distribution (0.5, 1.0)
 		early_stopping: True
 		n_iter_no_change: Random Integer Distribution (5, 49)
 
@@ -525,9 +550,10 @@ categorical multilabel
 		hidden_layer_sizes: Too many params to show
 
 
-* **"random forest classifier"**
+random forest classifier
+************************
 
-  :class:`sklearn.ensemble.RandomForestClassifier`
+  Base Class Documenation: :class:`sklearn.ensemble.RandomForestClassifier`
 
   Param Distributions
 
@@ -547,15 +573,16 @@ categorical multilabel
 
 categorical multiclass
 ======================
-* **"dt classifier"**
+dt classifier
+*************
 
-  :class:`sklearn.tree.DecisionTreeClassifier`
+  Base Class Documenation: :class:`sklearn.tree.DecisionTreeClassifier`
 
   Param Distributions
 
 	0. "base dt" ::
 
-		Class Defaults Only
+		defaults only
 
 	1. "dt rs" ::
 
@@ -563,9 +590,10 @@ categorical multiclass
 		min_samples_split: Random Integer Distribution (2, 49)
 
 
-* **"elastic net logistic"**
+elastic net logistic
+********************
 
-  :class:`sklearn.linear_model.LogisticRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
   Param Distributions
 
@@ -587,9 +615,10 @@ categorical multiclass
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-* **"gaussian nb"**
+gaussian nb
+***********
 
-  :class:`sklearn.naive_bayes.GaussianNB`
+  Base Class Documenation: :class:`sklearn.naive_bayes.GaussianNB`
 
   Param Distributions
 
@@ -598,9 +627,10 @@ categorical multiclass
 		var_smoothing: 1e-09
 
 
-* **"gp classifier"**
+gp classifier
+*************
 
-  :class:`sklearn.gaussian_process.GaussianProcessClassifier`
+  Base Class Documenation: :class:`sklearn.gaussian_process.GaussianProcessClassifier`
 
   Param Distributions
 
@@ -609,9 +639,10 @@ categorical multiclass
 		n_restarts_optimizer: 5
 
 
-* **"knn classifier"**
+knn classifier
+**************
 
-  :class:`sklearn.neighbors.KNeighborsClassifier`
+  Base Class Documenation: :class:`sklearn.neighbors.KNeighborsClassifier`
 
   Param Distributions
 
@@ -625,9 +656,10 @@ categorical multiclass
 		n_neighbors: Random Integer Distribution (2, 19)
 
 
-* **"lasso logistic"**
+lasso logistic
+**************
 
-  :class:`sklearn.linear_model.LogisticRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
   Param Distributions
 
@@ -647,9 +679,10 @@ categorical multiclass
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-* **"light gbm classifier"**
+light gbm classifier
+********************
 
-  :class:`lightgbm.LGBMClassifier`
+  Base Class Documenation: :class:`lightgbm.LGBMClassifier`
 
   Param Distributions
 
@@ -665,15 +698,16 @@ categorical multiclass
 		num_leaves: Random Integer Distribution (6, 49)
 		min_child_samples: Random Integer Distribution (100, 499)
 		min_child_weight: Random Reciprical Distribution (1e-05, 10000.0)
-		subsample: Random Reciprical Distribution (0.2, 1.0)
-		colsample_bytree: Random Reciprical Distribution (0.4, 1.0)
+		subsample: Random Uniform Distribution (0.2, 1.0)
+		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
 		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
 		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
 
 
-* **"logistic"**
+logistic
+********
 
-  :class:`sklearn.linear_model.LogisticRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
   Param Distributions
 
@@ -685,15 +719,16 @@ categorical multiclass
 		penalty: none
 
 
-* **"mlp classifier"**
+mlp classifier
+**************
 
-  :class:`sklearn.neural_network.MLPClassifier`
+  Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
 
   Param Distributions
 
 	0. "base mlp" ::
 
-		Class Defaults Only
+		defaults only
 
 	1. "mlp rs" ::
 
@@ -704,8 +739,8 @@ categorical multiclass
 		learning_rate: ['constant', 'invscaling', 'adaptive']
 		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
 		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Reciprical Distribution (0.5, 1.0)
-		beta_2: Random Reciprical Distribution (0.5, 1.0)
+		beta_1: Random Uniform Distribution (0.5, 1.0)
+		beta_2: Random Uniform Distribution (0.5, 1.0)
 
 	2. "mlp rs es" ::
 
@@ -716,8 +751,8 @@ categorical multiclass
 		learning_rate: ['constant', 'invscaling', 'adaptive']
 		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
 		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Reciprical Distribution (0.5, 1.0)
-		beta_2: Random Reciprical Distribution (0.5, 1.0)
+		beta_1: Random Uniform Distribution (0.5, 1.0)
+		beta_2: Random Uniform Distribution (0.5, 1.0)
 		early_stopping: True
 		n_iter_no_change: Random Integer Distribution (5, 49)
 
@@ -726,9 +761,10 @@ categorical multiclass
 		hidden_layer_sizes: Too many params to show
 
 
-* **"random forest classifier"**
+random forest classifier
+************************
 
-  :class:`sklearn.ensemble.RandomForestClassifier`
+  Base Class Documenation: :class:`sklearn.ensemble.RandomForestClassifier`
 
   Param Distributions
 
@@ -745,9 +781,10 @@ categorical multiclass
 		bootstrap: True
 
 
-* **"ridge logistic"**
+ridge logistic
+**************
 
-  :class:`sklearn.linear_model.LogisticRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
   Param Distributions
 
@@ -767,9 +804,10 @@ categorical multiclass
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-* **"svm classifier"**
+svm classifier
+**************
 
-  :class:`sklearn.svm.SVC`
+  Base Class Documenation: :class:`sklearn.svm.SVC`
 
   Param Distributions
 
@@ -794,213 +832,232 @@ Samplers
 
 binary
 ======
-* **"adasyn"**
+adasyn
+******
 
-  :class:`imblearn.over_sampling.ADASYN`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"all knn"**
-
-  :class:`imblearn.under_sampling.AllKNN`
+  Base Class Documenation: :class:`imblearn.over_sampling.ADASYN`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"borderline smote"**
+all knn
+*******
 
-  :class:`imblearn.over_sampling.BorderlineSMOTE`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"cluster centroids"**
-
-  :class:`imblearn.under_sampling.ClusterCentroids`
+  Base Class Documenation: :class:`imblearn.under_sampling.AllKNN`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"condensed nn"**
+borderline smote
+****************
 
-  :class:`imblearn.under_sampling.CondensedNearestNeighbour`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"enn"**
-
-  :class:`imblearn.under_sampling.EditedNearestNeighbours`
+  Base Class Documenation: :class:`imblearn.over_sampling.BorderlineSMOTE`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"kmeans smote"**
+cluster centroids
+*****************
 
-  :class:`imblearn.over_sampling.KMeansSMOTE`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"near miss"**
-
-  :class:`imblearn.under_sampling.NearMiss`
+  Base Class Documenation: :class:`imblearn.under_sampling.ClusterCentroids`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"neighbourhood cleaning rule"**
+condensed nn
+************
 
-  :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"one sided selection"**
-
-  :class:`imblearn.under_sampling.OneSidedSelection`
+  Base Class Documenation: :class:`imblearn.under_sampling.CondensedNearestNeighbour`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"random over sampler"**
+enn
+***
 
-  :class:`imblearn.over_sampling.RandomOverSampler`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"random under sampler"**
-
-  :class:`imblearn.under_sampling.RandomUnderSampler`
+  Base Class Documenation: :class:`imblearn.under_sampling.EditedNearestNeighbours`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"renn"**
+kmeans smote
+************
 
-  :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbours`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"smote"**
-
-  :class:`imblearn.over_sampling.SMOTE`
+  Base Class Documenation: :class:`imblearn.over_sampling.KMeansSMOTE`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"smote enn"**
+near miss
+*********
 
-  :class:`imblearn.combine.SMOTEENN`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"smote nc"**
-
-  :class:`imblearn.over_sampling.SMOTENC`
+  Base Class Documenation: :class:`imblearn.under_sampling.NearMiss`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"smote tomek"**
+neighbourhood cleaning rule
+***************************
 
-  :class:`imblearn.combine.SMOTETomek`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"svm smote"**
-
-  :class:`imblearn.over_sampling.SVMSMOTE`
+  Base Class Documenation: :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"tomek links"**
+one sided selection
+*******************
 
-  :class:`imblearn.under_sampling.TomekLinks`
+  Base Class Documenation: :class:`imblearn.under_sampling.OneSidedSelection`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
+
+
+random over sampler
+*******************
+
+  Base Class Documenation: :class:`imblearn.over_sampling.RandomOverSampler`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+random under sampler
+********************
+
+  Base Class Documenation: :class:`imblearn.under_sampling.RandomUnderSampler`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+renn
+****
+
+  Base Class Documenation: :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbours`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+smote
+*****
+
+  Base Class Documenation: :class:`imblearn.over_sampling.SMOTE`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+smote enn
+*********
+
+  Base Class Documenation: :class:`imblearn.combine.SMOTEENN`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+smote nc
+********
+
+  Base Class Documenation: :class:`imblearn.over_sampling.SMOTENC`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+smote tomek
+***********
+
+  Base Class Documenation: :class:`imblearn.combine.SMOTETomek`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+svm smote
+*********
+
+  Base Class Documenation: :class:`imblearn.over_sampling.SVMSMOTE`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+tomek links
+***********
+
+  Base Class Documenation: :class:`imblearn.under_sampling.TomekLinks`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 
@@ -1012,213 +1069,232 @@ categorical multilabel
 
 categorical multiclass
 ======================
-* **"adasyn"**
+adasyn
+******
 
-  :class:`imblearn.over_sampling.ADASYN`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"all knn"**
-
-  :class:`imblearn.under_sampling.AllKNN`
+  Base Class Documenation: :class:`imblearn.over_sampling.ADASYN`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"borderline smote"**
+all knn
+*******
 
-  :class:`imblearn.over_sampling.BorderlineSMOTE`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"cluster centroids"**
-
-  :class:`imblearn.under_sampling.ClusterCentroids`
+  Base Class Documenation: :class:`imblearn.under_sampling.AllKNN`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"condensed nn"**
+borderline smote
+****************
 
-  :class:`imblearn.under_sampling.CondensedNearestNeighbour`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"enn"**
-
-  :class:`imblearn.under_sampling.EditedNearestNeighbours`
+  Base Class Documenation: :class:`imblearn.over_sampling.BorderlineSMOTE`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"kmeans smote"**
+cluster centroids
+*****************
 
-  :class:`imblearn.over_sampling.KMeansSMOTE`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"near miss"**
-
-  :class:`imblearn.under_sampling.NearMiss`
+  Base Class Documenation: :class:`imblearn.under_sampling.ClusterCentroids`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"neighbourhood cleaning rule"**
+condensed nn
+************
 
-  :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"one sided selection"**
-
-  :class:`imblearn.under_sampling.OneSidedSelection`
+  Base Class Documenation: :class:`imblearn.under_sampling.CondensedNearestNeighbour`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"random over sampler"**
+enn
+***
 
-  :class:`imblearn.over_sampling.RandomOverSampler`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"random under sampler"**
-
-  :class:`imblearn.under_sampling.RandomUnderSampler`
+  Base Class Documenation: :class:`imblearn.under_sampling.EditedNearestNeighbours`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"renn"**
+kmeans smote
+************
 
-  :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbours`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"smote"**
-
-  :class:`imblearn.over_sampling.SMOTE`
+  Base Class Documenation: :class:`imblearn.over_sampling.KMeansSMOTE`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"smote enn"**
+near miss
+*********
 
-  :class:`imblearn.combine.SMOTEENN`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"smote nc"**
-
-  :class:`imblearn.over_sampling.SMOTENC`
+  Base Class Documenation: :class:`imblearn.under_sampling.NearMiss`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"smote tomek"**
+neighbourhood cleaning rule
+***************************
 
-  :class:`imblearn.combine.SMOTETomek`
-
-  Param Distributions
-
-	0. "default" ::
-
-		Class Defaults Only
-
-
-* **"svm smote"**
-
-  :class:`imblearn.over_sampling.SVMSMOTE`
+  Base Class Documenation: :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
 
 
-* **"tomek links"**
+one sided selection
+*******************
 
-  :class:`imblearn.under_sampling.TomekLinks`
+  Base Class Documenation: :class:`imblearn.under_sampling.OneSidedSelection`
 
   Param Distributions
 
 	0. "default" ::
 
-		Class Defaults Only
+		defaults only
+
+
+random over sampler
+*******************
+
+  Base Class Documenation: :class:`imblearn.over_sampling.RandomOverSampler`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+random under sampler
+********************
+
+  Base Class Documenation: :class:`imblearn.under_sampling.RandomUnderSampler`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+renn
+****
+
+  Base Class Documenation: :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbours`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+smote
+*****
+
+  Base Class Documenation: :class:`imblearn.over_sampling.SMOTE`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+smote enn
+*********
+
+  Base Class Documenation: :class:`imblearn.combine.SMOTEENN`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+smote nc
+********
+
+  Base Class Documenation: :class:`imblearn.over_sampling.SMOTENC`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+smote tomek
+***********
+
+  Base Class Documenation: :class:`imblearn.combine.SMOTETomek`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+svm smote
+*********
+
+  Base Class Documenation: :class:`imblearn.over_sampling.SVMSMOTE`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+tomek links
+***********
+
+  Base Class Documenation: :class:`imblearn.under_sampling.TomekLinks`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 
@@ -1228,9 +1304,10 @@ Feat Selectors
 
 binary
 ======
-* **"rfe"**
+rfe
+***
 
-  :class:`ABCD_ML.Feature_Selectors.RFE`
+  Base Class Documenation: :class:`ABCD_ML.Feature_Selectors.RFE`
 
   Param Distributions
 
@@ -1243,9 +1320,10 @@ binary
 		n_features_to_select: Random Uniform Distribution (0.0, 1.0)
 
 
-* **"univariate selection classification"**
+univariate selection classification
+***********************************
 
-  :class:`sklearn.feature_selection.SelectPercentile`
+  Base Class Documenation: :class:`sklearn.feature_selection.SelectPercentile`
 
   Param Distributions
 
@@ -1268,9 +1346,10 @@ binary
 
 regression
 ==========
-* **"rfe"**
+rfe
+***
 
-  :class:`ABCD_ML.Feature_Selectors.RFE`
+  Base Class Documenation: :class:`ABCD_ML.Feature_Selectors.RFE`
 
   Param Distributions
 
@@ -1283,9 +1362,10 @@ regression
 		n_features_to_select: Random Uniform Distribution (0.0, 1.0)
 
 
-* **"univariate selection regression"**
+univariate selection regression
+*******************************
 
-  :class:`sklearn.feature_selection.SelectPercentile`
+  Base Class Documenation: :class:`sklearn.feature_selection.SelectPercentile`
 
   Param Distributions
 
@@ -1311,9 +1391,10 @@ categorical multilabel
 
 categorical multiclass
 ======================
-* **"rfe"**
+rfe
+***
 
-  :class:`ABCD_ML.Feature_Selectors.RFE`
+  Base Class Documenation: :class:`ABCD_ML.Feature_Selectors.RFE`
 
   Param Distributions
 
@@ -1326,9 +1407,10 @@ categorical multiclass
 		n_features_to_select: Random Uniform Distribution (0.0, 1.0)
 
 
-* **"univariate selection classification"**
+univariate selection classification
+***********************************
 
-  :class:`sklearn.feature_selection.SelectPercentile`
+  Base Class Documenation: :class:`sklearn.feature_selection.SelectPercentile`
 
   Param Distributions
 
@@ -1355,158 +1437,268 @@ Ensemble Types
 
 binary
 ======
-* **"aposteriori"**
+aposteriori
+***********
 
-  :class:`deslib.dcs.a_posteriori.APosteriori`
-
-  Param Distributions
-
-
-* **"apriori"**
-
-  :class:`deslib.dcs.a_priori.APriori`
+  Base Class Documenation: :class:`deslib.dcs.a_posteriori.APosteriori`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"des clustering"**
-
-  :class:`deslib.des.des_clustering.DESClustering`
-
-  Param Distributions
+		defaults only
 
 
-* **"des knn"**
+apriori
+*******
 
-  :class:`deslib.des.des_knn.DESKNN`
+  Base Class Documenation: :class:`deslib.dcs.a_priori.APriori`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"deskl"**
-
-  :class:`deslib.des.probabilistic.DESKL`
-
-  Param Distributions
+		defaults only
 
 
-* **"desmi"**
+des clustering
+**************
 
-  :class:`deslib.des.des_mi.DESMI`
+  Base Class Documenation: :class:`deslib.des.des_clustering.DESClustering`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"desp"**
-
-  :class:`deslib.des.des_p.DESP`
-
-  Param Distributions
+		defaults only
 
 
-* **"exponential"**
+des knn
+*******
 
-  :class:`deslib.des.probabilistic.Exponential`
+  Base Class Documenation: :class:`deslib.des.des_knn.DESKNN`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"knop"**
-
-  :class:`deslib.des.knop.KNOP`
-
-  Param Distributions
+		defaults only
 
 
-* **"knorae"**
+deskl
+*****
 
-  :class:`deslib.des.knora_e.KNORAE`
+  Base Class Documenation: :class:`deslib.des.probabilistic.DESKL`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"knrau"**
-
-  :class:`deslib.des.knora_u.KNORAU`
-
-  Param Distributions
+		defaults only
 
 
-* **"lca"**
+desmi
+*****
 
-  :class:`deslib.dcs.lca.LCA`
+  Base Class Documenation: :class:`deslib.des.des_mi.DESMI`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"logarithmic"**
-
-  :class:`deslib.des.probabilistic.Logarithmic`
-
-  Param Distributions
+		defaults only
 
 
-* **"mcb"**
+desp
+****
 
-  :class:`deslib.dcs.mcb.MCB`
+  Base Class Documenation: :class:`deslib.des.des_p.DESP`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"metades"**
-
-  :class:`deslib.des.meta_des.METADES`
-
-  Param Distributions
+		defaults only
 
 
-* **"min dif"**
+exponential
+***********
 
-  :class:`deslib.des.probabilistic.MinimumDifference`
+  Base Class Documenation: :class:`deslib.des.probabilistic.Exponential`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"mla"**
-
-  :class:`deslib.dcs.mla.MLA`
-
-  Param Distributions
+		defaults only
 
 
-* **"ola"**
+knop
+****
 
-  :class:`deslib.dcs.ola.OLA`
+  Base Class Documenation: :class:`deslib.des.knop.KNOP`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"rank"**
-
-  :class:`deslib.dcs.rank.Rank`
-
-  Param Distributions
+		defaults only
 
 
-* **"rrc"**
+knorae
+******
 
-  :class:`deslib.des.probabilistic.RRC`
+  Base Class Documenation: :class:`deslib.des.knora_e.KNORAE`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"single best"**
+		defaults only
 
-  :class:`deslib.static.single_best.SingleBest`
+
+knrau
+*****
+
+  Base Class Documenation: :class:`deslib.des.knora_u.KNORAU`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+lca
+***
+
+  Base Class Documenation: :class:`deslib.dcs.lca.LCA`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"stacked"**
+		defaults only
 
-  :class:`deslib.static.stacked.StackedClassifier`
+
+logarithmic
+***********
+
+  Base Class Documenation: :class:`deslib.des.probabilistic.Logarithmic`
 
   Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+mcb
+***
+
+  Base Class Documenation: :class:`deslib.dcs.mcb.MCB`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+metades
+*******
+
+  Base Class Documenation: :class:`deslib.des.meta_des.METADES`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+min dif
+*******
+
+  Base Class Documenation: :class:`deslib.des.probabilistic.MinimumDifference`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+mla
+***
+
+  Base Class Documenation: :class:`deslib.dcs.mla.MLA`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+ola
+***
+
+  Base Class Documenation: :class:`deslib.dcs.ola.OLA`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+rank
+****
+
+  Base Class Documenation: :class:`deslib.dcs.rank.Rank`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+rrc
+***
+
+  Base Class Documenation: :class:`deslib.des.probabilistic.RRC`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+single best
+***********
+
+  Base Class Documenation: :class:`deslib.static.single_best.SingleBest`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+stacked
+*******
+
+  Base Class Documenation: :class:`deslib.static.stacked.StackedClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 
@@ -1518,158 +1710,268 @@ categorical multilabel
 
 categorical multiclass
 ======================
-* **"aposteriori"**
+aposteriori
+***********
 
-  :class:`deslib.dcs.a_posteriori.APosteriori`
-
-  Param Distributions
-
-
-* **"apriori"**
-
-  :class:`deslib.dcs.a_priori.APriori`
+  Base Class Documenation: :class:`deslib.dcs.a_posteriori.APosteriori`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"des clustering"**
-
-  :class:`deslib.des.des_clustering.DESClustering`
-
-  Param Distributions
+		defaults only
 
 
-* **"des knn"**
+apriori
+*******
 
-  :class:`deslib.des.des_knn.DESKNN`
+  Base Class Documenation: :class:`deslib.dcs.a_priori.APriori`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"deskl"**
-
-  :class:`deslib.des.probabilistic.DESKL`
-
-  Param Distributions
+		defaults only
 
 
-* **"desmi"**
+des clustering
+**************
 
-  :class:`deslib.des.des_mi.DESMI`
+  Base Class Documenation: :class:`deslib.des.des_clustering.DESClustering`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"desp"**
-
-  :class:`deslib.des.des_p.DESP`
-
-  Param Distributions
+		defaults only
 
 
-* **"exponential"**
+des knn
+*******
 
-  :class:`deslib.des.probabilistic.Exponential`
+  Base Class Documenation: :class:`deslib.des.des_knn.DESKNN`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"knop"**
-
-  :class:`deslib.des.knop.KNOP`
-
-  Param Distributions
+		defaults only
 
 
-* **"knorae"**
+deskl
+*****
 
-  :class:`deslib.des.knora_e.KNORAE`
+  Base Class Documenation: :class:`deslib.des.probabilistic.DESKL`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"knrau"**
-
-  :class:`deslib.des.knora_u.KNORAU`
-
-  Param Distributions
+		defaults only
 
 
-* **"lca"**
+desmi
+*****
 
-  :class:`deslib.dcs.lca.LCA`
+  Base Class Documenation: :class:`deslib.des.des_mi.DESMI`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"logarithmic"**
-
-  :class:`deslib.des.probabilistic.Logarithmic`
-
-  Param Distributions
+		defaults only
 
 
-* **"mcb"**
+desp
+****
 
-  :class:`deslib.dcs.mcb.MCB`
+  Base Class Documenation: :class:`deslib.des.des_p.DESP`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"metades"**
-
-  :class:`deslib.des.meta_des.METADES`
-
-  Param Distributions
+		defaults only
 
 
-* **"min dif"**
+exponential
+***********
 
-  :class:`deslib.des.probabilistic.MinimumDifference`
+  Base Class Documenation: :class:`deslib.des.probabilistic.Exponential`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"mla"**
-
-  :class:`deslib.dcs.mla.MLA`
-
-  Param Distributions
+		defaults only
 
 
-* **"ola"**
+knop
+****
 
-  :class:`deslib.dcs.ola.OLA`
+  Base Class Documenation: :class:`deslib.des.knop.KNOP`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"rank"**
-
-  :class:`deslib.dcs.rank.Rank`
-
-  Param Distributions
+		defaults only
 
 
-* **"rrc"**
+knorae
+******
 
-  :class:`deslib.des.probabilistic.RRC`
+  Base Class Documenation: :class:`deslib.des.knora_e.KNORAE`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"single best"**
+		defaults only
 
-  :class:`deslib.static.single_best.SingleBest`
+
+knrau
+*****
+
+  Base Class Documenation: :class:`deslib.des.knora_u.KNORAU`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+lca
+***
+
+  Base Class Documenation: :class:`deslib.dcs.lca.LCA`
 
   Param Distributions
 
+	0. "default" ::
 
-* **"stacked"**
+		defaults only
 
-  :class:`deslib.static.stacked.StackedClassifier`
+
+logarithmic
+***********
+
+  Base Class Documenation: :class:`deslib.des.probabilistic.Logarithmic`
 
   Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+mcb
+***
+
+  Base Class Documenation: :class:`deslib.dcs.mcb.MCB`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+metades
+*******
+
+  Base Class Documenation: :class:`deslib.des.meta_des.METADES`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+min dif
+*******
+
+  Base Class Documenation: :class:`deslib.des.probabilistic.MinimumDifference`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+mla
+***
+
+  Base Class Documenation: :class:`deslib.dcs.mla.MLA`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+ola
+***
+
+  Base Class Documenation: :class:`deslib.dcs.ola.OLA`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+rank
+****
+
+  Base Class Documenation: :class:`deslib.dcs.rank.Rank`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+rrc
+***
+
+  Base Class Documenation: :class:`deslib.des.probabilistic.RRC`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+single best
+***********
+
+  Base Class Documenation: :class:`deslib.static.single_best.SingleBest`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+stacked
+*******
+
+  Base Class Documenation: :class:`deslib.static.stacked.StackedClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 

@@ -59,9 +59,10 @@ def add_block(lines, problem_types, AVALIABLE, OBJS):
         for obj in objs:
 
             o_path = get_name(obj[1])
-            lines.append('* ' + '**"' + obj[0] + '"**')
+            lines.append(obj[0])
+            lines.append(''.join(['*' for i in range(len(obj[0]))]))
             lines.append('')
-            lines.append('  :class:`' + o_path + '`')
+            lines.append('  Base Class Documenation: :class:`' + o_path + '`')
             lines.append('')
             lines.append('  Param Distributions')
 
@@ -94,7 +95,7 @@ def add_block(lines, problem_types, AVALIABLE, OBJS):
 
                                 if a == 0:
                                     line += 'Random Uniform Distribution ('
-                                elif b/a < 2:
+                                elif b/a < 11:
                                     line += 'Random Uniform Distribution ('
                                 else:
                                     line += 'Random Reciprical Distribution ('
@@ -116,7 +117,7 @@ def add_block(lines, problem_types, AVALIABLE, OBJS):
                         lines.append(line)
 
                 else:
-                    lines.append('\t\tClass Defaults Only')
+                    lines.append('\t\tdefaults only')
 
                 lines.append('')
             lines.append('')

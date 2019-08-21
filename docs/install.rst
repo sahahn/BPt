@@ -31,7 +31,3 @@ In the future, to grab the latest updated versions, navigate into the ABCD_ML fo
 
     git pull
     pip install .
-
-
-
-

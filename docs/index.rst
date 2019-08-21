@@ -15,4 +15,12 @@ This is a project.
 
    ABCD_ML_class_docs
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Avaliable Options
+
+   options
+
+
+
 

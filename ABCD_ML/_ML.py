@@ -26,8 +26,8 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
     '''Sets the self.default_ML_params dictionary with user passed or default
     values. In general, if any argument is left as 'default' and it has
     not been previously defined, it will be set to a default value,
-    sometimes passed on other values.
-    See notes for rationale behind default ML params.
+    sometimes passed on other values. See notes for rationale behind
+    default ML params.
 
     Parameters
     ----------
@@ -135,9 +135,7 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 
         - 'random' : Uses sklearn RandomizedSearchCV
         - 'grid' : Uses sklearn GridSearchCV
-        - None : Still technically used sklearn GridSearchCV, but \
-            forces all param inds to default = 0, such that only one \
-            fixed setting is used.
+        - None : No search
 
         .. WARNING::
             If search type is set to grid, and any of model_type_param_ind,
@@ -249,7 +247,7 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         If set to True, will store the base feature importances
         when running Evaluate or Test. Note, base feature importances
         are only avaliable for tree-based or linear models, specifically
-        those with either coefs_ or feature_importance_ attributes.
+        those with either coefs or feature_importance attributes.
 
         If 'default', and not already defined, set to True.
         (default = 'default')
@@ -282,14 +280,6 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         If 'default', and not already defined, set to empty dict.
 
         (default = 'default')
-
-    Notes
-    ----------
-    `default_ML_params` are used in the case where the same settings
-    are being set over and over. For example, if only exploring a binary
-    problem_type, the default type should be set to 'binary',
-    and then the user won't have to pass it as an argument everytime they call
-    ``Evaluate``.
     '''
 
     default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
@@ -621,9 +611,7 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
         - 'random' : Uses sklearn RandomizedSearchCV
         - 'grid' : Uses sklearn GridSearchCV
-        - None : Still technically used sklearn GridSearchCV, but \
-            forces all param inds to default = 0, such that only one \
-            fixed setting is used.
+        - None : No search
 
         .. WARNING::
             If search type is set to grid, and any of model_type_param_ind,
@@ -753,7 +741,7 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         If set to True, will store the base feature importances
         when running Evaluate or Test. Note, base feature importances
         are only avaliable for tree-based or linear models, specifically
-        those with either coefs_ or feature_importance_ attributes.
+        those with either coefs or feature_importance attributes.
 
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
@@ -1016,9 +1004,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
         - 'random' : Uses sklearn RandomizedSearchCV
         - 'grid' : Uses sklearn GridSearchCV
-        - None : Still technically used sklearn GridSearchCV, but \
-            forces all param inds to default = 0, such that only one \
-            fixed setting is used.
+        - None : No search
 
         .. WARNING::
             If search type is set to grid, and any of model_type_param_ind,
@@ -1148,7 +1134,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         If set to True, will store the base feature importances
         when running Evaluate or Test. Note, base feature importances
         are only avaliable for tree-based or linear models, specifically
-        those with either coefs_ or feature_importance_ attributes.
+        those with either coefs or feature_importance attributes.
 
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')

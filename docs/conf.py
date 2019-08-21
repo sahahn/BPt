@@ -31,7 +31,7 @@ release = '0.1'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.napoleon']
+extensions = ['sphinx.ext.napoleon', 'sphinx.ext.intersphinx']
 
 
 # Add any paths that contain templates here, relative to this directory.
@@ -60,3 +60,10 @@ html_logo = 'logo/HG.jpg'
 autoclass_content = 'both'
 
 html_theme_options = {'collapse_navigation': False}
+
+intersphinx_mapping =\
+    {'deslib': ('http://deslib.readthedocs.io/en/latest', None),
+     'sklearn': ('http://scikit-learn.org/stable', None),
+     'lightgbm': ('https://lightgbm.readthedocs.io/en/latest', None),
+     'imblearn': ('https://imbalanced-learn.readthedocs.io/en/stable', None)
+     }

@@ -252,6 +252,38 @@ def get_avaliable_by_type(AVALIABLE):
     return avaliable_by_type
 
 
+def get_objects_by_type(problem_type, AVALIABLE=None, OBJS=None):
+    '''problem_type must be binary, regression or categorical multilabel or
+    categorical multiclass'''
+
+    avaliable_by_type = get_avaliable_by_type(AVALIABLE)
+
+    objs = []
+    for obj_str in avaliable_by_type[problem_type]:
+
+        if 'basic ensemble' not in obj_str and 'user passed' not in obj_str:
+            obj = OBJS[obj_str][0]
+            objs.append((obj_str, obj))
+
+    return objs
+
+
+def proc_problem_type(problem_type):
+
+    if problem_type is not None:
+        if problem_type == 'categorical':
+            problem_types = ['categorical multilabel',
+                             'categorical multiclass']
+
+        else:
+            problem_types = [problem_type]
+
+    else:
+        problem_types = list(avaliable_by_type)
+
+    return problem_types
+
+
 def show_objects(problem_type=None, obj=None,
                  show_param_ind_options=True, show_object=False,
                  show_all_possible_params=False, AVALIABLE=None, OBJS=None):
@@ -265,17 +297,7 @@ def show_objects(problem_type=None, obj=None,
             return
 
         avaliable_by_type = get_avaliable_by_type(AVALIABLE)
-
-        if problem_type is not None:
-            if problem_type == 'categorical':
-                problem_types = ['categorical multilabel',
-                                 'categorical multilabel']
-
-            else:
-                problem_types = [problem_type]
-
-        else:
-            problem_types = list(avaliable_by_type)
+        problem_types = proc_problem_type(problem_type)
 
         for pt in problem_types:
                 show_type(pt, avaliable_by_type,
@@ -293,8 +315,15 @@ def show_type(problem_type, avaliable_by_type, show_param_ind_options,
         print()
 
         for obj_str in avaliable_by_type[problem_type]:
-            if ('user passed' not in obj_str and
-               'basic ensemble' not in obj_str):
+
+            if 'basic ensemble' in obj_str:
+
+                print('- - - - - - - - - - - - - - - - - - - - ')
+                print('("basic ensemble")')
+                print('- - - - - - - - - - - - - - - - - - - - ')
+                print()
+
+            elif 'user passed' not in obj_str:
                 show_obj(obj_str, show_param_ind_options, show_object,
                          show_all_possible_params, OBJS)
 

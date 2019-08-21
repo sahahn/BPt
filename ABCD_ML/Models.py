@@ -133,11 +133,7 @@ def Show_Model_Types(self, problem_type=None, model_type_str=None,
                      param_ind_options=False, show_object=False,
                      possible_params=False):
         '''Print out the avaliable machine learning models,
-        optionally restricted by problem type + other diagnostic args.
-
-        :class:`GaussianNB`
-
-        :class:`sklearn.naive_bayes.GaussianNB`
+        optionally restricted by problem type and other diagnostic args.
 
         Parameters
         ----------

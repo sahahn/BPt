@@ -12,6 +12,8 @@ from ABCD_ML.Feature_Selectors import SELECTORS
 from ABCD_ML.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
 from ABCD_ML.Ensembles import ENSEMBLES
 
+from ABCD_ML.Default_Params import PARAMS
+
 
 def get_name(obj):
 
@@ -55,10 +57,71 @@ def add_block(lines, problem_types, AVALIABLE, OBJS):
         objs = get_objects_by_type(pt, AVALIABLE, OBJS)
 
         for obj in objs:
-            o_path = get_name(obj[1])
-            lines.append('* ' + obj[0] + ' :class:`' + o_path + '`')
 
+            o_path = get_name(obj[1])
+            lines.append('* ' + '**"' + obj[0] + '"**')
+            lines.append('')
+            lines.append('  :class:`' + o_path + '`')
+            lines.append('')
+            lines.append('  Param Distributions')
+
+            lines.append('')
+            o_params = obj[2]
+
+            for p in range(len(o_params)):
+
+                params_name = o_params[p]
+                params = PARAMS[params_name].copy()
+
+                lines.append('\t' + str(p) + '. "' + params_name + '" ::')
+                lines.append('')
+
+                if len(params) > 0:
+
+                    for key in params:
+
+                        line = '\t\t' + key + ': '
+                        value = params[key]
+
+                        if 'scipy' in str(type(value)):
+
+                            if isinstance(value.a, int):
+                                line += 'Random Integer Distribution ('
+                                line += str(value.a) + ', ' + str(value.b) + ')'
+
+                            else:
+                                a, b = value.interval(1)
+
+                                if a == 0:
+                                    line += 'Random Uniform Distribution ('
+                                elif b/a < 2:
+                                    line += 'Random Uniform Distribution ('
+                                else:
+                                    line += 'Random Reciprical Distribution ('
+
+                                line += str(a) + ', ' + str(b) + ')'
+
+                        elif len(value) == 1:
+                            if callable(value[0]):
+                                line += str(value[0].__name__)
+                            else:
+                                line += str(value[0])
+
+                        elif len(value) > 50:
+                            line += 'Too many params to show'
+
+                        else:
+                            line += str(value)
+
+                        lines.append(line)
+
+                else:
+                    lines.append('\t\tClass Defaults Only')
+
+                lines.append('')
+            lines.append('')
         lines.append('')
+
     return lines
 
 problem_types = ['binary', 'regression', 'categorical multilabel',

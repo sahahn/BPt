@@ -96,6 +96,7 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
 
     if covars == 'SHOW_ALL':
         covars = self._get_base_covar_names()
+        print(covars)
 
     if not isinstance(covars, list):
         covars = [covars]

@@ -1004,7 +1004,9 @@ class Model():
 
             if self.linear_flag:
                 X_train = self._proc_X_train(train_data)
-                explainer = shap.LinearExplainer(base_model, X_train)
+                explainer =\
+                    shap.LinearExplainer(base_model, X_train,
+                                         feature_dependence="independent")
 
             elif self.tree_flag:
                 explainer = shap.TreeExplainer(base_model)

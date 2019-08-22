@@ -96,7 +96,6 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
 
     if covars == 'SHOW_ALL':
         covars = self._get_base_covar_names()
-        print(covars)
 
     if not isinstance(covars, list):
         covars = [covars]
@@ -128,6 +127,9 @@ def show_covar_dist(self, covar, covars_df, cat_show_original_name, show=True):
                 dropped_name = list(dropped_name)[0]
                 covar_df[dropped_name] =\
                     np.where(covar_df.sum(axis=1) == 1, 0, 1)
+
+                covar_df[dropped_name] =\
+                    covar_df[dropped_name].astype('category')
 
             covar_df = covar_df[covar_df_names]
 
@@ -174,9 +176,9 @@ def show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
 
         display_df = pd.DataFrame(sums, columns=['Count'])
         display_df.index.name = 'Internal Name'
-        display_df['Original Name'] = original_names
+        display_df['Original Value'] = original_names
         display_df['Frequency'] = sums / len(data)
-        display_df = display_df[['Original Name', 'Count', 'Frequency']]
+        display_df = display_df[['Original Value', 'Count', 'Frequency']]
 
         if self.notebook:
             display(display_df)

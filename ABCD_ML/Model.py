@@ -715,8 +715,6 @@ class Model():
 
             (default = False)
 
-
-
         Returns
         ----------
         array-like

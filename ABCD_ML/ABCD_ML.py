@@ -204,6 +204,7 @@ class ABCD_ML():
         self.test_subjects = None
         self.CV = CV()
         self.default_ML_params = {}
+        self.all_scores = {}
 
         if self.notebook:
             shap.initjs()
@@ -511,7 +512,9 @@ class ABCD_ML():
                              _make_ML_params,
                              _print_model_params,
                              _init_model,
+                             _get_avaliable_all_scores_name,
                              _print_summary_score,
+                             _add_to_all_scores,
                              Get_Base_Feat_Importances,
                              Get_Shap_Feat_Importances)
 

@@ -478,11 +478,11 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
     self._print()
 
 
-def Evaluate(self, model_type, problem_type='default', metric='default',
-             data_scaler='default', sampler='default', feat_selector='default',
-             n_splits='default', n_repeats='default', int_cv='default',
-             ensemble_type='basic ensemble', ensemble_split=.2,
-             search_type='default', model_type_param_ind=0,
+def Evaluate(self, model_type, run_name=None, problem_type='default',
+             metric='default', data_scaler='default', sampler='default',
+             feat_selector='default', n_splits='default', n_repeats='default',
+             int_cv='default', ensemble_type='basic ensemble',
+             ensemble_split=.2, search_type='default', model_type_param_ind=0,
              data_scaler_param_ind='default', sampler_param_ind='default',
              feat_selector_param_ind='default', class_weight='default',
              n_jobs='default', n_iter='default', data_to_use='default',
@@ -502,6 +502,14 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
         For a full list of supported options call:
         :func:`Show_Model_Types`
+
+    run_name : str or None, optional
+        All results from `Evaluate`, or rather the metrics are
+        saved within ABCD_ML.all_scores by default (in addition to in
+        the logs, though this way saves them in a more programatically
+        avaliable way). `run_name` refers to the specific name under which to
+        store this Evaluate's run on results. If left as None, then will just
+        name as the first available integer, e.g. "6".
 
     problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
 
@@ -801,7 +809,7 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
     Returns
     ----------
-    train_scores : array-like of array-like
+    raw_scores : array-like of array-like
         numpy array of numpy arrays,
         where each internal array contains the raw scores as computed for
         all passed in metrics, computed for each fold within
@@ -809,15 +817,9 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         e.g., array will have a length of `n_repeats` * `n_splits`,
         and each internal array will have the same length as the number of
         metrics.
-
-    validation_scores : array-like of array-like
-        numpy array of numpy arrays,
-        where each internal array contains the raw scores as computed for
-        all passed in metrics, computed for each fold within
-        each repeat.
-        e.g., array will have a length of `n_repeats` * `n_splits`,
-        and each internal array will have the same length as the number of
-        metrics.
+        Optionally, this could instead return a list containing as the first
+        element the raw training score in this same format,
+        and then the raw testing scores.
 
     Notes
     ----------
@@ -848,6 +850,8 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
                              ensemble_split, model_type_param_ind,
                              test=False)
 
+    run_name = self._get_avaliable_all_scores_name(run_name)
+
     # Init the Model object with modeling params
     self._init_model(model_type, ML_params, ensemble_type, ensemble_split,
                      model_type_param_ind)
@@ -868,13 +872,13 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         score_type_list = ['Validation']
 
     for s, name in zip(score_list, score_type_list):
-
         self._print(name + ' Scores')
         self._print(''.join('_' for i in range(len(name) + 7)))
 
         for i in range(len(scorer_strs)):
-            self._print('Metric: ', scorer_strs[i])
 
+            metric_name = scorer_strs[i]
+            self._print('Metric: ', metric_name)
             score_by_metric = s[:, i]
 
             if len(score_by_metric[0].shape) > 0:
@@ -888,9 +892,11 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
 
                 for summary_scores, class_name in zip(summary_scores_by_class,
                                                       self.targets_key):
-                    self._print('for target class: ', class_name)
+
+                    self._print('Target class: ', class_name)
                     self._print_summary_score(name, summary_scores,
-                                              ML_params['n_repeats'])
+                                              ML_params['n_repeats'], run_name,
+                                              metric_name, class_name)
 
             else:
 
@@ -900,7 +906,8 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
                                                      ML_params['n_splits'])
 
                 self._print_summary_score(name, summary_scores,
-                                          ML_params['n_repeats'])
+                                          ML_params['n_repeats'], run_name,
+                                          metric_name)
 
     # Return the raw scores from each fold
     return score_list
@@ -915,7 +922,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
          feat_selector_param_ind='default', class_weight='default',
          n_jobs='default', n_iter='default', data_to_use='default',
          compute_train_score='default', random_state='default',
-         return_model=False, calc_base_feature_importances='default',
+         calc_base_feature_importances='default',
          calc_shap_feature_importances='default', extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
@@ -1208,13 +1215,6 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         If 'default', use the saved value within self.default_ML_params.
         (default = 'default')
 
-    return_model : bool, optional
-        If `return_model` is True, then model constructed and tested
-        will be returned in addition to the score. If False,
-        just the score will be returned.
-
-        (default = False)
-
     extra_params : dict or 'default', optional
         Any extra params being passed. Typically, extra params are
         added when the user wants to provide a specific model/classifier,
@@ -1232,16 +1232,12 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
     Returns
     ----------
-    train_score : array-like
+    raw_scores : array-like
         A numpy array of scores as determined by the passed
-        metric/scorer(s) on the provided testing set.
-
-    test_score : array-like
-        A numpy array of scores as determined by the passed
-        metric/scorer(s) on the provided testing set.
-
-    model (if return_model == True)
-        The sklearn api trained model object.
+        metric/scorer(s) on the provided testing set. Optionally,
+        this could instead return a list containing as the first
+        element the raw training score in this same format,
+        and then the raw testing scores.
     '''
 
     # Perform pre-modeling check
@@ -1296,13 +1292,11 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
                 for score_by_class, class_name in zip(scr, self.targets_key):
                     self._print('for target class: ', class_name)
                     self._print(name + ' Score: ', score_by_class)
+                    self._print()
 
             else:
                 self._print(name + ' Score: ', scr)
-
-    # Optionally return the model object itself
-    if return_model:
-        return score_list, self.Model.model
+                self._print()
 
     return score_list
 
@@ -1432,20 +1426,76 @@ def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
                        self._print)
 
 
-def _print_summary_score(self, name, summary_scores, n_repeats):
+def _get_avaliable_all_scores_name(self, name):
+
+    if name is None:
+
+        name = 0
+        while str(name) in self.all_scores:
+            name += 1
+
+        name = str(name)
+
+    else:
+
+        name = str(name)
+        if name in self.all_scores:
+            n = 0
+            while name + str(n) in self.all_scores:
+                n += 1
+
+            name = name + str(n)
+
+    self._print('Saving scores under name:', name)
+    return name
+
+
+def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
+                         metric_name, class_name=None):
 
     self._print('Mean ' + name + ' score: ', summary_scores[0])
+    self._add_to_all_scores(run_name, name, metric_name, 'Mean',
+                            summary_scores[0], class_name)
 
     if n_repeats > 1:
-        self._print('Macro std in ' + name + ' score: ',
+        self._print('Macro Std in ' + name + ' score: ',
                     summary_scores[1])
-        self._print('Micro std in ' + name + ' score: ',
+        self._print('Micro Std in ' + name + ' score: ',
                     summary_scores[2])
+        self._add_to_all_scores(run_name, name, metric_name, 'Macro Std',
+                                summary_scores[1], class_name)
+        self._add_to_all_scores(run_name, name, metric_name, 'Micro Std',
+                                summary_scores[2], class_name)
     else:
-        self._print('std in ' + name + ' score: ',
+        self._print('Std in ' + name + ' score: ',
                     summary_scores[1])
+        self._add_to_all_scores(run_name, name, metric_name, 'Std',
+                                summary_scores[1], class_name)
 
     self._print()
+
+
+def _add_to_all_scores(self, run_name, name, metric_name, val_type, val,
+                       class_name=None):
+
+    if run_name not in self.all_scores:
+        self.all_scores[run_name] = {}
+
+    if name not in self.all_scores[run_name]:
+        self.all_scores[run_name][name] = {}
+
+    if metric_name not in self.all_scores[run_name][name]:
+        self.all_scores[run_name][name][metric_name] = {}
+
+    if class_name is None:
+        self.all_scores[run_name][name][metric_name][val_type] = val
+
+    else:
+        if class_name not in self.all_scores[run_name][name][metric_name]:
+            self.all_scores[run_name][name][metric_name][class_name] = {}
+
+        self.all_scores[run_name][name][metric_name][class_name][val_type] =\
+            val
 
 
 def Get_Base_Feat_Importances(self, top_n=None):

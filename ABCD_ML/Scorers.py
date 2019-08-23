@@ -18,6 +18,7 @@ def roc_auc_score_wrapper(y_true, y_score, average='macro', sample_weight=None,
         y_true = binarize(y_true)
 
     y_score = mutlilabel_compat(y_score)
+
     return M.roc_auc_score(y_true, y_score, average, sample_weight, max_fpr)
 
 
@@ -155,6 +156,7 @@ AVALIABLE = {
                         'macro roc auc': 'multiclass macro roc auc',
                         'micro roc auc': 'multiclass micro roc auc',
                         'samples roc auc': 'multiclass samples roc auc',
+                        'by class roc auc': 'multiclass by class roc auc',
                         'balanced accuracy': 'balanced accuracy',
                         'accuracy': 'accuracy',
                         'macro average precision':
@@ -239,6 +241,11 @@ SCORERS = {
                                    'greater_is_better': True,
                                    'needs_proba': True, 'average': 'samples',
                                    'multiclass': True},
+
+    'multiclass by class roc auc': {'score_func': roc_auc_score_wrapper,
+                                    'greater_is_better': True,
+                                    'needs_proba': True, 'average': None,
+                                    'multiclass': True},
 
     'balanced accuracy': {'score_func': M.balanced_accuracy_score,
                           'greater_is_better': True},

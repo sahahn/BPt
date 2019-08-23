@@ -226,22 +226,20 @@ class ABCD_ML():
             if os.path.isdir(self.exp_log_dr):
 
                 if self.existing_log == 'new':
-                    cnt = 1
 
+                    cnt = 1
                     while os.path.isdir(self.exp_log_dr +
                                         '(' + str(cnt) + ')'):
                         cnt += 1
 
                     self.exp_log_dr += '(' + str(cnt) + ')'
 
+                # If overwrite, delete everything, then make new blank
                 elif self.existing_log == 'overwrite':
-
-                    # If overwrite, delete everything, then make new blank
                     shutil.rmtree(self.exp_log_dr)
 
+                # Make the new dr
                 if self.existing_log != 'append':
-
-                    # Make the new dr
                     os.mkdir(self.exp_log_dr)
 
             # If the dr doesn't already exist, regardless of existing log
@@ -513,6 +511,7 @@ class ABCD_ML():
                              _make_ML_params,
                              _print_model_params,
                              _init_model,
+                             _print_summary_score,
                              Get_Base_Feat_Importances,
                              Get_Shap_Feat_Importances)
 

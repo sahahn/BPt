@@ -85,9 +85,12 @@ class Model():
             - n_iter : int
                 The number of random searches to conduct in random search
                 model types.
-            -data_to_use : {'all', 'data', 'covars'}
+            - data_to_use : {'all', 'data', 'covars'}
                 The subset of data to use, either all avaliable, just
                 the data, or just the covars.
+            - compute_train_score : bool
+                If True, computes the training score of the model pipeline,
+                if false only computes the testing score.
             - random_state : int or None
                 The random state to use for CV splits / within modeling.
             - extra_params : dict
@@ -181,6 +184,7 @@ class Model():
         self.n_jobs = ML_params['n_jobs']
         self.n_iter = ML_params['n_iter']
         self.data_to_use = ML_params['data_to_use']
+        self.compute_train_score = ML_params['compute_train_score']
         self.random_state = ML_params['random_state']
         self.calc_base_feature_importances =\
             ML_params['calc_base_feature_importances']
@@ -263,6 +267,12 @@ class Model():
                                                    AVALIABLE_MODELS)
 
         if self.search_type is None:
+
+            if np.array(self.model_type_param_inds != 0).any():
+                self._print('Search type is set to None!')
+                self._print('No hyper-param search will be conducted.')
+                self._print()
+
             self.model_type_param_inds =\
                 [0 for i in range(len(self.model_types))]
 
@@ -552,8 +562,7 @@ class Model():
                                                  self.random_state,
                                                  return_index=False)
 
-        all_train_scores = []
-        all_scores = []
+        all_train_scores, all_scores = [], []
         fold_ind = 0
 
         # For each split with the repeated K-fold
@@ -629,8 +638,12 @@ class Model():
             if fold_ind % self.n_splits == self.n_splits-1:
                 self.shap_dfs.append(self.shap_df)
 
-        # Get the score on the train + test set
-        train_scores = self._get_scores(train_data)
+        # Get the scores
+        if self.compute_train_score:
+            train_scores = self._get_scores(train_data)
+        else:
+            train_scores = 0
+
         scores = self._get_scores(test_data)
 
         return train_scores, scores

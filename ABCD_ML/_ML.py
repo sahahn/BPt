@@ -19,6 +19,7 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
                           feat_selector_param_ind='default',
                           class_weight='default', n_jobs='default',
                           n_iter='default', data_to_use='default',
+                          compute_train_score='default',
                           random_state='default',
                           calc_base_feature_importances='default',
                           calc_shap_feature_importances='default',
@@ -221,7 +222,6 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         (default = 'default')
 
     data_to_use : {'all', 'data', 'covars'}, optional
-
         This setting allows the user to optionally
         run an expiriment with either only the loaded
         data and/or only the loaded covars. Likewise,
@@ -232,6 +232,14 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         - 'covars' : Uses only the loaded covars, and drops data if any
 
         if 'default', and not already defined, set to 'all'.
+        (default = 'default')
+
+    compute_train_score : bool, optional
+        If set to True, then :func:`Evaluate` and :func:`Test`
+        will compute, and print, training scores along with
+        validation / test scores.
+
+        if 'default', and not already defined, set to False.
         (default = 'default')
 
     random_state : int, RandomState instance, None or 'default', optional
@@ -420,6 +428,14 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self._print('No default data_to_use passed,',
                     'set to all')
 
+    if compute_train_score != 'default':
+        self.default_ML_params['compute_train_score'] = compute_train_score
+
+    elif 'compute_train_score' not in self.default_ML_params:
+        self.default_ML_params['compute_train_score'] = False
+        self._print('No default compute_train_score passed,',
+                    'set to False')
+
     if random_state != 'default':
         self.default_ML_params['random_state'] = random_state
 
@@ -470,7 +486,8 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
              data_scaler_param_ind='default', sampler_param_ind='default',
              feat_selector_param_ind='default', class_weight='default',
              n_jobs='default', n_iter='default', data_to_use='default',
-             random_state='default', calc_base_feature_importances='default',
+             compute_train_score='default', random_state='default',
+             calc_base_feature_importances='default',
              calc_shap_feature_importances='default', extra_params='default'):
 
     '''Class method to be called during the model selection phase.
@@ -713,7 +730,6 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         (default = 'default')
 
     data_to_use : {'all', 'data', 'covars'}, optional
-
         This setting allows the user to optionally
         run an expiriment with either only the loaded
         data and/or only the loaded covars. Likewise,
@@ -723,6 +739,13 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
         - 'data' : Uses only the loaded data, and drops covars if any
         - 'covars' : Uses only the loaded covars, and drops data if any
 
+        If 'default', use the saved value within self.default_ML_params.
+
+        (default = 'default')
+
+    compute_train_score : bool, optional
+        If set to True, will compute and print the model pipelines
+        training score in addition to validation scores.
         If 'default', use the saved value within self.default_ML_params.
 
         (default = 'default')
@@ -837,25 +860,50 @@ def Evaluate(self, model_type, problem_type='default', metric='default',
     scorer_strs = self.Model.scorer_strs
     self._print()
 
-    for s, name in zip([train_scores, scores], ['Train', 'Validation']):
+    if ML_params['compute_train_score']:
+        score_list = [train_scores, scores]
+        score_type_list = ['Training', 'Validation']
+    else:
+        score_list = [scores]
+        score_type_list = ['Validation']
 
-        self._print(name)
+    for s, name in zip(score_list, score_type_list):
+
+        self._print(name + ' Scores')
+        self._print(''.join('_' for i in range(len(name) + 7)))
 
         for i in range(len(scorer_strs)):
             self._print('Metric: ', scorer_strs[i])
 
-            # Compute macro / micro summary of scores
-            summary_scores = compute_macro_micro(s[:, i],
-                                                 ML_params['n_repeats'],
-                                                 ML_params['n_splits'])
+            score_by_metric = s[:, i]
 
-            self._print('Mean ' + name + ' score: ', summary_scores[0])
-            self._print('Macro std in ' + name + ' score: ', summary_scores[1])
-            self._print('Micro std in ' + name + ' score: ', summary_scores[2])
-            self._print()
+            if len(score_by_metric[0].shape) > 0:
+                by_class = [[score_by_metric[i][j] for i in
+                            range(len(score_by_metric))] for j in
+                            range(len(score_by_metric[0]))]
+
+                summary_scores_by_class =\
+                    [compute_macro_micro(class_scores, ML_params['n_repeats'],
+                     ML_params['n_splits']) for class_scores in by_class]
+
+                for summary_scores, class_name in zip(summary_scores_by_class,
+                                                      self.targets_key):
+                    self._print('for target class: ', class_name)
+                    self._print_summary_score(name, summary_scores,
+                                              ML_params['n_repeats'])
+
+            else:
+
+                # Compute macro / micro summary of scores
+                summary_scores = compute_macro_micro(score_by_metric,
+                                                     ML_params['n_repeats'],
+                                                     ML_params['n_splits'])
+
+                self._print_summary_score(name, summary_scores,
+                                          ML_params['n_repeats'])
 
     # Return the raw scores from each fold
-    return train_scores, scores
+    return score_list
 
 
 def Test(self, model_type, problem_type='default', train_subjects=None,
@@ -866,8 +914,8 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
          data_scaler_param_ind='default', sampler_param_ind='default',
          feat_selector_param_ind='default', class_weight='default',
          n_jobs='default', n_iter='default', data_to_use='default',
-         random_state='default', return_model=False,
-         calc_base_feature_importances='default',
+         compute_train_score='default', random_state='default',
+         return_model=False, calc_base_feature_importances='default',
          calc_shap_feature_importances='default', extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
@@ -1120,6 +1168,13 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
         (default = 'default')
 
+    compute_train_score : bool, optional
+        If set to True, will compute and print the model pipelines
+        training score in addition to validation scores.
+        If 'default', use the saved value within self.default_ML_params.
+
+        (default = 'default')
+
     random_state : int, RandomState instance, None or 'default', optional
         Random state, either as int for a specific seed, or if None then
         the random seed is set by np.random.
@@ -1218,7 +1273,17 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
     scorer_strs = self.Model.scorer_strs
     self._print()
 
-    for s, name in zip([train_scores, scores], ['Train', 'Validation']):
+    score_list, score_type_list = [], []
+    if ML_params['compute_train_score']:
+        score_list.append(train_scores)
+        score_type_list.append('Training')
+
+    score_list.append(scores)
+    score_type_list.append('Testing')
+
+    for s, name in zip(score_list, score_type_list):
+
+        print(name)
 
         for i in range(len(scorer_strs)):
             self._print('Metric: ', scorer_strs[i])
@@ -1226,9 +1291,9 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
     # Optionally return the model object itself
     if return_model:
-        return train_scores, scores, self.Model.model
+        return score_list, self.Model.model
 
-    return train_scores, scores
+    return score_list
 
 
 def _premodel_check(self, problem_type='default'):
@@ -1327,6 +1392,8 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
     self._print('n_jobs =', ML_params['n_jobs'])
     self._print('n_iter =', ML_params['n_iter'])
     self._print('data_to_use =', ML_params['data_to_use'])
+    self._print('compute_train_score =', ML_params['compute_train_score'])
+
     self._print('random_state =', ML_params['random_state'])
     self._print('calc_base_feature_importances =',
                 ML_params['calc_base_feature_importances'])
@@ -1352,6 +1419,22 @@ def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
                        self.covars_keys, self.cat_keys, self.targets_key,
                        self.targets_encoder, ensemble_type, ensemble_split,
                        self._print)
+
+
+def _print_summary_score(self, name, summary_scores, n_repeats):
+
+    self._print('Mean ' + name + ' score: ', summary_scores[0])
+
+    if n_repeats > 1:
+        self._print('Macro std in ' + name + ' score: ',
+                    summary_scores[1])
+        self._print('Micro std in ' + name + ' score: ',
+                    summary_scores[2])
+    else:
+        self._print('std in ' + name + ' score: ',
+                    summary_scores[1])
+
+    self._print()
 
 
 def Get_Base_Feat_Importances(self, top_n=None):
@@ -1383,7 +1466,7 @@ def Get_Base_Feat_Importances(self, top_n=None):
     assert len(self.Model.feature_importances) > 0,\
         "Either calc_base_feat_importances not set to True, or bad model_type!"
 
-    importances = np.mean(self.Model.feature_importances)
+    importances = np.mean(np.asb(self.Model.feature_importances))
     importances.sort_values(ascending=False, inplace=True)
 
     if top_n:

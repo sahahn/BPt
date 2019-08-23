@@ -1283,11 +1283,22 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
     for s, name in zip(score_list, score_type_list):
 
-        print(name)
+        self._print(name + ' Scores')
+        self._print(''.join('_' for i in range(len(name) + 7)))
 
         for i in range(len(scorer_strs)):
+
             self._print('Metric: ', scorer_strs[i])
-            self._print(name + 'Score: ', s[i])
+
+            scr = s[i]
+            if len(scr.shape) > 0:
+
+                for score_by_class, class_name in zip(scr, self.targets_key):
+                    self._print('for target class: ', class_name)
+                    self._print(name + ' Score: ', score_by_class)
+
+            else:
+                self._print(name + ' Score: ', scr)
 
     # Optionally return the model object itself
     if return_model:
@@ -1466,7 +1477,7 @@ def Get_Base_Feat_Importances(self, top_n=None):
     assert len(self.Model.feature_importances) > 0,\
         "Either calc_base_feat_importances not set to True, or bad model_type!"
 
-    importances = np.mean(np.asb(self.Model.feature_importances))
+    importances = np.mean(np.abs(self.Model.feature_importances))
     importances.sort_values(ascending=False, inplace=True)
 
     if top_n:

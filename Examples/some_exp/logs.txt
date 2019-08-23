@@ -149,6 +149,12 @@ Final shape:  (10737, 1)
 
 Total valid overlapping subjects = 6758
 
+Show Target distribution:
+               Original Name  Count  Frequency
+Internal Name                                 
+0                        1.0   3457   0.511542
+1                        2.0   3301   0.488458
+
 Loading covariates!
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Mental Health/ABCD Parent Demographics Survey.csv assumed to be dataset type: explorer
 load: demo_ed_v2
@@ -170,6 +176,7 @@ No default search type passed, set to None
 No default data scaler param ind passed, set to 0
 No default sampler param ind passed, set to 0
 No default feat selector param ind passed, set to 0
+No default data_to_use passed, set to all
 No default calc_base_feature_importances passed, set to True
 No default calc_shap_feature_importances passed, set to False
 No default extra params passed, set to empty dict
@@ -195,6 +202,7 @@ feat_selector_param_ind = 0
 class_weight = balanced
 n_jobs = 8
 n_iter = 8
+data_to_use = all
 random_state = 1
 calc_base_feature_importances = True
 calc_shap_feature_importances = True
@@ -203,18 +211,62 @@ extra_params = {}
 Running Evaluate on fold 0
 Running Evaluate on fold 1
 
+Train
 Metric:  macro roc auc
-Mean score:  0.8071512336094206
-Macro std in score:  0.0
-Micro std in score:  0.010510923111403392
+Mean Train score:  1.0
+Macro std in Train score:  0.0
+Micro std in Train score:  0.0
 
 Metric:  f1
-Mean score:  0.7287273495331144
-Macro std in score:  0.0
-Micro std in score:  0.024085999322143777
+Mean Train score:  1.0
+Macro std in Train score:  0.0
+Micro std in Train score:  0.0
 
 Metric:  accuracy
-Mean score:  0.7364032851707244
-Macro std in score:  0.0
-Micro std in score:  0.01330201934793962
+Mean Train score:  1.0
+Macro std in Train score:  0.0
+Micro std in Train score:  0.0
 
+Validation
+Metric:  macro roc auc
+Mean Validation score:  0.8071512336094206
+Macro std in Validation score:  0.0
+Micro std in Validation score:  0.010510923111403392
+
+Metric:  f1
+Mean Validation score:  0.7287273495331144
+Macro std in Validation score:  0.0
+Micro std in Validation score:  0.024085999322143777
+
+Metric:  accuracy
+Mean Validation score:  0.7364032851707244
+Macro std in Validation score:  0.0
+Micro std in Validation score:  0.01330201934793962
+
+Running Evaluate with:
+model_type = logistic
+problem_type = binary
+metric = ['macro roc auc', 'f1', 'accuracy']
+data_scaler = ['robust', 'minmax']
+sampler = None
+feat_selector = None
+n_splits = 2
+n_repeats = 1
+int_cv = 3
+ensemble_type = basic ensemble
+ensemble_split = 0.2
+search_type = None
+model_type_param_ind = 0
+data_scaler_param_ind = 0
+sampler_param_ind = 0
+feat_selector_param_ind = 0
+class_weight = balanced
+n_jobs = 8
+n_iter = 8
+data_to_use = all
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Running Evaluate on fold 0

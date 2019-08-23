@@ -106,8 +106,7 @@ PARAMS['svm classifier rs']['probability'] = [True]
 
 PARAMS['base mlp'] = {}
 
-PARAMS['base lasso regressor'] = {'solver': ['saga'],
-                                  'max_iter': [5000]}
+PARAMS['base lasso regressor'] = {'max_iter': [5000]}
 PARAMS['lasso regressor rs'] = {'alpha': reciprocal(a=1e-5, b=1e+4)}
 
 PARAMS['base ridge regressor'] = PARAMS['base lasso regressor'].copy()

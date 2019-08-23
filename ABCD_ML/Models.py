@@ -16,13 +16,12 @@ from sklearn.ensemble import (GradientBoostingClassifier, AdaBoostClassifier,
                               RandomForestRegressor, RandomForestClassifier)
 from sklearn.linear_model import (LogisticRegression, ElasticNet,
                                   LinearRegression, HuberRegressor,
-                                  OrthogonalMatchingPursuitCV, LarsCV, RidgeCV)
+                                  Lasso, Ridge)
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor, LGBMClassifier
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from ABCD_ML.Early_Stop import EarlyStopLGBMRegressor
 
 AVALIABLE = {
@@ -57,6 +56,8 @@ AVALIABLE = {
                         'light gbm regressor early stop',
                         'svm':                'svm regressor',
                         'mlp':                'mlp regressor',
+                        'ridge':              'ridge regressor',
+                        'lasso':              'lasso regressor',
         },
         'categorical': {
                 'multilabel': {
@@ -117,6 +118,9 @@ MODELS = {
                                      'mlp layers search']),
     'mlp classifier': (MLPClassifier, ['base mlp', 'mlp rs', 'mlp rs es',
                                        'mlp layers search']),
+    'ridge regressor':(Ridge, ['base ridge regressor', 'ridge regressor rs']),
+        
+    'lasso regressor':(Lasso, ['base lasso regressor','lasso regressor rs']),
     }
 
 

@@ -9,6 +9,7 @@ import shutil
 import shap
 import os
 from ABCD_ML.Data_Helpers import get_unique_combo
+from ABCD_ML.Docstring_Helpers import get_new_docstring
 from ABCD_ML.CV import CV
 
 
@@ -521,6 +522,9 @@ class ABCD_ML():
                              Get_Base_Feat_Importances,
                              Get_Shap_Feat_Importances)
 
+    new_eval = get_new_docstring(Set_Default_ML_Params, Evaluate)
+    Evaluate.__doc__ = new_eval
+
     from ABCD_ML.Models import Show_Model_Types, Show_Models
     from ABCD_ML.Scorers import Show_Metrics, Show_Scorers
     from ABCD_ML.Scalers import Show_Data_Scalers, Show_Scalers
@@ -537,3 +541,11 @@ class ABCD_ML():
                                    Plot_Shap_Feat_Importances,
                                    Plot_Shap_Summary,
                                    _plot_feature_importance)
+
+    
+
+    
+    
+
+
+    

@@ -181,17 +181,21 @@ PARAMS['base rfe'] = {'n_features_to_select': [None]}
 
 PARAMS['rfe num feats rs'] = {'n_features_to_select': uniform()}
 
-# Samplers
 
-
-def get(str_indicator, preprend):
+def get_base_params(str_indicator):
 
         base_params = PARAMS[str_indicator].copy()
+        return base_params
 
-        if preprend != '':
-                params = {preprend + '__' + key: base_params[key] for key in
+
+def proc_params(base_params, prepend=None):
+
+        # Return dict with prepend on all keys
+        if prepend is not None:
+                params = {prepend + '__' + key: base_params[key] for key in
                           base_params}
 
+        # Grabs param grid as single set of fixed params
         else:
                 params = {}
                 for key in base_params:

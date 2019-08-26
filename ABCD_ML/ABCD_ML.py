@@ -204,6 +204,7 @@ class ABCD_ML():
         self.test_subjects = None
         self.CV = CV()
         self.default_ML_params = {}
+        self.ML_verbosity = {}
         self.all_scores = {}
 
         if self.notebook:
@@ -506,6 +507,8 @@ class ABCD_ML():
 
     # Machine Learning functionality
     from ABCD_ML._ML import (Set_Default_ML_Params,
+                             Set_ML_Verbosity,
+                             _ML_print,
                              Evaluate,
                              Test,
                              _premodel_check,

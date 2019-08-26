@@ -8,6 +8,9 @@ import pandas as pd
 from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
+from tqdm import tqdm
+from tqdm import tqdm_notebook
+
 
 def Set_Default_ML_Params(self, problem_type='default', metric='default',
                           data_scaler='default', sampler='default',
@@ -478,6 +481,129 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
     self._print()
 
 
+def Set_ML_Verbosity(self, progress_bar=True, fold_name=False,
+                     time_per_fold=False, score_per_fold=False,
+                     fold_sizes=False, param_search_verbose=0,
+                     save_to_logs=False):
+    '''This function allows setting various verbosity options that effect
+    output during :func:`Evaluate` and :func:`Test`
+
+    Parameters
+    ----------
+    progress_bar : bool, optional
+        If True, a progress bar, implemented in the python
+        library tqdm, is used to show progress during use of
+        :func:`Evaluate` , If False, then no progress bar is shown.
+        This bar should work both in a notebook env and outside one,
+        assuming self.notebook has been set correctly.
+
+        (default = True)
+
+    fold_name : bool, optional
+        If True, prints a rough measure of progress via
+        printing out the current fold (somewhat redundant with the
+        progress bar if used, except if used with other params, e.g.
+        time per fold, then it is helpful to have the time printed
+        with each fold). If False, nothing is shown.
+
+        (default = False)
+
+    time_per_fold : bool, optional
+        If True, prints the full time that a fold took to complete.
+
+        (default = False)
+
+    score_per_fold : bool, optional
+        If True, displays the score for each fold, though slightly less
+        formatted then in the final display.
+
+        (default = False)
+
+    fold_sizes : bool, optional
+        If True, will show the number of subjects within each train
+        and val/test fold.
+
+        (default = False)
+
+    param_search_verbose : int, optional
+        This value is passed directly to the sklearn parameter selection
+        object. See:
+
+            - :class:`sklearn.model_selection.RandomSearchCV`
+            - :class:`sklearn.model_selection.GridSearchCV`
+
+        If 0, no verbose output is shown, and from there higher numbers
+        show much output.
+
+        (default = 0)
+
+    save_to_logs : bool, optional
+        If True, then when possible, and with the selected model
+        verbosity options, verbosity ouput will be saved to the
+        log file.
+
+        (default = False)
+    '''
+
+    if progress_bar:
+        if self.notebook:
+            self.ML_verbosity['progress_bar'] = tqdm_notebook
+        else:
+            self.ML_verbosity['progress_bar'] = tqdm
+
+    else:
+        self.ML_verbosity['progress_bar'] = None
+
+    self.ML_verbosity['fold_name'] = fold_name
+    self.ML_verbosity['time_per_fold'] = time_per_fold
+    self.ML_verbosity['score_per_fold'] = score_per_fold
+    self.ML_verbosity['fold_sizes'] = fold_sizes
+    self.ML_verbosity['param_search_verbose'] = param_search_verbose
+    self.ML_verbosity['save_to_logs'] = save_to_logs
+
+    if self.verbose is False and self.log_file is None:
+        self._print('Warning: self.verbose is set to False and not logs are',
+                    'being recorded! Some passed settings therefore might not',
+                    'take any effect.')
+
+    self._print()
+
+
+def _ML_print(self, *args, **kwargs):
+    '''Overriding the print function to allow for
+    customizable verbosity. This print is setup with specific
+    settings for the Model class, for using Evaluate and Test.
+
+    Parameters
+    ----------
+    args
+        Anything that would be passed to default python print
+    '''
+
+    if self.ML_verbosity['save_to_logs']:
+        _print = self._print
+    else:
+        _print = print
+
+    level = kwargs.pop('level', None)
+
+    # If no level passed, always print
+    if level is None:
+        _print(*args, **kwargs)
+
+    elif level == 'name' and self.ML_verbosity['fold_name']:
+        _print(*args, **kwargs)
+
+    elif level == 'time' and self.ML_verbosity['time_per_fold']:
+        _print(*args, **kwargs)
+
+    elif level == 'score' and self.ML_verbosity['score_per_fold']:
+        _print(*args, **kwargs)
+
+    elif level == 'size' and self.ML_verbosity['fold_sizes']:
+        _print(*args, **kwargs)
+
+
 def Evaluate(self, model_type, run_name=None, problem_type='default',
              metric='default', data_scaler='default', sampler='default',
              feat_selector='default', n_splits='default', n_repeats='default',
@@ -851,6 +977,7 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
                              test=False)
 
     run_name = self._get_avaliable_all_scores_name(run_name)
+    self._print()
 
     # Init the Model object with modeling params
     self._init_model(model_type, ML_params, ensemble_type, ensemble_split,
@@ -1339,6 +1466,14 @@ def _premodel_check(self, problem_type='default'):
 
         self.Set_Default_ML_Params(problem_type=problem_type)
 
+    if self.ML_verbosity == {}:
+
+        self._print('Setting default ML verbosity settings!')
+        self._print('Note, if the following values are not desired,',
+                    'call self.Set_ML_Verbosity()')
+
+        self.Set_ML_Verbosity()
+
 
 def _make_ML_params(self, args):
 
@@ -1423,7 +1558,9 @@ def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
                        self.data_keys,
                        self.covars_keys, self.cat_keys, self.targets_key,
                        self.targets_encoder, ensemble_type, ensemble_split,
-                       self._print)
+                       self.ML_verbosity['progress_bar'],
+                       self.ML_verbosity['param_search_verbose'],
+                       self._ML_print)
 
 
 def _get_avaliable_all_scores_name(self, name):
@@ -1446,7 +1583,7 @@ def _get_avaliable_all_scores_name(self, name):
 
             name = name + str(n)
 
-    self._print('Saving scores under name:', name)
+    self._print('Saving scores within self.all_scores with name:', name)
     return name
 
 

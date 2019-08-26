@@ -6,7 +6,7 @@ These are non-class functions that are used in _ML.py and Scoring.py
 """
 import numpy as np
 import inspect
-from ABCD_ML.Default_Params import get, show
+from ABCD_ML.Default_Params import get_base_params, proc_params, show
 
 
 def compute_macro_micro(scores, n_repeats, n_splits):
@@ -153,24 +153,36 @@ def get_obj_and_params(obj_str, OBJS, extra_params, param_ind, search_type):
             print('Setting to default base params setting instead!')
             param_ind = 0
 
-    # Get the actual params
-    try:
-        param_name = param_names[param_ind]
-    except IndexError:
-        print('Invalid param ind', param_ind, 'passed for', obj_str)
-        print('There are only', len(param_names), 'valid param options.')
-        print('Setting to default base params setting instead!')
-        param_name = param_names[0]
+    # If passed param ind is a dict, assume that a grid of params passed
+    if isinstance(param_ind, dict):
+        base_params = param_ind.copy()
 
+    # If not a dict passed, grab the param name, then params
+    else:
+
+        # Get the actual params
+        try:
+            param_name = param_names[param_ind]
+        except IndexError:
+            print('Invalid param ind', param_ind, 'passed for', obj_str)
+            print('There are only', len(param_names), 'valid param options.')
+            print('Setting to default base params setting instead!')
+            param_name = param_names[0]
+
+        base_params = get_base_params(param_name)
+
+    # Special case if search type None, convert param grid to
+    # be one set of params
     if search_type is None:
-        params = get(param_name, '')
+        params = proc_params(base_params)
 
         if obj_str in extra_params:
             params.update(extra_params[obj_str])
 
         return obj, params, {}
 
-    params = get(param_name, obj_str)
+    # Otherwise, prepend obj_str to all keys in base params
+    params = proc_params(base_params, prepend=obj_str)
 
     # Update with extra params if applicable
     extra_obj_params = {}

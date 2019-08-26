@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from imblearn.pipeline import Pipeline
@@ -35,7 +36,8 @@ class Model():
 
     def __init__(self, model_types, ML_params, model_type_param_ind, CV,
                  data_keys, covars_keys, cat_keys, targets_key,
-                 targets_encoder, ensemble_type, ensemble_split, _print=print):
+                 targets_encoder, ensemble_type, ensemble_split, progress_bar,
+                 param_search_verbose, _print=print):
         ''' Init function for Model
 
         Parameters
@@ -150,9 +152,16 @@ class Model():
             different methods, or non-linear svm, these values are estimated
             by a kernel function which is very compute intensive.
 
+        progress_bar : None or tqdm obj
+            Either None, to not use progress bar or a tqdm object, to
+            display progress.
+
+        param_search_verbose : int
+            Argument passed to sklearn param search objects, random or grid.
+
         _print : func, optional
             The print function to use, by default the python print,
-            but designed to be passed ABCD_ML._print
+            but designed to be passed ABCD_ML._ML_print
 
         Notes
         ----------
@@ -170,6 +179,8 @@ class Model():
         self.cat_keys = cat_keys
         self.targets_key = targets_key
         self.targets_encoder = targets_encoder
+        self.progress_bar = progress_bar
+        self.param_search_verbose = param_search_verbose
         self._print = _print
 
         # Un-pack ML_params
@@ -565,17 +576,62 @@ class Model():
         all_train_scores, all_scores = [], []
         fold_ind = 0
 
+        if self.progress_bar is not None:
+            repeats_bar = self.progress_bar(total=self.n_repeats,
+                                            desc='Repeats')
+
+            folds_bar = self.progress_bar(total=self.n_splits,
+                                          desc='Folds')
+
         # For each split with the repeated K-fold
         for train_subjects, test_subjects in subject_splits:
 
-            self._print('Running Evaluate on fold', fold_ind)
+            # Fold name verbosity
+            repeat = str((fold_ind // self.n_splits) + 1)
+            fold = str((fold_ind % self.n_splits) + 1)
+            self._print(level='name')
+            self._print('Repeat: ', repeat, '/', self.n_repeats, ' Fold: ',
+                        fold, '/', self.n_splits, sep='', level='name')
 
+            if self.progress_bar is not None:
+                repeats_bar.n = int(repeat) - 1
+                repeats_bar.refresh()
+
+                folds_bar.n = int(fold) - 1
+                folds_bar.refresh()
+
+            # Run actual code for this evaluate fold
+            start_time = time.time()
             train_scores, scores = self.Test_Model(data, train_subjects,
                                                    test_subjects, fold_ind)
-            fold_ind += 1
+
+            # Time by fold verbosity
+            elapsed_time = time.time() - start_time
+            time_str = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
+            self._print('Time Elapsed:', time_str, level='time')
+
+            # Score by fold verbosity
+            if self.compute_train_score:
+                for i in range(len(self.scorer_strs)):
+                    self._print('train ', self.scorer_strs[i], ': ',
+                                train_scores[i], sep='', level='score')
+
+            for i in range(len(self.scorer_strs)):
+                self._print('val ', self.scorer_strs[i], ': ',
+                            scores[i], sep='', level='score')
 
             all_train_scores.append(train_scores)
             all_scores.append(scores)
+            fold_ind += 1
+
+        if self.progress_bar is not None:
+            repeats_bar.n = self.n_repeats
+            repeats_bar.refresh()
+            repeats_bar.close()
+
+            folds_bar.n = self.n_splits
+            folds_bar.refresh()
+            folds_bar.close()
 
         # Average feature importances across folds / repeats
         self._average_feature_importances()
@@ -611,6 +667,9 @@ class Model():
         # Assume the train_subjects and test_subjects passed here are final.
         train_data = data.loc[train_subjects]
         test_data = data.loc[test_subjects]
+
+        self._print('Train size:', train_data.shape[0], level='size')
+        self._print('Val/Test size:', test_data.shape[0], level='size')
 
         # Train the model(s)
         self._train_models(train_data)
@@ -701,11 +760,17 @@ class Model():
                                          test_size=self.ensemble_split,
                                          random_state=self.random_state)
 
-            # Set ensemble data to X_y
+            # Set ensemble data
             ensemble_data = train_data.loc[ensemble_subjects]
 
             # Set train_data to new smaller set
             train_data = train_data.loc[train_subjects]
+
+            self._print('Performed extra ensemble train data split',
+                        level='name')
+            self._print('New Train size:', train_data.shape[0], level='size')
+            self._print('Ensemble Val size:', ensemble_data.shape[0],
+                        level='size')
 
         return train_data, ensemble_data
 
@@ -821,6 +886,7 @@ class Model():
         # Set the search params
         search_params = {}
         search_params['iid'] = False
+        search_params['verbose'] = self.param_search_verbose
         search_params['estimator'] = model
         search_params['pre_dispatch'] = 'n_jobs - 1'
         search_params['cv'] = base_int_cv
@@ -990,8 +1056,11 @@ class Model():
         base_model = self._check_feat_importance_type()
 
         if self.calc_base_feature_importances:
+            self._print('Calculate base feature importances', level='name')
             self._get_base_feature_importance(base_model, test_data)
+
         if self.calc_shap_feature_importances:
+            self._print('Calculate shap feature importances', level='name')
             self._get_shap_feature_importance(base_model, train_data,
                                               test_data)
 
@@ -1236,7 +1305,7 @@ class Categorical_Model(Model):
 
         if not check and self.sub_problem_type == 'multilabel':
             self._print('Not all input supports multilabel,')
-            self._print('Checking compatability with multiclass!')
+            self._print('Switching to multiclass for compatibility!')
 
             self.sub_problem_type = 'multiclass'
             check = super()._check_avaliable(in_strs, avaliable)

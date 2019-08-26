@@ -10,3 +10,5 @@ sphinx==2.0.1
 deslib
 imbalanced-learn
 shap
+scikit-image>=0.15
+tqdm

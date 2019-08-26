@@ -108,6 +108,10 @@ Set_Default_ML_Params
 ======================
 .. automethod:: ABCD_ML.Set_Default_ML_Params
 
+Set_ML_Verbosity
+================
+.. automethod:: Set_ML_Verbosity
+
 Evaluate
 ========
 .. automethod:: ABCD_ML.Evaluate

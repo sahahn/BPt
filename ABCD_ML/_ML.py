@@ -530,7 +530,7 @@ def Set_ML_Verbosity(self, progress_bar=True, fold_name=False,
             - :class:`sklearn.model_selection.GridSearchCV`
 
         If 0, no verbose output is shown, and from there higher numbers
-        show much output.
+        show more output.
 
         (default = 0)
 
@@ -1116,9 +1116,9 @@ def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
                                 summary_scores[2], class_name)
     else:
         self._print('Std in ' + name + ' score: ',
-                    summary_scores[1])
+                    summary_scores[2])
         self._add_to_all_scores(run_name, name, metric_name, 'Std',
-                                summary_scores[1], class_name)
+                                summary_scores[2], class_name)
 
     self._print()
 

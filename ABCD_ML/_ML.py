@@ -628,26 +628,19 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
 
     run_name : str or None, optional
         All results from `Evaluate`, or rather the metrics are
-        saved within ABCD_ML.all_scores by default (in addition to in
+        saved within self.all_scores by default (in addition to in
         the logs, though this way saves them in a more programatically
         avaliable way). `run_name` refers to the specific name under which to
         store this Evaluate's run on results. If left as None, then will just
         name as the first available integer, e.g. "6".
 
     problem_type :
-
     metric :
-
     data_scaler :
-
     sampler :
-
     feat_selector :
-
     n_splits :
-
     n_repeats :
-
     int_cv :
 
     ensemble_type : str or list of str,
@@ -701,27 +694,16 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
         (default = 0)
 
     data_scaler_param_ind :
-
     sampler_param_ind :
-
     feat_selector_param_ind :
-
     class_weight :
-
     n_jobs :
-
     n_iter :
-
     data_to_use :
-
     compute_train_score :
-
     random_state :
-
     calc_base_feature_importances :
-
     calc_shap_feature_importances :
-
     extra_params :
 
     Returns
@@ -847,306 +829,44 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
     Parameters
     ----------
-    model_type : str or list of str
-        Each string refers to a type of model to train.
-        If a list of strings is passed then an ensemble model
-        will be created over all individual models.
-
-        For a full list of supported options call:
-        :func:`Show_Model_Types`
-
-    problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
-
-        - 'regression' : For ML on float or ordinal target data
-        - 'binary' : For ML on binary target data
-        - 'categorical' : For ML on categorical target data, \
-                          as either multilabel or multiclass.
-        - 'default' : Use the name problem type within self.default_ML_params.
-
-        (default = 'default')
+    model_type :
+    problem_type :
 
     train_subjects : array-like or None, optional
         If passed None, (default), then the class defined train subjects will
         be used. Otherwise, an array or pandas Index of
         valid subjects should be passed.
+
         (default = None)
 
     test_subjects : array-like or None, optional
         If passed None, (default), then the class defined test subjects will
         be used. Otherwise, an array or pandas Index of
         valid subjects should be passed.
+
         (default = None)
 
-    metric : str or list, optional
-        Indicator for which metric(s) to use for calculating
-        score and during model parameter selection.
-        If 'default', use the saved value within self.default_ML_params.
-        Note, some metrics are only avaliable for certain problem types.
-
-        - 'regression'  : 'r2',
-        - 'binary'      : 'roc',
-        - 'categorical' : 'weighted roc auc'
-
-        For a full list of supported metrics call:
-        :func:`Show_Metrics`
-
-        (default = 'default')
-
-    data_scaler : str, list or None optional
-        `data_scaler` refers to the type of scaling to apply
-        to the saved data (just data, not covars) during model evaluation.
-        If a list is passed, then scalers will be applied in that order.
-        If None, then no scaling will be applied.
-        If 'default', use the saved value within self.default_ML_params.
-
-        For a full list of supported options call:
-        :func:`Show_Data_Scalers`
-
-        (default = 'default')
-
-    sampler : str, list or none optional
-        `sampler` refers optional to the type of resampling
-        to apply within the model pipeline - to correct for
-        imbalanced class distributions. These are different
-        techniques for over sampling under distributed classed
-        and under sampling over distributed ones.
-        If a list is passed, then samplers will be fit and applied
-        in that order.
-
-        For a full list of supported options call:
-        :func:`Show_Samplers`
-
-        If 'default', use the saved value within self.default_ML_params.
-        (default = 'default')
-
-    feat_selector : str, list or None, optional
-        `feat_selector` should be a str indicator or list of,
-        for which feature selection to use, if a list, they will
-        be applied in order.
-        If None, then no feature selection will be used.
-        If 'default', use the saved value within self.default_ML_params.
-
-        For a full list of supported options call:
-        :func:`Show_Feat_Selectors`
-
-        (default = 'default')
-
-    int_cv : int or 'default', optional
-        The number of internal folds to use during
-        model k-fold parameter selection, if the chosen model requires
-        parameter selection. A value greater
-        then 2 must be passed.
-        If 'default', use the saved value within self.default_ML_params.
-
-        (default = 'default')
-
-    ensemble_type : str or list of str,
-        Each string refers to a type of ensemble to train,
-        or 'basic ensemble' (default) for base behavior.
-        Base ensemble behavior is either to not ensemble,
-        if only one model type is passed,
-        or when multiple model types are passed,
-        to simply train each one independently and
-        average the predictions at test time (or max vote).
-
-        The user can optionally pass other ensemble types,
-        anything but 'basic ensemble' will require an
-        ensemble split though, which is an additional
-        train/val split on the training set, where the
-        val/ensemble split, is used to fit the ensemble object.
-
-        If a list is passed to ensemble_type, then every
-        item in the list must be a valid str indicator for
-        a non 'basic ensemble' ensemble type, and each ensemble
-        object passed will be fitted independly and then averaged
-        using the 'basic ensemble' behvaior... so an ensemble of ensembles.
-
-        For a full list of supported options call:
-        :func:`Show_Ensemble_Types`
-
-    ensemble_split : float, int or None
-        If a an ensemble_type(s) that requires fitting is passed,
-        i.e., not "basic ensemble", then this param is
-        the porportion of the train_data within each fold to
-        use towards fitting the ensemble objects.
-        If multiple ensembles are passed, they are all
-        fit with the same fold of data.
-
-    search_type : {'random', 'grid', None, 'default'}
-        The type of parameter search to conduct if any.
-
-        - 'random' : Uses sklearn RandomizedSearchCV
-        - 'grid' : Uses sklearn GridSearchCV
-        - None : No search
-
-        .. WARNING::
-            If search type is set to grid, and any of model_type_param_ind,
-            data_scaler_param_ind and feat_selector_param_ind are set
-            to a random distribution (rather then discrete values),
-            this will lead to an error.
-
-        If 'default', use the saved value within self.default_ML_params.
-        (default = 'default')
-
-    model_type_param_ind : int, str, or list of
-        Each `model_type` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `model_type_param_ind` is automatically
-        set to default 0.
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `model_type`.
-        Likewise with `model_type`, if passed list input, this means
-        a list was passed to `model_type` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `model_type`, can be shown by calling :func:`Show_Model_Types`
-
-        (default = 0)
-
-    data_scaler_param_ind : int, str, or list of
-        Each `data_scaler` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `data_scaler_param_ind` is automatically
-        set to default 0.
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `data_scaler`.
-        Likewise with `data_scaler`, if passed list input, this means
-        a list was passed to `data_scaler` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `data_scaler`, can be shown by calling :func:`Show_Data_Scalers`
-
-        If 'default', use the saved value within self.default_ML_params.
-        (default = 'default')
-
-    sampler_param_ind :  int, str, or list of
-        Each `sampler` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `sampler_param_ind` is automatically
-        set to default 0.
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `sampler`.
-        Likewise with `sampler`, if passed list input, this means
-        a list was passed to `sampler` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `sampler`, can be shown by calling :func:`Show_Samplers`
-
-        If 'default', use the saved value within self.default_ML_params.
-        (default = 'default')
-
-    feat_selector_param_ind : int, str, or list of
-         Each `feat_selector` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `feat_selector_param_ind` is automatically
-        set to default 0.
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `feat_selector` param option.
-        Likewise with `feat_selector`, if passed list input, this means
-        a list was passed to `feat_selector` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `feat_selector`, can be shown by calling :func:`Show_Feat_Selectors`
-
-        If 'default', use the saved value within self.default_ML_params.
-        (default = 'default')
-
-    class weight : {dict, 'balanced', None, 'default'}, optional
-        Only used for binary and categorical problem types.
-        Follows sklearn api class weight behavior. Typically, either use
-        'balanced' in the case of class distribution imbalance, or None.
-        If 'default', use the saved value within self.default_ML_params.
-
-        (default = 'default')
-
-    n_jobs : int or 'default', optional
-        The number of jobs to use (if avaliable) during training ML models.
-        This should be the number of procesors avaliable, if wanting to run
-        as fast as possible.
-        If 'default', use the saved value within self.default_ML_params.
-
-        (default = 'default')
-
-    n_iter : int or 'default', optional
-        The number of random search parameters to try, used
-        only if using random search.
-        If 'default', use the saved value within self.default_ML_params.
-
-        (default = 'default')
-
-    data_to_use : {'all', 'data', 'covars'}, optional
-
-        This setting allows the user to optionally
-        run an expiriment with either only the loaded
-        data and/or only the loaded covars. Likewise,
-        both can be used with the default param of 'all'.
-
-        - 'all' : Uses all data + covars loaded
-        - 'data' : Uses only the loaded data, and drops covars if any
-        - 'covars' : Uses only the loaded covars, and drops data if any
-
-        If 'default', use the saved value within self.default_ML_params.
-
-        (default = 'default')
-
-    compute_train_score : bool, optional
-        If set to True, will compute and print the model pipelines
-        training score in addition to validation scores.
-        If 'default', use the saved value within self.default_ML_params.
-
-        (default = 'default')
-
-    random_state : int, RandomState instance, None or 'default', optional
-        Random state, either as int for a specific seed, or if None then
-        the random seed is set by np.random.
-        If 'default', use the saved value within self,
-        (defined when initing ABCD_ML class) ^,
-        Or a different ML params random state is used, if defined when
-        calling set default ML params.
-
-        (default = 'default')
-
-    calc_base_feature_importances : bool or 'default, optional
-        If set to True, will store the base feature importances
-        when running Evaluate or Test. Note, base feature importances
-        are only avaliable for tree-based or linear models, specifically
-        those with either coefs or feature_importance attributes.
-
-        If 'default', use the saved value within self.default_ML_params.
-        (default = 'default')
-
-    calc_shap_feature_importances : bool or 'default, optional
-        If set to True, will calculate SHAP (SHapley Additive exPlanations)
-        for the model when running Evaluate or Test.
-        Note: For any case where the underlytin model is not tree or linear
-        based, e.g. an ensemble of different methods, or non-linear svm,
-        these values are estimated by a kernel explainer function which is
-        very compute intensive.
-        Read more about shap on their github:
-
-        https://github.com/slundberg/shap
-
-        If 'default', use the saved value within self.default_ML_params.
-        (default = 'default')
-
-    extra_params : dict or 'default', optional
-        Any extra params being passed. Typically, extra params are
-        added when the user wants to provide a specific model/classifier,
-        or data scaler, with updated (or new) parameters.
-        These can be supplied by creating another dict within extra_params.
-        E.g., ::
-
-            extra_params[model_name] = {'model_param' : new_value}
-
-        Where model param is a valid argument for that model, and model_name in
-        this case is the str indicator passed to model_type.
-        If 'default', use the saved value within self.default_ML_params.
-
-        (default = 'default')
+    metric :
+    data_scaler :
+    sampler :
+    feat_selector :
+    int_cv :
+    ensemble_type :
+    ensemble_split :
+    search_type :
+    model_type_param_ind :
+    data_scaler_param_ind :
+    sampler_param_ind :
+    feat_selector_param_ind :
+    class_weight :
+    n_jobs :
+    n_iter :
+    data_to_use :
+    compute_train_score :
+    random_state :
+    calc_base_feature_importances :
+    calc_shap_feature_importances :
+    extra_params :
 
     Returns
     ----------

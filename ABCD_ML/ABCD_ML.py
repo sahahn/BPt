@@ -524,6 +524,8 @@ class ABCD_ML():
 
     new_eval = get_new_docstring(Set_Default_ML_Params, Evaluate)
     Evaluate.__doc__ = new_eval
+    new_test = get_new_docstring(Evaluate, Test)
+    Test.__doc__ = new_test
 
     from ABCD_ML.Models import Show_Model_Types, Show_Models
     from ABCD_ML.Scorers import Show_Metrics, Show_Scorers

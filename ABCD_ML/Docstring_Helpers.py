@@ -15,7 +15,7 @@ def get_mapping(lines, args):
 
     new_lines = []
     for line in lines:
-        if " \'default\', and not already defined" in line:
+        if "If \'default\'" in line:
             new_lines.append(r)
         else:
             new_lines.append(line)

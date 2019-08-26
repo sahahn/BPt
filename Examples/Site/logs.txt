@@ -1,9 +1,9 @@
-exp_name = Regression_Example
+exp_name = Site
 log_dr = /home/sage/ABCD_ML/Examples
 existing_log = overwrite
 verbose = True
-exp log dr setup at: /home/sage/ABCD_ML/Examples/Regression_Example
-log file at: /home/sage/ABCD_ML/Examples/Regression_Example/logs.txt
+exp log dr setup at: /home/sage/ABCD_ML/Examples/Site
+log file at: /home/sage/ABCD_ML/Examples/Site/logs.txt
 notebook = True
 default subject id col = src_subject_id
 eventname = baseline_year_1_arm_1

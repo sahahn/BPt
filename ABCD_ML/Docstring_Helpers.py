@@ -8,14 +8,14 @@ def grab_params(func):
     return args
 
 
-
 def get_mapping(lines, args):
 
-    r = "    If 'default', use the saved value within self.default_ML_params."
+    r = "        If \'default\', use the saved value within"
+    r += " self.default_ML_params."
 
     new_lines = []
     for line in lines:
-        if "if \'default\', and not already defined" in line:
+        if " \'default\', and not already defined" in line:
             new_lines.append(r)
         else:
             new_lines.append(line)

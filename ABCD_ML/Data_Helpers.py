@@ -277,7 +277,7 @@ def get_unique_combo(data, keys):
     label_encoder = LabelEncoder()
     combo[data.index] = label_encoder.fit_transform(combo)
 
-    return combo
+    return combo, label_encoder
 
 
 def drop_col_duplicates(data, corr_thresh):

@@ -1,0 +1,88 @@
+exp_name = Ksats_Depr
+log_dr = /home/sage/ABCD_ML/Examples
+existing_log = overwrite
+verbose = True
+exp log dr setup at: /home/sage/ABCD_ML/Examples/Ksats_Depr
+log file at: /home/sage/ABCD_ML/Examples/Ksats_Depr/logs.txt
+notebook = True
+default subject id col = src_subject_id
+eventname = baseline_year_1_arm_1
+use default subject ids = True
+default dataset type = basic
+default NaN values = ['777', '999']
+original targets key col = targets
+low memory mode = False
+random state = 1
+ABCD_ML object initialized
+Loading /mnt/sdb2/ABCDFixRelease2p0p1/Fix Release Notes 2.0.1_Public/24. ABCD_Release_2.0.1_Updates/abcd_2.0.1_mapping.csv assumed to be dataset type: explorer
+Loaded map file
+Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
+dropped ['collection_id', 'abcd_ddtidp101_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
+Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp201.txt assumed to be dataset type: basic
+dropped ['collection_id', 'abcd_ddtidp201_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
+Dropped 906 columns, per drop_keys argument
+Dropped 0 cols for all missing values
+Dropped 669 rows for missing values
+Dropped rows with missing data
+Filtered data for outliers with value:  0.0001
+Winsorized data with value:  0.001
+loaded shape:  (9758, 906)
+
+Total valid overlapping subjects = 9758
+
+Loading targets!
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_ksad01.txt assumed to be dataset type: basic
+Final shape:  (11710, 1)
+
+Total valid overlapping subjects = 9612
+
+Show Target distribution:
+               Original Value  Count  Frequency
+Internal Name                                  
+0                         0.0   9367   0.974511
+1                         1.0    245   0.025489
+
+Loading covariates!
+Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Other Non-Imaging/ABCD ACS Post Stratification Weights.csv assumed to be dataset type: explorer
+load: race_ethnicity
+Found 5 categories
+dummy coding by dropping col race_ethnicity_0
+
+Total valid overlapping subjects = 9598
+
+Show race_ethnicity distribution:
+                  Original Value   Count  Frequency
+Internal Name                                      
+race_ethnicity_0             1.0  5167.0   0.538341
+race_ethnicity_1             2.0  1291.0   0.134507
+race_ethnicity_2             3.0  1944.0   0.202542
+race_ethnicity_3             4.0   193.0   0.020108
+race_ethnicity_4             5.0  1003.0   0.104501
+
+Reading strat/stratification values!
+Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Other Non-Imaging/ABCD ACS Post Stratification Weights.csv assumed to be dataset type: explorer
+
+Total valid overlapping subjects = 9596
+
+Removing non overlapping subjects
+Reading strat/stratification values!
+Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
+Merged with existing!
+
+Total valid overlapping subjects = 9596
+
+Removing non overlapping subjects
+CV defined with  stratifying behavior  over 2 unique values.
+   targets  Counts
+0      0.0    9351
+1      1.0     245
+
+CV defined with  stratifying behavior  over 4 unique values.
+   targets sex  Counts
+0      0.0   F    4461
+1      0.0   M    4890
+2      1.0   F     110
+3      1.0   M     135
+
+Final data (w/ target) for modeling loaded shape: (9596, 911)
+Performed train/test split, train size: 7676 test size:  1920

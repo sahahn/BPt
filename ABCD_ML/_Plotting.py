@@ -13,7 +13,7 @@ from IPython.display import display
 from ABCD_ML.Data_Helpers import get_original_cat_names
 
 
-def plot(self, title, show=True):
+def _plot(self, title, show=True):
 
     if show:
         if self.log_dr is not None:
@@ -54,10 +54,10 @@ def Show_Targets_Dist(self, cat_show_original_name=True,
     else:
         targets_df = self.targets.copy()
 
-    self.show_dist(targets_df, 'Target', cat_show_original_name,
-                   encoders=self.targets_encoder,
-                   original_key=self.original_targets_key,
-                   show=show)
+    self._show_dist(targets_df, 'Target', cat_show_original_name,
+                    encoders=self.targets_encoder,
+                    original_key=self.original_targets_key,
+                    show=show)
 
 
 def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
@@ -101,10 +101,10 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
         covars = [covars]
 
     for covar in covars:
-        self.show_covar_dist(covar, covars_df, cat_show_original_name, show)
+        self._show_covar_dist(covar, covars_df, cat_show_original_name, show)
 
 
-def show_covar_dist(self, covar, covars_df, cat_show_original_name, show=True):
+def _show_covar_dist(self, covar, covars_df, cat_show_original_name, show=True):
 
     # Binary or categorical
     if covar in self.covars_encoders:
@@ -136,14 +136,14 @@ def show_covar_dist(self, covar, covars_df, cat_show_original_name, show=True):
         else:
             covar_df = covars_df[[covar]].copy()
 
-        self.show_dist(covar_df, covar, cat_show_original_name,
+        self._show_dist(covar_df, covar, cat_show_original_name,
                        encoders=cov_encoders, original_key=covar, show=show)
 
     # Regression
     elif covar in covars_df:
 
         covar_df = covars_df[[covar]].copy()
-        self.show_dist(covar_df, plot_key=covar,
+        self._show_dist(covar_df, plot_key=covar,
                        cat_show_original_name=cat_show_original_name,
                        original_key=covar, show=show)
 
@@ -151,8 +151,8 @@ def show_covar_dist(self, covar, covars_df, cat_show_original_name, show=True):
         self._print('No covar named', covar, 'found!')
 
 
-def show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
-              original_key=None, show=True):
+def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
+               original_key=None, show=True):
 
     self._print('Show', plot_key, 'distribution:')
 
@@ -180,11 +180,7 @@ def show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
         display_df['Frequency'] = sums / len(data)
         display_df = display_df[['Original Value', 'Count', 'Frequency']]
 
-        if self.notebook:
-            display(display_df)
-
-        self._print(display_df, dont_print=self.notebook)
-        self._print(dont_print=self.notebook)
+        self._display_df(display_df)
 
         display_names = sums.index
         if cat_show_original_name:
@@ -197,11 +193,7 @@ def show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
 
         summary = data.describe()
 
-        if self.notebook:
-            display(summary)
-
-        self._print(summary, dont_print=self.notebook)
-        self._print(dont_print=self.notebook)
+        self._display_df(summary)
 
         vals = data[original_key]
         self._print('Num. of unique vals:', len(np.unique(vals)))
@@ -211,7 +203,16 @@ def show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
 
     title = plot_key + ' distributions'
     plt.title(title)
-    self.plot(title, show)
+    self._plot(title, show)
+
+
+def _display_df(self, display_df):
+
+    if self.notebook:
+        display(display_df)
+
+    self._print(display_df, dont_print=self.notebook)
+    self._print(dont_print=self.notebook)
 
 
 def Plot_Base_Feat_Importances(self, top_n=10, title=None, show=True):
@@ -250,7 +251,7 @@ def _plot_feature_importance(self, data, title, xlabel, show):
     sns.barplot(orient='h', data=data)
     plt.title(title)
     plt.xlabel(xlabel)
-    self.plot(title, show)
+    self._plot(title, show)
 
 
 def Plot_Shap_Summary(self, top_n=10, title=None, cat_show_original_name=True,
@@ -287,4 +288,4 @@ def Plot_Shap_Summary(self, top_n=10, title=None, cat_show_original_name=True,
         title = 'Shap Feat Importance Summary Plot'
 
     plt.title(title)
-    self.plot(title, show)
+    self._plot(title, show)

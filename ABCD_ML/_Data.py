@@ -65,7 +65,8 @@ def Load_Name_Map(self, loc, dataset_type='default',
 
 def Load_Data(self, loc, dataset_type='default', drop_keys=[],
               filter_outlier_percent=None, winsorize_val=None,
-              drop_col_duplicates=None):
+              unique_val_drop_thresh=None, unique_val_warn_percent=.2,
+              drop_col_duplicates=None, clear_existing=False):
     """Load a ABCD2p0NDA (default) or 2.0_ABCD_Data_Explorer (explorer)
     release formatted neuroimaging dataset - of derived ROI level info.
 
@@ -142,6 +143,27 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
 
         (default = None)
 
+    unique_val_drop_thresh : int, optional
+        This parameter allows you to drop a column within data,
+        or rather a feature, if there are under the passed
+        `unique_val_drop_thresh` number of unique values.
+
+        (default = None)
+
+    unique_val_warn_percent : int or float, optional
+        This value controls the warn threshold for printing
+        out potential data columns with a suspiciously low
+        number of unique values. Specifically, it refers to
+        the percentage of the total data that a features number of
+        unique values has to be under. For example, if 5 is passed,
+        that any column / feature with under .05 * len(data) unique
+        vals.
+
+        If float, then pass a value between 0 and 1, otherwise if greater
+        than 1, will turn to a percent.
+
+        (default = .2)
+
     drop_col_duplicates : float or None/False, optional
         If set to None, will not drop any.
         If float, then pass a value between 0 and 1,
@@ -154,6 +176,20 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         all loaded data.
 
         (default = None)
+
+    clear_existing : bool, optional
+        If this parameter is set to True, then any existing
+        loaded data will first be cleared before loading new data!
+
+        .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets, then simply reloading / clearing existing data
+            might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original data, or if not possible,
+            then reloading the notebook or re-running the script.
+
+        (default = False)
 
     Notes
     ----------
@@ -170,6 +206,8 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         self.data = data
 
     """
+    if clear_existing:
+        self.Clear_Data()
 
     # Load in the dataset & proc. dataset type
     if isinstance(loc, list):
@@ -210,17 +248,37 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         data[data_keys] = winsorize(data[data_keys], winsorize_val, axis=0)
         self._print('Winsorized data with value: ', winsorize_val)
 
-    self._print('loaded shape: ', data.shape)
-
     # Check for questionable loaded columns & print warning
-    warn_thresh = len(data) / 5
+    if unique_val_warn_percent > 1:
+        unique_val_warn_percent /= 100
+
+    warn_thresh = unique_val_warn_percent * len(data)
     unique_counts = [len(np.unique(data[x])) for x in data]
+
+    if unique_val_drop_thresh is None:
+        unique_val_drop_thresh = len(data) + 1
+
+    if (np.array(unique_counts) < unique_val_drop_thresh).any():
+
+        self._print()
+        self._print('The following columns were dropped due to being under',
+                    'the passed unique_val_drop_thresh of: ',
+                    unique_val_drop_thresh)
+
+        for col, count in zip(list(data), unique_counts):
+            if count < unique_val_drop_thresh:
+                data = data.drop(col, axis=1)
+                self._print('Dropped', col, 'unique vals:', count)
+
+        self._print()
+        unique_counts = [len(np.unique(data[x])) for x in data]
 
     if (np.array(unique_counts) < warn_thresh).any():
 
         self._print()
         self._print('The following columns have a questionable number',
-                    'of unique values: ')
+                    'of unique values (under the warn thresh of', warn_thresh,
+                    '): ')
         for col, count in zip(list(data), unique_counts):
             if count < warn_thresh:
                 self._print(col, 'unique vals:', count)
@@ -232,6 +290,8 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         data, dropped = drop_col_duplicates(data, drop_col_duplicates)
         self._print('Dropped', len(dropped), 'columns as duplicate cols!')
 
+    self._print('loaded shape: ', data.shape)
+
     # If other data is already loaded,
     # merge this data with existing loaded data
     self.data = self._merge_existing(self.data, data)
@@ -241,9 +301,8 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
 def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
                 code_categorical_as='dummy', categorical_drop_percent=None,
                 filter_float_outlier_percent=None, standardize=True,
-                normalize=False):
-    '''Load a covariate or covariates from a 2.0_ABCD_Data_Explorer
-    release formatted csv.
+                normalize=False, clear_existing=False):
+    '''Load a covariate or covariates, type data.
 
     Parameters
     ----------
@@ -328,7 +387,24 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         Note: Computed after standardization, if both set to True.
 
         (default = False)
+
+    clear_existing : bool, optional
+        If this parameter is set to True, then any existing
+        loaded covars will first be cleared before loading new covars!
+
+        .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            covars might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original data, or if not possible,
+            then reloading the notebook or re-running the script.
+
+        (default = False)
     '''
+
+    if clear_existing:
+        self.Clear_Covars()
 
     self._print('Loading covariates!')
     covars, col_names = self._common_load(loc, dataset_type,
@@ -516,7 +592,7 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
 
 
 def Load_Strat(self, loc, col_names, dataset_type='default',
-               binary_col_inds=None):
+               binary_col_inds=None, clear_existing=False):
     '''Load stratification values from a file.
     See Notes for more details on what stratification values are.
 
@@ -557,6 +633,20 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
 
         (default = None)
 
+    clear_existing : bool, optional
+        If this parameter is set to True, then any existing
+        loaded strat will first be cleared before loading new strat!
+
+        .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            strat might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original strat, or if not possible,
+            then reloading the notebook or re-running the script.
+
+        (default = False)
+
     Notes
     ----------
     Stratification values are categorical variables which are loaded for the
@@ -570,6 +660,8 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
     loaded, it could potentially lead to weird bugs.
     The easiest option is to just load strat last.
     '''
+    if clear_existing:
+        self.Clear_Strat()
 
     self._print('Reading strat/stratification values!')
     strat, col_names = self._common_load(loc, dataset_type,
@@ -597,7 +689,7 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
     self._process_new(True)  # Regardless of low mem-mode
 
 
-def Load_Exclusions(self, loc=None, exclusions=None):
+def Load_Exclusions(self, loc=None, exclusions=None, clear_existing=False):
     '''Loads in a set of excluded subjects,
     from either a file or as directly passed in.
 
@@ -612,6 +704,20 @@ def Load_Exclusions(self, loc=None, exclusions=None):
         An explicit list of subjects to add to exclusions.
         (default = None)
 
+    clear_existing : bool, optional
+        If this parameter is set to True, then any existing
+        loaded exclusions will first be cleared before loading new exclusions!
+
+        .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            exclusions might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original exclusions, or if not possible,
+            then reloading the notebook or re-running the script.
+
+        (default = False)
+
     Notes
     ----------
     For best/most reliable performance across all data loading cases,
@@ -621,6 +727,8 @@ def Load_Exclusions(self, loc=None, exclusions=None):
     reading subjects from a exclusion loc might not
     function as expected.
     '''
+    if clear_existing:
+        self.Clear_Exclusions()
 
     self.exclusions.update(self._load_set_of_subjects(loc=loc,
                                                       subjects=exclusions))
@@ -628,7 +736,7 @@ def Load_Exclusions(self, loc=None, exclusions=None):
     self._filter_excluded()
 
 
-def Load_Inclusions(self, loc=None, inclusions=None):
+def Load_Inclusions(self, loc=None, inclusions=None, clear_existing=False):
     '''Loads in a set of subjects such that only these subjects
     can be loaded in, and any subject not as an inclusion is dropped,
     from either a file or as directly passed in.
@@ -644,6 +752,20 @@ def Load_Inclusions(self, loc=None, inclusions=None):
         An explicit list of subjects to add to inclusions.
         (default = None)
 
+    clear_existing : bool, optional
+        If this parameter is set to True, then any existing
+        loaded inclusions will first be cleared before loading new inclusions!
+
+        .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            inclusions might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original inclusions, or if not possible,
+            then reloading the notebook or re-running the script.
+
+        (default = False)
+
     Notes
     ----------
     For best/most reliable performance across all data loading cases,
@@ -653,6 +775,8 @@ def Load_Inclusions(self, loc=None, inclusions=None):
     reading subjects from a inclusion loc might not
     function as expected.
     '''
+    if clear_existing:
+        self.Clear_Inclusions()
 
     self.inclusions.update(self._load_set_of_subjects(loc=loc,
                                                       subjects=inclusions))
@@ -667,40 +791,90 @@ def Clear_Name_Map(self):
 
 
 def Clear_Data(self):
-    '''Reset data'''
+    '''Resets any loaded data.
+
+    .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets, then simply clearing data might result
+            in computing a misleading overlap of final valid subjects.
+            Reloading should therefore be best used right after loading
+            the original data, or if not possible, then reloading the
+            notebook or re-running the script.
+
+    '''
     self.data = pd.DataFrame()
-    self._print('cleared data.')
+    self._print('Cleared loaded data.')
 
 
 def Clear_Covars(self):
-    '''Reset covars'''
+    '''Reset any loaded covars.
+
+    .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            covars might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original covars, or if not possible,
+            then reloading the notebook or re-running the script.
+
+    '''
     self.covars = pd.DataFrame()
     self.covars_encoders = {}
     self._print('cleared covars.')
 
 
 def Clear_Targets(self):
-    '''Reset targets'''
+    '''Resets targets'''
     self.targets = pd.DataFrame()
     self.targets_encoder = None
     self._print('cleared targets.')
 
 
 def Clear_Strat(self):
-    '''Reset strat'''
+    '''Reset any loaded strat
+
+    .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            strat might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original strat, or if not possible,
+            then reloading the notebook or re-running the script.
+
+    '''
     self.strat = pd.DataFrame()
     self.strat_encoders = {}
     self._print('cleared strat.')
 
 
 def Clear_Exclusions(self):
-    '''Resets exclusions to be an empty set'''
+    '''Resets exclusions to be an empty set.
+
+    .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            exclusions might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original exclusions, or if not possible,
+            then reloading the notebook or re-running the script.
+
+    '''
     self.exclusions = set()
     self._print('cleared exclusions.')
 
 
 def Clear_Inclusions(self):
-    '''Resets inclusions to be an empty set'''
+    '''Resets inclusions to be an empty set.
+
+    .. WARNING::
+        If any subjects have been dropped from a different place,
+        e.g. targets or data, then simply reloading / clearing existing
+        inclusions might result in computing a misleading overlap of final
+        valid subjects. Reloading should therefore be best used
+        right after loading the original inclusions, or if not possible,
+        then reloading the notebook or re-running the script.
+        
+    '''
     self.inclusions = set()
     self._print('cleared inclusions.')
 
@@ -719,6 +893,20 @@ def Drop_Data_Duplicates(self, corr_thresh):
 
     self.data, dropped = drop_col_duplicates(self.data, corr_thresh)
     self._print('Dropped', len(dropped), 'columns as duplicate cols!')
+
+
+def Get_Overlapping_Subjects(self):
+    '''This function will return the set of valid
+    overlapping subjects currently loaded across data,
+    targets, covars, strat ect... respecting any inclusions
+    and exclusions.
+
+    Returns
+    ----------
+    set
+        The set of valid overlapping subjects.
+    '''
+    return self._get_overlapping_subjects()
 
 
 def _load_datasets(self, locs, dataset_types):

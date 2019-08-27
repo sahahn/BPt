@@ -281,7 +281,7 @@ def get_objects_by_type(problem_type, AVALIABLE=None, OBJS=None):
     return objs
 
 
-def proc_problem_type(problem_type):
+def proc_problem_type(problem_type, avaliable_by_type):
 
     if problem_type is not None:
         if problem_type == 'categorical':
@@ -310,7 +310,7 @@ def show_objects(problem_type=None, obj=None,
             return
 
         avaliable_by_type = get_avaliable_by_type(AVALIABLE)
-        problem_types = proc_problem_type(problem_type)
+        problem_types = proc_problem_type(problem_type, avaliable_by_type)
 
         for pt in problem_types:
                 show_type(pt, avaliable_by_type,

@@ -1096,7 +1096,8 @@ class Model():
             shap_values = self._get_shap_values(explainer, X_test)
 
         else:
-            shap_values = self._get_kernel_shap_values(train_data, test_data)
+            shap_values, X_test =\
+                self._get_kernel_shap_values(train_data, test_data)
 
         # Set to df
         self._add_new_shap_values(X_test, shap_values)
@@ -1230,7 +1231,7 @@ class Model():
         shap_values = explainer.shap_values(np.array(X_test), l1_reg='aic',
                                             n_samples='auto')
 
-        return self._proc_shap_values(shap_values)
+        return self._proc_shap_values(shap_values), X_test
 
     def _get_kernel_explainer(self, model, X_train_summary):
         '''Base behavior for binary / multi-class'''

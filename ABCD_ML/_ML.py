@@ -5,11 +5,10 @@ Main class extension file for the Machine Learning functionality
 """
 import numpy as np
 import pandas as pd
+from tqdm import tqdm, tqdm_notebook
+
 from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
-
-from tqdm import tqdm
-from tqdm import tqdm_notebook
 
 
 def Set_Default_ML_Params(self, problem_type='default', metric='default',
@@ -628,11 +627,11 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
 
     run_name : str or None, optional
         All results from `Evaluate`, or rather the metrics are
-        saved within self.all_scores by default (in addition to in
+        saved within self.eval_scores by default (in addition to in
         the logs, though this way saves them in a more programatically
         avaliable way). `run_name` refers to the specific name under which to
         store this Evaluate's run on results. If left as None, then will just
-        name as the first available integer, e.g. "6".
+        use a default name.
 
     problem_type :
     metric :
@@ -749,8 +748,16 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
                              ensemble_split, model_type_param_ind,
                              test=False)
 
-    run_name = self._get_avaliable_all_scores_name(run_name)
+    run_name = self._get_avaliable_eval_scores_name(run_name, model_type)
     self._print()
+
+    # Save this specific set of settings
+    run_settings = ML_params.copy()
+    run_settings.update({'model_type': model_type, 'run_name': run_name,
+                         'ensemble_type': ensemble_type,
+                         'ensemble_split': ensemble_split,
+                         'model_type_param_ind': model_type_param_ind})
+    self.eval_settings[run_name] = run_settings
 
     # Init the Model object with modeling params
     self._init_model(model_type, ML_params, ensemble_type, ensemble_split,
@@ -760,10 +767,9 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
     train_scores, scores =\
         self.Model.Evaluate_Model(self.all_data, self.train_subjects)
 
-    # Print out summary stats for all passed metrics
-    scorer_strs = self.Model.scorer_strs
     self._print()
 
+    # Print out summary stats for all passed metrics
     if ML_params['compute_train_score']:
         score_list = [train_scores, scores]
         score_type_list = ['Training', 'Validation']
@@ -771,43 +777,8 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
         score_list = [scores]
         score_type_list = ['Validation']
 
-    for s, name in zip(score_list, score_type_list):
-        self._print(name + ' Scores')
-        self._print(''.join('_' for i in range(len(name) + 7)))
-
-        for i in range(len(scorer_strs)):
-
-            metric_name = scorer_strs[i]
-            self._print('Metric: ', metric_name)
-            score_by_metric = s[:, i]
-
-            if len(score_by_metric[0].shape) > 0:
-                by_class = [[score_by_metric[i][j] for i in
-                            range(len(score_by_metric))] for j in
-                            range(len(score_by_metric[0]))]
-
-                summary_scores_by_class =\
-                    [compute_macro_micro(class_scores, ML_params['n_repeats'],
-                     ML_params['n_splits']) for class_scores in by_class]
-
-                for summary_scores, class_name in zip(summary_scores_by_class,
-                                                      self.targets_key):
-
-                    self._print('Target class: ', class_name)
-                    self._print_summary_score(name, summary_scores,
-                                              ML_params['n_repeats'], run_name,
-                                              metric_name, class_name)
-
-            else:
-
-                # Compute macro / micro summary of scores
-                summary_scores = compute_macro_micro(score_by_metric,
-                                                     ML_params['n_repeats'],
-                                                     ML_params['n_splits'])
-
-                self._print_summary_score(name, summary_scores,
-                                          ML_params['n_repeats'], run_name,
-                                          metric_name)
+    for scrs, name in zip(score_list, score_type_list):
+        self._handle_scores(scrs, name, ML_params, run_name)
 
     # Return the raw scores from each fold
     return score_list
@@ -823,7 +794,8 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
          n_jobs='default', n_iter='default', data_to_use='default',
          compute_train_score='default', random_state='default',
          calc_base_feature_importances='default',
-         calc_shap_feature_importances='default', extra_params='default'):
+         calc_shap_feature_importances='default', extra_params='default',
+         **kwargs):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
 
@@ -1014,42 +986,55 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
     else:
         self._print('Running Evaluate with:')
 
-    self._print('model_type =', model_type)
     self._print('problem_type =', ML_params['problem_type'])
+
+    self._print('model_type =', model_type)
+    self._print('model_type_param_ind =', model_type_param_ind)
+
+    if isinstance(model_type, list):
+        self._print('ensemble_type =', ensemble_type)
+
+        if ensemble_type != 'basic ensemble':
+            self._print('ensemble_split =', ensemble_split)
+
     self._print('metric =', ML_params['metric'])
+
     self._print('data_scaler =', ML_params['data_scaler'])
+    if ML_params['data_scaler'] is not None:
+        self._print('data_scaler_param_ind =',
+                    ML_params['data_scaler_param_ind'])
+
     self._print('sampler =', ML_params['sampler'])
+    if ML_params['sampler'] is not None:
+        self._print('sampler_param_ind =', ML_params['sampler_param_ind'])
+
     self._print('feat_selector =', ML_params['feat_selector'])
+    if ML_params['feat_selector'] is not None:
+        self._print('feat_selector_param_ind =',
+                    ML_params['feat_selector_param_ind'])
 
     if not test:
         self._print('n_splits =', ML_params['n_splits'])
         self._print('n_repeats =', ML_params['n_repeats'])
 
-    self._print('int_cv =', ML_params['int_cv'])
-
-    self._print('ensemble_type =', ensemble_type)
-    self._print('ensemble_split =', ensemble_split)
-
     self._print('search_type =', ML_params['search_type'])
-    self._print('model_type_param_ind =', model_type_param_ind)
-    self._print('data_scaler_param_ind =', ML_params['data_scaler_param_ind'])
-    self._print('sampler_param_ind =', ML_params['sampler_param_ind'])
-    self._print('feat_selector_param_ind =',
-                ML_params['feat_selector_param_ind'])
+    if ML_params['search_type'] is not None:
+        self._print('int_cv =', ML_params['int_cv'])
+        self._print('n_iter =', ML_params['n_iter'])
 
     if ML_params['problem_type'] != 'regression':
         self._print('class_weight =', ML_params['class_weight'])
 
     self._print('n_jobs =', ML_params['n_jobs'])
-    self._print('n_iter =', ML_params['n_iter'])
     self._print('data_to_use =', ML_params['data_to_use'])
     self._print('compute_train_score =', ML_params['compute_train_score'])
-
     self._print('random_state =', ML_params['random_state'])
+
     self._print('calc_base_feature_importances =',
                 ML_params['calc_base_feature_importances'])
     self._print('calc_shap_feature_importances =',
                 ML_params['calc_shap_feature_importances'])
+
     self._print('extra_params =', ML_params['extra_params'])
     self._print()
 
@@ -1074,35 +1059,75 @@ def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
                        self._ML_print)
 
 
-def _get_avaliable_all_scores_name(self, name):
+def _get_avaliable_eval_scores_name(self, name, model_type):
 
     if name is None:
+        if isinstance(model_type, list):
+            name = 'ensemble'
+        else:
+            name = model_type
 
-        name = 0
-        while str(name) in self.all_scores:
-            name += 1
+    if name in self.eval_scores:
 
-        name = str(name)
+        n = 0
+        while name + str(n) in self.eval_scores:
+            n += 1
 
-    else:
+        name = name + str(n)
 
-        name = str(name)
-        if name in self.all_scores:
-            n = 0
-            while name + str(n) in self.all_scores:
-                n += 1
-
-            name = name + str(n)
-
-    self._print('Saving scores within self.all_scores with name:', name)
+    self._print('Saving scores and settings with unique name:', name)
     return name
+
+
+def _handle_scores(self, scores, name, ML_params, run_name):
+
+    scorer_strs = self.Model.scorer_strs
+
+    self._print(name + ' Scores')
+    self._print(''.join('_' for i in range(len(name) + 7)))
+
+    for i in range(len(scorer_strs)):
+
+        metric_name = scorer_strs[i]
+        self._print('Metric: ', metric_name)
+        score_by_metric = scores[:, i]
+
+        if len(score_by_metric[0].shape) > 0:
+            by_class = [[score_by_metric[i][j] for i in
+                        range(len(score_by_metric))] for j in
+                        range(len(score_by_metric[0]))]
+
+            summary_scores_by_class =\
+                [compute_macro_micro(class_scores, ML_params['n_repeats'],
+                 ML_params['n_splits']) for class_scores in by_class]
+
+            for summary_scores, class_name in zip(summary_scores_by_class,
+                                                  self.targets_key):
+
+                self._print('Target class: ', class_name)
+                self._print_summary_score(name, summary_scores,
+                                          ML_params['n_repeats'], run_name,
+                                          metric_name, class_name)
+
+        else:
+
+            # Compute macro / micro summary of scores
+            summary_scores = compute_macro_micro(score_by_metric,
+                                                 ML_params['n_repeats'],
+                                                 ML_params['n_splits'])
+
+            self._print_summary_score(name, summary_scores,
+                                      ML_params['n_repeats'], run_name,
+                                      metric_name)
 
 
 def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
                          metric_name, class_name=None):
+    '''Besides printing, also adds scores to self.eval_scores dict
+    under run name.'''
 
     self._print('Mean ' + name + ' score: ', summary_scores[0])
-    self._add_to_all_scores(run_name, name, metric_name, 'Mean',
+    self._add_to_eval_scores(run_name, name, metric_name, 'Mean',
                             summary_scores[0], class_name)
 
     if n_repeats > 1:
@@ -1110,39 +1135,39 @@ def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
                     summary_scores[1])
         self._print('Micro Std in ' + name + ' score: ',
                     summary_scores[2])
-        self._add_to_all_scores(run_name, name, metric_name, 'Macro Std',
+        self._add_to_eval_scores(run_name, name, metric_name, 'Macro Std',
                                 summary_scores[1], class_name)
-        self._add_to_all_scores(run_name, name, metric_name, 'Micro Std',
+        self._add_to_eval_scores(run_name, name, metric_name, 'Micro Std',
                                 summary_scores[2], class_name)
     else:
         self._print('Std in ' + name + ' score: ',
                     summary_scores[2])
-        self._add_to_all_scores(run_name, name, metric_name, 'Std',
+        self._add_to_eval_scores(run_name, name, metric_name, 'Std',
                                 summary_scores[2], class_name)
 
     self._print()
 
 
-def _add_to_all_scores(self, run_name, name, metric_name, val_type, val,
+def _add_to_eval_scores(self, run_name, name, metric_name, val_type, val,
                        class_name=None):
 
-    if run_name not in self.all_scores:
-        self.all_scores[run_name] = {}
+    if run_name not in self.eval_scores:
+        self.eval_scores[run_name] = {}
 
-    if name not in self.all_scores[run_name]:
-        self.all_scores[run_name][name] = {}
+    if name not in self.eval_scores[run_name]:
+        self.eval_scores[run_name][name] = {}
 
-    if metric_name not in self.all_scores[run_name][name]:
-        self.all_scores[run_name][name][metric_name] = {}
+    if metric_name not in self.eval_scores[run_name][name]:
+        self.eval_scores[run_name][name][metric_name] = {}
 
     if class_name is None:
-        self.all_scores[run_name][name][metric_name][val_type] = val
+        self.eval_scores[run_name][name][metric_name][val_type] = val
 
     else:
-        if class_name not in self.all_scores[run_name][name][metric_name]:
-            self.all_scores[run_name][name][metric_name][class_name] = {}
+        if class_name not in self.eval_scores[run_name][name][metric_name]:
+            self.eval_scores[run_name][name][metric_name][class_name] = {}
 
-        self.all_scores[run_name][name][metric_name][class_name][val_type] =\
+        self.eval_scores[run_name][name][metric_name][class_name][val_type] =\
             val
 
 

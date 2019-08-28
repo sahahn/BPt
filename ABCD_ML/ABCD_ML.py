@@ -332,10 +332,10 @@ class ABCD_ML():
                              _make_ML_params,
                              _print_model_params,
                              _init_model,
-                             _get_avaliable_all_scores_name,
+                             _get_avaliable_eval_scores_name,
                              _handle_scores,
                              _print_summary_score,
-                             _add_to_all_scores,
+                             _add_to_eval_scores,
                              Get_Base_Feat_Importances,
                              Get_Shap_Feat_Importances)
 

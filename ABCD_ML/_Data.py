@@ -65,7 +65,7 @@ def Load_Name_Map(self, loc, dataset_type='default',
 
 def Load_Data(self, loc, dataset_type='default', drop_keys=[],
               filter_outlier_percent=None, winsorize_val=None,
-              unique_val_drop_thresh=None, unique_val_warn_percent=.2,
+              unique_val_drop_thresh=2, unique_val_warn_percent=.2,
               drop_col_duplicates=None, clear_existing=False):
     """Load a ABCD2p0NDA (default) or 2.0_ABCD_Data_Explorer (explorer)
     release formatted neuroimaging dataset - of derived ROI level info.
@@ -147,8 +147,10 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         This parameter allows you to drop a column within data,
         or rather a feature, if there are under the passed
         `unique_val_drop_thresh` number of unique values.
+        By default this is 2, so any feature with only 1 unique value
+        will be dropped.
 
-        (default = None)
+        (default = 2)
 
     unique_val_warn_percent : int or float, optional
         This value controls the warn threshold for printing
@@ -254,9 +256,6 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
 
     warn_thresh = unique_val_warn_percent * len(data)
     unique_counts = [len(np.unique(data[x])) for x in data]
-
-    if unique_val_drop_thresh is None:
-        unique_val_drop_thresh = len(data) + 1
 
     if (np.array(unique_counts) < unique_val_drop_thresh).any():
 

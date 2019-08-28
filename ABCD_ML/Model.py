@@ -279,7 +279,7 @@ class Model():
 
         if self.search_type is None:
 
-            if np.array(self.model_type_param_inds != 0).any():
+            if (np.array(self.model_type_param_inds) != 0).any():
                 self._print('Search type is set to None!')
                 self._print('No hyper-param search will be conducted.')
                 self._print()

@@ -5,6 +5,10 @@ def grab_params(func):
     args = inspect.signature(func)
     args = list(args.parameters)
     args.remove('self')
+
+    if 'kwargs' in args:
+        args.remove('kwargs')
+
     return args
 
 

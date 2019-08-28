@@ -181,6 +181,9 @@ PARAMS['base rfe'] = {'n_features_to_select': [None]}
 
 PARAMS['rfe num feats rs'] = {'n_features_to_select': uniform()}
 
+PARAMS['binary under sampler'] = {'sampling_strategy': [1, .75, .66, .5, .33,
+                                                        .25]}
+
 
 def get_base_params(str_indicator):
 

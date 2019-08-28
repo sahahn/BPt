@@ -81,7 +81,8 @@ def proc_str_input(in_str):
     chunk_replace_dict = {' regressor': '',
                           ' regresure': '',
                           ' classifier': '',
-                          ' classifer': ''}
+                          ' classifer': '',
+                          ' classification': ''}
 
     for chunk in chunk_replace_dict:
         in_str = in_str.replace(chunk, chunk_replace_dict[chunk])

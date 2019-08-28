@@ -118,9 +118,8 @@ MODELS = {
                                      'mlp layers search']),
     'mlp classifier': (MLPClassifier, ['base mlp', 'mlp rs', 'mlp rs es',
                                        'mlp layers search']),
-    'ridge regressor':(Ridge, ['base ridge regressor', 'ridge regressor rs']),
-        
-    'lasso regressor':(Lasso, ['base lasso regressor','lasso regressor rs']),
+    'ridge regressor': (Ridge, ['base ridge regressor', 'ridge regressor rs']),
+    'lasso regressor': (Lasso, ['base lasso regressor', 'lasso regressor rs']),
     }
 
 

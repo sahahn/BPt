@@ -104,7 +104,8 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
         self._show_covar_dist(covar, covars_df, cat_show_original_name, show)
 
 
-def _show_covar_dist(self, covar, covars_df, cat_show_original_name, show=True):
+def _show_covar_dist(self, covar, covars_df, cat_show_original_name,
+                     show=True):
 
     # Binary or categorical
     if covar in self.covars_encoders:
@@ -137,15 +138,15 @@ def _show_covar_dist(self, covar, covars_df, cat_show_original_name, show=True):
             covar_df = covars_df[[covar]].copy()
 
         self._show_dist(covar_df, covar, cat_show_original_name,
-                       encoders=cov_encoders, original_key=covar, show=show)
+                        encoders=cov_encoders, original_key=covar, show=show)
 
     # Regression
     elif covar in covars_df:
 
         covar_df = covars_df[[covar]].copy()
         self._show_dist(covar_df, plot_key=covar,
-                       cat_show_original_name=cat_show_original_name,
-                       original_key=covar, show=show)
+                        cat_show_original_name=cat_show_original_name,
+                        original_key=covar, show=show)
 
     else:
         self._print('No covar named', covar, 'found!')

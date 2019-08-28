@@ -220,7 +220,7 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e):
         if l_e is not None:
             raw = l_e.inverse_transform(unique_vals)
             col_split = np.array([r.split('***')[:-1]
-                                    for r in raw]).astype(int)
+                                  for r in raw]).astype(int)
         else:
             col_names = [col_names]
             col_split = np.expand_dims(unique_vals, axis=-1)

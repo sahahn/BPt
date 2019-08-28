@@ -1168,6 +1168,7 @@ def _merge_existing(self, class_data, local_data):
     if len(class_data) > 0:
         class_data = pd.merge(class_data, local_data, on=self.subject_id)
         self._print('Merged with existing!')
+        self._print('New combined shape:', class_data.shape)
         return class_data
     else:
         return local_data

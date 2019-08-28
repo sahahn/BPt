@@ -1128,7 +1128,7 @@ def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
 
     self._print('Mean ' + name + ' score: ', summary_scores[0])
     self._add_to_eval_scores(run_name, name, metric_name, 'Mean',
-                            summary_scores[0], class_name)
+                             summary_scores[0], class_name)
 
     if n_repeats > 1:
         self._print('Macro Std in ' + name + ' score: ',
@@ -1136,20 +1136,20 @@ def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
         self._print('Micro Std in ' + name + ' score: ',
                     summary_scores[2])
         self._add_to_eval_scores(run_name, name, metric_name, 'Macro Std',
-                                summary_scores[1], class_name)
+                                 summary_scores[1], class_name)
         self._add_to_eval_scores(run_name, name, metric_name, 'Micro Std',
-                                summary_scores[2], class_name)
+                                 summary_scores[2], class_name)
     else:
         self._print('Std in ' + name + ' score: ',
                     summary_scores[2])
         self._add_to_eval_scores(run_name, name, metric_name, 'Std',
-                                summary_scores[2], class_name)
+                                 summary_scores[2], class_name)
 
     self._print()
 
 
 def _add_to_eval_scores(self, run_name, name, metric_name, val_type, val,
-                       class_name=None):
+                        class_name=None):
 
     if run_name not in self.eval_scores:
         self.eval_scores[run_name] = {}

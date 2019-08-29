@@ -20,7 +20,7 @@ from sklearn.linear_model import (LogisticRegression, ElasticNet,
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from xgboost import XGBRegressor
+from xgboost import XGBClassifier, XGBRegressor
 from lightgbm import LGBMRegressor, LGBMClassifier
 from ABCD_ML.Early_Stop import EarlyStopLGBMRegressor
 
@@ -41,6 +41,7 @@ AVALIABLE = {
                         'light gbm':          'light gbm classifier',
                         'svm':                'svm classifier',
                         'mlp':                'mlp classifier',
+                        'xgb':                'xgb classifier',
         },
         'regression': {
                         'user passed':        'user passed',
@@ -58,6 +59,7 @@ AVALIABLE = {
                         'mlp':                'mlp regressor',
                         'ridge':              'ridge regressor',
                         'lasso':              'lasso regressor',
+                        'xgb':                'xgb regressor',
         },
         'categorical': {
                 'multilabel': {
@@ -102,8 +104,9 @@ MODELS = {
     'random forest regressor': (RandomForestRegressor, ['base rf', 'rf rs']),
     'random forest classifier': (RandomForestClassifier, ['base rf', 'rf rs']),
 
-    'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm rs']),
-    'light gbm classifier': (LGBMClassifier, ['base lgbm', 'lgbm rs']),
+    'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm rs', 'lgbm 2']),
+    'light gbm classifier': (LGBMClassifier, ['base lgbm', 'lgbm rs',
+                                              'lgbm 2']),
 
     'light gbm regressor early stop': (EarlyStopLGBMRegressor, ['base lgbm es',
                                                                 'lgbm es rs']),
@@ -120,6 +123,9 @@ MODELS = {
                                        'mlp layers search']),
     'ridge regressor': (Ridge, ['base ridge regressor', 'ridge regressor rs']),
     'lasso regressor': (Lasso, ['base lasso regressor', 'lasso regressor rs']),
+
+    'xgb regressor': (XGBRegressor, ['base xgb', 'xgb rs']),
+    'xgb classifier': (XGBClassifier, ['base xgb', 'xgb rs']),
     }
 
 

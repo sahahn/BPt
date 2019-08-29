@@ -126,18 +126,22 @@ AVALIABLE = {
                         'macro roc auc': 'macro roc auc',
                         'micro roc auc': 'micro roc auc',
                         'samples roc auc': 'samples roc auc',
+                        'by class roc auc': 'by class roc auc',
                         'weighted f1': 'weighted f1',
                         'macro f1': 'macro f1',
                         'micro f1': 'micro f1',
                         'samples f1': 'samples f1',
+                        'by class f1': 'by class f1',
                         'weighted recall': 'weighted recall',
                         'macro recall': 'macro recall',
                         'micro recall': 'micro recall',
                         'samples recall': 'samples recall',
+                        'by class recall': 'by class recall',
                         'weighted precision': 'weighted precision',
                         'macro precision': 'macro precision',
                         'micro precision': 'micro precision',
                         'samples precision': 'samples precision',
+                        'by class precision': 'by class precision',
                         'log': 'log',
                         'accuracy': 'accuracy',
                         'macro average precision': 'macro average precision',
@@ -146,11 +150,14 @@ AVALIABLE = {
                         'weighted average precision',
                         'samples average precision':
                         'samples average precision',
+                        'by class average precision':
+                        'by class average precision',
                         'hamming': 'hamming',
                         'weighted jaccard': 'weighted jaccard',
                         'macro jaccard': 'macro jaccard',
                         'micro jaccard': 'micro jaccard',
                         'samples jaccard': 'samples jaccard',
+                        'by class jaccard': 'by class jaccard',
             },
             'multiclass': {
                         'weighted roc auc': 'multiclass weighted roc auc',
@@ -168,20 +175,26 @@ AVALIABLE = {
                         'multiclass weighted average precision',
                         'samples average precision':
                         'multiclass samples average precision',
+                        'by class average precision':
+                        'multiclass by class average precision',
                         'log': 'log',
                         'hamming': 'hamming',
                         'weighted f1': 'weighted f1',
                         'macro f1': 'macro f1',
                         'micro f1': 'micro f1',
+                        'by class f1': 'by class f1',
                         'weighted recall': 'weighted recall',
                         'macro recall': 'macro recall',
                         'micro recall': 'micro recall',
+                        'by class recall': 'by class recall',
                         'weighted precision': 'weighted precision',
                         'macro precision': 'macro precision',
                         'micro precision': 'micro precision',
+                        'by class precision': 'by class precision',
                         'weighted jaccard': 'weighted jaccard',
                         'macro jaccard': 'macro jaccard',
                         'micro jaccard': 'micro jaccard',
+                        'by class jaccard': 'by class jaccard',
                         'matthews': 'matthews',
             }
         }
@@ -222,6 +235,10 @@ METRICS = {
     'samples roc auc': {'score_func': roc_auc_score_wrapper,
                         'greater_is_better': True, 'needs_proba': True,
                         'average': 'samples'},
+
+    'by class roc auc': {'score_func': roc_auc_score_wrapper,
+                         'greater_is_better': True, 'needs_proba': True,
+                         'average': None},
 
     'multiclass weighted roc auc': {'score_func': roc_auc_score_wrapper,
                                     'greater_is_better': True,
@@ -265,6 +282,9 @@ METRICS = {
     'samples f1': {'score_func': f1_score_wrapper, 'greater_is_better': True,
                    'average': 'samples'},
 
+    'by class f1': {'score_func': f1_score_wrapper, 'greater_is_better': True,
+                    'average': None},
+
     'recall': {'score_func': recall_score_wrapper, 'greater_is_better': True},
 
     'weighted recall': {'score_func': recall_score_wrapper,
@@ -278,6 +298,9 @@ METRICS = {
 
     'samples recall': {'score_func': recall_score_wrapper,
                        'greater_is_better': True, 'average': 'samples'},
+
+    'by class recall': {'score_func': recall_score_wrapper,
+                        'greater_is_better': True, 'average': None},
 
     'precision': {'score_func': precision_score_wrapper,
                   'greater_is_better': True},
@@ -293,6 +316,9 @@ METRICS = {
 
     'samples precision': {'score_func': precision_score_wrapper,
                           'greater_is_better': True, 'average': 'samples'},
+
+    'by class precision': {'score_func': precision_score_wrapper,
+                           'greater_is_better': True, 'average': None},
 
     'log': {'score_func': log_loss_wrapper, 'greater_is_better': True,
             'needs_proba': True},
@@ -315,6 +341,10 @@ METRICS = {
         'score_func': average_precision_score_wrapper,
         'greater_is_better': True, 'needs_proba': True, 'average': 'samples'},
 
+    'by class average precision': {
+        'score_func': average_precision_score_wrapper,
+        'greater_is_better': True, 'needs_proba': True, 'average': None},
+
     'multiclass macro average precision': {
         'score_func': average_precision_score_wrapper,
         'greater_is_better': True, 'needs_proba': True, 'average': 'macro',
@@ -333,6 +363,11 @@ METRICS = {
     'multiclass samples average precision': {
         'score_func': average_precision_score_wrapper,
         'greater_is_better': True, 'needs_proba': True, 'average': 'samples',
+        'multiclass': True},
+
+    'multiclass by class average precision': {
+        'score_func': average_precision_score_wrapper,
+        'greater_is_better': True, 'needs_proba': True, 'average': None,
         'multiclass': True},
 
     'brier': {'score_func': M.brier_score_loss,
@@ -356,6 +391,9 @@ METRICS = {
 
     'samples jaccard': {'score_func': jaccard_score_wrapper,
                         'greater_is_better': True, 'average': 'samples'},
+
+    'by class jaccard': {'score_func': jaccard_score_wrapper,
+                         'greater_is_better': True, 'average': None},
 
     'matthews': {'score_func': M.matthews_corrcoef,
                  'greater_is_better': True},

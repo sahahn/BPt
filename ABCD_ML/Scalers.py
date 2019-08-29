@@ -23,6 +23,18 @@ SCALERS = {
     }
 
 
+def get_scaler_objects():
+
+    objs = []
+    for scaler_str in SCALERS:
+
+        obj = SCALERS[scaler_str][0]
+        obj_params = SCALERS[scaler_str][1]
+        objs.append((scaler_str, obj, obj_params))
+
+    return objs
+
+
 def get_data_scaler_and_params(data_scaler_str, extra_params, param_ind,
                                search_type):
     '''Returns a scaler based on proced str indicator input,

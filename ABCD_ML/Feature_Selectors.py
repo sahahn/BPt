@@ -27,22 +27,26 @@ class RFE(RFE):
 
 AVALIABLE = {
         'binary': {
-            'univariate selection':
-            'univariate selection classification',
-            'rfe': 'rfe',
+                'univariate selection':
+                'univariate selection classification',
+                'rfe': 'rfe',
+                'variance threshold': 'variance threshold',
         },
         'regression': {
-            'univariate selection':
-            'univariate selection regression',
-            'rfe': 'rfe',
+                'univariate selection':
+                'univariate selection regression',
+                'rfe': 'rfe',
+                'variance threshold': 'variance threshold',
         },
         'categorical': {
             'multilabel': {
+                'variance threshold': 'variance threshold',
             },
             'multiclass': {
                 'univariate selection':
                 'univariate selection classification',
                 'rfe': 'rfe',
+                'variance threshold': 'variance threshold',
             }
         }
 }
@@ -58,7 +62,9 @@ SELECTORS = {
                                              'univar fs classifier rs',
                                              'univar fs classifier gs']),
 
-    'rfe': (RFE, ['base rfe', 'rfe num feats rs'])
+    'rfe': (RFE, ['base rfe', 'rfe num feats rs']),
+
+    'variance threshold': (VarianceThreshold, ['default']),
 }
 
 

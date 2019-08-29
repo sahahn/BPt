@@ -76,15 +76,38 @@ PARAMS['lgbm rs'] = {'silent': [True],
                      'reg_alpha': reciprocal(a=1e-1, b=1e+2),
                      'reg_lambda': reciprocal(a=1e-1, b=1e+2)}
 
+PARAMS['lgbm 2'] = {'silent': [True],
+                    'lambda_l2': [0.001],
+                    'histogram_pool_size': [16384],
+                    'boosting_type': ['gbdt', 'dart'],
+                    'min_child_samples': [1, 5, 7, 10, 15, 20, 35, 50, 100,
+                                          200, 500, 1000],
+                    'num_leaves': [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65,
+                                   80, 100, 125, 150, 200, 250],
+                    'colsample_bytree': [0.7, 0.9, 1.0],
+                    'subsample': [0.7, 0.9, 1.0],
+                    'learning_rate': [0.01, 0.05, 0.1],
+                    'n_estimators': [5, 20, 35, 50, 75, 100, 150, 200, 350,
+                                     500, 750, 1000]}
+
 PARAMS['base lgbm es'] = {'silent': [True],
                           'val_split_percent': [.1],
-                          'early_stop_rounds': [50],
-                          }
+                          'early_stop_rounds': [50]}
 
 PARAMS['lgbm es rs'] = PARAMS['lgbm rs'].copy()
 PARAMS['lgbm es rs']['val_split_percent'] = uniform(loc=.05, scale=.2)
 PARAMS['lgbm es rs']['early_stop_rounds'] = randint(10, 150)
 
+PARAMS['base xgb'] = {'verbosity': [0]}
+
+PARAMS['xgb rs'] =\
+        {'verbosity': [0],
+         'max_depth': randint(2, 50),
+         'learning_rate': [0.01, 0.05, 0.1, 0.2],
+         'n_estimators': randint(3, 500),
+         'min_child_weight': [1, 5, 10, 50],
+         'subsample': uniform(loc=0.2, scale=0.8),
+         'colsample_bytree': uniform(loc=0.4, scale=0.6)}
 
 PARAMS['base gp regressor'] = {'n_restarts_optimizer': [5],
                                'normalize_y': [True]}

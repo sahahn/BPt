@@ -69,7 +69,9 @@ def process_binary_input(data, key, _print=print):
 
 
 def process_ordinal_input(data, key, drop_percent=None, _print=print):
-    '''Helper function to perform processing on ordinal input
+    '''Helper function to perform processing on ordinal input,
+    where note this definition of ordinal means categorical ordinal...
+    so converting input to ordinal, but from categorical!
 
     Parameters
     ----------
@@ -168,6 +170,7 @@ def process_categorical_input(data, key, drop='one hot', drop_percent=None,
     for i in range(len(categories)):
         k = key + '_' + str(categories[i])
         data[k] = vals[:, i]
+        data[k] = data[k].astype(int)
         data[k] = data[k].astype('category')
         new_keys.append(k)
 

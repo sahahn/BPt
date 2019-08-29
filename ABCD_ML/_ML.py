@@ -26,7 +26,7 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
                           calc_base_feature_importances='default',
                           calc_shap_feature_importances='default',
                           extra_params='default'):
-    '''Sets the self.default_ML_params dictionary with user passed or default
+    '''Sets self.default_ML_params dictionary with user passed or default
     values. In general, if any argument is left as 'default' and it has
     not been previously defined, it will be set to a default value,
     sometimes passed on other values. See notes for rationale behind
@@ -36,11 +36,11 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
     ----------
     problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
 
-        - 'regression' : For ML on float or ordinal target data
-        - 'binary' : For ML on binary target data
+        - 'regression' : For ML on float or ordinal target data.
+        - 'binary' : For ML on binary target data.
         - 'categorical' : For ML on categorical target data,\
                           as either multilabel or multiclass.
-        - 'default' : Use 'regression' if nothing else already defined
+        - 'default' : Use 'regression' if nothing else already defined.
 
         If 'default', and not already defined, set to 'regression'
         (default = 'default')
@@ -52,10 +52,10 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         for that problem types will be used.
         Note, some metrics are only avaliable for certain problem types.
 
-        For a full list of supported metrics call:
+        For a full list of supported metrics call: 
         :func:`Show_Metrics`
 
-         If 'default', and not already defined, set to default
+        If 'default', and not already defined, set to default
         metric for the problem type.
 
         - 'regression'  : 'r2'
@@ -139,6 +139,7 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         - None : No search
 
         .. WARNING::
+
             If search type is set to "grid", and any of model_type_param_ind,
             data_scaler_param_ind and feat_selector_param_ind are set
             to a random distribution (rather then discrete values),

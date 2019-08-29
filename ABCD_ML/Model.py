@@ -1333,6 +1333,9 @@ class Categorical_Model(Model):
         if self.sub_problem_type == 'multiclass':
             y = self.targets_encoder[1].inverse_transform(y).squeeze()
 
+        else:
+            y = y.astype(int)
+
         return y
 
     def _init_shap_df(self, data):

@@ -872,7 +872,7 @@ def Clear_Inclusions(self):
         valid subjects. Reloading should therefore be best used
         right after loading the original inclusions, or if not possible,
         then reloading the notebook or re-running the script.
-        
+
     '''
     self.inclusions = set()
     self._print('cleared inclusions.')

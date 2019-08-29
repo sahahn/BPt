@@ -205,7 +205,7 @@ def _get_one_col_targets(self):
 
 def _get_info_on(self, all_vals, col_names, v_type, l_e):
 
-    if v_type == 'group':
+    if v_type == 'groups':
         chunk = 'group preserving'
     elif v_type == 'stratify':
         chunk = 'stratifying behavior'

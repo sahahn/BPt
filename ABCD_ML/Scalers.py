@@ -1,7 +1,7 @@
 """
 Scalers.py
 ====================================
-File containing the various input data scalers.
+File containing the various data scalers.
 """
 from ABCD_ML.ML_Helpers import (show_param_options, get_possible_init_params,
                                 get_obj_and_params)
@@ -9,7 +9,7 @@ from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer)
 
 
-# Scalers differs from scorers and models in that the types are not restricted
+# Scalers differs from metrics and models in that the types are not restricted
 # by a given problem type. Therefore no AVALIABLE dictionary is neccisary,
 # all avaliable scalers are as indexed by SCALERS.
 SCALERS = {

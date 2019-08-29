@@ -324,6 +324,22 @@ knn regressor
 		n_neighbors: Random Integer Distribution (2, 19)
 
 
+lasso regressor
+***************
+
+  Base Class Documenation: :class:`sklearn.linear_model.Lasso`
+
+  Param Distributions
+
+	0. "base lasso regressor" ::
+
+		max_iter: 5000
+
+	1. "lasso regressor rs" ::
+
+		alpha: Random Reciprical Distribution (1e-05, 10000.0)
+
+
 light gbm regressor
 *******************
 
@@ -450,6 +466,22 @@ random forest regressor
 		max_features: Random Uniform Distribution (0.0, 1.0)
 		min_samples_split: Random Uniform Distribution (0.0, 1.0)
 		bootstrap: True
+
+
+ridge regressor
+***************
+
+  Base Class Documenation: :class:`sklearn.linear_model.ridge.Ridge`
+
+  Param Distributions
+
+	0. "base ridge regressor" ::
+
+		max_iter: 5000
+
+	1. "ridge regressor rs" ::
+
+		alpha: Random Reciprical Distribution (1e-05, 10000.0)
 
 
 svm regressor
@@ -826,9 +858,385 @@ svm classifier
 
 
 
+*******
+Metrics
+*******
+
+binary
+======
+accuracy
+********
+
+  Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
+
+balanced accuracy
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.balanced_accuracy_score`
+
+brier
+*****
+
+  Base Func Documenation: :func:`sklearn.metrics.brier_score_loss`
+
+f1
+**
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+hamming
+*******
+
+  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
+
+jaccard
+*******
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+log
+***
+
+  Base Func Documenation: :func:`sklearn.metrics.log_loss`
+
+macro average precision
+***********************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+macro roc auc
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+matthews
+********
+
+  Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
+
+precision
+*********
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+recall
+******
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+
+regression
+==========
+explained variance
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.explained_variance_score`
+
+max error
+*********
+
+  Base Func Documenation: :func:`sklearn.metrics.max_error`
+
+mean absolute error
+*******************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_absolute_error`
+
+mean squared error
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_squared_error`
+
+mean squared log error
+**********************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_squared_log_error`
+
+median absolute error
+*********************
+
+  Base Func Documenation: :func:`sklearn.metrics.median_absolute_error`
+
+r2
+**
+
+  Base Func Documenation: :func:`sklearn.metrics.r2_score`
+
+
+categorical multilabel
+======================
+accuracy
+********
+
+  Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
+
+hamming
+*******
+
+  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
+
+log
+***
+
+  Base Func Documenation: :func:`sklearn.metrics.log_loss`
+
+macro average precision
+***********************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+macro f1
+********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+macro jaccard
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+macro precision
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+macro recall
+************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+macro roc auc
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+micro average precision
+***********************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+micro f1
+********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+micro jaccard
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+micro precision
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+micro recall
+************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+micro roc auc
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+samples average precision
+*************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+samples f1
+**********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+samples jaccard
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+samples precision
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+samples recall
+**************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+samples roc auc
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+weighted average precision
+**************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+weighted f1
 ***********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+weighted jaccard
+****************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+weighted precision
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+weighted recall
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+weighted roc auc
+****************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+
+categorical multiclass
+======================
+accuracy
+********
+
+  Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
+
+balanced accuracy
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.balanced_accuracy_score`
+
+hamming
+*******
+
+  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
+
+log
+***
+
+  Base Func Documenation: :func:`sklearn.metrics.log_loss`
+
+macro f1
+********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+macro jaccard
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+macro precision
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+macro recall
+************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+matthews
+********
+
+  Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
+
+micro f1
+********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+micro jaccard
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+micro precision
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+micro recall
+************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+multiclass by class roc auc
+***************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+multiclass macro average precision
+**********************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+multiclass macro roc auc
+************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+multiclass micro average precision
+**********************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+multiclass micro roc auc
+************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+multiclass samples average precision
+************************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+multiclass samples roc auc
+**************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+multiclass weighted average precision
+*************************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+multiclass weighted roc auc
+***************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+weighted f1
+***********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+weighted jaccard
+****************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+weighted precision
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+weighted recall
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+
+********
 Samplers
-***********
+********
 
 binary
 ======
@@ -974,6 +1382,10 @@ random under sampler
 	0. "default" ::
 
 		defaults only
+
+	1. "binary under sampler" ::
+
+		sampling_strategy: [1, 0.75, 0.66, 0.5, 0.33, 0.25]
 
 
 renn
@@ -1211,6 +1623,10 @@ random under sampler
 	0. "default" ::
 
 		defaults only
+
+	1. "binary under sampler" ::
+
+		sampling_strategy: [1, 0.75, 0.66, 0.5, 0.33, 0.25]
 
 
 renn
@@ -1431,9 +1847,9 @@ univariate selection classification
 
 
 
-***************
+**************
 Ensemble Types
-***************
+**************
 
 binary
 ======

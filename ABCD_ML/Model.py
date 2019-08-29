@@ -19,12 +19,12 @@ from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
 from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.Samplers import AVALIABLE as AVALIABLE_SAMPLERS
 from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
-from ABCD_ML.Scorers import AVALIABLE as AVALIABLE_SCORERS
+from ABCD_ML.Metrics import AVALIABLE as AVALIABLE_METRICS
 from ABCD_ML.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
 
 from ABCD_ML.Samplers import get_sampler_and_params
 from ABCD_ML.Feature_Selectors import get_feat_selector_and_params
-from ABCD_ML.Scorers import get_scorer
+from ABCD_ML.Metrics import get_metric
 from ABCD_ML.Scalers import get_data_scaler_and_params
 from ABCD_ML.Ensembles import get_ensemble_and_params
 
@@ -165,8 +165,8 @@ class Model():
 
         Notes
         ----------
-        The Model class processes model_type, metric/scorer and data_scaler,
-        as model_types, metrics/scorers and data_scalers (the plural...).
+        The Model class processes model_type, metric and data_scaler,
+        as model_types, metrics and data_scalers (the plural...).
         This design decision was made to support both single str indicator
         input for any of these options, or a list of str indicators.
         '''
@@ -228,7 +228,7 @@ class Model():
         # Process inputs
         self._process_model_types()
         self._process_feat_selectors()
-        self._process_scorers()
+        self._process_metrics()
         self._process_data_scalers()
         self._process_samplers()
         self._process_ensemble_types()
@@ -312,19 +312,17 @@ class Model():
             self.feat_selectors = []
             self.feat_selector_params = {}
 
-    def _process_scorers(self):
-        '''Process self.metrics and set self.scorers and self.scorer,
-        as well as save the str processed final scorer_strs for verbose output.
-        '''
+    def _process_metrics(self):
+        '''Process self.metrics and set to proced version.'''
 
-        self.scorer_strs = self._proc_type_dep_str(self.metrics,
-                                                   AVALIABLE_SCORERS)
+        self.metric_strs = self._proc_type_dep_str(self.metrics,
+                                                   AVALIABLE_METRICS)
 
-        self.scorers = [get_scorer(scorer_str)
-                        for scorer_str in self.scorer_strs]
+        self.metrics = [get_metric(metric_str)
+                        for metric_str in self.metric_strs]
 
-        # Define the scorer to be used in model selection
-        self.scorer = self.scorers[0]
+        # Define the metric to be used in model selection
+        self.metric = self.metrics[0]
 
     def _process_data_scalers(self):
         '''Processes self.data_scaler to be a list of
@@ -443,7 +441,7 @@ class Model():
     def _proc_type_dep_str(self, in_strs, avaliable):
         '''Helper function to perform str correction on
         underlying proble type dependent input, e.g., for
-        scorer or ensemble_types, and to update extra params
+        metric or ensemble_types, and to update extra params
         and check to make sure input is valid ect...'''
 
         conv_strs = proc_input(in_strs)
@@ -612,12 +610,12 @@ class Model():
 
             # Score by fold verbosity
             if self.compute_train_score:
-                for i in range(len(self.scorer_strs)):
-                    self._print('train ', self.scorer_strs[i], ': ',
+                for i in range(len(self.metric_strs)):
+                    self._print('train ', self.metric_strs[i], ': ',
                                 train_scores[i], sep='', level='score')
 
-            for i in range(len(self.scorer_strs)):
-                self._print('val ', self.scorer_strs[i], ': ',
+            for i in range(len(self.metric_strs)):
+                self._print('val ', self.metric_strs[i], ': ',
                             scores[i], sep='', level='score')
 
             all_train_scores.append(train_scores)
@@ -890,7 +888,7 @@ class Model():
         search_params['estimator'] = model
         search_params['pre_dispatch'] = 'n_jobs - 1'
         search_params['cv'] = base_int_cv
-        search_params['scoring'] = self.scorer
+        search_params['scoring'] = self.metric
         search_params['n_jobs'] = self.n_jobs
 
         if self.search_type == 'random':
@@ -1032,8 +1030,8 @@ class Model():
         X_test, y_test = self._get_X_y(test_data)
 
         # Get the scores
-        scores = [scorer(self.model, X_test, y_test)
-                  for scorer in self.scorers]
+        scores = [metric(self.model, X_test, y_test)
+                  for metric in self.metrics]
 
         return np.array(scores)
 

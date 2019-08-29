@@ -11,7 +11,7 @@ This is a project.
 
 .. toctree::
    :maxdepth: 2
-   :caption: ABCD_ML Class Usage
+   :caption: ABCD_ML Class Docs
 
    ABCD_ML_class_docs
 

@@ -345,7 +345,7 @@ class ABCD_ML():
     Test.__doc__ = new_test
 
     from ABCD_ML.Models import Show_Model_Types, Show_Models
-    from ABCD_ML.Scorers import Show_Metrics, Show_Scorers
+    from ABCD_ML.Metrics import Show_Metrics
     from ABCD_ML.Scalers import Show_Data_Scalers, Show_Scalers
     from ABCD_ML.Samplers import Show_Samplers
     from ABCD_ML.Feature_Selectors import Show_Feat_Selectors

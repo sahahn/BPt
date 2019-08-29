@@ -86,6 +86,9 @@ Show_Covars_Dist
 ==================
 .. automethod:: ABCD_ML.Show_Covars_Dist
 
+Get_Overlapping_Subjects
+========================
+.. automethod:: ABCD_ML.Get_Overlapping_Subjects
 
 ****************
 Validation Phase

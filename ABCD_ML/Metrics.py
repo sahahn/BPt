@@ -1,7 +1,7 @@
 """
-Scorers.py
+Metrics.py
 ====================================
-File with functions related to calculating score from ML models
+File with functions related to calculating metrics/scores from ML models
 """
 import numpy as np
 import sklearn.metrics as M
@@ -56,8 +56,9 @@ def log_loss_wrapper(y_true, y_pred, eps=1e-15, normalize=True,
     return M.log_loss(y_true, y_pred, eps, normalize, sample_weight)
 
 
-def ap_score_wrapper(y_true, y_score, average="macro", pos_label=1,
-                     sample_weight=None, multiclass=False):
+def average_precision_score_wrapper(y_true, y_score, average="macro",
+                                    pos_label=1, sample_weight=None,
+                                    multiclass=False):
     '''Wrapper around sklearn average_precision score to support multilabel'''
 
     if multiclass:
@@ -186,13 +187,13 @@ AVALIABLE = {
         }
     }
 
-SCORERS = {
+METRICS = {
     'r2': {'score_func': M.r2_score, 'greater_is_better': True},
 
     'mean squared error': {'score_func': M.mean_squared_error,
                            'greater_is_better': False},
 
-    'explained_variance': {'score_func': M.explained_variance_score,
+    'explained variance': {'score_func': M.explained_variance_score,
                            'greater_is_better': True},
 
     'max error': {'score_func': M.max_error, 'greater_is_better': False},
@@ -298,45 +299,41 @@ SCORERS = {
 
     'accuracy': {'score_func': M.accuracy_score, 'greater_is_better': True},
 
-    'macro average precision': {'score_func': ap_score_wrapper,
-                                'greater_is_better': True, 'needs_proba': True,
-                                'average': 'macro'},
+    'macro average precision': {
+        'score_func': average_precision_score_wrapper,
+        'greater_is_better': True, 'needs_proba': True, 'average': 'macro'},
 
-    'micro average precision': {'score_func': ap_score_wrapper,
-                                'greater_is_better': True, 'needs_proba': True,
-                                'average': 'micro'},
+    'micro average precision': {
+        'score_func': average_precision_score_wrapper,
+        'greater_is_better': True, 'needs_proba': True, 'average': 'micro'},
 
-    'weighted average precision': {'score_func': ap_score_wrapper,
-                                   'greater_is_better': True,
-                                   'needs_proba': True, 'average': 'weighted'},
+    'weighted average precision': {
+        'score_func': average_precision_score_wrapper,
+        'greater_is_better': True, 'needs_proba': True, 'average': 'weighted'},
 
-    'samples average precision': {'score_func': ap_score_wrapper,
-                                  'greater_is_better': True,
-                                  'needs_proba': True, 'average': 'samples'},
+    'samples average precision': {
+        'score_func': average_precision_score_wrapper,
+        'greater_is_better': True, 'needs_proba': True, 'average': 'samples'},
 
-    'multiclass macro average precision': {'score_func': ap_score_wrapper,
-                                           'greater_is_better': True,
-                                           'needs_proba': True,
-                                           'average': 'macro',
-                                           'multiclass': True},
+    'multiclass macro average precision': {
+        'score_func': average_precision_score_wrapper,
+        'greater_is_better': True, 'needs_proba': True, 'average': 'macro',
+        'multiclass': True},
 
-    'multiclass micro average precision': {'score_func': ap_score_wrapper,
-                                           'greater_is_better': True,
-                                           'needs_proba': True,
-                                           'average': 'micro',
-                                           'multiclass': True},
+    'multiclass micro average precision': {
+        'score_func': average_precision_score_wrapper,
+        'greater_is_better': True, 'needs_proba': True, 'average': 'micro',
+        'multiclass': True},
 
-    'multiclass weighted average precision': {'score_func': ap_score_wrapper,
-                                              'greater_is_better': True,
-                                              'needs_proba': True,
-                                              'average': 'weighted',
-                                              'multiclass': True},
+    'multiclass weighted average precision': {
+        'score_func': average_precision_score_wrapper,
+        'greater_is_better': True, 'needs_proba': True, 'average': 'weighted',
+        'multiclass': True},
 
-    'multiclass samples average precision': {'score_func': ap_score_wrapper,
-                                             'greater_is_better': True,
-                                             'needs_proba': True,
-                                             'average': 'samples',
-                                             'multiclass': True},
+    'multiclass samples average precision': {
+        'score_func': average_precision_score_wrapper,
+        'greater_is_better': True, 'needs_proba': True, 'average': 'samples',
+        'multiclass': True},
 
     'brier': {'score_func': M.brier_score_loss,
               'greater_is_better': False,
@@ -365,23 +362,32 @@ SCORERS = {
     }
 
 
-def get_scorer(scorer_str):
-    '''From a final scorer str indicator, return the
-    scorer object.'''
+def get_metric(metric_str):
+    '''From a final metric str indicator, return the
+    metric object.'''
 
-    scorer_params = SCORERS[scorer_str]
-    scorer = M.make_scorer(**scorer_params)
-    return scorer
+    metric_params = METRICS[metric_str]
+    metric = M.make_scorer(**metric_params)
+    return metric
 
 
-def Show_Scorers(self, problem_type=None, metric=None):
-    '''Just calls Show_Metrics.'''
+def get_metrics_by_type(problem_type):
+    '''problem_type must be binary, regression or categorical multilabel or
+    categorical multiclass'''
 
-    self.Show_Metrics(problem_type, metric)
+    avaliable_by_type = get_avaliable_by_type(AVALIABLE)
+
+    objs = []
+    for metric_str in avaliable_by_type[problem_type]:
+
+        score_func = METRICS[metric_str]['score_func']
+        objs.append((metric_str, score_func))
+
+    return objs
 
 
 def Show_Metrics(self, problem_type=None, metric=None):
-    '''Print out the avaliable metrics / scorers,
+    '''Print out the avaliable metrics
     optionally restricted by problem type
 
     Parameters
@@ -392,7 +398,7 @@ def Show_Metrics(self, problem_type=None, metric=None):
         (default = None)
 
     metric : str or list
-        Where metric is the specific metric / scorer indicator str
+        Where metric is the specific metric indicator str
     '''
     print('Visit: ')
     print('https://scikit-learn.org/stable/modules/model_evaluation.html')

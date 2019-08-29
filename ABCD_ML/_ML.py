@@ -48,7 +48,7 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
     metric : str or list, optional
         Indicator for which metric(s) to use for calculating
         score and during model parameter selection.
-        If `metric` left as 'default', then the default metric/scorer
+        If `metric` left as 'default', then the default metric
         for that problem types will be used.
         Note, some metrics are only avaliable for certain problem types.
 
@@ -844,7 +844,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
     ----------
     raw_scores : array-like
         A numpy array of scores as determined by the passed
-        metric/scorer(s) on the provided testing set. Optionally,
+        metric(s) on the provided testing set. Optionally,
         this could instead return a list containing as the first
         element the raw training score in this same format,
         and then the raw testing scores.
@@ -876,7 +876,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
                                                  test_subjects)
 
     # Print out score for all passed metrics
-    scorer_strs = self.Model.scorer_strs
+    metric_strs = self.Model.metric_strs
     self._print()
 
     score_list, score_type_list = [], []
@@ -892,9 +892,9 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         self._print(name + ' Scores')
         self._print(''.join('_' for i in range(len(name) + 7)))
 
-        for i in range(len(scorer_strs)):
+        for i in range(len(metric_strs)):
 
-            self._print('Metric: ', scorer_strs[i])
+            self._print('Metric: ', metric_strs[i])
 
             scr = s[i]
             if len(scr.shape) > 0:
@@ -1081,14 +1081,14 @@ def _get_avaliable_eval_scores_name(self, name, model_type):
 
 def _handle_scores(self, scores, name, ML_params, run_name):
 
-    scorer_strs = self.Model.scorer_strs
+    metric_strs = self.Model.metric_strs
 
     self._print(name + ' Scores')
     self._print(''.join('_' for i in range(len(name) + 7)))
 
-    for i in range(len(scorer_strs)):
+    for i in range(len(metric_strs)):
 
-        metric_name = scorer_strs[i]
+        metric_name = metric_strs[i]
         self._print('Metric: ', metric_name)
         score_by_metric = scores[:, i]
 

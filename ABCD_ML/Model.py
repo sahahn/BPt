@@ -288,14 +288,15 @@ class Model():
 
     def _check_for_user_passed(self, objs, cnt):
 
-        for o in range(len(objs)):
-            if not isinstance(objs[o], str):
+        if objs is not None:
+            for o in range(len(objs)):
+                if not isinstance(objs[o], str):
 
-                save_name = 'user passed' + str(cnt)
-                cnt += 1
+                    save_name = 'user passed' + str(cnt)
+                    cnt += 1
 
-                self.user_passed_objs[save_name] = objs[o]
-                objs[o] = save_name
+                    self.user_passed_objs[save_name] = objs[o]
+                    objs[o] = save_name
 
         return objs, cnt
 

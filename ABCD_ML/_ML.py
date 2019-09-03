@@ -52,7 +52,7 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         for that problem types will be used.
         Note, some metrics are only avaliable for certain problem types.
 
-        For a full list of supported metrics call: 
+        For a full list of supported metrics call:
         :func:`Show_Metrics`
 
         If 'default', and not already defined, set to default

@@ -14,7 +14,8 @@ from ABCD_ML.Ensemble_Model import Ensemble_Model
 from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
                                 get_possible_init_params,
                                 get_possible_fit_params,
-                                get_obj_and_params)
+                                get_obj_and_params,
+                                user_passed_param_check)
 
 from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.Samplers import AVALIABLE as AVALIABLE_SAMPLERS
@@ -226,6 +227,7 @@ class Model():
         self._set_inds()
 
         # Process inputs
+        self._check_all_for_user_passed()
         self._process_model_types()
         self._process_feat_selectors()
         self._process_metrics()
@@ -234,8 +236,7 @@ class Model():
         self._process_ensemble_types()
 
     def _set_default_params(self):
-        self.user_passed_models = []
-        self.upmi = 0
+        self.user_passed_objs = {}
         self.shap_dfs = []
         self.fit_params = {}
 
@@ -267,12 +268,41 @@ class Model():
         self.cat_inds = [self.all_keys.index(k) for k in self.cat_keys
                          if k in self.all_keys]
 
+    def _check_all_for_user_passed(self):
+        '''If not str passed passed for various str indicators,
+        assume that a user passed object was passed instead'''
+
+        cnt = 0
+
+        self.model_types, cnt =\
+            self._check_for_user_passed(self.model_types, cnt)
+
+        self.feat_selectors, cnt =\
+            self._check_for_user_passed(self.feat_selectors, cnt)
+
+        self.data_scalers, cnt =\
+            self._check_for_user_passed(self.data_scalers, cnt)
+
+        self.samplers, cnt =\
+            self._check_for_user_passed(self.samplers, cnt)
+
+    def _check_for_user_passed(self, objs, cnt):
+
+        for o in range(len(objs)):
+            if not isinstance(objs[o], str):
+
+                save_name = 'user passed' + str(cnt)
+                cnt += 1
+
+                self.user_passed_objs[save_name] = objs[o]
+                objs[o] = save_name
+
+        return objs, cnt
+
     def _process_model_types(self):
         '''Class function to convert input model types to final
         str indicator, based on problem type and common input correction.
         '''
-
-        self._check_user_passed_models()
 
         self.model_types = self._proc_type_dep_str(self.model_types,
                                                    AVALIABLE_MODELS)
@@ -428,16 +458,6 @@ class Model():
                                                   self.extra_params)
                           for ensemble_str in self.ensemble_strs]
 
-    def _check_user_passed_models(self):
-        '''If not str passed as model type, assume it
-        to be a user passed model.'''
-
-        for m in range(len(self.model_types)):
-            if not isinstance(self.model_types[m], str):
-
-                self.user_passed_models.append(self.model_types[m])
-                self.model_types[m] = 'user passed'
-
     def _proc_type_dep_str(self, in_strs, avaliable):
         '''Helper function to perform str correction on
         underlying proble type dependent input, e.g., for
@@ -449,7 +469,7 @@ class Model():
         assert self._check_avaliable(conv_strs, avaliable),\
             "Error " + conv_strs + ' are not avaliable for this problem type'
 
-        avaliable_by_type = self._get_avaliable_by_type(avaliable)
+        avaliable_by_type = self._get_avaliable_by_type(avaliable, conv_strs)
         final_strs = [avaliable_by_type[conv_str] for conv_str in conv_strs]
 
         self._update_extra_params(in_strs, final_strs)
@@ -457,15 +477,22 @@ class Model():
 
     def _check_avaliable(self, in_strs, avaliable):
 
-        avaliable_by_type = self._get_avaliable_by_type(avaliable)
+        avaliable_by_type = self._get_avaliable_by_type(avaliable, in_strs)
 
         check = np.array([m in avaliable_by_type for
                           m in in_strs]).all()
 
         return check
 
-    def _get_avaliable_by_type(self, avaliable):
-        return avaliable[self.problem_type]
+    def _get_avaliable_by_type(self, avaliable, in_strs):
+
+        avaliable_by_type = avaliable[self.problem_type]
+
+        for s in in_strs:
+            if 'user passed' in s:
+                avaliable_by_type[s] = s
+
+        return avaliable_by_type
 
     def _update_extra_params(self, orig_strs, conv_strs):
         '''Helper method to update class extra params in the case
@@ -491,10 +518,27 @@ class Model():
         '''Helper function to grab data_scaler / feat_selectors and
         their relevant parameter grids'''
 
-        # Grab necc. info w/ given get_func
-        objs_and_params = [(name, get_func(name, self.extra_params, ind,
-                            self.search_type))
-                           for name, ind in zip(names, param_inds)]
+        # Fill param inds if necc.
+        for i in range(len(names) - len(param_inds)):
+            param_inds.append(0)
+
+        objs_and_params = []
+
+        for name, ind in zip(names, param_inds):
+            if 'user passed' in name:
+
+                user_obj = self.user_passed_objs[name]
+                user_obj_params = user_passed_param_check(ind, name)
+
+                objs_and_params.append((name, (user_obj, user_obj_params)))
+
+            else:
+
+                objs_and_params.append((name, get_func(name, self.extra_params,
+                                                       ind, self.search_type)))
+
+        # If two of same object passed, change name
+        objs_and_params = self.check_for_duplicate_names(objs_and_params)
 
         # Construct the obj as list of (name, obj) tuples
         objs = [(c[0], c[1][0]) for c in objs_and_params]
@@ -504,6 +548,32 @@ class Model():
                   for k, v in params[1][1].items()}
 
         return objs, params
+
+    def check_for_duplicate_names(self, objs_and_params):
+
+        names = [c[0] for c in objs_and_params]
+
+        # If any repeats
+        if len(names) != len(set(names)):
+            new_objs_and_params = []
+
+            for obj in objs_and_params:
+                name = obj[0]
+
+                if name in names:
+
+                    cnt = 1
+                    used = [c[0] for c in new_objs_and_params]
+                    while name + str(cnt) in used:
+                        cnt += 1
+
+                    new_objs_and_params.append((name + str(cnt), obj[1]))
+
+                else:
+                    new_objs_and_params.append(obj)
+
+            return new_objs_and_params
+        return objs_and_params
 
     def _replace_base_estimator(self):
         '''Check feat selectors for a RFE model'''
@@ -724,9 +794,6 @@ class Model():
         # Split the train data further, if nec. for ensemble split
         train_data, ensemble_data = self._get_ensemble_split(train_data)
 
-        # User passed model index should be reset to 0 here
-        self.upmi = 0
-
         # Train all of the models
         models = []
         mt_and_mt_params = zip(self.model_types, self.model_type_param_inds)
@@ -917,13 +984,13 @@ class Model():
     def _get_base_model(self, model_type, model_type_param_ind, search_type):
 
         # Check for user passed model
-        if model_type == 'user passed':
+        if 'user passed' in model_type:
 
-            user_model = self.user_passed_models[self.upmi]
-            user_model_type = 'user passed' + str(self.upmi)
-            self.upmi += 1
+            user_model = self.user_passed_objs[model_type]
+            user_model_params = user_passed_param_check(model_type_param_ind,
+                                                        model_type)
 
-            return user_model, user_model_type, {}
+            return user_model, model_type, user_model_params
 
         model, extra_model_params, model_type_params =\
             get_obj_and_params(model_type, MODELS, self.extra_params,
@@ -1311,8 +1378,15 @@ class Categorical_Model(Model):
 
         return check
 
-    def _get_avaliable_by_type(self, avaliable):
-        return avaliable[self.problem_type][self.sub_problem_type]
+    def _get_avaliable_by_type(self, avaliable, in_strs):
+
+        avaliable_by_type = avaliable[self.problem_type][self.sub_problem_type]
+
+        for s in in_strs:
+            if 'user passed' in s:
+                avaliable_by_type[s] = s
+
+        return avaliable_by_type
 
     def _conv_targets(self, y):
         '''Overrides parent method, if the sub problem type

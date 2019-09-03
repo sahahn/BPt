@@ -1065,6 +1065,10 @@ def _get_avaliable_eval_scores_name(self, name, model_type):
     if name is None:
         if isinstance(model_type, list):
             name = 'ensemble'
+
+        elif not isinstance(model_type, str):
+            name = 'user passed'
+
         else:
             name = model_type
 
@@ -1175,7 +1179,7 @@ def _add_to_eval_scores(self, run_name, name, metric_name, val_type, val,
 def Get_Base_Feat_Importances(self, top_n=None):
     '''Returns a pandas series with
     the base feature importances as calculated from the
-    last run :func:`Evaluate` or :func:`test`.
+    last run :func:`Evaluate` or :func:`Test`.
 
     .. WARNING::
         `calc_base_feature_importances` must have been set to True,

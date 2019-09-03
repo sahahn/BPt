@@ -137,6 +137,13 @@ def proc_str_input(in_str):
     return in_str
 
 
+def user_passed_param_check(params, obj_str):
+
+    if isinstance(params, dict):
+        return proc_params(params, prepend=obj_str)
+    return {}
+
+
 def get_obj_and_params(obj_str, OBJS, extra_params, param_ind, search_type):
 
     try:
@@ -274,7 +281,7 @@ def get_objects_by_type(problem_type, AVALIABLE=None, OBJS=None):
     objs = []
     for obj_str in avaliable_by_type[problem_type]:
 
-        if 'basic ensemble' not in obj_str and 'user passed' not in obj_str:
+        if 'basic ensemble' not in obj_str:
             obj = OBJS[obj_str][0]
             obj_params = OBJS[obj_str][1]
             objs.append((obj_str, obj, obj_params))

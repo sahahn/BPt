@@ -26,7 +26,6 @@ from ABCD_ML.Early_Stop import EarlyStopLGBMRegressor
 
 AVALIABLE = {
         'binary': {
-                        'user passed':        'user passed',
                         'logistic':           'logistic',
                         'linear':             'logistic',
                         'lasso':              'lasso logistic',
@@ -44,7 +43,6 @@ AVALIABLE = {
                         'xgb':                'xgb classifier',
         },
         'regression': {
-                        'user passed':        'user passed',
                         'linear':             'linear regressor',
                         'knn':                'knn regressor',
                         'dt':                 'dt regressor',
@@ -63,7 +61,6 @@ AVALIABLE = {
         },
         'categorical': {
                 'multilabel': {
-                        'user passed':        'user passed',
                         'knn':                'knn classifier',
                         'dt':                 'dt classifier',
                         'random forest':      'random forest classifier',

@@ -17,7 +17,7 @@ This is a project.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Avaliable Options
+   :caption: Avaliable Modeling Options
 
    options
 

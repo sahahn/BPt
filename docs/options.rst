@@ -2,10 +2,16 @@
 Model Types
 ***********
 
+Different availible choices for the `model_type` parameter are shown below.
+`model_type` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `model_type` is represented by the sub-heading (within "")
+The avaliable models are further broken down by which can workwith different problem_types.
+Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
+
 binary
 ======
-dt classifier
-*************
+"dt classifier"
+***************
 
   Base Class Documenation: :class:`sklearn.tree.DecisionTreeClassifier`
 
@@ -21,8 +27,8 @@ dt classifier
 		min_samples_split: Random Integer Distribution (2, 49)
 
 
-elastic net logistic
-********************
+"elastic net logistic"
+**********************
 
   Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
@@ -46,8 +52,8 @@ elastic net logistic
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-gaussian nb
-***********
+"gaussian nb"
+*************
 
   Base Class Documenation: :class:`sklearn.naive_bayes.GaussianNB`
 
@@ -58,8 +64,8 @@ gaussian nb
 		var_smoothing: 1e-09
 
 
-gp classifier
-*************
+"gp classifier"
+***************
 
   Base Class Documenation: :class:`sklearn.gaussian_process.GaussianProcessClassifier`
 
@@ -70,8 +76,8 @@ gp classifier
 		n_restarts_optimizer: 5
 
 
-knn classifier
-**************
+"knn classifier"
+****************
 
   Base Class Documenation: :class:`sklearn.neighbors.KNeighborsClassifier`
 
@@ -87,8 +93,8 @@ knn classifier
 		n_neighbors: Random Integer Distribution (2, 19)
 
 
-lasso logistic
-**************
+"lasso logistic"
+****************
 
   Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
@@ -110,8 +116,8 @@ lasso logistic
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-light gbm classifier
-********************
+"light gbm classifier"
+**********************
 
   Base Class Documenation: :class:`lightgbm.LGBMClassifier`
 
@@ -134,9 +140,22 @@ light gbm classifier
 		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
 		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
 
+	2. "lgbm 2" ::
 
-logistic
-********
+		silent: True
+		lambda_l2: 0.001
+		histogram_pool_size: 16384
+		boosting_type: ['gbdt', 'dart']
+		min_child_samples: [1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000]
+		num_leaves: [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250]
+		colsample_bytree: [0.7, 0.9, 1.0]
+		subsample: [0.7, 0.9, 1.0]
+		learning_rate: [0.01, 0.05, 0.1]
+		n_estimators: [5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000]
+
+
+"logistic"
+**********
 
   Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
@@ -150,8 +169,8 @@ logistic
 		penalty: none
 
 
-mlp classifier
-**************
+"mlp classifier"
+****************
 
   Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
 
@@ -192,8 +211,8 @@ mlp classifier
 		hidden_layer_sizes: Too many params to show
 
 
-random forest classifier
-************************
+"random forest classifier"
+**************************
 
   Base Class Documenation: :class:`sklearn.ensemble.RandomForestClassifier`
 
@@ -212,8 +231,8 @@ random forest classifier
 		bootstrap: True
 
 
-ridge logistic
-**************
+"ridge logistic"
+****************
 
   Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
@@ -235,8 +254,8 @@ ridge logistic
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-svm classifier
-**************
+"svm classifier"
+****************
 
   Base Class Documenation: :class:`sklearn.svm.SVC`
 
@@ -256,11 +275,33 @@ svm classifier
 		probability: True
 
 
+"xgb classifier"
+****************
+
+  Base Class Documenation: :class:`xgboost.XGBClassifier`
+
+  Param Distributions
+
+	0. "base xgb" ::
+
+		verbosity: 0
+
+	1. "xgb rs" ::
+
+		verbosity: 0
+		max_depth: Random Integer Distribution (2, 49)
+		learning_rate: [0.01, 0.05, 0.1, 0.2]
+		n_estimators: Random Integer Distribution (3, 499)
+		min_child_weight: [1, 5, 10, 50]
+		subsample: Random Uniform Distribution (0.2, 1.0)
+		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
+
+
 
 regression
 ==========
-dt regressor
-************
+"dt regressor"
+**************
 
   Base Class Documenation: :class:`sklearn.tree.DecisionTreeRegressor`
 
@@ -276,8 +317,8 @@ dt regressor
 		min_samples_split: Random Integer Distribution (2, 49)
 
 
-elastic net regressor
-*********************
+"elastic net regressor"
+***********************
 
   Base Class Documenation: :class:`sklearn.linear_model.ElasticNet`
 
@@ -294,8 +335,8 @@ elastic net regressor
 		l1_ratio: Random Uniform Distribution (0.0, 1.0)
 
 
-gp regressor
-************
+"gp regressor"
+**************
 
   Base Class Documenation: :class:`sklearn.gaussian_process.GaussianProcessRegressor`
 
@@ -307,8 +348,8 @@ gp regressor
 		normalize_y: True
 
 
-knn regressor
-*************
+"knn regressor"
+***************
 
   Base Class Documenation: :class:`sklearn.neighbors.KNeighborsRegressor`
 
@@ -324,8 +365,8 @@ knn regressor
 		n_neighbors: Random Integer Distribution (2, 19)
 
 
-lasso regressor
-***************
+"lasso regressor"
+*****************
 
   Base Class Documenation: :class:`sklearn.linear_model.Lasso`
 
@@ -340,8 +381,8 @@ lasso regressor
 		alpha: Random Reciprical Distribution (1e-05, 10000.0)
 
 
-light gbm regressor
-*******************
+"light gbm regressor"
+*********************
 
   Base Class Documenation: :class:`lightgbm.LGBMRegressor`
 
@@ -364,9 +405,22 @@ light gbm regressor
 		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
 		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
 
+	2. "lgbm 2" ::
 
-light gbm regressor early stop
-******************************
+		silent: True
+		lambda_l2: 0.001
+		histogram_pool_size: 16384
+		boosting_type: ['gbdt', 'dart']
+		min_child_samples: [1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000]
+		num_leaves: [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250]
+		colsample_bytree: [0.7, 0.9, 1.0]
+		subsample: [0.7, 0.9, 1.0]
+		learning_rate: [0.01, 0.05, 0.1]
+		n_estimators: [5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000]
+
+
+"light gbm regressor early stop"
+********************************
 
   Base Class Documenation: :class:`ABCD_ML.Early_Stop.EarlyStopLGBMRegressor`
 
@@ -394,8 +448,8 @@ light gbm regressor early stop
 		early_stop_rounds: Random Integer Distribution (10, 149)
 
 
-linear regressor
-****************
+"linear regressor"
+******************
 
   Base Class Documenation: :class:`sklearn.linear_model.LinearRegression`
 
@@ -406,8 +460,8 @@ linear regressor
 		fit_intercept: True
 
 
-mlp regressor
-*************
+"mlp regressor"
+***************
 
   Base Class Documenation: :class:`sklearn.neural_network.MLPRegressor`
 
@@ -448,8 +502,8 @@ mlp regressor
 		hidden_layer_sizes: Too many params to show
 
 
-random forest regressor
-***********************
+"random forest regressor"
+*************************
 
   Base Class Documenation: :class:`sklearn.ensemble.RandomForestRegressor`
 
@@ -468,8 +522,8 @@ random forest regressor
 		bootstrap: True
 
 
-ridge regressor
-***************
+"ridge regressor"
+*****************
 
   Base Class Documenation: :class:`sklearn.linear_model.ridge.Ridge`
 
@@ -484,8 +538,8 @@ ridge regressor
 		alpha: Random Reciprical Distribution (1e-05, 10000.0)
 
 
-svm regressor
-*************
+"svm regressor"
+***************
 
   Base Class Documenation: :class:`sklearn.svm.SVR`
 
@@ -503,11 +557,33 @@ svm regressor
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
+"xgb regressor"
+***************
+
+  Base Class Documenation: :class:`xgboost.XGBRegressor`
+
+  Param Distributions
+
+	0. "base xgb" ::
+
+		verbosity: 0
+
+	1. "xgb rs" ::
+
+		verbosity: 0
+		max_depth: Random Integer Distribution (2, 49)
+		learning_rate: [0.01, 0.05, 0.1, 0.2]
+		n_estimators: Random Integer Distribution (3, 499)
+		min_child_weight: [1, 5, 10, 50]
+		subsample: Random Uniform Distribution (0.2, 1.0)
+		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
+
+
 
 categorical multilabel
 ======================
-dt classifier
-*************
+"dt classifier"
+***************
 
   Base Class Documenation: :class:`sklearn.tree.DecisionTreeClassifier`
 
@@ -523,8 +599,8 @@ dt classifier
 		min_samples_split: Random Integer Distribution (2, 49)
 
 
-knn classifier
-**************
+"knn classifier"
+****************
 
   Base Class Documenation: :class:`sklearn.neighbors.KNeighborsClassifier`
 
@@ -540,8 +616,8 @@ knn classifier
 		n_neighbors: Random Integer Distribution (2, 19)
 
 
-mlp classifier
-**************
+"mlp classifier"
+****************
 
   Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
 
@@ -582,8 +658,8 @@ mlp classifier
 		hidden_layer_sizes: Too many params to show
 
 
-random forest classifier
-************************
+"random forest classifier"
+**************************
 
   Base Class Documenation: :class:`sklearn.ensemble.RandomForestClassifier`
 
@@ -605,8 +681,8 @@ random forest classifier
 
 categorical multiclass
 ======================
-dt classifier
-*************
+"dt classifier"
+***************
 
   Base Class Documenation: :class:`sklearn.tree.DecisionTreeClassifier`
 
@@ -622,8 +698,8 @@ dt classifier
 		min_samples_split: Random Integer Distribution (2, 49)
 
 
-elastic net logistic
-********************
+"elastic net logistic"
+**********************
 
   Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
@@ -647,8 +723,8 @@ elastic net logistic
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-gaussian nb
-***********
+"gaussian nb"
+*************
 
   Base Class Documenation: :class:`sklearn.naive_bayes.GaussianNB`
 
@@ -659,8 +735,8 @@ gaussian nb
 		var_smoothing: 1e-09
 
 
-gp classifier
-*************
+"gp classifier"
+***************
 
   Base Class Documenation: :class:`sklearn.gaussian_process.GaussianProcessClassifier`
 
@@ -671,8 +747,8 @@ gp classifier
 		n_restarts_optimizer: 5
 
 
-knn classifier
-**************
+"knn classifier"
+****************
 
   Base Class Documenation: :class:`sklearn.neighbors.KNeighborsClassifier`
 
@@ -688,8 +764,8 @@ knn classifier
 		n_neighbors: Random Integer Distribution (2, 19)
 
 
-lasso logistic
-**************
+"lasso logistic"
+****************
 
   Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
@@ -711,8 +787,8 @@ lasso logistic
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-light gbm classifier
-********************
+"light gbm classifier"
+**********************
 
   Base Class Documenation: :class:`lightgbm.LGBMClassifier`
 
@@ -735,9 +811,22 @@ light gbm classifier
 		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
 		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
 
+	2. "lgbm 2" ::
 
-logistic
-********
+		silent: True
+		lambda_l2: 0.001
+		histogram_pool_size: 16384
+		boosting_type: ['gbdt', 'dart']
+		min_child_samples: [1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000]
+		num_leaves: [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250]
+		colsample_bytree: [0.7, 0.9, 1.0]
+		subsample: [0.7, 0.9, 1.0]
+		learning_rate: [0.01, 0.05, 0.1]
+		n_estimators: [5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000]
+
+
+"logistic"
+**********
 
   Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
@@ -751,8 +840,8 @@ logistic
 		penalty: none
 
 
-mlp classifier
-**************
+"mlp classifier"
+****************
 
   Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
 
@@ -793,8 +882,8 @@ mlp classifier
 		hidden_layer_sizes: Too many params to show
 
 
-random forest classifier
-************************
+"random forest classifier"
+**************************
 
   Base Class Documenation: :class:`sklearn.ensemble.RandomForestClassifier`
 
@@ -813,8 +902,8 @@ random forest classifier
 		bootstrap: True
 
 
-ridge logistic
-**************
+"ridge logistic"
+****************
 
   Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
@@ -836,8 +925,8 @@ ridge logistic
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
-svm classifier
-**************
+"svm classifier"
+****************
 
   Base Class Documenation: :class:`sklearn.svm.SVC`
 
@@ -857,391 +946,492 @@ svm classifier
 		probability: True
 
 
+"xgb classifier"
+****************
+
+  Base Class Documenation: :class:`xgboost.XGBClassifier`
+
+  Param Distributions
+
+	0. "base xgb" ::
+
+		verbosity: 0
+
+	1. "xgb rs" ::
+
+		verbosity: 0
+		max_depth: Random Integer Distribution (2, 49)
+		learning_rate: [0.01, 0.05, 0.1, 0.2]
+		n_estimators: Random Integer Distribution (3, 499)
+		min_child_weight: [1, 5, 10, 50]
+		subsample: Random Uniform Distribution (0.2, 1.0)
+		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
+
+
 
 *******
 Metrics
 *******
 
+Different availible choices for the `metric` parameter are shown below.
+`metric` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `metric` is represented bythe sub-heading (within "")
+The avaliable metrics are further broken down by which can work with different problem_types.
+Additionally, a link to the original models documentation is shown.
+Note: When supplying the metric as a str indicator you donot need to include the prepended "multiclass"
+
 binary
 ======
-accuracy
-********
+"accuracy"
+**********
 
   Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
 
-balanced accuracy
-*****************
+"balanced accuracy"
+*******************
 
   Base Func Documenation: :func:`sklearn.metrics.balanced_accuracy_score`
 
-brier
-*****
+"brier"
+*******
 
   Base Func Documenation: :func:`sklearn.metrics.brier_score_loss`
 
-f1
-**
+"f1"
+****
 
   Base Func Documenation: :func:`sklearn.metrics.f1_score`
 
-hamming
-*******
+"hamming"
+*********
 
   Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
 
-jaccard
-*******
+"jaccard"
+*********
 
   Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
 
-log
-***
+"log"
+*****
 
   Base Func Documenation: :func:`sklearn.metrics.log_loss`
 
-macro average precision
-***********************
+"macro average precision"
+*************************
 
   Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
 
-macro roc auc
-*************
+"macro roc auc"
+***************
 
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
-matthews
-********
+"matthews"
+**********
 
   Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
 
-precision
-*********
+"precision"
+***********
 
   Base Func Documenation: :func:`sklearn.metrics.precision_score`
 
-recall
-******
+"recall"
+********
 
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
 
 
 regression
 ==========
-explained variance
-******************
+"explained variance"
+********************
 
   Base Func Documenation: :func:`sklearn.metrics.explained_variance_score`
 
-max error
-*********
+"max error"
+***********
 
   Base Func Documenation: :func:`sklearn.metrics.max_error`
 
-mean absolute error
-*******************
+"mean absolute error"
+*********************
 
   Base Func Documenation: :func:`sklearn.metrics.mean_absolute_error`
 
-mean squared error
-******************
+"mean squared error"
+********************
 
   Base Func Documenation: :func:`sklearn.metrics.mean_squared_error`
 
-mean squared log error
-**********************
+"mean squared log error"
+************************
 
   Base Func Documenation: :func:`sklearn.metrics.mean_squared_log_error`
 
-median absolute error
-*********************
+"median absolute error"
+***********************
 
   Base Func Documenation: :func:`sklearn.metrics.median_absolute_error`
 
-r2
-**
+"r2"
+****
 
   Base Func Documenation: :func:`sklearn.metrics.r2_score`
 
 
 categorical multilabel
 ======================
-accuracy
-********
+"accuracy"
+**********
 
   Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
 
-hamming
-*******
+"hamming"
+*********
 
   Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
 
-log
-***
+"log"
+*****
 
   Base Func Documenation: :func:`sklearn.metrics.log_loss`
 
-macro average precision
-***********************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-macro f1
-********
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-macro jaccard
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-macro precision
-***************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-macro recall
-************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-macro roc auc
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-micro average precision
-***********************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-micro f1
-********
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-micro jaccard
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-micro precision
-***************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-micro recall
-************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-micro roc auc
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-samples average precision
+"macro average precision"
 *************************
 
   Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
 
-samples f1
+"macro f1"
 **********
 
   Base Func Documenation: :func:`sklearn.metrics.f1_score`
 
-samples jaccard
+"macro jaccard"
 ***************
 
   Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
 
-samples precision
+"macro precision"
 *****************
 
   Base Func Documenation: :func:`sklearn.metrics.precision_score`
 
-samples recall
+"macro recall"
 **************
 
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
 
-samples roc auc
+"macro roc auc"
 ***************
 
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
-weighted average precision
-**************************
+"micro average precision"
+*************************
 
   Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
 
-weighted f1
-***********
+"micro f1"
+**********
 
   Base Func Documenation: :func:`sklearn.metrics.f1_score`
 
-weighted jaccard
-****************
+"micro jaccard"
+***************
 
   Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
 
-weighted precision
-******************
+"micro precision"
+*****************
 
   Base Func Documenation: :func:`sklearn.metrics.precision_score`
 
-weighted recall
-***************
+"micro recall"
+**************
 
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
 
-weighted roc auc
+"micro roc auc"
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"samples average precision"
+***************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+"samples f1"
+************
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"samples jaccard"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"samples precision"
+*******************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"samples recall"
 ****************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"samples roc auc"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"weighted average precision"
+****************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+"weighted f1"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"weighted jaccard"
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"weighted precision"
+********************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"weighted recall"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"weighted roc auc"
+******************
 
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
 
 categorical multiclass
 ======================
-accuracy
-********
+"accuracy"
+**********
 
   Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
 
-balanced accuracy
-*****************
+"balanced accuracy"
+*******************
 
   Base Func Documenation: :func:`sklearn.metrics.balanced_accuracy_score`
 
-hamming
-*******
+"hamming"
+*********
 
   Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
 
-log
-***
+"log"
+*****
 
   Base Func Documenation: :func:`sklearn.metrics.log_loss`
 
-macro f1
-********
+"macro f1"
+**********
 
   Base Func Documenation: :func:`sklearn.metrics.f1_score`
 
-macro jaccard
-*************
+"macro jaccard"
+***************
 
   Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
 
-macro precision
-***************
+"macro precision"
+*****************
 
   Base Func Documenation: :func:`sklearn.metrics.precision_score`
 
-macro recall
-************
+"macro recall"
+**************
 
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
 
-matthews
-********
+"matthews"
+**********
 
   Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
 
-micro f1
-********
+"micro f1"
+**********
 
   Base Func Documenation: :func:`sklearn.metrics.f1_score`
 
-micro jaccard
-*************
+"micro jaccard"
+***************
 
   Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
 
-micro precision
-***************
+"micro precision"
+*****************
 
   Base Func Documenation: :func:`sklearn.metrics.precision_score`
 
-micro recall
-************
+"micro recall"
+**************
 
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
 
-multiclass by class roc auc
-***************************
+"multiclass by class roc auc"
+*****************************
 
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
-multiclass macro average precision
-**********************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-multiclass macro roc auc
-************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-multiclass micro average precision
-**********************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-multiclass micro roc auc
-************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-multiclass samples average precision
+"multiclass macro average precision"
 ************************************
 
   Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
 
-multiclass samples roc auc
+"multiclass macro roc auc"
 **************************
 
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
-multiclass weighted average precision
-*************************************
+"multiclass micro average precision"
+************************************
 
   Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
 
-multiclass weighted roc auc
-***************************
+"multiclass micro roc auc"
+**************************
 
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
-weighted f1
-***********
+"multiclass samples average precision"
+**************************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+"multiclass samples roc auc"
+****************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"multiclass weighted average precision"
+***************************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+"multiclass weighted roc auc"
+*****************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"weighted f1"
+*************
 
   Base Func Documenation: :func:`sklearn.metrics.f1_score`
 
-weighted jaccard
-****************
+"weighted jaccard"
+******************
 
   Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
 
-weighted precision
-******************
+"weighted precision"
+********************
 
   Base Func Documenation: :func:`sklearn.metrics.precision_score`
 
-weighted recall
-***************
+"weighted recall"
+*****************
 
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+
+*******
+Scalers
+*******
+
+Different availible choices for the `data_scaler` parameter are shown below.
+data_scaler is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `data_scaler` is represented by the sub-heading (within "")
+Additionally, a link to the original scalers documentation as well as the implemented parameter distributions are shown.
+
+All Problem Types
+=================
+"standard"
+**********
+
+  Base Class Documenation: :class:`sklearn.preprocessing.StandardScaler`
+
+  Param Distributions
+
+	0. "base standard" ::
+
+		with_mean: True
+		with_std: True
+
+
+"minmax"
+********
+
+  Base Class Documenation: :class:`sklearn.preprocessing.MinMaxScaler`
+
+  Param Distributions
+
+	0. "base minmax" ::
+
+		feature_range: (0, 1)
+
+
+"robust"
+********
+
+  Base Class Documenation: :class:`sklearn.preprocessing.RobustScaler`
+
+  Param Distributions
+
+	0. "base robust" ::
+
+		quantile_range: (5, 95)
+
+	1. "robust gs" ::
+
+		quantile_range: [(1, 99), (5, 95), (10, 90), (15, 85), (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)]
+
+
+"power"
+*******
+
+  Base Class Documenation: :class:`sklearn.preprocessing.PowerTransformer`
+
+  Param Distributions
+
+	0. "base power" ::
+
+		method: yeo-johnson
+		standardize: True
+
 
 
 ********
 Samplers
 ********
 
+Different availible choices for the `sampler` parameter are shown below.
+`sampler` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `sampler` is represented by the sub-heading (within "")
+The avaliable samplers are further broken down by which  work with with different problem_types.
+Additionally, a link to the original samplers documentation as well as the implemented parameter distributions are shown.
+
 binary
 ======
-adasyn
-******
+"adasyn"
+********
 
   Base Class Documenation: :class:`imblearn.over_sampling.ADASYN`
 
@@ -1252,8 +1442,8 @@ adasyn
 		defaults only
 
 
-all knn
-*******
+"all knn"
+*********
 
   Base Class Documenation: :class:`imblearn.under_sampling.AllKNN`
 
@@ -1264,8 +1454,8 @@ all knn
 		defaults only
 
 
-borderline smote
-****************
+"borderline smote"
+******************
 
   Base Class Documenation: :class:`imblearn.over_sampling.BorderlineSMOTE`
 
@@ -1276,8 +1466,8 @@ borderline smote
 		defaults only
 
 
-cluster centroids
-*****************
+"cluster centroids"
+*******************
 
   Base Class Documenation: :class:`imblearn.under_sampling.ClusterCentroids`
 
@@ -1288,8 +1478,8 @@ cluster centroids
 		defaults only
 
 
-condensed nn
-************
+"condensed nn"
+**************
 
   Base Class Documenation: :class:`imblearn.under_sampling.CondensedNearestNeighbour`
 
@@ -1300,8 +1490,8 @@ condensed nn
 		defaults only
 
 
-enn
-***
+"enn"
+*****
 
   Base Class Documenation: :class:`imblearn.under_sampling.EditedNearestNeighbours`
 
@@ -1312,8 +1502,8 @@ enn
 		defaults only
 
 
-kmeans smote
-************
+"kmeans smote"
+**************
 
   Base Class Documenation: :class:`imblearn.over_sampling.KMeansSMOTE`
 
@@ -1324,8 +1514,8 @@ kmeans smote
 		defaults only
 
 
-near miss
-*********
+"near miss"
+***********
 
   Base Class Documenation: :class:`imblearn.under_sampling.NearMiss`
 
@@ -1336,8 +1526,8 @@ near miss
 		defaults only
 
 
-neighbourhood cleaning rule
-***************************
+"neighbourhood cleaning rule"
+*****************************
 
   Base Class Documenation: :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`
 
@@ -1348,8 +1538,8 @@ neighbourhood cleaning rule
 		defaults only
 
 
-one sided selection
-*******************
+"one sided selection"
+*********************
 
   Base Class Documenation: :class:`imblearn.under_sampling.OneSidedSelection`
 
@@ -1360,8 +1550,8 @@ one sided selection
 		defaults only
 
 
-random over sampler
-*******************
+"random over sampler"
+*********************
 
   Base Class Documenation: :class:`imblearn.over_sampling.RandomOverSampler`
 
@@ -1372,8 +1562,8 @@ random over sampler
 		defaults only
 
 
-random under sampler
-********************
+"random under sampler"
+**********************
 
   Base Class Documenation: :class:`imblearn.under_sampling.RandomUnderSampler`
 
@@ -1388,8 +1578,8 @@ random under sampler
 		sampling_strategy: [1, 0.75, 0.66, 0.5, 0.33, 0.25]
 
 
-renn
-****
+"renn"
+******
 
   Base Class Documenation: :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbours`
 
@@ -1400,8 +1590,8 @@ renn
 		defaults only
 
 
-smote
-*****
+"smote"
+*******
 
   Base Class Documenation: :class:`imblearn.over_sampling.SMOTE`
 
@@ -1412,8 +1602,8 @@ smote
 		defaults only
 
 
-smote enn
-*********
+"smote enn"
+***********
 
   Base Class Documenation: :class:`imblearn.combine.SMOTEENN`
 
@@ -1424,8 +1614,8 @@ smote enn
 		defaults only
 
 
-smote nc
-********
+"smote nc"
+**********
 
   Base Class Documenation: :class:`imblearn.over_sampling.SMOTENC`
 
@@ -1436,8 +1626,8 @@ smote nc
 		defaults only
 
 
-smote tomek
-***********
+"smote tomek"
+*************
 
   Base Class Documenation: :class:`imblearn.combine.SMOTETomek`
 
@@ -1448,8 +1638,8 @@ smote tomek
 		defaults only
 
 
-svm smote
-*********
+"svm smote"
+***********
 
   Base Class Documenation: :class:`imblearn.over_sampling.SVMSMOTE`
 
@@ -1460,8 +1650,8 @@ svm smote
 		defaults only
 
 
-tomek links
-***********
+"tomek links"
+*************
 
   Base Class Documenation: :class:`imblearn.under_sampling.TomekLinks`
 
@@ -1481,8 +1671,8 @@ categorical multilabel
 
 categorical multiclass
 ======================
-adasyn
-******
+"adasyn"
+********
 
   Base Class Documenation: :class:`imblearn.over_sampling.ADASYN`
 
@@ -1493,8 +1683,8 @@ adasyn
 		defaults only
 
 
-all knn
-*******
+"all knn"
+*********
 
   Base Class Documenation: :class:`imblearn.under_sampling.AllKNN`
 
@@ -1505,8 +1695,8 @@ all knn
 		defaults only
 
 
-borderline smote
-****************
+"borderline smote"
+******************
 
   Base Class Documenation: :class:`imblearn.over_sampling.BorderlineSMOTE`
 
@@ -1517,8 +1707,8 @@ borderline smote
 		defaults only
 
 
-cluster centroids
-*****************
+"cluster centroids"
+*******************
 
   Base Class Documenation: :class:`imblearn.under_sampling.ClusterCentroids`
 
@@ -1529,8 +1719,8 @@ cluster centroids
 		defaults only
 
 
-condensed nn
-************
+"condensed nn"
+**************
 
   Base Class Documenation: :class:`imblearn.under_sampling.CondensedNearestNeighbour`
 
@@ -1541,8 +1731,8 @@ condensed nn
 		defaults only
 
 
-enn
-***
+"enn"
+*****
 
   Base Class Documenation: :class:`imblearn.under_sampling.EditedNearestNeighbours`
 
@@ -1553,8 +1743,8 @@ enn
 		defaults only
 
 
-kmeans smote
-************
+"kmeans smote"
+**************
 
   Base Class Documenation: :class:`imblearn.over_sampling.KMeansSMOTE`
 
@@ -1565,8 +1755,8 @@ kmeans smote
 		defaults only
 
 
-near miss
-*********
+"near miss"
+***********
 
   Base Class Documenation: :class:`imblearn.under_sampling.NearMiss`
 
@@ -1577,8 +1767,8 @@ near miss
 		defaults only
 
 
-neighbourhood cleaning rule
-***************************
+"neighbourhood cleaning rule"
+*****************************
 
   Base Class Documenation: :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`
 
@@ -1589,8 +1779,8 @@ neighbourhood cleaning rule
 		defaults only
 
 
-one sided selection
-*******************
+"one sided selection"
+*********************
 
   Base Class Documenation: :class:`imblearn.under_sampling.OneSidedSelection`
 
@@ -1601,8 +1791,8 @@ one sided selection
 		defaults only
 
 
-random over sampler
-*******************
+"random over sampler"
+*********************
 
   Base Class Documenation: :class:`imblearn.over_sampling.RandomOverSampler`
 
@@ -1613,8 +1803,8 @@ random over sampler
 		defaults only
 
 
-random under sampler
-********************
+"random under sampler"
+**********************
 
   Base Class Documenation: :class:`imblearn.under_sampling.RandomUnderSampler`
 
@@ -1629,8 +1819,8 @@ random under sampler
 		sampling_strategy: [1, 0.75, 0.66, 0.5, 0.33, 0.25]
 
 
-renn
-****
+"renn"
+******
 
   Base Class Documenation: :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbours`
 
@@ -1641,8 +1831,8 @@ renn
 		defaults only
 
 
-smote
-*****
+"smote"
+*******
 
   Base Class Documenation: :class:`imblearn.over_sampling.SMOTE`
 
@@ -1653,8 +1843,8 @@ smote
 		defaults only
 
 
-smote enn
-*********
+"smote enn"
+***********
 
   Base Class Documenation: :class:`imblearn.combine.SMOTEENN`
 
@@ -1665,8 +1855,8 @@ smote enn
 		defaults only
 
 
-smote nc
-********
+"smote nc"
+**********
 
   Base Class Documenation: :class:`imblearn.over_sampling.SMOTENC`
 
@@ -1677,8 +1867,8 @@ smote nc
 		defaults only
 
 
-smote tomek
-***********
+"smote tomek"
+*************
 
   Base Class Documenation: :class:`imblearn.combine.SMOTETomek`
 
@@ -1689,8 +1879,8 @@ smote tomek
 		defaults only
 
 
-svm smote
-*********
+"svm smote"
+***********
 
   Base Class Documenation: :class:`imblearn.over_sampling.SVMSMOTE`
 
@@ -1701,8 +1891,8 @@ svm smote
 		defaults only
 
 
-tomek links
-***********
+"tomek links"
+*************
 
   Base Class Documenation: :class:`imblearn.under_sampling.TomekLinks`
 
@@ -1718,10 +1908,16 @@ tomek links
 Feat Selectors
 **************
 
+Different availible choices for the `feat_selector` parameter are shown below.
+`feat_selector` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `feat_selector` is represented by the sub-heading (within "")
+The avaliable feat selectors are further broken down by which can work with different problem_types.
+Additionally, a link to the original feat selectors  documentation as well as the implemented parameter distributions are shown.
+
 binary
 ======
-rfe
-***
+"rfe"
+*****
 
   Base Class Documenation: :class:`ABCD_ML.Feature_Selectors.RFE`
 
@@ -1736,8 +1932,8 @@ rfe
 		n_features_to_select: Random Uniform Distribution (0.0, 1.0)
 
 
-univariate selection classification
-***********************************
+"univariate selection classification"
+*************************************
 
   Base Class Documenation: :class:`sklearn.feature_selection.SelectPercentile`
 
@@ -1759,11 +1955,23 @@ univariate selection classification
 		percentile: [10, 20, 30, 40, 50, 60, 70, 80, 90]
 
 
+"variance threshold"
+********************
+
+  Base Class Documenation: :class:`sklearn.feature_selection.variance_threshold.VarianceThreshold`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 
 regression
 ==========
-rfe
-***
+"rfe"
+*****
 
   Base Class Documenation: :class:`ABCD_ML.Feature_Selectors.RFE`
 
@@ -1778,8 +1986,8 @@ rfe
 		n_features_to_select: Random Uniform Distribution (0.0, 1.0)
 
 
-univariate selection regression
-*******************************
+"univariate selection regression"
+*********************************
 
   Base Class Documenation: :class:`sklearn.feature_selection.SelectPercentile`
 
@@ -1801,14 +2009,38 @@ univariate selection regression
 		percentile: [10, 20, 30, 40, 50, 60, 70, 80, 90]
 
 
+"variance threshold"
+********************
+
+  Base Class Documenation: :class:`sklearn.feature_selection.variance_threshold.VarianceThreshold`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 
 categorical multilabel
 ======================
+"variance threshold"
+********************
+
+  Base Class Documenation: :class:`sklearn.feature_selection.variance_threshold.VarianceThreshold`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 
 categorical multiclass
 ======================
-rfe
-***
+"rfe"
+*****
 
   Base Class Documenation: :class:`ABCD_ML.Feature_Selectors.RFE`
 
@@ -1823,8 +2055,8 @@ rfe
 		n_features_to_select: Random Uniform Distribution (0.0, 1.0)
 
 
-univariate selection classification
-***********************************
+"univariate selection classification"
+*************************************
 
   Base Class Documenation: :class:`sklearn.feature_selection.SelectPercentile`
 
@@ -1846,15 +2078,33 @@ univariate selection classification
 		percentile: [10, 20, 30, 40, 50, 60, 70, 80, 90]
 
 
+"variance threshold"
+********************
+
+  Base Class Documenation: :class:`sklearn.feature_selection.variance_threshold.VarianceThreshold`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 
 **************
 Ensemble Types
 **************
 
+Different availible choices for the `ensemble_type` parameter are shown below.
+`ensemble_type` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `ensemble_type` is represented by the sub-heading (within "")
+The avaliable ensemble types are further broken down by which can work with different problem_types.
+Additionally, a link to the original ensemble types  documentation as well as the implemented parameter distributions are shown.
+
 binary
 ======
-aposteriori
-***********
+"aposteriori"
+*************
 
   Base Class Documenation: :class:`deslib.dcs.a_posteriori.APosteriori`
 
@@ -1865,8 +2115,8 @@ aposteriori
 		defaults only
 
 
-apriori
-*******
+"apriori"
+*********
 
   Base Class Documenation: :class:`deslib.dcs.a_priori.APriori`
 
@@ -1877,8 +2127,8 @@ apriori
 		defaults only
 
 
-des clustering
-**************
+"des clustering"
+****************
 
   Base Class Documenation: :class:`deslib.des.des_clustering.DESClustering`
 
@@ -1889,8 +2139,8 @@ des clustering
 		defaults only
 
 
-des knn
-*******
+"des knn"
+*********
 
   Base Class Documenation: :class:`deslib.des.des_knn.DESKNN`
 
@@ -1901,8 +2151,8 @@ des knn
 		defaults only
 
 
-deskl
-*****
+"deskl"
+*******
 
   Base Class Documenation: :class:`deslib.des.probabilistic.DESKL`
 
@@ -1913,8 +2163,8 @@ deskl
 		defaults only
 
 
-desmi
-*****
+"desmi"
+*******
 
   Base Class Documenation: :class:`deslib.des.des_mi.DESMI`
 
@@ -1925,8 +2175,8 @@ desmi
 		defaults only
 
 
-desp
-****
+"desp"
+******
 
   Base Class Documenation: :class:`deslib.des.des_p.DESP`
 
@@ -1937,8 +2187,8 @@ desp
 		defaults only
 
 
-exponential
-***********
+"exponential"
+*************
 
   Base Class Documenation: :class:`deslib.des.probabilistic.Exponential`
 
@@ -1949,8 +2199,8 @@ exponential
 		defaults only
 
 
-knop
-****
+"knop"
+******
 
   Base Class Documenation: :class:`deslib.des.knop.KNOP`
 
@@ -1961,8 +2211,8 @@ knop
 		defaults only
 
 
-knorae
-******
+"knorae"
+********
 
   Base Class Documenation: :class:`deslib.des.knora_e.KNORAE`
 
@@ -1973,8 +2223,8 @@ knorae
 		defaults only
 
 
-knrau
-*****
+"knrau"
+*******
 
   Base Class Documenation: :class:`deslib.des.knora_u.KNORAU`
 
@@ -1985,8 +2235,8 @@ knrau
 		defaults only
 
 
-lca
-***
+"lca"
+*****
 
   Base Class Documenation: :class:`deslib.dcs.lca.LCA`
 
@@ -1997,8 +2247,8 @@ lca
 		defaults only
 
 
-logarithmic
-***********
+"logarithmic"
+*************
 
   Base Class Documenation: :class:`deslib.des.probabilistic.Logarithmic`
 
@@ -2009,8 +2259,8 @@ logarithmic
 		defaults only
 
 
-mcb
-***
+"mcb"
+*****
 
   Base Class Documenation: :class:`deslib.dcs.mcb.MCB`
 
@@ -2021,8 +2271,8 @@ mcb
 		defaults only
 
 
-metades
-*******
+"metades"
+*********
 
   Base Class Documenation: :class:`deslib.des.meta_des.METADES`
 
@@ -2033,8 +2283,8 @@ metades
 		defaults only
 
 
-min dif
-*******
+"min dif"
+*********
 
   Base Class Documenation: :class:`deslib.des.probabilistic.MinimumDifference`
 
@@ -2045,8 +2295,8 @@ min dif
 		defaults only
 
 
-mla
-***
+"mla"
+*****
 
   Base Class Documenation: :class:`deslib.dcs.mla.MLA`
 
@@ -2057,8 +2307,8 @@ mla
 		defaults only
 
 
-ola
-***
+"ola"
+*****
 
   Base Class Documenation: :class:`deslib.dcs.ola.OLA`
 
@@ -2069,8 +2319,8 @@ ola
 		defaults only
 
 
-rank
-****
+"rank"
+******
 
   Base Class Documenation: :class:`deslib.dcs.rank.Rank`
 
@@ -2081,8 +2331,8 @@ rank
 		defaults only
 
 
-rrc
-***
+"rrc"
+*****
 
   Base Class Documenation: :class:`deslib.des.probabilistic.RRC`
 
@@ -2093,8 +2343,8 @@ rrc
 		defaults only
 
 
-single best
-***********
+"single best"
+*************
 
   Base Class Documenation: :class:`deslib.static.single_best.SingleBest`
 
@@ -2105,8 +2355,8 @@ single best
 		defaults only
 
 
-stacked
-*******
+"stacked"
+*********
 
   Base Class Documenation: :class:`deslib.static.stacked.StackedClassifier`
 
@@ -2126,8 +2376,8 @@ categorical multilabel
 
 categorical multiclass
 ======================
-aposteriori
-***********
+"aposteriori"
+*************
 
   Base Class Documenation: :class:`deslib.dcs.a_posteriori.APosteriori`
 
@@ -2138,8 +2388,8 @@ aposteriori
 		defaults only
 
 
-apriori
-*******
+"apriori"
+*********
 
   Base Class Documenation: :class:`deslib.dcs.a_priori.APriori`
 
@@ -2150,8 +2400,8 @@ apriori
 		defaults only
 
 
-des clustering
-**************
+"des clustering"
+****************
 
   Base Class Documenation: :class:`deslib.des.des_clustering.DESClustering`
 
@@ -2162,8 +2412,8 @@ des clustering
 		defaults only
 
 
-des knn
-*******
+"des knn"
+*********
 
   Base Class Documenation: :class:`deslib.des.des_knn.DESKNN`
 
@@ -2174,8 +2424,8 @@ des knn
 		defaults only
 
 
-deskl
-*****
+"deskl"
+*******
 
   Base Class Documenation: :class:`deslib.des.probabilistic.DESKL`
 
@@ -2186,8 +2436,8 @@ deskl
 		defaults only
 
 
-desmi
-*****
+"desmi"
+*******
 
   Base Class Documenation: :class:`deslib.des.des_mi.DESMI`
 
@@ -2198,8 +2448,8 @@ desmi
 		defaults only
 
 
-desp
-****
+"desp"
+******
 
   Base Class Documenation: :class:`deslib.des.des_p.DESP`
 
@@ -2210,8 +2460,8 @@ desp
 		defaults only
 
 
-exponential
-***********
+"exponential"
+*************
 
   Base Class Documenation: :class:`deslib.des.probabilistic.Exponential`
 
@@ -2222,8 +2472,8 @@ exponential
 		defaults only
 
 
-knop
-****
+"knop"
+******
 
   Base Class Documenation: :class:`deslib.des.knop.KNOP`
 
@@ -2234,8 +2484,8 @@ knop
 		defaults only
 
 
-knorae
-******
+"knorae"
+********
 
   Base Class Documenation: :class:`deslib.des.knora_e.KNORAE`
 
@@ -2246,8 +2496,8 @@ knorae
 		defaults only
 
 
-knrau
-*****
+"knrau"
+*******
 
   Base Class Documenation: :class:`deslib.des.knora_u.KNORAU`
 
@@ -2258,8 +2508,8 @@ knrau
 		defaults only
 
 
-lca
-***
+"lca"
+*****
 
   Base Class Documenation: :class:`deslib.dcs.lca.LCA`
 
@@ -2270,8 +2520,8 @@ lca
 		defaults only
 
 
-logarithmic
-***********
+"logarithmic"
+*************
 
   Base Class Documenation: :class:`deslib.des.probabilistic.Logarithmic`
 
@@ -2282,8 +2532,8 @@ logarithmic
 		defaults only
 
 
-mcb
-***
+"mcb"
+*****
 
   Base Class Documenation: :class:`deslib.dcs.mcb.MCB`
 
@@ -2294,8 +2544,8 @@ mcb
 		defaults only
 
 
-metades
-*******
+"metades"
+*********
 
   Base Class Documenation: :class:`deslib.des.meta_des.METADES`
 
@@ -2306,8 +2556,8 @@ metades
 		defaults only
 
 
-min dif
-*******
+"min dif"
+*********
 
   Base Class Documenation: :class:`deslib.des.probabilistic.MinimumDifference`
 
@@ -2318,8 +2568,8 @@ min dif
 		defaults only
 
 
-mla
-***
+"mla"
+*****
 
   Base Class Documenation: :class:`deslib.dcs.mla.MLA`
 
@@ -2330,8 +2580,8 @@ mla
 		defaults only
 
 
-ola
-***
+"ola"
+*****
 
   Base Class Documenation: :class:`deslib.dcs.ola.OLA`
 
@@ -2342,8 +2592,8 @@ ola
 		defaults only
 
 
-rank
-****
+"rank"
+******
 
   Base Class Documenation: :class:`deslib.dcs.rank.Rank`
 
@@ -2354,8 +2604,8 @@ rank
 		defaults only
 
 
-rrc
-***
+"rrc"
+*****
 
   Base Class Documenation: :class:`deslib.des.probabilistic.RRC`
 
@@ -2366,8 +2616,8 @@ rrc
 		defaults only
 
 
-single best
-***********
+"single best"
+*************
 
   Base Class Documenation: :class:`deslib.static.single_best.SingleBest`
 
@@ -2378,8 +2628,8 @@ single best
 		defaults only
 
 
-stacked
-*******
+"stacked"
+*********
 
   Base Class Documenation: :class:`deslib.static.stacked.StackedClassifier`
 

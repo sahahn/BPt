@@ -1,5 +1,6 @@
 from ABCD_ML.ML_Helpers import get_objects_by_type
 from ABCD_ML.Metrics import get_metrics_by_type
+from ABCD_ML.Scalers import get_scaler_objects
 
 from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.Models import MODELS
@@ -22,24 +23,15 @@ def get_name(obj):
 
     name = name.replace('.tree.tree', '.tree')
     name = name.replace('.tree.tree', '.tree')
-    name = name.replace('.logistic', '')
-    name = name.replace('.gpc', '')
-    name = name.replace('.gpr', '')
-    name = name.replace('.classification.', '.')
-    name = name.replace('.regression.', '.')
-    name = name.replace('.coordinate_descent.', '.')
-    name = name.replace('.sklearn.', '.')
-    name = name.replace('.forest.', '.')
-    name = name.replace('.classes.', '.')
-    name = name.replace('.base.', '.')
-    name = name.replace('.multilayer_perceptron.', '.')
-    name = name.replace('.univariate_selection.', '.')
-    name = name.replace('.minimum_difference.', '.')
-    name = name.replace('.deskl.', '.')
-    name = name.replace('.exponential.', '.')
-    name = name.replace('.logarithmic.', '.')
-    name = name.replace('.minimum_difference.', '.')
-    name = name.replace('.rrc.', '.')
+
+    base_replace_list = ['logistic', 'gpc', 'gpr', 'classification',
+                         'regression', 'coordinate_descent', 'sklearn',
+                         'forest', 'classes', 'base', 'multilayer_perceptron',
+                         'univariate_selection', 'minimum_difference', 'deskl',
+                         'exponential', 'logarithmic', 'rrc', 'data']
+
+    for r in base_replace_list:
+        name = name.replace('.' + r + '.', '.')
 
     splits = name.split('.')
     for split in splits:
@@ -93,12 +85,26 @@ def add_block(lines, problem_types, AVALIABLE=None, OBJS=None):
     return lines
 
 
+def add_scaler_block(lines):
+
+    lines.append('All Problem Types')
+    lines.append('=================')
+
+    objs = get_scaler_objects()
+
+    for obj in objs:
+        lines = add_obj(lines, obj, metric=False)
+
+    lines.append('')
+    return lines
+
+
 def add_obj(lines, obj, metric=False):
     '''Obj as (obj_str, obj, obj_params),
     or if metric = True, can have just
     obj_str and obj.'''
 
-    obj_str = obj[0]
+    obj_str = '"' + obj[0] + '"'
     lines.append(obj_str)
     lines.append(''.join(['*' for i in range(len(obj_str))]))
     lines.append('')
@@ -185,22 +191,102 @@ def add_param(lines, params):
 problem_types = ['binary', 'regression', 'categorical multilabel',
                  'categorical multiclass']
 
-
 lines = []
 
 lines = main_category(lines, 'Model Types')
+
+lines.append('Different availible choices for the `model_type` parameter' +
+             ' are shown below.')
+lines.append('`model_type` is accepted by ' +
+             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
+             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
+lines.append('The exact str indicator for each `model_type` is represented' +
+             ' by the sub-heading (within "")')
+lines.append('The avaliable models are further broken down by which can work' +
+             'with different problem_types.')
+lines.append('Additionally, a link to the original models documentation ' +
+             'as well as the implemented parameter distributions are shown.')
+lines.append('')
+
 lines = add_block(lines, problem_types, AVALIABLE_MODELS, MODELS)
 
 lines = main_category(lines, 'Metrics')
+
+lines.append('Different availible choices for the `metric` parameter' +
+             ' are shown below.')
+lines.append('`metric` is accepted by ' +
+             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
+             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
+lines.append('The exact str indicator for each `metric` is represented by' +
+             'the sub-heading (within "")')
+lines.append('The avaliable metrics are further broken down by which can' +
+             ' work with different problem_types.')
+lines.append('Additionally, a link to the original models documentation ' +
+             'is shown.')
+lines.append('Note: When supplying the metric as a str indicator you do' +
+             'not need to include the prepended "multiclass"')
+lines.append('')
+
 lines = add_block(lines, problem_types)
 
+lines = main_category(lines, 'Scalers')
+lines.append('Different availible choices for the `data_scaler` parameter' +
+             ' are shown below.')
+lines.append('data_scaler is accepted by ' +
+             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
+             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
+lines.append('The exact str indicator for each `data_scaler` is represented' +
+             ' by the sub-heading (within "")')
+lines.append('Additionally, a link to the original scalers documentation ' +
+             'as well as the implemented parameter distributions are shown.')
+lines.append('')
+lines = add_scaler_block(lines)
+
 lines = main_category(lines, 'Samplers')
+lines.append('Different availible choices for the `sampler` parameter' +
+             ' are shown below.')
+lines.append('`sampler` is accepted by ' +
+             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
+             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
+lines.append('The exact str indicator for each `sampler` is represented' +
+             ' by the sub-heading (within "")')
+lines.append('The avaliable samplers are further broken down by which ' +
+             ' work with with different problem_types.')
+lines.append('Additionally, a link to the original samplers documentation ' +
+             'as well as the implemented parameter distributions are shown.')
+lines.append('')
 lines = add_block(lines, problem_types, AVALIABLE_SAMPLERS, SAMPLERS)
 
 lines = main_category(lines, 'Feat Selectors')
+lines.append('Different availible choices for the `feat_selector` parameter' +
+             ' are shown below.')
+lines.append('`feat_selector` is accepted by ' +
+             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
+             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
+lines.append('The exact str indicator for each `feat_selector` is' +
+             ' represented by the sub-heading (within "")')
+lines.append('The avaliable feat selectors are further broken down by which ' +
+             'can work with different problem_types.')
+lines.append('Additionally, a link to the original feat selectors ' +
+             ' documentation ' +
+             'as well as the implemented parameter distributions are shown.')
+lines.append('')
 lines = add_block(lines, problem_types, AVALIABLE_SELECTORS, SELECTORS)
 
 lines = main_category(lines, 'Ensemble Types')
+lines.append('Different availible choices for the `ensemble_type` parameter' +
+             ' are shown below.')
+lines.append('`ensemble_type` is accepted by ' +
+             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
+             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
+lines.append('The exact str indicator for each `ensemble_type` is' +
+             ' represented by the sub-heading (within "")')
+lines.append('The avaliable ensemble types are further broken down by which ' +
+             'can work with different problem_types.')
+lines.append('Additionally, a link to the original ensemble types ' +
+             ' documentation ' +
+             'as well as the implemented parameter distributions are shown.')
+lines.append('')
 lines = add_block(lines, problem_types, AVALIABLE_ENSEMBLES, ENSEMBLES)
 
 

@@ -65,5 +65,6 @@ intersphinx_mapping =\
     {'deslib': ('http://deslib.readthedocs.io/en/latest', None),
      'sklearn': ('http://scikit-learn.org/stable', None),
      'lightgbm': ('https://lightgbm.readthedocs.io/en/latest', None),
-     'imblearn': ('https://imbalanced-learn.readthedocs.io/en/stable', None)
+     'xgboost': ('https://xgboost.readthedocs.io/en/latest', None),
+     'imblearn': ('https://imbalanced-learn.readthedocs.io/en/stable', None),
      }

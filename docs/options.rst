@@ -1356,9 +1356,9 @@ categorical multiclass
 Scalers
 *******
 
-Different availible choices for the `data_scaler` parameter are shown below.
-data_scaler is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `data_scaler` is represented by the sub-heading (within "")
+Different availible choices for the `scaler` parameter are shown below.
+scaler is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `scaler` is represented by the sub-heading (within "")
 Additionally, a link to the original scalers documentation as well as the implemented parameter distributions are shown.
 
 All Problem Types

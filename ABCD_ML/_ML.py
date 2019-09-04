@@ -12,11 +12,11 @@ from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
 
 def Set_Default_ML_Params(self, problem_type='default', metric='default',
-                          data_scaler='default', sampler='default',
-                          feat_selector='default', n_splits='default',
-                          n_repeats='default', int_cv='default',
-                          search_type='default',
-                          data_scaler_param_ind='default',
+                          scaler='default', scaler_scope='default',
+                          sampler='default', feat_selector='default',
+                          n_splits='default', n_repeats='default',
+                          int_cv='default', search_type='default',
+                          scaler_param_ind='default',
                           sampler_param_ind='default',
                           feat_selector_param_ind='default',
                           class_weight='default', n_jobs='default',
@@ -64,16 +64,37 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 
         (default = 'default')
 
-    data_scaler : str, list or None optional
-        `data_scaler` refers to the type of scaling to apply
+    scaler : str, list or None, optional
+        `scaler` refers to the type of scaling to apply
         to the saved data (just data, not covars) during model evaluation.
         If a list is passed, then scalers will be applied in that order.
         If None, then no scaling will be applied.
 
         For a full list of supported options call:
-        :func:`Show_Data_Scalers`
+        :func:`Show_Scalers`
 
         If 'default', and not already defined, set to 'standard'
+        (default = 'default')
+
+    scaler_scope : str, list or None, optional
+        `scaler_scope` refers to the "scope" or rather columns in
+        which each passed scaler (if multiple), should be applied.
+        If a list of scalers is passed, then scopes should also be a
+        list with index corresponding to each scaler.
+        If less then the number of scalers are passed, then the
+        first passed scaler scope will be used for all of the
+        remaining scalers. Likewise, if not scaler is passed, this
+        parameter will be ignored!
+
+        Each scaler scope can be either,
+
+        - 'all' or 'a' : To apply to all non-categorical\
+                         columns.
+        - 'data' or 'd' : To apply to all loaded data columns only.
+        - 'covars' or 'c' : To apply to all non-categorical covars columns\
+                            only.
+
+        If 'default', and not already defined, set to 'data'
         (default = 'default')
 
     sampler : str, list or none optional
@@ -141,26 +162,26 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         .. WARNING::
 
             If search type is set to "grid", and any of model_type_param_ind,
-            data_scaler_param_ind and feat_selector_param_ind are set
+            scaler_param_ind and feat_selector_param_ind are set
             to a random distribution (rather then discrete values),
             this will lead to an error.
 
         If 'default', and not already defined, set to None
         (default = 'default')
 
-    data_scaler_param_ind : int, str, or list of
-        Each `data_scaler` has atleast one default parameter distribution
+    scaler_param_ind : int, str, or list of
+        Each `scaler` has atleast one default parameter distribution
         saved with it. This parameter is used to select between different
         distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `data_scaler_param_ind` is automatically
+        when `search_type` == None, `scaler_param_ind` is automatically
         set to default 0.
         This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `data_scaler`.
-        Likewise with `data_scaler`, if passed list input, this means
-        a list was passed to `data_scaler` and the indices should correspond.
+        (zero based), or the str name for a given `scaler`.
+        Likewise with `scaler`, if passed list input, this means
+        a list was passed to `scaler` and the indices should correspond.
 
         The different parameter distributions avaliable for each
-        `data_scaler`, can be shown by calling :func:`Show_Data_Scalers`
+        `scaler`, can be shown by calling :func:`Show_Scalers`
 
         If 'default', and not already defined, set to 0
         (default = 'default')
@@ -314,12 +335,19 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
                     self.default_ML_params['metric'],
                     'based on default problem type.')
 
-    if data_scaler != 'default':
-        self.default_ML_params['data_scaler'] = data_scaler
+    if scaler != 'default':
+        self.default_ML_params['scaler'] = scaler
 
-    elif 'data_scaler' not in self.default_ML_params:
-        self.default_ML_params['data_scaler'] = 'standard'
-        self._print('No default data scaler passed, set to standard')
+    elif 'scaler' not in self.default_ML_params:
+        self.default_ML_params['scaler'] = 'standard'
+        self._print('No default scaler passed, set to standard')
+
+    if scaler_scope != 'default':
+        self.default_ML_params['scaler_scope'] = scaler_scope
+
+    elif 'scaler_scope' not in self.default_ML_params:
+        self.default_ML_params['scaler_scope'] = 'data'
+        self._print('No default scaler_scope passed, set to data')
 
     if sampler != 'default':
         self.default_ML_params['sampler'] = sampler
@@ -369,11 +397,11 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self.default_ML_params['search_type'] = None
         self._print('No default search type passed, set to None')
 
-    if data_scaler_param_ind != 'default':
-        self.default_ML_params['data_scaler_param_ind'] = data_scaler_param_ind
+    if scaler_param_ind != 'default':
+        self.default_ML_params['scaler_param_ind'] = scaler_param_ind
 
-    elif 'data_scaler_param_ind' not in self.default_ML_params:
-        self.default_ML_params['data_scaler_param_ind'] = 0
+    elif 'scaler_param_ind' not in self.default_ML_params:
+        self.default_ML_params['scaler_param_ind'] = 0
         self._print('No default data scaler param ind passed, set to 0')
 
     if sampler_param_ind != 'default':
@@ -602,11 +630,12 @@ def _ML_print(self, *args, **kwargs):
 
 
 def Evaluate(self, model_type, run_name=None, problem_type='default',
-             metric='default', data_scaler='default', sampler='default',
-             feat_selector='default', n_splits='default', n_repeats='default',
-             int_cv='default', ensemble_type='basic ensemble',
-             ensemble_split=.2, search_type='default', model_type_param_ind=0,
-             data_scaler_param_ind='default', sampler_param_ind='default',
+             metric='default', scaler='default', scaler_scope='default',
+             sampler='default', feat_selector='default', n_splits='default',
+             n_repeats='default', int_cv='default',
+             ensemble_type='basic ensemble', ensemble_split=.2,
+             search_type='default', model_type_param_ind=0,
+             scaler_param_ind='default', sampler_param_ind='default',
              feat_selector_param_ind='default', class_weight='default',
              n_jobs='default', n_iter='default', data_to_use='default',
              compute_train_score='default', random_state='default',
@@ -636,7 +665,8 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
 
     problem_type :
     metric :
-    data_scaler :
+    scaler :
+    scaler_scope :
     sampler :
     feat_selector :
     n_splits :
@@ -693,7 +723,7 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
 
         (default = 0)
 
-    data_scaler_param_ind :
+    scaler_param_ind :
     sampler_param_ind :
     feat_selector_param_ind :
     class_weight :
@@ -786,11 +816,11 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
 
 
 def Test(self, model_type, problem_type='default', train_subjects=None,
-         test_subjects=None, metric='default', data_scaler='default',
-         sampler='default', feat_selector='default', int_cv='default',
-         ensemble_type='basic ensemble', ensemble_split=.2,
+         test_subjects=None, metric='default', scaler='default',
+         scaler_scope='default', sampler='default', feat_selector='default',
+         int_cv='default', ensemble_type='basic ensemble', ensemble_split=.2,
          search_type='default', model_type_param_ind=0,
-         data_scaler_param_ind='default', sampler_param_ind='default',
+         scaler_param_ind='default', sampler_param_ind='default',
          feat_selector_param_ind='default', class_weight='default',
          n_jobs='default', n_iter='default', data_to_use='default',
          compute_train_score='default', random_state='default',
@@ -820,7 +850,8 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
         (default = None)
 
     metric :
-    data_scaler :
+    scaler :
+    scaler_scope :
     sampler :
     feat_selector :
     int_cv :
@@ -828,7 +859,7 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
     ensemble_split :
     search_type :
     model_type_param_ind :
-    data_scaler_param_ind :
+    scaler_param_ind :
     sampler_param_ind :
     feat_selector_param_ind :
     class_weight :
@@ -1000,10 +1031,11 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
 
     self._print('metric =', ML_params['metric'])
 
-    self._print('data_scaler =', ML_params['data_scaler'])
-    if ML_params['data_scaler'] is not None:
-        self._print('data_scaler_param_ind =',
-                    ML_params['data_scaler_param_ind'])
+    self._print('scaler =', ML_params['scaler'])
+    if ML_params['scaler'] is not None:
+        self._print('scaler_scope =', ML_params['scaler_scope'])
+        self._print('scaler_param_ind =',
+                    ML_params['scaler_param_ind'])
 
     self._print('sampler =', ML_params['sampler'])
     if ML_params['sampler'] is not None:

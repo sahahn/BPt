@@ -26,7 +26,7 @@ from ABCD_ML.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
 from ABCD_ML.Samplers import get_sampler_and_params
 from ABCD_ML.Feature_Selectors import get_feat_selector_and_params
 from ABCD_ML.Metrics import get_metric
-from ABCD_ML.Scalers import get_data_scaler_and_params
+from ABCD_ML.Scalers import get_scaler_and_params
 from ABCD_ML.Ensembles import get_ensemble_and_params
 
 
@@ -55,12 +55,15 @@ class Model():
             (See the docstring for ABCD_ML.Set_Default_ML_Params for a more
             detailed description of all parameters contained within ML_params)
 
-            - metrics : str or list,
+            - metrics : str or list
                 Metric / scorer str indicator, or list of. If list, the
                 metric in the first index will be used during model selection.
-            - data_scalers : str, list or None
+            - scalers : str, list or None
                 str indicator (or list of) for what type of data scaling
                 to use if any. If list, data will scaled in list order.
+            - scaler_scopes : str, list or None
+                The scope of each scaler passed, determining which columns
+                that scaler should act on.
             - feat_selectors : str, list or None
                 str indicator (or list of) for what type of feat selector(s)
                 to use if any. If list, selectors will be applied in that
@@ -76,8 +79,8 @@ class Model():
                 / parameter selection
             - search_type : {'random', 'grid', None}
                 The type of parameter search to conduct if any.
-            - data_scaler_param_ind : int, str or list of
-                The index or str name of the param index for `data_scaler`
+            - scaler_param_ind : int, str or list of
+                The index or str name of the param index for `scaler`
             - feat_selector_param_ind : int, str or list of
                 The index or str name of the param index for `feat_selector`
             - class_weight : str or None
@@ -166,8 +169,8 @@ class Model():
 
         Notes
         ----------
-        The Model class processes model_type, metric and data_scaler,
-        as model_types, metrics and data_scalers (the plural...).
+        The Model class processes model_type, metric and scaler,
+        as model_types, metrics and scalers (the plural...).
         This design decision was made to support both single str indicator
         input for any of these options, or a list of str indicators.
         '''
@@ -186,7 +189,8 @@ class Model():
 
         # Un-pack ML_params
         self.metrics = conv_to_list(ML_params['metric'])
-        self.data_scalers = conv_to_list(ML_params['data_scaler'])
+        self.scalers = conv_to_list(ML_params['scaler'])
+        self.scaler_scopes = conv_to_list(ML_params['scaler_scope'])
         self.samplers = conv_to_list(ML_params['sampler'])
         self.feat_selectors = conv_to_list(ML_params['feat_selector'])
         self.n_splits = ML_params['n_splits']
@@ -195,7 +199,6 @@ class Model():
         self.class_weight = ML_params['class_weight']
         self.n_jobs = ML_params['n_jobs']
         self.n_iter = ML_params['n_iter']
-        self.data_to_use = ML_params['data_to_use']
         self.compute_train_score = ML_params['compute_train_score']
         self.random_state = ML_params['random_state']
         self.calc_base_feature_importances =\
@@ -209,8 +212,8 @@ class Model():
 
         self.model_type_param_inds =\
             conv_to_list(ML_params['model_type_param_ind'])
-        self.data_scaler_param_inds =\
-            conv_to_list(ML_params['data_scaler_param_ind'])
+        self.scaler_param_inds =\
+            conv_to_list(ML_params['scaler_param_ind'])
         self.sampler_param_inds =\
             conv_to_list(ML_params['sampler_param_ind'])
         self.feat_selector_param_inds =\
@@ -222,16 +225,15 @@ class Model():
         # Default params just sets (sub)problem type for now
         self._set_default_params()
 
-        # Set all_keys then data and cat inds
-        self._set_all_keys()
-        self._set_inds()
+        # Set all_keys based on data_to_use
+        self._set_all_keys(ML_params['data_to_use'])
 
         # Process inputs
         self._check_all_for_user_passed()
         self._process_model_types()
         self._process_feat_selectors()
         self._process_metrics()
-        self._process_data_scalers()
+        self._process_scalers()
         self._process_samplers()
         self._process_ensemble_types()
 
@@ -245,28 +247,25 @@ class Model():
         self.linear_flag = False
         self.tree_flag = False
 
-    def _set_all_keys(self):
+    def _set_all_keys(self, data_to_use):
 
         if isinstance(self.targets_key, str):
             t_key = [self.targets_key]
         else:
             t_key = self.targets_key
 
-        if self.data_to_use == 'data':
+        if data_to_use == 'data' or data_to_use == 'd':
             self.all_keys = self.data_keys + t_key
-        elif self.data_to_use == 'covars':
+        elif data_to_use == 'covars' or data_to_use == 'c':
             self.all_keys = self.covars_keys + t_key
         else:
             self.all_keys =\
                 self.data_keys + self.covars_keys + t_key
 
-    def _set_inds(self):
+    def _get_inds_from_keys(self, keys):
 
-        self.data_inds = [self.all_keys.index(k) for k in self.data_keys
-                          if k in self.all_keys]
-
-        self.cat_inds = [self.all_keys.index(k) for k in self.cat_keys
-                         if k in self.all_keys]
+        inds = [self.all_keys.index(k) for k in keys if k in self.all_keys]
+        return inds
 
     def _check_all_for_user_passed(self):
         '''If not str passed passed for various str indicators,
@@ -280,8 +279,8 @@ class Model():
         self.feat_selectors, cnt =\
             self._check_for_user_passed(self.feat_selectors, cnt)
 
-        self.data_scalers, cnt =\
-            self._check_for_user_passed(self.data_scalers, cnt)
+        self.scalers, cnt =\
+            self._check_for_user_passed(self.scalers, cnt)
 
         self.samplers, cnt =\
             self._check_for_user_passed(self.samplers, cnt)
@@ -355,44 +354,91 @@ class Model():
         # Define the metric to be used in model selection
         self.metric = self.metrics[0]
 
-    def _process_data_scalers(self):
-        '''Processes self.data_scaler to be a list of
-        (name, scaler) tuples, and then creates col_data_scalers
+    def _process_scalers(self):
+        '''Processes self.scaler to be a list of
+        (name, scaler) tuples, and then creates col_scalers
         from that.'''
 
-        if self.data_scalers is not None:
+        if self.scalers is not None:
 
             # Get converted scaler str and update extra params
-            conv_data_scaler_strs = proc_input(self.data_scalers)
-            self._update_extra_params(self.data_scalers, conv_data_scaler_strs)
+            conv_scaler_strs = proc_input(self.scalers)
+            self._update_extra_params(self.scalers, conv_scaler_strs)
 
-            # Get the data_scalers tuple, and data_scaler_params grid / distr
-            data_scalers, data_scaler_params =\
-                self._get_objs_and_params(get_data_scaler_and_params,
-                                          conv_data_scaler_strs,
-                                          self.data_scaler_param_inds)
+            # Get the scalers tuple, and scaler_params grid / distr
+            scalers, scaler_params =\
+                self._get_objs_and_params(get_scaler_and_params,
+                                          conv_scaler_strs,
+                                          self.scaler_param_inds)
 
-            # Create a list of tuples (just like self.data_scalers), but
+            if len(self.scaler_scopes) > len(scalers):
+                self._print('Warning! More scaler scopes passed than scalers')
+                self._print('Extra have been truncated.')
+                self.scaler_scopes = self.scaler_scopes[:len(scalers)]
+
+            while len(scalers) != len(self.scaler_scopes):
+                self.scaler_scopes.append(self.scaler_scopes[0])
+
+            # Create a list of tuples (just like self.scalers), but
             # with column versions of the scalers.
-            self.col_data_scalers =\
-                [('col_' + name, ColumnTransformer([(name, scaler,
-                                                    self.data_inds)],
-                 remainder='passthrough', sparse_threshold=0))
-                 for name, scaler in data_scalers]
+            self.col_scalers = []
+            for i in range(len(scalers)):
 
-            # Create col_data_scaler_params from data_scaler_params
-            self.col_data_scaler_params = {}
+                name, scaler = scaler[i][0], scaler[i][1]
 
-            for key in data_scaler_params:
+                scope = self.scaler_scopes[i]
+                inds = self._get_inds_from_scope(scope)
+
+                col_scaler =\
+                    ('col_' + name, ColumnTransformer([(name, scaler, inds)],
+                     remainder='passthrough', sparse_threshold=0))
+
+                self.col_scalers.append(col_scaler)
+
+            # Create col_scaler_params from scaler_params
+            self.col_scaler_params = {}
+
+            for key in scaler_params:
                 name = key.split('__')[0]
                 new_name = 'col_' + name + '__' + key
 
-                self.col_data_scaler_params[new_name] =\
-                    data_scaler_params[key]
+                self.col_scaler_params[new_name] =\
+                    scaler_params[key]
 
         else:
-            self.col_data_scalers = []
-            self.col_data_scaler_params = {}
+            self.col_scalers = []
+            self.col_scaler_params = {}
+
+    def _get_inds_from_scope(self, scope):
+
+        if isinstance(scope, str):
+
+            # Lower-case first char only
+            scope = scope.lower()[0]
+
+            if scope == 'a':
+                keys = [k for k in self.all_keys if k not in self.cat_keys]
+
+            elif scope == 'd':
+                keys = self.data_keys
+
+            elif scope == 'c':
+                keys = [k for k in self.all_keys if
+                        k not in self.cat_keys and
+                        k not in self.data_keys]
+
+            else:
+                self._print('Warning! Passed scaler scope of:', scope,
+                            'is invalid!')
+                self._print('Setting scope to data only by default.')
+                keys = self.data_keys
+
+        # If not str then assume list / array like containing col names / keys
+        else:
+            keys = scope
+
+        inds = self._get_inds_from_keys(keys)
+        return inds
 
     def _process_samplers(self):
         '''Class function to convert input sampler strs to
@@ -415,9 +461,10 @@ class Model():
                                         self.random_state)
 
             # Replace categorical feats
+            cat_inds = self._get_inds_from_keys(self.cat_keys)
             self.samplers =\
                 self._check_and_replace(self.samplers, 'categorical_features',
-                                        self.cat_inds)
+                                        cat_inds)
 
             # N jobs if search type is None
             if self.search_type is None:
@@ -497,7 +544,7 @@ class Model():
 
     def _update_extra_params(self, orig_strs, conv_strs):
         '''Helper method to update class extra params in the case
-        where model_types or data_scaler str indicators change,
+        where model_types or scaler str indicators change,
         and they were refered to in extra params as the original name.
 
         Parameters
@@ -516,15 +563,20 @@ class Model():
                     self.extra_params[orig_strs[i]]
 
     def _get_objs_and_params(self, get_func, names, param_inds):
-        '''Helper function to grab data_scaler / feat_selectors and
+        '''Helper function to grab scaler / feat_selectors and
         their relevant parameter grids'''
 
-        # Fill param inds if necc.
-        for i in range(len(names) - len(param_inds)):
+        # Check + fill length of passed params + names
+        if len(param_inds) > len(names):
+            self._print('Warning! More params passed than objs')
+            self._print('Extra have been truncated.')
+            param_inds = param_inds[:len(names)]
+
+        while len(names) != len(param_inds):
             param_inds.append(0)
 
+        # Make the object + params based on passed settings
         objs_and_params = []
-
         for name, ind in zip(names, param_inds):
             if 'user passed' in name:
 
@@ -965,7 +1017,7 @@ class Model():
         # Merge the different params / grids of params
         # into one dict.
         all_params = {}
-        all_params.update(self.col_data_scaler_params)
+        all_params.update(self.col_scaler_params)
         all_params.update(self.sampler_params)
         all_params.update(self.feat_selector_params)
         all_params.update(model_type_params)
@@ -1025,7 +1077,7 @@ class Model():
 
     def _make_model_pipeline(self, model, model_type):
         '''Provided a model & model type (model str indicator),
-        return a sklearn pipeline with proceeding self.col_data_scalers,
+        return a sklearn pipeline with proceeding self.col_scalers,
         and then self.samplers, then self.feat_selectors
         (which should all just be empty list if None) and then the model,
         w/ model_type as its unique name.
@@ -1047,7 +1099,7 @@ class Model():
             scalers, and then the passed in model.
         '''
 
-        steps = self.col_data_scalers + self.samplers + self.feat_selectors \
+        steps = self.col_scalers + self.samplers + self.feat_selectors \
             + [(model_type, model)]
 
         model_pipeline = Pipeline(steps)
@@ -1226,7 +1278,7 @@ class Model():
 
     def _proc_X_test(self, test_data):
 
-        scalers = self._get_objs_from_pipeline(self.col_data_scalers)
+        scalers = self._get_objs_from_pipeline(self.col_scalers)
         feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 
         # Grab the test data, X as df + copy
@@ -1251,7 +1303,7 @@ class Model():
 
     def _proc_X_train(self, train_data):
 
-        scalers = self._get_objs_from_pipeline(self.col_data_scalers)
+        scalers = self._get_objs_from_pipeline(self.col_scalers)
         samplers = self._get_objs_from_pipeline(self.samplers)
         feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 

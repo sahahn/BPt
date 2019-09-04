@@ -16,55 +16,53 @@ random state = None
 ABCD_ML object initialized
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/ABCD_Release_ Notes_Data_Release_ 2.0/22. ABCD_Release_2.0_mapping_r.csv assumed to be dataset type: explorer
 Loaded map file
-Total excluded subjects:  1137
-Removed excluded subjects from loaded dfs
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/MRI/ABCD sMRI Part 1.csv assumed to be dataset type: explorer
 dropped ['abcd_smrip101_id', 'dataset_id', 'smri_visitid'] columns by default  due to dataset type
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/MRI/ABCD sMRI Part 2.csv assumed to be dataset type: explorer
 dropped ['abcd_smrip201_id', 'dataset_id'] columns by default  due to dataset type
 Dropped 0 columns, per drop_keys argument
 Dropped 10 cols for all missing values
-Dropped 1084 rows for missing values
+Dropped 1233 rows for missing values
 Dropped rows with missing data
 Filtered data for outliers with value:  0.01
 Winsorized data with value:  0.001
-loaded shape:  (155, 1186)
 
-The following columns have a questionable number of unique values: 
-smri_vol_subcortaseg_wmhypointensitieslh unique vals: 1
-smri_vol_subcortaseg_wmhypointensitiesrh unique vals: 1
+The following columns were dropped due to being under the passed unique_val_drop_thresh of:  2
+Dropped smri_vol_subcortaseg_wmhypointensitieslh unique vals: 1
+Dropped smri_vol_subcortaseg_wmhypointensitiesrh unique vals: 1
 
+loaded shape:  (169, 1184)
 
-Total valid overlapping subjects = 155
+Total valid overlapping subjects = 169
 
 Loading targets!
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Mental Health/ABCD Parent Demographics Survey.csv assumed to be dataset type: explorer
 More than two unique score values found, filtered all but [1. 2.]
-Final shape:  (10737, 1)
+Final shape:  (11866, 1)
 
-Total valid overlapping subjects = 155
+Total valid overlapping subjects = 169
 
 Show Target distribution:
                Original Value  Count  Frequency
 Internal Name                                  
-0                         1.0     73   0.470968
-1                         2.0     82   0.529032
+0                         1.0     80   0.473373
+1                         2.0     89   0.526627
 
 Loading covariates!
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Mental Health/ABCD Parent Demographics Survey.csv assumed to be dataset type: explorer
 load: demo_ed_v2
 
-Total valid overlapping subjects = 155
+Total valid overlapping subjects = 169
 
 Reading strat/stratification values!
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Other Non-Imaging/ABCD ACS Post Stratification Weights.csv assumed to be dataset type: explorer
 
-Total valid overlapping subjects = 155
+Total valid overlapping subjects = 169
 
 Removing non overlapping subjects
-CV defined with group preserving behavior, over 154 unique values.
-Final data (w/ target) for modeling loaded shape: (155, 1188)
-Performed train/test split, train size: 116 test size:  39
+CV defined with  group preserving  over 168 unique values.
+Final data (w/ target) for modeling loaded shape: (169, 1186)
+Performed train/test split, train size: 127 test size:  42
 No default sampler passed, set to None
 No default feat selector passed, set to None
 No default search type passed, set to None
@@ -82,46 +80,41 @@ Setting default ML verbosity settings!
 Note, if the following values are not desired, call self.Set_ML_Verbosity()
 
 Running Evaluate with:
-model_type = svm
 problem_type = binary
+model_type = rf
+model_type_param_ind = 0
 metric = ['macro roc auc', 'f1', 'accuracy']
-data_scaler = standard
-sampler = None
-feat_selector = univariate selection
+scaler = standard
+scaler_param_ind = 0
+sampler = smote
+sampler_param_ind = 0
+feat_selector = None
 n_splits = 2
 n_repeats = 1
-int_cv = 3
-ensemble_type = basic ensemble
-ensemble_split = 0.2
 search_type = None
-model_type_param_ind = 0
-data_scaler_param_ind = 0
-sampler_param_ind = 0
-feat_selector_param_ind = 0
 class_weight = balanced
 n_jobs = 8
-n_iter = 8
 data_to_use = all
 compute_train_score = False
 random_state = 1
 calc_base_feature_importances = True
 calc_shap_feature_importances = True
-extra_params = {'univariate selection': {'percentile': 1}}
+extra_params = {}
 
-Saving scores within self.all_scores with name: 0
+Saving scores and settings with unique name: rf
 
 
 Validation Scores
 _________________
 Metric:  macro roc auc
-Mean Validation score:  0.6175963488843814
-Std in Validation score:  0.011713995943204936
+Mean Validation score:  0.6369450898862663
+Std in Validation score:  0.0012902042313807094
 
 Metric:  f1
-Mean Validation score:  0.5686274509803922
-Std in Validation score:  0.09803921568627452
+Mean Validation score:  0.6741787624140566
+Std in Validation score:  0.027119938884644812
 
 Metric:  accuracy
-Mean Validation score:  0.5869759143621767
-Std in Validation score:  0.04460303300624441
+Mean Validation score:  0.6299603174603174
+Std in Validation score:  0.004960317460317443
 

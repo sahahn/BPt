@@ -127,9 +127,9 @@ Show_Metrics
 ==============
 .. automethod:: ABCD_ML.Show_Metrics
 
-Show_Data_Scalers
+Show_Scalers
 =================
-.. automethod:: ABCD_ML.Show_Data_Scalers
+.. automethod:: ABCD_ML.Show_Scalers
 
 Show_Samplers
 =============

@@ -35,14 +35,13 @@ def get_scaler_objects():
     return objs
 
 
-def get_data_scaler_and_params(data_scaler_str, extra_params, param_ind,
-                               search_type):
+def get_scaler_and_params(scaler_str, extra_params, param_ind, search_type):
     '''Returns a scaler based on proced str indicator input,
 
     Parameters
     ----------
-    data_scaler_str : str
-        `data_scaler_str` refers to the type of scaling to apply
+    scaler_str : str
+        `scaler_str` refers to the type of scaling to apply
         to the saved data during model evaluation.
 
     extra_params : dict
@@ -64,32 +63,23 @@ def get_data_scaler_and_params(data_scaler_str, extra_params, param_ind,
         The params for this scaler
     '''
 
-    data_scaler, extra_data_scaler_params, data_scaler_params =\
-        get_obj_and_params(data_scaler_str, SCALERS, extra_params, param_ind,
+    scaler, extra_scaler_params, scaler_params =\
+        get_obj_and_params(scaler_str, SCALERS, extra_params, param_ind,
                            search_type)
 
-    return data_scaler(**extra_data_scaler_params), data_scaler_params
+    return scaler(**extra_scaler_params), scaler_params
 
 
-def Show_Scalers(self, data_scaler=None, show_param_ind_options=False,
+def Show_Scalers(self, scaler=None, show_param_ind_options=False,
                  show_scaler_object=False,
                  show_all_possible_params=False):
-    '''Just calls Show_Data_Scalers'''
-
-    self.Show_Data_Scalers(data_scaler, show_param_ind_options,
-                           show_scaler_object, show_all_possible_params)
-
-
-def Show_Data_Scalers(self, data_scaler=None, show_param_ind_options=False,
-                      show_scaler_object=False,
-                      show_all_possible_params=False):
     '''Print out the avaliable data scalers.
 
     Parameters
     ----------
-    data_scaler : str or list, optional
+    scaler : str or list, optional
         Provide a str or list of strs, where
-        each str is the exact data_scaler str indicator
+        each str is the exact scaler str indicator
         in order to show information for only that (or those)
         data scalers
 
@@ -116,7 +106,7 @@ def Show_Data_Scalers(self, data_scaler=None, show_param_ind_options=False,
     print('https://scikit-learn.org/stable/modules/preprocessing.html')
     print('For more detailed information on different scalers',
           '/ preprocessing.')
-    print('Note Scalers / Data_Scalers is used somewhat loosely.')
+    print('Note Scalers is used somewhat loosely.')
     print('They describe any transformation on the data that does not')
     print('change the number of columns or data points, and that do')
     print('not require access to the target (y) variable.')
@@ -127,10 +117,10 @@ def Show_Data_Scalers(self, data_scaler=None, show_param_ind_options=False,
     print('is listed as ("str indicator")')
     print()
 
-    if data_scaler is not None:
-        if isinstance(data_scaler, str):
-                data_scaler = [data_scaler]
-        for scaler_str in data_scaler:
+    if scaler is not None:
+        if isinstance(scaler, str):
+                scaler = [scaler]
+        for scaler_str in scaler:
                 show_scaler(scaler_str, show_param_ind_options,
                             show_scaler_object, show_all_possible_params)
         return

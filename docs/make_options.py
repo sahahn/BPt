@@ -230,12 +230,12 @@ lines.append('')
 lines = add_block(lines, problem_types)
 
 lines = main_category(lines, 'Scalers')
-lines.append('Different availible choices for the `data_scaler` parameter' +
+lines.append('Different availible choices for the `scaler` parameter' +
              ' are shown below.')
-lines.append('data_scaler is accepted by ' +
+lines.append('scaler is accepted by ' +
              ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
              ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `data_scaler` is represented' +
+lines.append('The exact str indicator for each `scaler` is represented' +
              ' by the sub-heading (within "")')
 lines.append('Additionally, a link to the original scalers documentation ' +
              'as well as the implemented parameter distributions are shown.')

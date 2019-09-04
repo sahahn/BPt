@@ -24,264 +24,121 @@ Dropped 9 columns, per drop_keys argument
 Dropped 6 cols for all missing values
 Dropped 1216 rows for missing values
 Dropped rows with missing data
-Winsorized data with value:  0.01
-loaded shape:  (10318, 1181)
-
-The following columns have a questionable number of unique values: 
-smri_thick_cort.desikan_bankssts.lh unique vals: 818
-smri_thick_cort.desikan_caudalanteriorcingulate.lh unique vals: 1071
-smri_thick_cort.desikan_caudalmiddlefrontal.lh unique vals: 756
-smri_thick_cort.desikan_cuneus.lh unique vals: 708
-smri_thick_cort.desikan_entorhinal.lh unique vals: 1460
-smri_thick_cort.desikan_fusiform.lh unique vals: 617
-smri_thick_cort.desikan_inferiorparietal.lh unique vals: 760
-smri_thick_cort.desikan_inferiortemporal.lh unique vals: 787
-smri_thick_cort.desikan_isthmuscingulate.lh unique vals: 856
-smri_thick_cort.desikan_lateraloccipital.lh unique vals: 715
-smri_thick_cort.desikan_lateralorbitofrontal.lh unique vals: 738
-smri_thick_cort.desikan_lingual.lh unique vals: 627
-smri_thick_cort.desikan_medialorbitofrontal.lh unique vals: 801
-smri_thick_cort.desikan_middletemporal.lh unique vals: 929
-smri_thick_cort.desikan_parahippocampal.lh unique vals: 1220
-smri_thick_cort.desikan_paracentral.lh unique vals: 764
-smri_thick_cort.desikan_parsopercularis.lh unique vals: 715
-smri_thick_cort.desikan_parsorbitalis.lh unique vals: 969
-smri_thick_cort.desikan_parstriangularis.lh unique vals: 774
-smri_thick_cort.desikan_pericalcarine.lh unique vals: 680
-smri_thick_cort.desikan_postcentral.lh unique vals: 741
-smri_thick_cort.desikan_posteriorcingulate.lh unique vals: 723
-smri_thick_cort.desikan_precentral.lh unique vals: 732
-smri_thick_cort.desikan_precuneus.lh unique vals: 639
-smri_thick_cort.desikan_rostralanteriorcingulate.lh unique vals: 985
-smri_thick_cort.desikan_rostralmiddlefrontal.lh unique vals: 765
-smri_thick_cort.desikan_superiorfrontal.lh unique vals: 759
-smri_thick_cort.desikan_superiorparietal.lh unique vals: 678
-smri_thick_cort.desikan_superiortemporal.lh unique vals: 834
-smri_thick_cort.desikan_supramarginal.lh unique vals: 843
-smri_thick_cort.desikan_frontalpole.lh unique vals: 1441
-smri_thick_cort.desikan_temporalpole.lh unique vals: 1294
-smri_thick_cort.desikan_transversetemporal.lh unique vals: 959
-smri_thick_cort.desikan_insula.lh unique vals: 675
-smri_thick_cort.desikan_bankssts.rh unique vals: 849
-smri_thick_cort.desikan_caudalanteriorcingulate.rh unique vals: 953
-smri_thick_cort.desikan_caudalmiddlefrontal.rh unique vals: 790
-smri_thick_cort.desikan_cuneus.rh unique vals: 747
-smri_thick_cort.desikan_entorhinal.rh unique vals: 1598
-smri_thick_cort.desikan_fusiform.rh unique vals: 649
-smri_thick_cort.desikan_inferiorparietal.rh unique vals: 751
-smri_thick_cort.desikan_inferiortemporal.rh unique vals: 775
-smri_thick_cort.desikan_isthmuscingulate.rh unique vals: 867
-smri_thick_cort.desikan_lateraloccipital.rh unique vals: 737
-smri_thick_cort.desikan_lateralorbitofrontal.rh unique vals: 747
-smri_thick_cort.desikan_lingual.rh unique vals: 646
-smri_thick_cort.desikan_medialorbitofrontal.rh unique vals: 818
-smri_thick_cort.desikan_middletemporal.rh unique vals: 905
-smri_thick_cort.desikan_parahippocampal.rh unique vals: 1090
-smri_thick_cort.desikan_paracentral.rh unique vals: 696
-smri_thick_cort.desikan_parsopercularis.rh unique vals: 746
-smri_thick_cort.desikan_parsorbitalis.rh unique vals: 972
-smri_thick_cort.desikan_parstriangularis.rh unique vals: 825
-smri_thick_cort.desikan_pericalcarine.rh unique vals: 690
-smri_thick_cort.desikan_postcentral.rh unique vals: 779
-smri_thick_cort.desikan_posteriorcingulate.rh unique vals: 656
-smri_thick_cort.desikan_precentral.rh unique vals: 719
-smri_thick_cort.desikan_precuneus.rh unique vals: 644
-smri_thick_cort.desikan_rostralanteriorcingulate.rh unique vals: 1000
-smri_thick_cort.desikan_rostralmiddlefrontal.rh unique vals: 771
-smri_thick_cort.desikan_superiorfrontal.rh unique vals: 728
-smri_thick_cort.desikan_superiorparietal.rh unique vals: 671
-smri_thick_cort.desikan_superiortemporal.rh unique vals: 773
-smri_thick_cort.desikan_supramarginal.rh unique vals: 851
-smri_thick_cort.desikan_frontalpole.rh unique vals: 1401
-smri_thick_cort.desikan_temporalpole.rh unique vals: 1370
-smri_thick_cort.desikan_transversetemporal.rh unique vals: 936
-smri_thick_cort.desikan_insula.rh unique vals: 714
-smri_area_cort.desikan_bankssts.lh unique vals: 914
-smri_area_cort.desikan_caudalanteriorcingulate.lh unique vals: 730
-smri_area_cort.desikan_caudalmiddlefrontal.lh unique vals: 1950
-smri_area_cort.desikan_cuneus.lh unique vals: 995
-smri_area_cort.desikan_entorhinal.lh unique vals: 400
-smri_area_cort.desikan_fusiform.lh unique vals: 1866
-smri_area_cort.desikan_isthmuscingulate.lh unique vals: 916
-smri_area_cort.desikan_lateralorbitofrontal.lh unique vals: 1362
-smri_area_cort.desikan_lingual.lh unique vals: 1813
-smri_area_cort.desikan_medialorbitofrontal.lh unique vals: 1131
-smri_area_cort.desikan_middletemporal.lh unique vals: 1976
-smri_area_cort.desikan_parahippocampal.lh unique vals: 582
-smri_area_cort.desikan_paracentral.lh unique vals: 975
-smri_area_cort.desikan_parsopercularis.lh unique vals: 1339
-smri_area_cort.desikan_parsorbitalis.lh unique vals: 418
-smri_area_cort.desikan_parstriangularis.lh unique vals: 984
-smri_area_cort.desikan_pericalcarine.lh unique vals: 1037
-smri_area_cort.desikan_posteriorcingulate.lh unique vals: 961
-smri_area_cort.desikan_rostralanteriorcingulate.lh unique vals: 742
-smri_area_cort.desikan_frontalpole.lh unique vals: 175
-smri_area_cort.desikan_temporalpole.lh unique vals: 292
-smri_area_cort.desikan_transversetemporal.lh unique vals: 363
-smri_area_cort.desikan_insula.lh unique vals: 1128
-smri_area_cort.desikan_bankssts.rh unique vals: 759
-smri_area_cort.desikan_caudalanteriorcingulate.rh unique vals: 779
-smri_area_cort.desikan_caudalmiddlefrontal.rh unique vals: 1987
-smri_area_cort.desikan_cuneus.rh unique vals: 1113
-smri_area_cort.desikan_entorhinal.rh unique vals: 411
-smri_area_cort.desikan_fusiform.rh unique vals: 1859
-smri_area_cort.desikan_inferiortemporal.rh unique vals: 2043
-smri_area_cort.desikan_isthmuscingulate.rh unique vals: 836
-smri_area_cort.desikan_lateralorbitofrontal.rh unique vals: 1449
-smri_area_cort.desikan_lingual.rh unique vals: 1754
-smri_area_cort.desikan_medialorbitofrontal.rh unique vals: 985
-smri_area_cort.desikan_parahippocampal.rh unique vals: 583
-smri_area_cort.desikan_paracentral.rh unique vals: 1094
-smri_area_cort.desikan_parsopercularis.rh unique vals: 1200
-smri_area_cort.desikan_parsorbitalis.rh unique vals: 511
-smri_area_cort.desikan_parstriangularis.rh unique vals: 1224
-smri_area_cort.desikan_pericalcarine.rh unique vals: 1085
-smri_area_cort.desikan_posteriorcingulate.rh unique vals: 1039
-smri_area_cort.desikan_rostralanteriorcingulate.rh unique vals: 639
-smri_area_cort.desikan_superiortemporal.rh unique vals: 1930
-smri_area_cort.desikan_frontalpole.rh unique vals: 239
-smri_area_cort.desikan_temporalpole.rh unique vals: 280
-smri_area_cort.desikan_transversetemporal.rh unique vals: 263
-smri_area_cort.desikan_insula.rh unique vals: 1167
-smri_vol_cort.desikan_entorhinal.lh unique vals: 1680
-smri_vol_cort.desikan_parahippocampal.lh unique vals: 1753
-smri_vol_cort.desikan_parsorbitalis.lh unique vals: 1667
-smri_vol_cort.desikan_pericalcarine.lh unique vals: 1852
-smri_vol_cort.desikan_frontalpole.lh unique vals: 882
-smri_vol_cort.desikan_temporalpole.lh unique vals: 1625
-smri_vol_cort.desikan_transversetemporal.lh unique vals: 1199
-smri_vol_cort.desikan_entorhinal.rh unique vals: 1689
-smri_vol_cort.desikan_parahippocampal.rh unique vals: 1649
-smri_vol_cort.desikan_parsorbitalis.rh unique vals: 1935
-smri_vol_cort.desikan_pericalcarine.rh unique vals: 1963
-smri_vol_cort.desikan_frontalpole.rh unique vals: 1106
-smri_vol_cort.desikan_temporalpole.rh unique vals: 1571
-smri_vol_cort.desikan_transversetemporal.rh unique vals: 968
-
-
-Total valid overlapping subjects = 10318
-
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_smrip101.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_smrip101_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'sex', 'smri_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_smrip201.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_smrip201_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Dropped 9 columns, per drop_keys argument
-Dropped 6 cols for all missing values
-Dropped 1216 rows for missing values
-Dropped rows with missing data
 Winsorized data with value:  0.001
-loaded shape:  (10318, 1181)
 
-The following columns have a questionable number of unique values: 
-smri_thick_cort.desikan_bankssts.lh unique vals: 952
+The following columns were dropped due to being under the passed unique_val_drop_thresh of:  1000
+Dropped smri_thick_cort.desikan_bankssts.lh unique vals: 952
+Dropped smri_thick_cort.desikan_caudalmiddlefrontal.lh unique vals: 884
+Dropped smri_thick_cort.desikan_cuneus.lh unique vals: 832
+Dropped smri_thick_cort.desikan_fusiform.lh unique vals: 749
+Dropped smri_thick_cort.desikan_inferiorparietal.lh unique vals: 885
+Dropped smri_thick_cort.desikan_inferiortemporal.lh unique vals: 924
+Dropped smri_thick_cort.desikan_isthmuscingulate.lh unique vals: 982
+Dropped smri_thick_cort.desikan_lateraloccipital.lh unique vals: 840
+Dropped smri_thick_cort.desikan_lateralorbitofrontal.lh unique vals: 866
+Dropped smri_thick_cort.desikan_lingual.lh unique vals: 748
+Dropped smri_thick_cort.desikan_medialorbitofrontal.lh unique vals: 931
+Dropped smri_thick_cort.desikan_paracentral.lh unique vals: 895
+Dropped smri_thick_cort.desikan_parsopercularis.lh unique vals: 852
+Dropped smri_thick_cort.desikan_parstriangularis.lh unique vals: 899
+Dropped smri_thick_cort.desikan_pericalcarine.lh unique vals: 803
+Dropped smri_thick_cort.desikan_postcentral.lh unique vals: 861
+Dropped smri_thick_cort.desikan_posteriorcingulate.lh unique vals: 849
+Dropped smri_thick_cort.desikan_precentral.lh unique vals: 853
+Dropped smri_thick_cort.desikan_precuneus.lh unique vals: 761
+Dropped smri_thick_cort.desikan_rostralmiddlefrontal.lh unique vals: 880
+Dropped smri_thick_cort.desikan_superiorfrontal.lh unique vals: 880
+Dropped smri_thick_cort.desikan_superiorparietal.lh unique vals: 795
+Dropped smri_thick_cort.desikan_superiortemporal.lh unique vals: 959
+Dropped smri_thick_cort.desikan_supramarginal.lh unique vals: 964
+Dropped smri_thick_cort.desikan_insula.lh unique vals: 807
+Dropped smri_thick_cort.desikan_bankssts.rh unique vals: 982
+Dropped smri_thick_cort.desikan_caudalmiddlefrontal.rh unique vals: 915
+Dropped smri_thick_cort.desikan_cuneus.rh unique vals: 879
+Dropped smri_thick_cort.desikan_fusiform.rh unique vals: 778
+Dropped smri_thick_cort.desikan_inferiorparietal.rh unique vals: 882
+Dropped smri_thick_cort.desikan_inferiortemporal.rh unique vals: 911
+Dropped smri_thick_cort.desikan_isthmuscingulate.rh unique vals: 996
+Dropped smri_thick_cort.desikan_lateraloccipital.rh unique vals: 857
+Dropped smri_thick_cort.desikan_lateralorbitofrontal.rh unique vals: 874
+Dropped smri_thick_cort.desikan_lingual.rh unique vals: 768
+Dropped smri_thick_cort.desikan_medialorbitofrontal.rh unique vals: 950
+Dropped smri_thick_cort.desikan_paracentral.rh unique vals: 823
+Dropped smri_thick_cort.desikan_parsopercularis.rh unique vals: 881
+Dropped smri_thick_cort.desikan_parstriangularis.rh unique vals: 960
+Dropped smri_thick_cort.desikan_pericalcarine.rh unique vals: 811
+Dropped smri_thick_cort.desikan_postcentral.rh unique vals: 905
+Dropped smri_thick_cort.desikan_posteriorcingulate.rh unique vals: 781
+Dropped smri_thick_cort.desikan_precentral.rh unique vals: 850
+Dropped smri_thick_cort.desikan_precuneus.rh unique vals: 772
+Dropped smri_thick_cort.desikan_rostralmiddlefrontal.rh unique vals: 914
+Dropped smri_thick_cort.desikan_superiorfrontal.rh unique vals: 864
+Dropped smri_thick_cort.desikan_superiorparietal.rh unique vals: 782
+Dropped smri_thick_cort.desikan_superiortemporal.rh unique vals: 908
+Dropped smri_thick_cort.desikan_supramarginal.rh unique vals: 973
+Dropped smri_thick_cort.desikan_insula.rh unique vals: 843
+Dropped smri_area_cort.desikan_caudalanteriorcingulate.lh unique vals: 848
+Dropped smri_area_cort.desikan_entorhinal.lh unique vals: 497
+Dropped smri_area_cort.desikan_parahippocampal.lh unique vals: 709
+Dropped smri_area_cort.desikan_parsorbitalis.lh unique vals: 519
+Dropped smri_area_cort.desikan_rostralanteriorcingulate.lh unique vals: 861
+Dropped smri_area_cort.desikan_frontalpole.lh unique vals: 226
+Dropped smri_area_cort.desikan_temporalpole.lh unique vals: 375
+Dropped smri_area_cort.desikan_transversetemporal.lh unique vals: 446
+Dropped smri_area_cort.desikan_bankssts.rh unique vals: 893
+Dropped smri_area_cort.desikan_caudalanteriorcingulate.rh unique vals: 901
+Dropped smri_area_cort.desikan_entorhinal.rh unique vals: 505
+Dropped smri_area_cort.desikan_isthmuscingulate.rh unique vals: 961
+Dropped smri_area_cort.desikan_parahippocampal.rh unique vals: 700
+Dropped smri_area_cort.desikan_parsorbitalis.rh unique vals: 611
+Dropped smri_area_cort.desikan_rostralanteriorcingulate.rh unique vals: 749
+Dropped smri_area_cort.desikan_frontalpole.rh unique vals: 308
+Dropped smri_area_cort.desikan_temporalpole.rh unique vals: 358
+Dropped smri_area_cort.desikan_transversetemporal.rh unique vals: 334
+
+
+The following columns have a questionable number of unique values (under the warn thresh of 2063.6 ): 
 smri_thick_cort.desikan_caudalanteriorcingulate.lh unique vals: 1215
-smri_thick_cort.desikan_caudalmiddlefrontal.lh unique vals: 884
-smri_thick_cort.desikan_cuneus.lh unique vals: 832
 smri_thick_cort.desikan_entorhinal.lh unique vals: 1611
-smri_thick_cort.desikan_fusiform.lh unique vals: 749
-smri_thick_cort.desikan_inferiorparietal.lh unique vals: 885
-smri_thick_cort.desikan_inferiortemporal.lh unique vals: 924
-smri_thick_cort.desikan_isthmuscingulate.lh unique vals: 982
-smri_thick_cort.desikan_lateraloccipital.lh unique vals: 840
-smri_thick_cort.desikan_lateralorbitofrontal.lh unique vals: 866
-smri_thick_cort.desikan_lingual.lh unique vals: 748
-smri_thick_cort.desikan_medialorbitofrontal.lh unique vals: 931
 smri_thick_cort.desikan_middletemporal.lh unique vals: 1062
 smri_thick_cort.desikan_parahippocampal.lh unique vals: 1349
-smri_thick_cort.desikan_paracentral.lh unique vals: 895
-smri_thick_cort.desikan_parsopercularis.lh unique vals: 852
 smri_thick_cort.desikan_parsorbitalis.lh unique vals: 1113
-smri_thick_cort.desikan_parstriangularis.lh unique vals: 899
-smri_thick_cort.desikan_pericalcarine.lh unique vals: 803
-smri_thick_cort.desikan_postcentral.lh unique vals: 861
-smri_thick_cort.desikan_posteriorcingulate.lh unique vals: 849
-smri_thick_cort.desikan_precentral.lh unique vals: 853
-smri_thick_cort.desikan_precuneus.lh unique vals: 761
 smri_thick_cort.desikan_rostralanteriorcingulate.lh unique vals: 1129
-smri_thick_cort.desikan_rostralmiddlefrontal.lh unique vals: 880
-smri_thick_cort.desikan_superiorfrontal.lh unique vals: 880
-smri_thick_cort.desikan_superiorparietal.lh unique vals: 795
-smri_thick_cort.desikan_superiortemporal.lh unique vals: 959
-smri_thick_cort.desikan_supramarginal.lh unique vals: 964
 smri_thick_cort.desikan_frontalpole.lh unique vals: 1592
 smri_thick_cort.desikan_temporalpole.lh unique vals: 1454
 smri_thick_cort.desikan_transversetemporal.lh unique vals: 1089
-smri_thick_cort.desikan_insula.lh unique vals: 807
-smri_thick_cort.desikan_bankssts.rh unique vals: 982
 smri_thick_cort.desikan_caudalanteriorcingulate.rh unique vals: 1089
-smri_thick_cort.desikan_caudalmiddlefrontal.rh unique vals: 915
-smri_thick_cort.desikan_cuneus.rh unique vals: 879
 smri_thick_cort.desikan_entorhinal.rh unique vals: 1747
-smri_thick_cort.desikan_fusiform.rh unique vals: 778
-smri_thick_cort.desikan_inferiorparietal.rh unique vals: 882
-smri_thick_cort.desikan_inferiortemporal.rh unique vals: 911
-smri_thick_cort.desikan_isthmuscingulate.rh unique vals: 996
-smri_thick_cort.desikan_lateraloccipital.rh unique vals: 857
-smri_thick_cort.desikan_lateralorbitofrontal.rh unique vals: 874
-smri_thick_cort.desikan_lingual.rh unique vals: 768
-smri_thick_cort.desikan_medialorbitofrontal.rh unique vals: 950
 smri_thick_cort.desikan_middletemporal.rh unique vals: 1035
 smri_thick_cort.desikan_parahippocampal.rh unique vals: 1228
-smri_thick_cort.desikan_paracentral.rh unique vals: 823
-smri_thick_cort.desikan_parsopercularis.rh unique vals: 881
 smri_thick_cort.desikan_parsorbitalis.rh unique vals: 1107
-smri_thick_cort.desikan_parstriangularis.rh unique vals: 960
-smri_thick_cort.desikan_pericalcarine.rh unique vals: 811
-smri_thick_cort.desikan_postcentral.rh unique vals: 905
-smri_thick_cort.desikan_posteriorcingulate.rh unique vals: 781
-smri_thick_cort.desikan_precentral.rh unique vals: 850
-smri_thick_cort.desikan_precuneus.rh unique vals: 772
 smri_thick_cort.desikan_rostralanteriorcingulate.rh unique vals: 1143
-smri_thick_cort.desikan_rostralmiddlefrontal.rh unique vals: 914
-smri_thick_cort.desikan_superiorfrontal.rh unique vals: 864
-smri_thick_cort.desikan_superiorparietal.rh unique vals: 782
-smri_thick_cort.desikan_superiortemporal.rh unique vals: 908
-smri_thick_cort.desikan_supramarginal.rh unique vals: 973
 smri_thick_cort.desikan_frontalpole.rh unique vals: 1561
 smri_thick_cort.desikan_temporalpole.rh unique vals: 1519
 smri_thick_cort.desikan_transversetemporal.rh unique vals: 1080
-smri_thick_cort.desikan_insula.rh unique vals: 843
 smri_area_cort.desikan_bankssts.lh unique vals: 1051
-smri_area_cort.desikan_caudalanteriorcingulate.lh unique vals: 848
 smri_area_cort.desikan_cuneus.lh unique vals: 1139
-smri_area_cort.desikan_entorhinal.lh unique vals: 497
 smri_area_cort.desikan_fusiform.lh unique vals: 2025
 smri_area_cort.desikan_isthmuscingulate.lh unique vals: 1044
 smri_area_cort.desikan_lateralorbitofrontal.lh unique vals: 1505
 smri_area_cort.desikan_lingual.lh unique vals: 1966
 smri_area_cort.desikan_medialorbitofrontal.lh unique vals: 1270
-smri_area_cort.desikan_parahippocampal.lh unique vals: 709
 smri_area_cort.desikan_paracentral.lh unique vals: 1108
 smri_area_cort.desikan_parsopercularis.lh unique vals: 1482
-smri_area_cort.desikan_parsorbitalis.lh unique vals: 519
 smri_area_cort.desikan_parstriangularis.lh unique vals: 1114
 smri_area_cort.desikan_pericalcarine.lh unique vals: 1180
 smri_area_cort.desikan_posteriorcingulate.lh unique vals: 1095
-smri_area_cort.desikan_rostralanteriorcingulate.lh unique vals: 861
-smri_area_cort.desikan_frontalpole.lh unique vals: 226
-smri_area_cort.desikan_temporalpole.lh unique vals: 375
-smri_area_cort.desikan_transversetemporal.lh unique vals: 446
 smri_area_cort.desikan_insula.lh unique vals: 1264
-smri_area_cort.desikan_bankssts.rh unique vals: 893
-smri_area_cort.desikan_caudalanteriorcingulate.rh unique vals: 901
 smri_area_cort.desikan_cuneus.rh unique vals: 1256
-smri_area_cort.desikan_entorhinal.rh unique vals: 505
 smri_area_cort.desikan_fusiform.rh unique vals: 2019
-smri_area_cort.desikan_isthmuscingulate.rh unique vals: 961
 smri_area_cort.desikan_lateralorbitofrontal.rh unique vals: 1597
 smri_area_cort.desikan_lingual.rh unique vals: 1908
 smri_area_cort.desikan_medialorbitofrontal.rh unique vals: 1122
-smri_area_cort.desikan_parahippocampal.rh unique vals: 700
 smri_area_cort.desikan_paracentral.rh unique vals: 1230
 smri_area_cort.desikan_parsopercularis.rh unique vals: 1332
-smri_area_cort.desikan_parsorbitalis.rh unique vals: 611
 smri_area_cort.desikan_parstriangularis.rh unique vals: 1359
 smri_area_cort.desikan_pericalcarine.rh unique vals: 1234
 smri_area_cort.desikan_posteriorcingulate.rh unique vals: 1179
-smri_area_cort.desikan_rostralanteriorcingulate.rh unique vals: 749
-smri_area_cort.desikan_frontalpole.rh unique vals: 308
-smri_area_cort.desikan_temporalpole.rh unique vals: 358
-smri_area_cort.desikan_transversetemporal.rh unique vals: 334
 smri_area_cort.desikan_insula.rh unique vals: 1309
 smri_vol_cort.desikan_entorhinal.lh unique vals: 1839
 smri_vol_cort.desikan_parahippocampal.lh unique vals: 1910
@@ -296,284 +153,133 @@ smri_vol_cort.desikan_frontalpole.rh unique vals: 1246
 smri_vol_cort.desikan_temporalpole.rh unique vals: 1724
 smri_vol_cort.desikan_transversetemporal.rh unique vals: 1099
 
-Merged with existing!
+loaded shape:  (10318, 1113)
 
 Total valid overlapping subjects = 10318
 
+Loading targets!
+Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Other Non-Imaging/ABCD Longitudinal Tracking.csv assumed to be dataset type: explorer
+Dropping ['site01' 'site02' 'site03' 'site05' 'site06' 'site07' 'site08' 'site09'
+ 'site11' 'site12' 'site14' 'site15' 'site17' 'site18' 'site19' 'site20'
+ 'site21' 'site22'] according to passed drop percent of 0.06
+Found 4 categories
+Final shape:  (3222, 4)
+
+Total valid overlapping subjects = 2880
+
+Show Target distribution:
+              Original Value  Count  Frequency
+Internal Name                                 
+targets_0             site04  676.0   0.234722
+targets_1             site10  625.0   0.217014
+targets_2             site13  648.0   0.225000
+targets_3             site16  931.0   0.323264
+
+Loading covariates!
 Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_smrip101.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_smrip101_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'sex', 'smri_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_smrip201.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_smrip201_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Dropped 9 columns, per drop_keys argument
-Dropped 6 cols for all missing values
-Dropped 1216 rows for missing values
-Dropped rows with missing data
-loaded shape:  (10318, 1181)
+load: sex
+load: interview_age
 
-The following columns have a questionable number of unique values: 
-smri_thick_cort.desikan_bankssts.lh unique vals: 970
-smri_thick_cort.desikan_caudalanteriorcingulate.lh unique vals: 1235
-smri_thick_cort.desikan_caudalmiddlefrontal.lh unique vals: 904
-smri_thick_cort.desikan_cuneus.lh unique vals: 852
-smri_thick_cort.desikan_entorhinal.lh unique vals: 1631
-smri_thick_cort.desikan_fusiform.lh unique vals: 765
-smri_thick_cort.desikan_inferiorparietal.lh unique vals: 905
-smri_thick_cort.desikan_inferiortemporal.lh unique vals: 943
-smri_thick_cort.desikan_isthmuscingulate.lh unique vals: 1002
-smri_thick_cort.desikan_lateraloccipital.lh unique vals: 859
-smri_thick_cort.desikan_lateralorbitofrontal.lh unique vals: 886
-smri_thick_cort.desikan_lingual.lh unique vals: 764
-smri_thick_cort.desikan_medialorbitofrontal.lh unique vals: 950
-smri_thick_cort.desikan_middletemporal.lh unique vals: 1080
-smri_thick_cort.desikan_parahippocampal.lh unique vals: 1369
-smri_thick_cort.desikan_paracentral.lh unique vals: 915
-smri_thick_cort.desikan_parsopercularis.lh unique vals: 872
-smri_thick_cort.desikan_parsorbitalis.lh unique vals: 1133
-smri_thick_cort.desikan_parstriangularis.lh unique vals: 918
-smri_thick_cort.desikan_pericalcarine.lh unique vals: 821
-smri_thick_cort.desikan_postcentral.lh unique vals: 879
-smri_thick_cort.desikan_posteriorcingulate.lh unique vals: 867
-smri_thick_cort.desikan_precentral.lh unique vals: 872
-smri_thick_cort.desikan_precuneus.lh unique vals: 781
-smri_thick_cort.desikan_rostralanteriorcingulate.lh unique vals: 1149
-smri_thick_cort.desikan_rostralmiddlefrontal.lh unique vals: 898
-smri_thick_cort.desikan_superiorfrontal.lh unique vals: 899
-smri_thick_cort.desikan_superiorparietal.lh unique vals: 813
-smri_thick_cort.desikan_superiortemporal.lh unique vals: 979
-smri_thick_cort.desikan_supramarginal.lh unique vals: 983
-smri_thick_cort.desikan_frontalpole.lh unique vals: 1612
-smri_thick_cort.desikan_temporalpole.lh unique vals: 1473
-smri_thick_cort.desikan_transversetemporal.lh unique vals: 1109
-smri_thick_cort.desikan_insula.lh unique vals: 826
-smri_thick_cort.desikan_bankssts.rh unique vals: 1002
-smri_thick_cort.desikan_caudalanteriorcingulate.rh unique vals: 1108
-smri_thick_cort.desikan_caudalmiddlefrontal.rh unique vals: 932
-smri_thick_cort.desikan_cuneus.rh unique vals: 898
-smri_thick_cort.desikan_entorhinal.rh unique vals: 1766
-smri_thick_cort.desikan_fusiform.rh unique vals: 797
-smri_thick_cort.desikan_inferiorparietal.rh unique vals: 900
-smri_thick_cort.desikan_inferiortemporal.rh unique vals: 931
-smri_thick_cort.desikan_isthmuscingulate.rh unique vals: 1015
-smri_thick_cort.desikan_lateraloccipital.rh unique vals: 877
-smri_thick_cort.desikan_lateralorbitofrontal.rh unique vals: 893
-smri_thick_cort.desikan_lingual.rh unique vals: 786
-smri_thick_cort.desikan_medialorbitofrontal.rh unique vals: 970
-smri_thick_cort.desikan_middletemporal.rh unique vals: 1054
-smri_thick_cort.desikan_parahippocampal.rh unique vals: 1247
-smri_thick_cort.desikan_paracentral.rh unique vals: 843
-smri_thick_cort.desikan_parsopercularis.rh unique vals: 901
-smri_thick_cort.desikan_parsorbitalis.rh unique vals: 1127
-smri_thick_cort.desikan_parstriangularis.rh unique vals: 979
-smri_thick_cort.desikan_pericalcarine.rh unique vals: 828
-smri_thick_cort.desikan_postcentral.rh unique vals: 924
-smri_thick_cort.desikan_posteriorcingulate.rh unique vals: 801
-smri_thick_cort.desikan_precentral.rh unique vals: 869
-smri_thick_cort.desikan_precuneus.rh unique vals: 792
-smri_thick_cort.desikan_rostralanteriorcingulate.rh unique vals: 1163
-smri_thick_cort.desikan_rostralmiddlefrontal.rh unique vals: 934
-smri_thick_cort.desikan_superiorfrontal.rh unique vals: 884
-smri_thick_cort.desikan_superiorparietal.rh unique vals: 800
-smri_thick_cort.desikan_superiortemporal.rh unique vals: 927
-smri_thick_cort.desikan_supramarginal.rh unique vals: 992
-smri_thick_cort.desikan_frontalpole.rh unique vals: 1581
-smri_thick_cort.desikan_temporalpole.rh unique vals: 1538
-smri_thick_cort.desikan_transversetemporal.rh unique vals: 1099
-smri_thick_cort.desikan_insula.rh unique vals: 861
-smri_area_cort.desikan_bankssts.lh unique vals: 1070
-smri_area_cort.desikan_caudalanteriorcingulate.lh unique vals: 867
-smri_area_cort.desikan_cuneus.lh unique vals: 1159
-smri_area_cort.desikan_entorhinal.lh unique vals: 515
-smri_area_cort.desikan_fusiform.lh unique vals: 2045
-smri_area_cort.desikan_isthmuscingulate.lh unique vals: 1062
-smri_area_cort.desikan_lateralorbitofrontal.lh unique vals: 1524
-smri_area_cort.desikan_lingual.lh unique vals: 1985
-smri_area_cort.desikan_medialorbitofrontal.lh unique vals: 1290
-smri_area_cort.desikan_parahippocampal.lh unique vals: 728
-smri_area_cort.desikan_paracentral.lh unique vals: 1125
-smri_area_cort.desikan_parsopercularis.lh unique vals: 1501
-smri_area_cort.desikan_parsorbitalis.lh unique vals: 536
-smri_area_cort.desikan_parstriangularis.lh unique vals: 1134
-smri_area_cort.desikan_pericalcarine.lh unique vals: 1200
-smri_area_cort.desikan_posteriorcingulate.lh unique vals: 1114
-smri_area_cort.desikan_rostralanteriorcingulate.lh unique vals: 880
-smri_area_cort.desikan_frontalpole.lh unique vals: 241
-smri_area_cort.desikan_temporalpole.lh unique vals: 393
-smri_area_cort.desikan_transversetemporal.lh unique vals: 466
-smri_area_cort.desikan_insula.lh unique vals: 1284
-smri_area_cort.desikan_bankssts.rh unique vals: 912
-smri_area_cort.desikan_caudalanteriorcingulate.rh unique vals: 918
-smri_area_cort.desikan_cuneus.rh unique vals: 1276
-smri_area_cort.desikan_entorhinal.rh unique vals: 523
-smri_area_cort.desikan_fusiform.rh unique vals: 2039
-smri_area_cort.desikan_isthmuscingulate.rh unique vals: 980
-smri_area_cort.desikan_lateralorbitofrontal.rh unique vals: 1617
-smri_area_cort.desikan_lingual.rh unique vals: 1928
-smri_area_cort.desikan_medialorbitofrontal.rh unique vals: 1142
-smri_area_cort.desikan_parahippocampal.rh unique vals: 719
-smri_area_cort.desikan_paracentral.rh unique vals: 1248
-smri_area_cort.desikan_parsopercularis.rh unique vals: 1351
-smri_area_cort.desikan_parsorbitalis.rh unique vals: 629
-smri_area_cort.desikan_parstriangularis.rh unique vals: 1378
-smri_area_cort.desikan_pericalcarine.rh unique vals: 1254
-smri_area_cort.desikan_posteriorcingulate.rh unique vals: 1198
-smri_area_cort.desikan_rostralanteriorcingulate.rh unique vals: 766
-smri_area_cort.desikan_frontalpole.rh unique vals: 325
-smri_area_cort.desikan_temporalpole.rh unique vals: 376
-smri_area_cort.desikan_transversetemporal.rh unique vals: 350
-smri_area_cort.desikan_insula.rh unique vals: 1328
-smri_vol_cort.desikan_entorhinal.lh unique vals: 1858
-smri_vol_cort.desikan_parahippocampal.lh unique vals: 1930
-smri_vol_cort.desikan_parsorbitalis.lh unique vals: 1839
-smri_vol_cort.desikan_pericalcarine.lh unique vals: 2024
-smri_vol_cort.desikan_frontalpole.lh unique vals: 1032
-smri_vol_cort.desikan_temporalpole.lh unique vals: 1794
-smri_vol_cort.desikan_transversetemporal.lh unique vals: 1363
-smri_vol_cort.desikan_entorhinal.rh unique vals: 1870
-smri_vol_cort.desikan_parahippocampal.rh unique vals: 1826
-smri_vol_cort.desikan_frontalpole.rh unique vals: 1265
-smri_vol_cort.desikan_temporalpole.rh unique vals: 1744
-smri_vol_cort.desikan_transversetemporal.rh unique vals: 1117
+Total valid overlapping subjects = 2880
 
-Merged with existing!
+Show sex distribution:
+              Original Value  Count  Frequency
+Internal Name                                 
+0                          F   1364   0.473611
+1                          M   1516   0.526389
 
-Total valid overlapping subjects = 10318
+Show interview_age distribution:
+       interview_age
+count    2880.000000
+mean       -0.119670
+std         1.028957
+min        -1.592931
+25%        -1.059707
+50%        -0.126567
+75%         0.806573
+max         1.739714
 
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_smrip101.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_smrip101_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'sex', 'smri_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_smrip201.txt assumed to be dataset type: basic
-dropped ['collection_id', 'abcd_smrip201_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
-Dropped 9 columns, per drop_keys argument
-Dropped 6 cols for all missing values
-Dropped 1216 rows for missing values
-Dropped rows with missing data
-Winsorized data with value:  0.001
-loaded shape:  (10318, 1181)
+Num. of unique vals: 26
 
-The following columns have a questionable number of unique values: 
-smri_thick_cort.desikan_bankssts.lh unique vals: 952
-smri_thick_cort.desikan_caudalanteriorcingulate.lh unique vals: 1215
-smri_thick_cort.desikan_caudalmiddlefrontal.lh unique vals: 884
-smri_thick_cort.desikan_cuneus.lh unique vals: 832
-smri_thick_cort.desikan_entorhinal.lh unique vals: 1611
-smri_thick_cort.desikan_fusiform.lh unique vals: 749
-smri_thick_cort.desikan_inferiorparietal.lh unique vals: 885
-smri_thick_cort.desikan_inferiortemporal.lh unique vals: 924
-smri_thick_cort.desikan_isthmuscingulate.lh unique vals: 982
-smri_thick_cort.desikan_lateraloccipital.lh unique vals: 840
-smri_thick_cort.desikan_lateralorbitofrontal.lh unique vals: 866
-smri_thick_cort.desikan_lingual.lh unique vals: 748
-smri_thick_cort.desikan_medialorbitofrontal.lh unique vals: 931
-smri_thick_cort.desikan_middletemporal.lh unique vals: 1062
-smri_thick_cort.desikan_parahippocampal.lh unique vals: 1349
-smri_thick_cort.desikan_paracentral.lh unique vals: 895
-smri_thick_cort.desikan_parsopercularis.lh unique vals: 852
-smri_thick_cort.desikan_parsorbitalis.lh unique vals: 1113
-smri_thick_cort.desikan_parstriangularis.lh unique vals: 899
-smri_thick_cort.desikan_pericalcarine.lh unique vals: 803
-smri_thick_cort.desikan_postcentral.lh unique vals: 861
-smri_thick_cort.desikan_posteriorcingulate.lh unique vals: 849
-smri_thick_cort.desikan_precentral.lh unique vals: 853
-smri_thick_cort.desikan_precuneus.lh unique vals: 761
-smri_thick_cort.desikan_rostralanteriorcingulate.lh unique vals: 1129
-smri_thick_cort.desikan_rostralmiddlefrontal.lh unique vals: 880
-smri_thick_cort.desikan_superiorfrontal.lh unique vals: 880
-smri_thick_cort.desikan_superiorparietal.lh unique vals: 795
-smri_thick_cort.desikan_superiortemporal.lh unique vals: 959
-smri_thick_cort.desikan_supramarginal.lh unique vals: 964
-smri_thick_cort.desikan_frontalpole.lh unique vals: 1592
-smri_thick_cort.desikan_temporalpole.lh unique vals: 1454
-smri_thick_cort.desikan_transversetemporal.lh unique vals: 1089
-smri_thick_cort.desikan_insula.lh unique vals: 807
-smri_thick_cort.desikan_bankssts.rh unique vals: 982
-smri_thick_cort.desikan_caudalanteriorcingulate.rh unique vals: 1089
-smri_thick_cort.desikan_caudalmiddlefrontal.rh unique vals: 915
-smri_thick_cort.desikan_cuneus.rh unique vals: 879
-smri_thick_cort.desikan_entorhinal.rh unique vals: 1747
-smri_thick_cort.desikan_fusiform.rh unique vals: 778
-smri_thick_cort.desikan_inferiorparietal.rh unique vals: 882
-smri_thick_cort.desikan_inferiortemporal.rh unique vals: 911
-smri_thick_cort.desikan_isthmuscingulate.rh unique vals: 996
-smri_thick_cort.desikan_lateraloccipital.rh unique vals: 857
-smri_thick_cort.desikan_lateralorbitofrontal.rh unique vals: 874
-smri_thick_cort.desikan_lingual.rh unique vals: 768
-smri_thick_cort.desikan_medialorbitofrontal.rh unique vals: 950
-smri_thick_cort.desikan_middletemporal.rh unique vals: 1035
-smri_thick_cort.desikan_parahippocampal.rh unique vals: 1228
-smri_thick_cort.desikan_paracentral.rh unique vals: 823
-smri_thick_cort.desikan_parsopercularis.rh unique vals: 881
-smri_thick_cort.desikan_parsorbitalis.rh unique vals: 1107
-smri_thick_cort.desikan_parstriangularis.rh unique vals: 960
-smri_thick_cort.desikan_pericalcarine.rh unique vals: 811
-smri_thick_cort.desikan_postcentral.rh unique vals: 905
-smri_thick_cort.desikan_posteriorcingulate.rh unique vals: 781
-smri_thick_cort.desikan_precentral.rh unique vals: 850
-smri_thick_cort.desikan_precuneus.rh unique vals: 772
-smri_thick_cort.desikan_rostralanteriorcingulate.rh unique vals: 1143
-smri_thick_cort.desikan_rostralmiddlefrontal.rh unique vals: 914
-smri_thick_cort.desikan_superiorfrontal.rh unique vals: 864
-smri_thick_cort.desikan_superiorparietal.rh unique vals: 782
-smri_thick_cort.desikan_superiortemporal.rh unique vals: 908
-smri_thick_cort.desikan_supramarginal.rh unique vals: 973
-smri_thick_cort.desikan_frontalpole.rh unique vals: 1561
-smri_thick_cort.desikan_temporalpole.rh unique vals: 1519
-smri_thick_cort.desikan_transversetemporal.rh unique vals: 1080
-smri_thick_cort.desikan_insula.rh unique vals: 843
-smri_area_cort.desikan_bankssts.lh unique vals: 1051
-smri_area_cort.desikan_caudalanteriorcingulate.lh unique vals: 848
-smri_area_cort.desikan_cuneus.lh unique vals: 1139
-smri_area_cort.desikan_entorhinal.lh unique vals: 497
-smri_area_cort.desikan_fusiform.lh unique vals: 2025
-smri_area_cort.desikan_isthmuscingulate.lh unique vals: 1044
-smri_area_cort.desikan_lateralorbitofrontal.lh unique vals: 1505
-smri_area_cort.desikan_lingual.lh unique vals: 1966
-smri_area_cort.desikan_medialorbitofrontal.lh unique vals: 1270
-smri_area_cort.desikan_parahippocampal.lh unique vals: 709
-smri_area_cort.desikan_paracentral.lh unique vals: 1108
-smri_area_cort.desikan_parsopercularis.lh unique vals: 1482
-smri_area_cort.desikan_parsorbitalis.lh unique vals: 519
-smri_area_cort.desikan_parstriangularis.lh unique vals: 1114
-smri_area_cort.desikan_pericalcarine.lh unique vals: 1180
-smri_area_cort.desikan_posteriorcingulate.lh unique vals: 1095
-smri_area_cort.desikan_rostralanteriorcingulate.lh unique vals: 861
-smri_area_cort.desikan_frontalpole.lh unique vals: 226
-smri_area_cort.desikan_temporalpole.lh unique vals: 375
-smri_area_cort.desikan_transversetemporal.lh unique vals: 446
-smri_area_cort.desikan_insula.lh unique vals: 1264
-smri_area_cort.desikan_bankssts.rh unique vals: 893
-smri_area_cort.desikan_caudalanteriorcingulate.rh unique vals: 901
-smri_area_cort.desikan_cuneus.rh unique vals: 1256
-smri_area_cort.desikan_entorhinal.rh unique vals: 505
-smri_area_cort.desikan_fusiform.rh unique vals: 2019
-smri_area_cort.desikan_isthmuscingulate.rh unique vals: 961
-smri_area_cort.desikan_lateralorbitofrontal.rh unique vals: 1597
-smri_area_cort.desikan_lingual.rh unique vals: 1908
-smri_area_cort.desikan_medialorbitofrontal.rh unique vals: 1122
-smri_area_cort.desikan_parahippocampal.rh unique vals: 700
-smri_area_cort.desikan_paracentral.rh unique vals: 1230
-smri_area_cort.desikan_parsopercularis.rh unique vals: 1332
-smri_area_cort.desikan_parsorbitalis.rh unique vals: 611
-smri_area_cort.desikan_parstriangularis.rh unique vals: 1359
-smri_area_cort.desikan_pericalcarine.rh unique vals: 1234
-smri_area_cort.desikan_posteriorcingulate.rh unique vals: 1179
-smri_area_cort.desikan_rostralanteriorcingulate.rh unique vals: 749
-smri_area_cort.desikan_frontalpole.rh unique vals: 308
-smri_area_cort.desikan_temporalpole.rh unique vals: 358
-smri_area_cort.desikan_transversetemporal.rh unique vals: 334
-smri_area_cort.desikan_insula.rh unique vals: 1309
-smri_vol_cort.desikan_entorhinal.lh unique vals: 1839
-smri_vol_cort.desikan_parahippocampal.lh unique vals: 1910
-smri_vol_cort.desikan_parsorbitalis.lh unique vals: 1820
-smri_vol_cort.desikan_pericalcarine.lh unique vals: 2005
-smri_vol_cort.desikan_frontalpole.lh unique vals: 1014
-smri_vol_cort.desikan_temporalpole.lh unique vals: 1775
-smri_vol_cort.desikan_transversetemporal.lh unique vals: 1343
-smri_vol_cort.desikan_entorhinal.rh unique vals: 1851
-smri_vol_cort.desikan_parahippocampal.rh unique vals: 1806
-smri_vol_cort.desikan_frontalpole.rh unique vals: 1246
-smri_vol_cort.desikan_temporalpole.rh unique vals: 1724
-smri_vol_cort.desikan_transversetemporal.rh unique vals: 1099
+CV defined with  stratifying behavior  over 4 unique values.
+  targets  Counts
+0  site04     743
+1  site10     740
+2  site13     728
+3  site16    1011
 
-Merged with existing!
+Final data (w/ target) for modeling loaded shape: (2880, 1119)
+Performed train/test split, train size: 2304 test size:  576
+No default sampler passed, set to None
+No default feat selector passed, set to None
+No default num internal CV splits passed, set to 3
+No default search type passed, set to None
+No default data scaler param ind passed, set to 0
+No default sampler param ind passed, set to 0
+No default feat selector param ind passed, set to 0
+No default class weight setting passed, set to None
+No default number of random search iters passed, set to 10
+No default data_to_use passed, set to all
+No default compute_train_score passed, set to False
+No default random state passed, using class random state value of 1
+No default calc_base_feature_importances passed, set to True
+No default calc_shap_feature_importances passed, set to False
+No default extra params passed, set to empty dict
+Default params set.
 
-Total valid overlapping subjects = 10318
+Setting default ML verbosity settings!
+Note, if the following values are not desired, call self.Set_ML_Verbosity()
+
+Running Evaluate with:
+problem_type = categorical
+model_type = knn classifier
+model_type_param_ind = 0
+metric = accuracy
+scaler = robust
+scaler_param_ind = 0
+sampler = None
+feat_selector = None
+n_splits = 3
+n_repeats = 1
+search_type = None
+class_weight = None
+n_jobs = 8
+data_to_use = all
+compute_train_score = False
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Saving scores and settings with unique name: knn classifier
+
+
+Validation Scores
+_________________
+Metric:  accuracy
+Mean Validation score:  0.74955353905052
+Std in Validation score:  0.005878562654960108
+
+Running Evaluate with:
+problem_type = categorical
+model_type = light gbm
+model_type_param_ind = 0
+metric = ['micro f1', 'by class roc auc']
+scaler = robust
+scaler_param_ind = 0
+sampler = None
+feat_selector = None
+n_splits = 3
+n_repeats = 1
+search_type = None
+class_weight = None
+n_jobs = 8
+data_to_use = all
+compute_train_score = False
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Saving scores and settings with unique name: light gbm
 

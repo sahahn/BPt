@@ -384,7 +384,7 @@ class Model():
             self.col_scalers = []
             for i in range(len(scalers)):
 
-                name, scaler = scaler[i][0], scaler[i][1]
+                name, scaler = scalers[i][0], scalers[i][1]
 
                 scope = self.scaler_scopes[i]
                 inds = self._get_inds_from_scope(scope)
@@ -432,6 +432,18 @@ class Model():
                             'is invalid!')
                 self._print('Setting scope to data only by default.')
                 keys = self.data_keys
+
+            # If scope was a or c, need to check to remove targets
+            if scope == 'a' or scope == 'c':
+
+                try:
+                    if isinstance(self.targets_key, list):
+                        for t_key in self.targets_key:
+                            keys.remove(t_key)
+                    else:
+                        keys.remove(self.targets_key)
+                except ValueError:
+                    pass
 
         # If not str then assume list / array like containing col names / keys
         else:

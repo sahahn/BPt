@@ -305,6 +305,7 @@ class ABCD_ML():
                                _load_set_of_subjects,
                                _process_subject_name,
                                _drop_na,
+                               _drop_from_filter,
                                _filter_by_eventname,
                                _drop_excluded,
                                _drop_included,

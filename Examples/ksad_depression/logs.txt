@@ -68,3 +68,146 @@ CV defined with  stratifying behavior  over 4 unique values.
 2      1.0   F     110
 3      1.0   M     135
 
+Final data (w/ target) for modeling loaded shape: (9609, 907)
+Performed train/test split, train size: 7687 test size:  1922
+No default scaler_scope passed, set to data
+No default sampler passed, set to None
+No default feat selector passed, set to None
+No default num CV splits passed, set to 3
+No default num CV repeats passed, set to 2
+No default num internal CV splits passed, set to 3
+No default search type passed, set to None
+No default data scaler param ind passed, set to 0
+No default sampler param ind passed, set to 0
+No default feat selector param ind passed, set to 0
+No default class weight setting passed, set to None
+No default data_to_use passed, set to all
+No default compute_train_score passed, set to False
+No default random state passed, using class random state value of 1
+No default calc_base_feature_importances passed, set to True
+No default calc_shap_feature_importances passed, set to False
+No default extra params passed, set to empty dict
+Default params set.
+
+Setting default ML verbosity settings!
+Note, if the following values are not desired, call self.Set_ML_Verbosity()
+
+Running Evaluate with:
+problem_type = binary
+model_type = rf
+model_type_param_ind = 0
+metric = ['macro roc auc', 'f1', 'precision', 'recall']
+scaler = standard
+scaler_scope = data
+scaler_param_ind = 0
+sampler = None
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+search_type = None
+class_weight = None
+n_jobs = 8
+data_to_use = all
+compute_train_score = False
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Saving scores and settings with unique name: rf
+
+
+Validation Scores
+_________________
+Metric:  macro roc auc
+Mean Validation score:  0.46954417562146833
+Macro Std in Validation score:  0.017228109628990657
+Micro Std in Validation score:  0.028222731348665417
+
+Metric:  f1
+Mean Validation score:  0.0
+Macro Std in Validation score:  0.0
+Micro Std in Validation score:  0.0
+
+Metric:  precision
+Mean Validation score:  0.0
+Macro Std in Validation score:  0.0
+Micro Std in Validation score:  0.0
+
+Metric:  recall
+Mean Validation score:  0.0
+Macro Std in Validation score:  0.0
+Micro Std in Validation score:  0.0
+
+Running Evaluate with:
+problem_type = binary
+model_type = random forest classifier
+model_type_param_ind = 0
+metric = ['macro roc auc', 'f1', 'precision', 'recall']
+scaler = standard
+scaler_scope = all
+scaler_param_ind = 0
+sampler = None
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+search_type = None
+class_weight = balanced
+n_jobs = 8
+data_to_use = all
+compute_train_score = False
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Saving scores and settings with unique name: random forest classifier
+
+
+Validation Scores
+_________________
+Metric:  macro roc auc
+Mean Validation score:  0.5276360770453683
+Macro Std in Validation score:  0.0018765564520469291
+Micro Std in Validation score:  0.020923260728868635
+
+Metric:  f1
+Mean Validation score:  0.0
+Macro Std in Validation score:  0.0
+Micro Std in Validation score:  0.0
+
+Metric:  precision
+Mean Validation score:  0.0
+Macro Std in Validation score:  0.0
+Micro Std in Validation score:  0.0
+
+Metric:  recall
+Mean Validation score:  0.0
+Macro Std in Validation score:  0.0
+Micro Std in Validation score:  0.0
+
+Running Evaluate with:
+problem_type = binary
+model_type = random forest classifier
+model_type_param_ind = 0
+metric = ['macro roc auc', 'f1', 'precision', 'recall']
+scaler = standard
+scaler_scope = data
+scaler_param_ind = 0
+sampler = random over sampler
+sampler_param_ind = 0
+feat_selector = None
+n_splits = 3
+n_repeats = 2
+search_type = None
+class_weight = None
+n_jobs = 8
+data_to_use = all
+compute_train_score = False
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Saving scores and settings with unique name: random over sampler
+

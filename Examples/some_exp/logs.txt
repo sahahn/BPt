@@ -23,98 +23,50 @@ dropped ['abcd_smrip201_id', 'dataset_id'] columns by default  due to dataset ty
 Dropped 0 columns, per drop_keys argument
 Dropped 10 cols for all missing values
 Dropped 1233 rows for missing values
-Dropped rows with missing data
-Filtered data for outliers with value:  0.01
+Dropped 9564 rows based on filter outlier percent: 0.01
 Winsorized data with value:  0.001
 
 The following columns were dropped due to being under the passed unique_val_drop_thresh of:  2
 Dropped smri_vol_subcortaseg_wmhypointensitieslh unique vals: 1
 Dropped smri_vol_subcortaseg_wmhypointensitiesrh unique vals: 1
 
-loaded shape:  (169, 1184)
+loaded shape:  (739, 1184)
 
-Total valid overlapping subjects = 169
+Total valid overlapping subjects = 739
 
 Loading targets!
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Mental Health/ABCD Parent Demographics Survey.csv assumed to be dataset type: explorer
+Dropped 0 cols for all missing values
+Dropped 6 rows for missing values
 More than two unique score values found, filtered all but [1. 2.]
 Final shape:  (11866, 1)
 
-Total valid overlapping subjects = 169
+Total valid overlapping subjects = 739
 
 Show Target distribution:
                Original Value  Count  Frequency
 Internal Name                                  
-0                         1.0     80   0.473373
-1                         2.0     89   0.526627
+0                         1.0    349    0.47226
+1                         2.0    390    0.52774
 
 Loading covariates!
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Mental Health/ABCD Parent Demographics Survey.csv assumed to be dataset type: explorer
+Dropped 0 cols for all missing values
+Dropped 3 rows for missing values
 load: demo_ed_v2
 
-Total valid overlapping subjects = 169
+Total valid overlapping subjects = 739
 
-Reading strat/stratification values!
-Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Other Non-Imaging/ABCD ACS Post Stratification Weights.csv assumed to be dataset type: explorer
+Show demo_ed_v2 distribution:
+       demo_ed_v2
+count  739.000000
+mean     4.196211
+std      0.736716
+min      2.000000
+25%      4.000000
+50%      4.000000
+75%      5.000000
+max      6.000000
 
-Total valid overlapping subjects = 169
-
-Removing non overlapping subjects
-CV defined with  group preserving  over 168 unique values.
-Final data (w/ target) for modeling loaded shape: (169, 1186)
-Performed train/test split, train size: 127 test size:  42
-No default sampler passed, set to None
-No default feat selector passed, set to None
-No default search type passed, set to None
-No default data scaler param ind passed, set to 0
-No default sampler param ind passed, set to 0
-No default feat selector param ind passed, set to 0
-No default data_to_use passed, set to all
-No default compute_train_score passed, set to False
-No default calc_base_feature_importances passed, set to True
-No default calc_shap_feature_importances passed, set to False
-No default extra params passed, set to empty dict
-Default params set.
-
-Setting default ML verbosity settings!
-Note, if the following values are not desired, call self.Set_ML_Verbosity()
-
-Running Evaluate with:
-problem_type = binary
-model_type = rf
-model_type_param_ind = 0
-metric = ['macro roc auc', 'f1', 'accuracy']
-scaler = standard
-scaler_param_ind = 0
-sampler = smote
-sampler_param_ind = 0
-feat_selector = None
-n_splits = 2
-n_repeats = 1
-search_type = None
-class_weight = balanced
-n_jobs = 8
-data_to_use = all
-compute_train_score = False
-random_state = 1
-calc_base_feature_importances = True
-calc_shap_feature_importances = True
-extra_params = {}
-
-Saving scores and settings with unique name: rf
-
-
-Validation Scores
-_________________
-Metric:  macro roc auc
-Mean Validation score:  0.6369450898862663
-Std in Validation score:  0.0012902042313807094
-
-Metric:  f1
-Mean Validation score:  0.6741787624140566
-Std in Validation score:  0.027119938884644812
-
-Metric:  accuracy
-Mean Validation score:  0.6299603174603174
-Std in Validation score:  0.004960317460317443
+Num. of unique vals: 5
 

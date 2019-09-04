@@ -246,8 +246,8 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
         data = data[data[key] > data[key].quantile(fop[0])]
         data = data[data[key] < data[key].quantile(fop[1])]
     else:
-        data.loc[data[key] < data[key].quantile(fop[0]), key] = np.nan
-        data.loc[data[key] > data[key].quantile(fop[1]), key] = np.nan
+        data.loc[data[key] < data[key].quantile(fop[0]), key] = 999
+        data.loc[data[key] > data[key].quantile(fop[1]), key] = 999
 
     _print('Min-Max Score (post outlier filtering):',
            np.nanmin(data[key]), np.nanmax(data[key]))

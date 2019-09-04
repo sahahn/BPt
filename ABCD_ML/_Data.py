@@ -229,19 +229,17 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
 
     # Drop any cols with all missing and rows with and missing data
     data = self._drop_na(data)
-    self._print('Dropped rows with missing data')
 
     data_keys = list(data)
 
     if filter_outlier_percent is not None:
+
         for key in data_keys:
             data = filter_float_by_outlier(data, key, filter_outlier_percent,
                                            in_place=False,
                                            _print=self._print_nothing)
 
-        data = data.dropna()  # To actually remove the outliers
-        self._print('Filtered data for outliers with value: ',
-                    filter_outlier_percent)
+        data = self._drop_from_filter(data, filter_outlier_percent)
 
     if winsorize_val is not None:
         if type(winsorize_val) != tuple:
@@ -460,8 +458,8 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
                 min_val, max_val = np.min(covars[key]), np.max(covars[key])
                 covars[key] = (covars[key] - min_val) / (max_val - min_val)
 
-    # Filter float by outlier just replaces with NaN, so actually remove here.
-    covars = covars.dropna()
+    # Filter float by outlier just replaces with 999, so actually remove here.
+    covars = self._drop_from_filter(covars, filter_float_outlier_percent)
 
     # If other data is already loaded,
     # merge this data with existing loaded data.
@@ -1089,14 +1087,14 @@ def _common_load(self, loc, dataset_type, col_name=None,
     data = self._proc_df(data)
 
     if col_name is not None:
-        data = data[[col_name]].dropna()
+        data = self._drop_na(data[[col_name]])
         return data
 
     if not isinstance(col_names, list):
         col_names = list([col_names])
 
     # Drop rows with NaN
-    data = data[col_names].dropna()
+    data = data = self._drop_na(data[col_names])
     return data, col_names
 
 
@@ -1308,6 +1306,19 @@ def _drop_na(self, data):
     missing_values = data.isna().any(axis=1)
     data = data.dropna()
     self._print('Dropped', sum(missing_values), 'rows for missing values')
+
+    return data
+
+
+def _drop_from_filter(self, data, filter_outlier_percent):
+
+    if filter_outlier_percent is not None:
+
+        to_drop = data[(data == 999).any(axis=1)].index
+        data = data.drop(to_drop)
+
+        self._print('Dropped', len(to_drop), 'rows based on filter outlier',
+                    'percent:', filter_outlier_percent)
 
     return data
 

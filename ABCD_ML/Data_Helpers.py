@@ -5,6 +5,7 @@ Various helper functions for loading and processing data for ABCD_ML.
 Specifically, these are non-class functions used in _Data.py and ABCD_ML.py.
 """
 import numpy as np
+import numpy.ma as ma
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from operator import add
@@ -283,7 +284,7 @@ def get_unique_combo(data, keys):
     return combo, label_encoder
 
 
-def drop_col_duplicates(data, corr_thresh):
+def drop_duplicate_cols(data, corr_thresh):
     '''Drop duplicates columns within data based on
     if two data columns are >= to a certain correlation threshold.
 
@@ -295,7 +296,8 @@ def drop_col_duplicates(data, corr_thresh):
     corr_thresh : float
         A value between 0 and 1, where if two columns within .data
         are correlated >= to `corr_thresh`, the second column is removed.
-        A value of 1 acts like dropping exact repeats.
+
+        A value of 1 will instead make a quicker direct =='s comparison.
 
     Returns
     ----------
@@ -309,14 +311,30 @@ def drop_col_duplicates(data, corr_thresh):
     dropped = []
 
     for col1 in data:
-        for col2 in data:
 
+        A = data[col1]
+        a = ma.masked_invalid(A)
+
+        for col2 in data:
             if col1 != col2 and col1 in list(data) and col2 in list(data):
 
-                corr = np.corrcoef(data[col1], data[col2])[0][1]
-                if corr >= corr_thresh:
-                    data = data.drop(col2, axis=1)
-                    dropped.append(col2)
+                B = data[col2]
+                b = ma.masked_invalid(B)
+
+                overlap = (~a.mask & ~b.mask)
+
+                if corr_thresh == 1:
+
+                    if (np.array(A[overlap]) == np.array(B[overlap])).all():
+                        data = data.drop(col2, axis=1)
+                        dropped.append(col2)
+
+                else:
+
+                    corr = np.corrcoef(A[overlap], B[overlap])[0][1]
+                    if corr >= corr_thresh:
+                        data = data.drop(col2, axis=1)
+                        dropped.append(col2)
 
     return data, dropped
 
@@ -331,3 +349,31 @@ def get_original_cat_names(names, encoder, original_key):
     original = encoder.inverse_transform(base)
 
     return original
+
+
+def substrs(x):
+    return {x[i:i+j] for i in range(len(x)) for j in range(len(x) - i + 1)}
+
+
+def find_substr(data):
+
+    s = substrs(data[0])
+
+    for val in data[1:]:
+        s.intersection_update(substrs(val))
+
+    return max(s, key=len)
+
+
+def get_top_substrs(keys):
+
+    found = []
+    top = find_substr(keys)
+
+    while len(top) > 1:
+        found.append(top)
+
+        keys = [k.replace(top, '') for k in keys]
+        top = find_substr(keys)
+
+    return found

@@ -18,7 +18,7 @@ class ABCD_ML():
                  verbose=True, notebook=True, subject_id='src_subject_id',
                  eventname='baseline_year_1_arm_1',
                  use_default_subject_ids=True,
-                 default_dataset_type='basic',
+                 default_dataset_type='basic', drop_nan=True,
                  default_na_values=['777', '999'],
                  original_targets_key='targets', low_memory_mode=False,
                  random_state=None):
@@ -114,6 +114,27 @@ class ABCD_ML():
 
             (default = 'basic')
 
+        drop_nan : bool, int, float or 'default', optional
+            This setting just sets the default value for drop_nan,
+            which is used when loading data and covars.
+
+            If set to True, then will drop any row within the loaded
+            data if there are any NaN! If False, the will not drop any
+            rows for missing values.
+
+            If an int or float, then this means some NaN entries
+            will potentially be preserved! Missing data imputation
+            will therefore be required later on!
+
+            If an int > 1, then will drop any row with more than drop_nan
+            NaN values. If a float, will determine the drop threshold as
+            a percentage of the possible values, where 1 would not drop any
+            rows as it would require the number of columns + 1 NaN, and .5
+            would require that more than half the column entries are NaN in
+            order to drop that row.
+
+            (default = True)
+
         default_na_values : list, optional
             Additional values to treat as NaN, by default ABCD specific
             values of '777' and '999' are treated as NaN,
@@ -178,6 +199,7 @@ class ABCD_ML():
         self.eventname = eventname
         self.use_default_subject_ids = use_default_subject_ids
         self.default_dataset_type = default_dataset_type
+        self.drop_nan = drop_nan
         self.default_na_values = default_na_values
         self.original_targets_key = original_targets_key
         self.low_memory_mode = low_memory_mode
@@ -307,6 +329,7 @@ class ABCD_ML():
                                _drop_na,
                                _drop_from_filter,
                                _filter_by_eventname,
+                               _show_nan_info,
                                _drop_excluded,
                                _drop_included,
                                _filter_excluded,
@@ -315,7 +338,8 @@ class ABCD_ML():
                                _process_new,
                                _prepare_data,
                                _set_data_and_cat_inds,
-                               _get_base_covar_names)
+                               _get_base_covar_names,
+                               _get_covar_scopes)
 
     # Validation / CV funcationality
     from ABCD_ML._Validation import(Define_Validation_Strategy,

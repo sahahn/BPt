@@ -155,20 +155,25 @@ def _show_covar_dist(self, covar, covars_df, cat_show_original_name,
 def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
                original_key=None, show=True):
 
+    # Ensure works with NaN data loaded
+    no_nan_subjects = data[~data.isna().any(axis=1)].index
+    nan_subjects = data[data.isna().any(axis=1)].index
+    no_nan_data = data.loc[no_nan_subjects]
+
     self._print('Show', plot_key, 'distribution:')
 
     # Binary or categorical
-    if data.dtypes[0].name == 'category':
+    if no_nan_data.dtypes[0].name == 'category':
 
         # Categorical
         if isinstance(encoders, tuple):
             encoder = encoders[0]
-            sums = data.sum()
+            sums = no_nan_data.sum()
 
         # Binary
         else:
             encoder = encoders
-            unique, counts = np.unique(data, return_counts=True)
+            unique, counts = np.unique(no_nan_data, return_counts=True)
             sums = pd.Series(counts, unique)
 
         original_names = get_original_cat_names(sums.index,
@@ -178,7 +183,7 @@ def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
         display_df = pd.DataFrame(sums, columns=['Count'])
         display_df.index.name = 'Internal Name'
         display_df['Original Value'] = original_names
-        display_df['Frequency'] = sums / len(data)
+        display_df['Frequency'] = sums / len(no_nan_data)
         display_df = display_df[['Original Value', 'Count', 'Frequency']]
 
         self._display_df(display_df)
@@ -192,15 +197,20 @@ def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
     # Regression, float / ordinal
     else:
 
-        summary = data.describe()
+        summary = no_nan_data.describe()
 
         self._display_df(summary)
 
-        vals = data[original_key]
+        vals = no_nan_data[original_key]
         self._print('Num. of unique vals:', len(np.unique(vals)))
         self._print()
 
-        sns.distplot(data)
+        sns.distplot(no_nan_data)
+
+    # If any NaN
+    if len(nan_subjects) > 0:
+        self._print('Note:', len(nan_subjects), 'subject(s) with NaN',
+                    'not included/shown!')
 
     title = plot_key + ' distributions'
     plt.title(title)

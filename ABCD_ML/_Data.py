@@ -11,7 +11,8 @@ from ABCD_ML.Data_Helpers import (process_binary_input,
                                   process_ordinal_input,
                                   process_categorical_input,
                                   filter_float_by_outlier,
-                                  drop_col_duplicates)
+                                  drop_duplicate_cols,
+                                  get_top_substrs)
 
 
 def Load_Name_Map(self, loc, dataset_type='default',
@@ -63,7 +64,7 @@ def Load_Name_Map(self, loc, dataset_type='default',
         print('Name map not loaded!')
 
 
-def Load_Data(self, loc, dataset_type='default', drop_keys=[],
+def Load_Data(self, loc, dataset_type='default', drop_keys=[], drop_nan=True,
               filter_outlier_percent=None, winsorize_val=None,
               unique_val_drop_thresh=2, unique_val_warn_percent=.2,
               drop_col_duplicates=None, clear_existing=False):
@@ -119,6 +120,27 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
 
         (default = [])
 
+    drop_nan : bool, int, float or 'default', optional
+        If set to True, then will drop any row within the loaded
+        data if there are any NaN! If False, the will not drop any
+        rows for missing values.
+
+        If set to 'default' will use
+        the saved value within the class.
+
+        If an int or float, then this means some NaN entries
+        will potentially be preserved! Missing data imputation
+        will therefore be required later on!
+
+        If an int > 1, then will drop any row with more than drop_nan
+        NaN values. If a float, will determine the drop threshold as
+        a percentage of the possible values, where 1 would not drop any rows
+        as it would require the number of columns + 1 NaN, and .5 would require
+        that more than half the column entries are NaN in order to drop that
+        row.
+
+        (default = 'default')
+
     filter_outlier_percent : int, float, tuple or None, optional
         *For float / ordinal data only.*
         A percent of values to exclude from either end of the
@@ -171,7 +193,8 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         If float, then pass a value between 0 and 1,
         where if two columns within data
         are correlated >= to `corr_thresh`, the second column is removed.
-        A value of 1 acts like dropping exact duplicated.
+
+        A value of 1 will instead make a quicker direct =='s comparison.
 
         Note: just drops duplicated within just loaded data.
         Call self.Drop_Data_Duplicates() to drop duplicates across
@@ -210,6 +233,7 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
     """
     if clear_existing:
         self.Clear_Data()
+        self._print()
 
     # Load in the dataset & proc. dataset type
     if isinstance(loc, list):
@@ -227,11 +251,11 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
     data = data.drop(to_drop, axis=1)
     self._print('Dropped', len(to_drop), 'columns, per drop_keys argument')
 
-    # Drop any cols with all missing and rows with and missing data
-    data = self._drop_na(data)
+    # Drop any cols with all missing and rows by drop_nan argument
+    data = self._drop_na(data, drop_nan)
+    self._print()
 
     data_keys = list(data)
-
     if filter_outlier_percent is not None:
 
         for key in data_keys:
@@ -253,7 +277,8 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         unique_val_warn_percent /= 100
 
     warn_thresh = unique_val_warn_percent * len(data)
-    unique_counts = [len(np.unique(data[x])) for x in data]
+
+    unique_counts = [np.sum(~np.isnan(np.unique(data[x]))) for x in data]
 
     if (np.array(unique_counts) < unique_val_drop_thresh).any():
 
@@ -268,7 +293,7 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
                 self._print('Dropped', col, 'unique vals:', count)
 
         self._print()
-        unique_counts = [len(np.unique(data[x])) for x in data]
+        unique_counts = [np.sum(~np.isnan(np.unique(data[x]))) for x in data]
 
     if (np.array(unique_counts) < warn_thresh).any():
 
@@ -284,8 +309,10 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
     if drop_col_duplicates is False:
         drop_col_duplicates = None
     if drop_col_duplicates is not None:
-        data, dropped = drop_col_duplicates(data, drop_col_duplicates)
+        data, dropped = drop_duplicate_cols(data, drop_col_duplicates)
         self._print('Dropped', len(dropped), 'columns as duplicate cols!')
+
+    self._show_nan_info(data)
 
     self._print('loaded shape: ', data.shape)
 
@@ -296,7 +323,8 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
 
 
 def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
-                code_categorical_as='dummy', categorical_drop_percent=None,
+                drop_nan='default', code_categorical_as='dummy',
+                categorical_drop_percent=None,
                 filter_float_outlier_percent=None, standardize=True,
                 normalize=False, clear_existing=False):
     '''Load a covariate or covariates, type data.
@@ -320,6 +348,27 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         - 'categorical' or 'c' : Categorical input
         - 'ordinal' or 'o' : Ordinal input
         - 'float' or 'f' : Float numerical input
+
+    drop_nan : bool, int, float or 'default', optional
+        If set to True, then will drop any row within the loaded
+        data if there are any NaN! If False, the will not drop any
+        rows for missing values.
+
+        If set to 'default' will use
+        the saved value within the class.
+
+        If an int or float, then this means some NaN entries
+        will potentially be preserved! Missing data imputation
+        will therefore be required later on!
+
+        If an int > 1, then will drop any row with more than drop_nan
+        NaN values. If a float, will determine the drop threshold as
+        a percentage of the possible values, where 1 would not drop any rows
+        as it would require the number of columns + 1 NaN, and .5 would require
+        that more than half the column entries are NaN in order to drop that
+        row.
+
+        (default = 'default')
 
     dataset_type : {'default', 'basic', 'explorer', 'custom'}, optional
         The type of file to load from.
@@ -405,7 +454,8 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
     self._print('Loading covariates!')
     covars, col_names = self._common_load(loc, dataset_type,
-                                          col_names=col_names)
+                                          col_names=col_names,
+                                          drop_nan=drop_nan)
 
     if not isinstance(data_types, list):
         data_types = list([data_types])
@@ -415,29 +465,35 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
     for key, d_type in zip(col_names, data_types):
 
-        self._print('load:', key)
+        self._print('loading:', key)
+
+        non_nan_subjects = covars[~covars[key].isna()].index
+        non_nan_covars = covars.loc[non_nan_subjects]
 
         if d_type == 'binary' or d_type == 'b':
-            covars, encoder = process_binary_input(covars, key, self._print)
-            self.covars_encoders[key] = encoder
+
+            non_nan_covars, self.covars_encoders[key] =\
+                process_binary_input(non_nan_covars, key, self._print)
 
         elif d_type == "categorical" or d_type == 'c':
 
             if code_categorical_as == 'ordinal':
-                covars, encoder =\
-                    process_ordinal_input(covars, key,
+                non_nan_covars, encoder =\
+                    process_ordinal_input(non_nan_covars, key,
                                           categorical_drop_percent,
                                           self._print)
 
             # If using one hot or dummy coding, encoder will
             # contain 2 transformers
             else:
-                covars, new_keys, encoder =\
-                    process_categorical_input(covars, key, code_categorical_as,
+                non_nan_covars, new_keys, self.covars_encoders[key] =\
+                    process_categorical_input(non_nan_covars, key,
+                                              code_categorical_as,
                                               categorical_drop_percent,
                                               self._print)
 
-            self.covars_encoders[key] = encoder
+                # Add any new cols
+                covars = covars.reindex(columns=list(non_nan_covars))
 
         elif (d_type == 'float' or d_type == 'ordinal' or
                 d_type == 'f' or d_type == 'o'):
@@ -445,21 +501,32 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
             if (filter_float_outlier_percent is not None) and \
                     (d_type == 'float' or d_type == 'f'):
 
-                covars = filter_float_by_outlier(covars, key,
-                                                 filter_float_outlier_percent,
-                                                 in_place=False,
-                                                 _print=self._print)
+                non_nan_covars =\
+                    filter_float_by_outlier(non_nan_covars, key,
+                                            filter_float_outlier_percent,
+                                            in_place=False, _print=self._print)
 
             if standardize:
-                covars[key] -= np.mean(covars[key])
-                covars[key] /= np.std(covars[key])
+                non_nan_covars[key] -= np.mean(non_nan_covars[key])
+                non_nan_covars[key] /= np.std(non_nan_covars[key])
 
             if normalize:
-                min_val, max_val = np.min(covars[key]), np.max(covars[key])
-                covars[key] = (covars[key] - min_val) / (max_val - min_val)
+                min_val = np.min(non_nan_covars[key])
+                max_val = np.max(non_nan_covars[key])
+                non_nan_covars[key] =\
+                    (non_nan_covars[key] - min_val) / (max_val - min_val)
+
+        # Now update the changed values within covars
+        covars.loc[non_nan_subjects] = non_nan_covars
+
+        # Make sure col types are right
+        for dtype, key in zip(non_nan_covars.dtypes, list(covars)):
+            covars[key] = covars[key].astype(dtype.name)
 
     # Filter float by outlier just replaces with 999, so actually remove here.
     covars = self._drop_from_filter(covars, filter_float_outlier_percent)
+
+    self._print('loaded shape: ', covars.shape)
 
     # If other data is already loaded,
     # merge this data with existing loaded data.
@@ -885,10 +952,11 @@ def Drop_Data_Duplicates(self, corr_thresh):
     corr_thresh : float
         A value between 0 and 1, where if two columns within self.data
         are correlated >= to `corr_thresh`, the second column is removed.
-        A value of 1 acts like dropping exact repeats.
+
+        A value of 1 will instead make a quicker direct =='s comparison.
     '''
 
-    self.data, dropped = drop_col_duplicates(self.data, corr_thresh)
+    self.data, dropped = drop_duplicate_cols(self.data, corr_thresh)
     self._print('Dropped', len(dropped), 'columns as duplicate cols!')
 
 
@@ -1033,6 +1101,8 @@ def _load_dataset(self, loc, dataset_type):
         self._print('dropped', non_data_cols + to_drop, 'columns by default',
                     ' due to dataset type')
 
+    self._print()
+
     # Perform common operations
     # (check subject id, drop duplicate subjects ect...)
     data = self._proc_df(data)
@@ -1041,7 +1111,7 @@ def _load_dataset(self, loc, dataset_type):
 
 
 def _common_load(self, loc, dataset_type, col_name=None,
-                 col_names=None):
+                 col_names=None, drop_nan=True):
     '''Internal helper function to perform set of commonly used loading functions,
     on 2.0_ABCD_Data_Explorer release formatted csv'
 
@@ -1072,6 +1142,9 @@ def _common_load(self, loc, dataset_type, col_name=None,
     col_names : str or list
         The name(s) of the column(s) to load.
 
+    drop_nan : drop_nan param
+        ABCD_ML param for dropping NaN
+
     Returns
     -------
     pandas DataFrame and list
@@ -1087,14 +1160,14 @@ def _common_load(self, loc, dataset_type, col_name=None,
     data = self._proc_df(data)
 
     if col_name is not None:
-        data = self._drop_na(data[[col_name]])
+        data = self._drop_na(data[[col_name]], drop_nan)
         return data
 
     if not isinstance(col_names, list):
         col_names = list([col_names])
 
     # Drop rows with NaN
-    data = data = self._drop_na(data[col_names])
+    data = data = self._drop_na(data[col_names], drop_nan)
     return data, col_names
 
 
@@ -1283,13 +1356,16 @@ def _process_subject_name(self, subject):
         return subject
 
 
-def _drop_na(self, data):
+def _drop_na(self, data, drop_nan=True):
     '''Wrapper function to drop rows with NaN values.
 
     Parameters
     ----------
     data : pandas DataFrame
         ABCD_ML formatted.
+
+    drop_nan : drop_nan param
+        ABCD_ML drop_nan param
 
     Returns
     ----------
@@ -1302,10 +1378,27 @@ def _drop_na(self, data):
     data = data.dropna(axis=1, how='all')
     self._print('Dropped', sum(missing_values), 'cols for all missing values')
 
-    # Next drop rows with any missing vals
-    missing_values = data.isna().any(axis=1)
-    data = data.dropna()
-    self._print('Dropped', sum(missing_values), 'rows for missing values')
+    # Handle dropping rows based on passed drop_nan param
+    if drop_nan == 'default':
+        drop_nan = self.drop_nan
+
+    if drop_nan is not False:
+
+        if drop_nan is True:
+            nan_thresh = 0
+        elif drop_nan <= 1:
+            nan_thresh = int(drop_nan * data.shape[1])
+        else:
+            nan_thresh = drop_nan
+
+        to_drop = data[data.isna().sum(axis=1) > nan_thresh].index
+        data = data.drop(to_drop)
+        self._print('Dropped', len(to_drop), 'rows for missing values, based',
+                    'on the provided drop_nan param:', drop_nan,
+                    'with actual nan_thresh:', nan_thresh)
+
+    remaining_na_rows = data.isna().any(axis=1).sum()
+    self._print('Rows with NaN remaining:', remaining_na_rows)
 
     return data
 
@@ -1355,6 +1448,33 @@ def _filter_by_eventname(self, data):
             data = data.drop('eventname', axis=1)
 
     return data
+
+
+def _show_nan_info(self, data):
+
+    na_counts = data.isna().sum().sort_values(ascending=False)
+
+    if na_counts.sum() > 0:
+        self._print('Loaded NaN Info:')
+        self._print('There are:', na_counts.sum(), 'total missing values')
+
+        u_counts, c_counts = np.unique(na_counts, return_counts=True)
+        u_counts, c_counts = u_counts[1:], c_counts[1:]
+
+        inds = c_counts.argsort()
+        u_counts = u_counts[inds[::-1]]
+        c_counts = c_counts[inds[::-1]]
+
+        for u, c in zip(u_counts, c_counts):
+            if c > 1:
+
+                keys = list(na_counts[na_counts == u].index)
+                substrs = get_top_substrs(keys)
+
+                self._print(c, ' columns found with ', u, ' missing values',
+                            ' (column name overlap: ', substrs, ')', sep='')
+
+        self._print()
 
 
 def _drop_excluded(self, data):
@@ -1584,3 +1704,45 @@ def _get_base_covar_names(self):
             base_covars.add(col)
 
     return list(base_covars)
+
+
+def _get_covar_scopes():
+
+    covar_scopes = {'float': [],
+                    'binary': [],
+                    'categorical': [],
+                    'ordinal categorical': []}
+    cat_encoders = []
+
+    for base_covar in self._get_base_covar_names():
+
+        # Categorical or binary
+        if base_covar in self.covars_encoders:
+            cov_encoders = self.covars_encoders[base_covar]
+
+            if isinstance(cov_encoders, tuple):
+
+                one_hot_encoder = cov_encoders[1]
+                cat_encoders.append(one_hot_encoder)
+
+                categories = one_hot_encoder.categories_[0]
+                covar_df_names = [base_covar + '_' + str(c) for
+                                  c in categories]
+                valid_df_names = [c for c in covar_df_names if
+                                  c in self.all_data]
+
+                covar_scopes['categorical'].append(valid_df_names)
+
+            # Binary or ordinal
+            else:
+
+                if np.nanmax(ML.covars[base_covar]) > 1:
+                    covar_scopes['ordinal categorical'].append(base_covar)
+                else:
+                    covar_scopes['binary'].append(base_covar)
+
+        # Float
+        else:
+            covar_scopes['float'].append(base_covar)
+
+    return covar_scopes, cat_encoders

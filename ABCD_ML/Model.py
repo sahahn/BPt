@@ -37,8 +37,9 @@ class Model():
 
     def __init__(self, model_types, ML_params, model_type_param_ind, CV,
                  data_keys, covars_keys, cat_keys, targets_key,
-                 targets_encoder, ensemble_type, ensemble_split, progress_bar,
-                 param_search_verbose, _print=print):
+                 targets_encoder, covar_scopes, cat_encoders, ensemble_type,
+                 ensemble_split, progress_bar, param_search_verbose,
+                 _print=print):
         ''' Init function for Model
 
         Parameters
@@ -58,6 +59,10 @@ class Model():
             - metrics : str or list
                 Metric / scorer str indicator, or list of. If list, the
                 metric in the first index will be used during model selection.
+            - imputers : str, list or None
+                filler.
+            - imputer_scopes : str, list or None
+                filler.
             - scalers : str, list or None
                 str indicator (or list of) for what type of data scaling
                 to use if any. If list, data will scaled in list order.
@@ -133,6 +138,10 @@ class Model():
             The encoder or list of encoders, used in the case of targets
             needing to be transformed in some way.
 
+        covar_scopes : filler
+
+        cat_encoders : filler
+
         ensemble_type : str or list of str
             Each string refers to a type of ensemble to train,
             or 'basic ensemble' for base behavior.
@@ -183,12 +192,16 @@ class Model():
         self.cat_keys = cat_keys
         self.targets_key = targets_key
         self.targets_encoder = targets_encoder
+        self.covar_scopes = covar_scopes
+        self.cat_encoders = cat_encoders
         self.progress_bar = progress_bar
         self.param_search_verbose = param_search_verbose
         self._print = _print
 
         # Un-pack ML_params
         self.metrics = conv_to_list(ML_params['metric'])
+        self.imputers = conv_to_list(ML_params['imputer'])
+        self.imputer_scopes = conv_to_list(ML_params['imputer_scope'])
         self.scalers = conv_to_list(ML_params['scaler'])
         self.scaler_scopes = conv_to_list(ML_params['scaler_scope'])
         self.samplers = conv_to_list(ML_params['sampler'])
@@ -233,6 +246,7 @@ class Model():
         self._process_model_types()
         self._process_feat_selectors()
         self._process_metrics()
+        self._process_imputers()
         self._process_scalers()
         self._process_samplers()
         self._process_ensemble_types()
@@ -353,6 +367,36 @@ class Model():
 
         # Define the metric to be used in model selection
         self.metric = self.metrics[0]
+
+    def _process_imputers(self):
+
+        conv_imputer_strs = proc_input(self.imputers)
+        self._update_extra_params(self.imputers, conv_imputer_strs)
+
+        for imputer_str, scope in zip(conv_imputer_strs, self.imputer_scopes):
+
+            if scope == 'c' or scope == 'categorical':
+                cat_keys = self.covar_scopes['categorical']
+                ordinal_keys = self.covar_scopes['ordinal categorical']
+
+                cat_inds = [self._get_inds_from_scope(k) for k in cat_keys]
+                ordinal_inds = self._get_inds_from_scope(ordinal_inds)
+
+            else:
+
+                if scope == 'b' or scope == 'binary':
+                    keys = self.covar_scopes['binary']
+                elif scope == 'f' or scope == 'float':
+                    keys = 'a'
+                else:
+                    keys = scope
+
+                inds = self._get_inds_from_scope(keys)
+
+            # Need check to see if should grab base estimator
+            # Switch imputer_str to 'iterative' if so.
+
+            # Need to force defaults ~ ?
 
     def _process_scalers(self):
         '''Processes self.scaler to be a list of

@@ -22,51 +22,290 @@ Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/MRI/ABCD sMRI Part 2.csv a
 dropped ['abcd_smrip201_id', 'dataset_id'] columns by default  due to dataset type
 Dropped 0 columns, per drop_keys argument
 Dropped 10 cols for all missing values
-Dropped 1233 rows for missing values
-Dropped 9564 rows based on filter outlier percent: 0.01
+Dropped 1233 rows for missing values, based on the provided drop_nan param, with actual nan_thresh: 0
+Rows with NaN remaining: 0
 Winsorized data with value:  0.001
 
 The following columns were dropped due to being under the passed unique_val_drop_thresh of:  2
 Dropped smri_vol_subcortaseg_wmhypointensitieslh unique vals: 1
 Dropped smri_vol_subcortaseg_wmhypointensitiesrh unique vals: 1
 
-loaded shape:  (739, 1184)
 
-Total valid overlapping subjects = 739
+The following columns have a questionable number of unique values (under the warn thresh of 2060.6 ): 
+smri_thick_cortdesikan_banksstslh unique vals: 971
+smri_thick_cortdesikan_caudalanteriorcingulatelh unique vals: 1210
+smri_thick_cortdesikan_caudalmiddlefrontallh unique vals: 883
+smri_thick_cortdesikan_cuneuslh unique vals: 831
+smri_thick_cortdesikan_entorhinallh unique vals: 1635
+smri_thick_cortdesikan_fusiformlh unique vals: 747
+smri_thick_cortdesikan_inferiorparietallh unique vals: 887
+smri_thick_cortdesikan_inferiortemporallh unique vals: 921
+smri_thick_cortdesikan_isthmuscingulatelh unique vals: 980
+smri_thick_cortdesikan_lateraloccipitallh unique vals: 847
+smri_thick_cortdesikan_lateralorbitofrontallh unique vals: 872
+smri_thick_cortdesikan_linguallh unique vals: 745
+smri_thick_cortdesikan_medialorbitofrontallh unique vals: 939
+smri_thick_cortdesikan_middletemporallh unique vals: 1065
+smri_thick_cortdesikan_parahippocampallh unique vals: 1341
+smri_thick_cortdesikan_paracentrallh unique vals: 892
+smri_thick_cortdesikan_parsopercularislh unique vals: 852
+smri_thick_cortdesikan_parsorbitalislh unique vals: 1113
+smri_thick_cortdesikan_parstriangularislh unique vals: 908
+smri_thick_cortdesikan_pericalcarinelh unique vals: 798
+smri_thick_cortdesikan_postcentrallh unique vals: 865
+smri_thick_cortdesikan_posteriorcingulatelh unique vals: 840
+smri_thick_cortdesikan_precentrallh unique vals: 847
+smri_thick_cortdesikan_precuneuslh unique vals: 761
+smri_thick_cortdesikan_rostralanteriorcingulatelh unique vals: 1123
+smri_thick_cortdesikan_rostralmiddlefrontallh unique vals: 878
+smri_thick_cortdesikan_superiorfrontallh unique vals: 877
+smri_thick_cortdesikan_superiorparietallh unique vals: 797
+smri_thick_cortdesikan_superiortemporallh unique vals: 959
+smri_thick_cortdesikan_supramarginallh unique vals: 961
+smri_thick_cortdesikan_frontalpolelh unique vals: 1587
+smri_thick_cortdesikan_temporalpolelh unique vals: 1458
+smri_thick_cortdesikan_transversetemporallh unique vals: 1084
+smri_thick_cortdesikan_insulalh unique vals: 807
+smri_thick_cortdesikan_banksstsrh unique vals: 987
+smri_thick_cortdesikan_caudalanteriorcingulaterh unique vals: 1145
+smri_thick_cortdesikan_caudalmiddlefrontalrh unique vals: 925
+smri_thick_cortdesikan_cuneusrh unique vals: 874
+smri_thick_cortdesikan_entorhinalrh unique vals: 1732
+smri_thick_cortdesikan_fusiformrh unique vals: 776
+smri_thick_cortdesikan_inferiorparietalrh unique vals: 880
+smri_thick_cortdesikan_inferiortemporalrh unique vals: 908
+smri_thick_cortdesikan_isthmuscingulaterh unique vals: 1002
+smri_thick_cortdesikan_lateraloccipitalrh unique vals: 857
+smri_thick_cortdesikan_lateralorbitofrontalrh unique vals: 875
+smri_thick_cortdesikan_lingualrh unique vals: 772
+smri_thick_cortdesikan_medialorbitofrontalrh unique vals: 945
+smri_thick_cortdesikan_middletemporalrh unique vals: 1039
+smri_thick_cortdesikan_parahippocampalrh unique vals: 1237
+smri_thick_cortdesikan_paracentralrh unique vals: 826
+smri_thick_cortdesikan_parsopercularisrh unique vals: 883
+smri_thick_cortdesikan_parsorbitalisrh unique vals: 1108
+smri_thick_cortdesikan_parstriangularisrh unique vals: 957
+smri_thick_cortdesikan_pericalcarinerh unique vals: 817
+smri_thick_cortdesikan_postcentralrh unique vals: 906
+smri_thick_cortdesikan_posteriorcingulaterh unique vals: 792
+smri_thick_cortdesikan_precentralrh unique vals: 846
+smri_thick_cortdesikan_precuneusrh unique vals: 767
+smri_thick_cortdesikan_rostralanteriorcingulaterh unique vals: 1147
+smri_thick_cortdesikan_rostralmiddlefrontalrh unique vals: 915
+smri_thick_cortdesikan_superiorfrontalrh unique vals: 878
+smri_thick_cortdesikan_superiorparietalrh unique vals: 783
+smri_thick_cortdesikan_superiortemporalrh unique vals: 912
+smri_thick_cortdesikan_supramarginalrh unique vals: 977
+smri_thick_cortdesikan_frontalpolerh unique vals: 1564
+smri_thick_cortdesikan_temporalpolerh unique vals: 1505
+smri_thick_cortdesikan_transversetemporalrh unique vals: 1085
+smri_thick_cortdesikan_insularh unique vals: 848
+smri_area_cortdesikan_banksstslh unique vals: 1060
+smri_area_cortdesikan_caudalanteriorcingulatelh unique vals: 849
+smri_area_cortdesikan_cuneuslh unique vals: 1155
+smri_area_cortdesikan_entorhinallh unique vals: 503
+smri_area_cortdesikan_fusiformlh unique vals: 2024
+smri_area_cortdesikan_isthmuscingulatelh unique vals: 1053
+smri_area_cortdesikan_lateralorbitofrontallh unique vals: 1518
+smri_area_cortdesikan_linguallh unique vals: 1989
+smri_area_cortdesikan_medialorbitofrontallh unique vals: 1288
+smri_area_cortdesikan_parahippocampallh unique vals: 716
+smri_area_cortdesikan_paracentrallh unique vals: 1100
+smri_area_cortdesikan_parsopercularislh unique vals: 1495
+smri_area_cortdesikan_parsorbitalislh unique vals: 518
+smri_area_cortdesikan_parstriangularislh unique vals: 1114
+smri_area_cortdesikan_pericalcarinelh unique vals: 1186
+smri_area_cortdesikan_posteriorcingulatelh unique vals: 1121
+smri_area_cortdesikan_rostralanteriorcingulatelh unique vals: 860
+smri_area_cortdesikan_frontalpolelh unique vals: 226
+smri_area_cortdesikan_temporalpolelh unique vals: 385
+smri_area_cortdesikan_transversetemporallh unique vals: 444
+smri_area_cortdesikan_insulalh unique vals: 1270
+smri_area_cortdesikan_banksstsrh unique vals: 932
+smri_area_cortdesikan_caudalanteriorcingulaterh unique vals: 904
+smri_area_cortdesikan_cuneusrh unique vals: 1253
+smri_area_cortdesikan_entorhinalrh unique vals: 503
+smri_area_cortdesikan_fusiformrh unique vals: 2026
+smri_area_cortdesikan_isthmuscingulaterh unique vals: 962
+smri_area_cortdesikan_lateralorbitofrontalrh unique vals: 1594
+smri_area_cortdesikan_lingualrh unique vals: 1914
+smri_area_cortdesikan_medialorbitofrontalrh unique vals: 1136
+smri_area_cortdesikan_parahippocampalrh unique vals: 685
+smri_area_cortdesikan_paracentralrh unique vals: 1236
+smri_area_cortdesikan_parsopercularisrh unique vals: 1330
+smri_area_cortdesikan_parsorbitalisrh unique vals: 611
+smri_area_cortdesikan_parstriangularisrh unique vals: 1375
+smri_area_cortdesikan_pericalcarinerh unique vals: 1240
+smri_area_cortdesikan_posteriorcingulaterh unique vals: 1161
+smri_area_cortdesikan_rostralanteriorcingulaterh unique vals: 761
+smri_area_cortdesikan_frontalpolerh unique vals: 305
+smri_area_cortdesikan_temporalpolerh unique vals: 358
+smri_area_cortdesikan_transversetemporalrh unique vals: 349
+smri_area_cortdesikan_insularh unique vals: 1309
+smri_vol_cortdesikan_entorhinallh unique vals: 1858
+smri_vol_cortdesikan_parahippocampallh unique vals: 1929
+smri_vol_cortdesikan_parsorbitalislh unique vals: 1816
+smri_vol_cortdesikan_pericalcarinelh unique vals: 2011
+smri_vol_cortdesikan_frontalpolelh unique vals: 1015
+smri_vol_cortdesikan_temporalpolelh unique vals: 1780
+smri_vol_cortdesikan_transversetemporallh unique vals: 1337
+smri_vol_cortdesikan_entorhinalrh unique vals: 1839
+smri_vol_cortdesikan_parahippocampalrh unique vals: 1800
+smri_vol_cortdesikan_frontalpolerh unique vals: 1238
+smri_vol_cortdesikan_temporalpolerh unique vals: 1730
+smri_vol_cortdesikan_transversetemporalrh unique vals: 1129
 
-Loading targets!
-Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Mental Health/ABCD Parent Demographics Survey.csv assumed to be dataset type: explorer
-Dropped 0 cols for all missing values
-Dropped 6 rows for missing values
-More than two unique score values found, filtered all but [1. 2.]
-Final shape:  (11866, 1)
+loaded shape:  (10303, 1184)
 
-Total valid overlapping subjects = 739
+Total valid overlapping subjects = 10303
 
-Show Target distribution:
-               Original Value  Count  Frequency
-Internal Name                                  
-0                         1.0    349    0.47226
-1                         2.0    390    0.52774
+Cleared loaded data.
+Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/MRI/ABCD sMRI Part 1.csv assumed to be dataset type: explorer
+dropped ['abcd_smrip101_id', 'dataset_id', 'smri_visitid'] columns by default  due to dataset type
+Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/MRI/ABCD sMRI Part 2.csv assumed to be dataset type: explorer
+dropped ['abcd_smrip201_id', 'dataset_id'] columns by default  due to dataset type
+Dropped 0 columns, per drop_keys argument
+Dropped 10 cols for all missing values
+Dropped 624 rows for missing values, based on the provided drop_nan param, with actual nan_thresh: 10
+Rows with NaN remaining: 609
+Winsorized data with value:  0.001
 
-Loading covariates!
-Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Mental Health/ABCD Parent Demographics Survey.csv assumed to be dataset type: explorer
-Dropped 0 cols for all missing values
-Dropped 3 rows for missing values
-load: demo_ed_v2
+The following columns were dropped due to being under the passed unique_val_drop_thresh of:  2
+Dropped smri_vol_subcortaseg_wmhypointensitieslh unique vals: 1
+Dropped smri_vol_subcortaseg_wmhypointensitiesrh unique vals: 1
 
-Total valid overlapping subjects = 739
 
-Show demo_ed_v2 distribution:
-       demo_ed_v2
-count  739.000000
-mean     4.196211
-std      0.736716
-min      2.000000
-25%      4.000000
-50%      4.000000
-75%      5.000000
-max      6.000000
+The following columns have a questionable number of unique values (under the warn thresh of 2182.4 ): 
+smri_thick_cortdesikan_banksstslh unique vals: 978
+smri_thick_cortdesikan_caudalanteriorcingulatelh unique vals: 1226
+smri_thick_cortdesikan_caudalmiddlefrontallh unique vals: 893
+smri_thick_cortdesikan_cuneuslh unique vals: 844
+smri_thick_cortdesikan_entorhinallh unique vals: 1655
+smri_thick_cortdesikan_fusiformlh unique vals: 751
+smri_thick_cortdesikan_inferiorparietallh unique vals: 892
+smri_thick_cortdesikan_inferiortemporallh unique vals: 931
+smri_thick_cortdesikan_isthmuscingulatelh unique vals: 984
+smri_thick_cortdesikan_lateraloccipitallh unique vals: 849
+smri_thick_cortdesikan_lateralorbitofrontallh unique vals: 881
+smri_thick_cortdesikan_linguallh unique vals: 751
+smri_thick_cortdesikan_medialorbitofrontallh unique vals: 949
+smri_thick_cortdesikan_middletemporallh unique vals: 1076
+smri_thick_cortdesikan_parahippocampallh unique vals: 1360
+smri_thick_cortdesikan_paracentrallh unique vals: 901
+smri_thick_cortdesikan_parsopercularislh unique vals: 860
+smri_thick_cortdesikan_parsorbitalislh unique vals: 1125
+smri_thick_cortdesikan_parstriangularislh unique vals: 913
+smri_thick_cortdesikan_pericalcarinelh unique vals: 802
+smri_thick_cortdesikan_postcentrallh unique vals: 871
+smri_thick_cortdesikan_posteriorcingulatelh unique vals: 844
+smri_thick_cortdesikan_precentrallh unique vals: 854
+smri_thick_cortdesikan_precuneuslh unique vals: 771
+smri_thick_cortdesikan_rostralanteriorcingulatelh unique vals: 1136
+smri_thick_cortdesikan_rostralmiddlefrontallh unique vals: 886
+smri_thick_cortdesikan_superiorfrontallh unique vals: 879
+smri_thick_cortdesikan_superiorparietallh unique vals: 802
+smri_thick_cortdesikan_superiortemporallh unique vals: 961
+smri_thick_cortdesikan_supramarginallh unique vals: 972
+smri_thick_cortdesikan_frontalpolelh unique vals: 1598
+smri_thick_cortdesikan_temporalpolelh unique vals: 1475
+smri_thick_cortdesikan_transversetemporallh unique vals: 1092
+smri_thick_cortdesikan_insulalh unique vals: 816
+smri_thick_cortdesikan_banksstsrh unique vals: 993
+smri_thick_cortdesikan_caudalanteriorcingulaterh unique vals: 1156
+smri_thick_cortdesikan_caudalmiddlefrontalrh unique vals: 929
+smri_thick_cortdesikan_cuneusrh unique vals: 892
+smri_thick_cortdesikan_entorhinalrh unique vals: 1763
+smri_thick_cortdesikan_fusiformrh unique vals: 783
+smri_thick_cortdesikan_inferiorparietalrh unique vals: 889
+smri_thick_cortdesikan_inferiortemporalrh unique vals: 918
+smri_thick_cortdesikan_isthmuscingulaterh unique vals: 1016
+smri_thick_cortdesikan_lateraloccipitalrh unique vals: 863
+smri_thick_cortdesikan_lateralorbitofrontalrh unique vals: 882
+smri_thick_cortdesikan_lingualrh unique vals: 779
+smri_thick_cortdesikan_medialorbitofrontalrh unique vals: 953
+smri_thick_cortdesikan_middletemporalrh unique vals: 1042
+smri_thick_cortdesikan_parahippocampalrh unique vals: 1252
+smri_thick_cortdesikan_paracentralrh unique vals: 828
+smri_thick_cortdesikan_parsopercularisrh unique vals: 892
+smri_thick_cortdesikan_parsorbitalisrh unique vals: 1119
+smri_thick_cortdesikan_parstriangularisrh unique vals: 966
+smri_thick_cortdesikan_pericalcarinerh unique vals: 822
+smri_thick_cortdesikan_postcentralrh unique vals: 911
+smri_thick_cortdesikan_posteriorcingulaterh unique vals: 794
+smri_thick_cortdesikan_precentralrh unique vals: 853
+smri_thick_cortdesikan_precuneusrh unique vals: 774
+smri_thick_cortdesikan_rostralanteriorcingulaterh unique vals: 1156
+smri_thick_cortdesikan_rostralmiddlefrontalrh unique vals: 922
+smri_thick_cortdesikan_superiorfrontalrh unique vals: 882
+smri_thick_cortdesikan_superiorparietalrh unique vals: 788
+smri_thick_cortdesikan_superiortemporalrh unique vals: 917
+smri_thick_cortdesikan_supramarginalrh unique vals: 983
+smri_thick_cortdesikan_frontalpolerh unique vals: 1582
+smri_thick_cortdesikan_temporalpolerh unique vals: 1523
+smri_thick_cortdesikan_transversetemporalrh unique vals: 1098
+smri_thick_cortdesikan_insularh unique vals: 860
+smri_area_cortdesikan_banksstslh unique vals: 1090
+smri_area_cortdesikan_caudalanteriorcingulatelh unique vals: 892
+smri_area_cortdesikan_caudalmiddlefrontallh unique vals: 2139
+smri_area_cortdesikan_cuneuslh unique vals: 1164
+smri_area_cortdesikan_entorhinallh unique vals: 507
+smri_area_cortdesikan_fusiformlh unique vals: 2042
+smri_area_cortdesikan_isthmuscingulatelh unique vals: 1093
+smri_area_cortdesikan_lateralorbitofrontallh unique vals: 1529
+smri_area_cortdesikan_linguallh unique vals: 2019
+smri_area_cortdesikan_medialorbitofrontallh unique vals: 1297
+smri_area_cortdesikan_middletemporallh unique vals: 2158
+smri_area_cortdesikan_parahippocampallh unique vals: 772
+smri_area_cortdesikan_paracentrallh unique vals: 1110
+smri_area_cortdesikan_parsopercularislh unique vals: 1516
+smri_area_cortdesikan_parsorbitalislh unique vals: 555
+smri_area_cortdesikan_parstriangularislh unique vals: 1130
+smri_area_cortdesikan_pericalcarinelh unique vals: 1201
+smri_area_cortdesikan_posteriorcingulatelh unique vals: 1131
+smri_area_cortdesikan_rostralanteriorcingulatelh unique vals: 919
+smri_area_cortdesikan_frontalpolelh unique vals: 226
+smri_area_cortdesikan_temporalpolelh unique vals: 386
+smri_area_cortdesikan_transversetemporallh unique vals: 449
+smri_area_cortdesikan_insulalh unique vals: 1284
+smri_area_cortdesikan_banksstsrh unique vals: 978
+smri_area_cortdesikan_caudalanteriorcingulaterh unique vals: 953
+smri_area_cortdesikan_caudalmiddlefrontalrh unique vals: 2164
+smri_area_cortdesikan_cuneusrh unique vals: 1268
+smri_area_cortdesikan_entorhinalrh unique vals: 508
+smri_area_cortdesikan_fusiformrh unique vals: 2052
+smri_area_cortdesikan_isthmuscingulaterh unique vals: 1016
+smri_area_cortdesikan_lateralorbitofrontalrh unique vals: 1605
+smri_area_cortdesikan_lingualrh unique vals: 1935
+smri_area_cortdesikan_medialorbitofrontalrh unique vals: 1144
+smri_area_cortdesikan_parahippocampalrh unique vals: 753
+smri_area_cortdesikan_paracentralrh unique vals: 1253
+smri_area_cortdesikan_parsopercularisrh unique vals: 1344
+smri_area_cortdesikan_parsorbitalisrh unique vals: 663
+smri_area_cortdesikan_parstriangularisrh unique vals: 1389
+smri_area_cortdesikan_pericalcarinerh unique vals: 1251
+smri_area_cortdesikan_posteriorcingulaterh unique vals: 1171
+smri_area_cortdesikan_rostralanteriorcingulaterh unique vals: 817
+smri_area_cortdesikan_superiortemporalrh unique vals: 2127
+smri_area_cortdesikan_frontalpolerh unique vals: 307
+smri_area_cortdesikan_temporalpolerh unique vals: 361
+smri_area_cortdesikan_transversetemporalrh unique vals: 352
+smri_area_cortdesikan_insularh unique vals: 1320
+smri_vol_cortdesikan_entorhinallh unique vals: 1881
+smri_vol_cortdesikan_parahippocampallh unique vals: 1944
+smri_vol_cortdesikan_parsorbitalislh unique vals: 1834
+smri_vol_cortdesikan_pericalcarinelh unique vals: 2033
+smri_vol_cortdesikan_frontalpolelh unique vals: 1073
+smri_vol_cortdesikan_temporalpolelh unique vals: 1805
+smri_vol_cortdesikan_transversetemporallh unique vals: 1351
+smri_vol_cortdesikan_entorhinalrh unique vals: 1863
+smri_vol_cortdesikan_parahippocampalrh unique vals: 1814
+smri_vol_cortdesikan_parsorbitalisrh unique vals: 2127
+smri_vol_cortdesikan_pericalcarinerh unique vals: 2136
+smri_vol_cortdesikan_frontalpolerh unique vals: 1258
+smri_vol_cortdesikan_temporalpolerh unique vals: 1746
+smri_vol_cortdesikan_transversetemporalrh unique vals: 1174
 
-Num. of unique vals: 5
+loaded shape:  (10912, 1184)
+
+Total valid overlapping subjects = 10912
 

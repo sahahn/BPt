@@ -1083,10 +1083,13 @@ def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
 
     Model = problem_types[ML_params['problem_type']]
 
+    covar_scopes, cat_encoders = self._get_covar_scopes()
+
     self.Model = Model(model_type, ML_params, model_type_param_ind, self.CV,
                        self.data_keys,
                        self.covars_keys, self.cat_keys, self.targets_key,
-                       self.targets_encoder, ensemble_type, ensemble_split,
+                       self.targets_encoder, covar_scopes, cat_encoders,
+                       ensemble_type, ensemble_split,
                        self.ML_verbosity['progress_bar'],
                        self.ML_verbosity['param_search_verbose'],
                        self._ML_print)

@@ -12,6 +12,7 @@ from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
 
 def Set_Default_ML_Params(self, problem_type='default', metric='default',
+                          imputer='default', imputer_scope='default',
                           scaler='default', scaler_scope='default',
                           sampler='default', feat_selector='default',
                           n_splits='default', n_repeats='default',
@@ -63,6 +64,12 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         - 'categorical' : 'weighted roc auc'
 
         (default = 'default')
+
+    imputer : bleh
+        bleh
+
+    imputer_scope : bleh
+        bleh
 
     scaler : str, list or None, optional
         `scaler` refers to the type of scaling to apply
@@ -334,6 +341,20 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self._print('No default metric passed, set to,',
                     self.default_ML_params['metric'],
                     'based on default problem type.')
+
+    if imputer != 'default':
+        self.default_ML_params['imputer'] = imputer
+
+    elif 'imputer' not in self.default_ML_params:
+        self.default_ML_params['imputer'] = 'default'
+        self._print('No default imputer passed, set to default')
+
+    if imputer_scope != 'default':
+        self.default_ML_params['imputer_scope'] = imputer_scope
+
+    elif 'imputer_scope' not in self.default_ML_params:
+        self.default_ML_params['imputer_scope'] = 'default'
+        self._print('No default imputer scope passed, set to default')
 
     if scaler != 'default':
         self.default_ML_params['scaler'] = scaler
@@ -630,7 +651,8 @@ def _ML_print(self, *args, **kwargs):
 
 
 def Evaluate(self, model_type, run_name=None, problem_type='default',
-             metric='default', scaler='default', scaler_scope='default',
+             metric='default', imputer='default', imputer_scope='default',
+             scaler='default', scaler_scope='default',
              sampler='default', feat_selector='default', n_splits='default',
              n_repeats='default', int_cv='default',
              ensemble_type='basic ensemble', ensemble_split=.2,
@@ -665,6 +687,8 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
 
     problem_type :
     metric :
+    imputer :
+    imputer_scope :
     scaler :
     scaler_scope :
     sampler :

@@ -165,10 +165,19 @@ IMPUTERS = {
 
 
 def get_imputer(imputer_str, inds=[], encoder_inds=[], ordinal_inds=[],
-                base_estimator=None):
+                encoders=[], base_estimator=None):
 
-    base_imputer, params = IMPUTERS[imputer_str]
-    base_imputer = base_imputer(**params)
+    if base_estimator is None:
+        base_imputer, params = IMPUTERS[imputer_str]
+        base_imputer = base_imputer(**params)
+
+        # Categorical
+        if len(inds) == 0:
+            imputer = Categorical_Imputer(base_imputer, encoder_inds, ordinal_inds, encoders)
+        else:
+            imputer = Regular_Imputer(imputer, inds)
+
+        return imputer
 
 
 

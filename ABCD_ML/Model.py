@@ -27,6 +27,7 @@ from ABCD_ML.Samplers import get_sampler_and_params
 from ABCD_ML.Feature_Selectors import get_feat_selector_and_params
 from ABCD_ML.Metrics import get_metric
 from ABCD_ML.Scalers import get_scaler_and_params
+from ABCD_ML.Imputers import get_imputer
 from ABCD_ML.Ensembles import get_ensemble_and_params
 
 
@@ -328,8 +329,7 @@ class Model():
                 self._print('No hyper-param search will be conducted.')
                 self._print()
 
-            self.model_type_param_inds =\
-                [0 for i in range(len(self.model_types))]
+            self.model_type_param_inds = [0 for i in range(len(self.model_types))]
 
     def _process_feat_selectors(self):
         '''Class function to convert input feat selectors to a final
@@ -373,30 +373,46 @@ class Model():
         conv_imputer_strs = proc_input(self.imputers)
         self._update_extra_params(self.imputers, conv_imputer_strs)
 
-        for imputer_str, scope in zip(conv_imputer_strs, self.imputer_scopes):
+        self.imputers = [self._get_imputer(imputer_str, scope) for
+                         imputer_str, scope in zip(conv_imputer_strs, self.imputer_scopes)]
+        
 
-            if scope == 'c' or scope == 'categorical':
-                cat_keys = self.covar_scopes['categorical']
-                ordinal_keys = self.covar_scopes['ordinal categorical']
+    def _get_imputer(self, imputer_str, scope):
 
-                cat_inds = [self._get_inds_from_scope(k) for k in cat_keys]
-                ordinal_inds = self._get_inds_from_scope(ordinal_inds)
+        if scope == 'c' or scope == 'categorical':
+            cat_keys = self.covar_scopes['categorical']
+            ordinal_keys = self.covar_scopes['ordinal categorical']
 
+            cat_inds = [self._get_inds_from_scope(k) for k in cat_keys]
+            ordinal_inds = self._get_inds_from_scope(ordinal_inds)
+            inds = []
+
+        else:
+
+            if scope == 'b' or scope == 'binary':
+                keys = self.covar_scopes['binary']
+            elif scope == 'f' or scope == 'float':
+                keys = 'a'
             else:
+                keys = scope
 
-                if scope == 'b' or scope == 'binary':
-                    keys = self.covar_scopes['binary']
-                elif scope == 'f' or scope == 'float':
-                    keys = 'a'
-                else:
-                    keys = scope
+            inds = self._get_inds_from_scope(keys)
+            cat_inds = []
+            ordinal_inds = []
 
-                inds = self._get_inds_from_scope(keys)
+        # For now
+        base_estimator = None
 
-            # Need check to see if should grab base estimator
-            # Switch imputer_str to 'iterative' if so.
+        imputer = get_imputer(imputer_str,
+                              inds, encoder_inds,
+                              ordinal_inds, self.cat_encoders,
+                              base_estimator)
+        
+        # CHANGE THIS!
+        name = imputer_str
 
-            # Need to force defaults ~ ?
+        return (name, imputer)
+
 
     def _process_scalers(self):
         '''Processes self.scaler to be a list of
@@ -1155,7 +1171,7 @@ class Model():
             scalers, and then the passed in model.
         '''
 
-        steps = self.col_scalers + self.samplers + self.feat_selectors \
+        steps = self.imputers + self.col_scalers + self.samplers + self.feat_selectors \
             + [(model_type, model)]
 
         model_pipeline = Pipeline(steps)

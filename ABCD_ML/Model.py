@@ -36,27 +36,22 @@ class Model():
     training, scaling, handling different datatypes ect...
     '''
 
-    def __init__(self, model_types, ML_params, model_type_params, CV,
-                 data_keys, covars_keys, cat_keys, targets_key,
-                 targets_encoder, covar_scopes, cat_encoders, ensemble_type,
-                 ensemble_split, progress_bar, param_search_verbose,
-                 _print=print):
+    def __init__(self, ML_params, CV, data_keys, covars_keys, cat_keys,
+                 targets_key, targets_encoder, covar_scopes, cat_encoders,
+                 progress_bar, param_search_verbose, _print=print):
         ''' Init function for Model
 
         Parameters
         ----------
-        model_types : str or list of str,
-            Each string refers to a type of model to train.
-            If a list of strings is passed then an ensemble model
-            will be created over all individual models.
-            For a full list of supported options call:
-            ABCD_ML.Show_Model_Types(), with optional problem type parameter.
-
         ML_params : dict
             Dictionary of different ML params, the following must be included,
             (See the docstring for ABCD_ML.Set_Default_ML_Params for a more
             detailed description of all parameters contained within ML_params)
 
+            - model_types : str or list of str,
+                Each string refers to a type of model to train.
+                If a list of strings is passed then an ensemble model
+                will be created over all individual models.
             - metrics : str or list
                 Metric / scorer str indicator, or list of. If list, the
                 metric in the first index will be used during model selection.
@@ -83,8 +78,18 @@ class Model():
             - int_cv : int
                 The number of internal folds to use during modeling training
                 / parameter selection
+            - ensemble_type : str or list of str
+                Each string refers to a type of ensemble to train,
+                or 'basic ensemble' for base behavior.
+            - ensemble_split : float, int or None
+                If a an ensemble_type that requires fitting is passed,
+                i.e., not "basic ensemble", then this param is
+                the porportion of the train_data within each fold to
+                use towards fitting the ensemble.
             - search_type : {'random', 'grid', None}
                 The type of parameter search to conduct if any.
+            - model_type_params : int, str or list of
+                The index or str name of the param index for `model_type`
             - scaler_params : int, str or list of
                 The index or str name of the param index for `scaler`
             - feat_selector_params : int, str or list of
@@ -108,9 +113,6 @@ class Model():
             - extra_params : dict
                 The dictionary of any extra params to be passed to models or
                 data scalers.
-
-        model_type_params : int, str or list of
-            The index or str name of the param index for `model_type`
 
         CV : ABCD_ML CV
             The class defined ABCD_ML CV object for defining
@@ -139,19 +141,12 @@ class Model():
             The encoder or list of encoders, used in the case of targets
             needing to be transformed in some way.
 
-        covar_scopes : filler
+        covar_scopes : dict
+            Contains the different cols / scopes for each type
+            of covar.
 
-        cat_encoders : filler
-
-        ensemble_type : str or list of str
-            Each string refers to a type of ensemble to train,
-            or 'basic ensemble' for base behavior.
-
-        ensemble_split : float, int or None
-            If a an ensemble_type that requires fitting is passed,
-            i.e., not "basic ensemble", then this param is
-            the porportion of the train_data within each fold to
-            use towards fitting the ensemble.
+        cat_encoders : list of tuples
+            The encoders for conv'ing categorical.
 
         calc_base_feature_importances : bool
             If set to True, will store the base feature importances
@@ -186,7 +181,6 @@ class Model():
         '''
 
         # Set class parameters
-        self.model_types = conv_to_list(model_types)
         self.CV = CV
         self.data_keys = data_keys
         self.covars_keys = covars_keys
@@ -200,6 +194,7 @@ class Model():
         self._print = _print
 
         # Un-pack ML_params
+        self.model_types = conv_to_list(ML_params['model_type'])
         self.metrics = conv_to_list(ML_params['metric'])
         self.imputers = conv_to_list(ML_params['imputer'])
         self.imputer_scopes = conv_to_list(ML_params['imputer_scope'])
@@ -210,6 +205,8 @@ class Model():
         self.n_splits = ML_params['n_splits']
         self.n_repeats = ML_params['n_repeats']
         self.int_cv = ML_params['int_cv']
+        self.ensemble_types = conv_to_list(ML_params['ensemble_type'])
+        self.ensemble_split = ML_params['ensemble_split']
         self.class_weight = ML_params['class_weight']
         self.n_jobs = ML_params['n_jobs']
         self.n_iter = ML_params['n_iter']
@@ -219,7 +216,7 @@ class Model():
             ML_params['calc_base_feature_importances']
         self.calc_shap_feature_importances =\
             ML_params['calc_shap_feature_importances']
-        self.extra_params = ML_params['extra_params']
+        self.extra_params = ML_params['extra_params'].copy()
 
         # Un-pack param search ML_params
         self.search_type = ML_params['search_type']
@@ -232,9 +229,6 @@ class Model():
             conv_to_list(ML_params['sampler_params'])
         self.feat_selector_params =\
             conv_to_list(ML_params['feat_selector_params'])
-
-        self.ensemble_types = conv_to_list(ensemble_type)
-        self.ensemble_split = ensemble_split
 
         # Default params just sets (sub)problem type for now
         self._set_default_params()
@@ -1216,7 +1210,7 @@ class Model():
     def _make_model_pipeline(self, model, model_type):
         '''Provided a model & model type (model str indicator),
         return a sklearn pipeline with proceeding self.col_scalers,
-        and then self.samplers, then self.feat_selectors
+        and then imputers, then self.samplers, then self.feat_selectors
         (which should all just be empty list if None) and then the model,
         w/ model_type as its unique name.
 
@@ -1237,7 +1231,7 @@ class Model():
             scalers, and then the passed in model.
         '''
 
-        steps = self.imputers + self.col_scalers + self.samplers \
+        steps = self.col_scalers + self.imputers + self.samplers \
             + self.feat_selectors + [(model_type, model)]
 
         model_pipeline = Pipeline(steps)
@@ -1417,6 +1411,7 @@ class Model():
     def _proc_X_test(self, test_data):
 
         scalers = self._get_objs_from_pipeline(self.col_scalers)
+        imputers = self._get_objs_from_pipeline(self.imputers)
         feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 
         # Grab the test data, X as df + copy
@@ -1427,6 +1422,9 @@ class Model():
         # Apply all data scalers, in place
         for scaler in scalers:
             X_test[feat_names] = scaler.transform(X_test)
+
+        for imputer in imputers:
+            X_test[feat_names] = imputer.transform(X_test)
 
         # Apply all feature selectors, in place
         for feat_selector in feat_selectors:
@@ -1442,6 +1440,7 @@ class Model():
     def _proc_X_train(self, train_data):
 
         scalers = self._get_objs_from_pipeline(self.col_scalers)
+        imputers = self._get_objs_from_pipeline(self.imputers)
         samplers = self._get_objs_from_pipeline(self.samplers)
         feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 
@@ -1449,6 +1448,8 @@ class Model():
 
         for scaler in scalers:
             X_train = scaler.transform(X_train)
+        for imputer in imputers:
+            X_train = imputer.transform(X_train)
         for sampler in samplers:
             X_train, y_train = sampler.fit_resample(X_train, y_train)
         for feat_selector in feat_selectors:

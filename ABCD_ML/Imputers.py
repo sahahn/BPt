@@ -18,7 +18,7 @@ class Regular_Imputer():
     def fit(self, X, y=None):
 
         impute_X = self.get_impute_X(X)
-        self.imputer.fit(impute_X)
+        self.imputer.fit(impute_X, y)
 
     def get_impute_X(self, X):
 
@@ -62,6 +62,9 @@ class Regular_Imputer():
 
         self.fit(X, y)
         return self.transform(X)
+
+    def set_params(self, **params):
+        self.imputer.set_params(**params)
 
 
 class Categorical_Imputer():
@@ -181,6 +184,9 @@ class Categorical_Imputer():
 
         self.fit(X, y)
         return self.transform(X)
+
+    def set_params(self, **params):
+        self.imputer.set_params(**params)
 
 
 IMPUTERS = {

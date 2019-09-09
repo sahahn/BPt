@@ -11,12 +11,16 @@ from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
 
-def Set_Default_ML_Params(self, problem_type='default', metric='default',
-                          imputer='default', imputer_scope='default',
-                          scaler='default', scaler_scope='default',
+def Set_Default_ML_Params(self, model_type='default', problem_type='default',
+                          metric='default', imputer='default',
+                          imputer_scope='default', scaler='default',
+                          scaler_scope='default',
                           sampler='default', feat_selector='default',
                           n_splits='default', n_repeats='default',
-                          int_cv='default', search_type='default',
+                          int_cv='default', ensemble_type='default',
+                          ensemble_split='default',
+                          search_type='default',
+                          model_type_params='default',
                           scaler_params='default',
                           sampler_params='default',
                           feat_selector_params='default',
@@ -35,6 +39,17 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 
     Parameters
     ----------
+    model_type : str or list of str
+        Each string refers to a type of model to train.
+        If a list of strings is passed then an ensemble model
+        will be created over all individual models.
+
+        For a full list of supported options call:
+        :func:`Show_Model_Types`
+
+        If 'default', and not already defined, set to 'linear'
+        (default = 'default')
+
     problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
 
         - 'regression' : For ML on float or ordinal target data.
@@ -187,6 +202,44 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         If 'default', and not already defined, set to 3
         (default = 'default')
 
+    ensemble_type :  str or list of str,
+        Each string refers to a type of ensemble to train,
+        or 'basic ensemble' (default) for base behavior.
+        Base ensemble behavior is either to not ensemble,
+        if only one model type is passed,
+        or when multiple model types are passed,
+        to simply train each one independently and
+        average the predictions at test time (or max vote).
+
+        The user can optionally pass other ensemble types,
+        anything but 'basic ensemble' will require an
+        ensemble split though, which is an additional
+        train/val split on the training set, where the
+        val/ensemble split, is used to fit the ensemble object.
+
+        If a list is passed to ensemble_type, then every
+        item in the list must be a valid str indicator for
+        a non 'basic ensemble' ensemble type, and each ensemble
+        object passed will be fitted independly and then averaged
+        using the 'basic ensemble' behvaior... so an ensemble of ensembles.
+
+        For a full list of supported options call:
+        :func:`Show_Ensemble_Types`
+
+        If 'default', and not already defined, set to 'basic ensemble'
+        (default = 'default')
+
+    ensemble_split : float, int or None
+        If a an ensemble_type(s) that requires fitting is passed,
+        i.e., not "basic ensemble", then this param is
+        the porportion of the train_data within each fold to
+        use towards fitting the ensemble objects.
+        If multiple ensembles are passed, they are all
+        fit with the same fold of data.
+
+        If 'default', and not already defined, set to .2
+        (default = 'default')
+
     search_type : {'random', 'grid', None, 'default'}
         The type of parameter search to conduct if any.
 
@@ -202,6 +255,23 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
             this will lead to an error.
 
         If 'default', and not already defined, set to None
+        (default = 'default')
+
+    model_type_params : int, str, or list of
+        Each `model_type` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `model_type_params` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `model_type`.
+        Likewise with `model_type`, if passed list input, this means
+        a list was passed to `model_type` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `model_type`, can be shown by calling :func:`Show_Model_Types`
+
+        If 'default', and not already defined, set to 0
         (default = 'default')
 
     scaler_params : int, str, or list of
@@ -349,6 +419,13 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
     default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
                        'categorical': 'weighted roc auc'}
 
+    if model_type != 'default':
+        self.default_ML_params['model_type'] = model_type
+
+    elif 'model_type' not in self.default_ML_params:
+        self.default_ML_params['model_type'] = 'linear'
+        self._print('No default model type passed, set to linear.')
+
     if problem_type != 'default':
         problem_type = problem_type.lower()
         assert problem_type in default_metrics, 'Invalid problem type passed!'
@@ -441,12 +518,33 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self.default_ML_params['int_cv'] = 3
         self._print('No default num internal CV splits passed, set to 3')
 
+    if ensemble_type != 'default':
+        self.default_ML_params['ensemble_type'] = ensemble_type
+
+    elif 'ensemble_type' not in self.default_ML_params:
+        self.default_ML_params['ensemble_type'] = 'basic ensemble'
+        self._print('No default ensemble type passed, set to basic ensemble')
+
+    if ensemble_split != 'default':
+        self.default_ML_params['ensemble_split'] = ensemble_split
+
+    elif 'ensemble_split' not in self.default_ML_params:
+        self.default_ML_params['ensemble_split'] = .2
+        self._print('No default ensemble split passed, set to .2')
+
     if search_type != 'default':
         self.default_ML_params['search_type'] = search_type
 
     elif 'search_type' not in self.default_ML_params:
         self.default_ML_params['search_type'] = None
         self._print('No default search type passed, set to None')
+
+    if model_type_params != 'default':
+        self.default_ML_params['model_type_params'] = model_type_params
+
+    elif 'model_type_params' not in self.default_ML_params:
+        self.default_ML_params['model_type_params'] = 0
+        self._print('No default model_type param ind passed, set to 0')
 
     if scaler_params != 'default':
         self.default_ML_params['scaler_params'] = scaler_params
@@ -680,12 +778,12 @@ def _ML_print(self, *args, **kwargs):
         _print(*args, **kwargs)
 
 
-def Evaluate(self, model_type, run_name=None, problem_type='default',
+def Evaluate(self, model_type='default', run_name=None, problem_type='default',
              metric='default', imputer='default', imputer_scope='default',
              scaler='default', scaler_scope='default',
              sampler='default', feat_selector='default', n_splits='default',
              n_repeats='default', int_cv='default',
-             ensemble_type='basic ensemble', ensemble_split=.2,
+             ensemble_type='default', ensemble_split='default',
              search_type='default', model_type_params=0,
              scaler_params='default', sampler_params='default',
              feat_selector_params='default', class_weight='default',
@@ -699,13 +797,7 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
 
     Parameters
     ----------
-    model_type : str or list of str
-        Each string refers to a type of model to train.
-        If a list of strings is passed then an ensemble model
-        will be created over all individual models.
-
-        For a full list of supported options call:
-        :func:`Show_Model_Types`
+    model_type :
 
     run_name : str or None, optional
         All results from `Evaluate`, or rather the metrics are
@@ -726,57 +818,10 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
     n_splits :
     n_repeats :
     int_cv :
-
-    ensemble_type : str or list of str,
-        Each string refers to a type of ensemble to train,
-        or 'basic ensemble' (default) for base behavior.
-        Base ensemble behavior is either to not ensemble,
-        if only one model type is passed,
-        or when multiple model types are passed,
-        to simply train each one independently and
-        average the predictions at test time (or max vote).
-
-        The user can optionally pass other ensemble types,
-        anything but 'basic ensemble' will require an
-        ensemble split though, which is an additional
-        train/val split on the training set, where the
-        val/ensemble split, is used to fit the ensemble object.
-
-        If a list is passed to ensemble_type, then every
-        item in the list must be a valid str indicator for
-        a non 'basic ensemble' ensemble type, and each ensemble
-        object passed will be fitted independly and then averaged
-        using the 'basic ensemble' behvaior... so an ensemble of ensembles.
-
-        For a full list of supported options call:
-        :func:`Show_Ensemble_Types`
-
-    ensemble_split : float, int or None
-        If a an ensemble_type(s) that requires fitting is passed,
-        i.e., not "basic ensemble", then this param is
-        the porportion of the train_data within each fold to
-        use towards fitting the ensemble objects.
-        If multiple ensembles are passed, they are all
-        fit with the same fold of data.
-
+    ensemble_type :
+    ensemble_split :
     search_type :
-
-    model_type_params : int, str, or list of
-        Each `model_type` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `model_type_params` is automatically
-        set to default 0.
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `model_type`.
-        Likewise with `model_type`, if passed list input, this means
-        a list was passed to `model_type` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `model_type`, can be shown by calling :func:`Show_Model_Types`
-
-        (default = 0)
-
+    model_type_params :
     scaler_params :
     sampler_params :
     feat_selector_params :
@@ -829,24 +874,19 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
     ML_params = self._make_ML_params(args=locals())
 
     # Print the params being used
-    self._print_model_params(model_type, ML_params, ensemble_type,
-                             ensemble_split, model_type_params,
-                             test=False)
+    self._print_model_params(ML_params, test=False)
 
-    run_name = self._get_avaliable_eval_scores_name(run_name, model_type)
+    run_name = self._get_avaliable_eval_scores_name(run_name,
+                                                    ML_params['model_type'])
     self._print()
 
     # Save this specific set of settings
     run_settings = ML_params.copy()
-    run_settings.update({'model_type': model_type, 'run_name': run_name,
-                         'ensemble_type': ensemble_type,
-                         'ensemble_split': ensemble_split,
-                         'model_type_params': model_type_params})
+    run_settings.update({'run_name': run_name})
     self.eval_settings[run_name] = run_settings
 
     # Init the Model object with modeling params
-    self._init_model(model_type, ML_params, ensemble_type, ensemble_split,
-                     model_type_params)
+    self._init_model(ML_params)
 
     # Evaluate the model
     train_scores, scores =\
@@ -869,16 +909,16 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
     return score_list
 
 
-def Test(self, model_type, problem_type='default', train_subjects=None,
-         test_subjects=None, metric='default', scaler='default',
-         scaler_scope='default', sampler='default', feat_selector='default',
-         int_cv='default', ensemble_type='basic ensemble', ensemble_split=.2,
-         search_type='default', model_type_params=0,
-         scaler_params='default', sampler_params='default',
-         feat_selector_params='default', class_weight='default',
-         n_jobs='default', n_iter='default', data_to_use='default',
-         compute_train_score='default', random_state='default',
-         calc_base_feature_importances='default',
+def Test(self, model_type='default', problem_type='default',
+         train_subjects=None, test_subjects=None, metric='default',
+         scaler='default', scaler_scope='default', sampler='default',
+         feat_selector='default', int_cv='default', ensemble_type='default',
+         ensemble_split='default', search_type='default',
+         model_type_params='default', scaler_params='default',
+         sampler_params='default', feat_selector_params='default',
+         class_weight='default', n_jobs='default', n_iter='default',
+         data_to_use='default', compute_train_score='default',
+         random_state='default', calc_base_feature_importances='default',
          calc_shap_feature_importances='default', extra_params='default',
          **kwargs):
     '''Class method used to evaluate a specific model / data scaling
@@ -943,13 +983,10 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
     ML_params = self._make_ML_params(args=locals())
 
     # Print the params being used
-    self._print_model_params(model_type, ML_params, ensemble_type,
-                             ensemble_split, model_type_params,
-                             test=True)
+    self._print_model_params(ML_params, test=True)
 
     # Init the Model object with modeling params
-    self._init_model(model_type, ML_params, ensemble_type, ensemble_split,
-                     model_type_params)
+    self._init_model(ML_params)
 
     # If not train subjects or test subjects passed, use class
     if train_subjects is None:
@@ -1064,8 +1101,7 @@ def _make_ML_params(self, args):
     return ML_params
 
 
-def _print_model_params(self, model_type, ML_params, ensemble_type,
-                        ensemble_split, model_type_params, test=False):
+def _print_model_params(self, ML_params, test=False):
 
     if test:
         self._print('Running Test with:')
@@ -1074,14 +1110,14 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
 
     self._print('problem_type =', ML_params['problem_type'])
 
-    self._print('model_type =', model_type)
-    self._print('model_type_params =', model_type_params)
+    self._print('model_type =', ML_params['model_type'])
+    self._print('model_type_params =', ML_params['model_type_params'])
 
-    if isinstance(model_type, list):
-        self._print('ensemble_type =', ensemble_type)
+    if isinstance(ML_params['model_type'], list):
+        self._print('ensemble_type =', ML_params['ensemble_type'])
 
-        if ensemble_type != 'basic ensemble':
-            self._print('ensemble_split =', ensemble_split)
+        if ML_params['ensemble_type'] != 'basic ensemble':
+            self._print('ensemble_split =', ML_params['ensemble_split'])
 
     self._print('metric =', ML_params['metric'])
 
@@ -1130,8 +1166,7 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
     self._print()
 
 
-def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
-                model_type_params):
+def _init_model(self, ML_params):
 
     problem_types = {'binary': Binary_Model, 'regression': Regression_Model,
                      'categorical': Categorical_Model}
@@ -1143,11 +1178,9 @@ def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
 
     covar_scopes, cat_encoders = self._get_covar_scopes()
 
-    self.Model = Model(model_type, ML_params, model_type_params, self.CV,
-                       self.data_keys,
-                       self.covars_keys, self.cat_keys, self.targets_key,
-                       self.targets_encoder, covar_scopes, cat_encoders,
-                       ensemble_type, ensemble_split,
+    self.Model = Model(ML_params, self.CV, self.data_keys, self.covars_keys,
+                       self.cat_keys, self.targets_key, self.targets_encoder,
+                       covar_scopes, cat_encoders,
                        self.ML_verbosity['progress_bar'],
                        self.ML_verbosity['param_search_verbose'],
                        self._ML_print)

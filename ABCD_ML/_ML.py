@@ -65,11 +65,37 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 
         (default = 'default')
 
-    imputer : bleh
-        bleh
+    imputer : str, list or None, optional
+        If there is any missing data (NaN's) that have been kept
+        within data or covars, then an imputation strategy must be
+        defined! This param controls the imputer to use, along with
+        `imputer_scope` to determine what each imputer should cover.
+        A single str can be passed, or a list of strs.
 
-    imputer_scope : bleh
-        bleh
+        There are a number of pre-defined imputers to select from,
+        but the user can also pass a valid model_type str indicator here.
+        This model_type str refers to the base_estimator to be used in
+        an IterativeImputer, see :class:`sklearn.impute.IterativeImputer`
+
+        If a model_type str is passed, then it must be a valid model_type
+        for whatever scope is passed additional. If the `imputer_scope`
+        passed is 'float' or specific set of column names, then a regression
+        model type will be selected. If the scope is 'binary' or 'categorical',
+        then a binary / multiclass model type will be selected.
+        (Note: categorical cols are converted to multiclass first if nec.)
+
+    imputer_scope : str, list or None, optional
+        The `imputer_scope` param determines the scope,
+        or rather which columns the imputer should fill
+        (in data / covars), for each `imputer` passed.
+        Options are,
+
+        - 'float' or 'f' : To select just float / ordinal data
+        - 'binary' or 'b' : To select just binary type data
+        - 'categorical' or 'c' : To select any categorical type data\
+                                  regardless of encoding (e.g. one hot)
+        - array-like of strs : Can pass specific col names in as array-like\
+                               to select only those cols.
 
     scaler : str, list or None, optional
         `scaler` refers to the type of scaling to apply
@@ -90,7 +116,7 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         list with index corresponding to each scaler.
         If less then the number of scalers are passed, then the
         first passed scaler scope will be used for all of the
-        remaining scalers. Likewise, if not scaler is passed, this
+        remaining scalers. Likewise, if no scaler is passed, this
         parameter will be ignored!
 
         Each scaler scope can be either,
@@ -100,6 +126,8 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         - 'data' or 'd' : To apply to all loaded data columns only.
         - 'covars' or 'c' : To apply to all non-categorical covars columns\
                             only.
+        - array-like of strs : Can pass specific col names in as array-like\
+                               to select only those cols.
 
         If 'default', and not already defined, set to 'data'
         (default = 'default')
@@ -346,15 +374,17 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self.default_ML_params['imputer'] = imputer
 
     elif 'imputer' not in self.default_ML_params:
-        self.default_ML_params['imputer'] = 'default'
-        self._print('No default imputer passed, set to default')
+        self.default_ML_params['imputer'] = ['mean', 'median', 'median']
+        self._print('No default imputer passed, set to [mean, median, median]')
 
     if imputer_scope != 'default':
         self.default_ML_params['imputer_scope'] = imputer_scope
 
     elif 'imputer_scope' not in self.default_ML_params:
-        self.default_ML_params['imputer_scope'] = 'default'
-        self._print('No default imputer scope passed, set to default')
+        self.default_ML_params['imputer_scope'] =\
+            ['float', 'binary', 'categorical']
+        self._print('No default imputer scope passed, set to',
+                    '[float, binary, categorical]')
 
     if scaler != 'default':
         self.default_ML_params['scaler'] = scaler
@@ -1054,6 +1084,10 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
             self._print('ensemble_split =', ensemble_split)
 
     self._print('metric =', ML_params['metric'])
+
+    if pd.isnull(self.all_data).any().any():
+        self._print('imputer =', ML_params['imputer'])
+        self._print('imputer_scope =', ML_params['imputer_scope'])
 
     self._print('scaler =', ML_params['scaler'])
     if ML_params['scaler'] is not None:

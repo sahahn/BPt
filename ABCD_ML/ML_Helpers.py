@@ -43,12 +43,20 @@ def compute_macro_micro(scores, n_repeats, n_splits):
             np.std(scores))
 
 
+def is_array_like(in_val):
+
+    if hasattr(in_val, '__len__') and (not isinstance(in_val, str)):
+        return True
+    else:
+        return False
+
+
 def conv_to_list(in_val):
 
     if in_val is None:
         return None
 
-    if not isinstance(in_val, list):
+    if not is_array_like(in_val):
         in_val = [in_val]
 
     return in_val

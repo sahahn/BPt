@@ -1706,7 +1706,7 @@ def _get_base_covar_names(self):
     return list(base_covars)
 
 
-def _get_covar_scopes():
+def _get_covar_scopes(self):
 
     covar_scopes = {'float': [],
                     'binary': [],
@@ -1723,7 +1723,7 @@ def _get_covar_scopes():
             if isinstance(cov_encoders, tuple):
 
                 one_hot_encoder = cov_encoders[1]
-                cat_encoders.append(one_hot_encoder)
+                cat_encoders.append(cov_encoders)
 
                 categories = one_hot_encoder.categories_[0]
                 covar_df_names = [base_covar + '_' + str(c) for

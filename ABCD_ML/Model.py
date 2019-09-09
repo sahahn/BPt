@@ -256,6 +256,7 @@ class Model():
         self.user_passed_objs = {}
         self.shap_dfs = []
         self.fit_params = {}
+        self.nans = False
 
         # Flags for feat importance things
         self.ensemble_flag = False
@@ -329,7 +330,8 @@ class Model():
                 self._print('No hyper-param search will be conducted.')
                 self._print()
 
-            self.model_type_param_inds = [0 for i in range(len(self.model_types))]
+            self.model_type_param_inds =\
+                [0 for i in range(len(self.model_types))]
 
     def _process_feat_selectors(self):
         '''Class function to convert input feat selectors to a final
@@ -350,7 +352,7 @@ class Model():
                                           self.feat_selector_param_inds)
 
             # If any base estimators, replace with a model
-            self._replace_base_estimator()
+            self._replace_base_rfe_estimator()
 
         else:
             self.feat_selectors = []
@@ -370,49 +372,103 @@ class Model():
 
     def _process_imputers(self):
 
-        conv_imputer_strs = proc_input(self.imputers)
-        self._update_extra_params(self.imputers, conv_imputer_strs)
+        if self.imputers is not None:
 
-        self.imputers = [self._get_imputer(imputer_str, scope) for
-                         imputer_str, scope in zip(conv_imputer_strs, self.imputer_scopes)]
-        
+            conv_imputer_strs = proc_input(self.imputers)
+            self._update_extra_params(self.imputers, conv_imputer_strs)
+
+            # If more scopes then imputers, assume passed inds
+            if len(self.imputer_scopes) > len(conv_imputer_strs):
+                self.imputer_scopes = [self.imputer_scopes]
+
+            # Just warn if not equal
+            if len(conv_imputer_strs) != len(self.imputer_scopes):
+                self._print('Warning: non equal number of imputers passed as',
+                            'scopes! imputers without scope will be ignored.')
+
+            self.imputers = [self._get_imputer(imputer_str, scope) for
+                             imputer_str, scope in zip(conv_imputer_strs,
+                             self.imputer_scopes)]
+
+            # Remove any non valid imputers
+            while None in self.imputers:
+                self.imputers.remove(None)
+
+        else:
+            self.imputers = []
 
     def _get_imputer(self, imputer_str, scope):
 
+        # First grab the correct params based on scope
         if scope == 'c' or scope == 'categorical':
+            scope = 'categorical'
+
             cat_keys = self.covar_scopes['categorical']
             ordinal_keys = self.covar_scopes['ordinal categorical']
 
             cat_inds = [self._get_inds_from_scope(k) for k in cat_keys]
-            ordinal_inds = self._get_inds_from_scope(ordinal_inds)
+            ordinal_inds = self._get_inds_from_scope(ordinal_keys)
             inds = []
+
+            # If scope doesn't match any actual data, skip
+            if len(cat_inds) == 0 and len(ordinal_inds) == 0:
+                return None
 
         else:
 
             if scope == 'b' or scope == 'binary':
+                scope = 'binary'
                 keys = self.covar_scopes['binary']
             elif scope == 'f' or scope == 'float':
+                scope = 'float'
                 keys = 'a'
             else:
+                scope = 'custom'
                 keys = scope
 
             inds = self._get_inds_from_scope(keys)
             cat_inds = []
             ordinal_inds = []
 
-        # For now
-        base_estimator = None
+            # If scope doesn't match any actual data, skip
+            if len(inds) == 0:
+                return None
+
+        # Determine base estimator based off str + scope
+        base_estimator = self._proc_imputer_base_estimator(imputer_str, scope)
 
         imputer = get_imputer(imputer_str,
-                              inds, encoder_inds,
+                              inds, cat_inds,
                               ordinal_inds, self.cat_encoders,
                               base_estimator)
-        
-        # CHANGE THIS!
-        name = imputer_str
+
+        name = 'imputer_' + imputer_str + '_' + scope
 
         return (name, imputer)
 
+    def _proc_imputer_base_estimator(self, imputer_str, scope):
+
+        # For now, custom passed params assume and only work with
+        # float/regression type.
+        if scope == 'float' or scope == 'custom':
+            problem_type = 'regression'
+
+        # Assumes for model_types binary and multiclass have the same options
+        else:
+            problem_type = 'binary'
+
+        avaliable_by_type =\
+            self._get_avaliable_by_type(AVALIABLE_MODELS, [imputer_str],
+                                        problem_type)
+
+        # If a not a valid model type, then no base estimator
+        if imputer_str in avaliable_by_type:
+            base_model_str = avaliable_by_type[imputer_str]
+            base_estimator = self._get_base_model(base_model_str, 0, None)[0]
+        else:
+            base_estimator = None
+
+        return base_estimator
 
     def _process_scalers(self):
         '''Processes self.scaler to be a list of
@@ -431,13 +487,15 @@ class Model():
                                           conv_scaler_strs,
                                           self.scaler_param_inds)
 
+            # If more scopes then scalers passed, assume passed inds
             if len(self.scaler_scopes) > len(scalers):
-                self._print('Warning! More scaler scopes passed than scalers')
-                self._print('Extra have been truncated.')
-                self.scaler_scopes = self.scaler_scopes[:len(scalers)]
+                self.scaler_scopes = [self.scaler_scopes]
 
             while len(scalers) != len(self.scaler_scopes):
                 self.scaler_scopes.append(self.scaler_scopes[0])
+                self._print('Warning: non equal number of scalers passed as',
+                            'scopes! Filling remaining scopes with',
+                            self.scaler_scopes[0])
 
             # Create a list of tuples (just like self.scalers), but
             # with column versions of the scalers.
@@ -604,9 +662,12 @@ class Model():
 
         return check
 
-    def _get_avaliable_by_type(self, avaliable, in_strs):
+    def _get_avaliable_by_type(self, avaliable, in_strs, problem_type='class'):
 
-        avaliable_by_type = avaliable[self.problem_type]
+        if problem_type == 'class':
+            problem_type = self.problem_type
+
+        avaliable_by_type = avaliable[problem_type]
 
         for s in in_strs:
             if 'user passed' in s:
@@ -700,7 +761,7 @@ class Model():
             return new_objs_and_params
         return objs_and_params
 
-    def _replace_base_estimator(self):
+    def _replace_base_rfe_estimator(self):
         '''Check feat selectors for a RFE model'''
 
         for i in range(len(self.feat_selectors)):
@@ -856,6 +917,11 @@ class Model():
 
         # Ensure data being used is just the selected columns
         data = data[self.all_keys]
+
+        # Check for any NaN
+        self.nans = pd.isnull(data).any().any()
+        if self.nans is False:
+            self.imputers = []
 
         # Assume the train_subjects and test_subjects passed here are final.
         train_data = data.loc[train_subjects]
@@ -1171,8 +1237,8 @@ class Model():
             scalers, and then the passed in model.
         '''
 
-        steps = self.imputers + self.col_scalers + self.samplers + self.feat_selectors \
-            + [(model_type, model)]
+        steps = self.imputers + self.col_scalers + self.samplers \
+            + self.feat_selectors + [(model_type, model)]
 
         model_pipeline = Pipeline(steps)
 
@@ -1503,9 +1569,19 @@ class Categorical_Model(Model):
 
         return check
 
-    def _get_avaliable_by_type(self, avaliable, in_strs):
+    def _get_avaliable_by_type(self, avaliable, in_strs, problem_type='class'):
 
-        avaliable_by_type = avaliable[self.problem_type][self.sub_problem_type]
+        if problem_type == 'class':
+            avaliable_by_type =\
+                avaliable[self.problem_type][self.sub_problem_type]
+        else:
+            if problem_type in avaliable[self.problem_type]:
+                avaliable_by_type =\
+                    avaliable[self.problem_type][problem_type]
+            elif problem_type in avaliable:
+                avaliable_by_type = avaliable[problem_type]
+            else:
+                avaliable_by_type = {}
 
         for s in in_strs:
             if 'user passed' in s:

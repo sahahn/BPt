@@ -177,13 +177,16 @@ def process_categorical_input(data, key, drop='one hot', drop_percent=None,
 
     # Remove the original key column from the dataframe
     data = data.drop(key, axis=1)
+    ind = None
 
     if drop == 'dummy':
         max_col = np.sum(data[new_keys]).idxmax()
         data = data.drop(max_col, axis=1)
         _print('dummy coding by dropping col', max_col)
 
-    return data, new_keys, (label_encoder, encoder)
+        ind = new_keys.index(max_col)
+
+    return data, new_keys, (label_encoder, encoder, ind)
 
 
 def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,

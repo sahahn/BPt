@@ -102,6 +102,7 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
 
     for covar in covars:
         self._show_covar_dist(covar, covars_df, cat_show_original_name, show)
+        self._print()
 
 
 def _show_covar_dist(self, covar, covars_df, cat_show_original_name,
@@ -131,6 +132,8 @@ def _show_covar_dist(self, covar, covars_df, cat_show_original_name,
 
                 covar_df[dropped_name] =\
                     covar_df[dropped_name].astype('category')
+            else:
+                dropped_name = None
 
             covar_df = covar_df[covar_df_names]
 
@@ -138,7 +141,8 @@ def _show_covar_dist(self, covar, covars_df, cat_show_original_name,
             covar_df = covars_df[[covar]].copy()
 
         self._show_dist(covar_df, covar, cat_show_original_name,
-                        encoders=cov_encoders, original_key=covar, show=show)
+                        encoders=cov_encoders, original_key=covar,
+                        dropped_name=dropped_name, show=show)
 
     # Regression
     elif covar in covars_df:
@@ -153,14 +157,14 @@ def _show_covar_dist(self, covar, covars_df, cat_show_original_name,
 
 
 def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
-               original_key=None, show=True):
+               original_key=None, dropped_name=None, show=True):
 
     # Ensure works with NaN data loaded
     no_nan_subjects = data[~data.isna().any(axis=1)].index
     nan_subjects = data[data.isna().any(axis=1)].index
     no_nan_data = data.loc[no_nan_subjects]
 
-    self._print('Show', plot_key, 'distribution:')
+    self._print('--', plot_key, '--')
 
     # Binary or categorical
     if no_nan_data.dtypes[0].name == 'category':
@@ -187,6 +191,10 @@ def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
         display_df = display_df[['Original Value', 'Count', 'Frequency']]
 
         self._display_df(display_df)
+
+        if dropped_name is not None:
+            self._print('Note:', dropped_name, 'was dropped due to dummy',
+                        'coding but is still shown below.')
 
         display_names = sums.index
         if cat_show_original_name:

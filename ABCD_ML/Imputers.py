@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
@@ -22,12 +23,12 @@ class Regular_Imputer():
     def get_impute_X(self, X):
 
         if self.valid_mask is None:
-            self.valid_mask = ~np.isnan(X).any(axis=0)
+            self.valid_mask = ~pd.isnull(X).any(axis=0)
 
         valid_extra_X = X[:, self.valid_mask]
 
         # Just in case this col didnt have NaN in train, but does in test
-        valid_extra_X[np.isnan(valid_extra_X)] = 0
+        valid_extra_X[pd.isnull(valid_extra_X)] = 0
 
         ind = valid_extra_X.shape[1]
         impute_shape = (np.shape(X)[0], ind + len(self.inds))
@@ -84,12 +85,12 @@ class Categorical_Imputer():
     def get_impute_X(self, X):
 
         if self.valid_mask is None:
-            self.valid_mask = ~np.isnan(X).any(axis=0)
+            self.valid_mask = ~pd.isnull(X).any(axis=0)
 
         valid_extra_X = X[:, self.valid_mask]
 
         # Just in case this col didnt have NaN in train, but does in test
-        valid_extra_X[np.isnan(valid_extra_X)] = 0
+        valid_extra_X[pd.isnull(valid_extra_X)] = 0
 
         ind = valid_extra_X.shape[1]
         impute_shape = (np.shape(X)[0],
@@ -126,7 +127,11 @@ class Categorical_Imputer():
         for i in range(len(self.encoder_inds)):
 
             imputed_col = imputed[:, [ind+i]]
-            encoded = encoders[i].transform(imputed_col)
+            encoded = self.encoders[i][1].transform(imputed_col)
+
+            # If originally dummy coded
+            if len(self.encoders[i]) > 2:
+                encoded = np.delete(encoded, self.encoders[i][2], axis=1)
 
             X_copy[:, self.encoder_inds[i]] = encoded
 
@@ -138,16 +143,39 @@ class Categorical_Imputer():
         return X_copy
 
     def to_ordinal(self, X, encoder, inds):
+        '''encoder should be the tuple object here'''
 
         selection = X[:, inds]
-        non_nan_mask = ~np.isnan(selection).any(axis=1)
+        non_nan_mask = ~pd.isnull(selection).any(axis=1)
 
-        ordinal = encoder.inverse_transform(selection[non_nan_mask])
+        enc = encoder[1]
+        non_nan_selection = selection[non_nan_mask]
+
+        if len(encoder) > 2:
+            non_nan_selection =\
+                self.add_back_dummy_col(non_nan_selection, encoder[2])
+
+        ordinal = enc.inverse_transform(non_nan_selection)
+
         to_fill = np.full((len(non_nan_mask), 1), np.nan)
-
         to_fill[non_nan_mask] = ordinal
 
         return to_fill
+
+    def add_back_dummy_col(self, non_nan_selection, e):
+
+        nn_shape = non_nan_selection.shape
+        reverse_dummy_code = np.zeros((nn_shape[0], nn_shape[1]+1))
+
+        # Add around dropped
+        reverse_dummy_code[:, 0:e] = non_nan_selection[:, :e]
+        reverse_dummy_code[:, e+1:] = non_nan_selection[:, e:]
+
+        # Recover dropped values
+        reverse_dummy_code[:, e] =\
+            np.where(np.sum(reverse_dummy_code, axis=1) == 1, 0, 1)
+
+        return reverse_dummy_code
 
     def fit_transform(self, X, y=None):
 
@@ -160,24 +188,43 @@ IMPUTERS = {
     'median': (SimpleImputer, {'strategy': 'median'}),
     'most frequent': (SimpleImputer, {'strategy': 'most_frequent'}),
     'constant': (SimpleImputer, {'strategy': 'constant'}),
-    'iterative': (IterativeImputer, {}),
+    'iterative': (IterativeImputer, {'initial_strategy': 'mean'}),
 }
 
 
 def get_imputer(imputer_str, inds=[], encoder_inds=[], ordinal_inds=[],
                 encoders=[], base_estimator=None):
 
+    # Grab from imputer objs directly if no base estimator
     if base_estimator is None:
-        base_imputer, params = IMPUTERS[imputer_str]
-        base_imputer = base_imputer(**params)
 
-        # Categorical
+        try:
+            base_imputer_obj, params = IMPUTERS[imputer_str]
+        except KeyError:
+            print('Requested:', imputer_str, 'does not exist!')
+            print('If attempting to select a model str, make sure that str',
+                  'exists for the right problem type, where the problem type',
+                  'regression for float + custom scopes,',
+                  'and binary/multiclass for binary and categorical!')
+
+    # If base estimator, then using iterative imputer
+    else:
+        base_imputer_obj, params = IMPUTERS['iterative']
+        params['estimator'] = base_estimator
+
         if len(inds) == 0:
-            imputer = Categorical_Imputer(base_imputer, encoder_inds, ordinal_inds, encoders)
-        else:
-            imputer = Regular_Imputer(imputer, inds)
+            params['initial_strategy'] = 'median'
 
-        return imputer
+    base_imputer = base_imputer_obj(**params)
 
+    # Categorical
+    if len(inds) == 0:
 
+        imputer = Categorical_Imputer(base_imputer, encoder_inds,
+                                      ordinal_inds, encoders)
 
+    # Float or Binary
+    else:
+        imputer = Regular_Imputer(base_imputer, inds)
+
+    return imputer

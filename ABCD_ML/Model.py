@@ -36,7 +36,7 @@ class Model():
     training, scaling, handling different datatypes ect...
     '''
 
-    def __init__(self, model_types, ML_params, model_type_param_ind, CV,
+    def __init__(self, model_types, ML_params, model_type_params, CV,
                  data_keys, covars_keys, cat_keys, targets_key,
                  targets_encoder, covar_scopes, cat_encoders, ensemble_type,
                  ensemble_split, progress_bar, param_search_verbose,
@@ -85,9 +85,9 @@ class Model():
                 / parameter selection
             - search_type : {'random', 'grid', None}
                 The type of parameter search to conduct if any.
-            - scaler_param_ind : int, str or list of
+            - scaler_params : int, str or list of
                 The index or str name of the param index for `scaler`
-            - feat_selector_param_ind : int, str or list of
+            - feat_selector_params : int, str or list of
                 The index or str name of the param index for `feat_selector`
             - class_weight : str or None
                 For categorical / binary problem_types, for setting different
@@ -109,7 +109,7 @@ class Model():
                 The dictionary of any extra params to be passed to models or
                 data scalers.
 
-        model_type_param_ind : int, str or list of
+        model_type_params : int, str or list of
             The index or str name of the param index for `model_type`
 
         CV : ABCD_ML CV
@@ -224,14 +224,14 @@ class Model():
         # Un-pack param search ML_params
         self.search_type = ML_params['search_type']
 
-        self.model_type_param_inds =\
-            conv_to_list(ML_params['model_type_param_ind'])
-        self.scaler_param_inds =\
-            conv_to_list(ML_params['scaler_param_ind'])
-        self.sampler_param_inds =\
-            conv_to_list(ML_params['sampler_param_ind'])
-        self.feat_selector_param_inds =\
-            conv_to_list(ML_params['feat_selector_param_ind'])
+        self.model_type_params =\
+            conv_to_list(ML_params['model_type_params'])
+        self.scaler_params =\
+            conv_to_list(ML_params['scaler_params'])
+        self.sampler_params =\
+            conv_to_list(ML_params['sampler_params'])
+        self.feat_selector_params =\
+            conv_to_list(ML_params['feat_selector_params'])
 
         self.ensemble_types = conv_to_list(ensemble_type)
         self.ensemble_split = ensemble_split
@@ -325,12 +325,12 @@ class Model():
 
         if self.search_type is None:
 
-            if (np.array(self.model_type_param_inds) != 0).any():
+            if (np.array(self.model_type_params) != 0).any():
                 self._print('Search type is set to None!')
                 self._print('No hyper-param search will be conducted.')
                 self._print()
 
-            self.model_type_param_inds =\
+            self.model_type_params =\
                 [0 for i in range(len(self.model_types))]
 
     def _process_feat_selectors(self):
@@ -349,7 +349,7 @@ class Model():
             self.feat_selectors, self.feat_selector_params =\
                 self._get_objs_and_params(get_feat_selector_and_params,
                                           feat_selector_strs,
-                                          self.feat_selector_param_inds)
+                                          self.feat_selector_params)
 
             # If any base estimators, replace with a model
             self._replace_base_rfe_estimator()
@@ -485,7 +485,7 @@ class Model():
             scalers, scaler_params =\
                 self._get_objs_and_params(get_scaler_and_params,
                                           conv_scaler_strs,
-                                          self.scaler_param_inds)
+                                          self.scaler_params)
 
             # If more scopes then scalers passed, assume passed inds
             if len(self.scaler_scopes) > len(scalers):
@@ -583,7 +583,7 @@ class Model():
             self.samplers, self.sampler_params =\
                 self._get_objs_and_params(get_sampler_and_params,
                                           sampler_strs,
-                                          self.sampler_param_inds)
+                                          self.sampler_params)
 
             # Replace random state
             self.samplers =\
@@ -695,22 +695,22 @@ class Model():
                 self.extra_params[conv_strs[i]] =\
                     self.extra_params[orig_strs[i]]
 
-    def _get_objs_and_params(self, get_func, names, param_inds):
+    def _get_objs_and_params(self, get_func, names, params):
         '''Helper function to grab scaler / feat_selectors and
         their relevant parameter grids'''
 
         # Check + fill length of passed params + names
-        if len(param_inds) > len(names):
+        if len(params) > len(names):
             self._print('Warning! More params passed than objs')
             self._print('Extra have been truncated.')
-            param_inds = param_inds[:len(names)]
+            params = params[:len(names)]
 
-        while len(names) != len(param_inds):
-            param_inds.append(0)
+        while len(names) != len(params):
+            params.append(0)
 
         # Make the object + params based on passed settings
         objs_and_params = []
-        for name, ind in zip(names, param_inds):
+        for name, ind in zip(names, params):
             if 'user passed' in name:
 
                 user_obj = self.user_passed_objs[name]
@@ -987,11 +987,11 @@ class Model():
 
         # Train all of the models
         models = []
-        mt_and_mt_params = zip(self.model_types, self.model_type_param_inds)
-        for model_type, model_type_param_ind in mt_and_mt_params:
+        mt_and_mt_params = zip(self.model_types, self.model_type_params)
+        for model_type, model_type_params in mt_and_mt_params:
 
             models.append(self._train_model(train_data, model_type,
-                                            model_type_param_ind))
+                                            model_type_params))
 
         # If special ensemble passed, fit each one seperate
         if ensemble_data:
@@ -1087,7 +1087,7 @@ class Model():
         '''
         return y
 
-    def _train_model(self, train_data, model_type, model_type_param_ind):
+    def _train_model(self, train_data, model_type, model_type_params):
         '''Helper method to train a single model type given
         a str indicator and training data.
 
@@ -1100,7 +1100,7 @@ class Model():
             The final processed str indicator for which model_type to load from
             MODELS constant.
 
-        model_type_param_ind : int
+        model_type_params : int
             The index of the param grid / search space for the given model
             type.
 
@@ -1116,7 +1116,7 @@ class Model():
                                      return_index=True)
 
         # Create the model
-        model = self._get_model(model_type, model_type_param_ind, base_int_cv)
+        model = self._get_model(model_type, model_type_params, base_int_cv)
 
         # Data, score split
         X, y = self._get_X_y(train_data)
@@ -1126,11 +1126,11 @@ class Model():
 
         return model
 
-    def _get_model(self, model_type, model_type_param_ind, base_int_cv):
+    def _get_model(self, model_type, model_type_params, base_int_cv):
 
         # Grab the base model, model if changed, and model params grid/distr
         model, model_type, model_type_params =\
-            self._get_base_model(model_type, model_type_param_ind,
+            self._get_base_model(model_type, model_type_params,
                                  self.search_type)
 
         # Create the model pipeline object
@@ -1172,20 +1172,20 @@ class Model():
 
         return search_model
 
-    def _get_base_model(self, model_type, model_type_param_ind, search_type):
+    def _get_base_model(self, model_type, model_type_params, search_type):
 
         # Check for user passed model
         if 'user passed' in model_type:
 
             user_model = self.user_passed_objs[model_type]
-            user_model_params = user_passed_param_check(model_type_param_ind,
+            user_model_params = user_passed_param_check(model_type_params,
                                                         model_type)
 
             return user_model, model_type, user_model_params
 
         model, extra_model_params, model_type_params =\
             get_obj_and_params(model_type, MODELS, self.extra_params,
-                               model_type_param_ind, search_type)
+                               model_type_params, search_type)
 
         # Set class param values from possible model init params
         possible_params = get_possible_init_params(model)

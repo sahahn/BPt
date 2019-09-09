@@ -152,35 +152,35 @@ def user_passed_param_check(params, obj_str):
     return {}
 
 
-def get_obj_and_params(obj_str, OBJS, extra_params, param_ind, search_type):
+def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
 
     try:
         obj, param_names = OBJS[obj_str]
     except KeyError:
         print('Requested:', obj_str, 'does not exist!')
 
-    # If param ind is a str, change it to the relevant index
-    if isinstance(param_ind, str):
+    # If params is a str, change it to the relevant index
+    if isinstance(params, str):
         try:
-            param_ind = param_names.index(param_ind)
+            params = param_names.index(params)
         except ValueError:
-            print('str', param_ind, 'passed, but not found as an option for',
+            print('str', params, 'passed, but not found as an option for',
                   obj_str)
             print('Setting to default base params setting instead!')
-            param_ind = 0
+            params = 0
 
     # If passed param ind is a dict, assume that a grid of params passed
-    if isinstance(param_ind, dict):
-        base_params = param_ind.copy()
+    if isinstance(params, dict):
+        base_params = params.copy()
 
     # If not a dict passed, grab the param name, then params
     else:
 
         # Get the actual params
         try:
-            param_name = param_names[param_ind]
+            param_name = param_names[params]
         except IndexError:
-            print('Invalid param ind', param_ind, 'passed for', obj_str)
+            print('Invalid param ind', params, 'passed for', obj_str)
             print('There are only', len(param_names), 'valid param options.')
             print('Setting to default base params setting instead!')
             param_name = param_names[0]
@@ -314,14 +314,14 @@ def proc_problem_type(problem_type, avaliable_by_type):
 
 
 def show_objects(problem_type=None, obj=None,
-                 show_param_ind_options=True, show_object=False,
+                 show_params_options=True, show_object=False,
                  show_all_possible_params=False, AVALIABLE=None, OBJS=None):
 
         if obj is not None:
             objs = conv_to_list(obj)
 
             for obj in objs:
-                show_obj(obj, show_param_ind_options, show_object,
+                show_obj(obj, show_params_options, show_object,
                          show_all_possible_params, OBJS)
             return
 
@@ -330,12 +330,12 @@ def show_objects(problem_type=None, obj=None,
 
         for pt in problem_types:
                 show_type(pt, avaliable_by_type,
-                          show_param_ind_options,
+                          show_params_options,
                           show_object,
                           show_all_possible_params, OBJS)
 
 
-def show_type(problem_type, avaliable_by_type, show_param_ind_options,
+def show_type(problem_type, avaliable_by_type, show_params_options,
               show_object, show_all_possible_params, OBJS):
 
         print('Avaliable for Problem Type:', problem_type)
@@ -353,11 +353,11 @@ def show_type(problem_type, avaliable_by_type, show_param_ind_options,
                 print()
 
             elif 'user passed' not in obj_str:
-                show_obj(obj_str, show_param_ind_options, show_object,
+                show_obj(obj_str, show_params_options, show_object,
                          show_all_possible_params, OBJS)
 
 
-def show_obj(obj_str, show_param_ind_options, show_object,
+def show_obj(obj_str, show_params_options, show_object,
              show_all_possible_params, OBJS):
 
         print('- - - - - - - - - - - - - - - - - - - - ')
@@ -371,7 +371,7 @@ def show_obj(obj_str, show_param_ind_options, show_object,
                 print('Object: ', O[0])
 
         print()
-        if show_param_ind_options:
+        if show_params_options:
                 show_param_options(O[1])
 
         if show_all_possible_params:

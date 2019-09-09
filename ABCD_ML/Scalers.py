@@ -35,7 +35,7 @@ def get_scaler_objects():
     return objs
 
 
-def get_scaler_and_params(scaler_str, extra_params, param_ind, search_type):
+def get_scaler_and_params(scaler_str, extra_params, params, search_type):
     '''Returns a scaler based on proced str indicator input,
 
     Parameters
@@ -51,7 +51,7 @@ def get_scaler_and_params(scaler_str, extra_params, param_ind, search_type):
         Where method param is a valid argument for that method,
         and method in this case is the str indicator.
 
-    param_ind : int
+    params : int
         The index of the params to use.
 
     Returns
@@ -64,13 +64,13 @@ def get_scaler_and_params(scaler_str, extra_params, param_ind, search_type):
     '''
 
     scaler, extra_scaler_params, scaler_params =\
-        get_obj_and_params(scaler_str, SCALERS, extra_params, param_ind,
+        get_obj_and_params(scaler_str, SCALERS, extra_params, params,
                            search_type)
 
     return scaler(**extra_scaler_params), scaler_params
 
 
-def Show_Scalers(self, scaler=None, show_param_ind_options=False,
+def Show_Scalers(self, scaler=None, show_params_options=False,
                  show_scaler_object=False,
                  show_all_possible_params=False):
     '''Print out the avaliable data scalers.
@@ -83,7 +83,7 @@ def Show_Scalers(self, scaler=None, show_param_ind_options=False,
         in order to show information for only that (or those)
         data scalers
 
-    show_param_ind_options : bool, optional
+    show_params_options : bool, optional
         Flag, if set to True, then will display the ABCD_ML
         param ind options for each data scaler.
 
@@ -121,16 +121,16 @@ def Show_Scalers(self, scaler=None, show_param_ind_options=False,
         if isinstance(scaler, str):
                 scaler = [scaler]
         for scaler_str in scaler:
-                show_scaler(scaler_str, show_param_ind_options,
+                show_scaler(scaler_str, show_params_options,
                             show_scaler_object, show_all_possible_params)
         return
 
     for scaler in SCALERS:
-        show_scaler(scaler, show_param_ind_options,
+        show_scaler(scaler, show_params_options,
                     show_scaler_object, show_all_possible_params)
 
 
-def show_scaler(scaler, show_param_ind_options, show_scaler_object,
+def show_scaler(scaler, show_params_options, show_scaler_object,
                 show_all_possible_params):
 
     print('- - - - - - - - - - - - - - - - - - - - ')
@@ -144,7 +144,7 @@ def show_scaler(scaler, show_param_ind_options, show_scaler_object,
         print('Scaler Object: ', S[0])
 
     print()
-    if show_param_ind_options:
+    if show_params_options:
         show_param_options(S[1])
 
     if show_all_possible_params:

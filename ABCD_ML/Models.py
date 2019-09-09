@@ -127,16 +127,16 @@ MODELS = {
 
 
 def Show_Models(self, problem_type=None, model_type_str=None,
-                param_ind_options=False, show_object=False,
+                params_options=False, show_object=False,
                 possible_params=False):
         '''Just calls Show_Model_Types.'''
 
-        self.Show_Model_Types(problem_type, model_type_str, param_ind_options,
+        self.Show_Model_Types(problem_type, model_type_str, params_options,
                               show_object, possible_params)
 
 
 def Show_Model_Types(self, problem_type=None, model_type_str=None,
-                     param_ind_options=False, show_object=False,
+                     params_options=False, show_object=False,
                      possible_params=False):
         '''Print out the avaliable machine learning models,
         optionally restricted by problem type and other diagnostic args.
@@ -161,7 +161,7 @@ def Show_Model_Types(self, problem_type=None, model_type_str=None,
 
                 (default = None)
 
-        param_ind_options : bool, optional
+        params_options : bool, optional
             Flag, if set to True, then will display the ABCD_ML
             param ind options for each model.
 
@@ -191,5 +191,5 @@ def Show_Model_Types(self, problem_type=None, model_type_str=None,
         print('is listed as ("str indicator")')
         print()
 
-        show_objects(problem_type, model_type_str, param_ind_options,
+        show_objects(problem_type, model_type_str, params_options,
                      show_object, possible_params, AVALIABLE, MODELS)

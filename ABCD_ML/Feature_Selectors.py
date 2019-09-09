@@ -68,7 +68,7 @@ SELECTORS = {
 }
 
 
-def get_feat_selector_and_params(feat_selector_str, extra_params, param_ind,
+def get_feat_selector_and_params(feat_selector_str, extra_params, params,
                                  search_type):
     '''Returns a scaler based on proced str indicator input,
 
@@ -85,7 +85,7 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, param_ind,
         Where method param is a valid argument for that method,
         and method in this case is the str indicator.
 
-    param_ind : int
+    params : int
         The index of the params to use.
 
     Returns
@@ -99,7 +99,7 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, param_ind,
 
     feat_selector, extra_feat_selector_params, feat_selector_params =\
         get_obj_and_params(feat_selector_str, SELECTORS, extra_params,
-                           param_ind, search_type)
+                           params, search_type)
 
     # Need to check for estimator, as RFE needs a default param for estimator
     # Though, only replaced if not passed in user extra params already.
@@ -112,7 +112,7 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, param_ind,
 
 
 def Show_Feat_Selectors(self, problem_type=None, feat_selector_str=None,
-                        show_param_ind_options=False, show_object=False,
+                        show_params_options=False, show_object=False,
                         possible_params=False):
     '''Print out the avaliable feature selectors,
     optionally restricted by problem type + other diagnostic args.
@@ -133,7 +133,7 @@ def Show_Feat_Selectors(self, problem_type=None, feat_selector_str=None,
 
         (default = None)
 
-    show_param_ind_options : bool, optional
+    show_params_options : bool, optional
         Flag, if set to True, then will display the ABCD_ML
         param ind options for each feat selector.
 
@@ -162,5 +162,5 @@ def Show_Feat_Selectors(self, problem_type=None, feat_selector_str=None,
     print()
 
     show_objects(problem_type, feat_selector_str,
-                 show_param_ind_options, show_object, possible_params,
+                 show_params_options, show_object, possible_params,
                  AVALIABLE, SELECTORS)

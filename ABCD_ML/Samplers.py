@@ -69,11 +69,11 @@ SAMPLERS = {
 }
 
 
-def get_sampler_and_params(sampler_str, extra_params, param_ind, search_type):
+def get_sampler_and_params(sampler_str, extra_params, params, search_type):
 
     sampler, extra_sampler_params, sampler_params =\
         get_obj_and_params(sampler_str, SAMPLERS, extra_params,
-                           param_ind, search_type)
+                           params, search_type)
 
     # Need to check if categorical features is a possible param
     possible_params = get_possible_init_params(sampler)
@@ -85,7 +85,7 @@ def get_sampler_and_params(sampler_str, extra_params, param_ind, search_type):
 
 
 def Show_Samplers(self, problem_type=None, sampler_str=None,
-                  param_ind_options=False, show_object=False,
+                  params_options=False, show_object=False,
                   possible_params=False):
     '''Print out the avaliable feature selectors,
     optionally restricted by problem type + other diagnostic args.
@@ -106,7 +106,7 @@ def Show_Samplers(self, problem_type=None, sampler_str=None,
 
         (default = None)
 
-    show_param_ind_options : bool, optional
+    show_params_options : bool, optional
         Flag, if set to True, then will display the ABCD_ML
         param ind options for each sampler.
 
@@ -137,5 +137,5 @@ def Show_Samplers(self, problem_type=None, sampler_str=None,
     print()
 
     show_objects(problem_type, sampler_str,
-                 param_ind_options, show_object, possible_params,
+                 params_options, show_object, possible_params,
                  AVALIABLE, SAMPLERS)

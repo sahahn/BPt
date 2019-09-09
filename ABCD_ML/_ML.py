@@ -17,9 +17,9 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
                           sampler='default', feat_selector='default',
                           n_splits='default', n_repeats='default',
                           int_cv='default', search_type='default',
-                          scaler_param_ind='default',
-                          sampler_param_ind='default',
-                          feat_selector_param_ind='default',
+                          scaler_params='default',
+                          sampler_params='default',
+                          feat_selector_params='default',
                           class_weight='default', n_jobs='default',
                           n_iter='default', data_to_use='default',
                           compute_train_score='default',
@@ -196,19 +196,19 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
 
         .. WARNING::
 
-            If search type is set to "grid", and any of model_type_param_ind,
-            scaler_param_ind and feat_selector_param_ind are set
+            If search type is set to "grid", and any of model_type_params,
+            scaler_params and feat_selector_params are set
             to a random distribution (rather then discrete values),
             this will lead to an error.
 
         If 'default', and not already defined, set to None
         (default = 'default')
 
-    scaler_param_ind : int, str, or list of
+    scaler_params : int, str, or list of
         Each `scaler` has atleast one default parameter distribution
         saved with it. This parameter is used to select between different
         distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `scaler_param_ind` is automatically
+        when `search_type` == None, `scaler_params` is automatically
         set to default 0.
         This parameter can be selected with either an integer index
         (zero based), or the str name for a given `scaler`.
@@ -221,11 +221,11 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         If 'default', and not already defined, set to 0
         (default = 'default')
 
-    sampler_param_ind :  int, str, or list of
+    sampler_params :  int, str, or list of
         Each `sampler` has atleast one default parameter distribution
         saved with it. This parameter is used to select between different
         distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `sampler_param_ind` is automatically
+        when `search_type` == None, `sampler_params` is automatically
         set to default 0.
         This parameter can be selected with either an integer index
         (zero based), or the str name for a given `sampler`.
@@ -238,11 +238,11 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         If 'default', and not already defined, set to 0
         (default = 'default')
 
-    feat_selector_param_ind : int, str, or list of
+    feat_selector_params : int, str, or list of
          Each `feat_selector` has atleast one default parameter distribution
         saved with it. This parameter is used to select between different
         distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `feat_selector_param_ind` is automatically
+        when `search_type` == None, `feat_selector_params` is automatically
         set to default 0.
         This parameter can be selected with either an integer index
         (zero based), or the str name for a given `feat_selector` param option.
@@ -448,26 +448,26 @@ def Set_Default_ML_Params(self, problem_type='default', metric='default',
         self.default_ML_params['search_type'] = None
         self._print('No default search type passed, set to None')
 
-    if scaler_param_ind != 'default':
-        self.default_ML_params['scaler_param_ind'] = scaler_param_ind
+    if scaler_params != 'default':
+        self.default_ML_params['scaler_params'] = scaler_params
 
-    elif 'scaler_param_ind' not in self.default_ML_params:
-        self.default_ML_params['scaler_param_ind'] = 0
+    elif 'scaler_params' not in self.default_ML_params:
+        self.default_ML_params['scaler_params'] = 0
         self._print('No default data scaler param ind passed, set to 0')
 
-    if sampler_param_ind != 'default':
-        self.default_ML_params['sampler_param_ind'] = sampler_param_ind
+    if sampler_params != 'default':
+        self.default_ML_params['sampler_params'] = sampler_params
 
-    elif 'sampler_param_ind' not in self.default_ML_params:
-        self.default_ML_params['sampler_param_ind'] = 0
+    elif 'sampler_params' not in self.default_ML_params:
+        self.default_ML_params['sampler_params'] = 0
         self._print('No default sampler param ind passed, set to 0')
 
-    if feat_selector_param_ind != 'default':
-        self.default_ML_params['feat_selector_param_ind'] =\
-            feat_selector_param_ind
+    if feat_selector_params != 'default':
+        self.default_ML_params['feat_selector_params'] =\
+            feat_selector_params
 
-    elif 'feat_selector_param_ind' not in self.default_ML_params:
-        self.default_ML_params['feat_selector_param_ind'] = 0
+    elif 'feat_selector_params' not in self.default_ML_params:
+        self.default_ML_params['feat_selector_params'] = 0
         self._print('No default feat selector param ind passed, set to 0')
 
     if class_weight != 'default':
@@ -686,9 +686,9 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
              sampler='default', feat_selector='default', n_splits='default',
              n_repeats='default', int_cv='default',
              ensemble_type='basic ensemble', ensemble_split=.2,
-             search_type='default', model_type_param_ind=0,
-             scaler_param_ind='default', sampler_param_ind='default',
-             feat_selector_param_ind='default', class_weight='default',
+             search_type='default', model_type_params=0,
+             scaler_params='default', sampler_params='default',
+             feat_selector_params='default', class_weight='default',
              n_jobs='default', n_iter='default', data_to_use='default',
              compute_train_score='default', random_state='default',
              calc_base_feature_importances='default',
@@ -761,11 +761,11 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
 
     search_type :
 
-    model_type_param_ind : int, str, or list of
+    model_type_params : int, str, or list of
         Each `model_type` has atleast one default parameter distribution
         saved with it. This parameter is used to select between different
         distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `model_type_param_ind` is automatically
+        when `search_type` == None, `model_type_params` is automatically
         set to default 0.
         This parameter can be selected with either an integer index
         (zero based), or the str name for a given `model_type`.
@@ -777,9 +777,9 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
 
         (default = 0)
 
-    scaler_param_ind :
-    sampler_param_ind :
-    feat_selector_param_ind :
+    scaler_params :
+    sampler_params :
+    feat_selector_params :
     class_weight :
     n_jobs :
     n_iter :
@@ -830,7 +830,7 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
 
     # Print the params being used
     self._print_model_params(model_type, ML_params, ensemble_type,
-                             ensemble_split, model_type_param_ind,
+                             ensemble_split, model_type_params,
                              test=False)
 
     run_name = self._get_avaliable_eval_scores_name(run_name, model_type)
@@ -841,12 +841,12 @@ def Evaluate(self, model_type, run_name=None, problem_type='default',
     run_settings.update({'model_type': model_type, 'run_name': run_name,
                          'ensemble_type': ensemble_type,
                          'ensemble_split': ensemble_split,
-                         'model_type_param_ind': model_type_param_ind})
+                         'model_type_params': model_type_params})
     self.eval_settings[run_name] = run_settings
 
     # Init the Model object with modeling params
     self._init_model(model_type, ML_params, ensemble_type, ensemble_split,
-                     model_type_param_ind)
+                     model_type_params)
 
     # Evaluate the model
     train_scores, scores =\
@@ -873,9 +873,9 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
          test_subjects=None, metric='default', scaler='default',
          scaler_scope='default', sampler='default', feat_selector='default',
          int_cv='default', ensemble_type='basic ensemble', ensemble_split=.2,
-         search_type='default', model_type_param_ind=0,
-         scaler_param_ind='default', sampler_param_ind='default',
-         feat_selector_param_ind='default', class_weight='default',
+         search_type='default', model_type_params=0,
+         scaler_params='default', sampler_params='default',
+         feat_selector_params='default', class_weight='default',
          n_jobs='default', n_iter='default', data_to_use='default',
          compute_train_score='default', random_state='default',
          calc_base_feature_importances='default',
@@ -912,10 +912,10 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
     ensemble_type :
     ensemble_split :
     search_type :
-    model_type_param_ind :
-    scaler_param_ind :
-    sampler_param_ind :
-    feat_selector_param_ind :
+    model_type_params :
+    scaler_params :
+    sampler_params :
+    feat_selector_params :
     class_weight :
     n_jobs :
     n_iter :
@@ -944,12 +944,12 @@ def Test(self, model_type, problem_type='default', train_subjects=None,
 
     # Print the params being used
     self._print_model_params(model_type, ML_params, ensemble_type,
-                             ensemble_split, model_type_param_ind,
+                             ensemble_split, model_type_params,
                              test=True)
 
     # Init the Model object with modeling params
     self._init_model(model_type, ML_params, ensemble_type, ensemble_split,
-                     model_type_param_ind)
+                     model_type_params)
 
     # If not train subjects or test subjects passed, use class
     if train_subjects is None:
@@ -1065,7 +1065,7 @@ def _make_ML_params(self, args):
 
 
 def _print_model_params(self, model_type, ML_params, ensemble_type,
-                        ensemble_split, model_type_param_ind, test=False):
+                        ensemble_split, model_type_params, test=False):
 
     if test:
         self._print('Running Test with:')
@@ -1075,7 +1075,7 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
     self._print('problem_type =', ML_params['problem_type'])
 
     self._print('model_type =', model_type)
-    self._print('model_type_param_ind =', model_type_param_ind)
+    self._print('model_type_params =', model_type_params)
 
     if isinstance(model_type, list):
         self._print('ensemble_type =', ensemble_type)
@@ -1092,17 +1092,17 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
     self._print('scaler =', ML_params['scaler'])
     if ML_params['scaler'] is not None:
         self._print('scaler_scope =', ML_params['scaler_scope'])
-        self._print('scaler_param_ind =',
-                    ML_params['scaler_param_ind'])
+        self._print('scaler_params =',
+                    ML_params['scaler_params'])
 
     self._print('sampler =', ML_params['sampler'])
     if ML_params['sampler'] is not None:
-        self._print('sampler_param_ind =', ML_params['sampler_param_ind'])
+        self._print('sampler_params =', ML_params['sampler_params'])
 
     self._print('feat_selector =', ML_params['feat_selector'])
     if ML_params['feat_selector'] is not None:
-        self._print('feat_selector_param_ind =',
-                    ML_params['feat_selector_param_ind'])
+        self._print('feat_selector_params =',
+                    ML_params['feat_selector_params'])
 
     if not test:
         self._print('n_splits =', ML_params['n_splits'])
@@ -1131,7 +1131,7 @@ def _print_model_params(self, model_type, ML_params, ensemble_type,
 
 
 def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
-                model_type_param_ind):
+                model_type_params):
 
     problem_types = {'binary': Binary_Model, 'regression': Regression_Model,
                      'categorical': Categorical_Model}
@@ -1143,7 +1143,7 @@ def _init_model(self, model_type, ML_params, ensemble_type, ensemble_split,
 
     covar_scopes, cat_encoders = self._get_covar_scopes()
 
-    self.Model = Model(model_type, ML_params, model_type_param_ind, self.CV,
+    self.Model = Model(model_type, ML_params, model_type_params, self.CV,
                        self.data_keys,
                        self.covars_keys, self.cat_keys, self.targets_key,
                        self.targets_encoder, covar_scopes, cat_encoders,

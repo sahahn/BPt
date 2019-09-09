@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+from ABCD_ML.ML_Helpers import get_obj_and_params
 
 
 class Regular_Imputer():
@@ -17,7 +18,12 @@ class Regular_Imputer():
 
     def fit(self, X, y=None):
 
-        impute_X = self.get_impute_X(X)
+        if self.copy:
+            X_copy = X.copy()
+        else:
+            X_copy = X
+
+        impute_X = self.get_impute_X(X_copy)
         self.imputer.fit(impute_X, y)
 
     def get_impute_X(self, X):
@@ -82,7 +88,12 @@ class Categorical_Imputer():
 
     def fit(self, X, y=None):
 
-        impute_X = self.get_impute_X(X)
+        if self.copy:
+            X_copy = X.copy()
+        else:
+            X_copy = X
+
+        impute_X = self.get_impute_X(X_copy)
         self.imputer.fit(impute_X)
 
     def get_impute_X(self, X):
@@ -190,42 +201,66 @@ class Categorical_Imputer():
 
 
 IMPUTERS = {
-    'mean': (SimpleImputer, {'strategy': 'mean'}),
-    'median': (SimpleImputer, {'strategy': 'median'}),
-    'most frequent': (SimpleImputer, {'strategy': 'most_frequent'}),
-    'constant': (SimpleImputer, {'strategy': 'constant'}),
-    'iterative': (IterativeImputer, {'initial_strategy': 'mean'}),
+    'mean': (SimpleImputer, ['mean imp']),
+    'median': (SimpleImputer, ['median imp']),
+    'most frequent': (SimpleImputer, ['most freq imp']),
+    'constant': (SimpleImputer, ['constant imp']),
+    'iterative': (IterativeImputer, ['iterative imp']),
 }
 
 
-def get_imputer(imputer_str, inds=[], encoder_inds=[], ordinal_inds=[],
-                encoders=[], base_estimator=None):
+def replace_model_name(base_estimator_params):
 
-    # Grab from imputer objs directly if no base estimator
+    new = {}
+
+    for key in base_estimator_params:
+        value = base_estimator_params[key]
+
+        split_key = key.split('__')
+        split_key[0] = 'estimator'
+
+        new_key = '__'.join(split_key)
+        new[new_key] = value
+
+    return new
+
+
+def get_imputer(imputer_str, extra_params, params, search_type,
+                inds=[], encoder_inds=[], ordinal_inds=[],
+                encoders=[], base_estimator=None, base_estimator_params={}):
+
     if base_estimator is None:
 
-        try:
-            base_imputer_obj, params = IMPUTERS[imputer_str]
-        except KeyError:
-            print('Requested:', imputer_str, 'does not exist!')
-            print('If attempting to select a model str, make sure that str',
-                  'exists for the right problem type, where the problem type',
-                  'regression for float + custom scopes,',
-                  'and binary/multiclass for binary and categorical!')
+        base_imputer_obj, extra_imputer_params, imputer_params =\
+            get_obj_and_params(imputer_str, IMPUTERS, extra_params, params,
+                               search_type)
 
-    # If base estimator, then using iterative imputer
+        imputer_params = replace_model_name(base_estimator_params)
+
+        # proc imputer params for within obj
+        new_imputer_params = {}
+        for key in imputer_params:
+            new_imputer_params['estimator__' + key] = imputer_params[key]
+        imputer_params = new_imputer_params
+
     else:
-        base_imputer_obj, params = IMPUTERS['iterative']
-        params['estimator'] = base_estimator
 
+        base_imputer_obj, extra_imputer_params, imputer_params =\
+            get_obj_and_params('iterative', IMPUTERS, extra_params, 0,
+                               search_type=None)
+
+        extra_imputer_params['estimator'] = base_estimator
         if len(inds) == 0:
-            params['initial_strategy'] = 'median'
+            extra_imputer_params['initial_strategy'] = 'median'
 
-    base_imputer = base_imputer_obj(**params)
+        # Use the base estimator params !
+        imputer_params = replace_model_name(base_estimator_params)
+
+    # This is the actual imputer object
+    base_imputer = base_imputer_obj(**extra_imputer_params)
 
     # Categorical
     if len(inds) == 0:
-
         imputer = Categorical_Imputer(base_imputer, encoder_inds,
                                       ordinal_inds, encoders)
 
@@ -233,4 +268,4 @@ def get_imputer(imputer_str, inds=[], encoder_inds=[], ordinal_inds=[],
     else:
         imputer = Regular_Imputer(base_imputer, inds)
 
-    return imputer
+    return imputer, imputer_params

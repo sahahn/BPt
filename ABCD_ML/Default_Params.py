@@ -208,6 +208,11 @@ PARAMS['binary under sampler'] = {'sampling_strategy': [1, .75, .66, .5, .33,
                                                         .25]}
 
 # Imputers
+PARAMS['mean imp'] = {'strategy': ['mean']}
+PARAMS['median imp'] = {'strategy': ['median']}
+PARAMS['most freq imp'] = {'strategy': ['most_frequent']}
+PARAMS['constant imp'] = {'strategy': ['constant']}
+PARAMS['iterative imp'] = {'initial_strategy': ['mean']}
 
 
 def get_base_params(str_indicator):

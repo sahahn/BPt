@@ -21,6 +21,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
                           ensemble_split='default',
                           search_type='default',
                           model_type_params='default',
+                          imputer_params='default',
                           scaler_params='default',
                           sampler_params='default',
                           feat_selector_params='default',
@@ -270,6 +271,24 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
 
         The different parameter distributions avaliable for each
         `model_type`, can be shown by calling :func:`Show_Model_Types`
+
+        If 'default', and not already defined, set to 0
+        (default = 'default')
+
+    imputer_params : int, str or list of
+        Each `imputer` has atleast one parameetr distribution,
+        which can be selected with an int index, or a corresponding
+        str name. Likewise, a user can pass in a dictionary with their
+        own custom values.
+
+        This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `scaler_params` is automatically
+        set to default 0.
+
+        Note: If a model_type was passed to the imputer, then
+        `imputer_params` will refer to the parameters for that
+        base model!
 
         If 'default', and not already defined, set to 0
         (default = 'default')
@@ -546,19 +565,26 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         self.default_ML_params['model_type_params'] = 0
         self._print('No default model_type param ind passed, set to 0')
 
+    if imputer_params != 'default':
+        self.default_ML_params['imputer_params'] = imputer_params
+
+    elif 'imputer_params' not in self.default_ML_params:
+        self.default_ML_params['imputer_params'] = 0
+        self._print('No default imputer scaler params passed, set to 0')
+
     if scaler_params != 'default':
         self.default_ML_params['scaler_params'] = scaler_params
 
     elif 'scaler_params' not in self.default_ML_params:
         self.default_ML_params['scaler_params'] = 0
-        self._print('No default data scaler param ind passed, set to 0')
+        self._print('No default data scaler params passed, set to 0')
 
     if sampler_params != 'default':
         self.default_ML_params['sampler_params'] = sampler_params
 
     elif 'sampler_params' not in self.default_ML_params:
         self.default_ML_params['sampler_params'] = 0
-        self._print('No default sampler param ind passed, set to 0')
+        self._print('No default sampler params passed, set to 0')
 
     if feat_selector_params != 'default':
         self.default_ML_params['feat_selector_params'] =\
@@ -566,7 +592,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
 
     elif 'feat_selector_params' not in self.default_ML_params:
         self.default_ML_params['feat_selector_params'] = 0
-        self._print('No default feat selector param ind passed, set to 0')
+        self._print('No default feat selector params passed, set to 0')
 
     if class_weight != 'default':
         self.default_ML_params['class_weight'] = class_weight
@@ -785,11 +811,11 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
              n_repeats='default', int_cv='default',
              ensemble_type='default', ensemble_split='default',
              search_type='default', model_type_params=0,
-             scaler_params='default', sampler_params='default',
-             feat_selector_params='default', class_weight='default',
-             n_jobs='default', n_iter='default', data_to_use='default',
-             compute_train_score='default', random_state='default',
-             calc_base_feature_importances='default',
+             imputer_params='default', scaler_params='default',
+             sampler_params='default', feat_selector_params='default',
+             class_weight='default', n_jobs='default', n_iter='default',
+             data_to_use='default', compute_train_score='default',
+             random_state='default', calc_base_feature_importances='default',
              calc_shap_feature_importances='default', extra_params='default'):
 
     '''Class method to be called during the model selection phase.
@@ -822,6 +848,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
     ensemble_split :
     search_type :
     model_type_params :
+    imputer_params :
     scaler_params :
     sampler_params :
     feat_selector_params :
@@ -914,11 +941,12 @@ def Test(self, model_type='default', problem_type='default',
          scaler='default', scaler_scope='default', sampler='default',
          feat_selector='default', int_cv='default', ensemble_type='default',
          ensemble_split='default', search_type='default',
-         model_type_params='default', scaler_params='default',
-         sampler_params='default', feat_selector_params='default',
-         class_weight='default', n_jobs='default', n_iter='default',
-         data_to_use='default', compute_train_score='default',
-         random_state='default', calc_base_feature_importances='default',
+         model_type_params='default', imputer_params='default',
+         scaler_params='default', sampler_params='default',
+         feat_selector_params='default', class_weight='default',
+         n_jobs='default', n_iter='default', data_to_use='default',
+         compute_train_score='default', random_state='default',
+         calc_base_feature_importances='default',
          calc_shap_feature_importances='default', extra_params='default',
          **kwargs):
     '''Class method used to evaluate a specific model / data scaling
@@ -953,6 +981,7 @@ def Test(self, model_type='default', problem_type='default',
     ensemble_split :
     search_type :
     model_type_params :
+    imputer_params :
     scaler_params :
     sampler_params :
     feat_selector_params :
@@ -1123,7 +1152,10 @@ def _print_model_params(self, ML_params, test=False):
 
     if pd.isnull(self.all_data).any().any():
         self._print('imputer =', ML_params['imputer'])
-        self._print('imputer_scope =', ML_params['imputer_scope'])
+
+        if ML_params['imputer'] is not None:
+            self._print('imputer_scope =', ML_params['imputer_scope'])
+            self._print('imputer_params =', ML_params['imputer_params'])
 
     self._print('scaler =', ML_params['scaler'])
     if ML_params['scaler'] is not None:

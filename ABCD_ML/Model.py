@@ -90,6 +90,8 @@ class Model():
                 The type of parameter search to conduct if any.
             - model_type_params : int, str or list of
                 The index or str name of the param index for `model_type`
+            - imputer_params : int, str or list of
+                The index or str name of the param index for `imputer`
             - scaler_params : int, str or list of
                 The index or str name of the param index for `scaler`
             - feat_selector_params : int, str or list of
@@ -223,6 +225,8 @@ class Model():
 
         self.model_type_params =\
             conv_to_list(ML_params['model_type_params'])
+        self.imputer_params =\
+            conv_to_list(ML_params['imputer_params'])
         self.scaler_params =\
             conv_to_list(ML_params['scaler_params'])
         self.sampler_params =\
@@ -289,6 +293,9 @@ class Model():
         self.feat_selectors, cnt =\
             self._check_for_user_passed(self.feat_selectors, cnt)
 
+        self.imputers, cnt =\
+            self._check_for_user_passed(self.imputers, cnt)
+
         self.scalers, cnt =\
             self._check_for_user_passed(self.scalers, cnt)
 
@@ -309,6 +316,20 @@ class Model():
 
         return objs, cnt
 
+    def _check_params_by_search(self, params):
+
+        if self.search_type is None:
+
+            if (np.array(params) != 0).any():
+                self._print('Search type is set to None! Therefore no',
+                            'hyper-param search will be conducted, even',
+                            'though params were passed.')
+                self._print()
+
+                params = [0 for i in range(len(params))]
+
+        return params
+
     def _process_model_types(self):
         '''Class function to convert input model types to final
         str indicator, based on problem type and common input correction.
@@ -317,15 +338,11 @@ class Model():
         self.model_types = self._proc_type_dep_str(self.model_types,
                                                    AVALIABLE_MODELS)
 
-        if self.search_type is None:
+        self.model_type_params =\
+            self._param_len_check(self.model_types, self.model_type_params)
 
-            if (np.array(self.model_type_params) != 0).any():
-                self._print('Search type is set to None!')
-                self._print('No hyper-param search will be conducted.')
-                self._print()
-
-            self.model_type_params =\
-                [0 for i in range(len(self.model_types))]
+        self.model_type_params =\
+            self._check_params_by_search(self.model_type_params)
 
     def _process_feat_selectors(self):
         '''Class function to convert input feat selectors to a final
@@ -371,6 +388,12 @@ class Model():
             conv_imputer_strs = proc_input(self.imputers)
             self._update_extra_params(self.imputers, conv_imputer_strs)
 
+            self.imputer_params =\
+                self._param_len_check(conv_imputer_strs, self.imputer_params)
+
+            self.imputer_params =\
+                self._check_params_by_search(self.imputer_params)
+
             # If more scopes then imputers, assume passed inds
             if len(self.imputer_scopes) > len(conv_imputer_strs):
                 self.imputer_scopes = [self.imputer_scopes]
@@ -380,18 +403,24 @@ class Model():
                 self._print('Warning: non equal number of imputers passed as',
                             'scopes! imputers without scope will be ignored.')
 
-            self.imputers = [self._get_imputer(imputer_str, scope) for
-                             imputer_str, scope in zip(conv_imputer_strs,
-                             self.imputer_scopes)]
+            imputers_and_params =\
+                [self._get_imputer(imputer_str, imputer_param, scope)
+                 for imputer_str, imputer_param, scope in zip(
+                     conv_imputer_strs,
+                     self.imputer_params,
+                     self.imputer_scopes)]
 
-            # Remove any non valid imputers
-            while None in self.imputers:
-                self.imputers.remove(None)
+            while None in imputers_and_params:
+                imputers_and_params.remove(None)
+
+            self.imputers, self.imputer_params =\
+                self._proc_objs_and_params(imputers_and_params)
 
         else:
             self.imputers = []
+            self.imputer_params = {}
 
-    def _get_imputer(self, imputer_str, scope):
+    def _get_imputer(self, imputer_str, imputer_param, scope):
 
         # First grab the correct params based on scope
         if scope == 'c' or scope == 'categorical':
@@ -429,18 +458,27 @@ class Model():
                 return None
 
         # Determine base estimator based off str + scope
-        base_estimator = self._proc_imputer_base_estimator(imputer_str, scope)
+        base_estimator, base_estimator_params =\
+            self._proc_imputer_base_estimator(imputer_str,
+                                              imputer_param,
+                                              scope)
 
-        imputer = get_imputer(imputer_str,
-                              inds, cat_inds,
-                              ordinal_inds, self.cat_encoders,
-                              base_estimator)
+        imputer, imputer_params =\
+            get_imputer(imputer_str, self.extra_params, imputer_param,
+                        self.search_type, inds, cat_inds, ordinal_inds,
+                        self.cat_encoders, base_estimator,
+                        base_estimator_params)
 
         name = 'imputer_' + imputer_str + '_' + scope
 
-        return (name, imputer)
+        # Update imputer params with name of imputer obj
+        new_imputer_params = {}
+        for key in imputer_params:
+            new_imputer_params[name + '__' + key] = imputer_params[key]
 
-    def _proc_imputer_base_estimator(self, imputer_str, scope):
+        return name, (imputer, new_imputer_params)
+
+    def _proc_imputer_base_estimator(self, imputer_str, imputer_param, scope):
 
         # For now, custom passed params assume and only work with
         # float/regression type.
@@ -458,11 +496,15 @@ class Model():
         # If a not a valid model type, then no base estimator
         if imputer_str in avaliable_by_type:
             base_model_str = avaliable_by_type[imputer_str]
-            base_estimator = self._get_base_model(base_model_str, 0, None)[0]
+            base_model = self._get_base_model(base_model_str, imputer_param,
+                                              self.search_type)
+            base_estimator = base_model[0]
+            base_estimator_params = base_model[2]
         else:
             base_estimator = None
+            base_estimator_params = {}
 
-        return base_estimator
+        return base_estimator, base_estimator_params
 
     def _process_scalers(self):
         '''Processes self.scaler to be a list of
@@ -694,13 +736,10 @@ class Model():
         their relevant parameter grids'''
 
         # Check + fill length of passed params + names
-        if len(params) > len(names):
-            self._print('Warning! More params passed than objs')
-            self._print('Extra have been truncated.')
-            params = params[:len(names)]
+        params = self._param_len_check(names, params)
 
-        while len(names) != len(params):
-            params.append(0)
+        # Check search type
+        params = self._check_params_by_search(params)
 
         # Make the object + params based on passed settings
         objs_and_params = []
@@ -716,6 +755,23 @@ class Model():
 
                 objs_and_params.append((name, get_func(name, self.extra_params,
                                                        ind, self.search_type)))
+
+        objs, params = self._proc_objs_and_params(objs_and_params)
+        return objs, params
+
+    def _param_len_check(self, names, params):
+
+        if len(params) > len(names):
+            self._print('Warning! More params passed than objs')
+            self._print('Extra params have been truncated.')
+            params = params[:len(names)]
+
+        while len(names) != len(params):
+            params.append(0)
+
+        return params
+
+    def _proc_objs_and_params(self, objs_and_params):
 
         # If two of same object passed, change name
         objs_and_params = self.check_for_duplicate_names(objs_and_params)
@@ -1150,6 +1206,7 @@ class Model():
         # into one dict.
         all_params = {}
         all_params.update(self.col_scaler_params)
+        all_params.update(self.imputer_params)
         all_params.update(self.sampler_params)
         all_params.update(self.feat_selector_params)
         all_params.update(model_type_params)
@@ -1424,7 +1481,7 @@ class Model():
             X_test[feat_names] = scaler.transform(X_test)
 
         for imputer in imputers:
-            X_test[feat_names] = imputer.transform(X_test)
+            X_test[feat_names] = imputer.transform(np.array(X_test))
 
         # Apply all feature selectors, in place
         for feat_selector in feat_selectors:
@@ -1449,7 +1506,7 @@ class Model():
         for scaler in scalers:
             X_train = scaler.transform(X_train)
         for imputer in imputers:
-            X_train = imputer.transform(X_train)
+            X_train = imputer.transform(np.array(X_train))
         for sampler in samplers:
             X_train, y_train = sampler.fit_resample(X_train, y_train)
         for feat_selector in feat_selectors:

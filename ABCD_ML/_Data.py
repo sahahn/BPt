@@ -1398,7 +1398,7 @@ def _drop_na(self, data, drop_nan=True):
                     'with actual nan_thresh:', nan_thresh)
 
     remaining_na_rows = data.isna().any(axis=1).sum()
-    self._print('Rows with NaN remaining:', remaining_na_rows)
+    self._print('Loaded rows with NaN remaining:', remaining_na_rows)
 
     return data
 

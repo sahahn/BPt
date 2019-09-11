@@ -45,13 +45,10 @@ def compute_macro_micro(scores, n_repeats, n_splits):
 
 def is_array_like(in_val):
 
-    try:
-        if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
-         (not isinstance(in_val, dict)):
-            return True
-        else:
-            return False
-    except:
+    if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
+     (not isinstance(in_val, dict)) and (not callable(in_val)):
+        return True
+    else:
         return False
 
 
@@ -398,3 +395,5 @@ def show_param_options(param_options):
         show(param_options[ind])
         print()
     print('-------------')
+
+

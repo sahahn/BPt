@@ -30,7 +30,8 @@ def get_name(obj):
                          'regression', 'coordinate_descent', 'sklearn',
                          'forest', 'classes', 'base', 'multilayer_perceptron',
                          'univariate_selection', 'minimum_difference', 'deskl',
-                         'exponential', 'logarithmic', 'rrc', 'data']
+                         'exponential', 'logarithmic', 'rrc', 'data',
+                         'variance_threshold']
 
     for r in base_replace_list:
         name = name.replace('.' + r + '.', '.')

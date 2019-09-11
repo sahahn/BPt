@@ -2101,7 +2101,7 @@ binary
 "variance threshold"
 ********************
 
-  Base Class Documenation: :class:`sklearn.feature_selection.variance_threshold.VarianceThreshold`
+  Base Class Documenation: :class:`sklearn.feature_selection.VarianceThreshold`
 
   Param Distributions
 
@@ -2155,7 +2155,7 @@ regression
 "variance threshold"
 ********************
 
-  Base Class Documenation: :class:`sklearn.feature_selection.variance_threshold.VarianceThreshold`
+  Base Class Documenation: :class:`sklearn.feature_selection.VarianceThreshold`
 
   Param Distributions
 
@@ -2170,7 +2170,7 @@ categorical multilabel
 "variance threshold"
 ********************
 
-  Base Class Documenation: :class:`sklearn.feature_selection.variance_threshold.VarianceThreshold`
+  Base Class Documenation: :class:`sklearn.feature_selection.VarianceThreshold`
 
   Param Distributions
 
@@ -2224,7 +2224,7 @@ categorical multiclass
 "variance threshold"
 ********************
 
-  Base Class Documenation: :class:`sklearn.feature_selection.variance_threshold.VarianceThreshold`
+  Base Class Documenation: :class:`sklearn.feature_selection.VarianceThreshold`
 
   Param Distributions
 

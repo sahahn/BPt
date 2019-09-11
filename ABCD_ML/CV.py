@@ -7,17 +7,24 @@ import sklearn.model_selection as MS
 import numpy as np
 
 
+def inds_from_names(original_subjects, subject_splits):
+
+    subject_inds = [[[original_subjects.get_loc(name) for name in s]
+                    for s in split] for split in subject_splits]
+    return subject_inds
+
+
 class CV():
     '''Class for performing various cross validation functions'''
 
-    def __init__(self, groups=None, stratify=None):
+    def __init__(self, groups=None, stratify=None, train_only=None):
         '''
         CV class init, for defining split behavior. If groups is None
         and stratify is None, random splits are used.
 
         Parameters
         ----------
-        groups : pandas Series or None, optional (default = None)
+        groups : pandas Series or None, optional
             `groups` should be passed a pandas Series,
             by default passed from ABCD_ML.strat,
             where the Index are subject id's and the values are
@@ -25,13 +32,23 @@ class CV():
             the same fold.
             E.g., GroupKFold
 
-        stratify : pandas Series or None, optional (default = None)
+            (default = None)
+
+        stratify : pandas Series or None, optional
             `groups` should be passed a pandas Series,
             by default passed from ABCD_ML.strat,
             where the Index are subject id's and the values are
             unique ids - where like ids are to be as evenly distributed
             as possible between folds.
             E.g., StratifiedKFold
+
+            (default = None)
+
+        train_only : array-like, optional
+            An array of subjects that should be forced into the
+            training set at every fold, or train test split.
+
+            (default = None)
 
         See Also
         --------
@@ -41,6 +58,11 @@ class CV():
 
         self.groups = groups
         self.stratify = stratify
+        self.train_only = train_only
+
+        if self.train_only is not None:
+            if len(self.train_only) == 0:
+                self.train_only = None
 
     def train_test_split(self, subjects, test_size=.2, random_state=None):
         '''Define a train test split on input subjects, with a given target test size.
@@ -72,6 +94,14 @@ class CV():
             The testing subjects as computed by the split
         '''
 
+        if self.train_only is not None:
+            train_only = np.intersect1d(subjects, self.train_only,
+                                        assume_unique=True)
+            subjects = np.setdiff1d(subjects, self.train_only,
+                                    assume_unique=True)
+        else:
+            train_only = np.array([])
+
         if self.groups is not None:
             splitter = MS.GroupShuffleSplit(n_splits=1, test_size=test_size,
                                             random_state=random_state)
@@ -93,6 +123,8 @@ class CV():
         inds = inds[0]
 
         train_subjects, test_subjects = subjects[inds[0]], subjects[inds[1]]
+        train_subjects = np.concatenate([train_subjects, train_only])
+
         return train_subjects, test_subjects
 
     def repeated_k_fold(self, subjects, n_repeats, n_splits, random_state=None,
@@ -189,6 +221,16 @@ class CV():
             The second contains the testing subjects.
         '''
 
+        original_subjects = subjects.copy()
+
+        if self.train_only is not None:
+            train_only = np.intersect1d(subjects, self.train_only,
+                                        assume_unique=True)
+            subjects = np.setdiff1d(subjects, self.train_only,
+                                    assume_unique=True)
+        else:
+            train_only = np.array([])
+
         # Special implementation for group K fold,
         # just do KFold on unique groups, and recover subjects
         # by group. This assume groups are roughly equal size.
@@ -202,34 +244,34 @@ class CV():
 
             [*inds] = splitter.split(unique_groups)
 
-            subject_splits = [(groups.index[groups.isin(unique_groups[i[0]])],
-                              groups.index[groups.isin(unique_groups[i[1]])])
-                              for i in inds]
+            subject_splits = [(
+                np.concatenate([groups.index[groups.isin(unique_groups[i[0]])],
+                               train_only]),
+                groups.index[groups.isin(unique_groups[i[1]])]) for i in inds]
 
-            if return_index:
-                subject_inds = [[[subjects.get_loc(name) for name in s]
-                                for s in split] for split in subject_splits]
-                return subject_inds
-
-            return subject_splits
-
-        # Stratify behavior just uses stratified k-fold
-        elif self.stratify is not None:
-
-            splitter = MS.StratifiedKFold(n_splits=n_splits,
-                                          shuffle=True,
-                                          random_state=random_state)
-            [*inds] = splitter.split(subjects, y=self.stratify.loc[subjects])
-
-        # If no groups or stratify, just use random k-fold
         else:
 
-            splitter = MS.KFold(n_splits=n_splits, shuffle=True,
-                                random_state=random_state)
-            [*inds] = splitter.split(subjects)
+            # Stratify behavior just uses stratified k-fold
+            if self.stratify is not None:
+
+                splitter = MS.StratifiedKFold(n_splits=n_splits,
+                                              shuffle=True,
+                                              random_state=random_state)
+                [*inds] = splitter.split(subjects,
+                                         y=self.stratify.loc[subjects])
+
+            # If no groups or stratify, just use random k-fold
+            else:
+
+                splitter = MS.KFold(n_splits=n_splits, shuffle=True,
+                                    random_state=random_state)
+                [*inds] = splitter.split(subjects)
+
+            # Conv inds within subjects to subject names + train only subjects
+            subject_splits = [(np.concatenate([subjects[i[0]], train_only]),
+                               subjects[i[1]]) for i in inds]
 
         if return_index:
-            return inds
+            return inds_from_names(original_subjects, subject_splits)
 
-        subject_splits = [(subjects[i[0]], subjects[i[1]]) for i in inds]
         return subject_splits

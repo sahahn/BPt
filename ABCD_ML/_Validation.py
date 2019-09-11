@@ -9,7 +9,8 @@ from ABCD_ML.Data_Helpers import get_unique_combo
 from ABCD_ML.CV import CV
 
 
-def Define_Validation_Strategy(self, groups=None, stratify=None):
+def Define_Validation_Strategy(self, groups=None, stratify=None,
+                               train_only_loc=None, train_only_subjects=None):
     '''Define a validation stratagy to be used during different train/test splits,
     in addition to model selection and model hyperparameter CV.
     See Notes for more info.
@@ -43,6 +44,26 @@ def Define_Validation_Strategy(self, groups=None, stratify=None):
 
         (default = None)
 
+    train_only_loc : str, Path or None, optional
+        Location of a file to load in train_only subjects,
+        where any subject loaded as train_only will be assigned to
+        every training fold, and never to a testing fold.
+        This file should be formatted as one subject per line.
+
+        This parameter is compatible with groups / stratify.
+
+        (default = None)
+
+
+    train_only_subjects : list, set, array-like or None, optional
+        An explicit list or array-like of train_only subjects, where
+        any subject loaded as train_only will be assigned to every training
+        fold, and never to a testing fold.
+
+        This parameter is compatible with groups / stratify.
+
+        (default = None)
+
     Notes
     ----------
     Validation stratagy choices are explained in more detail:
@@ -73,18 +94,29 @@ def Define_Validation_Strategy(self, groups=None, stratify=None):
     the size of the smallest unique group decreases.
     '''
 
+    train_only =\
+        self._load_set_of_subjects(loc=train_only_loc,
+                                   subjects=train_only_subjects)
+    train_only = np.array(list(train_only))
+
+    if groups is not None and stratify is not None:
+        print('Warning: ABCD_ML does not currently support groups and',
+              'stratify together!')
+
     if groups is not None:
 
         if isinstance(groups, str):
             l_e = None
-            self.CV = CV(groups=self.strat[groups])
+            grp = self.strat[groups]
 
         elif isinstance(groups, list):
+            grp, l_e = get_unique_combo(self.strat, groups)
 
-            combo, l_e = get_unique_combo(self.strat, groups)
-            self.CV = CV(groups=combo)
+        else:
+            assert 1 == 2, "Make sure groups is a list or str"
 
-        self._get_info_on(self.CV.groups, groups, 'groups', l_e)
+        self.CV = CV(groups=grp, train_only=train_only)
+        self._get_info_on(self.CV.groups, groups, 'groups', l_e, train_only)
 
     elif stratify is not None:
 
@@ -96,7 +128,7 @@ def Define_Validation_Strategy(self, groups=None, stratify=None):
                     self._get_one_col_targets()
 
             l_e = None
-            self.CV = CV(stratify=self.strat[stratify])
+            strat = self.strat[stratify]
 
         elif isinstance(stratify, list):
 
@@ -104,10 +136,22 @@ def Define_Validation_Strategy(self, groups=None, stratify=None):
                 self.strat[self.original_targets_key] =\
                     self._get_one_col_targets()
 
-            combo, l_e = get_unique_combo(self.strat, stratify)
-            self.CV = CV(stratify=combo)
+            strat, l_e = get_unique_combo(self.strat, stratify)
 
-        self._get_info_on(self.CV.stratify, stratify, 'stratify', l_e)
+        else:
+            assert 1 == 2, "Make sure statify is a list or str"
+
+        self.CV = CV(stratify=strat, train_only=train_only)
+        self._get_info_on(self.CV.stratify, stratify, 'stratify', l_e,
+                          train_only)
+
+    # If only train only
+    elif len(train_only) > 0:
+        self.CV = CV(train_only=train_only)
+        self._print(len(train_only), 'Train only subjects defined.')
+
+    else:
+        self._print('No params passed, nothing done.')
 
 
 def Train_Test_Split(self, test_size=None, test_loc=None,
@@ -203,16 +247,25 @@ def _get_one_col_targets(self):
     return targets
 
 
-def _get_info_on(self, all_vals, col_names, v_type, l_e):
+def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only):
 
     if v_type == 'groups':
         chunk = 'group preserving'
     elif v_type == 'stratify':
         chunk = 'stratifying behavior'
 
+    if len(train_only) > 0:
+        self._print(len(train_only), 'Train only subjects defined.')
+        self._print('Those subjects are excluded from the below stats!')
+        self._print()
+
+        non_train_only = np.setdiff1d(all_vals.index, train_only,
+                                      assume_unique=True)
+        all_vals = all_vals.loc[non_train_only]
+
     unique_vals, counts = np.unique(all_vals, return_counts=True)
 
-    self._print('CV defined with ', chunk, ' over',
+    self._print('CV defined with', chunk, 'over',
                 len(unique_vals), 'unique values.')
 
     if v_type == 'stratify':

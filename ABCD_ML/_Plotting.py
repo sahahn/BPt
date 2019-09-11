@@ -194,7 +194,7 @@ def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
 
         if dropped_name is not None:
             self._print('Note:', dropped_name, 'was dropped due to dummy',
-                        'coding but is still shown below.')
+                        'coding but is still shown.')
 
         display_names = sums.index
         if cat_show_original_name:

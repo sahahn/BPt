@@ -827,7 +827,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
              sampler='default', feat_selector='default', n_splits='default',
              n_repeats='default', int_cv='default',
              ensemble_type='default', ensemble_split='default',
-             search_type='default', model_type_params=0,
+             search_type='default', model_type_params='default',
              imputer_params='default', scaler_params='default',
              sampler_params='default', feat_selector_params='default',
              class_weight='default', n_jobs='default', n_iter='default',
@@ -955,6 +955,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
 
 def Test(self, model_type='default', problem_type='default',
          train_subjects=None, test_subjects=None, metric='default',
+         imputer='default', imputer_scope='default',
          scaler='default', scaler_scope='default', sampler='default',
          feat_selector='default', int_cv='default', ensemble_type='default',
          ensemble_split='default', search_type='default',
@@ -989,6 +990,8 @@ def Test(self, model_type='default', problem_type='default',
         (default = None)
 
     metric :
+    imputer :
+    imputer_scope :
     scaler :
     scaler_scope :
     sampler :
@@ -1358,7 +1361,7 @@ def Get_Base_Feat_Importances(self, top_n=None):
 
     .. WARNING::
         `calc_base_feature_importances` must have been set to True,
-        during the last call to :func:`Evaluate` or :func:`test`,
+        during the last call to :func:`Evaluate` or :func:`Test`,
         AND the `model_type` must have been a linear or tree-based model
         (with no extra ensembling).
 
@@ -1399,7 +1402,7 @@ def Get_Shap_Feat_Importances(self, top_n=None):
 
     .. WARNING::
         `calc_shap_feature_importances` must have been set to True,
-        during the last call to :func:`Evaluate` or :func:`test`
+        during the last call to :func:`Evaluate` or :func:`Test`
 
     Parameters
     ----------

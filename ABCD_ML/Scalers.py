@@ -4,7 +4,7 @@ Scalers.py
 File containing the various data scalers.
 """
 from ABCD_ML.ML_Helpers import (show_param_options, get_possible_init_params,
-                                get_obj_and_params)
+                                get_obj_and_params, show_objects)
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer)
 
@@ -71,7 +71,7 @@ def get_scaler_and_params(scaler_str, extra_params, params, search_type):
 
 
 def Show_Scalers(self, scaler=None, show_params_options=False,
-                 show_scaler_object=False,
+                 show_object=False,
                  show_all_possible_params=False):
     '''Print out the avaliable data scalers.
 
@@ -89,7 +89,7 @@ def Show_Scalers(self, scaler=None, show_params_options=False,
 
         (default = False)
 
-    show_scaler_object : bool, optional
+    show_object : bool, optional
         Flag, if set to True, then will print the raw data scaler
         object.
 
@@ -117,37 +117,8 @@ def Show_Scalers(self, scaler=None, show_params_options=False,
     print('is listed as ("str indicator")')
     print()
 
-    if scaler is not None:
-        if isinstance(scaler, str):
-                scaler = [scaler]
-        for scaler_str in scaler:
-                show_scaler(scaler_str, show_params_options,
-                            show_scaler_object, show_all_possible_params)
-        return
-
-    for scaler in SCALERS:
-        show_scaler(scaler, show_params_options,
-                    show_scaler_object, show_all_possible_params)
-
-
-def show_scaler(scaler, show_params_options, show_scaler_object,
-                show_all_possible_params):
-
-    print('- - - - - - - - - - - - - - - - - - - - ')
-    S = SCALERS[scaler]
-    print(S[0].__name__, end='')
-    print(' ("', scaler, '")', sep='')
-    print('- - - - - - - - - - - - - - - - - - - - ')
-    print()
-
-    if show_scaler_object:
-        print('Scaler Object: ', S[0])
-
-    print()
-    if show_params_options:
-        show_param_options(S[1])
-
-    if show_all_possible_params:
-            possible_params = get_possible_init_params(S[0])
-            print('All Possible Params:', possible_params)
-    print()
+    show_objects(problem_type=None, obj=scaler,
+                 show_params_options=show_params_options,
+                 show_object=show_object,
+                 show_all_possible_params=show_all_possible_params,
+                 AVALIABLE=None, OBJS=SCALERS)

@@ -1,3 +1,5 @@
+.. _Model Types:
+ 
 ***********
 Model Types
 ***********
@@ -969,6 +971,8 @@ categorical multiclass
 
 
 
+.. _Metrics:
+ 
 *******
 Metrics
 *******
@@ -1087,6 +1091,36 @@ categorical multilabel
 **********
 
   Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
+
+"by class average precision"
+****************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+"by class f1"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"by class jaccard"
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"by class precision"
+********************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"by class recall"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"by class roc auc"
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
 "hamming"
 *********
@@ -1231,6 +1265,26 @@ categorical multiclass
 
   Base Func Documenation: :func:`sklearn.metrics.balanced_accuracy_score`
 
+"by class f1"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"by class jaccard"
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"by class precision"
+********************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"by class recall"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
 "hamming"
 *********
 
@@ -1285,6 +1339,11 @@ categorical multiclass
 **************
 
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"multiclass by class average precision"
+***************************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
 
 "multiclass by class roc auc"
 *****************************
@@ -1352,6 +1411,86 @@ categorical multiclass
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
 
 
+.. _Imputers:
+ 
+********
+Imputers
+********
+
+Different availible choices for the `imputer` parameter are shown below.
+imputer is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `imputer` is represented by the sub-heading (within "")
+Additionally, a link to the original imputers documentation as well as the implemented parameter distributions are shown.
+Imputers are also special, in that a model_type can be passed instead of the imputer str. In that case, the model_type will be used to fill any NaN by column.
+For `imputer_scope` of float, or custom column names, only regression type models are valid, and for scope of categorical, only binary / multiclass model types are valid!
+The sklearn iterative imputer is used when a model_type is passed.
+Also, if a model_type is passed, then the `imputer_params` argument will then be considered as applied to the base  estimator / model_type!
+
+All Problem Types
+=================
+"mean"
+******
+
+  Base Class Documenation: :class:`sklearn.impute.SimpleImputer`
+
+  Param Distributions
+
+	0. "mean imp" ::
+
+		strategy: mean
+
+
+"median"
+********
+
+  Base Class Documenation: :class:`sklearn.impute.SimpleImputer`
+
+  Param Distributions
+
+	0. "median imp" ::
+
+		strategy: median
+
+
+"most frequent"
+***************
+
+  Base Class Documenation: :class:`sklearn.impute.SimpleImputer`
+
+  Param Distributions
+
+	0. "most freq imp" ::
+
+		strategy: most_frequent
+
+
+"constant"
+**********
+
+  Base Class Documenation: :class:`sklearn.impute.SimpleImputer`
+
+  Param Distributions
+
+	0. "constant imp" ::
+
+		strategy: constant
+
+
+"iterative"
+***********
+
+  Base Class Documenation: :class:`sklearn.impute.IterativeImputer`
+
+  Param Distributions
+
+	0. "iterative imp" ::
+
+		initial_strategy: mean
+
+
+
+.. _Scalers:
+ 
 *******
 Scalers
 *******
@@ -1418,6 +1557,8 @@ All Problem Types
 
 
 
+.. _Samplers:
+ 
 ********
 Samplers
 ********
@@ -1904,6 +2045,8 @@ categorical multiclass
 
 
 
+.. _Feat Selectors:
+ 
 **************
 Feat Selectors
 **************
@@ -2091,6 +2234,8 @@ categorical multiclass
 
 
 
+.. _Ensemble Types:
+ 
 **************
 Ensemble Types
 **************

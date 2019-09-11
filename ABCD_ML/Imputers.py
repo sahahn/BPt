@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
-from ABCD_ML.ML_Helpers import get_obj_and_params
+from ABCD_ML.ML_Helpers import get_obj_and_params, show_objects
 
 
 class Regular_Imputer():
@@ -269,3 +269,53 @@ def get_imputer(imputer_str, extra_params, params, search_type,
         imputer = Regular_Imputer(base_imputer, inds)
 
     return imputer, imputer_params
+
+
+def Show_Imputers(self, imputer=None, show_params_options=False,
+                  show_object=False, show_all_possible_params=False):
+    '''Print out the avaliable imputers.
+
+    Parameters
+    ----------
+    imputer : str or list, optional
+        Provide a str or list of strs, where
+        each str is the exact imputer str indicator
+        in order to show information for only that (or those)
+        imputers.
+
+    show_params_options : bool, optional
+        Flag, if set to True, then will display the ABCD_ML
+        param ind options for each imputer.
+
+        (default = False)
+
+    show_object : bool, optional
+        Flag, if set to True, then will print the raw data imputer
+        object.
+
+        (default = False)
+
+    show_all_possible_params: bool, optional
+        Flag, if set to True, then will print all
+        possible arguments to the classes __init__
+
+        (default = False)
+    '''
+
+    print('Visit: ')
+    print('https://scikit-learn.org/stable/modules/impute.html')
+    print('For more detailed information on different imputers')
+    print('More information through this function is avaliable')
+    print('By passing optional extra optional params! Please view',
+          'the help function for more info!')
+    print('Note: the str indicator actually passed during Evaluate / Test')
+    print('is listed as ("str indicator")')
+    print('Also for imputers, a model_type str can be passed instead of',
+          'imputer str!')
+    print()
+
+    show_objects(problem_type=None, obj=imputer,
+                 show_params_options=show_params_options,
+                 show_object=show_object,
+                 show_all_possible_params=show_all_possible_params,
+                 AVALIABLE=None, OBJS=IMPUTERS)

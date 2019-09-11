@@ -46,7 +46,7 @@ def compute_macro_micro(scores, n_repeats, n_splits):
 def is_array_like(in_val):
 
     if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
-     (not isinstance(in_val, dict)) and (not callable(in_val)):
+     (not isinstance(in_val, dict)) and (not hasattr(in_val, 'fit')):
         return True
     else:
         return False
@@ -298,6 +298,18 @@ def get_objects_by_type(problem_type, AVALIABLE=None, OBJS=None):
     return objs
 
 
+def get_objects(OBJS):
+
+    objs = []
+    for obj_str in OBJS:
+
+        obj = OBJS[obj_str][0]
+        obj_params = OBJS[obj_str][1]
+        objs.append((obj_str, obj, obj_params))
+
+    return objs
+
+
 def proc_problem_type(problem_type, avaliable_by_type):
 
     if problem_type is not None:
@@ -326,14 +338,22 @@ def show_objects(problem_type=None, obj=None,
                          show_all_possible_params, OBJS)
             return
 
-        avaliable_by_type = get_avaliable_by_type(AVALIABLE)
-        problem_types = proc_problem_type(problem_type, avaliable_by_type)
+        if AVALIABLE is not None:
 
-        for pt in problem_types:
-                show_type(pt, avaliable_by_type,
-                          show_params_options,
-                          show_object,
-                          show_all_possible_params, OBJS)
+            avaliable_by_type = get_avaliable_by_type(AVALIABLE)
+            problem_types = proc_problem_type(problem_type, avaliable_by_type)
+
+            for pt in problem_types:
+                    show_type(pt, avaliable_by_type,
+                              show_params_options,
+                              show_object,
+                              show_all_possible_params, OBJS)
+
+        else:
+
+            for obj in OBJS:
+                show_obj(obj, show_params_options, show_object,
+                         show_all_possible_params, OBJS)
 
 
 def show_type(problem_type, avaliable_by_type, show_params_options,

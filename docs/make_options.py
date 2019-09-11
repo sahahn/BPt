@@ -1,9 +1,11 @@
-from ABCD_ML.ML_Helpers import get_objects_by_type
+from ABCD_ML.ML_Helpers import get_objects_by_type, get_objects
 from ABCD_ML.Metrics import get_metrics_by_type
-from ABCD_ML.Scalers import get_scaler_objects
 
 from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.Models import MODELS
+
+from ABCD_ML.Imputers import IMPUTERS
+from ABCD_ML.Scalers import SCALERS
 
 from ABCD_ML.Samplers import AVALIABLE as AVALIABLE_SAMPLERS
 from ABCD_ML.Samplers import SAMPLERS
@@ -52,6 +54,9 @@ def get_metric_name(obj):
 
 def main_category(lines, name):
 
+    lines.append('.. _' + name + ':')
+    lines.append(' ')
+
     stars = ''.join('*' for i in range(len(name)))
     lines.append(stars)
     lines.append(name)
@@ -85,12 +90,12 @@ def add_block(lines, problem_types, AVALIABLE=None, OBJS=None):
     return lines
 
 
-def add_scaler_block(lines):
+def add_no_type_block(lines, OBJS):
 
     lines.append('All Problem Types')
     lines.append('=================')
 
-    objs = get_scaler_objects()
+    objs = get_objects(OBJS)
 
     for obj in objs:
         lines = add_obj(lines, obj, metric=False)
@@ -229,6 +234,30 @@ lines.append('')
 
 lines = add_block(lines, problem_types)
 
+lines = main_category(lines, 'Imputers')
+lines.append('Different availible choices for the `imputer` parameter' +
+             ' are shown below.')
+lines.append('imputer is accepted by ' +
+             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
+             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
+lines.append('The exact str indicator for each `imputer` is represented' +
+             ' by the sub-heading (within "")')
+lines.append('Additionally, a link to the original imputers documentation ' +
+             'as well as the implemented parameter distributions are shown.')
+lines.append('Imputers are also special, in that a model_type can be passed ' +
+             'instead of the imputer str. In that case, the model_type will' +
+             ' be used to fill any NaN by column.')
+lines.append('For `imputer_scope` of float, or custom column names, only ' +
+             'regression type models are valid, and for scope of categorical' +
+             ', only binary / multiclass model types are valid!')
+lines.append('The sklearn iterative imputer is used when a model_type is' +
+             ' passed.')
+lines.append('Also, if a model_type is passed, then the `imputer_params`' +
+             ' argument will then be considered as applied to the base ' +
+             ' estimator / model_type!')
+lines.append('')
+lines = add_no_type_block(lines, IMPUTERS)
+
 lines = main_category(lines, 'Scalers')
 lines.append('Different availible choices for the `scaler` parameter' +
              ' are shown below.')
@@ -240,7 +269,7 @@ lines.append('The exact str indicator for each `scaler` is represented' +
 lines.append('Additionally, a link to the original scalers documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
-lines = add_scaler_block(lines)
+lines = add_no_type_block(lines, SCALERS)
 
 lines = main_category(lines, 'Samplers')
 lines.append('Different availible choices for the `sampler` parameter' +

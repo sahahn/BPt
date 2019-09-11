@@ -46,7 +46,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         will be created over all individual models.
 
         For a full list of supported options call:
-        :func:`Show_Model_Types`
+        :func:`Show_Model_Types` or view the docs at :ref:`Model Types`
 
         If 'default', and not already defined, set to 'linear'
         (default = 'default')
@@ -70,7 +70,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         Note, some metrics are only avaliable for certain problem types.
 
         For a full list of supported metrics call:
-        :func:`Show_Metrics`
+        :func:`Show_Metrics` or view the docs at :ref:`Metrics`
 
         If 'default', and not already defined, set to default
         metric for the problem type.
@@ -100,6 +100,9 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         then a binary / multiclass model type will be selected.
         (Note: categorical cols are converted to multiclass first if nec.)
 
+        For a full list of supported options call:
+        :func:`Show_Imputers` or view the docs at :ref:`Imputers`
+
         If 'default', and not already defined, set to ['mean', 'median']
         (default = 'default')
 
@@ -126,7 +129,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         If None, then no scaling will be applied.
 
         For a full list of supported options call:
-        :func:`Show_Scalers`
+        :func:`Show_Scalers` or view the docs at :ref:`Scalers`
 
         If 'default', and not already defined, set to 'standard'
         (default = 'default')
@@ -164,7 +167,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         in that order.
 
         For a full list of supported options call:
-        :func:`Show_Samplers`
+        :func:`Show_Samplers` or view the docs at :ref:`Samplers`
 
         If 'default', and not already defined, set to None
         (default = 'default')
@@ -176,7 +179,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         If None, then no feature selection will be used.
 
         For a full list of supported options call:
-        :func:`Show_Feat_Selectors`
+        :func:`Show_Feat_Selectors` or view the docs at :ref:`Feat Selectors`
 
         If 'default', and not already defined, set to None
         (default = 'default')
@@ -231,7 +234,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         using the 'basic ensemble' behvaior... so an ensemble of ensembles.
 
         For a full list of supported options call:
-        :func:`Show_Ensemble_Types`
+        :func:`Show_Ensemble_Types` or view the docs at :ref:`Ensemble Types`
 
         If 'default', and not already defined, set to 'basic ensemble'
         (default = 'default')
@@ -277,6 +280,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
 
         The different parameter distributions avaliable for each
         `model_type`, can be shown by calling :func:`Show_Model_Types`
+        or on the docs at :ref:`Model Types`
 
         If 'default', and not already defined, set to 0
         (default = 'default')
@@ -291,6 +295,10 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         distributions to be used with `search_type` == 'random' or 'grid',
         when `search_type` == None, `scaler_params` is automatically
         set to default 0.
+
+        The different parameter distributions avaliable for each
+        `imputer`, can be shown by calling :func:`Show_Imputers`
+        or on the docs at :ref:`Imputers`
 
         Note: If a model_type was passed to the imputer, then
         `imputer_params` will refer to the parameters for that
@@ -312,6 +320,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
 
         The different parameter distributions avaliable for each
         `scaler`, can be shown by calling :func:`Show_Scalers`
+        or on the docs at :ref:`Scalers`
 
         If 'default', and not already defined, set to 0
         (default = 'default')
@@ -329,6 +338,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
 
         The different parameter distributions avaliable for each
         `sampler`, can be shown by calling :func:`Show_Samplers`
+        or on the docs at :ref:`Samplers`
 
         If 'default', and not already defined, set to 0
         (default = 'default')
@@ -346,6 +356,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
 
         The different parameter distributions avaliable for each
         `feat_selector`, can be shown by calling :func:`Show_Feat_Selectors`
+        or on the docs at :ref:`Feat Selectors`
 
         If 'default', and not already defined, set to 0
         (default = 'default')

@@ -12,3 +12,4 @@ imbalanced-learn
 shap
 scikit-image>=0.15
 tqdm
+dill

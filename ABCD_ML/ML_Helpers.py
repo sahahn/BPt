@@ -45,10 +45,13 @@ def compute_macro_micro(scores, n_repeats, n_splits):
 
 def is_array_like(in_val):
 
-    if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
-     (not isinstance(in_val, dict)):
-        return True
-    else:
+    try:
+        if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
+         (not isinstance(in_val, dict)):
+            return True
+        else:
+            return False
+    except:
         return False
 
 

@@ -439,10 +439,7 @@ class Model():
 
         else:
 
-            if scope == 'b' or scope == 'binary':
-                scope = 'binary'
-                keys = self.covar_scopes['binary']
-            elif scope == 'f' or scope == 'float':
+            if scope == 'f' or scope == 'float':
                 scope = 'float'
                 keys = 'a'
             else:

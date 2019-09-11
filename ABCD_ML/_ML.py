@@ -100,6 +100,9 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         then a binary / multiclass model type will be selected.
         (Note: categorical cols are converted to multiclass first if nec.)
 
+        If 'default', and not already defined, set to ['mean', 'median']
+        (default = 'default')
+
     imputer_scope : str, list or None, optional
         The `imputer_scope` param determines the scope,
         or rather which columns the imputer should fill
@@ -107,11 +110,14 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         Options are,
 
         - 'float' or 'f' : To select just float / ordinal data
-        - 'binary' or 'b' : To select just binary type data
-        - 'categorical' or 'c' : To select any categorical type data\
-                                  regardless of encoding (e.g. one hot)
+        - 'categorical' or 'c' : To select any categorical type\
+                                 (including binary) data\
+                                 regardless of encoding (e.g. one hot)
         - array-like of strs : Can pass specific col names in as array-like\
                                to select only those cols.
+
+        If 'default', and not already defined, set to ['float', 'categorical']
+        (default = 'default')
 
     scaler : str, list or None, optional
         `scaler` refers to the type of scaling to apply
@@ -470,17 +476,17 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         self.default_ML_params['imputer'] = imputer
 
     elif 'imputer' not in self.default_ML_params:
-        self.default_ML_params['imputer'] = ['mean', 'median', 'median']
-        self._print('No default imputer passed, set to [mean, median, median]')
+        self.default_ML_params['imputer'] = ['mean', 'median']
+        self._print('No default imputer passed, set to [mean, median]')
 
     if imputer_scope != 'default':
         self.default_ML_params['imputer_scope'] = imputer_scope
 
     elif 'imputer_scope' not in self.default_ML_params:
         self.default_ML_params['imputer_scope'] =\
-            ['float', 'binary', 'categorical']
+            ['float', 'categorical']
         self._print('No default imputer scope passed, set to',
-                    '[float, binary, categorical]')
+                    '[float, categorical]')
 
     if scaler != 'default':
         self.default_ML_params['scaler'] = scaler

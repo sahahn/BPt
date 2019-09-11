@@ -1709,7 +1709,6 @@ def _get_base_covar_names(self):
 def _get_covar_scopes(self):
 
     covar_scopes = {'float': [],
-                    'binary': [],
                     'categorical': [],
                     'ordinal categorical': []}
     cat_encoders = []
@@ -1735,12 +1734,8 @@ def _get_covar_scopes(self):
 
             # Binary or ordinal
             else:
-
-                if np.nanmax(ML.covars[base_covar]) > 1:
-                    covar_scopes['ordinal categorical'].append(base_covar)
-                else:
-                    covar_scopes['binary'].append(base_covar)
-
+                covar_scopes['ordinal categorical'].append(base_covar)
+                
         # Float
         else:
             covar_scopes['float'].append(base_covar)

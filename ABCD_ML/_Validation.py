@@ -107,9 +107,11 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
 
         if isinstance(groups, str):
             l_e = None
+            groups += self.strat_u_name
             grp = self.strat[groups]
 
         elif isinstance(groups, list):
+            groups = [g + self.strat_u_name for g in groups]
             grp, l_e = get_unique_combo(self.strat, groups)
 
         else:
@@ -124,10 +126,11 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         if isinstance(stratify, str):
 
             if stratify == self.original_targets_key:
-                self.strat[self.original_targets_key] =\
+                self.strat[self.original_targets_key + self.strat_u_name] =\
                     self._get_one_col_targets()
 
             l_e = None
+            stratify += self.strat_u_name
             strat = self.strat[stratify]
 
         elif isinstance(stratify, list):
@@ -136,6 +139,7 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
                 self.strat[self.original_targets_key] =\
                     self._get_one_col_targets()
 
+            stratify = [s + self.strat_u_name for s in stratify]
             strat, l_e = get_unique_combo(self.strat, stratify)
 
         else:
@@ -290,7 +294,11 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only):
                 if isinstance(encoder, tuple):
                     encoder = encoder[0]
 
-            display_df[name] = encoder.inverse_transform(col_split[:, n])
+            try:
+                display_df[name] = encoder.inverse_transform(col_split[:, n])
+            except ValueError:
+                display_df[name] = np.squeeze(encoder.inverse_transform(
+                                              col_split[:, n].reshape(-1, 1)))
 
         display_df['Counts'] = counts
         self._display_df(display_df)

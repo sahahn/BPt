@@ -10,6 +10,7 @@ from scipy.stats.mstats import winsorize
 from ABCD_ML.Data_Helpers import (process_binary_input,
                                   process_ordinal_input,
                                   process_categorical_input,
+                                  process_float_input,
                                   get_unused_drop_val,
                                   filter_float_by_outlier,
                                   drop_duplicate_cols,
@@ -337,7 +338,7 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[], drop_nan=True,
 def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
                 drop_nan='default', code_categorical_as='dummy',
                 categorical_drop_percent=None,
-                filter_float_outlier_percent=None, standardize=True,
+                filter_float_outlier_percent=None, standardize=False,
                 normalize=False, clear_existing=False):
     '''Load a covariate or covariates, type data.
 
@@ -407,7 +408,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         - 'one hot' : for one hot encoding, to len(unique classes) columns
 
         - 'ordinal' : for just ordinal, one column values 0 to \
-            len(unique classes) -1
+                      len(unique classes) -1
 
         (default = 'dummy')
 
@@ -420,7 +421,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
         (default = None)
 
-    filter_float_outlier_percent, float, int, tuple or None, optional
+    filter_float_outlier_percent : float, int, tuple or None, optional
         For float datatypes only.
         A percent of values to exclude from either end of the
         targets distribution, provided as either 1 number,
@@ -436,7 +437,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         Note: Computed before normalization, if both set to True,
         and both computed after filter_float_outlier_percent.
 
-        (default = True)
+        (default = False)
 
     normalize : bool, optional
         If True, scales any float/ordinal covariates loaded
@@ -632,7 +633,6 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
     # By default set the target key to be the class original target key
     self.targets_key = self.original_targets_key
 
-    self._print('Loading targets!')
     targets = self._common_load(loc, dataset_type, col_name=col_name)
 
     # Rename the column with targets to default targets key name
@@ -672,7 +672,8 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
 
 
 def Load_Strat(self, loc, col_names, dataset_type='default',
-               binary_col_inds=None, clear_existing=False):
+               binary_col_inds=None, float_col_inds=None, float_bins=10,
+               float_bin_strategy='uniform', clear_existing=False):
     '''Load stratification values from a file.
     See Notes for more details on what stratification values are.
 
@@ -712,6 +713,38 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
         which should be loaded explicitly as binary.
 
         (default = None)
+
+    float_col_inds : int, list or None, optional
+        Strat values are loaded as ordinal categorical, but one
+        could also want to load a float value, and bin it into according
+        to some strategy into ordinal categorical. This input should be
+        either None, for just loading in all cols as ordinal,
+        or an int or list of ints, where each int refers to the
+        numerical index within the passed `col_names` of a column
+        which should be loaded as a float.
+
+        (default = None)
+
+    float_bins : int, optional
+        If any float_col_inds are specified, then the float
+        input must be discretized into bins. This param controls
+        the number of bins to create. If the user desires different
+        settings for making bins for different loaded values, they should
+        just call Load_Strat seperately for each unique set of `float_bins`
+        and `float_bin_strategy` params.
+
+        (default = 10)
+
+    float_bin_strategy : {'uniform', 'quantile', 'kmeans'}, optional
+        The strategy used to define the bins if any `float_col_inds`
+        are specified.
+
+        - 'uniform' : All bins in each feature have identical widths.
+        - 'quantile' : All bins in each feature have the same number of points.
+        - 'kmeans' : Values in each bin have the same nearest center of a 1D \
+                     k-means cluster.
+
+        (default = 'uniform')
 
     clear_existing : bool, optional
         If this parameter is set to True, then any existing
@@ -756,14 +789,30 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
 
         binary_col_names = [col_names[i] for i in binary_col_inds]
 
+    if float_col_inds is not None:
+
+        if isinstance(float_col_inds, int):
+            float_col_inds = [float_col_inds]
+
+        float_col_names = [col_names[i] for i in float_col_inds]
+
     # Encode each column into unique values
     for col in col_names:
 
-        if col not in binary_col_names:
-            strat, self.strat_encoders[col] = process_ordinal_input(strat, col)
-        else:
-            strat, self.strat_encoders[col] =\
+        if col in binary_col_names:
+            strat, self.strat_encoders[col + self.strat_u_name] =\
                 process_binary_input(strat, col, self._print)
+
+        elif col in float_col_names:
+            strat, self.strat_encoders[col + self.strat_u_name] =\
+                process_float_input(strat, col, float_bins, float_bin_strategy)
+
+        else:
+            strat, self.strat_encoders[col + self.strat_u_name] =\
+                process_ordinal_input(strat, col)
+
+    col_mapping = {col: col + self.strat_u_name for col in strat}
+    strat = strat.rename(col_mapping, axis=1)
 
     self.strat = self._merge_existing(self.strat, strat)
     self._process_new(True)  # Regardless of low mem-mode

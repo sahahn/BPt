@@ -111,6 +111,7 @@ def _show_covar_dist(self, covar, covars_df, cat_show_original_name,
     # Binary or categorical
     if covar in self.covars_encoders:
 
+        dropped_name = None
         cov_encoders = self.covars_encoders[covar]
 
         if isinstance(cov_encoders, tuple):
@@ -132,8 +133,6 @@ def _show_covar_dist(self, covar, covars_df, cat_show_original_name,
 
                 covar_df[dropped_name] =\
                     covar_df[dropped_name].astype('category')
-            else:
-                dropped_name = None
 
             covar_df = covar_df[covar_df_names]
 

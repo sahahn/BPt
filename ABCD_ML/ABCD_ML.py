@@ -227,6 +227,7 @@ class ABCD_ML():
         self.default_ML_params = {}
         self.ML_verbosity = {}
         self.eval_scores, self.eval_settings = {}, {}
+        self.strat_u_name = '_STRAT'
 
         if self.notebook:
             shap.initjs()

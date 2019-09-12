@@ -8,6 +8,7 @@ import numpy as np
 import numpy.ma as ma
 import pandas as pd
 import random
+from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from operator import add
 from functools import reduce
@@ -190,6 +191,18 @@ def process_categorical_input(data, key, drop='one hot', drop_percent=None,
     return data, new_keys, (label_encoder, encoder, ind)
 
 
+def process_float_input(data, key, bins, strategy):
+
+    encoder = KBinsDiscretizer(n_bins=bins, encode='ordinal',
+                               strategy=strategy)
+
+    vals = np.array(data[key]).reshape(-1, 1)
+    vals = np.squeeze(encoder.fit_transform(vals))
+    data[key] = vals
+
+    return data, encoder
+
+
 def get_unused_drop_val(data):
 
     drop_val = random.randint(-100000, 100000)
@@ -326,8 +339,10 @@ def drop_duplicate_cols(data, corr_thresh):
 
     for col1 in data:
 
-        A = data[col1]
-        a = ma.masked_invalid(A)
+        if col1 in data:
+
+            A = data[col1]
+            a = ma.masked_invalid(A)
 
         for col2 in data:
             if col1 != col2 and col1 in list(data) and col2 in list(data):

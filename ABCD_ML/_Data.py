@@ -10,6 +10,7 @@ from scipy.stats.mstats import winsorize
 from ABCD_ML.Data_Helpers import (process_binary_input,
                                   process_ordinal_input,
                                   process_categorical_input,
+                                  get_unused_drop_val,
                                   filter_float_by_outlier,
                                   drop_duplicate_cols,
                                   get_top_substrs)
@@ -196,9 +197,12 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[], drop_nan=True,
 
         A value of 1 will instead make a quicker direct =='s comparison.
 
-        Note: just drops duplicated within just loaded data.
-        Call self.Drop_Data_Duplicates() to drop duplicates across
+        Note: This param just drops duplicated within the just loaded data.
+        You can call self.Drop_Data_Duplicates() to drop duplicates across
         all loaded data.
+
+        Be advised, this functionality runs rather slow when there are ~500+
+        columns to compare!
 
         (default = None)
 
@@ -256,20 +260,28 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[], drop_nan=True,
     self._print()
 
     data_keys = list(data)
+
+    # Filter based on outlier percent
     if filter_outlier_percent is not None:
+
+        drop_val = get_unused_drop_val(data)
 
         for key in data_keys:
             data = filter_float_by_outlier(data, key, filter_outlier_percent,
-                                           in_place=False,
+                                           in_place=False, drop_val=drop_val,
                                            _print=self._print_nothing)
 
-        data = self._drop_from_filter(data, filter_outlier_percent)
+        data = self._drop_from_filter(data, filter_outlier_percent, drop_val)
 
     if winsorize_val is not None:
         if type(winsorize_val) != tuple:
             winsorize_val = (winsorize_val)
 
-        data[data_keys] = winsorize(data[data_keys], winsorize_val, axis=0)
+        for key in data_keys:
+            non_nan_subjects = ~data[key].isna()
+            data.loc[non_nan_subjects, key] =\
+                winsorize(data.loc[non_nan_subjects, key], winsorize_val)
+
         self._print('Winsorized data with value: ', winsorize_val)
 
     # Check for questionable loaded columns & print warning
@@ -463,6 +475,8 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
     assert len(data_types) == len(col_names), \
         "You must provide the same # of datatypes as column names!"
 
+    drop_val = get_unused_drop_val(covars)
+
     for key, d_type in zip(col_names, data_types):
 
         self._print('loading:', key)
@@ -504,7 +518,8 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
                 non_nan_covars =\
                     filter_float_by_outlier(non_nan_covars, key,
                                             filter_float_outlier_percent,
-                                            in_place=False, _print=self._print)
+                                            in_place=False, drop_val=drop_val,
+                                            _print=self._print)
 
             if standardize:
                 non_nan_covars[key] -= np.mean(non_nan_covars[key])
@@ -523,8 +538,9 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         for dtype, key in zip(non_nan_covars.dtypes, list(covars)):
             covars[key] = covars[key].astype(dtype.name)
 
-    # Filter float by outlier just replaces with 999, so actually remove here.
-    covars = self._drop_from_filter(covars, filter_float_outlier_percent)
+    # Filter float by outlier just replaces with drop_val, now actually remove
+    covars = self._drop_from_filter(covars, filter_float_outlier_percent,
+                                    drop_val)
 
     self._print('loaded shape: ', covars.shape)
 
@@ -1156,7 +1172,8 @@ def _common_load(self, loc, dataset_type, col_name=None,
     # Read csv data from loc
     data = self._load(loc, dataset_type)
 
-    # Perform common df corrections
+    # Perform common df processing, on subject ids,
+    #  duplicate subjects + eventname
     data = self._proc_df(data)
 
     if col_name is not None:
@@ -1167,7 +1184,7 @@ def _common_load(self, loc, dataset_type, col_name=None,
         col_names = list([col_names])
 
     # Drop rows with NaN
-    data = data = self._drop_na(data[col_names], drop_nan)
+    data = self._drop_na(data[col_names], drop_nan)
     return data, col_names
 
 
@@ -1272,7 +1289,12 @@ def _proc_df(self, data):
     # Drop any duplicate subjects, default behavior for now
     # though, could imagine a case where you wouldn't want to when
     # there are future releases.
+    before = data.shape[0]
     data = data.drop_duplicates(subset=self.subject_id)
+    after = data.shape[0]
+
+    if before != after:
+        self._print(before - after, 'duplicate subjects dropped.')
 
     # Rename columns if loaded name map
     if self.name_map:
@@ -1403,11 +1425,11 @@ def _drop_na(self, data, drop_nan=True):
     return data
 
 
-def _drop_from_filter(self, data, filter_outlier_percent):
+def _drop_from_filter(self, data, filter_outlier_percent, drop_val=999):
 
     if filter_outlier_percent is not None:
 
-        to_drop = data[(data == 999).any(axis=1)].index
+        to_drop = data[(data == drop_val).any(axis=1)].index
         data = data.drop(to_drop)
 
         self._print('Dropped', len(to_drop), 'rows based on filter outlier',
@@ -1435,14 +1457,22 @@ def _filter_by_eventname(self, data):
     if self.eventname:
 
         if 'eventname' in list(data):
+
+            before = data.shape[0]
             data = data[data['eventname'] == self.eventname]
+            after = data.shape[0]
+
+            if before != after:
+                self._print(before - after, 'subjects dropped for eventname')
+
             data = data.drop('eventname', axis=1)
+
         else:
             self._print('Warning: filter by eventname =', self.eventname,
                         'is set but this data does not have a column with',
                         'eventname.')
 
-    # If eventname none, but still exists, take out the column
+    # If eventname None, but still exists, take out the column
     else:
         if 'eventname' in list(data):
             data = data.drop('eventname', axis=1)
@@ -1735,7 +1765,7 @@ def _get_covar_scopes(self):
             # Binary or ordinal
             else:
                 covar_scopes['ordinal categorical'].append(base_covar)
-                
+
         # Float
         else:
             covar_scopes['float'].append(base_covar)

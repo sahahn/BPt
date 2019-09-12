@@ -7,6 +7,7 @@ Specifically, these are non-class functions used in _Data.py and ABCD_ML.py.
 import numpy as np
 import numpy.ma as ma
 import pandas as pd
+import random
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from operator import add
 from functools import reduce
@@ -189,8 +190,18 @@ def process_categorical_input(data, key, drop='one hot', drop_percent=None,
     return data, new_keys, (label_encoder, encoder, ind)
 
 
+def get_unused_drop_val(data):
+
+    drop_val = random.randint(-100000, 100000)
+
+    while (data == drop_val).any().any():
+        drop_val = random.randint(-100000, 100000)
+
+    return drop_val
+
+
 def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
-                            _print=print):
+                            drop_val=999, _print=print):
     '''Helper function to perform filtering on a dataframe,
     by setting values to be NaN, then optionally removing rows inplace
 
@@ -250,8 +261,8 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
         data = data[data[key] > data[key].quantile(fop[0])]
         data = data[data[key] < data[key].quantile(fop[1])]
     else:
-        data.loc[data[key] < data[key].quantile(fop[0]), key] = 999
-        data.loc[data[key] > data[key].quantile(fop[1]), key] = 999
+        data.loc[data[key] < data[key].quantile(fop[0]), key] = drop_val
+        data.loc[data[key] > data[key].quantile(fop[1]), key] = drop_val
 
     _print('Min-Max Score (post outlier filtering):',
            np.nanmin(data[key]), np.nanmax(data[key]))

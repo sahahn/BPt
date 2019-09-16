@@ -136,7 +136,7 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         elif isinstance(stratify, list):
 
             if self.original_targets_key in stratify:
-                self.strat[self.original_targets_key] =\
+                self.strat[self.original_targets_key + self.strat_u_name] =\
                     self._get_one_col_targets()
 
             stratify = [s + self.strat_u_name for s in stratify]
@@ -149,6 +149,11 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         self._get_info_on(self.CV.stratify, stratify, 'stratify', l_e,
                           train_only)
 
+        # Drop the 1-col version of target if loaded into strat
+        t_name = self.original_targets_key + self.strat_u_name
+        if t_name in self.strat:
+            self.strat = self.strat.drop(t_name, axis=1)
+
     # If only train only
     elif len(train_only) > 0:
         self.CV = CV(train_only=train_only)
@@ -159,7 +164,7 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
 
 
 def Train_Test_Split(self, test_size=None, test_loc=None,
-                     test_subjects=None, random_state=None):
+                     test_subjects=None, random_state='default'):
     '''Define the overarching train / test split, *highly reccomended*.
 
     Parameters
@@ -272,7 +277,7 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only):
     self._print('CV defined with', chunk, 'over',
                 len(unique_vals), 'unique values.')
 
-    if v_type == 'stratify':
+    if self.verbose and v_type == 'stratify':
 
         if l_e is not None:
             raw = l_e.inverse_transform(unique_vals)

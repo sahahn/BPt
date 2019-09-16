@@ -1230,8 +1230,8 @@ def _init_model(self, ML_params):
 
     covar_scopes, cat_encoders = self._get_covar_scopes()
 
-    self.Model = Model(ML_params, self.CV, self.data_keys, self.covars_keys,
-                       self.cat_keys, self.targets_key, self.targets_encoder,
+    self.Model = Model(ML_params, self.CV, self.all_data_keys,
+                       self.targets_key, self.targets_encoder,
                        covar_scopes, cat_encoders,
                        self.ML_verbosity['progress_bar'],
                        self.ML_verbosity['param_search_verbose'],

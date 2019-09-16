@@ -4,6 +4,7 @@ import time
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from imblearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import FunctionTransformer
 
 import shap
 import pandas as pd
@@ -36,8 +37,8 @@ class Model():
     training, scaling, handling different datatypes ect...
     '''
 
-    def __init__(self, ML_params, CV, data_keys, covars_keys, cat_keys,
-                 targets_key, targets_encoder, covar_scopes, cat_encoders,
+    def __init__(self, ML_params, CV, all_data_keys, targets_key,
+                 targets_encoder, covar_scopes, cat_encoders,
                  progress_bar, param_search_verbose, _print=print):
         ''' Init function for Model
 
@@ -120,20 +121,9 @@ class Model():
             The class defined ABCD_ML CV object for defining
             custom validation splits.
 
-        data_keys : list
-            List of column keys within data, as passed to Evaluate_Model or
-            Test_Model, that correspond to the columns which should be scaled
-            with the chosen data scaler(s) (if any) and are the neuroimaging
-            data.
-
-        covars_keys : list
-            List of column keys within data, as passed to Evaluate_Model or
-            Test_Model, that correspond to the columns which are covars
-
-        cat_keys : list
-            List of column keys within data, as passed to Evaluate_Model or
-            Test_Model, that correspond to the columns within covars that
-            are categorical (binary or categorical).
+        all_data_keys : dict
+            Contains data_keys, covars_keys, strat_keys and cat_keys,
+            as the column names within all_data.
 
         targets_key : str or list
             The str or list corresponding to the column keys for the targets
@@ -184,9 +174,10 @@ class Model():
 
         # Set class parameters
         self.CV = CV
-        self.data_keys = data_keys
-        self.covars_keys = covars_keys
-        self.cat_keys = cat_keys
+        self.data_keys = all_data_keys['data_keys']
+        self.covars_keys = all_data_keys['covars_keys']
+        self.strat_keys = all_data_keys['strat_keys']
+        self.cat_keys = all_data_keys['cat_keys']
         self.targets_key = targets_key
         self.targets_encoder = targets_encoder
         self.covar_scopes = covar_scopes
@@ -250,6 +241,8 @@ class Model():
         self._process_samplers()
         self._process_ensemble_types()
 
+        self._make_drop_strat()
+
     def _set_default_params(self):
         self.user_passed_objs = {}
         self.shap_dfs = []
@@ -262,6 +255,8 @@ class Model():
         self.tree_flag = False
 
     def _set_all_keys(self, data_to_use):
+        '''Strat keys then target keys should always be last,
+           as to no effect earlier indexing.'''
 
         if isinstance(self.targets_key, str):
             t_key = [self.targets_key]
@@ -269,14 +264,16 @@ class Model():
             t_key = self.targets_key
 
         if data_to_use == 'data' or data_to_use == 'd':
-            self.all_keys = self.data_keys + t_key
+            self.all_keys = self.data_keys + self.strat_keys + t_key
         elif data_to_use == 'covars' or data_to_use == 'c':
-            self.all_keys = self.covars_keys + t_key
+            self.all_keys = self.covars_keys + self.strat_keys + t_key
         else:
             self.all_keys =\
-                self.data_keys + self.covars_keys + t_key
+                self.data_keys + self.covars_keys + self.strat_keys + t_key
 
-    def _get_inds_from_keys(self, keys):
+    def _get_train_inds_from_keys(self, keys):
+        '''Assume target is always last within self.all_keys ...
+        maybe a bad assumption.'''
 
         inds = [self.all_keys.index(k) for k in keys if k in self.all_keys]
         return inds
@@ -413,12 +410,19 @@ class Model():
             while None in imputers_and_params:
                 imputers_and_params.remove(None)
 
-            self.imputers, self.imputer_params =\
+            imputers, imputer_params =\
                 self._proc_objs_and_params(imputers_and_params)
 
+            # Make column transformers for skipping strat cols
+            skip_strat_scopes = ['n' for i in range(len(imputers))]
+
+            self.col_imputers, self.col_imputer_params =\
+                self._make_col_version(imputers, imputer_params,
+                                       skip_strat_scopes)
+
         else:
-            self.imputers = []
-            self.imputer_params = {}
+            self.col_imputers = []
+            self.col_imputer_params = {}
 
     def _get_imputer(self, imputer_str, imputer_param, scope):
 
@@ -530,77 +534,91 @@ class Model():
                             'scopes! Filling remaining scopes with',
                             self.scaler_scopes[0])
 
-            # Create a list of tuples (just like self.scalers), but
-            # with column versions of the scalers.
-            self.col_scalers = []
-            for i in range(len(scalers)):
-
-                name, scaler = scalers[i][0], scalers[i][1]
-
-                scope = self.scaler_scopes[i]
-                inds = self._get_inds_from_scope(scope)
-
-                col_scaler =\
-                    ('col_' + name, ColumnTransformer([(name, scaler, inds)],
-                     remainder='passthrough', sparse_threshold=0))
-
-                self.col_scalers.append(col_scaler)
-
-            # Create col_scaler_params from scaler_params
-            self.col_scaler_params = {}
-
-            for key in scaler_params:
-                name = key.split('__')[0]
-                new_name = 'col_' + name + '__' + key
-
-                self.col_scaler_params[new_name] =\
-                    scaler_params[key]
+            self.col_scalers, self.col_scaler_params =\
+                self._make_col_version(scalers, scaler_params,
+                                       self.scaler_scopes)
 
         else:
             self.col_scalers = []
             self.col_scaler_params = {}
 
+    def _make_col_version(self, objs, params, scopes):
+
+        # Make objects first
+        col_objs = []
+
+        for i in range(len(objs)):
+            name, obj = objs[i][0], objs[i][1]
+            inds = self._get_inds_from_scope(scopes[i])
+
+            col_obj =\
+                ('col_' + name, ColumnTransformer([(name, obj, inds)],
+                 remainder='passthrough', sparse_threshold=0))
+
+            col_objs.append(col_obj)
+
+        # Change params to reflect objs
+        col_params = {}
+
+        for key in params:
+            name = key.split('__')[0]
+            new_name = 'col_' + name + '__' + key
+
+            col_params[new_name] = params[key]
+
+        return col_objs, col_params
+
     def _get_inds_from_scope(self, scope):
+        '''Return inds from scope, with a check to remove strat
+        and target keys always.'''
 
         if isinstance(scope, str):
 
             # Lower-case first char only
             scope = scope.lower()[0]
 
+            # All non categorical
             if scope == 'a':
                 keys = [k for k in self.all_keys if k not in self.cat_keys]
 
+            # Just data_keys
             elif scope == 'd':
-                keys = self.data_keys
+                keys = self.data_keys.copy()
 
+            # Just non-categorical covars
             elif scope == 'c':
                 keys = [k for k in self.all_keys if
                         k not in self.cat_keys and
                         k not in self.data_keys]
 
+            # Everything (but strat and targets!)
+            elif scope == 'n':
+                keys = self.all_keys.copy()
+
+            # Wrong str case
             else:
                 self._print('Warning! Passed scaler scope of:', scope,
                             'is invalid!')
                 self._print('Setting scope to data only by default.')
-                keys = self.data_keys
-
-            # If scope was a or c, need to check to remove targets
-            if scope == 'a' or scope == 'c':
-
-                try:
-                    if isinstance(self.targets_key, list):
-                        for t_key in self.targets_key:
-                            keys.remove(t_key)
-                    else:
-                        keys.remove(self.targets_key)
-                except ValueError:
-                    pass
+                keys = self.data_keys.copy()
 
         # If not str then assume list / array like containing col names / keys
         else:
             keys = scope
 
-        inds = self._get_inds_from_keys(keys)
+        # Need to remove all strat keys + target_keys, if there regardless
+        if isinstance(self.targets_key, list):
+            t_keys = self.targets_key
+        else:
+            t_keys = [self.targets_key]
+
+        for key in self.strat_keys + t_keys:
+            try:
+                keys.remove(key)
+            except ValueError:
+                pass
+
+        inds = self._get_train_inds_from_keys(keys)
         return inds
 
     def _process_samplers(self):
@@ -624,7 +642,7 @@ class Model():
                                         self.random_state)
 
             # Replace categorical feats
-            cat_inds = self._get_inds_from_keys(self.cat_keys)
+            cat_inds = self._get_train_inds_from_keys(self.cat_keys)
             self.samplers =\
                 self._check_and_replace(self.samplers, 'categorical_features',
                                         cat_inds)
@@ -668,6 +686,22 @@ class Model():
         self.ensembles = [get_ensemble_and_params(ensemble_str,
                                                   self.extra_params)
                           for ensemble_str in self.ensemble_strs]
+
+    def _make_drop_strat(self):
+        '''This creates a columntransformer in order to drop
+        the strat cols from X!'''
+
+        non_strat_inds = self._get_inds_from_scope('n')
+        identity = FunctionTransformer(validate=False)
+
+        # Make base col_transformer, just for dropping strat cols
+        col_transformer =\
+            ColumnTransformer(transformers=[('keep_all_but_strat_inds',
+                                             identity, non_strat_inds)],
+                              remainder='drop', sparse_threshold=0)
+
+        # Put in list, to easily add to pipeline
+        self.drop_strat = [('drop_strat', col_transformer)]
 
     def _proc_type_dep_str(self, in_strs, avaliable):
         '''Helper function to perform str correction on
@@ -968,7 +1002,8 @@ class Model():
         # Check for any NaN
         self.nans = pd.isnull(data).any().any()
         if self.nans is False:
-            self.imputers = []
+            self.col_imputers = []
+            self.col_imputer_params = {}
 
         # Assume the train_subjects and test_subjects passed here are final.
         train_data = data.loc[train_subjects]
@@ -1203,7 +1238,7 @@ class Model():
         # into one dict.
         all_params = {}
         all_params.update(self.col_scaler_params)
-        all_params.update(self.imputer_params)
+        all_params.update(self.col_imputer_params)
         all_params.update(self.sampler_params)
         all_params.update(self.feat_selector_params)
         all_params.update(model_type_params)
@@ -1285,8 +1320,8 @@ class Model():
             scalers, and then the passed in model.
         '''
 
-        steps = self.col_scalers + self.imputers + self.samplers \
-            + self.feat_selectors + [(model_type, model)]
+        steps = self.col_scalers + self.col_imputers + self.samplers \
+            + self.drop_strat + self.feat_selectors + [(model_type, model)]
 
         model_pipeline = Pipeline(steps)
 
@@ -1465,7 +1500,8 @@ class Model():
     def _proc_X_test(self, test_data):
 
         scalers = self._get_objs_from_pipeline(self.col_scalers)
-        imputers = self._get_objs_from_pipeline(self.imputers)
+        imputers = self._get_objs_from_pipeline(self.col_imputers)
+        drop_strat = self._get_objs_from_pipeline(self.drop_strat)
         feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 
         # Grab the test data, X as df + copy
@@ -1473,14 +1509,19 @@ class Model():
 
         feat_names = list(X_test)
 
-        # Apply all data scalers, in place
+        # Apply pipeline operations in place
         for scaler in scalers:
             X_test[feat_names] = scaler.transform(X_test)
-
         for imputer in imputers:
             X_test[feat_names] = imputer.transform(np.array(X_test))
 
-        # Apply all feature selectors, in place
+        # Make sure to keep track of col changes w/ drop + feat_selector
+        for drop in drop_strat:
+
+            valid_inds = np.array(drop.transformers[0][2])
+            feat_names = np.array(feat_names)[valid_inds]
+            X_test[feat_names] = drop.transform(X_test)
+
         for feat_selector in feat_selectors:
 
             feat_mask = feat_selector.get_support()
@@ -1494,8 +1535,9 @@ class Model():
     def _proc_X_train(self, train_data):
 
         scalers = self._get_objs_from_pipeline(self.col_scalers)
-        imputers = self._get_objs_from_pipeline(self.imputers)
+        imputers = self._get_objs_from_pipeline(self.col_imputers)
         samplers = self._get_objs_from_pipeline(self.samplers)
+        drop_strat = self._get_objs_from_pipeline(self.drop_strat)
         feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 
         X_train, y_train = self._get_X_y(train_data)
@@ -1506,6 +1548,8 @@ class Model():
             X_train = imputer.transform(np.array(X_train))
         for sampler in samplers:
             X_train, y_train = sampler.fit_resample(X_train, y_train)
+        for drop in drop_strat:
+            X_train = drop.transform(X_train)
         for feat_selector in feat_selectors:
             X_train = feat_selector.transform(X_train)
 

@@ -222,6 +222,7 @@ class ABCD_ML():
         self.covars_encoders, self.targets_encoder = {}, None
         self.strat_encoders = {}
         self.all_data, self.train_subjects = None, None
+        self.all_data_keys = {}
         self.test_subjects = None
         self.CV = CV()
         self.default_ML_params = {}
@@ -338,7 +339,8 @@ class ABCD_ML():
                                _get_overlapping_subjects,
                                _process_new,
                                _prepare_data,
-                               _set_data_and_cat_inds,
+                               _get_cat_keys,
+                               _set_all_data_keys,
                                _get_base_covar_names,
                                _get_covar_scopes)
 

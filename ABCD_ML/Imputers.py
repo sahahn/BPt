@@ -72,6 +72,14 @@ class Regular_Imputer():
     def set_params(self, **params):
         self.imputer.set_params(**params)
 
+    def get_params(self, deep=False):
+
+        params = {'imputer': self.imputer,
+                  'inds': self.inds,
+                  'copy': self.copy}
+
+        return params
+
 
 class Categorical_Imputer():
 
@@ -198,6 +206,16 @@ class Categorical_Imputer():
 
     def set_params(self, **params):
         self.imputer.set_params(**params)
+
+    def get_params(self, deep=False):
+
+        params = {'imputer': self.imputer,
+                  'encoder_inds': self.encoder_inds,
+                  'ordinal_inds': self.ordinal_inds,
+                  'encoders': self.encoders,
+                  'copy': self.copy}
+
+        return params
 
 
 IMPUTERS = {

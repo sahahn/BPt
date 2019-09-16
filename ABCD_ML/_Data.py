@@ -781,7 +781,6 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
                                          col_names=col_names)
 
     binary_col_names = []
-
     if binary_col_inds is not None:
 
         if isinstance(binary_col_inds, int):
@@ -789,6 +788,7 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
 
         binary_col_names = [col_names[i] for i in binary_col_inds]
 
+    float_col_names = []
     if float_col_inds is not None:
 
         if isinstance(float_col_inds, int):
@@ -1701,15 +1701,12 @@ def _prepare_data(self):
 
     if len(self.data) > 0:
         dfs.append(self.data)
-        self.data_keys = list(self.data)
-    else:
-        self.data_keys = []
 
     if len(self.covars) > 0:
         dfs.append(self.covars)
-        self.covars_keys = list(self.covars)
-    else:
-        self.covars_keys = []
+
+    if len(self.strat) > 0:
+        dfs.append(self.strat)
 
     assert len(self.targets) > 0, \
         'Targets must be loaded!'
@@ -1718,44 +1715,68 @@ def _prepare_data(self):
 
     self.all_data = dfs[0]
     for i in range(1, len(dfs)):
+
+        overlap_c_names = np.array([c_name in list(self.all_data) for
+                                    c_name in list(dfs[i])])
+
+        if overlap_c_names.any():
+
+            self._print('Col names from data, covars, targets and strat',
+                        'must be unique!')
+
+            overlap = np.array(list(dfs[i]))[overlap_c_names]
+            assert 1 == 2, str(overlap) + ' col(s) overlap!'
+
         self.all_data = pd.merge(self.all_data, dfs[i], on=self.subject_id)
+
+    # Set data keys, covars, strat, ect...
+    self._set_all_data_keys()
 
     self._print('Final data (w/ target) for modeling loaded shape:',
                 self.all_data.shape)
 
-    self._set_data_and_cat_inds()
-
     if self.low_memory_mode:
         self._print('Low memory mode is on!')
         self._print('Clearing self.data, self.covars, self.targets',
-                    'from memory!')
+                    'and self.strat from memory!')
         self._print('Note: Final data, self.all_data, the',
                     'merged dataframe is still in memory')
 
-        self.data = pd.DataFrame()
-        self.targets = pd.DataFrame()
-        self.covars = pd.DataFrame()
+        self.Clear_Data()
+        self.Clear_Targets()
+        self.Clear_Covars()
+        self.Clear_Strat()
 
 
-def _set_data_and_cat_inds(self):
-    '''Determines and sets the column index for data and
+def _get_cat_keys(self):
+    '''Determines and sets the column for
     all categorical features if any. Also sets the class
     cat_keys attribute.'''
 
     # First determine which columns contain categorical
-    self.cat_keys = list(self.all_data.select_dtypes(include='category'))
+    cat_keys = list(self.all_data.select_dtypes(include='category'))
 
     # If target is categorical exclude it
     try:
         if isinstance(self.targets_key, list):
             for t_key in self.targets_key:
-                self.cat_keys.remove(t_key)
+                cat_keys.remove(t_key)
 
         else:
-            self.cat_keys.remove(self.targets_key)
+            cat_keys.remove(self.targets_key)
 
     except ValueError:
         pass
+
+    return cat_keys
+
+
+def _set_all_data_keys(self):
+
+    self.all_data_keys['data_keys'] = list(self.data)
+    self.all_data_keys['covars_keys'] = list(self.covars)
+    self.all_data_keys['strat_keys'] = list(self.strat)
+    self.all_data_keys['cat_keys'] = self._get_cat_keys()
 
 
 def _get_base_covar_names(self):

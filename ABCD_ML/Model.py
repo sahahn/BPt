@@ -37,8 +37,8 @@ class Model():
     training, scaling, handling different datatypes ect...
     '''
 
-    def __init__(self, ML_params, CV, all_data_keys, targets_key,
-                 targets_encoder, covar_scopes, cat_encoders,
+    def __init__(self, ML_params, CV, search_split_vals, all_data_keys,
+                 targets_key, targets_encoder, covar_scopes, cat_encoders,
                  progress_bar, param_search_verbose, _print=print):
         ''' Init function for Model
 
@@ -80,7 +80,7 @@ class Model():
             - n_repeats : int
                 The number of repeats to do during the Evaluate_Model repeated
                 k-fold.
-            - int_cv : int
+            - search_splits : int, str or list
                 The number of internal folds to use during modeling training
                 / parameter selection
             - ensemble_type : str or list of str
@@ -124,6 +124,9 @@ class Model():
         CV : ABCD_ML CV
             The class defined ABCD_ML CV object for defining
             custom validation splits.
+
+        search_split_vals : pandas Series or None
+            Use if search_splits not int.
 
         all_data_keys : dict
             Contains data_keys, covars_keys, strat_keys and cat_keys,
@@ -178,6 +181,7 @@ class Model():
 
         # Set class parameters
         self.CV = CV
+        self.search_split_vals = search_split_vals
         self.data_keys = all_data_keys['data_keys']
         self.covars_keys = all_data_keys['covars_keys']
         self.strat_keys = all_data_keys['strat_keys']
@@ -202,7 +206,7 @@ class Model():
         self.feat_selectors = conv_to_list(ML_params['feat_selector'])
         self.splits = ML_params['splits']
         self.n_repeats = ML_params['n_repeats']
-        self.int_cv = ML_params['int_cv']
+        self.search_splits = ML_params['search_splits']
         self.ensemble_types = conv_to_list(ML_params['ensemble_type'])
         self.ensemble_split = ML_params['ensemble_split']
         self.class_weight = ML_params['class_weight']
@@ -1011,7 +1015,7 @@ class Model():
             except AttributeError:
                 pass
 
-    def Evaluate_Model(self, data, train_subjects, split_unique_vals=None):
+    def Evaluate_Model(self, data, train_subjects, splits_vals=None):
         '''Method to perform a full evaluation
         on a provided model type and training subjects, according to
         class set parameters.
@@ -1024,7 +1028,7 @@ class Model():
         train_subjects : array-like
             An array or pandas Index of the train subjects should be passed.
 
-        split_unique_vals : pandas Series or None, optional
+        splits_vals : pandas Series or None, optional
             Subjects with unique vals, for doing leave one out split
 
             (default = None)
@@ -1043,7 +1047,7 @@ class Model():
 
         # Setup the desired eval splits
         subject_splits =\
-            self._get_eval_splits(train_subjects, split_unique_vals)
+            self._get_eval_splits(train_subjects, splits_vals)
 
         all_train_scores, all_scores = [], []
         fold_ind = 0
@@ -1162,9 +1166,9 @@ class Model():
 
         return train_scores, scores
 
-    def _get_eval_splits(self, train_subjects, split_unique_vals):
+    def _get_eval_splits(self, train_subjects, splits_vals):
 
-        if split_unique_vals is None:
+        if splits_vals is None:
 
             self.n_splits = self.splits
 
@@ -1176,12 +1180,12 @@ class Model():
         else:
 
             self.n_splits =\
-                len(np.unique(split_unique_vals.loc[train_subjects]))
+                len(np.unique(splits_vals.loc[train_subjects]))
 
             subject_splits =\
                 self.CV.repeated_leave_one_group_out(train_subjects,
                                                      self.n_repeats,
-                                                     split_unique_vals,
+                                                     splits_vals,
                                                      return_index=False)
 
         return subject_splits
@@ -1344,6 +1348,20 @@ class Model():
         '''
         return y
 
+    def _get_search_cv(self, train_data_index):
+
+        if self.search_split_vals is None:
+            search_cv = self.CV.k_fold(train_data_index, self.search_splits,
+                                       random_state=self.random_state,
+                                       return_index=True)
+
+        else:
+            search_cv = self.CV.leave_one_group_out(train_data_index,
+                                                    self.search_split_vals,
+                                                    return_index=True)
+
+        return search_cv
+
     def _train_model(self, train_data, model_type, model_type_params):
         '''Helper method to train a single model type given
         a str indicator and training data.
@@ -1367,13 +1385,11 @@ class Model():
             The trained model.
         '''
 
-        # Create the internal base k-fold indices to pass to model
-        base_int_cv = self.CV.k_fold(train_data.index, self.int_cv,
-                                     random_state=self.random_state,
-                                     return_index=True)
+        # Get search CV
+        search_cv = self._get_search_cv(train_data.index)
 
         # Create the model
-        model = self._get_model(model_type, model_type_params, base_int_cv)
+        model = self._get_model(model_type, model_type_params, search_cv)
 
         # Data, score split
         X, y = self._get_X_y(train_data)
@@ -1383,7 +1399,7 @@ class Model():
 
         return model
 
-    def _get_model(self, model_type, model_type_params, base_int_cv):
+    def _get_model(self, model_type, model_type_params, search_cv):
 
         # Grab the base model, model if changed, and model params grid/distr
         model, model_type, model_type_params =\
@@ -1402,7 +1418,7 @@ class Model():
         search_params['verbose'] = self.param_search_verbose
         search_params['estimator'] = model
         search_params['pre_dispatch'] = 'n_jobs - 1'
-        search_params['cv'] = base_int_cv
+        search_params['cv'] = search_cv
         search_params['scoring'] = self.metric
         search_params['n_jobs'] = self.n_jobs
 

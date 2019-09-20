@@ -360,6 +360,7 @@ class ABCD_ML():
                              _premodel_check,
                              _make_ML_params,
                              _print_model_params,
+                             _get_split_vals,
                              _init_model,
                              _get_avaliable_eval_scores_name,
                              _handle_scores,

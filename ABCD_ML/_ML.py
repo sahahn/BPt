@@ -18,7 +18,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
                           scaler_scope='default',
                           sampler='default', sample_on='default',
                           feat_selector='default', splits='default',
-                          n_repeats='default', int_cv='default',
+                          n_repeats='default', search_splits='default',
                           ensemble_type='default', ensemble_split='default',
                           search_type='default',
                           model_type_params='default',
@@ -241,11 +241,19 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         If 'default', and not already defined, set to 2
         (default = 2)
 
-    int_cv : int or 'default', optional
+    search_splits : int, str or list, optional
         The number of internal folds to use during
-        model k-fold parameter selection, if the chosen model requires
-        parameter selection. A value greater
-        then 2 must be passed.
+        model k-fold parameter selection if `search_splits` is an int.
+
+        Note: the splits will be determined according to the validation
+        strategy defined in :func:`Define_Validation_Strategy` if any!
+
+        Alternatively, `search_splits` can be set to a str or list of
+        strings, where each str refers to a column name loaded
+        within strat! In this case, a leave-one-out CV will be
+        performed on that strat value, or combination of values.
+        The number of search CV folds will therefore be equal to the
+        number of unique values.
 
         If 'default', and not already defined, set to 3
         (default = 'default')
@@ -588,14 +596,12 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         self.default_ML_params['n_repeats'] = 2
         self._print('No default num CV repeats passed, set to 2')
 
-    if int_cv != 'default':
-        assert isinstance(int_cv, int), 'int_cv must be int'
-        assert int_cv > 1, 'int_cv must be greater than 1'
-        self.default_ML_params['int_cv'] = int_cv
+    if search_splits != 'default':
+        self.default_ML_params['search_splits'] = search_splits
 
-    elif 'int_cv' not in self.default_ML_params:
-        self.default_ML_params['int_cv'] = 3
-        self._print('No default num internal CV splits passed, set to 3')
+    elif 'search_splits' not in self.default_ML_params:
+        self.default_ML_params['search_splits'] = 3
+        self._print('No default num search splits passed, set to 3')
 
     if ensemble_type != 'default':
         self.default_ML_params['ensemble_type'] = ensemble_type
@@ -869,7 +875,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
              scaler='default', scaler_scope='default',
              sampler='default', sample_on='default',
              feat_selector='default', splits='default',
-             n_repeats='default', int_cv='default',
+             n_repeats='default', search_splits='default',
              ensemble_type='default', ensemble_split='default',
              search_type='default', model_type_params='default',
              imputer_params='default', scaler_params='default',
@@ -905,7 +911,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
     feat_selector :
     splits :
     n_repeats :
-    int_cv :
+    search_splits :
     ensemble_type :
     ensemble_split :
     search_type :
@@ -977,22 +983,13 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
     # Init. the Model object with modeling params
     self._init_model(ML_params)
 
-    # Proc. splits here
-    if not isinstance(ML_params['splits'], int):
-        strat_split_names = self._add_strat_u_name(ML_params['splits'])
-
-        if isinstance(strat_split_names, str):
-            strat_split_names = [strat_split_names]
-
-        split_unique_vals, suv_le =\
-            get_unique_combo_df(self.strat, strat_split_names)
-    else:
-        split_unique_vals = None
+    # Proc. splits
+    split_names, split_vals, sv_le = self._get_split_vals(ML_params['splits'])
 
     # Evaluate the model
     train_scores, scores =\
         self.Model.Evaluate_Model(self.all_data, self.train_subjects,
-                                  split_unique_vals)
+                                  split_vals)
 
     self._print()
 
@@ -1016,7 +1013,7 @@ def Test(self, model_type='default', problem_type='default',
          train_subjects=None, test_subjects=None, metric='default',
          imputer='default', imputer_scope='default',
          scaler='default', scaler_scope='default', sampler='default',
-         sample_on='default', feat_selector='default', int_cv='default',
+         sample_on='default', feat_selector='default', search_splits='default',
          ensemble_type='default', ensemble_split='default',
          search_type='default', model_type_params='default',
          imputer_params='default', scaler_params='default',
@@ -1056,7 +1053,7 @@ def Test(self, model_type='default', problem_type='default',
     sampler :
     sample_on :
     feat_selector :
-    int_cv :
+    search_splits :
     ensemble_type :
     ensemble_split :
     search_type :
@@ -1259,7 +1256,7 @@ def _print_model_params(self, ML_params, test=False):
 
     self._print('search_type =', ML_params['search_type'])
     if ML_params['search_type'] is not None:
-        self._print('int_cv =', ML_params['int_cv'])
+        self._print('search_splits =', ML_params['search_splits'])
         self._print('n_iter =', ML_params['n_iter'])
 
     if ML_params['problem_type'] != 'regression':
@@ -1279,6 +1276,23 @@ def _print_model_params(self, ML_params, test=False):
     self._print()
 
 
+def _get_split_vals(self, splits):
+
+    if not isinstance(splits, int):
+        split_names = self._add_strat_u_name(splits)
+
+        if isinstance(split_names, str):
+            split_names = [split_names]
+
+        split_vals, sv_le =\
+            get_unique_combo_df(self.strat, split_names)
+
+    else:
+        split_names, split_vals, sv_le = None, None, None
+
+    return split_names, split_vals, sv_le
+
+
 def _init_model(self, ML_params):
 
     problem_types = {'binary': Binary_Model, 'regression': Regression_Model,
@@ -1289,14 +1303,19 @@ def _init_model(self, ML_params):
 
     Model = problem_types[ML_params['problem_type']]
 
+    # Grab index info
     covar_scopes, cat_encoders = self._get_covar_scopes()
 
     # Conv sample_on params w/ added unique key here, if needed
     ML_params['sample_on'] = self._add_strat_u_name(ML_params['sample_on'])
 
-    self.Model = Model(ML_params, self.CV, self.all_data_keys,
-                       self.targets_key, self.targets_encoder,
-                       covar_scopes, cat_encoders,
+    # Grab search split_vals_here
+    _, search_split_vals, _ = self._get_split_vals(ML_params['search_splits'])
+
+    # Make model
+    self.Model = Model(ML_params, self.CV, search_split_vals,
+                       self.all_data_keys, self.targets_key,
+                       self.targets_encoder, covar_scopes, cat_encoders,
                        self.ML_verbosity['progress_bar'],
                        self.ML_verbosity['param_search_verbose'],
                        self._ML_print)

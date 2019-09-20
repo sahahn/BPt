@@ -944,6 +944,11 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
         element the raw training score in this same format,
         and then the raw testing scores.
 
+    raw_preds : pandas DataFrame
+        A pandas dataframe containing the raw prediction for each subject,
+        with both prob. and prediction. Will show the predictions per repeat by
+        subject, as well as the internal fold the prediction was made in.
+
     Notes
     ----------
     Prints by default the following for each metric,
@@ -987,7 +992,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
     split_names, split_vals, sv_le = self._get_split_vals(ML_params['splits'])
 
     # Evaluate the model
-    train_scores, scores =\
+    train_scores, scores, raw_preds =\
         self.Model.Evaluate_Model(self.all_data, self.train_subjects,
                                   split_vals)
 
@@ -1006,7 +1011,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
                             self.Model.n_splits)
 
     # Return the raw scores from each fold
-    return score_list
+    return score_list, raw_preds
 
 
 def Test(self, model_type='default', problem_type='default',
@@ -1080,6 +1085,10 @@ def Test(self, model_type='default', problem_type='default',
         this could instead return a list containing as the first
         element the raw training score in this same format,
         and then the raw testing scores.
+
+    raw_preds : pandas DataFrame
+        A pandas dataframe containing the raw predictions for each subject,
+        in the test set.
     '''
 
     # Perform pre-modeling check
@@ -1101,8 +1110,9 @@ def Test(self, model_type='default', problem_type='default',
         test_subjects = self.test_subjects
 
     # Train the model w/ selected parameters and test on test subjects
-    train_scores, scores = self.Model.Test_Model(self.all_data, train_subjects,
-                                                 test_subjects)
+    train_scores, scores, raw_preds =\
+        self.Model.Test_Model(self.all_data, train_subjects,
+                              test_subjects)
 
     # Print out score for all passed metrics
     metric_strs = self.Model.metric_strs
@@ -1137,7 +1147,7 @@ def Test(self, model_type='default', problem_type='default',
                 self._print(name + ' Score: ', scr)
                 self._print()
 
-    return score_list
+    return score_list, raw_preds
 
 
 def _premodel_check(self, problem_type='default'):

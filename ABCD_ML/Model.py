@@ -1045,6 +1045,9 @@ class Model():
             as the number of metrics.
         '''
 
+        # Init raw_preds_df
+        self._init_raw_preds_df(train_subjects)
+
         # Setup the desired eval splits
         subject_splits =\
             self._get_eval_splits(train_subjects, splits_vals)
@@ -1113,7 +1116,8 @@ class Model():
         self._average_feature_importances()
 
         # Return all scores
-        return np.array(all_train_scores), np.array(all_scores)
+        return (np.array(all_train_scores), np.array(all_scores),
+                self.raw_preds_df)
 
     def Test_Model(self, data, train_subjects, test_subjects, fold_ind='test'):
         '''Method to test given input data, training a model on train_subjects
@@ -1143,6 +1147,10 @@ class Model():
         # Check for any NaN
         self._nan_check(data)
 
+        # Init raw_preds_df
+        if fold_ind == 'test':
+            self._init_raw_preds_df(test_subjects)
+
         # Assume the train_subjects and test_subjects passed here are final.
         train_data = data.loc[train_subjects]
         test_data = data.loc[test_subjects]
@@ -1158,11 +1166,14 @@ class Model():
 
         # Get the scores
         if self.compute_train_score:
-            train_scores = self._get_scores(train_data)
+            train_scores = self._get_scores(train_data, 'train_', fold_ind)
         else:
             train_scores = 0
 
-        scores = self._get_scores(test_data)
+        scores = self._get_scores(test_data, '', fold_ind)
+
+        if fold_ind == 'test':
+            return train_scores, scores, self.raw_preds_df
 
         return train_scores, scores
 
@@ -1542,7 +1553,7 @@ class Model():
 
         return model
 
-    def _get_scores(self, test_data):
+    def _get_scores(self, test_data, eval_type, fold_ind):
         '''Helper method to get the scores of
         the trained model saved in the class on input test data.
         For all metrics/scorers.
@@ -1551,6 +1562,10 @@ class Model():
         ----------
         test_data : pandas DataFrame
             ABCD ML formatted test data.
+
+        eval_type : {'train_', ''}
+
+        fold_ind : int or 'test'
 
         Returns
         ----------
@@ -1561,11 +1576,72 @@ class Model():
         # Data, score split
         X_test, y_test = self._get_X_y(test_data)
 
+        # Add raw preds to raw_preds_df
+        self._add_raw_preds(X_test, y_test, test_data.index, eval_type,
+                            fold_ind)
+
         # Get the scores
         scores = [metric(self.model, X_test, y_test)
                   for metric in self.metrics]
 
         return np.array(scores)
+
+    def _add_raw_preds(self, X_test, y_test, subjects, eval_type, fold_ind):
+
+        fold = str((fold_ind % self.n_splits) + 1)
+        repeat = str((fold_ind // self.n_splits) + 1)
+
+        try:
+            raw_prob_preds = self.model.predict_proba(X_test)
+            pred_col = eval_type + repeat + '_prob'
+
+            if len(np.shape(raw_prob_preds)) == 3:
+
+                for i in range(len(raw_prob_preds)):
+                    p_col = pred_col + '_class_' + str(i)
+                    class_preds = [val[1] for val in raw_prob_preds[i]]
+                    self.raw_preds_df.loc[subjects, p_col] = class_preds
+
+            elif len(np.shape(raw_prob_preds)) == 2:
+
+                for i in range(np.shape(raw_prob_preds)[1]):
+                    p_col = pred_col + '_class_' + str(i)
+                    class_preds = raw_prob_preds[:, i]
+                    self.raw_preds_df.loc[subjects, p_col] = class_preds
+
+            else:
+                self.raw_preds_df.loc[subjects, pred_col] = raw_prob_preds
+
+        except AttributeError:
+            pass
+
+        raw_preds = self.model.predict(X_test)
+        pred_col = eval_type + repeat
+
+        if len(np.shape(raw_preds)) == 2:
+            for i in range(np.shape(raw_preds)[1]):
+                p_col = pred_col + '_class_' + str(i)
+                class_preds = raw_preds[:, i]
+                self.raw_preds_df.loc[subjects, p_col] = class_preds
+
+        else:
+            self.raw_preds_df.loc[subjects, pred_col] = raw_preds
+
+        self.raw_preds_df.loc[subjects, pred_col + '_fold'] = fold
+
+        # Make copy of true values
+        if len(np.shape(y_test)) > 1:
+            for i in range(len(self.targets_key)):
+                self.raw_preds_df.loc[subjects, self.targets_key[i]] =\
+                    y_test[:, i]
+
+        elif isinstance(self.targets_key, list):
+            t_base_key = '_'.join(self.targets_key[0].split('_')[:-1])
+            self.raw_preds_df.loc[subjects, 'multiclass_' + t_base_key] =\
+                y_test
+
+        else:
+            self.raw_preds_df.loc[subjects, self.targets_key] = y_test
 
     def _init_feature_importances(self, data):
 
@@ -1573,6 +1649,10 @@ class Model():
         feat_names = list(X)
 
         self.feature_importances = pd.DataFrame(columns=feat_names)
+
+    def _init_raw_preds_df(self, subjects):
+
+        self.raw_preds_df = pd.DataFrame(index=subjects)
 
     def _init_shap_df(self, data):
 

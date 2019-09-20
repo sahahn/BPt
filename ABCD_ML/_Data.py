@@ -493,7 +493,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         elif d_type == "categorical" or d_type == 'c':
 
             if code_categorical_as == 'ordinal':
-                non_nan_covars, encoder =\
+                non_nan_covars, self.covars_encoders[key] =\
                     process_ordinal_input(non_nan_covars, key,
                                           categorical_drop_percent,
                                           self._print)

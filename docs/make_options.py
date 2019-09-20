@@ -6,8 +6,6 @@ from ABCD_ML.Models import MODELS
 
 from ABCD_ML.Imputers import IMPUTERS
 from ABCD_ML.Scalers import SCALERS
-
-from ABCD_ML.Samplers import AVALIABLE as AVALIABLE_SAMPLERS
 from ABCD_ML.Samplers import SAMPLERS
 
 from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
@@ -280,12 +278,10 @@ lines.append('`sampler` is accepted by ' +
              ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
 lines.append('The exact str indicator for each `sampler` is represented' +
              ' by the sub-heading (within "")')
-lines.append('The avaliable samplers are further broken down by which ' +
-             ' work with with different problem_types.')
 lines.append('Additionally, a link to the original samplers documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
-lines = add_block(lines, problem_types, AVALIABLE_SAMPLERS, SAMPLERS)
+lines = add_no_type_block(lines, SAMPLERS)
 
 lines = main_category(lines, 'Feat Selectors')
 lines.append('Different availible choices for the `feat_selector` parameter' +

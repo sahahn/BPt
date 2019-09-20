@@ -15,10 +15,10 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
                           metric='default', imputer='default',
                           imputer_scope='default', scaler='default',
                           scaler_scope='default',
-                          sampler='default', feat_selector='default',
-                          n_splits='default', n_repeats='default',
-                          int_cv='default', ensemble_type='default',
-                          ensemble_split='default',
+                          sampler='default', sample_on='default',
+                          feat_selector='default', n_splits='default',
+                          n_repeats='default', int_cv='default',
+                          ensemble_type='default', ensemble_split='default',
                           search_type='default',
                           model_type_params='default',
                           imputer_params='default',
@@ -157,7 +157,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         If 'default', and not already defined, set to 'data'
         (default = 'default')
 
-    sampler : str, list or none optional
+    sampler : str, list or None, optional
         `sampler` refers optional to the type of resampling
         to apply within the model pipeline - to correct for
         imbalanced class distributions. These are different
@@ -170,6 +170,31 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         :func:`Show_Samplers` or view the docs at :ref:`Samplers`
 
         If 'default', and not already defined, set to None
+        (default = 'default')
+
+    sample_on : str, list or None, optional
+        If `sampler` is set, then for each sampler used,
+        this `sample_on` parameter must be set. This parameter
+        dictates what the sampler should use as its class to
+        re-sample. For example, the most typical case is passing
+        self.original_targets_key (which is just 'targets' if not
+        changed by the user), which will then resample according to the
+        distribution of the target variable. The user can also pass in
+        the names of any loaded strat columns (See: :func:`Load_Strat`),
+        or a combination as list of both,
+        similar to input accepted by the `stratify` param
+        in :func:`Define_Validation_Strategy`.
+
+        When a list is passed to one sampler, then the unique combination
+        of values fis created, and sampled on.
+
+        In the case where a list of a samplers is passed, then a
+        list of `sample_on` params should be passed, where the index
+        correspond. `sample_on` would look like a list of lists in the case
+        where you want to pass a combination of options, or differing combos
+        to different samplers.
+
+        If 'default', and not already defined, set to self.original_targets_key
         (default = 'default')
 
     feat_selector : str, list or None, optional
@@ -520,6 +545,13 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         self.default_ML_params['sampler'] = None
         self._print('No default sampler passed, set to None')
 
+    if sample_on != 'default':
+        self.default_ML_params['sample_on'] = sample_on
+
+    elif 'sample on' not in self.default_ML_params:
+        self.default_ML_params['sample_on'] = self.original_targets_key
+        self._print('No default sample on passed, set to original_targets_key')
+
     if feat_selector != 'default':
         self.default_ML_params['feat_selector'] = feat_selector
 
@@ -824,7 +856,8 @@ def _ML_print(self, *args, **kwargs):
 def Evaluate(self, model_type='default', run_name=None, problem_type='default',
              metric='default', imputer='default', imputer_scope='default',
              scaler='default', scaler_scope='default',
-             sampler='default', feat_selector='default', n_splits='default',
+             sampler='default', sample_on='default',
+             feat_selector='default', n_splits='default',
              n_repeats='default', int_cv='default',
              ensemble_type='default', ensemble_split='default',
              search_type='default', model_type_params='default',
@@ -857,6 +890,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
     scaler :
     scaler_scope :
     sampler :
+    sample_on :
     feat_selector :
     n_splits :
     n_repeats :
@@ -957,14 +991,14 @@ def Test(self, model_type='default', problem_type='default',
          train_subjects=None, test_subjects=None, metric='default',
          imputer='default', imputer_scope='default',
          scaler='default', scaler_scope='default', sampler='default',
-         feat_selector='default', int_cv='default', ensemble_type='default',
-         ensemble_split='default', search_type='default',
-         model_type_params='default', imputer_params='default',
-         scaler_params='default', sampler_params='default',
-         feat_selector_params='default', class_weight='default',
-         n_jobs='default', n_iter='default', data_to_use='default',
-         compute_train_score='default', random_state='default',
-         calc_base_feature_importances='default',
+         sample_on='default', feat_selector='default', int_cv='default',
+         ensemble_type='default', ensemble_split='default',
+         search_type='default', model_type_params='default',
+         imputer_params='default', scaler_params='default',
+         sampler_params='default', feat_selector_params='default',
+         class_weight='default', n_jobs='default', n_iter='default',
+         data_to_use='default', compute_train_score='default',
+         random_state='default', calc_base_feature_importances='default',
          calc_shap_feature_importances='default', extra_params='default',
          **kwargs):
     '''Class method used to evaluate a specific model / data scaling
@@ -995,6 +1029,7 @@ def Test(self, model_type='default', problem_type='default',
     scaler :
     scaler_scope :
     sampler :
+    sample_on :
     feat_selector :
     int_cv :
     ensemble_type :
@@ -1185,6 +1220,7 @@ def _print_model_params(self, ML_params, test=False):
 
     self._print('sampler =', ML_params['sampler'])
     if ML_params['sampler'] is not None:
+        self._print('sample_on =', ML_params['sample_on'])
         self._print('sampler_params =', ML_params['sampler_params'])
 
     self._print('feat_selector =', ML_params['feat_selector'])
@@ -1229,6 +1265,9 @@ def _init_model(self, ML_params):
     Model = problem_types[ML_params['problem_type']]
 
     covar_scopes, cat_encoders = self._get_covar_scopes()
+
+    # Conv sample_on params w/ added unique key here, if needed
+    ML_params['sample_on'] = self._add_strat_u_name(ML_params['sample_on'])
 
     self.Model = Model(ML_params, self.CV, self.all_data_keys,
                        self.targets_key, self.targets_encoder,

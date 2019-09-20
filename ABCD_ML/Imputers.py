@@ -243,9 +243,10 @@ def replace_model_name(base_estimator_params):
     return new
 
 
-def get_imputer(imputer_str, extra_params, params, search_type,
-                inds=[], encoder_inds=[], ordinal_inds=[],
-                encoders=[], base_estimator=None, base_estimator_params={}):
+def get_imputer_and_params(imputer_str, extra_params, params, search_type,
+                           inds=[], encoder_inds=[], ordinal_inds=[],
+                           encoders=[], base_estimator=None,
+                           base_estimator_params={}):
 
     if base_estimator is None:
 

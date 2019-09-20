@@ -204,15 +204,27 @@ PARAMS['base rfe'] = {'n_features_to_select': [None]}
 
 PARAMS['rfe num feats rs'] = {'n_features_to_select': uniform()}
 
-PARAMS['binary under sampler'] = {'sampling_strategy': [1, .75, .66, .5, .33,
-                                                        .25]}
-
 # Imputers
 PARAMS['mean imp'] = {'strategy': ['mean']}
 PARAMS['median imp'] = {'strategy': ['median']}
 PARAMS['most freq imp'] = {'strategy': ['most_frequent']}
 PARAMS['constant imp'] = {'strategy': ['constant']}
 PARAMS['iterative imp'] = {'initial_strategy': ['mean']}
+
+# Samplers
+PARAMS['base no change sampler'] = {'sampler_type': ['no change'],
+                                    'regression_bins': [3],
+                                    'regression_bin_strategy': ['uniform']}
+
+PARAMS['base special sampler'] = {'sampler_type': ['special'],
+                                  'regression_bins': [3],
+                                  'regression_bin_strategy': ['uniform']}
+
+PARAMS['base change sampler'] = {'sampler_type': ['change'],
+                                 'regression_bins': [3],
+                                 'regression_bin_strategy': ['uniform']}
+
+
 
 
 def get_base_params(str_indicator):

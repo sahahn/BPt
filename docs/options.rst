@@ -1566,131 +1566,10 @@ Samplers
 Different availible choices for the `sampler` parameter are shown below.
 `sampler` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
 The exact str indicator for each `sampler` is represented by the sub-heading (within "")
-The avaliable samplers are further broken down by which  work with with different problem_types.
 Additionally, a link to the original samplers documentation as well as the implemented parameter distributions are shown.
 
-binary
-======
-"adasyn"
-********
-
-  Base Class Documenation: :class:`imblearn.over_sampling.ADASYN`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"all knn"
-*********
-
-  Base Class Documenation: :class:`imblearn.under_sampling.AllKNN`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"borderline smote"
-******************
-
-  Base Class Documenation: :class:`imblearn.over_sampling.BorderlineSMOTE`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"cluster centroids"
-*******************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.ClusterCentroids`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"condensed nn"
-**************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.CondensedNearestNeighbour`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"enn"
-*****
-
-  Base Class Documenation: :class:`imblearn.under_sampling.EditedNearestNeighbours`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"kmeans smote"
-**************
-
-  Base Class Documenation: :class:`imblearn.over_sampling.KMeansSMOTE`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"near miss"
-***********
-
-  Base Class Documenation: :class:`imblearn.under_sampling.NearMiss`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"neighbourhood cleaning rule"
-*****************************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"one sided selection"
-*********************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.OneSidedSelection`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
+All Problem Types
+=================
 "random over sampler"
 *********************
 
@@ -1698,37 +1577,11 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "base no change sampler" ::
 
-		defaults only
-
-
-"random under sampler"
-**********************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.RandomUnderSampler`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-	1. "binary under sampler" ::
-
-		sampling_strategy: [1, 0.75, 0.66, 0.5, 0.33, 0.25]
-
-
-"renn"
-******
-
-  Base Class Documenation: :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbours`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
+		sampler_type: no change
+		regression_bins: 3
+		regression_bin_strategy: uniform
 
 
 "smote"
@@ -1738,80 +1591,13 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "base change sampler" ::
 
-		defaults only
-
-
-"smote enn"
-***********
-
-  Base Class Documenation: :class:`imblearn.combine.SMOTEENN`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
+		sampler_type: change
+		regression_bins: 3
+		regression_bin_strategy: uniform
 
 
-"smote nc"
-**********
-
-  Base Class Documenation: :class:`imblearn.over_sampling.SMOTENC`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"smote tomek"
-*************
-
-  Base Class Documenation: :class:`imblearn.combine.SMOTETomek`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"svm smote"
-***********
-
-  Base Class Documenation: :class:`imblearn.over_sampling.SVMSMOTE`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"tomek links"
-*************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.TomekLinks`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-
-regression
-==========
-
-categorical multilabel
-======================
-
-categorical multiclass
-======================
 "adasyn"
 ********
 
@@ -1819,21 +1605,11 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "base change sampler" ::
 
-		defaults only
-
-
-"all knn"
-*********
-
-  Base Class Documenation: :class:`imblearn.under_sampling.AllKNN`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
+		sampler_type: change
+		regression_bins: 3
+		regression_bin_strategy: uniform
 
 
 "borderline smote"
@@ -1843,181 +1619,11 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
-
-		defaults only
-
-
-"cluster centroids"
-*******************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.ClusterCentroids`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"condensed nn"
-**************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.CondensedNearestNeighbour`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"enn"
-*****
-
-  Base Class Documenation: :class:`imblearn.under_sampling.EditedNearestNeighbours`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"kmeans smote"
-**************
-
-  Base Class Documenation: :class:`imblearn.over_sampling.KMeansSMOTE`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"near miss"
-***********
-
-  Base Class Documenation: :class:`imblearn.under_sampling.NearMiss`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"neighbourhood cleaning rule"
-*****************************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"one sided selection"
-*********************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.OneSidedSelection`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"random over sampler"
-*********************
-
-  Base Class Documenation: :class:`imblearn.over_sampling.RandomOverSampler`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"random under sampler"
-**********************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.RandomUnderSampler`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-	1. "binary under sampler" ::
-
-		sampling_strategy: [1, 0.75, 0.66, 0.5, 0.33, 0.25]
-
-
-"renn"
-******
-
-  Base Class Documenation: :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbours`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"smote"
-*******
-
-  Base Class Documenation: :class:`imblearn.over_sampling.SMOTE`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"smote enn"
-***********
-
-  Base Class Documenation: :class:`imblearn.combine.SMOTEENN`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"smote nc"
-**********
-
-  Base Class Documenation: :class:`imblearn.over_sampling.SMOTENC`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-"smote tomek"
-*************
-
-  Base Class Documenation: :class:`imblearn.combine.SMOTETomek`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
+	0. "base change sampler" ::
+
+		sampler_type: change
+		regression_bins: 3
+		regression_bin_strategy: uniform
 
 
 "svm smote"
@@ -2027,9 +1633,81 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "base change sampler" ::
 
-		defaults only
+		sampler_type: change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"kmeans smote"
+**************
+
+  Base Class Documenation: :class:`imblearn.over_sampling.KMeansSMOTE`
+
+  Param Distributions
+
+	0. "base change sampler" ::
+
+		sampler_type: change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"smote nc"
+**********
+
+  Base Class Documenation: :class:`imblearn.over_sampling.SMOTENC`
+
+  Param Distributions
+
+	0. "base special sampler" ::
+
+		sampler_type: special
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"cluster centroids"
+*******************
+
+  Base Class Documenation: :class:`imblearn.under_sampling.ClusterCentroids`
+
+  Param Distributions
+
+	0. "base change sampler" ::
+
+		sampler_type: change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"random under sampler"
+**********************
+
+  Base Class Documenation: :class:`imblearn.under_sampling.RandomUnderSampler`
+
+  Param Distributions
+
+	0. "base no change sampler" ::
+
+		sampler_type: no change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"near miss"
+***********
+
+  Base Class Documenation: :class:`imblearn.under_sampling.NearMiss`
+
+  Param Distributions
+
+	0. "base no change sampler" ::
+
+		sampler_type: no change
+		regression_bins: 3
+		regression_bin_strategy: uniform
 
 
 "tomek links"
@@ -2039,9 +1717,123 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "base no change sampler" ::
 
-		defaults only
+		sampler_type: no change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"enn"
+*****
+
+  Base Class Documenation: :class:`imblearn.under_sampling.EditedNearestNeighbours`
+
+  Param Distributions
+
+	0. "base no change sampler" ::
+
+		sampler_type: no change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"renn"
+******
+
+  Base Class Documenation: :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbours`
+
+  Param Distributions
+
+	0. "base no change sampler" ::
+
+		sampler_type: no change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"all knn"
+*********
+
+  Base Class Documenation: :class:`imblearn.under_sampling.AllKNN`
+
+  Param Distributions
+
+	0. "base no change sampler" ::
+
+		sampler_type: no change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"condensed nn"
+**************
+
+  Base Class Documenation: :class:`imblearn.under_sampling.CondensedNearestNeighbour`
+
+  Param Distributions
+
+	0. "base no change sampler" ::
+
+		sampler_type: no change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"one sided selection"
+*********************
+
+  Base Class Documenation: :class:`imblearn.under_sampling.OneSidedSelection`
+
+  Param Distributions
+
+	0. "base no change sampler" ::
+
+		sampler_type: no change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"neighbourhood cleaning rule"
+*****************************
+
+  Base Class Documenation: :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`
+
+  Param Distributions
+
+	0. "base no change sampler" ::
+
+		sampler_type: no change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"smote enn"
+***********
+
+  Base Class Documenation: :class:`imblearn.combine.SMOTEENN`
+
+  Param Distributions
+
+	0. "base change sampler" ::
+
+		sampler_type: change
+		regression_bins: 3
+		regression_bin_strategy: uniform
+
+
+"smote tomek"
+*************
+
+  Base Class Documenation: :class:`imblearn.combine.SMOTETomek`
+
+  Param Distributions
+
+	0. "base change sampler" ::
+
+		sampler_type: change
+		regression_bins: 3
+		regression_bin_strategy: uniform
 
 
 

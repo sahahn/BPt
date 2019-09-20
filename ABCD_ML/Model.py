@@ -16,10 +16,10 @@ from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
                                 get_possible_init_params,
                                 get_possible_fit_params,
                                 get_obj_and_params,
-                                user_passed_param_check)
+                                user_passed_param_check,
+                                f_array)
 
 from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
-from ABCD_ML.Samplers import AVALIABLE as AVALIABLE_SAMPLERS
 from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
 from ABCD_ML.Metrics import AVALIABLE as AVALIABLE_METRICS
 from ABCD_ML.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
@@ -28,7 +28,7 @@ from ABCD_ML.Samplers import get_sampler_and_params
 from ABCD_ML.Feature_Selectors import get_feat_selector_and_params
 from ABCD_ML.Metrics import get_metric
 from ABCD_ML.Scalers import get_scaler_and_params
-from ABCD_ML.Imputers import get_imputer
+from ABCD_ML.Imputers import get_imputer_and_params
 from ABCD_ML.Ensembles import get_ensemble_and_params
 
 
@@ -66,6 +66,10 @@ class Model():
             - scaler_scopes : str, list or None
                 The scope of each scaler passed, determining which columns
                 that scaler should act on.
+            - samplers : str, list or None
+                Re-sampler objects
+            - sample_on : str or list or None
+                params for samplers.
             - feat_selectors : str, list or None
                 str indicator (or list of) for what type of feat selector(s)
                 to use if any. If list, selectors will be applied in that
@@ -194,6 +198,7 @@ class Model():
         self.scalers = conv_to_list(ML_params['scaler'])
         self.scaler_scopes = conv_to_list(ML_params['scaler_scope'])
         self.samplers = conv_to_list(ML_params['sampler'])
+        self.sample_on = conv_to_list(ML_params['sample_on'])
         self.feat_selectors = conv_to_list(ML_params['feat_selector'])
         self.n_splits = ML_params['n_splits']
         self.n_repeats = ML_params['n_repeats']
@@ -244,6 +249,7 @@ class Model():
         self._make_drop_strat()
 
     def _set_default_params(self):
+        self.problem_type = ''
         self.user_passed_objs = {}
         self.shap_dfs = []
         self.fit_params = {}
@@ -391,14 +397,9 @@ class Model():
             self.imputer_params =\
                 self._check_params_by_search(self.imputer_params)
 
-            # If more scopes then imputers, assume passed inds
-            if len(self.imputer_scopes) > len(conv_imputer_strs):
-                self.imputer_scopes = [self.imputer_scopes]
-
-            # Just warn if not equal
-            if len(conv_imputer_strs) != len(self.imputer_scopes):
-                self._print('Warning: non equal number of imputers passed as',
-                            'scopes! imputers without scope will be ignored.')
+            self.imputer_scopes = self._scope_len_check(conv_imputer_strs,
+                                                        self.imputer_scopes,
+                                                        "imputers")
 
             imputers_and_params =\
                 [self._get_imputer(imputer_str, imputer_param, scope)
@@ -430,11 +431,9 @@ class Model():
         if scope == 'c' or scope == 'categorical':
             scope = 'categorical'
 
-            cat_keys = self.covar_scopes['categorical']
-            ordinal_keys = self.covar_scopes['ordinal categorical']
+            cat_inds, ordinal_inds =\
+                self._get_cat_ordinal_inds()
 
-            cat_inds = [self._get_inds_from_scope(k) for k in cat_keys]
-            ordinal_inds = self._get_inds_from_scope(ordinal_keys)
             inds = []
 
             # If scope doesn't match any actual data, skip
@@ -465,10 +464,10 @@ class Model():
                                               scope)
 
         imputer, imputer_params =\
-            get_imputer(imputer_str, self.extra_params, imputer_param,
-                        self.search_type, inds, cat_inds, ordinal_inds,
-                        self.cat_encoders, base_estimator,
-                        base_estimator_params)
+            get_imputer_and_params(imputer_str, self.extra_params,
+                                   imputer_param, self.search_type, inds,
+                                   cat_inds, ordinal_inds, self.cat_encoders,
+                                   base_estimator, base_estimator_params)
 
         name = 'imputer_' + imputer_str + '_' + scope
 
@@ -524,15 +523,9 @@ class Model():
                                           conv_scaler_strs,
                                           self.scaler_params)
 
-            # If more scopes then scalers passed, assume passed inds
-            if len(self.scaler_scopes) > len(scalers):
-                self.scaler_scopes = [self.scaler_scopes]
-
-            while len(scalers) != len(self.scaler_scopes):
-                self.scaler_scopes.append(self.scaler_scopes[0])
-                self._print('Warning: non equal number of scalers passed as',
-                            'scopes! Filling remaining scopes with',
-                            self.scaler_scopes[0])
+            self.scaler_scopes = self._scope_len_check(scalers,
+                                                       self.scaler_scopes,
+                                                       "scalers")
 
             self.col_scalers, self.col_scaler_params =\
                 self._make_col_version(scalers, scaler_params,
@@ -628,35 +621,122 @@ class Model():
 
         if self.samplers is not None:
 
-            sampler_strs =\
-                self._proc_type_dep_str(self.samplers, AVALIABLE_SAMPLERS)
+            # Initial proc
+            conv_sampler_strs = proc_input(self.samplers)
+            self._update_extra_params(self.samplers, conv_sampler_strs)
+
+            # Performing proc on input lengths
+            self.sampler_params =\
+                self._param_len_check(conv_sampler_strs, self.sampler_params)
+
+            self.sampler_params =\
+                self._check_params_by_search(self.sampler_params)
+
+            self.sample_on = self._scope_len_check(conv_sampler_strs,
+                                                   self.sample_on,
+                                                   'imputers')
+
+            recover_strats = self._get_recover_strats(len(conv_sampler_strs))
+
+            # Get the scalers and params
+            scalers_and_params =\
+                [self._get_sampler(sampler_str, sampler_param, on,
+                                   recover_strat) for
+                 sampler_str, sampler_param, on, recover_strat in
+                 zip(conv_sampler_strs, self.sampler_params, self.sample_on,
+                     recover_strats)]
 
             self.samplers, self.sampler_params =\
-                self._get_objs_and_params(get_sampler_and_params,
-                                          sampler_strs,
-                                          self.sampler_params)
+                self._proc_objs_and_params(scalers_and_params)
 
-            # Replace random state
-            self.samplers =\
-                self._check_and_replace(self.samplers, 'random_state',
-                                        self.random_state)
+            # Change some sampler params if applicable
+            self._check_and_replace_samplers('random_state',
+                                             self.random_state)
 
-            # Replace categorical feats
-            cat_inds = self._get_train_inds_from_keys(self.cat_keys)
-            self.samplers =\
-                self._check_and_replace(self.samplers, 'categorical_features',
-                                        cat_inds)
-
-            # N jobs if search type is None
             if self.search_type is None:
-                self.samplers =\
-                    self._check_and_replace(self.samplers,
-                                            'n_jobs',
-                                            self.n_jobs)
+                self._check_and_replace_samplers('n_jobs',
+                                                 self.n_jobs)
 
         else:
             self.samplers = []
             self.sampler_params = {}
+
+    def _get_recover_strats(self, num_samplers):
+
+        recover_strats = []
+
+        # Creates binary mask of, True if any strat inds used
+        uses_strat = [len(self._proc_sample_on(self.sample_on[i])[1]) > 0 for
+                      i in range(num_samplers)]
+
+        # If never use strat, set all to False
+        if True not in uses_strat:
+            return [False for i in range(num_samplers)]
+
+        # If strat is used, then just need Trues up to but not including
+        # the last true.
+        last_true = len(uses_strat) - 1 - uses_strat[::-1].index(True)
+
+        trues = [True for i in range(last_true)]
+        falses = [False for i in range(num_samplers - last_true)]
+
+        return trues + falses
+
+    def _proc_sample_on(self, on):
+
+        # On should be either a list, or a single str
+        if isinstance(on, str):
+            on = [on]
+        else:
+            on = list(on)
+
+        sample_strat_keys = [o for o in on if o in self.strat_keys]
+
+        # Set sample_target
+        sample_target = False
+        if len(sample_strat_keys) != len(on):
+            sample_target = True
+
+        return sample_target, sample_strat_keys
+
+    def _get_sampler(self, sampler_str, sampler_param, on, recover_strat):
+
+        # Grab sample_target and sample_strat_keys, from on
+        sample_target, sample_strat_keys = self._proc_sample_on(on)
+
+        # Set strat inds and sample_strat
+        strat_inds = self._get_train_inds_from_keys(self.strat_keys)
+        sample_strat = self._get_train_inds_from_keys(sample_strat_keys)
+
+        # Set categorical flag
+        categorical = True
+        if self.problem_type == 'regression':
+            categorical = False
+
+        # Set targets_encoder if multilabel
+        targets_encoder = None
+        if self.targets_encoder is not None:
+
+            # If multi-label, target_encoder saved in index 1
+            if len(self.targets_encoder) > 1:
+                targets_encoder = self.targets_encoder[1]
+
+        cat_inds, ordinal_inds =\
+            self._get_cat_ordinal_inds()
+        covars_inds = cat_inds + [[o] for o in ordinal_inds]
+
+        sampler, sampler_params =\
+            get_sampler_and_params(sampler_str, self.extra_params,
+                                   sampler_param, self.search_type,
+                                   strat_inds=strat_inds,
+                                   sample_target=sample_target,
+                                   sample_strat=sample_strat,
+                                   categorical=categorical,
+                                   targets_encoder=targets_encoder,
+                                   recover_strat=recover_strat,
+                                   covars_inds=covars_inds)
+
+        return sampler_str, (sampler, sampler_params)
 
     def _process_ensemble_types(self):
         '''Processes ensemble types to be a list of
@@ -792,6 +872,9 @@ class Model():
 
     def _param_len_check(self, names, params):
 
+        if isinstance(params, dict) and len(names) == 1:
+            return params
+
         if len(params) > len(names):
             self._print('Warning! More params passed than objs')
             self._print('Extra params have been truncated.')
@@ -801,6 +884,34 @@ class Model():
             params.append(0)
 
         return params
+
+    def _scope_len_check(self, objs, scopes, error_name):
+
+        scope_name = 'scopes'
+        if error_name == 'imputers':
+            scope_name = 'sample_on'
+
+        # If more scopes then objs passed, assume passed inds
+        if len(scopes) > len(objs):
+            scopes = [scopes]
+
+        if len(objs) != len(scopes):
+
+            if error_name == 'imputers':
+
+                self._print('Warning: non equal number of', error_name,
+                            'passed as scopes! imputers without scope will be',
+                            'ignored.')
+
+            else:
+                self._print('Warning: non equal number of', error_name,
+                            'passed as', scope_name, '! Filling remaining',
+                            scope_name, 'with', scopes[0])
+
+                while len(objs) != len(scopes):
+                    scopes.append(scopes[0])
+
+        return scopes
 
     def _proc_objs_and_params(self, objs_and_params):
 
@@ -834,13 +945,38 @@ class Model():
                     while name + str(cnt) in used:
                         cnt += 1
 
-                    new_objs_and_params.append((name + str(cnt), obj[1]))
+                    # Need to change name within params also
+                    base_obj = obj[1][0]
+                    base_obj_params = obj[1][1]
+
+                    new_obj_params = {}
+                    for param_name in base_obj_params:
+
+                        p_split = param_name.split('__')
+                        new_param_name = p_split[0] + str(cnt)
+                        new_param_name += '__' + '__'.join(p_split[1:])
+
+                        new_obj_params[new_param_name] =\
+                            base_obj_params[param_name]
+
+                    new_objs_and_params.append((name + str(cnt),
+                                               (base_obj, new_obj_params)))
 
                 else:
                     new_objs_and_params.append(obj)
 
             return new_objs_and_params
         return objs_and_params
+
+    def _get_cat_ordinal_inds(self):
+
+        cat_keys = self.covar_scopes['categorical']
+        ordinal_keys = self.covar_scopes['ordinal categorical']
+
+        cat_inds = [self._get_inds_from_scope(k) for k in cat_keys]
+        ordinal_inds = self._get_inds_from_scope(ordinal_keys)
+
+        return cat_keys, ordinal_inds
 
     def _replace_base_rfe_estimator(self):
         '''Check feat selectors for a RFE model'''
@@ -864,21 +1000,19 @@ class Model():
             except AttributeError:
                 pass
 
-    def _check_and_replace(self, objs, param_name, replace_value):
+    def _check_and_replace_samplers(self, param_name, replace_value):
 
-        for i in range(len(objs)):
+        for i in range(len(self.samplers)):
 
             try:
-                getattr(objs[i][1], param_name)
-                setattr(objs[i][1], param_name, replace_value)
+                getattr(self.samplers[i][1].sampler, param_name)
+                setattr(self.samplers[i][1].sampler, param_name, replace_value)
 
             except AttributeError:
                 pass
 
-        return objs
-
     def Evaluate_Model(self, data, train_subjects):
-        '''Method to perform a full repeated k-fold evaluation
+        '''Method to perform a full evaluation
         on a provided model type and training subjects, according to
         class set parameters.
 
@@ -907,6 +1041,9 @@ class Model():
                                                  self.n_repeats, self.n_splits,
                                                  self.random_state,
                                                  return_index=False)
+
+        print(np.shape(subject_splits))
+        print(subject_splits[0])
 
         all_train_scores, all_scores = [], []
         fold_ind = 0
@@ -1141,13 +1278,15 @@ class Model():
 
         if copy:
             X = data.drop(self.targets_key, axis=1).copy()
+            y = data[self.targets_key].copy()
         else:
             X = data.drop(self.targets_key, axis=1)
+            y = data[self.targets_key]
 
         if not X_as_df:
-            X = np.array(X)
+            X = np.array(X).astype(float)
 
-        y = np.array(data[self.targets_key])
+        y = np.array(y).astype(float)
 
         # Convert/decode y/score if needed
         y = self._conv_targets(y)
@@ -1511,9 +1650,9 @@ class Model():
 
         # Apply pipeline operations in place
         for scaler in scalers:
-            X_test[feat_names] = scaler.transform(X_test)
+            X_test[feat_names] = scaler.transform(f_array(X_test))
         for imputer in imputers:
-            X_test[feat_names] = imputer.transform(np.array(X_test))
+            X_test[feat_names] = imputer.transform(f_array(X_test))
 
         # Make sure to keep track of col changes w/ drop + feat_selector
         for drop in drop_strat:

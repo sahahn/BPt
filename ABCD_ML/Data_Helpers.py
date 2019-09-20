@@ -283,7 +283,7 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
     return data
 
 
-def get_unique_combo(data, keys):
+def get_unique_combo_df(data, keys):
     '''Get the unique label combinations from a dataframe (data)
     given multiple column names.
 
@@ -309,6 +309,24 @@ def get_unique_combo(data, keys):
     combo[data.index] = label_encoder.fit_transform(combo)
 
     return combo, label_encoder
+
+
+def get_unique_combo(to_join):
+
+    as_str = ['***'.join(to_join[i].astype(str)) for i in range(len(to_join))]
+    le = LabelEncoder()
+
+    unique_combo = le.fit_transform(as_str)
+    return unique_combo, le
+
+
+def reverse_unique_combo(unique_combo, le):
+
+    reverse = le.inverse_transform(unique_combo)
+    seperate = np.array([np.array(reverse[i].split('***')).astype(float)
+                        for i in range(len(reverse))])
+
+    return seperate
 
 
 def drop_duplicate_cols(data, corr_thresh):

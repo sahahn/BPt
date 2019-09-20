@@ -5,7 +5,7 @@ Main class extension file for defining validation and train test splits.
 """
 import pandas as pd
 import numpy as np
-from ABCD_ML.Data_Helpers import get_unique_combo
+from ABCD_ML.Data_Helpers import get_unique_combo_df
 from ABCD_ML.CV import CV
 
 
@@ -104,15 +104,13 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
               'stratify together!')
 
     if groups is not None:
+        groups = self._add_strat_u_name(groups)
 
         if isinstance(groups, str):
-            l_e = None
-            groups += self.strat_u_name
-            grp = self.strat[groups]
+            grp, l_e = self.strat[groups], None
 
         elif isinstance(groups, list):
-            groups = [g + self.strat_u_name for g in groups]
-            grp, l_e = get_unique_combo(self.strat, groups)
+            grp, l_e = get_unique_combo_df(self.strat, groups)
 
         else:
             assert 1 == 2, "Make sure groups is a list or str"
@@ -130,7 +128,7 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
                     self._get_one_col_targets()
 
             l_e = None
-            stratify += self.strat_u_name
+            stratify = self._add_strat_u_name(stratify)
             strat = self.strat[stratify]
 
         elif isinstance(stratify, list):
@@ -139,8 +137,8 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
                 self.strat[self.original_targets_key + self.strat_u_name] =\
                     self._get_one_col_targets()
 
-            stratify = [s + self.strat_u_name for s in stratify]
-            strat, l_e = get_unique_combo(self.strat, stratify)
+            stratify = self._add_strat_u_name(stratify)
+            strat, l_e = get_unique_combo_df(self.strat, stratify)
 
         else:
             assert 1 == 2, "Make sure statify is a list or str"
@@ -150,9 +148,9 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
                           train_only)
 
         # Drop the 1-col version of target if loaded into strat
-        t_name = self.original_targets_key + self.strat_u_name
-        if t_name in self.strat:
-            self.strat = self.strat.drop(t_name, axis=1)
+        strat_target_name = self.original_targets_key + self.strat_u_name
+        if strat_target_name in self.strat:
+            self.strat = self.strat.drop(strat_target_name, axis=1)
 
     # If only train only
     elif len(train_only) > 0:
@@ -222,6 +220,25 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
     self._print('Performed train/test split, train size:',
                 len(self.train_subjects), 'test size: ',
                 len(self.test_subjects))
+
+
+def _add_strat_u_name(self, in_vals):
+
+    if in_vals is None:
+        return None
+
+    if isinstance(in_vals, str):
+        if self.strat_u_name not in in_vals:
+            new_vals = in_vals + self.strat_u_name
+        else:
+            new_vals = in_vals
+    else:
+        new_vals = []
+
+        for val in in_vals:
+            new_vals.append(self._add_strat_u_name(val))
+
+    return new_vals
 
 
 def _get_one_col_targets(self):

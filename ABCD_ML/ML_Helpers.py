@@ -415,3 +415,31 @@ def show_param_options(param_options):
         show(param_options[ind])
         print()
     print('-------------')
+
+
+def f_array(in_array):
+    return np.array(in_array).astype(float)
+
+
+def find_ind(X, base_X_mask, X_r, r_ind, mask=True):
+
+    r_dtype = X_r.dtype
+    o_dtype = X.dtype
+
+    if r_dtype != o_dtype and mask:
+        ind = np.where(np.all(X[:, base_X_mask].astype(r_dtype) == X_r[r_ind],
+                       axis=1))
+
+    elif r_dtype != o_dtype:
+        ind = np.where(np.all(X.astype(r_dtype) == X_r[r_ind], axis=1))
+
+    elif mask:
+        ind = np.where(np.all(X[:, base_X_mask] == X_r[r_ind], axis=1))
+
+    else:
+        ind = np.where(np.all(X == X_r[r_ind], axis=1))
+
+    try:
+        return ind[0][0]
+    except IndexError:
+        return None

@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm, tqdm_notebook
 
+from ABCD_ML.Data_Helpers import get_unique_combo_df
 from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
@@ -16,7 +17,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
                           imputer_scope='default', scaler='default',
                           scaler_scope='default',
                           sampler='default', sample_on='default',
-                          feat_selector='default', n_splits='default',
+                          feat_selector='default', splits='default',
                           n_repeats='default', int_cv='default',
                           ensemble_type='default', ensemble_split='default',
                           search_type='default',
@@ -209,21 +210,33 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         If 'default', and not already defined, set to None
         (default = 'default')
 
-    n_splits : int or 'default', optional
-        :func:`Evaluate` performs a repeated k-fold model evaluation,
-        `n_splits` refers to the k. E.g., if set to 3, then a 3-fold
-        repeated CV will be performed. This parameter is typically
-        chosen as a trade off between bias and variance, in addition to
-        as a function of sample size.
+    splits : int, str or list, optional
+        If `splits` is an int, then :func:`Evaluate` performs a repeated
+        k-fold model evaluation, where `splits` refers to the k, and
+        `n_repeats` refers to the number of repeats.
+        E.g., if set to 3, then a 3-fold CV will be performed at each repeat.
+
+        Note: the splits will be determined according to the validation
+        strategy defined in :func:`Define_Validation_Strategy` if any!
+
+        Alternatively, `splits` can be set to a str or list of
+        strings, where each str refers to a column name loaded
+        within strat! In this case, a leave-one-out CV will be
+        performed on that strat value, or combination of values.
+        The number of folds will therefore be equal to the number of unique
+        values, and can optionally be repeated with `n_repeats` set to > 1.
 
         If 'default', and not already defined, set to 3
         (default = 'default')
 
     n_repeats : int or 'default', optional
         :func:`Evaluate` performs a repeated k-fold model evaluation,
-        `n_repeats` refers to the number of times to repeat the
-        k-fold CV. This parameter is typical chosen as a balance between
-        run time, and accuratly accessing model performance.
+        or a left out CV, based on input. `n_repeats` refers to the number of
+        times to repeat this.
+
+        Note: In the case where `splits` is set to a strat col and therefore
+        a leave-one-out CV, setting `n_repeats` > 1, with a fixed random seed
+        will be redundant.
 
         If 'default', and not already defined, set to 2
         (default = 2)
@@ -559,14 +572,12 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         self.default_ML_params['feat_selector'] = None
         self._print('No default feat selector passed, set to None')
 
-    if n_splits != 'default':
-        assert isinstance(n_splits, int), 'n_splits must be int'
-        assert n_splits > 1, 'n_splits must be greater than 1'
-        self.default_ML_params['n_splits'] = n_splits
+    if splits != 'default':
+        self.default_ML_params['splits'] = splits
 
-    elif 'n_splits' not in self.default_ML_params:
-        self.default_ML_params['n_splits'] = 3
-        self._print('No default num CV splits passed, set to 3')
+    elif 'splits' not in self.default_ML_params:
+        self.default_ML_params['splits'] = 3
+        self._print('No default splits passed, set to 3')
 
     if n_repeats != 'default':
         assert isinstance(n_repeats, int), 'n_repeats must be int'
@@ -857,7 +868,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
              metric='default', imputer='default', imputer_scope='default',
              scaler='default', scaler_scope='default',
              sampler='default', sample_on='default',
-             feat_selector='default', n_splits='default',
+             feat_selector='default', splits='default',
              n_repeats='default', int_cv='default',
              ensemble_type='default', ensemble_split='default',
              search_type='default', model_type_params='default',
@@ -892,7 +903,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
     sampler :
     sample_on :
     feat_selector :
-    n_splits :
+    splits :
     n_repeats :
     int_cv :
     ensemble_type :
@@ -920,7 +931,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
         where each internal array contains the raw scores as computed for
         all passed in metrics, computed for each fold within
         each repeat.
-        e.g., array will have a length of `n_repeats` * `n_splits`,
+        e.g., array will have a length of `n_repeats` * number of folds,
         and each internal array will have the same length as the number of
         metrics.
         Optionally, this could instead return a list containing as the first
@@ -963,12 +974,25 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
     run_settings.update({'run_name': run_name})
     self.eval_settings[run_name] = run_settings
 
-    # Init the Model object with modeling params
+    # Init. the Model object with modeling params
     self._init_model(ML_params)
+
+    # Proc. splits here
+    if not isinstance(ML_params['splits'], int):
+        strat_split_names = self._add_strat_u_name(ML_params['splits'])
+
+        if isinstance(strat_split_names, str):
+            strat_split_names = [strat_split_names]
+
+        split_unique_vals, suv_le =\
+            get_unique_combo_df(self.strat, strat_split_names)
+    else:
+        split_unique_vals = None
 
     # Evaluate the model
     train_scores, scores =\
-        self.Model.Evaluate_Model(self.all_data, self.train_subjects)
+        self.Model.Evaluate_Model(self.all_data, self.train_subjects,
+                                  split_unique_vals)
 
     self._print()
 
@@ -981,7 +1005,8 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
         score_type_list = ['Validation']
 
     for scrs, name in zip(score_list, score_type_list):
-        self._handle_scores(scrs, name, ML_params, run_name)
+        self._handle_scores(scrs, name, ML_params, run_name,
+                            self.Model.n_splits)
 
     # Return the raw scores from each fold
     return score_list
@@ -1229,7 +1254,7 @@ def _print_model_params(self, ML_params, test=False):
                     ML_params['feat_selector_params'])
 
     if not test:
-        self._print('n_splits =', ML_params['n_splits'])
+        self._print('splits =', ML_params['splits'])
         self._print('n_repeats =', ML_params['n_repeats'])
 
     self._print('search_type =', ML_params['search_type'])
@@ -1301,7 +1326,7 @@ def _get_avaliable_eval_scores_name(self, name, model_type):
     return name
 
 
-def _handle_scores(self, scores, name, ML_params, run_name):
+def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
 
     metric_strs = self.Model.metric_strs
 
@@ -1321,7 +1346,7 @@ def _handle_scores(self, scores, name, ML_params, run_name):
 
             summary_scores_by_class =\
                 [compute_macro_micro(class_scores, ML_params['n_repeats'],
-                 ML_params['n_splits']) for class_scores in by_class]
+                 n_splits) for class_scores in by_class]
 
             for summary_scores, class_name in zip(summary_scores_by_class,
                                                   self.targets_key):
@@ -1336,7 +1361,7 @@ def _handle_scores(self, scores, name, ML_params, run_name):
             # Compute macro / micro summary of scores
             summary_scores = compute_macro_micro(score_by_metric,
                                                  ML_params['n_repeats'],
-                                                 ML_params['n_splits'])
+                                                 n_splits)
 
             self._print_summary_score(name, summary_scores,
                                       ML_params['n_repeats'], run_name,

@@ -200,7 +200,7 @@ class Model():
         self.samplers = conv_to_list(ML_params['sampler'])
         self.sample_on = conv_to_list(ML_params['sample_on'])
         self.feat_selectors = conv_to_list(ML_params['feat_selector'])
-        self.n_splits = ML_params['n_splits']
+        self.splits = ML_params['splits']
         self.n_repeats = ML_params['n_repeats']
         self.int_cv = ML_params['int_cv']
         self.ensemble_types = conv_to_list(ML_params['ensemble_type'])
@@ -250,10 +250,10 @@ class Model():
 
     def _set_default_params(self):
         self.problem_type = ''
+        self.n_splits = None
         self.user_passed_objs = {}
         self.shap_dfs = []
         self.fit_params = {}
-        self.nans = False
 
         # Flags for feat importance things
         self.ensemble_flag = False
@@ -1011,7 +1011,7 @@ class Model():
             except AttributeError:
                 pass
 
-    def Evaluate_Model(self, data, train_subjects):
+    def Evaluate_Model(self, data, train_subjects, split_unique_vals=None):
         '''Method to perform a full evaluation
         on a provided model type and training subjects, according to
         class set parameters.
@@ -1024,6 +1024,11 @@ class Model():
         train_subjects : array-like
             An array or pandas Index of the train subjects should be passed.
 
+        split_unique_vals : pandas Series or None, optional
+            Subjects with unique vals, for doing leave one out split
+
+            (default = None)
+
         Returns
         ----------
         array-like of array-like
@@ -1031,19 +1036,14 @@ class Model():
             where each internal array contains the raw scores as computed for
             all passed in metrics, computed for each fold within
             each repeat.
-            e.g., array will have a length of `n_repeats` * `n_splits`,
-            and each internal array will have the same length as the number of
-            metrics.
+            e.g., array will have a length of `n_repeats` * n_splits
+            (num folds) and each internal array will have the same length
+            as the number of metrics.
         '''
 
-        # Setup the desired splits, using the passed in train subjects
-        subject_splits = self.CV.repeated_k_fold(train_subjects,
-                                                 self.n_repeats, self.n_splits,
-                                                 self.random_state,
-                                                 return_index=False)
-
-        print(np.shape(subject_splits))
-        print(subject_splits[0])
+        # Setup the desired eval splits
+        subject_splits =\
+            self._get_eval_splits(train_subjects, split_unique_vals)
 
         all_train_scores, all_scores = [], []
         fold_ind = 0
@@ -1137,10 +1137,7 @@ class Model():
         data = data[self.all_keys]
 
         # Check for any NaN
-        self.nans = pd.isnull(data).any().any()
-        if self.nans is False:
-            self.col_imputers = []
-            self.col_imputer_params = {}
+        self._nan_check(data)
 
         # Assume the train_subjects and test_subjects passed here are final.
         train_data = data.loc[train_subjects]
@@ -1152,28 +1149,8 @@ class Model():
         # Train the model(s)
         self._train_models(train_data)
 
-        if self.calc_base_feature_importances:
-            if fold_ind == 0 or fold_ind == 'test':
-                self._init_feature_importances(train_data)
-
-        if self.calc_shap_feature_importances:
-
-            # If fold ind test, init with test_data
-            if fold_ind == 'test':
-                self._init_shap_df(test_data)
-
-            # Otherwise, using Evaluate, init with all data only every n_splits
-            elif fold_ind % self.n_splits == 0:
-                self._init_shap_df(pd.concat([train_data, test_data]))
-
-        # Compute feature importance
-        self._get_feature_importance(train_data, test_data)
-
-        # Need a check to add self.shap_df to self.shap_dfs
-        # Only during Evalaute, not for test
-        if isinstance(fold_ind, int) and self.calc_shap_feature_importances:
-            if fold_ind % self.n_splits == self.n_splits-1:
-                self.shap_dfs.append(self.shap_df)
+        # Proc the different feat importances
+        self._proc_feat_importance(train_data, test_data, fold_ind)
 
         # Get the scores
         if self.compute_train_score:
@@ -1184,6 +1161,40 @@ class Model():
         scores = self._get_scores(test_data)
 
         return train_scores, scores
+
+    def _get_eval_splits(self, train_subjects, split_unique_vals):
+
+        if split_unique_vals is None:
+
+            self.n_splits = self.splits
+
+            subject_splits =\
+                self.CV.repeated_k_fold(train_subjects, self.n_repeats,
+                                        self.n_splits, self.random_state,
+                                        return_index=False)
+
+        else:
+
+            self.n_splits =\
+                len(np.unique(split_unique_vals.loc[train_subjects]))
+
+            subject_splits =\
+                self.CV.repeated_leave_one_group_out(train_subjects,
+                                                     self.n_repeats,
+                                                     split_unique_vals,
+                                                     return_index=False)
+
+        return subject_splits
+
+    def _nan_check(self, data):
+        '''If no nans, can set imputers to None, regardless
+        of passed params.'''
+
+        nans = pd.isnull(data).any().any()
+
+        if nans is False:
+            self.col_imputers = []
+            self.col_imputer_params = {}
 
     def _train_models(self, train_data):
         '''Given training data, train the model(s), from the
@@ -1220,6 +1231,31 @@ class Model():
         # If multiple base models, or ensembles of models,
         # either make a basic ensemble or if len == 1, use just that 1st model
         self.model = self._get_one_or_basic_ensemble(models)
+
+    def _proc_feat_importance(self, train_data, test_data, fold_ind):
+
+        if self.calc_base_feature_importances:
+            if fold_ind == 0 or fold_ind == 'test':
+                self._init_feature_importances(train_data)
+
+        if self.calc_shap_feature_importances:
+
+            # If fold ind test, init with test_data
+            if fold_ind == 'test':
+                self._init_shap_df(test_data)
+
+            # Otherwise, using Evaluate, init with all data only every n_splits
+            elif fold_ind % self.n_splits == 0:
+                self._init_shap_df(pd.concat([train_data, test_data]))
+
+        # Compute feature importance
+        self._get_feature_importance(train_data, test_data)
+
+        # Need a check to add self.shap_df to self.shap_dfs
+        # Only during Evalaute, not for test
+        if isinstance(fold_ind, int) and self.calc_shap_feature_importances:
+            if fold_ind % self.n_splits == self.n_splits-1:
+                self.shap_dfs.append(self.shap_df)
 
     def _get_ensemble_split(self, train_data):
         '''Split the train subjects further only if an ensemble split

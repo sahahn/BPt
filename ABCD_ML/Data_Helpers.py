@@ -329,6 +329,14 @@ def reverse_unique_combo(unique_combo, le):
     return seperate
 
 
+def reverse_unique_combo_df(unique_combo, le):
+
+    reverse = le.inverse_transform(unique_combo)
+    col_split = np.array([r.split('***')[:-1] for r in reverse]).astype(int)
+
+    return col_split
+
+
 def drop_duplicate_cols(data, corr_thresh):
     '''Drop duplicates columns within data based on
     if two data columns are >= to a certain correlation threshold.

@@ -94,13 +94,7 @@ class CV():
             The testing subjects as computed by the split
         '''
 
-        if self.train_only is not None:
-            train_only = np.intersect1d(subjects, self.train_only,
-                                        assume_unique=True)
-            subjects = np.setdiff1d(subjects, self.train_only,
-                                    assume_unique=True)
-        else:
-            train_only = np.array([])
+        original_subjects, subjects, train_only = self.get_train_only(subjects)
 
         if self.groups is not None:
             splitter = MS.GroupShuffleSplit(n_splits=1, test_size=test_size,
@@ -221,15 +215,7 @@ class CV():
             The second contains the testing subjects.
         '''
 
-        original_subjects = subjects.copy()
-
-        if self.train_only is not None:
-            train_only = np.intersect1d(subjects, self.train_only,
-                                        assume_unique=True)
-            subjects = np.setdiff1d(subjects, self.train_only,
-                                    assume_unique=True)
-        else:
-            train_only = np.array([])
+        original_subjects, subjects, train_only = self.get_train_only(subjects)
 
         # Special implementation for group K fold,
         # just do KFold on unique groups, and recover subjects
@@ -270,6 +256,45 @@ class CV():
             # Conv inds within subjects to subject names + train only subjects
             subject_splits = [(np.concatenate([subjects[i[0]], train_only]),
                                subjects[i[1]]) for i in inds]
+
+        if return_index:
+            return inds_from_names(original_subjects, subject_splits)
+
+        return subject_splits
+
+    def get_train_only(self, subjects):
+
+        original_subjects = subjects.copy()
+
+        if self.train_only is not None:
+            train_only = np.intersect1d(subjects, self.train_only,
+                                        assume_unique=True)
+            subjects = np.setdiff1d(subjects, self.train_only,
+                                    assume_unique=True)
+        else:
+            train_only = np.array([])
+
+        return original_subjects, subjects, train_only
+
+    def repeated_leave_one_group_out(self, subjects, n_repeats, groups_series,
+                                     return_index=False):
+
+        subject_splits = []
+        for n in range(n_repeats):
+            subject_splits += self.leave_one_group_out(subjects, groups_series,
+                                                       return_index)
+
+        return subject_splits
+
+    def leave_one_group_out(self, subjects, groups_series, return_index=False):
+
+        original_subjects, subjects, train_only = self.get_train_only(subjects)
+
+        logo = MS.LeaveOneGroupOut()
+        [*inds] = logo.split(subjects, groups=groups_series.loc[subjects])
+
+        subject_splits = [(np.concatenate([subjects[i[0]], train_only]),
+                          subjects[i[1]]) for i in inds]
 
         if return_index:
             return inds_from_names(original_subjects, subject_splits)

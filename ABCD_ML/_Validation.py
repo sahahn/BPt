@@ -5,7 +5,7 @@ Main class extension file for defining validation and train test splits.
 """
 import pandas as pd
 import numpy as np
-from ABCD_ML.Data_Helpers import get_unique_combo_df
+from ABCD_ML.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ABCD_ML.CV import CV
 
 
@@ -297,9 +297,8 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only):
     if self.verbose and v_type == 'stratify':
 
         if l_e is not None:
-            raw = l_e.inverse_transform(unique_vals)
-            col_split = np.array([r.split('***')[:-1]
-                                  for r in raw]).astype(int)
+            col_split = reverse_unique_combo_df(unique_vals, l_e)
+
         else:
             col_names = [col_names]
             col_split = np.expand_dims(unique_vals, axis=-1)

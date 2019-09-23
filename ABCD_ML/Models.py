@@ -22,7 +22,6 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from xgboost import XGBClassifier, XGBRegressor
 from lightgbm import LGBMRegressor, LGBMClassifier
-from ABCD_ML.Early_Stop import EarlyStopLGBMRegressor
 
 AVALIABLE = {
         'binary': {
@@ -51,8 +50,6 @@ AVALIABLE = {
                         'random forest':      'random forest regressor',
                         'gp':                 'gp regressor',
                         'light gbm':          'light gbm regressor',
-                        'light gbm early stop':
-                        'light gbm regressor early stop',
                         'svm':                'svm regressor',
                         'mlp':                'mlp regressor',
                         'ridge':              'ridge regressor',
@@ -104,9 +101,6 @@ MODELS = {
     'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm rs', 'lgbm 2']),
     'light gbm classifier': (LGBMClassifier, ['base lgbm', 'lgbm rs',
                                               'lgbm 2']),
-
-    'light gbm regressor early stop': (EarlyStopLGBMRegressor, ['base lgbm es',
-                                                                'lgbm es rs']),
 
     'gp regressor': (GaussianProcessRegressor, ['base gp regressor']),
     'gp classifier': (GaussianProcessClassifier,  ['base gp classifier']),

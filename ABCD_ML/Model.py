@@ -37,9 +37,10 @@ class Model():
     training, scaling, handling different datatypes ect...
     '''
 
-    def __init__(self, ML_params, CV, search_split_vals, all_data_keys,
-                 targets_key, targets_encoder, covar_scopes, cat_encoders,
-                 progress_bar, param_search_verbose, _print=print):
+    def __init__(self, ML_params, CV, search_split_vals,
+                 all_data_keys, targets_key, targets_encoder, covar_scopes,
+                 cat_encoders, progress_bar, param_search_verbose,
+                 _print=print):
         ''' Init function for Model
 
         Parameters
@@ -109,7 +110,7 @@ class Model():
             - n_iter : int
                 The number of random searches to conduct in random search
                 model types.
-            - data_to_use : {'all', 'data', 'covars'}
+            - feats_to_use : {'all', 'data', 'covars'}
                 The subset of data to use, either all avaliable, just
                 the data, or just the covars.
             - compute_train_score : bool
@@ -237,8 +238,10 @@ class Model():
         # Default params just sets (sub)problem type for now
         self._set_default_params()
 
-        # Set all_keys based on data_to_use
-        self._set_all_keys(ML_params['data_to_use'])
+        self.subjects_to_use = ML_params['subjects_to_use']
+
+        # Set all_keys based on feats_to_use
+        self._set_all_keys(ML_params['feats_to_use'])
 
         # Process inputs
         self._check_all_for_user_passed()
@@ -264,22 +267,42 @@ class Model():
         self.linear_flag = False
         self.tree_flag = False
 
-    def _set_all_keys(self, data_to_use):
+    def _set_all_keys(self, feats_to_use):
         '''Strat keys then target keys should always be last,
            as to no effect earlier indexing.'''
 
+        # Always add self.strat_keys + targets_key at end
         if isinstance(self.targets_key, str):
             t_key = [self.targets_key]
         else:
             t_key = self.targets_key
 
-        if data_to_use == 'data' or data_to_use == 'd':
-            self.all_keys = self.data_keys + self.strat_keys + t_key
-        elif data_to_use == 'covars' or data_to_use == 'c':
-            self.all_keys = self.covars_keys + self.strat_keys + t_key
+        keys_at_end = self.strat_keys + t_key
+
+        if isinstance(feats_to_use, str):
+
+            if feats_to_use == 'data' or feats_to_use == 'd':
+                self.all_keys = self.data_keys + keys_at_end
+            elif feats_to_use == 'covars' or feats_to_use == 'c':
+                self.all_keys = self.covars_keys + keys_at_end
+            elif feats_to_use == 'all' or feats_to_use == 'a':
+                self.all_keys =\
+                    self.data_keys + self.covars_keys + keys_at_end
+            else:
+                self._print('Invalid param:', feats_to_use, 'passed for feats',
+                            'to use! Make sure you pass "data", "covars",',
+                            '"all"',
+                            'or a custom array!')
+
+        # Assume user passed list, if not str
         else:
-            self.all_keys =\
-                self.data_keys + self.covars_keys + self.strat_keys + t_key
+            self.all_keys = list(feats_to_use) + keys_at_end
+
+    def _get_subjects_overlap(self, subjects):
+        '''Computer overlapping subjects with subjects
+        to use.'''
+
+        return list(self.subjects_to_use.intersection(set(subjects)))
 
     def _get_train_inds_from_keys(self, keys):
         '''Assume target is always last within self.all_keys ...
@@ -1045,6 +1068,9 @@ class Model():
             as the number of metrics.
         '''
 
+        # Set train_subjects according to self.subjects_to_use
+        train_subjects = self._get_subjects_overlap(train_subjects)
+
         # Init raw_preds_df
         self._init_raw_preds_df(train_subjects)
 
@@ -1141,7 +1167,11 @@ class Model():
             metric/scorer(s) on the provided testing set.
         '''
 
-        # Ensure data being used is just the selected columns
+        # Ensure train and test subjects are just the requested overlap
+        train_subjects = self._get_subjects_overlap(train_subjects)
+        test_subjects = self._get_subjects_overlap(test_subjects)
+
+        # Ensure data being used is just the selected col / feats
         data = data[self.all_keys]
 
         # Check for any NaN
@@ -1155,8 +1185,8 @@ class Model():
         train_data = data.loc[train_subjects]
         test_data = data.loc[test_subjects]
 
-        self._print('Train size:', train_data.shape[0], level='size')
-        self._print('Val/Test size:', test_data.shape[0], level='size')
+        self._print('Train subjects:', train_data.shape[0], level='size')
+        self._print('Val/Test subjects:', test_data.shape[0], level='size')
 
         # Train the model(s)
         self._train_models(train_data)

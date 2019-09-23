@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm, tqdm_notebook
 
-from ABCD_ML.Data_Helpers import get_unique_combo_df
+from ABCD_ML.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
@@ -27,7 +27,8 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
                           sampler_params='default',
                           feat_selector_params='default',
                           class_weight='default', n_jobs='default',
-                          n_iter='default', data_to_use='default',
+                          n_iter='default', feats_to_use='default',
+                          subjects_to_use='default',
                           compute_train_score='default',
                           random_state='default',
                           calc_base_feature_importances='default',
@@ -332,7 +333,7 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         (default = 'default')
 
     imputer_params : int, str or list of
-        Each `imputer` has atleast one parameetr distribution,
+        Each `imputer` has atleast one param distribution,
         which can be selected with an int index, or a corresponding
         str name. Likewise, a user can pass in a dictionary with their
         own custom values.
@@ -429,15 +430,60 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         if 'default', and not already defined, set to 10.
         (default = 'default')
 
-    data_to_use : {'all', 'data', 'covars'}, optional
-        This setting allows the user to optionally
-        run an expiriment with either only the loaded
-        data and/or only the loaded covars. Likewise,
-        both can be used with the default param of 'all'.
+    feats_to_use : {'all', 'data', 'covars'} or array, optional
+        This parameter allows the user to optionally
+        run an expiriment with a subset of the loaded features
+        / columns. Typically either only the loaded
+        data and/or only the loaded covars. Specific key words
+        exist for selecting these, or alternatively, an array-like
+        of column keys can be passed in explicitly.
 
         - 'all' : Uses all data + covars loaded
         - 'data' : Uses only the loaded data, and drops covars if any
         - 'covars' : Uses only the loaded covars, and drops data if any
+        - array-like of strs : Can pass specific col names in as array-like\
+                               to select only those cols.
+        - wild card str or array-like : If user passed str doesn't match with\
+                                        valid col name, will use as wildcard.
+
+        The way the wild card system works is that if for all user
+        passed strs that do not match a column name, they will be treated
+        as wildcards. For example, if '._desikan' and '._lh' were passed
+        as wildcards, any column name with both '._desikan' and '._lh', will
+        be added to feats to use.
+
+        You can also pass a list combination of any of the above,
+        for example you could pass ['covars', specific_column_name, wildcard]
+        to select all of the covariate columns, the specific column name(s),\
+        and any extra columns which match the wildcard(s).
+
+        if 'default', and not already defined, set to 'all'.
+        (default = 'default')
+
+    subjects_to_use : 'all', array-like or str, optional
+        This parameter allows the user to optionally run
+        an Evaluation run with just a subset of the loaded subjects.
+        It is designed to be to be used after a global train test split
+        has been defined (see :func:`Train_Test_Split`), for cases such
+        as, creating and testing models on just Males, or just Females.
+
+        If set to 'all' (as is by default), all avaliable subjects will be
+        used.
+
+        `subjects_to_use` can accept either a specific array of subjects,
+        or even a loc of a text file (formatted one subject per line) in
+        which to read from. Note: do not pass a tuple of subjects, as that
+        is reserved for specifying special behavior.
+
+        Alternatively, `subjects_to_use` will accept a tuple, (Note:
+        it must be a tuple!), where the first element is a loaded strat key,
+        or a list of, and the second is an int value. In this case,
+        `subjects_to_use`, will be set to the subset of subjects associated
+        with the specified strat values (or combination) that have that value.
+
+        For example, if sex was loaded within strat, and ('sex', 0) was
+        passed to `subjects_to_use`, then :func:`Evaluate` would be run
+        on just those subjects with sex == 0.
 
         if 'default', and not already defined, set to 'all'.
         (default = 'default')
@@ -687,14 +733,20 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         self._print('No default number of random search iters passed,',
                     'set to 10')
 
-    if data_to_use != 'default':
-        assert data_to_use in ['all', 'data', 'covars'], \
-            "data_to_use must be 'all', 'data' or 'covars'"
-        self.default_ML_params['data_to_use'] = data_to_use
+    if feats_to_use != 'default':
+        self.default_ML_params['feats_to_use'] = feats_to_use
 
-    elif 'data_to_use' not in self.default_ML_params:
-        self.default_ML_params['data_to_use'] = 'all'
-        self._print('No default data_to_use passed,',
+    elif 'feats_to_use' not in self.default_ML_params:
+        self.default_ML_params['feats_to_use'] = 'all'
+        self._print('No default feats_to_use passed,',
+                    'set to all')
+
+    if subjects_to_use != 'default':
+        self.default_ML_params['subjects_to_use'] = subjects_to_use
+
+    elif 'subjects_to_use' not in self.default_ML_params:
+        self.default_ML_params['subjects_to_use'] = 'all'
+        self._print('No default subjects_to_use passed,',
                     'set to all')
 
     if compute_train_score != 'default':
@@ -881,8 +933,9 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
              imputer_params='default', scaler_params='default',
              sampler_params='default', feat_selector_params='default',
              class_weight='default', n_jobs='default', n_iter='default',
-             data_to_use='default', compute_train_score='default',
-             random_state='default', calc_base_feature_importances='default',
+             feats_to_use='default', subjects_to_use='default',
+             compute_train_score='default', random_state='default',
+             calc_base_feature_importances='default',
              calc_shap_feature_importances='default', extra_params='default'):
 
     '''Class method to be called during the model selection phase.
@@ -923,7 +976,8 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
     class_weight :
     n_jobs :
     n_iter :
-    data_to_use :
+    feats_to_use :
+    subjects_to_use :
     compute_train_score :
     random_state :
     calc_base_feature_importances :
@@ -978,6 +1032,7 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
 
     run_name = self._get_avaliable_eval_scores_name(run_name,
                                                     ML_params['model_type'])
+    self._print('Saving scores and settings with unique name:', run_name)
     self._print()
 
     # Save this specific set of settings
@@ -1024,8 +1079,9 @@ def Test(self, model_type='default', problem_type='default',
          imputer_params='default', scaler_params='default',
          sampler_params='default', feat_selector_params='default',
          class_weight='default', n_jobs='default', n_iter='default',
-         data_to_use='default', compute_train_score='default',
-         random_state='default', calc_base_feature_importances='default',
+         feats_to_use='default', subjects_to_use='default',
+         compute_train_score='default', random_state='default',
+         calc_base_feature_importances='default',
          calc_shap_feature_importances='default', extra_params='default',
          **kwargs):
     '''Class method used to evaluate a specific model / data scaling
@@ -1070,7 +1126,8 @@ def Test(self, model_type='default', problem_type='default',
     class_weight :
     n_jobs :
     n_iter :
-    data_to_use :
+    feats_to_use :
+    subjects_to_use :
     compute_train_score :
     random_state :
     calc_base_feature_importances :
@@ -1204,9 +1261,15 @@ def _make_ML_params(self, args):
     # If passed param is default use default value.
     # Otherwise use passed value.
     for key in args:
-        if args[key] == 'default':
-            ML_params[key] = self.default_ML_params[key]
-        elif key != 'self':
+
+        try:
+            if args[key] == 'default':
+                ML_params[key] = self.default_ML_params[key]
+            elif key != 'self':
+                ML_params[key] = args[key]
+
+        # If value error, set to key
+        except ValueError:
             ML_params[key] = args[key]
 
     # Fill in any missing params w/ default value.
@@ -1273,7 +1336,19 @@ def _print_model_params(self, ML_params, test=False):
         self._print('class_weight =', ML_params['class_weight'])
 
     self._print('n_jobs =', ML_params['n_jobs'])
-    self._print('data_to_use =', ML_params['data_to_use'])
+
+    if len(ML_params['feats_to_use']) > 20:
+        self._print('feats_to_use = custom passed keys with len',
+                    len(ML_params['feats_to_use']))
+    else:
+        self._print('feats_to_use =', ML_params['feats_to_use'])
+
+    if len(ML_params['subjects_to_use']) > 20:
+        self._print('subjects_to_use = custom passed keys with len',
+                    len(ML_params['subjects_to_use']))
+    else:
+        self._print('subjects_to_use =', ML_params['subjects_to_use'])
+
     self._print('compute_train_score =', ML_params['compute_train_score'])
     self._print('random_state =', ML_params['random_state'])
 
@@ -1288,7 +1363,10 @@ def _print_model_params(self, ML_params, test=False):
 
 def _get_split_vals(self, splits):
 
-    if not isinstance(splits, int):
+    if isinstance(splits, int):
+        split_names, split_vals, sv_le = None, None, None
+
+    else:
         split_names = self._add_strat_u_name(splits)
 
         if isinstance(split_names, str):
@@ -1297,10 +1375,83 @@ def _get_split_vals(self, splits):
         split_vals, sv_le =\
             get_unique_combo_df(self.strat, split_names)
 
-    else:
-        split_names, split_vals, sv_le = None, None, None
-
     return split_names, split_vals, sv_le
+
+
+def _proc_feats_to_use(self, feats_to_use):
+
+    if isinstance(feats_to_use, str):
+        valid = ['data', 'd', 'covars', 'c', 'all', 'a']
+
+        if feats_to_use in valid:
+            return feats_to_use
+        else:
+            feats_to_use = [feats_to_use]
+
+    final_feats_to_use = []
+    restrict_keys = []
+
+    all_feats =\
+        self.all_data_keys['data_keys'] + self.all_data_keys['covars_keys']
+    all_feats = np.array(all_feats)
+
+    for feat in feats_to_use:
+        if feat == 'data' or feat == 'd':
+            final_feats_to_use += self.all_data_keys['data_keys']
+        elif feat == 'covars' or feat == 'c':
+            final_feats_to_use += self.all_data_keys['covars_keys']
+        elif feat in all_feats:
+            final_feats_to_use.append(feat)
+        else:
+            restrict_keys.append(feat)
+
+    if len(restrict_keys) > 0:
+
+        rest = list(all_feats[[all([r in a for r in restrict_keys]) for
+                               a in all_feats]])
+        final_feats_to_use += rest
+
+    # If any repeats
+    final_feats_to_use = list(set(final_feats_to_use))
+
+    return final_feats_to_use
+
+
+def _get_final_subjects_to_use(self, subjects_to_use):
+
+    if subjects_to_use == 'all':
+        subjects = self.all_data.index
+
+    elif isinstance(subjects_to_use, tuple):
+        split_names, split_vals, sv_le =\
+            self._get_split_vals(subjects_to_use[0])
+
+        selected = split_vals[split_vals == subjects_to_use[1]]
+        subjects = set(selected.index)
+
+        rev_values = reverse_unique_combo_df(selected, sv_le)[0]
+        self._print('subjects_to_use set to: ', end='')
+
+        for strat_name, value in zip(split_names, rev_values):
+            if self.strat_u_name in strat_name:
+                strat_name = strat_name.replace(self.strat_u_name, '')
+            self._print(strat_name, '=', value, ',', end='', sep='')
+
+        self._print()
+        self._print()
+
+    else:
+        if isinstance(subjects_to_use, str):
+            loc = subjects_to_use
+            subjs = None
+
+        else:
+            loc = None
+            subjs = subjects_to_use
+
+        subjects = self._load_set_of_subjects(loc=loc, subjects=subjs)
+
+    return subjects
 
 
 def _init_model(self, ML_params):
@@ -1318,6 +1469,14 @@ def _init_model(self, ML_params):
 
     # Conv sample_on params w/ added unique key here, if needed
     ML_params['sample_on'] = self._add_strat_u_name(ML_params['sample_on'])
+
+    # Proc feats_to_use
+    ML_params['feats_to_use'] =\
+        self._proc_feats_to_use(ML_params['feats_to_use'])
+
+    # Proc subjects to use
+    ML_params['subjects_to_use'] =\
+        self._get_final_subjects_to_use(ML_params['subjects_to_use'])
 
     # Grab search split_vals_here
     _, search_split_vals, _ = self._get_split_vals(ML_params['search_splits'])
@@ -1351,7 +1510,6 @@ def _get_avaliable_eval_scores_name(self, name, model_type):
 
         name = name + str(n)
 
-    self._print('Saving scores and settings with unique name:', name)
     return name
 
 

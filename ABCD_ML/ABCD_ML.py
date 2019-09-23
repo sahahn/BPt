@@ -361,6 +361,8 @@ class ABCD_ML():
                              _make_ML_params,
                              _print_model_params,
                              _get_split_vals,
+                             _proc_feats_to_use,
+                             _get_final_subjects_to_use,
                              _init_model,
                              _get_avaliable_eval_scores_name,
                              _handle_scores,

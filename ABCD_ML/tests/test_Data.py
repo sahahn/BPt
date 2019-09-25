@@ -13,10 +13,10 @@ def get_file_path(name):
     return file_path
 
 
-class Test_ABCD_ML(TestCase):
+class Test_Data(TestCase):
 
     def __init__(self, *args, **kwargs):
-        super(Test_ABCD_ML, self).__init__(*args, **kwargs)
+        super(Test_Data, self).__init__(*args, **kwargs)
 
         self.ML = ABCD_ML(log_dr=None)
 
@@ -60,7 +60,8 @@ class Test_ABCD_ML(TestCase):
         for loc, dataset_type in zip(locs, dataset_types):
 
             # Should drop second subject for eventname
-            self.ML.Load_Data(loc=loc, dataset_type=dataset_type)
+            self.ML.Load_Data(loc=loc, dataset_type=dataset_type,
+                              drop_col_duplicates=False)
             self.assertTrue(self.ML.data.shape == (2, 3))
             self.assertTrue('NDAR_1' in self.ML.data.index)
 
@@ -134,6 +135,15 @@ class Test_ABCD_ML(TestCase):
         self.assertTrue(self.ML.data.loc['NDAR_1']['oname1'] == 3)
         self.assertTrue(self.ML.data.loc['NDAR_10']['oname1'] == 10)
         self.ML.Clear_Data()
+
+    def test_load_data3(self):
+
+        self.ML.eventname = None
+        loc = get_file_path('custom_data1.csv')
+
+        self.ML.Load_Data(loc=loc, dataset_type='custom',
+                          drop_col_duplicates=True)
+        self.assertTrue(self.ML.data.shape == (3, 1))
 
     def test_load_covars1(self):
 
@@ -259,8 +269,8 @@ class Test_ABCD_ML(TestCase):
         self.ML.Load_Exclusions(loc=loc)
         self.assertTrue(self.ML.data.shape == (7, 3))
 
-        self.ML.Load_Exclusions(exclusions='4')
-        self.ML.Load_Exclusions(exclusions=['Ndar_notreeal', 'NDAR_5'])
+        self.ML.Load_Exclusions(subjects='4')
+        self.ML.Load_Exclusions(subjects=['Ndar_notreeal', 'NDAR_5'])
         self.assertTrue(self.ML.data.shape == (5, 3))
 
         self.ML.Clear_Exclusions()
@@ -268,6 +278,16 @@ class Test_ABCD_ML(TestCase):
 
         # Data shouldn't change
         self.assertTrue(self.ML.data.shape == (5, 3))
+
+    def test_load_inclusions1(self):
+
+        self.ML.eventname = None
+        loc = get_file_path('custom_data2.csv')
+
+        self.ML.Load_Inclusions(subjects=['1'])
+
+        self.ML.Load_Data(loc=loc, dataset_type='custom')
+        self.assertTrue(self.ML.data.shape == (1, 0))
 
     def test_load_all1(self):
 
@@ -323,7 +343,8 @@ class Test_ABCD_ML(TestCase):
 
     def test_low_memory_mode1(self):
 
-        ML = self.ML = ABCD_ML(low_memory_mode=True, eventname=None)
+        ML = self.ML = ABCD_ML(low_memory_mode=True, eventname=None,
+                               log_dr=None)
 
         loc = get_file_path('custom_data2.csv')
         ML.Load_Data(loc=loc, dataset_type='custom')

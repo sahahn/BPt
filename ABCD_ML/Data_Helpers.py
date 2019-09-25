@@ -10,8 +10,62 @@ import pandas as pd
 import random
 from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from operator import add
 from functools import reduce
+
+
+def get_non_drop(data, key, in_place, drop_val):
+
+    if in_place:
+        non_drop_subjects = data.index
+
+    else:
+
+        # If drop_val np.nan, means treating dropped as missing value
+        if drop_val is np.nan:
+            non_drop_subjects = data[~(data[key].isna())].index
+
+        # Otherwise
+        else:
+            non_drop_subjects = data[~(data[key] == drop_val)].index
+
+    non_drop_data = data.loc[non_drop_subjects]
+    return non_drop_data, non_drop_subjects
+
+
+def put_non_drop_back(data, non_drop_subjects, non_drop_data):
+
+    data.loc[non_drop_subjects] = non_drop_data
+
+    # Make sure col types are right
+    for dtype, key in zip(non_drop_data.dtypes, list(data)):
+        data[key] = data[key].astype(dtype.name)
+
+    return data
+
+
+def scale_input(data, key, standardize, normalize, in_place=True,
+                drop_val=np.nan):
+
+    if not standardize and not normalize:
+        return data
+
+    non_drop_data, non_drop_subjects =\
+        get_non_drop(data, key, in_place, drop_val)
+
+    scaler = None
+    if standardize:
+        scaler = StandardScaler()
+    if normalize:
+        scaler = MinMaxScaler()
+    if scaler is not None:
+        vals = np.array(non_drop_data[key]).reshape(-1, 1)
+        scaled_vals = scaler.fit_transform(vals)
+        non_drop_data[key] = np.squeeze(scaled_vals)
+
+    data = put_non_drop_back(data, non_drop_subjects, non_drop_data)
+    return data
 
 
 def process_binary_input(data, key, in_place=True, drop_val=np.nan,
@@ -73,17 +127,25 @@ def process_binary_input(data, key, in_place=True, drop_val=np.nan,
         _print('More than two unique score values found,',
                'filtered all but', keep_vals)
 
+    # Work on only non_dropped data / non NaN data if applicable
+    non_drop_data, non_drop_subjects =\
+        get_non_drop(data, key, in_place, drop_val)
+
     # Perform actual binary encoding
     encoder = LabelEncoder()
-    data[key] = encoder.fit_transform(np.array(data[key]))
-    data[key] = data[key].astype('category')
+    non_drop_data[key] = encoder.fit_transform(np.array(non_drop_data[key]))
+    non_drop_data[key] = non_drop_data[key].astype('category')
 
-    assert len(np.unique(data[key])) == 2, \
+    assert len(np.unique(non_drop_data[key])) == 2, \
         "Error: Binary type, but more than two unique values"
+
+    data = put_non_drop_back(data, non_drop_subjects, non_drop_data)
+
     return data, encoder
 
 
-def process_ordinal_input(data, key, drop_percent=None, _print=print):
+def process_ordinal_input(data, key, drop_percent=None, in_place=True,
+                          drop_val=np.nan, _print=print):
     '''Helper function to perform processing on ordinal input,
     where note this definition of ordinal means categorical ordinal...
     so converting input to ordinal, but from categorical!
@@ -95,6 +157,17 @@ def process_ordinal_input(data, key, drop_percent=None, _print=print):
 
     key : str
         Column key of the column to process within `data` input.
+
+    drop_percent : float
+        % to drop
+
+    in_place : bool
+        If True, drop in place, otherwise replace with drop_val
+
+    drop_val : NaN or int
+        If a row needs to be dropped, replace with drop_val
+
+        (default = np.nan)
 
     Returns
     ----------
@@ -113,20 +186,31 @@ def process_ordinal_input(data, key, drop_percent=None, _print=print):
         drop_inds = np.where(counts / len(data) < drop_percent)
         drop_vals = unique_vals[drop_inds]
 
-        data.drop(data.index[data[key].isin(drop_vals)], inplace=True)
+        if in_place:
+            data.drop(data.index[data[key].isin(drop_vals)], inplace=True)
+        else:
+            to_drop = data.index[data[key].isin(drop_vals)]
+            data.loc[to_drop, key] = drop_val
 
         _print('Dropping', drop_vals, 'according to passed drop percent of',
                drop_percent)
 
+    # Work on only non_dropped data / non NaN data if applicable
+    non_drop_data, non_drop_subjects =\
+        get_non_drop(data, key, in_place, drop_val)
+
+    # Encode ordinally
     label_encoder = LabelEncoder()
-    data[key] = label_encoder.fit_transform(data[key])
-    data[key] = data[key].astype('category')
+    non_drop_data[key] = label_encoder.fit_transform(non_drop_data[key])
+    non_drop_data[key] = non_drop_data[key].astype('category')
+
+    data = put_non_drop_back(data, non_drop_subjects, non_drop_data)
 
     return data, label_encoder
 
 
 def process_categorical_input(data, key, drop='one hot', drop_percent=None,
-                              _print=print):
+                              in_place=True, drop_val=np.nan, _print=print):
     '''Helper function to perform processing on categorical input
 
     Parameters
@@ -167,14 +251,18 @@ def process_categorical_input(data, key, drop='one hot', drop_percent=None,
     # want to be able to do reverse transform w/ 1-hot encoder
     # between label encoded results.
     data, label_encoder = process_ordinal_input(data, key, drop_percent,
-                                                _print)
+                                                in_place=in_place,
+                                                drop_val=drop_val,
+                                                _print=_print)
 
-    # Now convert to one hot or dummy encoded
-    vals = np.array(data[key]).reshape(-1, 1)
+    # Work on only non_dropped data / non NaN data if applicable
+    non_drop_data, non_drop_subjects =\
+        get_non_drop(data, key, in_place, drop_val)
+
+    vals = np.array(non_drop_data[key]).reshape(-1, 1)
 
     encoder = OneHotEncoder(categories='auto', sparse=False)
-
-    vals = encoder.fit_transform(vals)
+    vals = encoder.fit_transform(vals).astype(int)
     categories = encoder.categories_[0]
 
     _print('Found', len(categories), 'categories')
@@ -184,8 +272,13 @@ def process_categorical_input(data, key, drop='one hot', drop_percent=None,
     # Add the encoded features to the dataframe in their own columns
     for i in range(len(categories)):
         k = key + '_' + str(categories[i])
-        data[k] = vals[:, i]
-        data[k] = data[k].astype(int)
+
+        # First create new col in ordiginal df w/ all drop val
+        data[k] = drop_val
+
+        # Set non drop subjects to new vals
+        data.loc[non_drop_subjects, k] = vals[:, i]
+
         data[k] = data[k].astype('category')
         new_keys.append(k)
 
@@ -194,7 +287,7 @@ def process_categorical_input(data, key, drop='one hot', drop_percent=None,
     ind = None
 
     if drop == 'dummy':
-        max_col = np.sum(data[new_keys]).idxmax()
+        max_col = data[new_keys].sum().idxmax()
         data = data.drop(max_col, axis=1)
         _print('dummy coding by dropping col', max_col)
 

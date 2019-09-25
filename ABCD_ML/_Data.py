@@ -11,6 +11,7 @@ from ABCD_ML.Data_Helpers import (process_binary_input,
                                   process_ordinal_input,
                                   process_categorical_input,
                                   process_float_input,
+                                  scale_input,
                                   get_unused_drop_val,
                                   filter_float_by_outlier,
                                   drop_duplicate_cols,
@@ -69,7 +70,8 @@ def Load_Name_Map(self, loc, dataset_type='default',
 def Load_Data(self, loc, dataset_type='default', drop_keys=[], drop_nan=True,
               filter_outlier_percent=None, winsorize_val=None,
               unique_val_drop_thresh=2, unique_val_warn_percent=.2,
-              drop_col_duplicates=None, clear_existing=False):
+              drop_col_duplicates=None, drop_or_nan='drop',
+              clear_existing=False):
     """Load a ABCD2p0NDA (default) or 2.0_ABCD_Data_Explorer (explorer)
     release formatted neuroimaging dataset - of derived ROI level info.
 
@@ -152,6 +154,11 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[], drop_nan=True,
         If over 1 then treated as a percent, if under 1, then
         used directly.
 
+        If drop_or_nan == 'drop', then all rows/subjects with >= 1
+        value(s) found outside of the percent will be dropped.
+        Otherwise, if drop_or_nan = 'nan', then any outside values
+        will be set to NaN.
+
         (default = None)
 
     winsorize_val : float, tuple or None, optional
@@ -206,6 +213,16 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[], drop_nan=True,
         columns to compare!
 
         (default = None)
+
+    drop_or_nan : {'drop', 'nan'}, optional
+
+        filter_outlier_percent by default drops rows with extreme values, if
+        drop_or_nan is set to 'nan', then these values will be replaced with
+        NaN instead.
+
+        Otherwise, will continue to drop with default param == 'drop'
+
+        (default = 'drop')
 
     clear_existing : bool, optional
         If this parameter is set to True, then any existing
@@ -265,14 +282,19 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[], drop_nan=True,
     # Filter based on outlier percent
     if filter_outlier_percent is not None:
 
-        drop_val = get_unused_drop_val(data)
+        if drop_or_nan == 'nan':
+            drop_val = np.nan
+        else:
+            drop_val = get_unused_drop_val(data)
 
         for key in data_keys:
             data = filter_float_by_outlier(data, key, filter_outlier_percent,
                                            in_place=False, drop_val=drop_val,
                                            _print=self._print_nothing)
 
-        data = self._drop_from_filter(data, filter_outlier_percent, drop_val)
+        # Only remove if not NaN
+        if drop_val is not np.nan:
+            data = self._drop_from_filter(data, drop_val)
 
     if winsorize_val is not None:
         if type(winsorize_val) != tuple:
@@ -454,9 +476,6 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         This parameter allows alternatively to instead specify those
         values that would be dropped as NaN instead.
 
-        Note, if categorical_drop_percent is set, then those rows will always
-        be dropped.
-
         (default = 'drop')
 
     clear_existing : bool, optional
@@ -504,7 +523,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
             non_nan_covars, self.covars_encoders[key] =\
                 process_binary_input(non_nan_covars, key, in_place=False,
-                                     drop_val=drop_val, self._print)
+                                     drop_val=drop_val, _print=self._print)
 
         elif d_type == "categorical" or d_type == 'c':
 
@@ -512,7 +531,8 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
                 non_nan_covars, self.covars_encoders[key] =\
                     process_ordinal_input(non_nan_covars, key,
                                           categorical_drop_percent,
-                                          self._print)
+                                          in_place=False, drop_val=drop_val,
+                                          _print=self._print)
 
             # If using one hot or dummy coding, encoder will
             # contain 2 transformers
@@ -521,7 +541,9 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
                     process_categorical_input(non_nan_covars, key,
                                               code_categorical_as,
                                               categorical_drop_percent,
-                                              self._print)
+                                              in_place=False,
+                                              drop_val=drop_val,
+                                              _print=self._print)
 
                 # Add any new cols
                 covars = covars.reindex(columns=list(non_nan_covars))
@@ -538,15 +560,10 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
                                             in_place=False, drop_val=drop_val,
                                             _print=self._print)
 
-            if standardize:
-                non_nan_covars[key] -= np.mean(non_nan_covars[key])
-                non_nan_covars[key] /= np.std(non_nan_covars[key])
-
-            if normalize:
-                min_val = np.min(non_nan_covars[key])
-                max_val = np.max(non_nan_covars[key])
-                non_nan_covars[key] =\
-                    (non_nan_covars[key] - min_val) / (max_val - min_val)
+            # Perform scaling if needed
+            non_nan_covars = scale_input(non_nan_covars, key, standardize,
+                                         normalize, in_place=False,
+                                         drop_val=drop_val)
 
         # Now update the changed values within covars
         covars.loc[non_nan_subjects] = non_nan_covars
@@ -555,9 +572,9 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         for dtype, key in zip(non_nan_covars.dtypes, list(covars)):
             covars[key] = covars[key].astype(dtype.name)
 
-    # Have to remove rows with drop_val
-    covars = self._drop_from_filter(covars, filter_float_outlier_percent,
-                                    drop_val)
+    # Have to remove rows with drop_val if drop_val not NaN
+    if drop_val is not np.nan:
+        covars = self._drop_from_filter(covars, drop_val)
 
     self._print('loaded shape: ', covars.shape)
 
@@ -834,7 +851,7 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
     self._process_new(True)  # Regardless of low mem-mode
 
 
-def Load_Exclusions(self, loc=None, exclusions=None, clear_existing=False):
+def Load_Exclusions(self, loc=None, subjects=None, clear_existing=False):
     '''Loads in a set of excluded subjects,
     from either a file or as directly passed in.
 
@@ -845,7 +862,7 @@ def Load_Exclusions(self, loc=None, exclusions=None, clear_existing=False):
         The file should be formatted as one subject per line.
         (default = None)
 
-    exclusions : list, set, array-like or None, optional
+    subjects : list, set, array-like or None, optional
         An explicit list of subjects to add to exclusions.
         (default = None)
 
@@ -876,12 +893,12 @@ def Load_Exclusions(self, loc=None, exclusions=None, clear_existing=False):
         self.Clear_Exclusions()
 
     self.exclusions.update(self._load_set_of_subjects(loc=loc,
-                                                      subjects=exclusions))
+                                                      subjects=subjects))
     self._print('Total excluded subjects: ', len(self.exclusions))
     self._filter_excluded()
 
 
-def Load_Inclusions(self, loc=None, inclusions=None, clear_existing=False):
+def Load_Inclusions(self, loc=None, subjects=None, clear_existing=False):
     '''Loads in a set of subjects such that only these subjects
     can be loaded in, and any subject not as an inclusion is dropped,
     from either a file or as directly passed in.
@@ -893,7 +910,7 @@ def Load_Inclusions(self, loc=None, inclusions=None, clear_existing=False):
         The file should be formatted as one subject per line.
         (default = None)
 
-    inclusions : list, set, array-like or None, optional
+    subjects : list, set, array-like or None, optional
         An explicit list of subjects to add to inclusions.
         (default = None)
 
@@ -924,7 +941,7 @@ def Load_Inclusions(self, loc=None, inclusions=None, clear_existing=False):
         self.Clear_Inclusions()
 
     self.inclusions.update(self._load_set_of_subjects(loc=loc,
-                                                      subjects=inclusions))
+                                                      subjects=subjects))
     self._print('Total inclusion subjects: ', len(self.inclusions))
     self._filter_included()
 
@@ -1490,16 +1507,16 @@ def _drop_na(self, data, drop_nan=True):
     return data
 
 
-def _drop_from_filter(self, data, filter_outlier_percent, drop_val=999):
+def _drop_from_filter(self, data, drop_val=999):
 
-    if filter_outlier_percent is not None:
+    print(data)
 
-        to_drop = data[(data == drop_val).any(axis=1)].index
+    to_drop = data[(data == drop_val).any(axis=1)].index
+
+    if len(to_drop) > 0:
         data = data.drop(to_drop)
-
-        self._print('Dropped', len(to_drop), 'rows based on filter outlier',
-                    'percent:', filter_outlier_percent)
-
+        self._print('Dropped', len(to_drop), 'rows based on filter input',
+                    'params, e.g. filter outlier percent, drop cat, ect...')
     return data
 
 

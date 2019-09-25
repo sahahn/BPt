@@ -12,27 +12,23 @@ from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
 
-def Set_Default_ML_Params(self, model_type='default', problem_type='default',
-                          metric='default', imputer='default',
-                          imputer_scope='default', scaler='default',
-                          scaler_scope='default',
+def Set_Default_ML_Params(self, problem_type='default', model_type='default',
+                          model_type_params='default', metric='default',
+                          imputer='default', imputer_scope='default',
+                          imputer_params='default', scaler='default',
+                          scaler_scope='default', scaler_params='default',
                           sampler='default', sample_on='default',
-                          feat_selector='default', splits='default',
-                          n_repeats='default', search_splits='default',
+                          sampler_params='default', feat_selector='default',
+                          feat_selector_params='default', splits='default',
+                          n_repeats='default', search_type='default',
+                          search_splits='default', search_n_iter='default',
+                          feats_to_use='default', subjects_to_use='default',
                           ensemble_type='default', ensemble_split='default',
-                          search_type='default',
-                          model_type_params='default',
-                          imputer_params='default',
-                          scaler_params='default',
-                          sampler_params='default',
-                          feat_selector_params='default',
-                          class_weight='default', n_jobs='default',
-                          n_iter='default', feats_to_use='default',
-                          subjects_to_use='default',
-                          compute_train_score='default',
-                          random_state='default',
                           calc_base_feature_importances='default',
                           calc_shap_feature_importances='default',
+                          class_weight='default', n_jobs='default',
+                          random_state='default',
+                          compute_train_score='default',
                           extra_params='default'):
     '''Sets self.default_ML_params dictionary with user passed or default
     values. In general, if any argument is left as 'default' and it has
@@ -42,6 +38,17 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
 
     Parameters
     ----------
+    problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
+
+        - 'regression' : For ML on float or ordinal target data.
+        - 'binary' : For ML on binary target data.
+        - 'categorical' : For ML on categorical target data,\
+                          as either multilabel or multiclass.
+        - 'default' : Use 'regression' if nothing else already defined.
+
+        If 'default', and not already defined, set to 'regression'
+        (default = 'default')
+
     model_type : str or list of str
         Each string refers to a type of model to train.
         If a list of strings is passed then an ensemble model
@@ -53,15 +60,22 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         If 'default', and not already defined, set to 'linear'
         (default = 'default')
 
-    problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
+    model_type_params : int, str, or list of
+        Each `model_type` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `model_type_params` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `model_type`.
+        Likewise with `model_type`, if passed list input, this means
+        a list was passed to `model_type` and the indices should correspond.
 
-        - 'regression' : For ML on float or ordinal target data.
-        - 'binary' : For ML on binary target data.
-        - 'categorical' : For ML on categorical target data,\
-                          as either multilabel or multiclass.
-        - 'default' : Use 'regression' if nothing else already defined.
+        The different parameter distributions avaliable for each
+        `model_type`, can be shown by calling :func:`Show_Model_Types`
+        or on the docs at :ref:`Model Types`
 
-        If 'default', and not already defined, set to 'regression'
+        If 'default', and not already defined, set to 0
         (default = 'default')
 
     metric : str or list, optional
@@ -124,6 +138,28 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         If 'default', and not already defined, set to ['float', 'categorical']
         (default = 'default')
 
+    imputer_params : int, str or list of
+        Each `imputer` has atleast one param distribution,
+        which can be selected with an int index, or a corresponding
+        str name. Likewise, a user can pass in a dictionary with their
+        own custom values.
+
+        This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `scaler_params` is automatically
+        set to default 0.
+
+        The different parameter distributions avaliable for each
+        `imputer`, can be shown by calling :func:`Show_Imputers`
+        or on the docs at :ref:`Imputers`
+
+        Note: If a model_type was passed to the imputer, then
+        `imputer_params` will refer to the parameters for that
+        base model!
+
+        If 'default', and not already defined, set to 0
+        (default = 'default')
+
     scaler : str, list or None, optional
         `scaler` refers to the type of scaling to apply
         to the saved data (just data, not covars) during model evaluation.
@@ -157,6 +193,24 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
                                to select only those cols.
 
         If 'default', and not already defined, set to 'data'
+        (default = 'default')
+
+    scaler_params : int, str, or list of
+        Each `scaler` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `scaler_params` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `scaler`.
+        Likewise with `scaler`, if passed list input, this means
+        a list was passed to `scaler` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `scaler`, can be shown by calling :func:`Show_Scalers`
+        or on the docs at :ref:`Scalers`
+
+        If 'default', and not already defined, set to 0
         (default = 'default')
 
     sampler : str, list or None, optional
@@ -199,6 +253,24 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         If 'default', and not already defined, set to self.original_targets_key
         (default = 'default')
 
+    sampler_params :  int, str, or list of
+        Each `sampler` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `sampler_params` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `sampler`.
+        Likewise with `sampler`, if passed list input, this means
+        a list was passed to `sampler` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `sampler`, can be shown by calling :func:`Show_Samplers`
+        or on the docs at :ref:`Samplers`
+
+        If 'default', and not already defined, set to 0
+        (default = 'default')
+
     feat_selector : str, list or None, optional
         `feat_selector` should be a str indicator or list of,
         for which feature selection to use, if a list, they will
@@ -209,6 +281,24 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         :func:`Show_Feat_Selectors` or view the docs at :ref:`Feat Selectors`
 
         If 'default', and not already defined, set to None
+        (default = 'default')
+
+    feat_selector_params : int, str, or list of
+         Each `feat_selector` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `feat_selector_params` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `feat_selector` param option.
+        Likewise with `feat_selector`, if passed list input, this means
+        a list was passed to `feat_selector` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `feat_selector`, can be shown by calling :func:`Show_Feat_Selectors`
+        or on the docs at :ref:`Feat Selectors`
+
+        If 'default', and not already defined, set to 0
         (default = 'default')
 
     splits : int, str or list, optional
@@ -242,61 +332,6 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         If 'default', and not already defined, set to 2
         (default = 2)
 
-    search_splits : int, str or list, optional
-        The number of internal folds to use during
-        model k-fold parameter selection if `search_splits` is an int.
-
-        Note: the splits will be determined according to the validation
-        strategy defined in :func:`Define_Validation_Strategy` if any!
-
-        Alternatively, `search_splits` can be set to a str or list of
-        strings, where each str refers to a column name loaded
-        within strat! In this case, a leave-one-out CV will be
-        performed on that strat value, or combination of values.
-        The number of search CV folds will therefore be equal to the
-        number of unique values.
-
-        If 'default', and not already defined, set to 3
-        (default = 'default')
-
-    ensemble_type :  str or list of str,
-        Each string refers to a type of ensemble to train,
-        or 'basic ensemble' (default) for base behavior.
-        Base ensemble behavior is either to not ensemble,
-        if only one model type is passed,
-        or when multiple model types are passed,
-        to simply train each one independently and
-        average the predictions at test time (or max vote).
-
-        The user can optionally pass other ensemble types,
-        anything but 'basic ensemble' will require an
-        ensemble split though, which is an additional
-        train/val split on the training set, where the
-        val/ensemble split, is used to fit the ensemble object.
-
-        If a list is passed to ensemble_type, then every
-        item in the list must be a valid str indicator for
-        a non 'basic ensemble' ensemble type, and each ensemble
-        object passed will be fitted independly and then averaged
-        using the 'basic ensemble' behvaior... so an ensemble of ensembles.
-
-        For a full list of supported options call:
-        :func:`Show_Ensemble_Types` or view the docs at :ref:`Ensemble Types`
-
-        If 'default', and not already defined, set to 'basic ensemble'
-        (default = 'default')
-
-    ensemble_split : float, int or None
-        If a an ensemble_type(s) that requires fitting is passed,
-        i.e., not "basic ensemble", then this param is
-        the porportion of the train_data within each fold to
-        use towards fitting the ensemble objects.
-        If multiple ensembles are passed, they are all
-        fit with the same fold of data.
-
-        If 'default', and not already defined, set to .2
-        (default = 'default')
-
     search_type : {'random', 'grid', None, 'default'}
         The type of parameter search to conduct if any.
 
@@ -314,116 +349,24 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         If 'default', and not already defined, set to None
         (default = 'default')
 
-    model_type_params : int, str, or list of
-        Each `model_type` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `model_type_params` is automatically
-        set to default 0.
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `model_type`.
-        Likewise with `model_type`, if passed list input, this means
-        a list was passed to `model_type` and the indices should correspond.
+    search_splits : int, str or list, optional
+        The number of internal folds to use during
+        model k-fold parameter selection if `search_splits` is an int.
 
-        The different parameter distributions avaliable for each
-        `model_type`, can be shown by calling :func:`Show_Model_Types`
-        or on the docs at :ref:`Model Types`
+        Note: the splits will be determined according to the validation
+        strategy defined in :func:`Define_Validation_Strategy` if any!
 
-        If 'default', and not already defined, set to 0
+        Alternatively, `search_splits` can be set to a str or list of
+        strings, where each str refers to a column name loaded
+        within strat! In this case, a leave-one-out CV will be
+        performed on that strat value, or combination of values.
+        The number of search CV folds will therefore be equal to the
+        number of unique values.
+
+        If 'default', and not already defined, set to 3
         (default = 'default')
 
-    imputer_params : int, str or list of
-        Each `imputer` has atleast one param distribution,
-        which can be selected with an int index, or a corresponding
-        str name. Likewise, a user can pass in a dictionary with their
-        own custom values.
-
-        This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `scaler_params` is automatically
-        set to default 0.
-
-        The different parameter distributions avaliable for each
-        `imputer`, can be shown by calling :func:`Show_Imputers`
-        or on the docs at :ref:`Imputers`
-
-        Note: If a model_type was passed to the imputer, then
-        `imputer_params` will refer to the parameters for that
-        base model!
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    scaler_params : int, str, or list of
-        Each `scaler` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `scaler_params` is automatically
-        set to default 0.
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `scaler`.
-        Likewise with `scaler`, if passed list input, this means
-        a list was passed to `scaler` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `scaler`, can be shown by calling :func:`Show_Scalers`
-        or on the docs at :ref:`Scalers`
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    sampler_params :  int, str, or list of
-        Each `sampler` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `sampler_params` is automatically
-        set to default 0.
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `sampler`.
-        Likewise with `sampler`, if passed list input, this means
-        a list was passed to `sampler` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `sampler`, can be shown by calling :func:`Show_Samplers`
-        or on the docs at :ref:`Samplers`
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    feat_selector_params : int, str, or list of
-         Each `feat_selector` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `feat_selector_params` is automatically
-        set to default 0.
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `feat_selector` param option.
-        Likewise with `feat_selector`, if passed list input, this means
-        a list was passed to `feat_selector` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `feat_selector`, can be shown by calling :func:`Show_Feat_Selectors`
-        or on the docs at :ref:`Feat Selectors`
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    class_weight : {dict, 'balanced', None, 'default'}, optional
-        Only used for binary and categorical problem types.
-        Follows sklearn api class weight behavior. Typically, either use
-        'balanced' in the case of class distribution imbalance, or None.
-
-        If 'default', and not already defined, set to None
-        (default = 'default')
-
-    n_jobs : int or 'default', optional
-        The number of jobs to use (if avaliable) during training ML models.
-        This should be the number of procesors avaliable for fastest run times.
-
-        if 'default', and not already defined, set to 1.
-        (default = 'default')
-
-    n_iter : int or 'default', optional
+    search_n_iter : int or 'default', optional
         The number of random search parameters to try, used
         only if using random search.
 
@@ -488,21 +431,42 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         if 'default', and not already defined, set to 'all'.
         (default = 'default')
 
-    compute_train_score : bool, optional
-        If set to True, then :func:`Evaluate` and :func:`Test`
-        will compute, and print, training scores along with
-        validation / test scores.
+    ensemble_type :  str or list of str,
+        Each string refers to a type of ensemble to train,
+        or 'basic ensemble' (default) for base behavior.
+        Base ensemble behavior is either to not ensemble,
+        if only one model type is passed,
+        or when multiple model types are passed,
+        to simply train each one independently and
+        average the predictions at test time (or max vote).
 
-        if 'default', and not already defined, set to False.
+        The user can optionally pass other ensemble types,
+        anything but 'basic ensemble' will require an
+        ensemble split though, which is an additional
+        train/val split on the training set, where the
+        val/ensemble split, is used to fit the ensemble object.
+
+        If a list is passed to ensemble_type, then every
+        item in the list must be a valid str indicator for
+        a non 'basic ensemble' ensemble type, and each ensemble
+        object passed will be fitted independly and then averaged
+        using the 'basic ensemble' behvaior... so an ensemble of ensembles.
+
+        For a full list of supported options call:
+        :func:`Show_Ensemble_Types` or view the docs at :ref:`Ensemble Types`
+
+        If 'default', and not already defined, set to 'basic ensemble'
         (default = 'default')
 
-    random_state : int, RandomState instance, None or 'default', optional
-        Random state, either as int for a specific seed, or if None then
-        the random seed is set by np.random.
+    ensemble_split : float, int or None
+        If an ensemble_type(s) that requires fitting is passed,
+        i.e., not "basic ensemble", then this param is
+        the porportion of the train_data within each fold to
+        use towards fitting the ensemble objects.
+        If multiple ensembles are passed, they are all
+        fit with the same fold of data.
 
-        If 'default', use the saved value within self
-        ( Defined in :func:`__init__` )
-        Or the user can define a different random state for use in ML.
+        If 'default', and not already defined, set to .2
         (default = 'default')
 
     calc_base_feature_importances : bool or 'default, optional
@@ -526,6 +490,38 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         https://github.com/slundberg/shap
 
         If 'default', and not already defined, set to False.
+        (default = 'default')
+
+    class_weight : {dict, 'balanced', None, 'default'}, optional
+        Only used for binary and categorical problem types.
+        Follows sklearn api class weight behavior. Typically, either use
+        'balanced' in the case of class distribution imbalance, or None.
+
+        If 'default', and not already defined, set to None
+        (default = 'default')
+
+    n_jobs : int or 'default', optional
+        The number of jobs to use (if avaliable) during training ML models.
+        This should be the number of procesors avaliable for fastest run times.
+
+        if 'default', and not already defined, set to 1.
+        (default = 'default')
+
+    random_state : int, RandomState instance, None or 'default', optional
+        Random state, either as int for a specific seed, or if None then
+        the random seed is set by np.random.
+
+        If 'default', use the saved value within self
+        ( Defined in :func:`__init__` )
+        Or the user can define a different random state for use in ML.
+        (default = 'default')
+
+    compute_train_score : bool, optional
+        If set to True, then :func:`Evaluate` and :func:`Test`
+        will compute, and print, training scores along with
+        validation / test scores.
+
+        if 'default', and not already defined, set to False.
         (default = 'default')
 
     extra_params : dict or 'default', optional
@@ -723,13 +719,13 @@ def Set_Default_ML_Params(self, model_type='default', problem_type='default',
         self.default_ML_params['n_jobs'] = 1
         self._print('No default number of jobs passed, set to 1')
 
-    if n_iter != 'default':
-        assert isinstance(n_iter, int), 'n_iter must be int'
-        assert n_iter > 0, 'n_iter must be greater than 0'
-        self.default_ML_params['n_iter'] = n_iter
+    if search_n_iter != 'default':
+        assert isinstance(search_n_iter, int), 'search_n_iter must be int'
+        assert search_n_iter > 0, 'search_n_iter must be greater than 0'
+        self.default_ML_params['search_n_iter'] = search_n_iter
 
-    elif 'n_iter' not in self.default_ML_params:
-        self.default_ML_params['n_iter'] = 10
+    elif 'search_n_iter' not in self.default_ML_params:
+        self.default_ML_params['search_n_iter'] = 10
         self._print('No default number of random search iters passed,',
                     'set to 10')
 
@@ -922,29 +918,25 @@ def _ML_print(self, *args, **kwargs):
         _print(*args, **kwargs)
 
 
-def Evaluate(self, model_type='default', run_name=None, problem_type='default',
-             metric='default', imputer='default', imputer_scope='default',
-             scaler='default', scaler_scope='default',
-             sampler='default', sample_on='default',
-             feat_selector='default', splits='default',
-             n_repeats='default', search_splits='default',
-             ensemble_type='default', ensemble_split='default',
-             search_type='default', model_type_params='default',
-             imputer_params='default', scaler_params='default',
-             sampler_params='default', feat_selector_params='default',
-             class_weight='default', n_jobs='default', n_iter='default',
+def Evaluate(self, run_name=None, problem_type='default', model_type='default',
+             model_type_params='default', metric='default', imputer='default',
+             imputer_scope='default', imputer_params='default',
+             scaler='default', scaler_scope='default', scaler_params='default',
+             sampler='default', sample_on='default', sampler_params='default',
+             feat_selector='default', feat_selector_params='default',
+             splits='default', n_repeats='default', search_type='default',
+             search_splits='default', search_n_iter='default',
              feats_to_use='default', subjects_to_use='default',
-             compute_train_score='default', random_state='default',
+             ensemble_type='default', ensemble_split='default',
              calc_base_feature_importances='default',
-             calc_shap_feature_importances='default', extra_params='default'):
-
+             calc_shap_feature_importances='default', class_weight='default',
+             n_jobs='default', random_state='default',
+             compute_train_score='default', extra_params='default'):
     '''Class method to be called during the model selection phase.
     Used to evaluated different combination of models and scaling, ect...
 
     Parameters
     ----------
-    model_type :
-
     run_name : str or None, optional
         All results from `Evaluate`, or rather the metrics are
         saved within self.eval_scores by default (in addition to in
@@ -952,36 +944,36 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
         avaliable way). `run_name` refers to the specific name under which to
         store this Evaluate's run on results. If left as None, then will just
         use a default name.
-
     problem_type :
+    model_type :
+    model_type_params :
     metric :
     imputer :
     imputer_scope :
+    imputer_params :
     scaler :
     scaler_scope :
+    scaler_params :
     sampler :
     sample_on :
+    sampler_params :
     feat_selector :
+    feat_selector_params :
     splits :
     n_repeats :
-    search_splits :
-    ensemble_type :
-    ensemble_split :
     search_type :
-    model_type_params :
-    imputer_params :
-    scaler_params :
-    sampler_params :
-    feat_selector_params :
-    class_weight :
-    n_jobs :
-    n_iter :
+    search_splits :
+    search_n_iter :
     feats_to_use :
     subjects_to_use :
-    compute_train_score :
-    random_state :
+    ensemble_type :
+    ensemble_split :
     calc_base_feature_importances :
     calc_shap_feature_importances :
+    class_weight :
+    n_jobs :
+    random_state :
+    compute_train_score :
     extra_params :
 
     Returns
@@ -1069,29 +1061,24 @@ def Evaluate(self, model_type='default', run_name=None, problem_type='default',
     return score_list, raw_preds
 
 
-def Test(self, model_type='default', problem_type='default',
-         train_subjects=None, test_subjects=None, metric='default',
-         imputer='default', imputer_scope='default',
-         scaler='default', scaler_scope='default', sampler='default',
-         sample_on='default', feat_selector='default', search_splits='default',
-         ensemble_type='default', ensemble_split='default',
-         search_type='default', model_type_params='default',
-         imputer_params='default', scaler_params='default',
-         sampler_params='default', feat_selector_params='default',
-         class_weight='default', n_jobs='default', n_iter='default',
-         feats_to_use='default', subjects_to_use='default',
-         compute_train_score='default', random_state='default',
-         calc_base_feature_importances='default',
-         calc_shap_feature_importances='default', extra_params='default',
-         **kwargs):
+def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
+         model_type='default', model_type_params='default', metric='default',
+         imputer='default', imputer_scope='default', imputer_params='default',
+         scaler='default', scaler_scope='default', scaler_params='default',
+         sampler='default', sample_on='default', sampler_params='default',
+         feat_selector='default', feat_selector_params='default',
+         search_type='default', search_splits='default',
+         search_n_iter='default', feats_to_use='default',
+         subjects_to_use='default', ensemble_type='default',
+         ensemble_split='default', calc_base_feature_importances='default',
+         calc_shap_feature_importances='default', class_weight='default',
+         n_jobs='default', random_state='default',
+         compute_train_score='default', extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
 
     Parameters
     ----------
-    model_type :
-    problem_type :
-
     train_subjects : array-like or None, optional
         If passed None, (default), then the class defined train subjects will
         be used. Otherwise, an array or pandas Index of
@@ -1106,32 +1093,34 @@ def Test(self, model_type='default', problem_type='default',
 
         (default = None)
 
+    problem_type :
+    model_type :
+    model_type_params :
     metric :
     imputer :
     imputer_scope :
+    imputer_params :
     scaler :
     scaler_scope :
+    scaler_params :
     sampler :
     sample_on :
-    feat_selector :
-    search_splits :
-    ensemble_type :
-    ensemble_split :
-    search_type :
-    model_type_params :
-    imputer_params :
-    scaler_params :
     sampler_params :
+    feat_selector :
     feat_selector_params :
-    class_weight :
-    n_jobs :
-    n_iter :
+    search_type :
+    search_splits :
+    search_n_iter :
     feats_to_use :
     subjects_to_use :
-    compute_train_score :
-    random_state :
+    ensemble_type :
+    ensemble_split :
     calc_base_feature_importances :
     calc_shap_feature_importances :
+    class_weight :
+    n_jobs :
+    random_state :
+    compute_train_score :
     extra_params :
 
     Returns
@@ -1330,7 +1319,7 @@ def _print_model_params(self, ML_params, test=False):
     self._print('search_type =', ML_params['search_type'])
     if ML_params['search_type'] is not None:
         self._print('search_splits =', ML_params['search_splits'])
-        self._print('n_iter =', ML_params['n_iter'])
+        self._print('search_n_iter =', ML_params['search_n_iter'])
 
     if ML_params['problem_type'] != 'regression':
         self._print('class_weight =', ML_params['class_weight'])

@@ -339,7 +339,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
                 drop_nan='default', code_categorical_as='dummy',
                 categorical_drop_percent=None,
                 filter_float_outlier_percent=None, standardize=False,
-                normalize=False, clear_existing=False):
+                normalize=False, drop_or_nan='drop', clear_existing=False):
     '''Load a covariate or covariates, type data.
 
     Parameters
@@ -447,6 +447,18 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
         (default = False)
 
+    drop_or_nan : {'drop', 'nan'}, optional
+        When loading a binary variable and more than two classed are present,
+        or when using filter_float_outlier_percent or categorical_drop_percent,
+        by default rows are dropped.
+        This parameter allows alternatively to instead specify those
+        values that would be dropped as NaN instead.
+
+        Note, if categorical_drop_percent is set, then those rows will always
+        be dropped.
+
+        (default = 'drop')
+
     clear_existing : bool, optional
         If this parameter is set to True, then any existing
         loaded covars will first be cleared before loading new covars!
@@ -476,7 +488,10 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
     assert len(data_types) == len(col_names), \
         "You must provide the same # of datatypes as column names!"
 
-    drop_val = get_unused_drop_val(covars)
+    if drop_or_nan == 'nan':
+        drop_val = np.nan
+    else:
+        drop_val = get_unused_drop_val(covars)
 
     for key, d_type in zip(col_names, data_types):
 
@@ -488,7 +503,8 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         if d_type == 'binary' or d_type == 'b':
 
             non_nan_covars, self.covars_encoders[key] =\
-                process_binary_input(non_nan_covars, key, self._print)
+                process_binary_input(non_nan_covars, key, in_place=False,
+                                     drop_val=drop_val, self._print)
 
         elif d_type == "categorical" or d_type == 'c':
 
@@ -539,7 +555,7 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
         for dtype, key in zip(non_nan_covars.dtypes, list(covars)):
             covars[key] = covars[key].astype(dtype.name)
 
-    # Filter float by outlier just replaces with drop_val, now actually remove
+    # Have to remove rows with drop_val
     covars = self._drop_from_filter(covars, filter_float_outlier_percent,
                                     drop_val)
 

@@ -107,7 +107,7 @@ class Model():
                 class weights.
             - n_jobs : int
                 The number of jobs to use during model training.
-            - n_iter : int
+            - search_n_iter : int
                 The number of random searches to conduct in random search
                 model types.
             - feats_to_use : {'all', 'data', 'covars'}
@@ -212,7 +212,7 @@ class Model():
         self.ensemble_split = ML_params['ensemble_split']
         self.class_weight = ML_params['class_weight']
         self.n_jobs = ML_params['n_jobs']
-        self.n_iter = ML_params['n_iter']
+        self.search_n_iter = ML_params['search_n_iter']
         self.compute_train_score = ML_params['compute_train_score']
         self.random_state = ML_params['random_state']
         self.calc_base_feature_importances =\
@@ -1464,7 +1464,7 @@ class Model():
         search_params['n_jobs'] = self.n_jobs
 
         if self.search_type == 'random':
-            search_params['n_iter'] = self.n_iter
+            search_params['n_iter'] = self.search_n_iter
 
         # Merge the different params / grids of params
         # into one dict.

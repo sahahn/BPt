@@ -14,7 +14,8 @@ from operator import add
 from functools import reduce
 
 
-def process_binary_input(data, key, _print=print):
+def process_binary_input(data, key, in_place=True, drop_val=np.nan,
+                         _print=print):
     '''Helper function to perform processing on binary input
 
     Parameters
@@ -24,6 +25,14 @@ def process_binary_input(data, key, _print=print):
 
     key : str
         Column key of the column to process within `data` input.
+
+    in_place : bool
+        If True, drop in place, otherwise replace with drop_val
+
+    drop_val : NaN or int
+        If a row needs to be dropped, replace with drop_val
+
+        (default = np.nan)
 
     _print : print func, optional
         Either python print statement or overriden print
@@ -55,8 +64,11 @@ def process_binary_input(data, key, _print=print):
         keep_vals = unique_vals[keep_inds]
         keep_vals.sort()
 
-        # Only keep rows with those scores
-        data.drop(data.index[~data[key].isin(keep_vals)], inplace=True)
+        if in_place:
+            data.drop(data.index[~data[key].isin(keep_vals)], inplace=True)
+        else:
+            to_drop = data.index[~data[key].isin(keep_vals)]
+            data.loc[to_drop, key] = drop_val
 
         _print('More than two unique score values found,',
                'filtered all but', keep_vals)
@@ -235,7 +247,7 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
 
     in_place : bool
         Defines if rows with float outliers should be removed right away,
-        or just set to NaN. If performing outlier removal on multiple
+        or just set to drop_val. If performing outlier removal on multiple
         columns, this should be set to False, as you would only want to
         remove rows with missing values after all columns have been checked.
         If only filtering one column, this can be set to True.
@@ -274,8 +286,10 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
         data = data[data[key] > data[key].quantile(fop[0])]
         data = data[data[key] < data[key].quantile(fop[1])]
     else:
-        data.loc[data[key] < data[key].quantile(fop[0]), key] = drop_val
-        data.loc[data[key] > data[key].quantile(fop[1]), key] = drop_val
+        q1 = data[key].quantile(fop[0])
+        q2 = data[key].quantile(fop[1])
+        data.loc[data[key] < q1, key] = drop_val
+        data.loc[data[key] > q2, key] = drop_val
 
     _print('Min-Max Score (post outlier filtering):',
            np.nanmin(data[key]), np.nanmax(data[key]))

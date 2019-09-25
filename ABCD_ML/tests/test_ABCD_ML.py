@@ -104,6 +104,7 @@ class Test_ABCD_ML(TestCase):
 
         self.ML.Load_Data(loc=loc, dataset_type='custom',
                           filter_outlier_percent=10)
+
         self.assertTrue(self.ML.data.shape == (8, 3))
         self.ML.Clear_Data()
 
@@ -213,7 +214,9 @@ class Test_ABCD_ML(TestCase):
 
         self.ML.Load_Strat(loc, 'education', dataset_type='custom')
         self.assertTrue(self.ML.strat.shape == (6, 1))
-        self.assertTrue(len(np.unique(self.ML.strat['education'])) == 3)
+        ed_size =\
+            len(np.unique(self.ML.strat['education' + self.ML.strat_u_name]))
+        self.assertTrue(ed_size == 3)
 
         self.ML.Define_Validation_Strategy(groups='education')
         self.assertTrue(len(self.ML.CV.groups == 6))
@@ -298,7 +301,7 @@ class Test_ABCD_ML(TestCase):
 
             self.assertTrue(len(train_groups.intersection(test_groups)))
 
-        self.assertTrue(self.ML.all_data.shape == (5, 6))
+        self.assertTrue(self.ML.all_data.shape == (5, 7))
 
         self.ML.Define_Validation_Strategy(stratify=self.ML.targets_key)
         self.assertTrue(len(self.ML.CV.stratify) == 5)

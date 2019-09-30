@@ -443,3 +443,13 @@ def find_ind(X, base_X_mask, X_r, r_ind, mask=True):
         return ind[0][0]
     except IndexError:
         return None
+
+
+def replace_with_in_params(params, original, replace):
+
+    new_params = {}
+
+    for key in params:
+        new_params[key.replace(original, replace)] = params[key]
+
+    return new_params

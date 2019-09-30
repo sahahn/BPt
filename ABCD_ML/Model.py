@@ -11,13 +11,11 @@ import pandas as pd
 from collections import Counter
 
 from ABCD_ML.Models import MODELS
-from ABCD_ML.Ensemble_Model import Ensemble_Model
 from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
                                 get_possible_init_params,
-                                get_possible_fit_params,
                                 get_obj_and_params,
                                 user_passed_param_check,
-                                f_array)
+                                f_array, replace_with_in_params)
 
 from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
@@ -29,7 +27,8 @@ from ABCD_ML.Feature_Selectors import get_feat_selector_and_params
 from ABCD_ML.Metrics import get_metric
 from ABCD_ML.Scalers import get_scaler_and_params
 from ABCD_ML.Imputers import get_imputer_and_params
-from ABCD_ML.Ensembles import get_ensemble_and_params
+from ABCD_ML.Ensembles import (get_ensemble_and_params, Basic_Ensemble,
+                               DES_Ensemble)
 
 
 class Model():
@@ -102,6 +101,8 @@ class Model():
                 The index or str name of the param index for `scaler`
             - feat_selector_params : int, str or list of
                 The index or str name of the param index for `feat_selector`
+            - ensemble_type_params : int, str or list of
+                The index or str name of the param index for `ensemble_type`
             - class_weight : str or None
                 For categorical / binary problem_types, for setting different
                 class weights.
@@ -234,6 +235,8 @@ class Model():
             conv_to_list(ML_params['sampler_params'])
         self.feat_selector_params =\
             conv_to_list(ML_params['feat_selector_params'])
+        self.ensemble_type_params =\
+            conv_to_list(ML_params['ensemble_type_params'])
 
         # Default params just sets (sub)problem type for now
         self._set_default_params()
@@ -253,14 +256,15 @@ class Model():
         self._process_samplers()
         self._process_ensemble_types()
 
+        # Make the model pipeline, save to self.model_pipeline
         self._make_drop_strat()
+        self._set_model_pipeline()
 
     def _set_default_params(self):
         self.problem_type = ''
         self.n_splits = None
         self.user_passed_objs = {}
         self.shap_dfs = []
-        self.fit_params = {}
 
         # Flags for feat importance things
         self.ensemble_flag = False
@@ -302,7 +306,8 @@ class Model():
         '''Computer overlapping subjects with subjects
         to use.'''
 
-        return list(self.subjects_to_use.intersection(set(subjects)))
+        overlap = self.subjects_to_use.intersection(set(subjects))
+        return np.array(list(overlap))
 
     def _get_train_inds_from_keys(self, keys):
         '''Assume target is always last within self.all_keys ...
@@ -331,6 +336,9 @@ class Model():
 
         self.samplers, cnt =\
             self._check_for_user_passed(self.samplers, cnt)
+
+        self.ensemble_types, cnt =\
+            self._check_for_user_passed(self.ensemble_types, cnt)
 
     def _check_for_user_passed(self, objs, cnt):
 
@@ -368,11 +376,9 @@ class Model():
         self.model_types = self._proc_type_dep_str(self.model_types,
                                                    AVALIABLE_MODELS)
 
-        self.model_type_params =\
-            self._param_len_check(self.model_types, self.model_type_params)
-
-        self.model_type_params =\
-            self._check_params_by_search(self.model_type_params)
+        self.models, self.model_params =\
+            self._get_objs_and_params(self._get_base_model,
+                                      self.model_types, self.model_type_params)
 
     def _process_feat_selectors(self):
         '''Class function to convert input feat selectors to a final
@@ -766,33 +772,37 @@ class Model():
         return sampler_str, (sampler, sampler_params)
 
     def _process_ensemble_types(self):
-        '''Processes ensemble types to be a list of
-        (ensemble, ensemble params) tuples.
-        '''
+        '''Processes ensemble types'''
 
-        self.ensemble_strs = self._proc_type_dep_str(self.ensemble_types,
-                                                     AVALIABLE_ENSEMBLES)
+        if self.ensemble_types is not None:
 
-        # If basic ensemble is in any of the ensemble_strs,
-        # ensure it is the only one.
-        if np.array(['basic ensemble' in ensemble_str for
-                     ensemble_str in self.ensemble_strs]).any():
+            self.ensemble_types = self._proc_type_dep_str(self.ensemble_types,
+                                                          AVALIABLE_ENSEMBLES)
 
-            if len(self.ensemble_strs) > 1:
+            # If basic ensemble is in any of the ensemble_strs,
+            # ensure it is the only one.
+            if np.array(['basic ensemble' in ensemble for
+                        ensemble in self.ensemble_types]).any():
 
-                self._print('Warning! "basic ensemble" ensemble type passed',
-                            'within a list of ensemble types.')
-                self._print('In order to use multiple ensembles',
-                            'they cannot include "basic ensemble".')
-                self._print('Setting to just "basic ensemble" ensemble type!')
+                if len(self.ensemble_types) > 1:
 
-                self.ensemble_strs = ['basic ensemble']
+                    self._print('Warning! "basic ensemble" ensemble type',
+                                'passed within a list of ensemble types.')
+                    self._print('In order to use multiple ensembles',
+                                'they cannot include "basic ensemble".')
+                    self._print('Setting to just "basic ensemble" ensemble',
+                                ' type!')
 
-        # Grab the ensembles to use as a list of tuples with,
-        # (ensemble, ensemble params).
-        self.ensembles = [get_ensemble_and_params(ensemble_str,
-                                                  self.extra_params)
-                          for ensemble_str in self.ensemble_strs]
+                    self.ensemble_types = ['basic ensemble']
+
+            self.ensembles, self.ensemble_params =\
+                self._get_objs_and_params(get_ensemble_and_params,
+                                          self.ensemble_types,
+                                          self.ensemble_type_params)
+
+        else:
+            self.ensembles = [('basic ensemble', None)]
+            self.ensemble_params = {}
 
     def _make_drop_strat(self):
         '''This creates a columntransformer in order to drop
@@ -881,18 +891,19 @@ class Model():
 
         # Make the object + params based on passed settings
         objs_and_params = []
-        for name, ind in zip(names, params):
+        for name, param in zip(names, params):
             if 'user passed' in name:
 
                 user_obj = self.user_passed_objs[name]
-                user_obj_params = user_passed_param_check(ind, name)
+                user_obj_params = user_passed_param_check(param, name)
 
                 objs_and_params.append((name, (user_obj, user_obj_params)))
 
             else:
 
                 objs_and_params.append((name, get_func(name, self.extra_params,
-                                                       ind, self.search_type)))
+                                                       param, self.search_type)
+                                        ))
 
         objs, params = self._proc_objs_and_params(objs_and_params)
         return objs, params
@@ -1188,8 +1199,11 @@ class Model():
         self._print('Train subjects:', train_data.shape[0], level='size')
         self._print('Val/Test subjects:', test_data.shape[0], level='size')
 
+        # Wrap in search CV / set to self.Model, final pipeline
+        self._set_model(train_data)
+
         # Train the model(s)
-        self._train_models(train_data)
+        self._train_model(train_data)
 
         # Proc the different feat importances
         self._proc_feat_importance(train_data, test_data, fold_ind)
@@ -1241,41 +1255,145 @@ class Model():
             self.col_imputers = []
             self.col_imputer_params = {}
 
-    def _train_models(self, train_data):
-        '''Given training data, train the model(s), from the
-        class model_types.
+    def _update_model_ensemble_params(self, to_add, model=True, ensemble=True):
 
-        Parameters
-        ----------
-        train_data : pandas DataFrame
-            ABCD_ML formatted, training data.
+        if model:
+            new_model_params = {}
+            for key in self.model_params:
+                new_model_params[to_add + '__' + key] =\
+                    self.model_params[key]
+            self.model_params = new_model_params
+
+        if ensemble:
+
+            new_ensemble_params = {}
+            for key in self.ensemble_params:
+                new_ensemble_params[to_add + '__' + key] =\
+                    self.ensemble_params[key]
+            self.ensemble_params = new_ensemble_params
+
+    def _basic_ensemble(self, models, name):
+
+        if len(models) == 1:
+            return models
+
+        else:
+            basic_ensemble = Basic_Ensemble(models)
+            self._update_model_ensemble_params(name, ensemble=False)
+
+            return [(name, basic_ensemble)]
+
+    def _basic_ensemble_pipe(self, models, name):
+        '''Models as [(name, obj), ect...]'''
+
+        basic_ensemble = self._basic_ensemble(models, name)
+        return self._make_model_pipeline(basic_ensemble)
+
+    def _set_model_pipeline(self):
+
+        # Check if basic ensemble
+        if self.ensembles[0][1] is None:
+
+            self.model_pipeline =\
+                self._basic_ensemble_pipe(self.models, self.ensembles[0][0])
+
+        # Otherwise special ensembles
+        else:
+
+            new_model_params = {}
+            new_ensemble_params = {}
+            new_ensembles = []
+
+            for ensemble in self.ensembles:
+                ensemble_obj = ensemble[1][0]
+                ensemble_extra_params = ensemble[1][1]
+                ensemble_name = ensemble[0]
+
+                try:
+                    single_estimator =\
+                        ensemble_extra_params.pop('single_estimator')
+                except KeyError:
+
+                    self._print('Assuming that this ensemble does not build',
+                                'on a single estimator/model',
+                                'if this is not the case, pass',
+                                'single_estimator: True, in ensemble params')
+                    single_estimator = False
+
+                # If needs a single estimator, but multiple models passed,
+                # wrap in ensemble!
+                if single_estimator:
+
+                    se_ensemb_name = 'ensemble for single est'
+                    models = self._basic_ensemble(self.models,
+                                                  se_ensemb_name)
+                else:
+                    models = self.models
+
+                try:
+                    needs_split = ensemble_extra_params.pop('needs_split')
+                except KeyError:
+                    self._print('Assuming this ensemble needs a split!')
+                    self._print('Pass needs_split: False, in ensemble params',
+                                'if this is not the case.')
+                    needs_split = True
+
+                if needs_split:
+
+                    # Init with default params
+                    ensemble = ensemble_obj()
+
+                    new_ensembles.append(
+                        (ensemble_name, DES_Ensemble(models,
+                                                     ensemble,
+                                                     ensemble_name,
+                                                     self.ensemble_split,
+                                                     ensemble_extra_params,
+                                                     self.random_state)))
+
+                else:
+
+                    new_ensembles.append(
+                        (ensemble_name,
+                         ensemble_obj(base_estimator=models[0][1],
+                                      **ensemble_extra_params)))
+
+                    # Have to change model name to base_estimator
+                    self.model_params =\
+                        replace_with_in_params(self.model_params, models[0][0],
+                                               'base_estimator')
+
+                self._update_model_ensemble_params(ensemble_name)
+
+            self.model_pipeline =\
+                self._basic_ensemble_pipe(new_ensembles,
+                                          'ensemble of ensembles')
+            self._update_model_ensemble_params(ensemble_name, model=False)
+
+    def _make_model_pipeline(self, models):
+        '''Make the model pipeline object
 
         Returns
         ----------
-        sklearn api compatible model object
-            The trained single model, or some ensemble of models.
-            Ensemble objects with predict funcs.
+        sklearn Pipeline
+            Pipeline object with all relevant column specific data
+            scalers, and then the passed in model.
         '''
 
-        # Split the train data further, if nec. for ensemble split
-        train_data, ensemble_data = self._get_ensemble_split(train_data)
+        steps = self.col_scalers + self.col_imputers + self.samplers \
+            + self.drop_strat + self.feat_selectors + models
 
-        # Train all of the models
-        models = []
-        mt_and_mt_params = zip(self.model_types, self.model_type_params)
-        for model_type, model_type_params in mt_and_mt_params:
+        model_pipeline = Pipeline(steps)
 
-            models.append(self._train_model(train_data, model_type,
-                                            model_type_params))
+        return model_pipeline
 
-        # If special ensemble passed, fit each one seperate
-        if ensemble_data:
-            models = [self._fit_ensemble(models, ensemble_data, i)
-                      for i in range(len(self.ensembles))]
+    def _set_model(self, train_data):
 
-        # If multiple base models, or ensembles of models,
-        # either make a basic ensemble or if len == 1, use just that 1st model
-        self.model = self._get_one_or_basic_ensemble(models)
+        # Get search CV
+        search_cv = self._get_search_cv(train_data.index)
+
+        # Wrap in search object
+        self.Model = self._get_search_model(self.model_pipeline, search_cv)
 
     def _proc_feat_importance(self, train_data, test_data, fold_ind):
 
@@ -1403,8 +1521,8 @@ class Model():
 
         return search_cv
 
-    def _train_model(self, train_data, model_type, model_type_params):
-        '''Helper method to train a single model type given
+    def _train_model(self, train_data):
+        '''Helper method to train a models given
         a str indicator and training data.
 
         Parameters
@@ -1412,43 +1530,21 @@ class Model():
         train_data : pandas DataFrame
             ABCD_ML formatted, training data.
 
-        model_type : str
-            The final processed str indicator for which model_type to load from
-            MODELS constant.
-
-        model_type_params : int
-            The index of the param grid / search space for the given model
-            type.
-
         Returns
         ----------
         sklearn api compatible model object
             The trained model.
         '''
 
-        # Get search CV
-        search_cv = self._get_search_cv(train_data.index)
-
-        # Create the model
-        model = self._get_model(model_type, model_type_params, search_cv)
-
         # Data, score split
         X, y = self._get_X_y(train_data)
 
         # Fit the model
-        model.fit(X, y, **self.fit_params)
+        self.Model.fit(X, y)
 
-        return model
-
-    def _get_model(self, model_type, model_type_params, search_cv):
-
-        # Grab the base model, model if changed, and model params grid/distr
-        model, model_type, model_type_params =\
-            self._get_base_model(model_type, model_type_params,
-                                 self.search_type)
-
-        # Create the model pipeline object
-        model = self._make_model_pipeline(model, model_type)
+    def _get_search_model(self, model, search_cv):
+        '''Passed model as a created pipeline object + search_cv info,
+        if search_type isn't None, creates the search wrapper.'''
 
         if self.search_type is None:
             return model
@@ -1473,7 +1569,8 @@ class Model():
         all_params.update(self.col_imputer_params)
         all_params.update(self.sampler_params)
         all_params.update(self.feat_selector_params)
-        all_params.update(model_type_params)
+        all_params.update(self.model_params)
+        all_params.update(self.ensemble_params)
 
         # Create the search model
         if self.search_type == 'random':
@@ -1487,20 +1584,12 @@ class Model():
 
         return search_model
 
-    def _get_base_model(self, model_type, model_type_params, search_type):
-
-        # Check for user passed model
-        if 'user passed' in model_type:
-
-            user_model = self.user_passed_objs[model_type]
-            user_model_params = user_passed_param_check(model_type_params,
-                                                        model_type)
-
-            return user_model, model_type, user_model_params
+    def _get_base_model(self, model_type, extra_params, model_type_params,
+                        search_type):
 
         model, extra_model_params, model_type_params =\
             get_obj_and_params(model_type, MODELS, self.extra_params,
-                               model_type_params, search_type)
+                               model_type_params, self.search_type)
 
         # Set class param values from possible model init params
         possible_params = get_possible_init_params(model)
@@ -1517,59 +1606,22 @@ class Model():
         if 'random_state' in possible_params:
             extra_model_params['random_state'] = self.random_state
 
-        # Set class param values from possible model fit params
-        possible_fit_params = get_possible_fit_params(model)
-
-        # This dict should reset here to empty every time
-        self.fit_params = {}
-
         # Init model, w/ any user passed params + class params
         model = model(**extra_model_params)
 
-        return model, model_type, model_type_params
-
-    def _make_model_pipeline(self, model, model_type):
-        '''Provided a model & model type (model str indicator),
-        return a sklearn pipeline with proceeding self.col_scalers,
-        and then imputers, then self.samplers, then self.feat_selectors
-        (which should all just be empty list if None) and then the model,
-        w/ model_type as its unique name.
-
-        Parameters
-        ----------
-        model : sklearn api model
-            The base model, w/ parameters already provided
-
-        model_type : str
-            The final str indicator for this model, also
-            the name that the model will be saved under within
-            the Pipeline object.
-
-        Returns
-        ----------
-        sklearn Pipeline
-            Pipeline object with all relevant column specific data
-            scalers, and then the passed in model.
-        '''
-
-        steps = self.col_scalers + self.col_imputers + self.samplers \
-            + self.drop_strat + self.feat_selectors + [(model_type, model)]
-
-        model_pipeline = Pipeline(steps)
-
-        return model_pipeline
+        return model, model_type_params
 
     def _fit_ensemble(self, models, ensemble_data, i):
+
+        # Grab data
+        ensemble_X, ensemble_y = self._get_X_y(ensemble_data)
 
         # Grab ensemble + params from ind (i)
         ensemble_model = self.ensembles[i][0]
         ensemble_params = self.ensembles[i][1]
 
-        # Init the ensemble model
+        # Init the ensemble model & fit
         ensemble_model = ensemble_model(models, **ensemble_params)
-
-        # Fit the ensemble model
-        ensemble_X, ensemble_y = self._get_X_y(ensemble_data)
         ensemble_model.fit(ensemble_X, ensemble_y)
 
         return ensemble_model
@@ -1611,7 +1663,7 @@ class Model():
                             fold_ind)
 
         # Get the scores
-        scores = [metric(self.model, X_test, y_test)
+        scores = [metric(self.Model, X_test, y_test)
                   for metric in self.metrics]
 
         return np.array(scores)
@@ -1622,7 +1674,7 @@ class Model():
         repeat = str((fold_ind // self.n_splits) + 1)
 
         try:
-            raw_prob_preds = self.model.predict_proba(X_test)
+            raw_prob_preds = self.Model.predict_proba(X_test)
             pred_col = eval_type + repeat + '_prob'
 
             if len(np.shape(raw_prob_preds)) == 3:
@@ -1645,7 +1697,7 @@ class Model():
         except AttributeError:
             pass
 
-        raw_preds = self.model.predict(X_test)
+        raw_preds = self.Model.predict(X_test)
         pred_col = eval_type + repeat
 
         if len(np.shape(raw_preds)) == 2:
@@ -1756,14 +1808,14 @@ class Model():
         # Try grabbing a base model, if it doesnt exist,
         # it means there is some type of ensemble being used
         try:
-            base_model = self.model[self.model_types[0]]
+            base_model = self.Model[self.model_types[0]]
         except:
             self.ensemble_flag = True
 
         if self.ensemble_flag:
 
             try:
-                base_model = self.model.best_estimator_[self.model_types[0]]
+                base_model = self.Model.best_estimator_[self.model_types[0]]
                 self.ensemble_flag = False
             except:
                 self.ensemble_flag = True
@@ -1784,26 +1836,29 @@ class Model():
 
         return base_model
 
-    def _get_objs_from_pipeline(self, names_objs):
-        '''Assumes that the self.model is a pipeline object only,
+    def _get_objs_from_pipeline(self, names_objs, model, as_steps=False):
+        '''Assumes that the self.Model is a pipeline object only,
         no ensemble, or within a search object
         '''
 
         names = [n[0] for n in names_objs]
 
         try:
-            objs = [self.model[n] for n in names]
+            objs = [model[n] for n in names]
         except TypeError:
-            objs = [self.model.best_estimator_[n] for n in names]
+            objs = [model.best_estimator_[n] for n in names]
+
+        if as_steps:
+            objs = [(names[i], objs[i]) for i in range(len(names))]
 
         return objs
 
     def _proc_X_test(self, test_data):
 
-        scalers = self._get_objs_from_pipeline(self.col_scalers)
-        imputers = self._get_objs_from_pipeline(self.col_imputers)
-        drop_strat = self._get_objs_from_pipeline(self.drop_strat)
-        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
+        scalers = self._get_objs_from_pipeline(self.col_scalers, self.Model)
+        imputers = self._get_objs_from_pipeline(self.col_imputers, self.Model)
+        drop_strat = self._get_objs_from_pipeline(self.drop_strat, self.Model)
+        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors, self.Model)
 
         # Grab the test data, X as df + copy
         X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
@@ -1835,11 +1890,11 @@ class Model():
 
     def _proc_X_train(self, train_data):
 
-        scalers = self._get_objs_from_pipeline(self.col_scalers)
-        imputers = self._get_objs_from_pipeline(self.col_imputers)
-        samplers = self._get_objs_from_pipeline(self.samplers)
-        drop_strat = self._get_objs_from_pipeline(self.drop_strat)
-        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
+        scalers = self._get_objs_from_pipeline(self.col_scalers, self.Model)
+        imputers = self._get_objs_from_pipeline(self.col_imputers, self.Model)
+        samplers = self._get_objs_from_pipeline(self.samplers, self.Model)
+        drop_strat = self._get_objs_from_pipeline(self.drop_strat, self.Model)
+        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors, self.Model)
 
         X_train, y_train = self._get_X_y(train_data)
 
@@ -1882,7 +1937,7 @@ class Model():
         # Generate summary of X_train, w/ k = 10 default
         X_train_summary = shap.kmeans(X_train, 10)
 
-        explainer = self._get_kernel_explainer(self.model, X_train_summary)
+        explainer = self._get_kernel_explainer(self.Model, X_train_summary)
 
         shap_values = explainer.shap_values(np.array(X_test), l1_reg='aic',
                                             n_samples='auto')

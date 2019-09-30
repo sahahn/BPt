@@ -224,7 +224,12 @@ PARAMS['base change sampler'] = {'sampler_type': ['change'],
                                  'regression_bins': [3],
                                  'regression_bin_strategy': ['uniform']}
 
+# Ensemblers
+PARAMS['des default'] = {'needs_split': [True],
+                         'single_estimator': [False]}
 
+PARAMS['single default'] = {'needs_split': [False],
+                            'single_estimator': [True]}
 
 
 def get_base_params(str_indicator):

@@ -24,6 +24,7 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
                           search_splits='default', search_n_iter='default',
                           feats_to_use='default', subjects_to_use='default',
                           ensemble_type='default', ensemble_split='default',
+                          ensemble_type_params='default',
                           calc_base_feature_importances='default',
                           calc_shap_feature_importances='default',
                           class_weight='default', n_jobs='default',
@@ -441,10 +442,19 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         average the predictions at test time (or max vote).
 
         The user can optionally pass other ensemble types,
-        anything but 'basic ensemble' will require an
-        ensemble split though, which is an additional
-        train/val split on the training set, where the
-        val/ensemble split, is used to fit the ensemble object.
+        though with other types of ensembles there are two
+        different types to consider. One additional set of
+        ensemble types will require a parameter to be set for
+        `ensemble_split`, as these ensembles need to be fit
+        on a left out portion of the data. This ensemble split
+        will importantly always do a stratified split for now,
+        and not uphold any defined CV behavior.
+
+        The other possible ensemble type is one based on a single
+        estimator, for example Bagging. In this case, if a list of models
+        is passed, a Basic Ensemble will be fit over the models, and
+        the Bagging Classifier or Regressor built on that ensemble of
+        models.
 
         If a list is passed to ensemble_type, then every
         item in the list must be a valid str indicator for
@@ -467,6 +477,20 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         fit with the same fold of data.
 
         If 'default', and not already defined, set to .2
+        (default = 'default')
+
+    ensemble_type_params : int, str, or list of
+         Each `ensemble_type` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `ensemble_type_params` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `ensemble_type` param option.
+        Likewise with `ensemble_type`, if passed list input, this means
+        a list was passed to `ensemble_type` and the indices should correspond.
+
+        If 'default', and not already defined, set to 0
         (default = 'default')
 
     calc_base_feature_importances : bool or 'default, optional
@@ -702,6 +726,14 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         self.default_ML_params['feat_selector_params'] = 0
         self._print('No default feat selector params passed, set to 0')
 
+    if ensemble_type_params != 'default':
+        self.default_ML_params['ensemble_type_params'] =\
+            ensemble_type_params
+
+    elif 'ensemble_type_params' not in self.default_ML_params:
+        self.default_ML_params['ensemble_type_params'] = 0
+        self._print('No default ensemble type params passed, set to 0')
+
     if class_weight != 'default':
         self.default_ML_params['class_weight'] = class_weight
 
@@ -928,6 +960,7 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
              search_splits='default', search_n_iter='default',
              feats_to_use='default', subjects_to_use='default',
              ensemble_type='default', ensemble_split='default',
+             ensemble_type_params='default',
              calc_base_feature_importances='default',
              calc_shap_feature_importances='default', class_weight='default',
              n_jobs='default', random_state='default',
@@ -968,6 +1001,7 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
     subjects_to_use :
     ensemble_type :
     ensemble_split :
+    ensemble_type_params :
     calc_base_feature_importances :
     calc_shap_feature_importances :
     class_weight :
@@ -1070,7 +1104,8 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
          search_type='default', search_splits='default',
          search_n_iter='default', feats_to_use='default',
          subjects_to_use='default', ensemble_type='default',
-         ensemble_split='default', calc_base_feature_importances='default',
+         ensemble_split='default', ensemble_type_params='default',
+         calc_base_feature_importances='default',
          calc_shap_feature_importances='default', class_weight='default',
          n_jobs='default', random_state='default',
          compute_train_score='default', extra_params='default'):
@@ -1115,6 +1150,7 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
     subjects_to_use :
     ensemble_type :
     ensemble_split :
+    ensemble_type_params :
     calc_base_feature_importances :
     calc_shap_feature_importances :
     class_weight :
@@ -1231,6 +1267,7 @@ def _premodel_check(self, problem_type='default'):
                     'call self.Set_Default_ML_Params()')
         self._print('Or just pass values everytime to Evaluate',
                     'or Test, and these default values will be ignored')
+        self._print('')
 
         self.Set_Default_ML_Params(problem_type=problem_type)
 
@@ -1286,6 +1323,8 @@ def _print_model_params(self, ML_params, test=False):
 
         if ML_params['ensemble_type'] != 'basic ensemble':
             self._print('ensemble_split =', ML_params['ensemble_split'])
+            self._print('ensemble_type_params =',
+                        ML_params['ensemble_type_params'])
 
     self._print('metric =', ML_params['metric'])
 

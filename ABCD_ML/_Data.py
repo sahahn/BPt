@@ -1088,13 +1088,13 @@ def Binarize_Targets(self, lower, upper):
     binarize = binarize.where(binarize < upper, 1)
 
     self.targets = binarize.to_frame()
-    
+
     self.targets[self.targets_key] =\
         self.targets[self.targets_key].astype('category')
     self._process_new(self.low_memory_mode)
 
-    self.targets_encoder = {0: '<' + str(upper),
-                            1: '>' + str(lower)}
+    self.targets_encoder = {0: '<' + str(lower),
+                            1: '>' + str(upper)}
 
 
 def Get_Overlapping_Subjects(self):

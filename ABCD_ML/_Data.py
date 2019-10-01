@@ -1058,6 +1058,45 @@ def Drop_Data_Duplicates(self, corr_thresh):
     self._print('Dropped', len(dropped), 'columns as duplicate cols!')
 
 
+def Binarize_Targets(self, lower, upper):
+    '''This function binarizes a loaded target variable,
+    assuming that an ordinal or float type target is loaded,
+    otherwise this function will break!
+
+    Parameters
+    ----------
+    lower : float
+        Any value that is greater than lower will be set to 1,
+        and any value <= upper and >= lower will be dropped.
+
+    upper : float
+        Any value that is less than upper will be set to 0,
+        and any value <= upper and >= lower will be dropped.
+    '''
+
+    self._print('Binarizing loaded targets!')
+    target_values = self.targets[self.targets_key]
+
+    self._print('Keeping:', (target_values > upper).sum(), 'as 1.')
+    self._print('Keeping:', (target_values < lower).sum(), 'as 0.')
+
+    drop_middle =\
+        target_values.drop(target_values[(target_values <= upper) &
+                                         (target_values >= lower)].index)
+
+    binarize = drop_middle.where(drop_middle > lower, 0)
+    binarize = binarize.where(binarize < upper, 1)
+
+    self.targets = binarize.to_frame()
+    
+    self.targets[self.targets_key] =\
+        self.targets[self.targets_key].astype('category')
+    self._process_new(self.low_memory_mode)
+
+    self.targets_encoder = {0: '<' + str(upper),
+                            1: '>' + str(lower)}
+
+
 def Get_Overlapping_Subjects(self):
     '''This function will return the set of valid
     overlapping subjects currently loaded across data,
@@ -1508,8 +1547,6 @@ def _drop_na(self, data, drop_nan=True):
 
 
 def _drop_from_filter(self, data, drop_val=999):
-
-    print(data)
 
     to_drop = data[(data == drop_val).any(axis=1)].index
 

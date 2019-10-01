@@ -19,12 +19,12 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
                           scaler_scope='default', scaler_params='default',
                           sampler='default', sample_on='default',
                           sampler_params='default', feat_selector='default',
-                          feat_selector_params='default', splits='default',
+                          feat_selector_params='default',
+                          ensemble_type='default', ensemble_split='default',
+                          ensemble_type_params='default', splits='default',
                           n_repeats='default', search_type='default',
                           search_splits='default', search_n_iter='default',
                           feats_to_use='default', subjects_to_use='default',
-                          ensemble_type='default', ensemble_split='default',
-                          ensemble_type_params='default',
                           calc_base_feature_importances='default',
                           calc_shap_feature_importances='default',
                           class_weight='default', n_jobs='default',
@@ -302,6 +302,67 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         If 'default', and not already defined, set to 0
         (default = 'default')
 
+    ensemble_type :  str or list of str,
+        Each string refers to a type of ensemble to train,
+        or 'basic ensemble' (default) for base behavior.
+        Base ensemble behavior is either to not ensemble,
+        if only one model type is passed,
+        or when multiple model types are passed,
+        to simply train each one independently and
+        average the predictions at test time (or max vote).
+
+        The user can optionally pass other ensemble types,
+        though with other types of ensembles there are two
+        different types to consider. One additional set of
+        ensemble types will require a parameter to be set for
+        `ensemble_split`, as these ensembles need to be fit
+        on a left out portion of the data. This ensemble split
+        will importantly always do a stratified split for now,
+        and not uphold any defined CV behavior.
+
+        The other possible ensemble type is one based on a single
+        estimator, for example Bagging. In this case, if a list of models
+        is passed, a Basic Ensemble will be fit over the models, and
+        the Bagging Classifier or Regressor built on that ensemble of
+        models.
+
+        If a list is passed to ensemble_type, then every
+        item in the list must be a valid str indicator for
+        a non 'basic ensemble' ensemble type, and each ensemble
+        object passed will be fitted independly and then averaged
+        using the 'basic ensemble' behvaior... so an ensemble of ensembles.
+
+        For a full list of supported options call:
+        :func:`Show_Ensemble_Types` or view the docs at :ref:`Ensemble Types`
+
+        If 'default', and not already defined, set to 'basic ensemble'
+        (default = 'default')
+
+    ensemble_split : float, int or None
+        If an ensemble_type(s) that requires fitting is passed,
+        i.e., not "basic ensemble", then this param is
+        the porportion of the train_data within each fold to
+        use towards fitting the ensemble objects.
+        If multiple ensembles are passed, they are all
+        fit with the same fold of data.
+
+        If 'default', and not already defined, set to .2
+        (default = 'default')
+
+    ensemble_type_params : int, str, or list of
+         Each `ensemble_type` has atleast one default parameter distribution
+        saved with it. This parameter is used to select between different
+        distributions to be used with `search_type` == 'random' or 'grid',
+        when `search_type` == None, `ensemble_type_params` is automatically
+        set to default 0.
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `ensemble_type` param option.
+        Likewise with `ensemble_type`, if passed list input, this means
+        a list was passed to `ensemble_type` and the indices should correspond.
+
+        If 'default', and not already defined, set to 0
+        (default = 'default')
+
     splits : int, str or list, optional
         If `splits` is an int, then :func:`Evaluate` performs a repeated
         k-fold model evaluation, where `splits` refers to the k, and
@@ -331,7 +392,7 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         will be redundant.
 
         If 'default', and not already defined, set to 2
-        (default = 2)
+        (default = 'default')
 
     search_type : {'random', 'grid', None, 'default'}
         The type of parameter search to conduct if any.
@@ -430,67 +491,6 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         on just those subjects with sex == 0.
 
         if 'default', and not already defined, set to 'all'.
-        (default = 'default')
-
-    ensemble_type :  str or list of str,
-        Each string refers to a type of ensemble to train,
-        or 'basic ensemble' (default) for base behavior.
-        Base ensemble behavior is either to not ensemble,
-        if only one model type is passed,
-        or when multiple model types are passed,
-        to simply train each one independently and
-        average the predictions at test time (or max vote).
-
-        The user can optionally pass other ensemble types,
-        though with other types of ensembles there are two
-        different types to consider. One additional set of
-        ensemble types will require a parameter to be set for
-        `ensemble_split`, as these ensembles need to be fit
-        on a left out portion of the data. This ensemble split
-        will importantly always do a stratified split for now,
-        and not uphold any defined CV behavior.
-
-        The other possible ensemble type is one based on a single
-        estimator, for example Bagging. In this case, if a list of models
-        is passed, a Basic Ensemble will be fit over the models, and
-        the Bagging Classifier or Regressor built on that ensemble of
-        models.
-
-        If a list is passed to ensemble_type, then every
-        item in the list must be a valid str indicator for
-        a non 'basic ensemble' ensemble type, and each ensemble
-        object passed will be fitted independly and then averaged
-        using the 'basic ensemble' behvaior... so an ensemble of ensembles.
-
-        For a full list of supported options call:
-        :func:`Show_Ensemble_Types` or view the docs at :ref:`Ensemble Types`
-
-        If 'default', and not already defined, set to 'basic ensemble'
-        (default = 'default')
-
-    ensemble_split : float, int or None
-        If an ensemble_type(s) that requires fitting is passed,
-        i.e., not "basic ensemble", then this param is
-        the porportion of the train_data within each fold to
-        use towards fitting the ensemble objects.
-        If multiple ensembles are passed, they are all
-        fit with the same fold of data.
-
-        If 'default', and not already defined, set to .2
-        (default = 'default')
-
-    ensemble_type_params : int, str, or list of
-         Each `ensemble_type` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `ensemble_type_params` is automatically
-        set to default 0.
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `ensemble_type` param option.
-        Likewise with `ensemble_type`, if passed list input, this means
-        a list was passed to `ensemble_type` and the indices should correspond.
-
-        If 'default', and not already defined, set to 0
         (default = 'default')
 
     calc_base_feature_importances : bool or 'default, optional
@@ -635,7 +635,7 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
     if sample_on != 'default':
         self.default_ML_params['sample_on'] = sample_on
 
-    elif 'sample on' not in self.default_ML_params:
+    elif 'sample_on' not in self.default_ML_params:
         self.default_ML_params['sample_on'] = self.original_targets_key
         self._print('No default sample on passed, set to original_targets_key')
 
@@ -956,11 +956,11 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
              scaler='default', scaler_scope='default', scaler_params='default',
              sampler='default', sample_on='default', sampler_params='default',
              feat_selector='default', feat_selector_params='default',
-             splits='default', n_repeats='default', search_type='default',
+             ensemble_type='default', ensemble_split='default',
+             ensemble_type_params='default', splits='default',
+             n_repeats='default', search_type='default',
              search_splits='default', search_n_iter='default',
              feats_to_use='default', subjects_to_use='default',
-             ensemble_type='default', ensemble_split='default',
-             ensemble_type_params='default',
              calc_base_feature_importances='default',
              calc_shap_feature_importances='default', class_weight='default',
              n_jobs='default', random_state='default',
@@ -992,6 +992,9 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
     sampler_params :
     feat_selector :
     feat_selector_params :
+    ensemble_type :
+    ensemble_split :
+    ensemble_type_params :
     splits :
     n_repeats :
     search_type :
@@ -999,9 +1002,6 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
     search_n_iter :
     feats_to_use :
     subjects_to_use :
-    ensemble_type :
-    ensemble_split :
-    ensemble_type_params :
     calc_base_feature_importances :
     calc_shap_feature_importances :
     class_weight :
@@ -1101,10 +1101,10 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
          scaler='default', scaler_scope='default', scaler_params='default',
          sampler='default', sample_on='default', sampler_params='default',
          feat_selector='default', feat_selector_params='default',
-         search_type='default', search_splits='default',
-         search_n_iter='default', feats_to_use='default',
-         subjects_to_use='default', ensemble_type='default',
-         ensemble_split='default', ensemble_type_params='default',
+         ensemble_type='default', ensemble_split='default',
+         ensemble_type_params='default', search_type='default',
+         search_splits='default', search_n_iter='default',
+         feats_to_use='default', subjects_to_use='default',
          calc_base_feature_importances='default',
          calc_shap_feature_importances='default', class_weight='default',
          n_jobs='default', random_state='default',
@@ -1143,14 +1143,14 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
     sampler_params :
     feat_selector :
     feat_selector_params :
+    ensemble_type :
+    ensemble_split :
+    ensemble_type_params :
     search_type :
     search_splits :
     search_n_iter :
     feats_to_use :
     subjects_to_use :
-    ensemble_type :
-    ensemble_split :
-    ensemble_type_params :
     calc_base_feature_importances :
     calc_shap_feature_importances :
     class_weight :
@@ -1654,7 +1654,7 @@ def Get_Base_Feat_Importances(self, top_n=None):
     ----------
     pandas Series
         A sorted series containing the base feature importances,
-        as averaged over folds for Evaluate, and as is for Test.
+        as averaged over Evaluate folds, and as is for Test.
         Unless top_n is passed, then just a series with the top_n
         features is returnes
     '''

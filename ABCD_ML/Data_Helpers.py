@@ -503,12 +503,16 @@ def drop_duplicate_cols(data, corr_thresh):
 
 def get_original_cat_names(names, encoder, original_key):
 
-    if isinstance(names[0], (np.integer, int)):
+    try:
+        float(names[0])
         base = names
-    else:
+    except ValueError:
         base = [int(name.replace(original_key + '_', '')) for name in names]
 
-    original = encoder.inverse_transform(base)
+    if isinstance(encoder, dict):
+        original = [encoder[name] for name in names]
+    else:
+        original = encoder.inverse_transform(base)
 
     return original
 

@@ -1858,7 +1858,8 @@ class Model():
         scalers = self._get_objs_from_pipeline(self.col_scalers, self.Model)
         imputers = self._get_objs_from_pipeline(self.col_imputers, self.Model)
         drop_strat = self._get_objs_from_pipeline(self.drop_strat, self.Model)
-        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors, self.Model)
+        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors,
+                                                      self.Model)
 
         # Grab the test data, X as df + copy
         X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
@@ -1894,7 +1895,8 @@ class Model():
         imputers = self._get_objs_from_pipeline(self.col_imputers, self.Model)
         samplers = self._get_objs_from_pipeline(self.samplers, self.Model)
         drop_strat = self._get_objs_from_pipeline(self.drop_strat, self.Model)
-        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors, self.Model)
+        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors,
+                                                      self.Model)
 
         X_train, y_train = self._get_X_y(train_data)
 

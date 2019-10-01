@@ -319,6 +319,7 @@ class ABCD_ML():
                                Clear_Exclusions,
                                Clear_Inclusions,
                                Drop_Data_Duplicates,
+                               Binarize_Targets,
                                Get_Overlapping_Subjects,
                                _load_datasets,
                                _load_dataset,

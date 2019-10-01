@@ -13,13 +13,13 @@ from IPython.display import display
 from ABCD_ML.Data_Helpers import get_original_cat_names
 
 
-def _plot(self, title, show=True):
+def _plot(self, save_name, show=True):
 
     if show:
         if self.log_dr is not None:
 
             save_spot = os.path.join(self.exp_log_dr,
-                                     title.replace(' ', '_') + '.png')
+                                     save_name.replace(' ', '_') + '.png')
             plt.savefig(save_spot, dpi=100, bbox_inches='tight')
 
         if self.notebook:
@@ -44,6 +44,15 @@ def Show_Targets_Dist(self, cat_show_original_name=True,
         If True, then displays only the distributions for valid overlapping
         subjects across data, covars, ect... otherwise, shows the current
         loaded distribution as is.
+
+        (default = True)
+
+    show : bool, optional
+        If True, then plt.show(), the matplotlib command will be called,
+        and the figure displayed. On the other hand, if set to False,
+        then the user can customize the plot as they desire.
+        You can think of plt.show() as clearing all of the loaded settings,
+        so in order to make changes, you can't call this until you are done.
 
         (default = True)
     '''
@@ -84,6 +93,15 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
         If True, then displays only the distributions for valid overlapping
         subjects across data, covars, ect... otherwise, shows the current
         loaded distribution as is.
+
+        (default = True)
+
+    show : bool, optional
+        If True, then plt.show(), the matplotlib command will be called,
+        and the figure displayed. On the other hand, if set to False,
+        then the user can customize the plot as they desire.
+        You can think of plt.show() as clearing all of the loaded settings,
+        so in order to make changes, you can't call this until you are done.
 
         (default = True)
     '''
@@ -183,11 +201,11 @@ def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
                                                 encoder,
                                                 original_key)
 
-        display_df = pd.DataFrame(sums, columns=['Count'])
+        display_df = pd.DataFrame(sums, columns=['Counts'])
         display_df.index.name = 'Internal Name'
-        display_df['Original Value'] = original_names
+        display_df['Original Name'] = original_names
         display_df['Frequency'] = sums / len(no_nan_data)
-        display_df = display_df[['Original Value', 'Count', 'Frequency']]
+        display_df = display_df[['Original Name', 'Counts', 'Frequency']]
 
         self._display_df(display_df)
 
@@ -197,9 +215,11 @@ def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
 
         display_names = sums.index
         if cat_show_original_name:
-            display_names = original_names
+            display_names = pd.Index(original_names)
+            display_names.name = 'Original Name'
 
         sns.barplot(x=sums.values, y=display_names, orient='h')
+        plt.xlabel('Counts')
 
     # Regression, float / ordinal
     else:
@@ -233,20 +253,77 @@ def _display_df(self, display_df):
     self._print(dont_print=self.notebook)
 
 
-def Plot_Base_Feat_Importances(self, top_n=10, title=None, show=True):
+def Plot_Base_Feat_Importances(self, top_n=10,
+                               title='Base Feature Importances', show=True):
+    '''Plots the base feature importances as calculated from the
+    last run :func:`Evaluate` or :func:`Test`.
+    See :func:`Get_Base_Feat_Importances` for more details.
+
+    Parameters
+    ----------
+
+    top_n : int or None, optional
+        If not None, then will only return the top_n
+        number of features, by shap feature importance.
+
+        (default = 10)
+
+    title : str, optional
+        The title used during plotting, and also used
+        to save a version of the figure
+        (with spaces in title replaced by _, and as a png).
+
+        (default = 'Base Feature Importances')
+
+    show : bool, optional
+        If True, then plt.show(), the matplotlib command will be called,
+        and the figure displayed. On the other hand, if set to False,
+        then the user can customize the plot as they desire.
+        You can think of plt.show() as clearing all of the loaded settings,
+        so in order to make changes, you can't call this until you are done.
+
+        (default = True)
+    '''
 
     top_x = self.Get_Base_Feat_Importances(top_n).index
     just_top = self.Model.feature_importances[top_x]
-
-    if title is None:
-        title = 'Base Feature Importances'
 
     self._plot_feature_importance(just_top, title=title,
                                   xlabel='Feature Importance',
                                   show=show)
 
 
-def Plot_Shap_Feat_Importances(self, top_n=10, title=None, show=True):
+def Plot_Shap_Feat_Importances(self, top_n=10,
+                               title='Shap Feature Importances', show=True):
+    '''Plots the shap feature importances as calculated from the
+    last run :func:`Evaluate` or :func:`Test`.
+    See :func:`Get_Shap_Feat_Importances` for more details.
+
+    Parameters
+    ----------
+
+    top_n : int or None, optional
+        If not None, then will only return the top_n
+        number of features, by shap feature importance.
+
+        (default = 10)
+
+    title : str, optional
+        The title used during plotting, and also used
+        to save a version of the figure
+        (with spaces in title replaced by _, and as a png).
+
+        (default = 'Shap Feature Importances')
+
+    show : bool, optional
+        If True, then plt.show(), the matplotlib command will be called,
+        and the figure displayed. On the other hand, if set to False,
+        then the user can customize the plot as they desire.
+        You can think of plt.show() as clearing all of the loaded settings,
+        so in order to make changes, you can't call this until you are done.
+
+        (default = True)
+    '''
 
     top_x = self.Get_Shap_Feat_Importances(top_n).index
 
@@ -255,9 +332,6 @@ def Plot_Shap_Feat_Importances(self, top_n=10, title=None, show=True):
         just_top = np.abs(self.avg_shap_df)[top_x]
     except AttributeError:
         just_top = np.abs(self.Model.shap_df)[top_x]
-
-    if title is None:
-        title = 'Shap Feature Importances'
 
     self._plot_feature_importance(just_top, title=title,
                                   xlabel='Shap Feature Importance',

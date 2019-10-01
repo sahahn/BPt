@@ -78,6 +78,10 @@ Drop_Data_Duplicates
 =====================
 .. automethod:: ABCD_ML.Drop_Data_Duplicates
 
+Binarize_Targets
+================
+.. automethod:: ABCD_ML.Binarize_Targets
+
 Show_Targets_Dist
 ==================
 .. automethod:: ABCD_ML.Show_Targets_Dist

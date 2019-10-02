@@ -302,6 +302,9 @@ class Model():
         else:
             self.all_keys = list(feats_to_use) + keys_at_end
 
+        self._print('Using:', len(self.all_keys) - len(keys_at_end), 'feats',
+                    level='size')
+
     def _get_subjects_overlap(self, subjects):
         '''Computer overlapping subjects with subjects
         to use.'''
@@ -529,8 +532,10 @@ class Model():
         # If a not a valid model type, then no base estimator
         if imputer_str in avaliable_by_type:
             base_model_str = avaliable_by_type[imputer_str]
-            base_model = self._get_base_model(base_model_str, imputer_param,
+            base_model = self._get_base_model(base_model_str,
+                                              self.extra_params, imputer_param,
                                               self.search_type)
+
             base_estimator = base_model[0]
             base_estimator_params = base_model[2]
         else:
@@ -1033,7 +1038,8 @@ class Model():
                                             AVALIABLE_MODELS)[0]
 
                 self.feat_selectors[i][1].estimator =\
-                    self._get_base_model(base_model_str, 0, None)[0]
+                    self._get_base_model(base_model_str, self.extra_params, 0,
+                                         None)[0]
 
             except AttributeError:
                 pass
@@ -1877,7 +1883,7 @@ class Model():
 
             valid_inds = np.array(drop.transformers[0][2])
             feat_names = np.array(feat_names)[valid_inds]
-            X_test[feat_names] = drop.transform(X_test)
+            X_test = X_test[feat_names]
 
         for feat_selector in feat_selectors:
 

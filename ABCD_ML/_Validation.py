@@ -315,11 +315,18 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only):
                 if isinstance(encoder, tuple):
                     encoder = encoder[0]
 
-            try:
-                display_df[name] = encoder.inverse_transform(col_split[:, n])
-            except ValueError:
-                display_df[name] = np.squeeze(encoder.inverse_transform(
-                                              col_split[:, n].reshape(-1, 1)))
+            if isinstance(encoder, dict):
+                display_df[name] = [encoder[v] for v in col_split[:, n]]
+
+            else:
+
+                try:
+                    display_df[name] =\
+                        encoder.inverse_transform(col_split[:, n])
+                except ValueError:
+                    display_df[name] =\
+                        np.squeeze(encoder.inverse_transform(
+                                   col_split[:, n].reshape(-1, 1)))
 
         display_df['Counts'] = counts
         self._display_df(display_df)

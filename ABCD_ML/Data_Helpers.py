@@ -439,7 +439,8 @@ def reverse_unique_combo(unique_combo, le):
 def reverse_unique_combo_df(unique_combo, le):
 
     reverse = le.inverse_transform(unique_combo)
-    col_split = np.array([r.split('***')[:-1] for r in reverse]).astype(int)
+    col_split = np.array([r.split('***')[:-1] for r in reverse])
+    col_split = col_split.astype(float).astype(int)
 
     return col_split
 

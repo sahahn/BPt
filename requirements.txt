@@ -5,7 +5,7 @@ numpy>=1.16
 scipy>=1.2
 pandas>=0.24
 matplotlib>=3
-seaborn
+seaborn>=0.9
 sphinx==2.0.1
 deslib
 imbalanced-learn

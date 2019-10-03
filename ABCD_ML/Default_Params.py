@@ -85,7 +85,6 @@ PARAMS['lgbm rs1'] = {'silent': [True],
 
 PARAMS['lgbm rs2'] = {'silent': [True],
                       'lambda_l2': [0.001],
-                      'histogram_pool_size': [16384],
                       'boosting_type': ['gbdt', 'dart'],
                       'min_child_samples': [1, 5, 7, 10, 15, 20, 35, 50, 100,
                                             200, 500, 1000],

@@ -31,7 +31,7 @@ from ABCD_ML.Ensembles import (get_ensemble_and_params, Basic_Ensemble,
                                DES_Ensemble)
 
 
-class Model():
+class Model_Pipeline():
     '''Helper class for handling all of the different parameters involved in model
     training, scaling, handling different datatypes ect...
     '''
@@ -188,19 +188,19 @@ class Model():
         self._print = _print
 
         # Un-pack ML_params
-        self.model_types = conv_to_list(ML_params['model'])
-        self.metrics = conv_to_list(ML_params['metric'])
-        self.imputers = conv_to_list(ML_params['imputer'])
+        self.model_strs = conv_to_list(ML_params['model'])
+        self.metric_strs = conv_to_list(ML_params['metric'])
+        self.imputer_strs = conv_to_list(ML_params['imputer'])
         self.imputer_scopes = conv_to_list(ML_params['imputer_scope'])
-        self.scalers = conv_to_list(ML_params['scaler'])
+        self.scaler_strs = conv_to_list(ML_params['scaler'])
         self.scaler_scopes = conv_to_list(ML_params['scaler_scope'])
-        self.samplers = conv_to_list(ML_params['sampler'])
+        self.sampler_strs = conv_to_list(ML_params['sampler'])
         self.sample_on = conv_to_list(ML_params['sample_on'])
-        self.feat_selectors = conv_to_list(ML_params['feat_selector'])
+        self.feat_selector_strs = conv_to_list(ML_params['feat_selector'])
         self.splits = ML_params['splits']
         self.n_repeats = ML_params['n_repeats']
         self.search_splits = ML_params['search_splits']
-        self.ensemble_types = conv_to_list(ML_params['ensemble'])
+        self.ensemble_strs = conv_to_list(ML_params['ensemble'])
         self.ensemble_split = ML_params['ensemble_split']
         self.n_jobs = ML_params['n_jobs']
         self.search_n_iter = ML_params['search_n_iter']
@@ -215,7 +215,7 @@ class Model():
         # Un-pack param search ML_params
         self.search_type = ML_params['search_type']
 
-        self.model_type_params =\
+        self.model_params =\
             conv_to_list(ML_params['model_params'])
         self.imputer_params =\
             conv_to_list(ML_params['imputer_params'])
@@ -225,7 +225,7 @@ class Model():
             conv_to_list(ML_params['sampler_params'])
         self.feat_selector_params =\
             conv_to_list(ML_params['feat_selector_params'])
-        self.ensemble_type_params =\
+        self.ensemble_params =\
             conv_to_list(ML_params['ensemble_params'])
 
         # Default params just sets (sub)problem type for now
@@ -246,9 +246,9 @@ class Model():
         self._process_ensemble_types()
         self._process_metrics()
 
-        # Make the model pipeline, save to self.model_pipeline
+        # Make the model pipeline, save to self.base_model_pipeline
         self._make_drop_strat()
-        self._set_model_pipeline()
+        self._set_base_model_pipeline()
 
     def _set_default_params(self):
         self.problem_type = ''
@@ -315,23 +315,23 @@ class Model():
 
         cnt = 0
 
-        self.model_types, cnt =\
-            self._check_for_user_passed(self.model_types, cnt)
+        self.model_strs, cnt =\
+            self._check_for_user_passed(self.model_strs, cnt)
 
-        self.feat_selectors, cnt =\
-            self._check_for_user_passed(self.feat_selectors, cnt)
+        self.feat_selector_strs, cnt =\
+            self._check_for_user_passed(self.feat_selector_strs, cnt)
 
-        self.imputers, cnt =\
-            self._check_for_user_passed(self.imputers, cnt)
+        self.imputer_strs, cnt =\
+            self._check_for_user_passed(self.imputer_strs, cnt)
 
-        self.scalers, cnt =\
-            self._check_for_user_passed(self.scalers, cnt)
+        self.scaler_strs, cnt =\
+            self._check_for_user_passed(self.scaler_strs, cnt)
 
-        self.samplers, cnt =\
-            self._check_for_user_passed(self.samplers, cnt)
+        self.sampler_strs, cnt =\
+            self._check_for_user_passed(self.sampler_strs, cnt)
 
-        self.ensemble_types, cnt =\
-            self._check_for_user_passed(self.ensemble_types, cnt)
+        self.ensemble_strs, cnt =\
+            self._check_for_user_passed(self.ensemble_strs, cnt)
 
     def _check_for_user_passed(self, objs, cnt):
 
@@ -366,12 +366,12 @@ class Model():
         str indicator, based on problem type and common input correction.
         '''
 
-        self.model_types = self._proc_type_dep_str(self.model_types,
-                                                   AVALIABLE_MODELS)
+        self.model_strs = self._proc_type_dep_str(self.model_strs,
+                                                  AVALIABLE_MODELS)
 
         self.models, self.model_params =\
             self._get_objs_and_params(self._get_base_model,
-                                      self.model_types, self.model_type_params)
+                                      self.model_strs, self.model_params)
 
     def _process_feat_selectors(self):
         '''Class function to convert input feat selectors to a final
@@ -379,16 +379,16 @@ class Model():
         based on problem type and common input correction.
         '''
 
-        if self.feat_selectors is not None:
+        if self.feat_selector_strs is not None:
 
-            feat_selector_strs =\
-                self._proc_type_dep_str(self.feat_selectors,
+            self.feat_selector_strs =\
+                self._proc_type_dep_str(self.feat_selector_strs,
                                         AVALIABLE_SELECTORS)
 
             # Get the feat_selectors tuple, and merged params grid / distr dict
             self.feat_selectors, self.feat_selector_params =\
                 self._get_objs_and_params(get_feat_selector_and_params,
-                                          feat_selector_strs,
+                                          self.feat_selector_strs,
                                           self.feat_selector_params)
 
             # If any base estimators, replace with a model
@@ -399,9 +399,9 @@ class Model():
             self.feat_selector_params = {}
 
     def _process_metrics(self):
-        '''Process self.metrics and set to proced version.'''
+        '''Process self.metric_strs and set to proced version.'''
 
-        self.metric_strs = self._proc_type_dep_str(self.metrics,
+        self.metric_strs = self._proc_type_dep_str(self.metric_strs,
                                                    AVALIABLE_METRICS)
 
         self.metrics = [get_metric(metric_str)
@@ -412,10 +412,10 @@ class Model():
 
     def _process_imputers(self):
 
-        if self.imputers is not None:
+        if self.imputer_strs is not None:
 
-            conv_imputer_strs = proc_input(self.imputers)
-            self._update_extra_params(self.imputers, conv_imputer_strs)
+            conv_imputer_strs = proc_input(self.imputer_strs)
+            self._update_extra_params(self.imputer_strs, conv_imputer_strs)
 
             self.imputer_params =\
                 self._param_len_check(conv_imputer_strs, self.imputer_params)
@@ -539,11 +539,11 @@ class Model():
         (name, scaler) tuples, and then creates col_scalers
         from that.'''
 
-        if self.scalers is not None:
+        if self.scaler_strs is not None:
 
             # Get converted scaler str and update extra params
-            conv_scaler_strs = proc_input(self.scalers)
-            self._update_extra_params(self.scalers, conv_scaler_strs)
+            conv_scaler_strs = proc_input(self.scaler_strs)
+            self._update_extra_params(self.scaler_strs, conv_scaler_strs)
 
             # Get the scalers tuple, and scaler_params grid / distr
             scalers, scaler_params =\
@@ -647,11 +647,11 @@ class Model():
         a resampling object.
         '''
 
-        if self.samplers is not None:
+        if self.sampler_strs is not None:
 
             # Initial proc
-            conv_sampler_strs = proc_input(self.samplers)
-            self._update_extra_params(self.samplers, conv_sampler_strs)
+            conv_sampler_strs = proc_input(self.sampler_strs)
+            self._update_extra_params(self.sampler_strs, conv_sampler_strs)
 
             # Performing proc on input lengths
             self.sampler_params =\
@@ -769,17 +769,17 @@ class Model():
     def _process_ensemble_types(self):
         '''Processes ensemble types'''
 
-        if self.ensemble_types is not None:
+        if self.ensemble_strs is not None:
 
-            self.ensemble_types = self._proc_type_dep_str(self.ensemble_types,
-                                                          AVALIABLE_ENSEMBLES)
+            self.ensemble_strs = self._proc_type_dep_str(self.ensemble_strs,
+                                                         AVALIABLE_ENSEMBLES)
 
             # If basic ensemble is in any of the ensemble_strs,
             # ensure it is the only one.
             if np.array(['basic ensemble' in ensemble for
-                        ensemble in self.ensemble_types]).any():
+                        ensemble in self.ensemble_strs]).any():
 
-                if len(self.ensemble_types) > 1:
+                if len(self.ensemble_strs) > 1:
 
                     self._print('Warning! "basic ensemble" ensemble type',
                                 'passed within a list of ensemble types.')
@@ -788,12 +788,12 @@ class Model():
                     self._print('Setting to just "basic ensemble" ensemble',
                                 ' type!')
 
-                    self.ensemble_types = ['basic ensemble']
+                    self.ensemble_strs = ['basic ensemble']
 
             self.ensembles, self.ensemble_params =\
                 self._get_objs_and_params(get_ensemble_and_params,
-                                          self.ensemble_types,
-                                          self.ensemble_type_params)
+                                          self.ensemble_strs,
+                                          self.ensemble_params)
 
         else:
             self.ensembles = [('basic ensemble', None)]
@@ -1045,7 +1045,7 @@ class Model():
             except AttributeError:
                 pass
 
-    def Evaluate_Model(self, data, train_subjects, splits_vals=None):
+    def Evaluate(self, data, train_subjects, splits_vals=None):
         '''Method to perform a full evaluation
         on a provided model type and training subjects, according to
         class set parameters.
@@ -1114,8 +1114,8 @@ class Model():
 
             # Run actual code for this evaluate fold
             start_time = time.time()
-            train_scores, scores = self.Test_Model(data, train_subjects,
-                                                   test_subjects, fold_ind)
+            train_scores, scores = self.Test(data, train_subjects,
+                                             test_subjects, fold_ind)
 
             # Time by fold verbosity
             elapsed_time = time.time() - start_time
@@ -1152,7 +1152,7 @@ class Model():
         return (np.array(all_train_scores), np.array(all_scores),
                 self.raw_preds_df)
 
-    def Test_Model(self, data, train_subjects, test_subjects, fold_ind='test'):
+    def Test(self, data, train_subjects, test_subjects, fold_ind='test'):
         '''Method to test given input data, training a model on train_subjects
         and testing the model on test_subjects.
 
@@ -1196,7 +1196,7 @@ class Model():
         self._print('Val/Test subjects:', test_data.shape[0], level='size')
 
         # Wrap in search CV / set to self.Model, final pipeline
-        self._set_model(train_data)
+        self._set_model_pipeline(train_data)
 
         # Train the model(s)
         self._train_model(train_data)
@@ -1285,12 +1285,12 @@ class Model():
         basic_ensemble = self._basic_ensemble(models, name, ensemble=True)
         return self._make_model_pipeline(basic_ensemble)
 
-    def _set_model_pipeline(self):
+    def _set_base_model_pipeline(self):
 
         # Check if basic ensemble
         if self.ensembles[0][1] is None:
 
-            self.model_pipeline =\
+            self.base_model_pipeline =\
                 self._basic_ensemble_pipe(self.models, self.ensembles[0][0])
 
         # Otherwise special ensembles
@@ -1363,7 +1363,7 @@ class Model():
                                                        ensemble=False)
 
             e_of_e = 'ensemble of ensembles'
-            self.model_pipeline =\
+            self.base_model_pipeline =\
                 self._basic_ensemble_pipe(new_ensembles, e_of_e)
 
     def _make_model_pipeline(self, models):
@@ -1383,13 +1383,12 @@ class Model():
 
         return model_pipeline
 
-    def _set_model(self, train_data):
+    def _set_model_pipeline(self, train_data):
 
-        # Get search CV
-        search_cv = self._get_search_cv(train_data.index)
-
-        # Wrap in search object
-        self.Model = self._get_search_model(self.model_pipeline, search_cv)
+        # Set Model_Pipeline as Model
+        self.Model =\
+            self._get_search_model(self.base_model_pipeline,
+                                   self._get_search_cv(train_data.index))
 
     def _proc_feat_importance(self, train_data, test_data, fold_ind):
 
@@ -1801,14 +1800,14 @@ class Model():
         # Try grabbing a base model, if it doesnt exist,
         # it means there is some type of ensemble being used
         try:
-            base_model = self.Model[self.model_types[0]]
+            base_model = self.Model[self.model_strs[0]]
         except:
             self.ensemble_flag = True
 
         if self.ensemble_flag:
 
             try:
-                base_model = self.Model.best_estimator_[self.model_types[0]]
+                base_model = self.Model.best_estimator_[self.model_strs[0]]
                 self.ensemble_flag = False
             except:
                 self.ensemble_flag = True
@@ -1966,7 +1965,7 @@ class Model():
             self.shap_dfs = []
 
 
-class Regression_Model(Model):
+class Regression_Model_Pipeline(Model_Pipeline):
     '''Child class of Model for regression problem types.'''
 
     def _set_default_params(self):
@@ -1983,7 +1982,7 @@ class Regression_Model(Model):
         return explainer
 
 
-class Binary_Model(Model):
+class Binary_Model_Pipeline(Model_Pipeline):
     '''Child class of Model for binary problem types.'''
 
     def _set_default_params(self):
@@ -1996,7 +1995,7 @@ class Binary_Model(Model):
         return shap_values[1]
 
 
-class Categorical_Model(Model):
+class Categorical_Model_Pipeline(Model_Pipeline):
     '''Child class of Model for categorical problem types.'''
 
     def _set_default_params(self):

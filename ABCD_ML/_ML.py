@@ -9,7 +9,9 @@ from tqdm import tqdm, tqdm_notebook
 
 from ABCD_ML.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ABCD_ML.ML_Helpers import compute_macro_micro
-from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
+from ABCD_ML.Model_Pipeline import (Regression_Model_Pipeline,
+                                    Binary_Model_Pipeline,
+                                    Categorical_Model_Pipeline)
 
 
 def Set_Default_ML_Params(self, problem_type='default', model='default',
@@ -901,7 +903,7 @@ def Set_ML_Verbosity(self, progress_bar=True, fold_name=False,
 def _ML_print(self, *args, **kwargs):
     '''Overriding the print function to allow for
     customizable verbosity. This print is setup with specific
-    settings for the Model class, for using Evaluate and Test.
+    settings for the Model_Pipeline class, for using Evaluate and Test.
 
     Parameters
     ----------
@@ -1048,7 +1050,7 @@ def Evaluate(self, run_name=None, problem_type='default', model='default',
     run_settings.update({'run_name': run_name})
     self.eval_settings[run_name] = run_settings
 
-    # Init. the Model object with modeling params
+    # Init. the Model_Pipeline object with modeling params
     self._init_model(ML_params)
 
     # Proc. splits
@@ -1056,8 +1058,8 @@ def Evaluate(self, run_name=None, problem_type='default', model='default',
 
     # Evaluate the model
     train_scores, scores, raw_preds =\
-        self.Model.Evaluate_Model(self.all_data, self.train_subjects,
-                                  split_vals)
+        self.Model_Pipeline.Evaluate(self.all_data, self.train_subjects,
+                                     split_vals)
 
     self._print()
 
@@ -1071,7 +1073,7 @@ def Evaluate(self, run_name=None, problem_type='default', model='default',
 
     for scrs, name in zip(score_list, score_type_list):
         self._handle_scores(scrs, name, ML_params, run_name,
-                            self.Model.n_splits)
+                            self.Model_Pipeline.n_splits)
 
     # Return the raw scores from each fold
     return score_list, raw_preds
@@ -1163,7 +1165,7 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
     # Print the params being used
     self._print_model_params(ML_params, test=True)
 
-    # Init the Model object with modeling params
+    # Init the Model_Pipeline object with modeling params
     self._init_model(ML_params)
 
     # If not train subjects or test subjects passed, use class
@@ -1174,11 +1176,11 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, raw_preds =\
-        self.Model.Test_Model(self.all_data, train_subjects,
-                              test_subjects)
+        self.Model_Pipeline.Test(self.all_data, train_subjects,
+                                 test_subjects)
 
     # Print out score for all passed metrics
-    metric_strs = self.Model.metric_strs
+    metric_strs = self.Model_Pipeline.metric_strs
     self._print()
 
     score_list, score_type_list = [], []
@@ -1299,10 +1301,11 @@ def _print_model_params(self, ML_params, test=False):
     self._print('model =', ML_params['model'])
     self._print('model_params =', ML_params['model_params'])
 
-    if isinstance(ML_params['model'], list):
+    ensmb_flag = ML_params['ensemble'] != 'basic ensemble'
+    if isinstance(ML_params['model'], list) or ensmb_flag:
         self._print('ensemble =', ML_params['ensemble'])
 
-        if ML_params['ensemble'] != 'basic ensemble':
+        if ensmb_flag:
             self._print('ensemble_split =', ML_params['ensemble_split'])
             self._print('ensemble_params =',
                         ML_params['ensemble_params'])
@@ -1462,13 +1465,14 @@ def _get_final_subjects_to_use(self, subjects_to_use):
 
 def _init_model(self, ML_params):
 
-    problem_types = {'binary': Binary_Model, 'regression': Regression_Model,
-                     'categorical': Categorical_Model}
+    problem_types = {'binary': Binary_Model_Pipeline,
+                     'regression': Regression_Model_Pipeline,
+                     'categorical': Categorical_Model_Pipeline}
 
     assert ML_params['problem_type'] in problem_types, \
         "Invalid problem type!"
 
-    Model = problem_types[ML_params['problem_type']]
+    Model_Pipeline = problem_types[ML_params['problem_type']]
 
     # Grab index info
     covar_scopes, cat_encoders = self._get_covar_scopes()
@@ -1488,7 +1492,8 @@ def _init_model(self, ML_params):
     _, search_split_vals, _ = self._get_split_vals(ML_params['search_splits'])
 
     # Make model
-    self.Model = Model(ML_params, self.CV, search_split_vals,
+    self.Model_Pipeline =\
+        Model_Pipeline(ML_params, self.CV, search_split_vals,
                        self.all_data_keys, self.targets_key,
                        self.targets_encoder, covar_scopes, cat_encoders,
                        self.ML_verbosity['progress_bar'],
@@ -1521,7 +1526,7 @@ def _get_avaliable_eval_scores_name(self, name, model):
 
 def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
 
-    metric_strs = self.Model.metric_strs
+    metric_strs = self.Model_Pipeline.metric_strs
 
     self._print(name + ' Scores')
     self._print(''.join('_' for i in range(len(name) + 7)))
@@ -1637,10 +1642,10 @@ def Get_Base_Feat_Importances(self, top_n=None):
         features is returnes
     '''
 
-    assert len(self.Model.feature_importances) > 0,\
+    assert len(self.Model_Pipeline.feature_importances) > 0,\
         "Either calc_base_feat_importances not set to True, or bad model!"
 
-    importances = np.mean(np.abs(self.Model.feature_importances))
+    importances = np.mean(np.abs(self.Model_Pipeline.feature_importances))
     importances.sort_values(ascending=False, inplace=True)
 
     if top_n:
@@ -1675,17 +1680,17 @@ def Get_Shap_Feat_Importances(self, top_n=None):
         Unless top_n is passed, then just a series with just the top_n
         features is returned.
     '''
-    assert len(self.Model.shap_df) > 0, \
+    assert len(self.Model_Pipeline.shap_df) > 0, \
         "calc_shap_feature_importances must be set to True!"
 
     # for categorical
-    if 'pandas' not in str(type(self.Model.shap_df)):
+    if 'pandas' not in str(type(self.Model_Pipeline.shap_df)):
 
         # First grab copy of first ind as base
-        shap_df = self.Model.shap_df[0].copy()
+        shap_df = self.Model_Pipeline.shap_df[0].copy()
 
         # Get mean across list
-        shap_df_arrays = [np.array(df) for df in self.Model.shap_df]
+        shap_df_arrays = [np.array(df) for df in self.Model_Pipeline.shap_df]
         mean_shap_array = np.mean(shap_df_arrays, axis=0)
 
         # Set values in df
@@ -1695,7 +1700,7 @@ def Get_Shap_Feat_Importances(self, top_n=None):
         self.avg_shap_df = shap_df
 
     else:
-        shap_df = self.Model.shap_df
+        shap_df = self.Model_Pipeline.shap_df
 
     shap_importances = np.mean(np.abs(shap_df))
     shap_importances.sort_values(ascending=False, inplace=True)

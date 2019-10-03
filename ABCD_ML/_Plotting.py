@@ -9,7 +9,8 @@ import seaborn as sns
 import numpy as np
 import shap
 import os
-from IPython.display import display
+from IPython.display import display, HTML
+from matplotlib.animation import FuncAnimation
 from ABCD_ML.Data_Helpers import get_original_cat_names
 
 
@@ -24,6 +25,56 @@ def _plot(self, save_name, show=True):
 
         if self.notebook:
             plt.show()
+
+
+def Show_Data_Dist(self, num_feats=20, frame_interval=500,
+                   save=True, save_name='data distribution'):
+
+    '''This method displays some summary statistics about
+    the loaded targets, as well as plots the distibution if possible.
+
+    Parameters
+    ----------
+    num_feats: int, optional
+        The number of random features's distributions in which to view.
+        Note: If too many are selected it may take a long time to render
+        and/or consume a lot of memory!
+
+        (default = 20)
+
+    frame_interval: int, optional
+        The number of milliseconds between each frame.
+
+        (default = 500)
+
+    save : bool, optional
+        If the animation should be saved as a gif, True or False.
+
+    save_name : str, optional
+        The name in which the gif should be saved under.
+    '''
+
+    fig, ax = plt.subplots()
+    fig.set_tight_layout(True)
+
+    def update(i):
+        fig.clear()
+        sns.boxplot(self.data[list(self.data)[i]])
+
+    frames = np.random.randint(0, self.data.shape[1], size=num_feats)
+    anim = FuncAnimation(fig, update, frames=frames, interval=500)
+
+    if self.log_dr is not None:
+
+        save_name = os.path.join(self.exp_log_dr,
+                                 save_name.replace(' ', '_') + '.gif')
+        anim.save(save_name, dpi=80, writer='imagemagick')
+
+    if self.notebook:
+        fig.clear()
+        return HTML(anim.to_html5_video())
+
+    return None
 
 
 def Show_Targets_Dist(self, cat_show_original_name=True,

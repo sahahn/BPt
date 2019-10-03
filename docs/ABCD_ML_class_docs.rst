@@ -82,6 +82,10 @@ Binarize_Targets
 ================
 .. automethod:: ABCD_ML.Binarize_Targets
 
+Show_Data_Dist
+==============
+.. automethod:: ABCD_ML.Show_Data_Dist
+
 Show_Targets_Dist
 ==================
 .. automethod:: ABCD_ML.Show_Targets_Dist

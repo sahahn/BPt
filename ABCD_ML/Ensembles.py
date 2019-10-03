@@ -33,6 +33,7 @@ from sklearn.ensemble.voting import _BaseVoting
 from copy import deepcopy
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import BaggingClassifier, BaggingRegressor
+from imblearn.ensemble import BalancedBaggingClassifier
 
 
 class Basic_Ensemble(_BaseVoting):
@@ -205,6 +206,7 @@ AVALIABLE = {
             'single best': 'single best',
             'stacked': 'stacked',
             'bagging': 'bagging classifier',
+            'balanced bagging': 'balanced bagging classifier',
         },
         'regression': {
                 'basic ensemble': 'basic ensemble',
@@ -247,6 +249,8 @@ ENSEMBLES = {
     'stacked': (StackedClassifier, ['des default']),
     'bagging classifier': (BaggingClassifier, ['single default']),
     'bagging regressor': (BaggingRegressor, ['single default']),
+    'balanced bagging classifier': (BalancedBaggingClassifier,
+                                    ['bb default']),
 }
 
 

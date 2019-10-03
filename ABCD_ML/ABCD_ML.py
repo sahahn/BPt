@@ -386,6 +386,7 @@ class ABCD_ML():
     from ABCD_ML.Ensembles import Show_Ensemble_Types
 
     from ABCD_ML._Plotting import (_plot,
+                                   Show_Data_Dist,
                                    Show_Targets_Dist,
                                    Show_Covars_Dist,
                                    _show_covar_dist,

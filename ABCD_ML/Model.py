@@ -250,11 +250,11 @@ class Model():
         self._check_all_for_user_passed()
         self._process_model_types()
         self._process_feat_selectors()
-        self._process_metrics()
         self._process_imputers()
         self._process_scalers()
         self._process_samplers()
         self._process_ensemble_types()
+        self._process_metrics()
 
         # Make the model pipeline, save to self.model_pipeline
         self._make_drop_strat()

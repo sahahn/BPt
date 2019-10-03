@@ -231,6 +231,9 @@ PARAMS['des default'] = {'needs_split': [True],
 PARAMS['single default'] = {'needs_split': [False],
                             'single_estimator': [True]}
 
+PARAMS['bb default'] = PARAMS['single default'].copy()
+PARAMS['bb default']['replacement'] = True
+
 
 def get_base_params(str_indicator):
 

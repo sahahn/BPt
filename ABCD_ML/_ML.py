@@ -27,7 +27,7 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
                           feats_to_use='default', subjects_to_use='default',
                           calc_base_feature_importances='default',
                           calc_shap_feature_importances='default',
-                          class_weight='default', n_jobs='default',
+                          n_jobs='default',
                           random_state='default',
                           compute_train_score='default',
                           extra_params='default'):
@@ -516,14 +516,6 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         If 'default', and not already defined, set to False.
         (default = 'default')
 
-    class_weight : {dict, 'balanced', None, 'default'}, optional
-        Only used for binary and categorical problem types.
-        Follows sklearn api class weight behavior. Typically, either use
-        'balanced' in the case of class distribution imbalance, or None.
-
-        If 'default', and not already defined, set to None
-        (default = 'default')
-
     n_jobs : int or 'default', optional
         The number of jobs to use (if avaliable) during training ML models.
         This should be the number of procesors avaliable for fastest run times.
@@ -733,15 +725,6 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
     elif 'ensemble_type_params' not in self.default_ML_params:
         self.default_ML_params['ensemble_type_params'] = 0
         self._print('No default ensemble type params passed, set to 0')
-
-    if class_weight != 'default':
-        self.default_ML_params['class_weight'] = class_weight
-
-    elif 'class_weight' not in self.default_ML_params:
-        self.default_ML_params['class_weight'] = None
-        if self.default_ML_params['problem_type'] != 'regression':
-            self._print('No default class weight setting passed,',
-                        'set to None')
 
     if n_jobs != 'default':
         assert isinstance(n_jobs, int), 'n_jobs must be int'
@@ -962,7 +945,7 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
              search_splits='default', search_n_iter='default',
              feats_to_use='default', subjects_to_use='default',
              calc_base_feature_importances='default',
-             calc_shap_feature_importances='default', class_weight='default',
+             calc_shap_feature_importances='default',
              n_jobs='default', random_state='default',
              compute_train_score='default', extra_params='default'):
     '''Class method to be called during the model selection phase.
@@ -1004,7 +987,6 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
     subjects_to_use :
     calc_base_feature_importances :
     calc_shap_feature_importances :
-    class_weight :
     n_jobs :
     random_state :
     compute_train_score :
@@ -1106,7 +1088,7 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
          search_splits='default', search_n_iter='default',
          feats_to_use='default', subjects_to_use='default',
          calc_base_feature_importances='default',
-         calc_shap_feature_importances='default', class_weight='default',
+         calc_shap_feature_importances='default',
          n_jobs='default', random_state='default',
          compute_train_score='default', extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
@@ -1153,7 +1135,6 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
     subjects_to_use :
     calc_base_feature_importances :
     calc_shap_feature_importances :
-    class_weight :
     n_jobs :
     random_state :
     compute_train_score :
@@ -1359,9 +1340,6 @@ def _print_model_params(self, ML_params, test=False):
     if ML_params['search_type'] is not None:
         self._print('search_splits =', ML_params['search_splits'])
         self._print('search_n_iter =', ML_params['search_n_iter'])
-
-    if ML_params['problem_type'] != 'regression':
-        self._print('class_weight =', ML_params['class_weight'])
 
     self._print('n_jobs =', ML_params['n_jobs'])
 

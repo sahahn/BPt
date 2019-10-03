@@ -90,17 +90,20 @@ MODELS = {
     'knn classifier': (KNeighborsClassifier, ['base knn', 'knn rs']),
     'knn regressor': (KNeighborsRegressor, ['base knn', 'knn rs']),
 
-    'dt classifier': (DecisionTreeClassifier, ['base dt', 'dt rs']),
+    'dt classifier': (DecisionTreeClassifier, ['base dt', 'dt classifier rs']),
     'dt regressor':  (DecisionTreeRegressor, ['base dt', 'dt rs']),
 
     'linear regressor': (LinearRegression, ['base linear']),
 
     'random forest regressor': (RandomForestRegressor, ['base rf', 'rf rs']),
-    'random forest classifier': (RandomForestClassifier, ['base rf', 'rf rs']),
+    'random forest classifier': (RandomForestClassifier, ['base rf',
+                                                          'rf classifier rs']),
 
-    'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm rs', 'lgbm 2']),
-    'light gbm classifier': (LGBMClassifier, ['base lgbm', 'lgbm rs',
-                                              'lgbm 2']),
+    'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm rs1',
+                                            'lgbm rs2']),
+    'light gbm classifier': (LGBMClassifier,
+                             ['base lgbm', 'lgbm classifier rs1',
+                              'lgbm classifier rs2']),
 
     'gp regressor': (GaussianProcessRegressor, ['base gp regressor']),
     'gp classifier': (GaussianProcessClassifier,  ['base gp classifier']),

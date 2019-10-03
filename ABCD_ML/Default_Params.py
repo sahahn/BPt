@@ -17,7 +17,8 @@ PARAMS['default'] = {}
 PARAMS['base logistic'] = {'solver': ['saga'],
                            'max_iter': [5000],
                            'multi_class': ['auto'],
-                           'penalty': ['none']}
+                           'penalty': ['none'],
+                           'class_weight': [None, 'balanced']}
 
 PARAMS['base lasso'] = PARAMS['base logistic'].copy()
 PARAMS['base lasso']['penalty'] = ['l1']
@@ -55,6 +56,9 @@ PARAMS['base dt'] = {}
 PARAMS['dt rs'] = {'max_depth': randint(1, 20),
                    'min_samples_split': randint(2, 50)}
 
+PARAMS['dt classifier rs'] = PARAMS['dt rs'].copy()
+PARAMS['dt classifier rs']['class_weight'] = [None, 'balanced']
+
 PARAMS['base linear'] = {'fit_intercept': [True]}
 
 PARAMS['base rf'] = {'n_estimators': [100]}
@@ -64,31 +68,40 @@ PARAMS['rf rs'] = {'n_estimators': randint(3, 500),
                    'min_samples_split': uniform(),
                    'bootstrap': [True]}
 
-PARAMS['base lgbm'] = {'silent': [True]}
-PARAMS['lgbm rs'] = {'silent': [True],
-                     'boosting_type': ['gbdt', 'dart', 'goss'],
-                     'n_estimators': randint(3, 500),
-                     'num_leaves': randint(6, 50),
-                     'min_child_samples': randint(100, 500),
-                     'min_child_weight': reciprocal(a=1e-5, b=1e+4),
-                     'subsample': uniform(loc=0.2, scale=0.8),
-                     'colsample_bytree': uniform(loc=0.4, scale=0.6),
-                     'reg_alpha': reciprocal(a=1e-1, b=1e+2),
-                     'reg_lambda': reciprocal(a=1e-1, b=1e+2)}
+PARAMS['rf classifier rs'] = PARAMS['rf rs'].copy()
+PARAMS['rf classifier rs']['class_weight'] = [None, 'balanced']
 
-PARAMS['lgbm 2'] = {'silent': [True],
-                    'lambda_l2': [0.001],
-                    'histogram_pool_size': [16384],
-                    'boosting_type': ['gbdt', 'dart'],
-                    'min_child_samples': [1, 5, 7, 10, 15, 20, 35, 50, 100,
-                                          200, 500, 1000],
-                    'num_leaves': [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65,
-                                   80, 100, 125, 150, 200, 250],
-                    'colsample_bytree': [0.7, 0.9, 1.0],
-                    'subsample': [0.7, 0.9, 1.0],
-                    'learning_rate': [0.01, 0.05, 0.1],
-                    'n_estimators': [5, 20, 35, 50, 75, 100, 150, 200, 350,
-                                     500, 750, 1000]}
+PARAMS['base lgbm'] = {'silent': [True]}
+PARAMS['lgbm rs1'] = {'silent': [True],
+                      'boosting_type': ['gbdt', 'dart', 'goss'],
+                      'n_estimators': randint(3, 500),
+                      'num_leaves': randint(6, 50),
+                      'min_child_samples': randint(100, 500),
+                      'min_child_weight': reciprocal(a=1e-5, b=1e+4),
+                      'subsample': uniform(loc=0.2, scale=0.8),
+                      'colsample_bytree': uniform(loc=0.4, scale=0.6),
+                      'reg_alpha': reciprocal(a=1e-1, b=1e+2),
+                      'reg_lambda': reciprocal(a=1e-1, b=1e+2)}
+
+PARAMS['lgbm rs2'] = {'silent': [True],
+                      'lambda_l2': [0.001],
+                      'histogram_pool_size': [16384],
+                      'boosting_type': ['gbdt', 'dart'],
+                      'min_child_samples': [1, 5, 7, 10, 15, 20, 35, 50, 100,
+                                            200, 500, 1000],
+                      'num_leaves': [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50,
+                                     65, 80, 100, 125, 150, 200, 250],
+                      'colsample_bytree': [0.7, 0.9, 1.0],
+                      'subsample': [0.7, 0.9, 1.0],
+                      'learning_rate': [0.01, 0.05, 0.1],
+                      'n_estimators': [5, 20, 35, 50, 75, 100, 150, 200, 350,
+                                       500, 750, 1000]}
+
+PARAMS['lgbm classifier rs1'] = PARAMS['lgbm rs1'].copy()
+PARAMS['lgbm classifier rs1']['class_weight'] = [None, 'balanced']
+
+PARAMS['lgbm classifier rs2'] = PARAMS['lgbm rs2'].copy()
+PARAMS['lgbm classifier rs2']['class_weight'] = [None, 'balanced']
 
 PARAMS['base lgbm es'] = {'silent': [True],
                           'val_split_percent': [.1],
@@ -126,6 +139,7 @@ PARAMS['base svm classifier']['probability'] = [True]
 
 PARAMS['svm classifier rs'] = PARAMS['svm rs'].copy()
 PARAMS['svm classifier rs']['probability'] = [True]
+PARAMS['svm classifier rs']['class_weight'] = [None, 'balanced']
 
 PARAMS['base mlp'] = {}
 

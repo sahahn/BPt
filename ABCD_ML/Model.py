@@ -103,9 +103,6 @@ class Model():
                 The index or str name of the param index for `feat_selector`
             - ensemble_type_params : int, str or list of
                 The index or str name of the param index for `ensemble_type`
-            - class_weight : str or None
-                For categorical / binary problem_types, for setting different
-                class weights.
             - n_jobs : int
                 The number of jobs to use during model training.
             - search_n_iter : int
@@ -211,7 +208,6 @@ class Model():
         self.search_splits = ML_params['search_splits']
         self.ensemble_types = conv_to_list(ML_params['ensemble_type'])
         self.ensemble_split = ML_params['ensemble_split']
-        self.class_weight = ML_params['class_weight']
         self.n_jobs = ML_params['n_jobs']
         self.search_n_iter = ML_params['search_n_iter']
         self.compute_train_score = ML_params['compute_train_score']
@@ -1599,9 +1595,6 @@ class Model():
 
         # Set class param values from possible model init params
         possible_params = get_possible_init_params(model)
-
-        if 'class_weight' in possible_params:
-            extra_model_params['class_weight'] = self.class_weight
 
         if 'n_jobs' in possible_params:
             if self.search_type is None:

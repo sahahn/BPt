@@ -107,7 +107,7 @@ PARAMS['base lgbm es'] = {'silent': [True],
                           'val_split_percent': [.1],
                           'early_stop_rounds': [50]}
 
-PARAMS['lgbm es rs'] = PARAMS['lgbm rs'].copy()
+PARAMS['lgbm es rs'] = PARAMS['lgbm rs1'].copy()
 PARAMS['lgbm es rs']['val_split_percent'] = uniform(loc=.05, scale=.2)
 PARAMS['lgbm es rs']['early_stop_rounds'] = randint(10, 150)
 
@@ -246,7 +246,6 @@ PARAMS['single default'] = {'needs_split': [False],
                             'single_estimator': [True]}
 
 PARAMS['bb default'] = PARAMS['single default'].copy()
-PARAMS['bb default']['replacement'] = True
 
 
 def get_base_params(str_indicator):

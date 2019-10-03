@@ -78,7 +78,7 @@ def proc_input(in_vals):
 def proc_str_input(in_str):
     '''Perform common preprocs on a str.
     Speicifcally this function is is used to process user str input,
-    as referencing a model_type, metric, or scaler.'''
+    as referencing a model, metric, or scaler.'''
 
     if not isinstance(in_str, str):
         return in_str

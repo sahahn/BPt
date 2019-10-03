@@ -64,7 +64,7 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
     frames = np.random.randint(0, self.data.shape[1], size=num_feats)
     anim = FuncAnimation(fig, update, frames=frames, interval=500)
     html = HTML(anim.to_html5_video())
-    plt.close(fig)
+    #plt.close(fig)
 
     if self.log_dr is not None:
 

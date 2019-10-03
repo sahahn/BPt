@@ -170,12 +170,6 @@ class Model():
             The print function to use, by default the python print,
             but designed to be passed ABCD_ML._ML_print
 
-        Notes
-        ----------
-        The Model class processes model_type, metric and scaler,
-        as model_types, metrics and scalers (the plural...).
-        This design decision was made to support both single str indicator
-        input for any of these options, or a list of str indicators.
         '''
 
         # Set class parameters
@@ -194,7 +188,7 @@ class Model():
         self._print = _print
 
         # Un-pack ML_params
-        self.model_types = conv_to_list(ML_params['model_type'])
+        self.model_types = conv_to_list(ML_params['model'])
         self.metrics = conv_to_list(ML_params['metric'])
         self.imputers = conv_to_list(ML_params['imputer'])
         self.imputer_scopes = conv_to_list(ML_params['imputer_scope'])
@@ -206,7 +200,7 @@ class Model():
         self.splits = ML_params['splits']
         self.n_repeats = ML_params['n_repeats']
         self.search_splits = ML_params['search_splits']
-        self.ensemble_types = conv_to_list(ML_params['ensemble_type'])
+        self.ensemble_types = conv_to_list(ML_params['ensemble'])
         self.ensemble_split = ML_params['ensemble_split']
         self.n_jobs = ML_params['n_jobs']
         self.search_n_iter = ML_params['search_n_iter']
@@ -222,7 +216,7 @@ class Model():
         self.search_type = ML_params['search_type']
 
         self.model_type_params =\
-            conv_to_list(ML_params['model_type_params'])
+            conv_to_list(ML_params['model_params'])
         self.imputer_params =\
             conv_to_list(ML_params['imputer_params'])
         self.scaler_params =\
@@ -232,7 +226,7 @@ class Model():
         self.feat_selector_params =\
             conv_to_list(ML_params['feat_selector_params'])
         self.ensemble_type_params =\
-            conv_to_list(ML_params['ensemble_type_params'])
+            conv_to_list(ML_params['ensemble_params'])
 
         # Default params just sets (sub)problem type for now
         self._set_default_params()
@@ -1274,21 +1268,21 @@ class Model():
                     self.ensemble_params[key]
             self.ensemble_params = new_ensemble_params
 
-    def _basic_ensemble(self, models, name):
+    def _basic_ensemble(self, models, name, ensemble=False):
 
         if len(models) == 1:
             return models
 
         else:
             basic_ensemble = Basic_Ensemble(models)
-            self._update_model_ensemble_params(name, ensemble=False)
+            self._update_model_ensemble_params(name, ensemble=ensemble)
 
             return [(name, basic_ensemble)]
 
     def _basic_ensemble_pipe(self, models, name):
         '''Models as [(name, obj), ect...]'''
 
-        basic_ensemble = self._basic_ensemble(models, name)
+        basic_ensemble = self._basic_ensemble(models, name, ensemble=True)
         return self._make_model_pipeline(basic_ensemble)
 
     def _set_model_pipeline(self):
@@ -1302,8 +1296,6 @@ class Model():
         # Otherwise special ensembles
         else:
 
-            new_model_params = {}
-            new_ensemble_params = {}
             new_ensembles = []
 
             for ensemble in self.ensembles:
@@ -1353,6 +1345,8 @@ class Model():
                                                      ensemble_extra_params,
                                                      self.random_state)))
 
+                    self._update_model_ensemble_params(ensemble_name)
+
                 else:
 
                     new_ensembles.append(
@@ -1365,12 +1359,12 @@ class Model():
                         replace_with_in_params(self.model_params, models[0][0],
                                                'base_estimator')
 
-                self._update_model_ensemble_params(ensemble_name)
+                    self._update_model_ensemble_params(ensemble_name,
+                                                       ensemble=False)
 
+            e_of_e = 'ensemble of ensembles'
             self.model_pipeline =\
-                self._basic_ensemble_pipe(new_ensembles,
-                                          'ensemble of ensembles')
-            self._update_model_ensemble_params(ensemble_name, model=False)
+                self._basic_ensemble_pipe(new_ensembles, e_of_e)
 
     def _make_model_pipeline(self, models):
         '''Make the model pipeline object

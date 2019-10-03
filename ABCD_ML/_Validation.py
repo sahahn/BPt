@@ -5,6 +5,7 @@ Main class extension file for defining validation and train test splits.
 """
 import pandas as pd
 import numpy as np
+import os
 from ABCD_ML.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ABCD_ML.CV import CV
 
@@ -220,6 +221,17 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
     self._print('Performed train/test split, train size:',
                 len(self.train_subjects), 'test size: ',
                 len(self.test_subjects))
+
+    if self.log_dr is not None:
+
+        train_loc = os.path.join(self.exp_log_dr, 'train_subjects.txt')
+        test_loc = os.path.join(self.exp_log_dr, 'test_subjects.txt')
+
+        for loc, subjects in zip([train_loc, test_loc], [self.train_subjects,
+                                                         self.test_subjects]):
+            with open(loc, 'w') as f:
+                for subject in subjects:
+                    f.write(subject + '\n')
 
 
 def _add_strat_u_name(self, in_vals):

@@ -123,18 +123,9 @@ MODELS = {
     }
 
 
-def Show_Models(self, problem_type=None, model_type_str=None,
+def Show_Models(self, problem_type=None, model=None,
                 params_options=False, show_object=False,
                 possible_params=False):
-        '''Just calls Show_Model_Types.'''
-
-        self.Show_Model_Types(problem_type, model_type_str, params_options,
-                              show_object, possible_params)
-
-
-def Show_Model_Types(self, problem_type=None, model_type_str=None,
-                     params_options=False, show_object=False,
-                     possible_params=False):
         '''Print out the avaliable machine learning models,
         optionally restricted by problem type and other diagnostic args.
 
@@ -149,8 +140,8 @@ def Show_Model_Types(self, problem_type=None, model_type_str=None,
 
                 (default = None)
 
-        model_type_str : str or list, optional
-                If model type is passed, will just show the specific
+        model : str or list, optional
+                If model is passed, will just show the specific
                 model, according to the rest of the params passed.
                 Note : You must pass the specific model indicator str
                 limited preproc will be done on this input!
@@ -188,5 +179,5 @@ def Show_Model_Types(self, problem_type=None, model_type_str=None,
         print('is listed as ("str indicator")')
         print()
 
-        show_objects(problem_type, model_type_str, params_options,
+        show_objects(problem_type, model, params_options,
                      show_object, possible_params, AVALIABLE, MODELS)

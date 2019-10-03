@@ -12,16 +12,16 @@ from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model import Regression_Model, Binary_Model, Categorical_Model
 
 
-def Set_Default_ML_Params(self, problem_type='default', model_type='default',
-                          model_type_params='default', metric='default',
+def Set_Default_ML_Params(self, problem_type='default', model='default',
+                          model_params='default', metric='default',
                           imputer='default', imputer_scope='default',
                           imputer_params='default', scaler='default',
                           scaler_scope='default', scaler_params='default',
                           sampler='default', sample_on='default',
                           sampler_params='default', feat_selector='default',
                           feat_selector_params='default',
-                          ensemble_type='default', ensemble_split='default',
-                          ensemble_type_params='default', splits='default',
+                          ensemble='default', ensemble_split='default',
+                          ensemble_params='default', splits='default',
                           n_repeats='default', search_type='default',
                           search_splits='default', search_n_iter='default',
                           feats_to_use='default', subjects_to_use='default',
@@ -50,30 +50,30 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         If 'default', and not already defined, set to 'regression'
         (default = 'default')
 
-    model_type : str or list of str
+    model : str or list of str
         Each string refers to a type of model to train.
         If a list of strings is passed then an ensemble model
         will be created over all individual models.
 
         For a full list of supported options call:
-        :func:`Show_Model_Types` or view the docs at :ref:`Model Types`
+        :func:`Show_Models` or view the docs at :ref:`Models`
 
         If 'default', and not already defined, set to 'linear'
         (default = 'default')
 
-    model_type_params : int, str, or list of
-        Each `model_type` has atleast one default parameter distribution
+    model_params : int, str, or list of
+        Each `model` has atleast one default parameter distribution
         saved with it. This parameter is used to select between different
         distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `model_type_params` is automatically
+        when `search_type` == None, `model_params` is automatically
         set to default 0.
         This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `model_type`.
-        Likewise with `model_type`, if passed list input, this means
-        a list was passed to `model_type` and the indices should correspond.
+        (zero based), or the str name for a given `model`.
+        Likewise with `model`, if passed list input, this means
+        a list was passed to `model` and the indices should correspond.
 
         The different parameter distributions avaliable for each
-        `model_type`, can be shown by calling :func:`Show_Model_Types`
+        `model`, can be shown by calling :func:`Show_Models`
         or on the docs at :ref:`Model Types`
 
         If 'default', and not already defined, set to 0
@@ -106,11 +106,11 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         A single str can be passed, or a list of strs.
 
         There are a number of pre-defined imputers to select from,
-        but the user can also pass a valid model_type str indicator here.
-        This model_type str refers to the base_estimator to be used in
+        but the user can also pass a valid model str indicator here.
+        This model str refers to the base_estimator to be used in
         an IterativeImputer, see :class:`sklearn.impute.IterativeImputer`
 
-        If a model_type str is passed, then it must be a valid model_type
+        If a model str is passed, then it must be a valid model
         for whatever scope is passed additional. If the `imputer_scope`
         passed is 'float' or specific set of column names, then a regression
         model type will be selected. If the scope is 'binary' or 'categorical',
@@ -154,7 +154,7 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         `imputer`, can be shown by calling :func:`Show_Imputers`
         or on the docs at :ref:`Imputers`
 
-        Note: If a model_type was passed to the imputer, then
+        Note: If a model was passed to the imputer, then
         `imputer_params` will refer to the parameters for that
         base model!
 
@@ -302,7 +302,7 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         If 'default', and not already defined, set to 0
         (default = 'default')
 
-    ensemble_type :  str or list of str,
+    ensemble :  str or list of str,
         Each string refers to a type of ensemble to train,
         or 'basic ensemble' (default) for base behavior.
         Base ensemble behavior is either to not ensemble,
@@ -326,20 +326,20 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         the Bagging Classifier or Regressor built on that ensemble of
         models.
 
-        If a list is passed to ensemble_type, then every
+        If a list is passed to ensemble, then every
         item in the list must be a valid str indicator for
         a non 'basic ensemble' ensemble type, and each ensemble
         object passed will be fitted independly and then averaged
         using the 'basic ensemble' behvaior... so an ensemble of ensembles.
 
         For a full list of supported options call:
-        :func:`Show_Ensemble_Types` or view the docs at :ref:`Ensemble Types`
+        :func:`Show_Ensembles` or view the docs at :ref:`Ensemble Types`
 
         If 'default', and not already defined, set to 'basic ensemble'
         (default = 'default')
 
     ensemble_split : float, int or None
-        If an ensemble_type(s) that requires fitting is passed,
+        If an ensemble(s) that requires fitting is passed,
         i.e., not "basic ensemble", then this param is
         the porportion of the train_data within each fold to
         use towards fitting the ensemble objects.
@@ -349,16 +349,16 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         If 'default', and not already defined, set to .2
         (default = 'default')
 
-    ensemble_type_params : int, str, or list of
-         Each `ensemble_type` has atleast one default parameter distribution
+    ensemble_params : int, str, or list of
+         Each `ensemble` has atleast one default parameter distribution
         saved with it. This parameter is used to select between different
         distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `ensemble_type_params` is automatically
+        when `search_type` == None, `ensemble_params` is automatically
         set to default 0.
         This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `ensemble_type` param option.
-        Likewise with `ensemble_type`, if passed list input, this means
-        a list was passed to `ensemble_type` and the indices should correspond.
+        (zero based), or the str name for a given `ensemble` param option.
+        Likewise with `ensemble`, if passed list input, this means
+        a list was passed to `ensemble` and the indices should correspond.
 
         If 'default', and not already defined, set to 0
         (default = 'default')
@@ -403,7 +403,7 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
 
         .. WARNING::
 
-            If search type is set to "grid", and any of model_type_params,
+            If search type is set to "grid", and any of model_params,
             scaler_params and feat_selector_params are set
             to a random distribution (rather then discrete values),
             this will lead to an error.
@@ -550,7 +550,7 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
             extra_params[model_name] = {'model_param' : new_value}
 
         Where model param is a valid argument for that model, and model_name in
-        this case is the str indicator passed to model_type.
+        this case is the str indicator passed to model.
         If 'default', and not already defined, set to empty dict.
 
         (default = 'default')
@@ -559,11 +559,11 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
     default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
                        'categorical': 'weighted roc auc'}
 
-    if model_type != 'default':
-        self.default_ML_params['model_type'] = model_type
+    if model != 'default':
+        self.default_ML_params['model'] = model
 
-    elif 'model_type' not in self.default_ML_params:
-        self.default_ML_params['model_type'] = 'linear'
+    elif 'model' not in self.default_ML_params:
+        self.default_ML_params['model'] = 'linear'
         self._print('No default model type passed, set to linear.')
 
     if problem_type != 'default':
@@ -661,11 +661,11 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         self.default_ML_params['search_splits'] = 3
         self._print('No default num search splits passed, set to 3')
 
-    if ensemble_type != 'default':
-        self.default_ML_params['ensemble_type'] = ensemble_type
+    if ensemble != 'default':
+        self.default_ML_params['ensemble'] = ensemble
 
-    elif 'ensemble_type' not in self.default_ML_params:
-        self.default_ML_params['ensemble_type'] = 'basic ensemble'
+    elif 'ensemble' not in self.default_ML_params:
+        self.default_ML_params['ensemble'] = 'basic ensemble'
         self._print('No default ensemble type passed, set to basic ensemble')
 
     if ensemble_split != 'default':
@@ -682,12 +682,12 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         self.default_ML_params['search_type'] = None
         self._print('No default search type passed, set to None')
 
-    if model_type_params != 'default':
-        self.default_ML_params['model_type_params'] = model_type_params
+    if model_params != 'default':
+        self.default_ML_params['model_params'] = model_params
 
-    elif 'model_type_params' not in self.default_ML_params:
-        self.default_ML_params['model_type_params'] = 0
-        self._print('No default model_type param ind passed, set to 0')
+    elif 'model_params' not in self.default_ML_params:
+        self.default_ML_params['model_params'] = 0
+        self._print('No default model param ind passed, set to 0')
 
     if imputer_params != 'default':
         self.default_ML_params['imputer_params'] = imputer_params
@@ -718,12 +718,12 @@ def Set_Default_ML_Params(self, problem_type='default', model_type='default',
         self.default_ML_params['feat_selector_params'] = 0
         self._print('No default feat selector params passed, set to 0')
 
-    if ensemble_type_params != 'default':
-        self.default_ML_params['ensemble_type_params'] =\
-            ensemble_type_params
+    if ensemble_params != 'default':
+        self.default_ML_params['ensemble_params'] =\
+            ensemble_params
 
-    elif 'ensemble_type_params' not in self.default_ML_params:
-        self.default_ML_params['ensemble_type_params'] = 0
+    elif 'ensemble_params' not in self.default_ML_params:
+        self.default_ML_params['ensemble_params'] = 0
         self._print('No default ensemble type params passed, set to 0')
 
     if n_jobs != 'default':
@@ -933,14 +933,14 @@ def _ML_print(self, *args, **kwargs):
         _print(*args, **kwargs)
 
 
-def Evaluate(self, run_name=None, problem_type='default', model_type='default',
-             model_type_params='default', metric='default', imputer='default',
+def Evaluate(self, run_name=None, problem_type='default', model='default',
+             model_params='default', metric='default', imputer='default',
              imputer_scope='default', imputer_params='default',
              scaler='default', scaler_scope='default', scaler_params='default',
              sampler='default', sample_on='default', sampler_params='default',
              feat_selector='default', feat_selector_params='default',
-             ensemble_type='default', ensemble_split='default',
-             ensemble_type_params='default', splits='default',
+             ensemble='default', ensemble_split='default',
+             ensemble_params='default', splits='default',
              n_repeats='default', search_type='default',
              search_splits='default', search_n_iter='default',
              feats_to_use='default', subjects_to_use='default',
@@ -961,8 +961,8 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
         store this Evaluate's run on results. If left as None, then will just
         use a default name.
     problem_type :
-    model_type :
-    model_type_params :
+    model :
+    model_params :
     metric :
     imputer :
     imputer_scope :
@@ -975,9 +975,9 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
     sampler_params :
     feat_selector :
     feat_selector_params :
-    ensemble_type :
+    ensemble :
     ensemble_split :
-    ensemble_type_params :
+    ensemble_params :
     splits :
     n_repeats :
     search_type :
@@ -1039,7 +1039,7 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
     self._print_model_params(ML_params, test=False)
 
     run_name = self._get_avaliable_eval_scores_name(run_name,
-                                                    ML_params['model_type'])
+                                                    ML_params['model'])
     self._print('Saving scores and settings with unique name:', run_name)
     self._print()
 
@@ -1078,13 +1078,13 @@ def Evaluate(self, run_name=None, problem_type='default', model_type='default',
 
 
 def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
-         model_type='default', model_type_params='default', metric='default',
+         model='default', model_params='default', metric='default',
          imputer='default', imputer_scope='default', imputer_params='default',
          scaler='default', scaler_scope='default', scaler_params='default',
          sampler='default', sample_on='default', sampler_params='default',
          feat_selector='default', feat_selector_params='default',
-         ensemble_type='default', ensemble_split='default',
-         ensemble_type_params='default', search_type='default',
+         ensemble='default', ensemble_split='default',
+         ensemble_params='default', search_type='default',
          search_splits='default', search_n_iter='default',
          feats_to_use='default', subjects_to_use='default',
          calc_base_feature_importances='default',
@@ -1111,8 +1111,8 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
         (default = None)
 
     problem_type :
-    model_type :
-    model_type_params :
+    model :
+    model_params :
     metric :
     imputer :
     imputer_scope :
@@ -1125,9 +1125,9 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
     sampler_params :
     feat_selector :
     feat_selector_params :
-    ensemble_type :
+    ensemble :
     ensemble_split :
-    ensemble_type_params :
+    ensemble_params :
     search_type :
     search_splits :
     search_n_iter :
@@ -1296,16 +1296,16 @@ def _print_model_params(self, ML_params, test=False):
 
     self._print('problem_type =', ML_params['problem_type'])
 
-    self._print('model_type =', ML_params['model_type'])
-    self._print('model_type_params =', ML_params['model_type_params'])
+    self._print('model =', ML_params['model'])
+    self._print('model_params =', ML_params['model_params'])
 
-    if isinstance(ML_params['model_type'], list):
-        self._print('ensemble_type =', ML_params['ensemble_type'])
+    if isinstance(ML_params['model'], list):
+        self._print('ensemble =', ML_params['ensemble'])
 
-        if ML_params['ensemble_type'] != 'basic ensemble':
+        if ML_params['ensemble'] != 'basic ensemble':
             self._print('ensemble_split =', ML_params['ensemble_split'])
-            self._print('ensemble_type_params =',
-                        ML_params['ensemble_type_params'])
+            self._print('ensemble_params =',
+                        ML_params['ensemble_params'])
 
     self._print('metric =', ML_params['metric'])
 
@@ -1496,17 +1496,17 @@ def _init_model(self, ML_params):
                        self._ML_print)
 
 
-def _get_avaliable_eval_scores_name(self, name, model_type):
+def _get_avaliable_eval_scores_name(self, name, model):
 
     if name is None:
-        if isinstance(model_type, list):
+        if isinstance(model, list):
             name = 'ensemble'
 
-        elif not isinstance(model_type, str):
+        elif not isinstance(model, str):
             name = 'user passed'
 
         else:
-            name = model_type
+            name = model
 
     if name in self.eval_scores:
 
@@ -1619,7 +1619,7 @@ def Get_Base_Feat_Importances(self, top_n=None):
     .. WARNING::
         `calc_base_feature_importances` must have been set to True,
         during the last call to :func:`Evaluate` or :func:`Test`,
-        AND the `model_type` must have been a linear or tree-based model
+        AND the `model` must have been a linear or tree-based model
         (with no extra ensembling).
 
     Parameters
@@ -1638,7 +1638,7 @@ def Get_Base_Feat_Importances(self, top_n=None):
     '''
 
     assert len(self.Model.feature_importances) > 0,\
-        "Either calc_base_feat_importances not set to True, or bad model_type!"
+        "Either calc_base_feat_importances not set to True, or bad model!"
 
     importances = np.mean(np.abs(self.Model.feature_importances))
     importances.sort_values(ascending=False, inplace=True)

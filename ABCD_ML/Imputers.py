@@ -329,7 +329,7 @@ def Show_Imputers(self, imputer=None, show_params_options=False,
           'the help function for more info!')
     print('Note: the str indicator actually passed during Evaluate / Test')
     print('is listed as ("str indicator")')
-    print('Also for imputers, a model_type str can be passed instead of',
+    print('Also for imputers, a model str can be passed instead of',
           'imputer str!')
     print()
 

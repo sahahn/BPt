@@ -284,8 +284,8 @@ def get_ensemble_and_params(ensemble_str, extra_params, params, search_type):
     return (ensemble, extra_ensemble_params), ensemble_params
 
 
-def Show_Ensemble_Types(self, problem_type=None, ensemble_type=None,
-                        show_object=False, possible_params=False):
+def Show_Ensembles(self, problem_type=None, ensemble=None,
+                   show_object=False, possible_params=False):
     '''Print out the avaliable ensemble types,
     optionally restricted by problem type
 
@@ -296,8 +296,8 @@ def Show_Ensemble_Types(self, problem_type=None, ensemble_type=None,
 
         (default = None)
 
-    ensemble_type : str or list
-        Where ensemble_type is a specific str indicator
+    ensemble : str or list
+        Where ensemble is a specific str indicator
 
     show_object : bool, optional
         Flag, if set to True, then will print the
@@ -322,5 +322,5 @@ def Show_Ensemble_Types(self, problem_type=None, ensemble_type=None,
     print('is listed as ("str indicator")')
     print()
 
-    show_objects(problem_type, ensemble_type, False, show_object,
+    show_objects(problem_type, ensemble, False, show_object,
                  possible_params, AVALIABLE, ENSEMBLES)

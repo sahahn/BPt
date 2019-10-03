@@ -377,13 +377,13 @@ class ABCD_ML():
     new_test = get_new_docstring(Evaluate, Test)
     Test.__doc__ = new_test
 
-    from ABCD_ML.Models import Show_Model_Types, Show_Models
+    from ABCD_ML.Models import Show_Models
     from ABCD_ML.Metrics import Show_Metrics
     from ABCD_ML.Imputers import Show_Imputers
     from ABCD_ML.Scalers import Show_Scalers
     from ABCD_ML.Samplers import Show_Samplers
     from ABCD_ML.Feature_Selectors import Show_Feat_Selectors
-    from ABCD_ML.Ensembles import Show_Ensemble_Types
+    from ABCD_ML.Ensembles import Show_Ensembles
 
     from ABCD_ML._Plotting import (_plot,
                                    Show_Data_Dist,

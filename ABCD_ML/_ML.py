@@ -14,10 +14,11 @@ from ABCD_ML.Model_Pipeline import (Regression_Model_Pipeline,
                                     Categorical_Model_Pipeline)
 
 
-def Set_Default_ML_Params(self, problem_type='default', model='default',
-                          model_params='default', metric='default',
-                          imputer='default', imputer_scope='default',
-                          imputer_params='default', scaler='default',
+def Set_Default_ML_Params(self, problem_type='default', target='default',
+                          model='default', model_params='default',
+                          metric='default', imputer='default',
+                          imputer_scope='default', imputer_params='default',
+                          scaler='default',
                           scaler_scope='default', scaler_params='default',
                           sampler='default', sample_on='default',
                           sampler_params='default', feat_selector='default',
@@ -50,6 +51,14 @@ def Set_Default_ML_Params(self, problem_type='default', model='default',
         - 'default' : Use 'regression' if nothing else already defined.
 
         If 'default', and not already defined, set to 'regression'
+        (default = 'default')
+
+    target : int or str, optional
+        The loaded target in which to use during modelling.
+        This can be the int index, or the name of the target column.
+        If only one target is loaded, just leave as default.
+
+        If 'default', and not already defined, set to 0
         (default = 'default')
 
     model : str or list of str
@@ -236,13 +245,19 @@ def Set_Default_ML_Params(self, problem_type='default', model='default',
         this `sample_on` parameter must be set. This parameter
         dictates what the sampler should use as its class to
         re-sample. For example, the most typical case is passing
-        self.original_targets_key (which is just 'targets' if not
-        changed by the user), which will then resample according to the
-        distribution of the target variable. The user can also pass in
+        in 't' which will then resample according to the
+        distribution of the target variable.
+        (If multipled loaded, then whichever is is selected in target param),
+        The user can also pass in
         the names of any loaded strat columns (See: :func:`Load_Strat`),
         or a combination as list of both,
         similar to input accepted by the `stratify` param
         in :func:`Define_Validation_Strategy`.
+
+        Note: The way sample_on is coded, any passed col name which is not
+        loaded in Strat, will be interpreted as sample the target variable!
+        That is why the default value is just t, but you can pass anything that
+        isnt a loaded strat col, to have it sample on strat.
 
         When a list is passed to one sampler, then the unique combination
         of values fis created, and sampled on.
@@ -253,7 +268,7 @@ def Set_Default_ML_Params(self, problem_type='default', model='default',
         where you want to pass a combination of options, or differing combos
         to different samplers.
 
-        If 'default', and not already defined, set to self.original_targets_key
+        If 'default', and not already defined, set to 'targets'
         (default = 'default')
 
     sampler_params :  int, str, or list of
@@ -561,13 +576,6 @@ def Set_Default_ML_Params(self, problem_type='default', model='default',
     default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
                        'categorical': 'weighted roc auc'}
 
-    if model != 'default':
-        self.default_ML_params['model'] = model
-
-    elif 'model' not in self.default_ML_params:
-        self.default_ML_params['model'] = 'linear'
-        self._print('No default model type passed, set to linear.')
-
     if problem_type != 'default':
         problem_type = problem_type.lower()
         assert problem_type in default_metrics, 'Invalid problem type passed!'
@@ -576,6 +584,20 @@ def Set_Default_ML_Params(self, problem_type='default', model='default',
     elif 'problem_type' not in self.default_ML_params:
         self.default_ML_params['problem_type'] = 'regression'
         self._print('No default problem type passed, set to regression.')
+
+    if target != 'default':
+        self.default_ML_params['target'] = target
+
+    elif 'target' not in self.default_ML_params:
+        self.default_ML_params['target'] = 0
+        self._print('No default target passed, set to 0.')
+
+    if model != 'default':
+        self.default_ML_params['model'] = model
+
+    elif 'model' not in self.default_ML_params:
+        self.default_ML_params['model'] = 'linear'
+        self._print('No default model type passed, set to linear.')
 
     if metric != 'default':
         self.default_ML_params['metric'] = metric
@@ -630,8 +652,8 @@ def Set_Default_ML_Params(self, problem_type='default', model='default',
         self.default_ML_params['sample_on'] = sample_on
 
     elif 'sample_on' not in self.default_ML_params:
-        self.default_ML_params['sample_on'] = self.original_targets_key
-        self._print('No default sample on passed, set to original_targets_key')
+        self.default_ML_params['sample_on'] = 'targets'
+        self._print('No default sample on passed, set to targets')
 
     if feat_selector != 'default':
         self.default_ML_params['feat_selector'] = feat_selector
@@ -935,10 +957,11 @@ def _ML_print(self, *args, **kwargs):
         _print(*args, **kwargs)
 
 
-def Evaluate(self, run_name=None, problem_type='default', model='default',
-             model_params='default', metric='default', imputer='default',
-             imputer_scope='default', imputer_params='default',
-             scaler='default', scaler_scope='default', scaler_params='default',
+def Evaluate(self, run_name=None, problem_type='default', target='default',
+             model='default', model_params='default', metric='default',
+             imputer='default', imputer_scope='default',
+             imputer_params='default', scaler='default',
+             scaler_scope='default', scaler_params='default',
              sampler='default', sample_on='default', sampler_params='default',
              feat_selector='default', feat_selector_params='default',
              ensemble='default', ensemble_split='default',
@@ -963,6 +986,7 @@ def Evaluate(self, run_name=None, problem_type='default', model='default',
         store this Evaluate's run on results. If left as None, then will just
         use a default name.
     problem_type :
+    target :
     model :
     model_params :
     metric :
@@ -1080,8 +1104,9 @@ def Evaluate(self, run_name=None, problem_type='default', model='default',
 
 
 def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
-         model='default', model_params='default', metric='default',
-         imputer='default', imputer_scope='default', imputer_params='default',
+         target='default', model='default', model_params='default',
+         metric='default', imputer='default', imputer_scope='default',
+         imputer_params='default',
          scaler='default', scaler_scope='default', scaler_params='default',
          sampler='default', sample_on='default', sampler_params='default',
          feat_selector='default', feat_selector_params='default',
@@ -1113,6 +1138,7 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
         (default = None)
 
     problem_type :
+    target :
     model :
     model_params :
     metric :
@@ -1203,7 +1229,9 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
             scr = s[i]
             if len(scr.shape) > 0:
 
-                for score_by_class, class_name in zip(scr, self.targets_key):
+                targets_key = self.Model_Pipeline.targets_key
+
+                for score_by_class, class_name in zip(scr, targets_key):
                     self._print('for target class: ', class_name)
                     self._print(name + ' Score: ', score_by_class)
                     self._print()
@@ -1474,6 +1502,11 @@ def _init_model(self, ML_params):
 
     Model_Pipeline = problem_types[ML_params['problem_type']]
 
+    targets_key = self._get_targets_key(ML_params['target'])
+    targets_encoder =\
+        self.targets_encoders[self._get_targets_key(ML_params['target'],
+                              base_key=True)]
+
     # Grab index info
     covar_scopes, cat_encoders = self._get_covar_scopes()
 
@@ -1494,8 +1527,8 @@ def _init_model(self, ML_params):
     # Make model
     self.Model_Pipeline =\
         Model_Pipeline(ML_params, self.CV, search_split_vals,
-                       self.all_data_keys, self.targets_key,
-                       self.targets_encoder, covar_scopes, cat_encoders,
+                       self.all_data_keys, targets_key,
+                       targets_encoder, covar_scopes, cat_encoders,
                        self.ML_verbosity['progress_bar'],
                        self.ML_verbosity['param_search_verbose'],
                        self._ML_print)
@@ -1546,8 +1579,9 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
                 [compute_macro_micro(class_scores, ML_params['n_repeats'],
                  n_splits) for class_scores in by_class]
 
+            targets_key = self.Model_Pipeline.targets_key
             for summary_scores, class_name in zip(summary_scores_by_class,
-                                                  self.targets_key):
+                                                  targets_key):
 
                 self._print('Target class: ', class_name)
                 self._print_summary_score(name, summary_scores,

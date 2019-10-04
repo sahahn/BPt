@@ -544,3 +544,15 @@ def get_top_substrs(keys):
         top = find_substr(keys)
 
     return found
+
+
+def proc_datatypes(data_types, col_names):
+
+    if not isinstance(data_types, list):
+        data_types = list([data_types])
+
+    if len(data_types) != len(col_names):
+        raise RuntimeError('The same number of datatypes were not passed as',
+                           'columns!')
+
+    return data_types

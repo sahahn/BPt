@@ -20,7 +20,7 @@ class ABCD_ML():
                  use_default_subject_ids=True,
                  default_dataset_type='basic', drop_nan=True,
                  default_na_values=['777', '999'],
-                 original_targets_key='targets', low_memory_mode=False,
+                 low_memory_mode=False,
                  random_state=None):
         '''Main class init
 
@@ -144,14 +144,6 @@ class ABCD_ML():
 
             (default = ['777', '999'])
 
-        original_targets_key : str, optional
-            This parameter refers to the column name / key, that the
-            target variable of interest will be stored under. There are not a
-            lot of reasons to change this setting, except in the case of
-            a naming conflict - or just for further customization.
-
-            (default = 'targets')
-
         low_memory_mode : bool, optional
             This parameter dictates behavior around loading in data,
             specifically, if `low_memory_mode` is set to True,
@@ -201,7 +193,6 @@ class ABCD_ML():
         self.default_dataset_type = default_dataset_type
         self.drop_nan = drop_nan
         self.default_na_values = default_na_values
-        self.original_targets_key = original_targets_key
         self.low_memory_mode = low_memory_mode
         self.random_state = random_state
 
@@ -211,23 +202,29 @@ class ABCD_ML():
         self._print('use default subject ids =', self.use_default_subject_ids)
         self._print('default dataset type =', self.default_dataset_type)
         self._print('default NaN values =', self.default_na_values)
-        self._print('original targets key col =', self.original_targets_key)
         self._print('low memory mode =', self.low_memory_mode)
         self._print('random state =', self.random_state)
 
         # Initialze various variables
         self.data, self.covars = pd.DataFrame(), pd.DataFrame()
         self.targets, self.strat = pd.DataFrame(), pd.DataFrame()
+
         self.name_map, self.exclusions, self.inclusions = {}, set(), set()
-        self.covars_encoders, self.targets_encoder = {}, None
+
+        self.covars_encoders, self.targets_encoders = {}, {}
         self.strat_encoders = {}
-        self.all_data, self.train_subjects = None, None
-        self.all_data_keys = {}
-        self.test_subjects = None
+
+        self.all_data, self.all_data_keys = None, {}
+        self.train_subjects, self.test_subjects = None, None
+
+        self.targets_keys = []
+
         self.CV = CV()
         self.default_ML_params = {}
         self.ML_verbosity = {}
+
         self.eval_scores, self.eval_settings = {}, {}
+
         self.strat_u_name = '_STRAT'
 
         if self.notebook:
@@ -319,8 +316,9 @@ class ABCD_ML():
                                Clear_Exclusions,
                                Clear_Inclusions,
                                Drop_Data_Duplicates,
-                               Binarize_Targets,
+                               Binarize_Target,
                                Get_Overlapping_Subjects,
+                               _get_targets_key,
                                _load_datasets,
                                _load_dataset,
                                _common_load,
@@ -343,6 +341,7 @@ class ABCD_ML():
                                _get_cat_keys,
                                _set_all_data_keys,
                                _get_base_covar_names,
+                               _get_base_targets_names,
                                _get_covar_scopes)
 
     # Validation / CV funcationality
@@ -389,7 +388,7 @@ class ABCD_ML():
                                    Show_Data_Dist,
                                    Show_Targets_Dist,
                                    Show_Covars_Dist,
-                                   _show_covar_dist,
+                                   _show_single_dist,
                                    _show_dist,
                                    _display_df,
                                    Plot_Base_Feat_Importances,

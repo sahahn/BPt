@@ -15,7 +15,8 @@ from ABCD_ML.Data_Helpers import (process_binary_input,
                                   get_unused_drop_val,
                                   filter_float_by_outlier,
                                   drop_duplicate_cols,
-                                  get_top_substrs)
+                                  get_top_substrs,
+                                  proc_datatypes)
 
 
 def Load_Name_Map(self, loc, dataset_type='default',
@@ -357,7 +358,7 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[], drop_nan=True,
     self._process_new(self.low_memory_mode)
 
 
-def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
+def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
                 drop_nan='default', code_categorical_as='dummy',
                 categorical_drop_percent=None,
                 filter_float_outlier_percent=None, standardize=False,
@@ -369,12 +370,12 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
     loc : str, Path or None
         The location of the csv file to load co-variates load from.
 
-    col_names : str or list
+    col_name : str or list
         The name(s) of the column(s) to load.
 
         Note: Must be in the same order as data types passed in.
 
-    data_types : {'binary', 'categorical', 'ordinal', 'float'} or list of
+    data_type : {'binary', 'categorical', 'ordinal', 'float'} or list of
         The data types of the different columns to load,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well
@@ -498,14 +499,10 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
 
     self._print('Loading covariates!')
     covars, col_names = self._common_load(loc, dataset_type,
-                                          col_names=col_names,
+                                          col_names=col_name,
                                           drop_nan=drop_nan)
 
-    if not isinstance(data_types, list):
-        data_types = list([data_types])
-
-    assert len(data_types) == len(col_names), \
-        "You must provide the same # of datatypes as column names!"
+    data_types = proc_datatypes(data_type, col_names)
 
     if drop_or_nan == 'nan':
         drop_val = np.nan
@@ -584,8 +581,10 @@ def Load_Covars(self, loc, col_names, data_types, dataset_type='default',
     self._process_new(self.low_memory_mode)
 
 
-def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
-                 filter_outlier_percent=None, categorical_drop_percent=None):
+def Load_Targets(self, loc, col_name, data_type,
+                 dataset_type='default', filter_outlier_percent=None,
+                 categorical_drop_percent=None,
+                 clear_existing=False):
     '''Loads in a set of subject ids and associated targets from a
     2.0_ABCD_Data_Explorer release formatted csv.
     See Notes for more info.
@@ -595,11 +594,14 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
     loc : str, Path or None
         The location of the csv file to load targets load from.
 
-    col_name : str
-        The name of the column to load.
+    col_name : str or list
+        The name(s) of the column(s) to load.
 
-    data_type : {'binary', 'categorical', 'ordinal', 'float'}
-        The data type of the targets column.
+        Note: Must be in the same order as data types passed in.
+
+    data_type : {'binary', 'categorical', 'ordinal', 'float'} or list of
+        The data types of the different columns to load,
+        in the same order as the column names passed in.
         Shorthands for datatypes can be used as well
 
         - 'binary' or 'b' : Binary input
@@ -644,6 +646,20 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
 
         (default = None)
 
+    clear_existing : bool, optional
+        If this parameter is set to True, then any existing
+        loaded targets will first be cleared before loading new targets!
+
+        .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. covars or data, then simply reloading / clearing existing
+            covars might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original data, or if not possible,
+            then reloading the notebook or re-running the script.
+
+        (default = False)
+
     Notes
     ----------
     Targets can be either 'binary', 'categorical', 'ordinal' or 'float',
@@ -659,49 +675,60 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
         supported as of now.
 
     - Ordinal and Float : Targets are read in as a floating point number,\
-        and optionally then filtered for outliers with the\
-        filter_outlier_percent flag.
+        and optionally then filtered.
     '''
 
-    # By default set the target key to be the class original target key
-    self.targets_key = self.original_targets_key
+    if clear_existing:
+        self.Clear_Targets()
 
-    targets = self._common_load(loc, dataset_type, col_name=col_name)
+    targets, col_names = self._common_load(loc, dataset_type,
+                                           col_names=col_name)
 
-    # Rename the column with targets to default targets key name
-    targets = targets.rename({col_name: self.targets_key}, axis=1)
+    data_types = proc_datatypes(data_type, col_names)
 
-    if data_type == 'binary' or data_type == 'b':
+    for key, d_type in zip(col_names, data_types):
 
-        # Processing for binary, with some tolerance to funky input
-        targets, self.targets_encoder = process_binary_input(targets,
-                                                             self.targets_key,
-                                                             self._print)
+        self._print('loading:', key)
+        targets_key = key
 
-    elif data_type == 'categorical' or data_type == 'c':
+        if d_type == 'binary' or d_type == 'b':
 
-        # Processing for categorical input,
-        # targets encoder is a tuple with encoder to ordinal
-        # then encoder from ordinal to sparse.
-        targets, self.targets_key, self.targets_encoder = \
-            process_categorical_input(targets, self.targets_key,
-                                      drop_percent=categorical_drop_percent,
-                                      _print=self._print)
+            # Processing for binary, with some tolerance to funky input
+            targets, self.targets_encoders[key] =\
+                process_binary_input(targets, targets_key, self._print)
 
-    elif (data_type == 'float' or data_type == 'ordinal' or
-            data_type == 'f' or data_type == 'o'):
+        elif d_type == 'categorical' or d_type == 'c':
 
-        if filter_outlier_percent is not None:
-            targets = filter_float_by_outlier(targets, self.targets_key,
-                                              filter_outlier_percent,
-                                              in_place=True,
-                                              _print=self._print)
+            # Processing for categorical input,
+            # targets encoder is a tuple with encoder to ordinal
+            # then encoder from ordinal to sparse.
+            targets, targets_key, self.targets_encoders[key] =\
+                process_categorical_input(targets, targets_key,
+                                          'one hot', categorical_drop_percent,
+                                          _print=self._print)
+
+        elif (d_type == 'float' or d_type == 'ordinal' or
+              d_type == 'f' or d_type == 'o'):
+
+            if filter_outlier_percent is not None:
+                targets = filter_float_by_outlier(targets, targets_key,
+                                                  filter_outlier_percent,
+                                                  in_place=True,
+                                                  _print=self._print)
+
+        # Keep track of each loaded target in targets_keys
+        if targets_key not in self.targets_keys:
+            self.targets_keys.append(targets_key)
 
     self._print('Final shape: ', targets.shape)
 
     # By default only load one set of targets note now, so no merging
-    self.targets = targets
+    self.targets = self._merge_existing(self.targets, targets)
     self._process_new(self.low_memory_mode)
+
+    self._print('All loaded targets')
+    for i in range(len(self.targets_keys)):
+        self._print(i, ':', self.targets_keys[i])
 
 
 def Load_Strat(self, loc, col_names, dataset_type='default',
@@ -988,7 +1015,8 @@ def Clear_Covars(self):
 def Clear_Targets(self):
     '''Resets targets'''
     self.targets = pd.DataFrame()
-    self.targets_encoder = None
+    self.targets_encoders = {}
+    self.targets_keys = []
     self._print('cleared targets.')
 
 
@@ -1058,7 +1086,7 @@ def Drop_Data_Duplicates(self, corr_thresh):
     self._print('Dropped', len(dropped), 'columns as duplicate cols!')
 
 
-def Binarize_Targets(self, lower, upper):
+def Binarize_Target(self, lower, upper, target=0):
     '''This function binarizes a loaded target variable,
     assuming that an ordinal or float type target is loaded,
     otherwise this function will break!
@@ -1072,29 +1100,46 @@ def Binarize_Targets(self, lower, upper):
     upper : float
         Any value that is less than upper will be set to 0,
         and any value <= upper and >= lower will be dropped.
+
+    target : int or str, optional
+        The loaded target in which to Binarize. This can be
+        the int index, or the name of the target column.
+        If only one target is loaded, just leave as default.
+
+        (default = 0)
     '''
 
-    self._print('Binarizing loaded targets!')
-    target_values = self.targets[self.targets_key]
+    targets_key = self._get_targets_key(target)
 
+    self._print('Binarizing', targets_key)
+
+    target_values = self.targets[targets_key]
     self._print('Keeping:', (target_values > upper).sum(), 'as 1.')
     self._print('Keeping:', (target_values < lower).sum(), 'as 0.')
 
-    drop_middle =\
-        target_values.drop(target_values[(target_values <= upper) &
-                                         (target_values >= lower)].index)
+    # Drop out the middle
+    to_drop = target_values[(target_values <= upper) &
+                            (target_values >= lower)].index
+    self.targets = self.targets.drop(to_drop)
+    drop_middle = self.targets[targets_key]
 
+    # Binarize remaining
     binarize = drop_middle.where(drop_middle > lower, 0)
     binarize = binarize.where(binarize < upper, 1)
 
-    self.targets = binarize.to_frame()
+    # Fill back into targets
+    self.targets[targets_key] = binarize
 
-    self.targets[self.targets_key] =\
-        self.targets[self.targets_key].astype('category')
+    # Conv to categorical data type
+    self.targets[targets_key] =\
+        self.targets[targets_key].astype('category')
+
+    # Global proc.
     self._process_new(self.low_memory_mode)
 
-    self.targets_encoder = {0: '<' + str(lower),
-                            1: '>' + str(upper)}
+    # Save new encoder
+    self.targets_encoders[self._get_targets_key(target, base_key=True)] =\
+        {0: '<' + str(lower), 1: '>' + str(upper)}
 
 
 def Get_Overlapping_Subjects(self):
@@ -1109,6 +1154,20 @@ def Get_Overlapping_Subjects(self):
         The set of valid overlapping subjects.
     '''
     return self._get_overlapping_subjects()
+
+
+def _get_targets_key(self, key, base_key=False):
+
+    targets_base_keys = self._get_base_targets_names()
+
+    if isinstance(key, int):
+        ind = key
+    else:
+        ind = targets_base_keys.index(key)
+
+    if base_key:
+        return targets_base_keys[ind]
+    return self.targets_keys[ind]
 
 
 def _load_datasets(self, locs, dataset_types):
@@ -1375,6 +1434,12 @@ def _merge_existing(self, class_data, local_data):
 
     # If other data is already loaded, merge with it
     if len(class_data) > 0:
+
+        repeat_col_names = set(class_data).intersection(set(local_data))
+        if len(repeat_col_names) > 0:
+            raise RuntimeError('These col_names appear in both dfs:',
+                               repeat_col_names)
+
         class_data = pd.merge(class_data, local_data, on=self.subject_id)
         self._print('Merged with existing!')
         self._print('New combined shape:', class_data.shape)
@@ -1826,17 +1891,19 @@ def _get_cat_keys(self):
     # First determine which columns contain categorical
     cat_keys = list(self.all_data.select_dtypes(include='category'))
 
-    # If target is categorical exclude it
-    try:
-        if isinstance(self.targets_key, list):
-            for t_key in self.targets_key:
-                cat_keys.remove(t_key)
+    # If any target is categorical exclude it
+    for targets_key in self.targets_keys:
 
-        else:
-            cat_keys.remove(self.targets_key)
+        try:
+            if isinstance(targets_key, list):
+                for t_key in targets_key:
+                    cat_keys.remove(t_key)
 
-    except ValueError:
-        pass
+            else:
+                cat_keys.remove(targets_key)
+
+        except ValueError:
+            pass
 
     return cat_keys
 
@@ -1874,6 +1941,20 @@ def _get_base_covar_names(self):
             base_covars.add(col)
 
     return list(base_covars)
+
+
+def _get_base_targets_names(self):
+
+    targets_base_keys = []
+
+    for targets_key in self.targets_keys:
+
+        if isinstance(targets_key, list):
+            targets_base_keys.append('_'.join(targets_key[0].split('_')[:-1]))
+        else:
+            targets_base_keys.append(targets_key)
+
+    return targets_base_keys
 
 
 def _get_covar_scopes(self):

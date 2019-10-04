@@ -79,13 +79,21 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
     return None
 
 
-def Show_Targets_Dist(self, cat_show_original_name=True,
+def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
                       show_only_overlap=True, show=True):
     '''This method displays some summary statistics about
     the loaded targets, as well as plots the distibution if possible.
 
     Parameters
     ----------
+    targets : str or list, optional
+        The single (str) or multiple targets (list),
+        in which to display the distributions of. The str input
+        'SHOW_ALL' is reserved, and set to default, for showing
+        the distributions of loaded targets.
+
+        (default = 'SHOW_ALL')
+
     cat_show_original_name : bool, optional
         If True, then when showing a categorical distribution (or binary)
         make the distr plot using the original names. Otherwise,
@@ -116,10 +124,16 @@ def Show_Targets_Dist(self, cat_show_original_name=True,
     else:
         targets_df = self.targets.copy()
 
-    self._show_dist(targets_df, 'Target', cat_show_original_name,
-                    encoders=self.targets_encoder,
-                    original_key=self.original_targets_key,
-                    show=show)
+    if targets == 'SHOW_ALL':
+        targets = self._get_base_targets_names()
+
+    if not isinstance(targets, list):
+        targets = [targets]
+
+    for target in targets:
+        self._show_single_dist(target, targets_df, self.targets_encoders,
+                               cat_show_original_name, show)
+        self._print()
 
 
 def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
@@ -134,6 +148,8 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
         in which to display the distributions of. The str input
         'SHOW_ALL' is reserved, and set to default, for showing
         the distributions of all avaliable covars.
+
+        (default = 'SHOW_ALL')
 
     cat_show_original_name : bool, optional
         If True, then when showing a categorical distribution (or binary)
@@ -172,58 +188,61 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
         covars = [covars]
 
     for covar in covars:
-        self._show_covar_dist(covar, covars_df, cat_show_original_name, show)
+        self._show_single_dist(covar, covars_df, self.covars_encoders,
+                               cat_show_original_name, show)
         self._print()
 
 
-def _show_covar_dist(self, covar, covars_df, cat_show_original_name,
-                     show=True):
+def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
+                      show=True):
 
     # Binary or categorical
-    if covar in self.covars_encoders:
+    if name in all_encoders:
 
         dropped_name = None
-        cov_encoders = self.covars_encoders[covar]
+        encoders = all_encoders[name]
 
-        if isinstance(cov_encoders, tuple):
-            categories = cov_encoders[1].categories_[0]
+        if isinstance(encoders, tuple):
+            categories = encoders[1].categories_[0]
             categories = sorted(categories)
 
-            covar_df_names = [covar + '_' + str(c) for c in categories]
-            valid_df_names = [c for c in covar_df_names if c in covars_df]
+            df_names = [name + '_' + str(cat) for cat in categories]
+            valid_df_names = [name for name in df_names if name in df]
 
-            covar_df = covars_df[valid_df_names].copy()
+            single_df = df[valid_df_names].copy()
 
             # Recover dropped column if dummy coded
-            dropped_name = set(covar_df_names).difference(set(valid_df_names))
+            dropped_name = set(df_names).difference(set(valid_df_names))
+
             if len(dropped_name) > 0:
-
                 dropped_name = list(dropped_name)[0]
-                covar_df[dropped_name] =\
-                    np.where(covar_df.sum(axis=1) == 1, 0, 1)
 
-                covar_df[dropped_name] =\
-                    covar_df[dropped_name].astype('category')
+                single_df[dropped_name] =\
+                    np.where(single_df.sum(axis=1) == 1, 0, 1)
 
-            covar_df = covar_df[covar_df_names]
+                single_df[dropped_name] =\
+                    single_df[dropped_name].astype('category')
+
+            # Back into order
+            single_df = single_df[df_names]
 
         else:
-            covar_df = covars_df[[covar]].copy()
+            single_df = df[[name]].copy()
 
-        self._show_dist(covar_df, covar, cat_show_original_name,
-                        encoders=cov_encoders, original_key=covar,
+        self._show_dist(single_df, name, cat_show_original_name,
+                        encoders=encoders, original_key=name,
                         dropped_name=dropped_name, show=show)
 
     # Regression
-    elif covar in covars_df:
+    elif name in df:
 
-        covar_df = covars_df[[covar]].copy()
-        self._show_dist(covar_df, plot_key=covar,
+        single_df = df[[name]].copy()
+        self._show_dist(single_df, plot_key=name,
                         cat_show_original_name=cat_show_original_name,
-                        original_key=covar, show=show)
+                        original_key=name, show=show)
 
     else:
-        self._print('No covar named', covar, 'found!')
+        self._print('No col named', name, 'found!')
 
 
 def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
@@ -411,12 +430,20 @@ def Plot_Shap_Summary(self, top_n=10, title=None, cat_show_original_name=True,
         shap_df = self.Model_Pipeline.shap_df[0]
         shap_df_arrays = [np.array(df) for df in self.Model_Pipeline.shap_df]
 
-        if cat_show_original_name:
-            class_names = get_original_cat_names(self.targets_key,
-                                                 self.targets_encoder[0],
-                                                 self.original_targets_key)
+        targets_key = self.Model_Pipeline.targets_key
+
+        if isinstance(targets_key, list):
+            base_target_key = '_'.join(targets_key[0].split('_')[:-1])
         else:
-            class_names = self.targets_key
+            base_target_key = targets_key
+
+        if cat_show_original_name:
+            class_names =\
+                get_original_cat_names(targets_key,
+                                       self.Model_Pipeline.targets_encoder[0],
+                                       base_target_key)
+        else:
+            class_names = targets_key
 
     else:
         shap_df = self.Model_Pipeline.shap_df

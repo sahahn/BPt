@@ -61,10 +61,10 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
         fig.clear()
         sns.boxplot(self.data[list(self.data)[i]])
 
+    np.random.seed(1)
     frames = np.random.randint(0, self.data.shape[1], size=num_feats)
     anim = FuncAnimation(fig, update, frames=frames, interval=500)
     html = HTML(anim.to_html5_video())
-    #plt.close(fig)
 
     if self.log_dr is not None:
 
@@ -339,7 +339,7 @@ def Plot_Base_Feat_Importances(self, top_n=10,
     '''
 
     top_x = self.Get_Base_Feat_Importances(top_n).index
-    just_top = self.Model.feature_importances[top_x]
+    just_top = self.Model_Pipeline.feature_importances[top_x]
 
     self._plot_feature_importance(just_top, title=title,
                                   xlabel='Feature Importance',
@@ -384,7 +384,7 @@ def Plot_Shap_Feat_Importances(self, top_n=10,
     try:
         just_top = np.abs(self.avg_shap_df)[top_x]
     except AttributeError:
-        just_top = np.abs(self.Model.shap_df)[top_x]
+        just_top = np.abs(self.Model_Pipeline.shap_df)[top_x]
 
     self._plot_feature_importance(just_top, title=title,
                                   xlabel='Shap Feature Importance',
@@ -402,14 +402,14 @@ def _plot_feature_importance(self, data, title, xlabel, show):
 def Plot_Shap_Summary(self, top_n=10, title=None, cat_show_original_name=True,
                       show=True):
 
-    assert len(self.Model.shap_df) > 0, \
+    assert len(self.Model_Pipeline.shap_df) > 0, \
         "calc_shap_feature_importances must be set to True!"
 
     # For grabbing right cols and subjects
     # And plotting correct values
-    if 'pandas' not in str(type(self.Model.shap_df)):
-        shap_df = self.Model.shap_df[0]
-        shap_df_arrays = [np.array(df) for df in self.Model.shap_df]
+    if 'pandas' not in str(type(self.Model_Pipeline.shap_df)):
+        shap_df = self.Model_Pipeline.shap_df[0]
+        shap_df_arrays = [np.array(df) for df in self.Model_Pipeline.shap_df]
 
         if cat_show_original_name:
             class_names = get_original_cat_names(self.targets_key,
@@ -419,8 +419,8 @@ def Plot_Shap_Summary(self, top_n=10, title=None, cat_show_original_name=True,
             class_names = self.targets_key
 
     else:
-        shap_df = self.Model.shap_df
-        shap_df_arrays = np.array(self.Model.shap_df)
+        shap_df = self.Model_Pipeline.shap_df
+        shap_df_arrays = np.array(self.Model_Pipeline.shap_df)
         class_names = None
 
     shap_cols, shap_inds = list(shap_df), shap_df.index

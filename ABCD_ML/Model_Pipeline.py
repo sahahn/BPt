@@ -238,7 +238,7 @@ class Model_Pipeline():
 
         # Process inputs
         self._check_all_for_user_passed()
-        self._process_model_types()
+        self._process_model()
         self._process_feat_selectors()
         self._process_imputers()
         self._process_scalers()
@@ -361,7 +361,7 @@ class Model_Pipeline():
 
         return params
 
-    def _process_model_types(self):
+    def _process_model(self):
         '''Class function to convert input model types to final
         str indicator, based on problem type and common input correction.
         '''

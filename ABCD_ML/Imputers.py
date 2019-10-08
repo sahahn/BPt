@@ -34,8 +34,8 @@ class Regular_Imputer():
 
         valid_extra_X = X[:, self.valid_mask]
 
-        # Just in case this col didnt have NaN in train, but does in test
-        valid_extra_X[pd.isnull(valid_extra_X)] = 0
+        # Unsure if this is needed, need to check
+        # valid_extra_X[pd.isnull(valid_extra_X)] = 0
 
         ind = valid_extra_X.shape[1]
         impute_shape = (np.shape(X)[0], ind + len(self.inds))
@@ -114,8 +114,8 @@ class Categorical_Imputer():
 
         valid_extra_X = X[:, self.valid_mask]
 
-        # Just in case this col didnt have NaN in train, but does in test
-        valid_extra_X[pd.isnull(valid_extra_X)] = 0
+        # Unsure if this is needed, need to check
+        # valid_extra_X[pd.isnull(valid_extra_X)] = 0
 
         ind = valid_extra_X.shape[1]
         impute_shape = (np.shape(X)[0],

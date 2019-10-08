@@ -527,7 +527,7 @@ class Model_Pipeline():
                                               self.search_type)
 
             base_estimator = base_model[0]
-            base_estimator_params = base_model[2]
+            base_estimator_params = base_model[1]
         else:
             base_estimator = None
             base_estimator_params = {}

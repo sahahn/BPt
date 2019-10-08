@@ -30,6 +30,7 @@ class Regular_Imputer():
 
         if self.valid_mask is None:
             self.valid_mask = ~pd.isnull(X).any(axis=0)
+            self.valid_mask[self.inds] = False
 
         valid_extra_X = X[:, self.valid_mask]
 
@@ -108,6 +109,8 @@ class Categorical_Imputer():
 
         if self.valid_mask is None:
             self.valid_mask = ~pd.isnull(X).any(axis=0)
+            self.valid_mask[self.encoder_inds] = False
+            self.valid_mask[self.ordinal_inds] = False
 
         valid_extra_X = X[:, self.valid_mask]
 

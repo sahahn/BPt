@@ -68,11 +68,11 @@ def Load_Name_Map(self, loc, dataset_type='default',
         print('Name map not loaded!')
 
 
-def Load_Data(self, loc, dataset_type='default', drop_keys=[], drop_nan=True,
-              filter_outlier_percent=None, winsorize_val=None,
-              unique_val_drop_thresh=2, unique_val_warn_percent=.2,
-              drop_col_duplicates=None, drop_or_nan='drop',
-              clear_existing=False):
+def Load_Data(self, loc, dataset_type='default', drop_keys=[],
+              drop_nan='default', filter_outlier_percent=None,
+              winsorize_val=None, unique_val_drop_thresh=2,
+              unique_val_warn_percent=.2, drop_col_duplicates=None,
+              drop_or_nan='drop', clear_existing=False):
     """Load a ABCD2p0NDA (default) or 2.0_ABCD_Data_Explorer (explorer)
     release formatted neuroimaging dataset - of derived ROI level info.
 
@@ -1353,15 +1353,23 @@ def _common_load(self, loc, dataset_type, col_name=None,
     data = self._load(loc, dataset_type)
 
     # Perform common df processing, on subject ids,
-    #  duplicate subjects + eventname
+    # duplicate subjects + eventname
     data = self._proc_df(data)
 
     if col_name is not None:
+
+        if col_name in self.name_map:
+            col_name = self.name_map[col_name]
+
         data = self._drop_na(data[[col_name]], drop_nan)
         return data
 
     if not isinstance(col_names, list):
         col_names = list([col_names])
+
+    for i in range(len(col_names)):
+        if col_names[i] in self.name_map:
+            col_names[i] = self.name_map[col_names[i]]
 
     # Drop rows with NaN
     data = self._drop_na(data[col_names], drop_nan)

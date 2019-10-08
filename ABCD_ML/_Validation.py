@@ -11,7 +11,8 @@ from ABCD_ML.CV import CV
 
 
 def Define_Validation_Strategy(self, groups=None, stratify=None,
-                               train_only_loc=None, train_only_subjects=None):
+                               train_only_loc=None, train_only_subjects=None,
+                               show_original=True):
     '''Define a validation stratagy to be used during different train/test splits,
     in addition to model selection and model hyperparameter CV.
     See Notes for more info.
@@ -61,6 +62,13 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         This parameter is compatible with groups / stratify.
 
         (default = None)
+
+    show_original : bool, optional
+        By default when you define stratifying behavior, a dataframe will
+        be displayed. This param controls if that dataframe shows original
+        names, or if False, then it shows the internally used names.
+
+        (default = True)
 
     Notes
     ----------
@@ -129,7 +137,7 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
 
         self.CV = CV(stratify=strat, train_only=train_only)
         self._get_info_on(self.CV.stratify, stratify, 'stratify', l_e,
-                          train_only)
+                          train_only, show_original)
 
         # Now drop any loaded targets from strat
         for target in targets:
@@ -275,7 +283,8 @@ def _get_one_col_targets(self, key):
     return targets_one_col
 
 
-def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only):
+def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only,
+                 show_original=True):
 
     if v_type == 'groups':
         chunk = 'group preserving'
@@ -311,26 +320,31 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only):
             name = col_names[n]
 
             if name in self.strat_encoders:
-                encoder = self.strat_encoders[name]
+                    encoder = self.strat_encoders[name]
             else:
                 name = name.replace(self.strat_u_name, '')
                 encoder = self.targets_encoders[name]
 
-            if isinstance(encoder, tuple):
-                encoder = encoder[0]
+            if show_original:
 
-            if isinstance(encoder, dict):
-                display_df[name] = [encoder[v] for v in col_split[:, n]]
+                if isinstance(encoder, tuple):
+                    encoder = encoder[0]
+
+                if isinstance(encoder, dict):
+                    display_df[name] = [encoder[v] for v in col_split[:, n]]
+
+                else:
+
+                    try:
+                        display_df[name] =\
+                            encoder.inverse_transform(col_split[:, n])
+                    except ValueError:
+                        display_df[name] =\
+                            np.squeeze(encoder.inverse_transform(
+                                    col_split[:, n].reshape(-1, 1)))
 
             else:
-
-                try:
-                    display_df[name] =\
-                        encoder.inverse_transform(col_split[:, n])
-                except ValueError:
-                    display_df[name] =\
-                        np.squeeze(encoder.inverse_transform(
-                                   col_split[:, n].reshape(-1, 1)))
+                display_df[name] = col_split[:, n]
 
         display_df['Counts'] = counts
         self._display_df(display_df)

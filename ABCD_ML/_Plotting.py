@@ -28,7 +28,8 @@ def _plot(self, save_name, show=True):
 
 
 def Show_Data_Dist(self, num_feats=20, frame_interval=500,
-                   save=True, save_name='data distribution'):
+                   plot_type='bar', save=True,
+                   save_name='data distribution'):
 
     '''This method displays some summary statistics about
     the loaded targets, as well as plots the distibution if possible.
@@ -47,19 +48,35 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
 
         (default = 500)
 
+    plot_type : {'bar', 'hist'}
+        The type of base seaborn plot to generate for each datapoint.
+        Either 'bar' for barplot, or 'hist' or seaborns dist plot.
+
+        (default = 'bar')
+
     save : bool, optional
         If the animation should be saved as a gif, True or False.
 
+        (default = True)
+
     save_name : str, optional
         The name in which the gif should be saved under.
+
+        (default = 'data distribution')
     '''
 
     fig, ax = plt.subplots()
-    fig.set_tight_layout(True)
 
     def update(i):
         fig.clear()
-        sns.boxplot(self.data[list(self.data)[i]])
+
+        col = self.data[list(self.data)[i]]
+        non_nan_col = col[~pd.isnull(col)]
+
+        if plot_type == 'hist':
+            sns.distplot(non_nan_col)
+        else:
+            sns.boxplot(non_nan_col)
 
     np.random.seed(1)
     frames = np.random.randint(0, self.data.shape[1], size=num_feats)
@@ -282,8 +299,9 @@ def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
         self._display_df(display_df)
 
         if dropped_name is not None:
-            self._print('Note:', dropped_name, 'was dropped due to dummy',
-                        'coding but is still shown.')
+            if len(dropped_name) > 0:
+                self._print('Note:', dropped_name, 'was dropped due to dummy',
+                            'coding but is still shown.')
 
         display_names = sums.index
         if cat_show_original_name:

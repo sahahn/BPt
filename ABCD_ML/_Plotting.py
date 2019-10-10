@@ -120,8 +120,8 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
 
     show_only_overlap : bool, optional
         If True, then displays only the distributions for valid overlapping
-        subjects across data, covars, ect... otherwise, shows the current
-        loaded distribution as is.
+        subjects across data, covars, ect... otherwise, if False,
+        shows the current loaded distribution as is.
 
         (default = True)
 

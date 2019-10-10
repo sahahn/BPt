@@ -78,9 +78,9 @@ Drop_Data_Duplicates
 =====================
 .. automethod:: ABCD_ML.Drop_Data_Duplicates
 
-Binarize_Targets
+Binarize_Target
 ================
-.. automethod:: ABCD_ML.Binarize_Targets
+.. automethod:: ABCD_ML.Binarize_Target
 
 Show_Data_Dist
 ==============
@@ -127,9 +127,9 @@ Evaluate
 ========
 .. automethod:: ABCD_ML.Evaluate
 
-Show_Model_Types
+Show_Models
 ================
-.. automethod:: ABCD_ML.Show_Model_Types
+.. automethod:: ABCD_ML.Show_Models
 
 Show_Metrics
 ==============
@@ -151,9 +151,9 @@ Show_Feat_Selectors
 ===================
 .. automethod:: ABCD_ML.Show_Feat_Selectors
 
-Show_Ensemble_Types
+Show_Ensembles
 ===================
-.. automethod:: ABCD_ML.Show_Ensemble_Types
+.. automethod:: ABCD_ML.Show_Ensembles
 
 Get_Base_Feat_Importances
 =========================

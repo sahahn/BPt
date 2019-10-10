@@ -197,14 +197,14 @@ problem_types = ['binary', 'regression', 'categorical multilabel',
 
 lines = []
 
-lines = main_category(lines, 'Model Types')
+lines = main_category(lines, 'Models')
 
-lines.append('Different availible choices for the `model_type` parameter' +
+lines.append('Different availible choices for the `model` parameter' +
              ' are shown below.')
-lines.append('`model_type` is accepted by ' +
+lines.append('`model` is accepted by ' +
              ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
              ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `model_type` is represented' +
+lines.append('The exact str indicator for each `model` is represented' +
              ' by the sub-heading (within "")')
 lines.append('The avaliable models are further broken down by which can work' +
              'with different problem_types.')
@@ -243,17 +243,17 @@ lines.append('The exact str indicator for each `imputer` is represented' +
              ' by the sub-heading (within "")')
 lines.append('Additionally, a link to the original imputers documentation ' +
              'as well as the implemented parameter distributions are shown.')
-lines.append('Imputers are also special, in that a model_type can be passed ' +
-             'instead of the imputer str. In that case, the model_type will' +
+lines.append('Imputers are also special, in that a model can be passed ' +
+             'instead of the imputer str. In that case, the model will' +
              ' be used to fill any NaN by column.')
 lines.append('For `imputer_scope` of float, or custom column names, only ' +
              'regression type models are valid, and for scope of categorical' +
              ', only binary / multiclass model types are valid!')
-lines.append('The sklearn iterative imputer is used when a model_type is' +
+lines.append('The sklearn iterative imputer is used when a model is' +
              ' passed.')
-lines.append('Also, if a model_type is passed, then the `imputer_params`' +
+lines.append('Also, if a model is passed, then the `imputer_params`' +
              ' argument will then be considered as applied to the base ' +
-             ' estimator / model_type!')
+             ' estimator / model!')
 lines.append('')
 lines = add_no_type_block(lines, IMPUTERS)
 
@@ -300,12 +300,12 @@ lines.append('')
 lines = add_block(lines, problem_types, AVALIABLE_SELECTORS, SELECTORS)
 
 lines = main_category(lines, 'Ensemble Types')
-lines.append('Different availible choices for the `ensemble_type` parameter' +
+lines.append('Different availible choices for the `ensemble` parameter' +
              ' are shown below.')
-lines.append('`ensemble_type` is accepted by ' +
+lines.append('`ensemble` is accepted by ' +
              ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
              ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `ensemble_type` is' +
+lines.append('The exact str indicator for each `ensemble` is' +
              ' represented by the sub-heading (within "")')
 lines.append('The avaliable ensemble types are further broken down by which ' +
              'can work with different problem_types.')

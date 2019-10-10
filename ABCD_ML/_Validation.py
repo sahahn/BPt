@@ -100,6 +100,9 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
     the size of the smallest unique group decreases.
     '''
 
+    # Ensures only final overlap of subjects, ect...
+    self._process_new(True)
+
     train_only =\
         self._load_set_of_subjects(loc=train_only_loc,
                                    subjects=train_only_subjects)

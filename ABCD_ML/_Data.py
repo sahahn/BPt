@@ -68,8 +68,8 @@ def Load_Name_Map(self, loc, dataset_type='default',
         print('Name map not loaded!')
 
 
-def Load_Data(self, loc, dataset_type='default', drop_keys=[],
-              drop_nan='default', filter_outlier_percent=None,
+def Load_Data(self, loc, dataset_type='default', overlap_subjects=False,
+              drop_keys=[], drop_nan='default', filter_outlier_percent=None,
               winsorize_val=None, unique_val_drop_thresh=2,
               unique_val_warn_percent=.2, drop_col_duplicates=None,
               drop_or_nan='drop', clear_existing=False):
@@ -116,6 +116,19 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
             (except eventname) or unless specific drop keys are passed.
 
         (default = 'default')
+
+    overlap_subjects : bool, optional
+        This parameter dictates if the loaded data,
+        (after initial basic proc and merge w/ other passed loc's),
+        should be restricted to only the overlapping subjects from previously
+        loaded data, targets, covars or strat. If False, then all subjects will
+        be kept throughout the rest of the optional processing - and only
+        merged at the end with only the existing loaded data (if any).
+
+        Note: Inclusions and Exclusions are always applied regardless of this
+        parameter.
+
+        (default = False)
 
     drop_keys : list, optional
         A list of keys to drop columns by, where if any key given in a columns
@@ -263,6 +276,10 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=[],
         data = self._load_datasets(loc, dataset_type)
     else:
         data = self._load_dataset(loc, dataset_type)
+
+    if overlap_subjects:
+        data = data[data.index.isin(self._get_overlapping_subjects())]
+        self._print('Set to overlap subjects only')
 
     # Drop any columns if any of the drop keys occur in the column name
     column_names = list(data)
@@ -731,7 +748,7 @@ def Load_Targets(self, loc, col_name, data_type,
         self._print(i, ':', self.targets_keys[i])
 
 
-def Load_Strat(self, loc, col_names, dataset_type='default',
+def Load_Strat(self, loc, col_name, dataset_type='default',
                binary_col_inds=None, float_col_inds=None, float_bins=10,
                float_bin_strategy='uniform', clear_existing=False):
     '''Load stratification values from a file.
@@ -742,7 +759,7 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
     loc : str, Path or None
         The location of the csv file to load stratification vals from.
 
-    col_names : str or list
+    col_name : str or list
         The name(s) of the column(s) to load.
 
     dataset_type : {'default', 'basic', 'explorer', 'custom'}, optional
@@ -838,7 +855,7 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
 
     self._print('Reading strat/stratification values!')
     strat, col_names = self._common_load(loc, dataset_type,
-                                         col_names=col_names)
+                                         col_names=col_name)
 
     binary_col_names = []
     if binary_col_inds is not None:
@@ -875,7 +892,7 @@ def Load_Strat(self, loc, col_names, dataset_type='default',
     strat = strat.rename(col_mapping, axis=1)
 
     self.strat = self._merge_existing(self.strat, strat)
-    self._process_new(True)  # Regardless of low mem-mode
+    self._process_new(self.low_memory_mode)
 
 
 def Load_Exclusions(self, loc=None, subjects=None, clear_existing=False):

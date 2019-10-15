@@ -376,7 +376,8 @@ def Load_Data(self, loc, dataset_type='default', overlap_subjects=False,
 
 
 def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
-                drop_nan='default', code_categorical_as='dummy',
+                overlap_subjects=False, drop_nan='default',
+                code_categorical_as='dummy',
                 categorical_drop_percent=None,
                 filter_float_outlier_percent=None, standardize=False,
                 normalize=False, drop_or_nan='drop', clear_existing=False):
@@ -439,6 +440,19 @@ def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
             column called self.subject_id.
 
         (default = 'default')
+
+     overlap_subjects : bool, optional
+        This parameter dictates if the loaded covars,
+        (after initial basic proc)
+        should be restricted to only the overlapping subjects from previously
+        loaded data, targets, covars or strat. If False, then all subjects will
+        be kept throughout the rest of the optional processing - and only
+        merged at the end with only the existing loaded covars (if any).
+
+        Note: Inclusions and Exclusions are always applied regardless of this
+        parameter.
+
+        (default = False)
 
     code_categorical_as: {'dummy', 'one hot', 'ordinal'}
         How to code categorical data,
@@ -516,6 +530,7 @@ def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
 
     self._print('Loading covariates!')
     covars, col_names = self._common_load(loc, dataset_type,
+                                          overlap_subjects,
                                           col_names=col_name,
                                           drop_nan=drop_nan)
 
@@ -599,7 +614,8 @@ def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
 
 
 def Load_Targets(self, loc, col_name, data_type,
-                 dataset_type='default', filter_outlier_percent=None,
+                 dataset_type='default', overlap_subjects=False,
+                 filter_outlier_percent=None,
                  categorical_drop_percent=None,
                  clear_existing=False):
     '''Loads in a set of subject ids and associated targets from a
@@ -644,6 +660,19 @@ def Load_Targets(self, loc, col_name, data_type,
             column called self.subject_id.
 
         (default = 'default')
+
+     overlap_subjects : bool, optional
+        This parameter dictates if the loaded targets,
+        (after initial basic proc)
+        should be restricted to only the overlapping subjects from previously
+        loaded data, targets, covars or strat. If False, then all subjects will
+        be kept throughout the rest of the optional processing - and only
+        merged at the end with only the existing loaded targets (if any).
+
+        Note: Inclusions and Exclusions are always applied regardless of this
+        parameter.
+
+        (default = False)
 
     filter_outlier_percent : float, tuple or None, optional
         For float or ordinal datatypes only.
@@ -699,6 +728,7 @@ def Load_Targets(self, loc, col_name, data_type,
         self.Clear_Targets()
 
     targets, col_names = self._common_load(loc, dataset_type,
+                                           overlap_subjects,
                                            col_names=col_name)
 
     data_types = proc_datatypes(data_type, col_names)
@@ -749,7 +779,8 @@ def Load_Targets(self, loc, col_name, data_type,
 
 
 def Load_Strat(self, loc, col_name, dataset_type='default',
-               binary_col_inds=None, float_col_inds=None, float_bins=10,
+               overlap_subjects=False, binary_col_inds=None,
+               float_col_inds=None, float_bins=10,
                float_bin_strategy='uniform', clear_existing=False):
     '''Load stratification values from a file.
     See Notes for more details on what stratification values are.
@@ -778,6 +809,19 @@ def Load_Strat(self, loc, col_name, dataset_type='default',
             column called self.subject_id.
 
         (default = 'default')
+
+     overlap_subjects : bool, optional
+        This parameter dictates if the loaded strat,
+        (after initial basic proc)
+        should be restricted to only the overlapping subjects from previously
+        loaded data, targets, covars or strat. If False, then all subjects will
+        be kept throughout the rest of the optional processing - and only
+        merged at the end with only the existing loaded strat (if any).
+
+        Note: Inclusions and Exclusions are always applied regardless of this
+        parameter.
+
+        (default = False)
 
     binary_col_inds : int, list or None, optional
         Strat values are loaded as ordinal categorical, but there still
@@ -855,6 +899,7 @@ def Load_Strat(self, loc, col_name, dataset_type='default',
 
     self._print('Reading strat/stratification values!')
     strat, col_names = self._common_load(loc, dataset_type,
+                                         overlap_subjects,
                                          col_names=col_name)
 
     binary_col_names = []
@@ -1323,48 +1368,8 @@ def _load_dataset(self, loc, dataset_type):
     return data
 
 
-def _common_load(self, loc, dataset_type, col_name=None,
-                 col_names=None, drop_nan=True):
-    '''Internal helper function to perform set of commonly used loading functions,
-    on 2.0_ABCD_Data_Explorer release formatted csv'
-
-    Parameters
-    ----------
-    loc : str, Path or None, optional
-        Location of a csv file to load in selected columns from.
-        (default = None)
-
-    dataset_type : {'default', 'basic', 'explorer', 'custom'}
-        The type of file to load from.
-        Dataset types are,
-
-        - 'default' : Use the class defined default dataset type,
-            if not set by the user this is 'basic'.
-
-        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
-
-        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
-
-        - 'custom' : A user-defined custom dataset. Right now this is only
-            supported as a comma seperated file, with the subject names in a
-            column called self.subject_id.
-
-    col_name : str
-        The name of the column to load.
-
-    col_names : str or list
-        The name(s) of the column(s) to load.
-
-    drop_nan : drop_nan param
-        ABCD_ML param for dropping NaN
-
-    Returns
-    -------
-    pandas DataFrame and list
-        If col name is passed, returns just the DataFrame,
-        If col names is passed, returns the Dataframe
-        and processed column names.
-    '''
+def _common_load(self, loc, dataset_type, overlap_subjects,
+                 col_name=None, col_names=None, drop_nan=True):
 
     # Read csv data from loc
     data = self._load(loc, dataset_type)
@@ -1372,6 +1377,10 @@ def _common_load(self, loc, dataset_type, col_name=None,
     # Perform common df processing, on subject ids,
     # duplicate subjects + eventname
     data = self._proc_df(data)
+
+    if overlap_subjects:
+        data = data[data.index.isin(self._get_overlapping_subjects())]
+        self._print('Set to overlap subjects only')
 
     if col_name is not None:
 

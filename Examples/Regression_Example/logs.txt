@@ -1,0 +1,343 @@
+exp_name = Regression_Example
+log_dr = /home/sage/ABCD_ML/Examples
+existing_log = overwrite
+verbose = True
+exp log dr setup at: /home/sage/ABCD_ML/Examples/Regression_Example
+log file at: /home/sage/ABCD_ML/Examples/Regression_Example/logs.txt
+notebook = True
+default subject id col = src_subject_id
+eventname = baseline_year_1_arm_1
+use default subject ids = True
+default dataset type = basic
+default NaN values = ['777', '999']
+original targets key col = targets
+low memory mode = False
+random state = 1
+ABCD_ML object initialized
+Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_betnet02.txt assumed to be dataset type: basic
+dropped ['collection_id', 'abcd_betnet02_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'sex', 'rsfmri_c_ngd_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
+
+Dropped 0 columns, per drop_keys argument
+Dropped 0 cols for all missing values
+Dropped 690 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
+
+
+The following columns have a questionable number of unique values (under the warn thresh of 2055.2000000000003 ): 
+rsfmri_c_ngd_tr unique vals: 11
+rsfmri_c_ngd_numtrs unique vals: 118
+rsfmri_c_ngd_nvols unique vals: 105
+rsfmri_c_ngd_stnvols unique vals: 1280
+rsfmri_c_ngd_stcontignvols unique vals: 1364
+rsfmri_c_ngd_ntpoints unique vals: 1407
+
+loaded shape:  (10276, 181)
+
+Total valid overlapping subjects = 10276
+
+Cleared loaded data.
+Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_betnet02.txt assumed to be dataset type: basic
+dropped ['collection_id', 'abcd_betnet02_id', 'dataset_id', 'subjectkey', 'interview_date', 'interview_age', 'sex', 'rsfmri_c_ngd_visitid', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
+
+Dropped 12 columns, per drop_keys argument
+Dropped 0 cols for all missing values
+Dropped 633 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
+
+loaded shape:  (10333, 169)
+
+Total valid overlapping subjects = 10333
+
+Dropped 78 columns as duplicate cols!
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
+Dropped 0 cols for all missing values
+Dropped 155 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
+Final shape:  (11718, 1)
+
+Total valid overlapping subjects = 10201
+
+Loading covariates!
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
+Dropped 0 cols for all missing values
+Dropped 6 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
+loading: interview_age
+loading: gender
+loaded shape:  (11867, 2)
+
+Total valid overlapping subjects = 10198
+
+-- Target --
+            targets
+count  10198.000000
+mean     107.186409
+std       16.886082
+min        0.000000
+25%       98.000000
+50%      109.000000
+75%      120.000000
+max      208.000000
+
+Num. of unique vals: 54
+
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
+Dropped 0 cols for all missing values
+Dropped 155 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
+Filtering for outliers, dropping rows with params:  1
+Min-Max Score (before outlier filtering): 0.0 208.0
+Min-Max Score (post outlier filtering): 77.0 152.0
+Final shape:  (11347, 1)
+
+Total valid overlapping subjects = 9883
+
+-- Target --
+           targets
+count  9883.000000
+mean    106.778913
+std      14.837300
+min      77.000000
+25%      98.000000
+50%     109.000000
+75%     120.000000
+max     152.000000
+
+Num. of unique vals: 33
+
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_tbss01.txt assumed to be dataset type: basic
+Dropped 0 cols for all missing values
+Dropped 155 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
+Filtering for outliers, dropping rows with params:  0.005
+Min-Max Score (before outlier filtering): 0.0 208.0
+Min-Max Score (post outlier filtering): 71.0 155.0
+Final shape:  (11569, 1)
+
+Total valid overlapping subjects = 10076
+
+-- Target --
+            targets
+count  10076.000000
+mean     107.053196
+std       15.804874
+min       71.000000
+25%       98.000000
+50%      109.000000
+75%      120.000000
+max      153.000000
+
+Num. of unique vals: 36
+
+Final data (w/ target) for modeling loaded shape: (10076, 94)
+Performed train/test split, train size: 7557 test size:  2519
+No default model type passed, set to linear.
+No default imputer passed, set to [mean, median]
+No default imputer scope passed, set to [float, categorical]
+No default scaler_scope passed, set to data
+No default sampler passed, set to None
+No default sample on passed, set to original_targets_key
+No default feat selector passed, set to None
+No default ensemble type passed, set to basic ensemble
+No default ensemble split passed, set to .2
+No default search type passed, set to None
+No default model_type param ind passed, set to 0
+No default imputer scaler params passed, set to 0
+No default data scaler params passed, set to 0
+No default sampler params passed, set to 0
+No default feat selector params passed, set to 0
+No default ensemble type params passed, set to 0
+No default feats_to_use passed, set to all
+No default subjects_to_use passed, set to all
+No default compute_train_score passed, set to False
+No default calc_base_feature_importances passed, set to True
+No default calc_shap_feature_importances passed, set to False
+No default extra params passed, set to empty dict
+Default params set.
+
+
+Running Evaluate with:
+problem_type = regression
+model_type = knn regressor
+model_type_params = 0
+metric = ['r2', 'mse']
+scaler = standard
+scaler_scope = data
+scaler_params = 0
+sampler = None
+feat_selector = univariate selection
+feat_selector_params = 0
+splits = 2
+n_repeats = 3
+search_type = None
+n_jobs = 8
+feats_to_use = all
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Saving scores and settings with unique name: knn regressor
+
+
+Validation Scores
+_________________
+Metric:  r2
+Mean Validation score:  -0.16314193556543813
+Macro Std in Validation score:  0.010337006361842014
+Micro Std in Validation score:  0.012706157541868799
+
+Metric:  mean squared error
+Mean Validation score:  -291.44085445543345
+Macro Std in Validation score:  2.589279674221907
+Micro Std in Validation score:  4.611407155299732
+
+Running Evaluate with:
+problem_type = regression
+model_type = ['knn regressor', 'knn regressor']
+model_type_params = 0
+ensemble_type = basic ensemble
+metric = ['r2', 'mse']
+scaler = standard
+scaler_scope = data
+scaler_params = 0
+sampler = None
+feat_selector = univariate selection
+feat_selector_params = 0
+splits = 2
+n_repeats = 3
+search_type = None
+n_jobs = 8
+feats_to_use = all
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Saving scores and settings with unique name: ensemble
+
+
+Validation Scores
+_________________
+Metric:  r2
+Mean Validation score:  -0.16314193556543813
+Macro Std in Validation score:  0.010337006361842014
+Micro Std in Validation score:  0.012706157541868799
+
+Metric:  mean squared error
+Mean Validation score:  -291.44085445543345
+Macro Std in Validation score:  2.589279674221907
+Micro Std in Validation score:  4.611407155299732
+
+Running Evaluate with:
+problem_type = regression
+model_type = ['knn regressor', 'knn regressor']
+model_type_params = 0
+ensemble_type = bagging
+ensemble_split = 0.2
+ensemble_type_params = 0
+metric = ['r2', 'mse']
+scaler = standard
+scaler_scope = data
+scaler_params = 0
+sampler = None
+feat_selector = univariate selection
+feat_selector_params = 0
+splits = 2
+n_repeats = 3
+search_type = None
+n_jobs = 8
+feats_to_use = all
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Saving scores and settings with unique name: ensemble0
+
+Running Evaluate with:
+problem_type = regression
+model_type = ['dt', 'dt']
+model_type_params = 0
+ensemble_type = bagging
+ensemble_split = 0.2
+ensemble_type_params = 0
+metric = ['r2', 'mse']
+scaler = standard
+scaler_scope = data
+scaler_params = 0
+sampler = None
+feat_selector = univariate selection
+feat_selector_params = 0
+splits = 2
+n_repeats = 3
+search_type = None
+n_jobs = 8
+feats_to_use = all
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Saving scores and settings with unique name: ensemble0
+
+
+Validation Scores
+_________________
+Metric:  r2
+Mean Validation score:  -0.0678506861784239
+Macro Std in Validation score:  0.007856097439806324
+Micro Std in Validation score:  0.012053640621051763
+
+Metric:  mean squared error
+Mean Validation score:  -267.5492390036015
+Macro Std in Validation score:  1.9562223364418547
+Micro Std in Validation score:  3.22163445111765
+
+Running Evaluate with:
+problem_type = regression
+model_type = ['knn regressor', 'knn regressor']
+model_type_params = 0
+ensemble_type = basic ensemble
+metric = ['r2', 'mse']
+scaler = standard
+scaler_scope = data
+scaler_params = 0
+sampler = None
+feat_selector = univariate selection
+feat_selector_params = 0
+splits = 2
+n_repeats = 3
+search_type = None
+n_jobs = 8
+feats_to_use = all
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+calc_base_feature_importances = True
+calc_shap_feature_importances = False
+extra_params = {}
+
+Saving scores and settings with unique name: ensemble1
+
+
+Validation Scores
+_________________
+Metric:  r2
+Mean Validation score:  -0.16314193556543813
+Macro Std in Validation score:  0.010337006361842014
+Micro Std in Validation score:  0.012706157541868799
+
+Metric:  mean squared error
+Mean Validation score:  -291.44085445543345
+Macro Std in Validation score:  2.589279674221907
+Micro Std in Validation score:  4.611407155299732
+

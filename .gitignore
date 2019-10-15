@@ -7,6 +7,7 @@ dist/*
 cover/*
 
 ABCD_ML/Train_Light_GBM.py
+Examples/Test_Samplers.ipynb
 
 .vscode
 Data/*

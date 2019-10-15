@@ -18,70 +18,90 @@ Loading /mnt/sdb2/ABCDFixRelease2p0p1/Fix Release Notes 2.0.1_Public/24. ABCD_Re
 Loaded map file
 Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
 dropped ['collection_id', 'abcd_ddtidp101_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
+
 Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp201.txt assumed to be dataset type: basic
 dropped ['collection_id', 'abcd_ddtidp201_id', 'dataset_id', 'subjectkey', 'interview_age', 'interview_date', 'sex', 'collection_title', 'study_cohort_name'] columns by default  due to dataset type
+
 Dropped 906 columns, per drop_keys argument
 Dropped 0 cols for all missing values
-Dropped 669 rows for missing values
-Dropped rows with missing data
-Filtered data for outliers with value:  0.0001
+Dropped 669 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
+
+Dropped 625 rows based on filter outlier percent: 0.0001
 Winsorized data with value:  0.001
-loaded shape:  (9758, 906)
+loaded shape:  (10106, 906)
 
-Total valid overlapping subjects = 9758
+Total valid overlapping subjects = 10106
 
-Loading targets!
 Loading /mnt/sdb2/ABCD2p0NDA/abcd_ksad01.txt assumed to be dataset type: basic
+4949 subjects dropped for eventname
+Dropped 0 cols for all missing values
+Dropped 151 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
 Final shape:  (11710, 1)
 
-Total valid overlapping subjects = 9612
+Total valid overlapping subjects = 9956
 
-Show Target distribution:
+-- Target --
                Original Value  Count  Frequency
 Internal Name                                  
-0                         0.0   9367   0.974511
-1                         1.0    245   0.025489
+0                         0.0   9706    0.97489
+1                         1.0    250    0.02511
 
 Reading strat/stratification values!
 Loading /mnt/sdb2/2.0_ABCD_Data_Explorer/2.0_NDA_Data/Other Non-Imaging/ABCD ACS Post Stratification Weights.csv assumed to be dataset type: explorer
+Dropped 0 cols for all missing values
+Dropped 2 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
 
-Total valid overlapping subjects = 9610
+Total valid overlapping subjects = 9954
 
 Removing non overlapping subjects
 Reading strat/stratification values!
 Loading /mnt/sdb2/ABCDFixRelease2p0p1/abcd_ddtidp101.txt assumed to be dataset type: basic
+Dropped 0 cols for all missing values
+Dropped 1 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
 Merged with existing!
-New combined shape: (9609, 2)
+New combined shape: (9953, 2)
 
-Total valid overlapping subjects = 9609
+Total valid overlapping subjects = 9953
 
 Removing non overlapping subjects
-CV defined with  stratifying behavior  over 2 unique values.
-   targets  Counts
-0      0.0    9364
-1      1.0     245
+CV defined with stratifying behavior over 2 unique values.
+   targets_STRAT  Counts
+0            0.0    9703
+1            1.0     250
 
-CV defined with  stratifying behavior  over 4 unique values.
-   targets sex  Counts
-0      0.0   F    4466
-1      0.0   M    4898
-2      1.0   F     110
-3      1.0   M     135
+CV defined with stratifying behavior over 4 unique values.
+   targets_STRAT sex_STRAT  Counts
+0            0.0         F    4630
+1            0.0         M    5073
+2            1.0         F     112
+3            1.0         M     138
 
-Final data (w/ target) for modeling loaded shape: (9609, 907)
-Performed train/test split, train size: 7687 test size:  1922
+Final data (w/ target) for modeling loaded shape: (9953, 909)
+Performed train/test split, train size: 7962 test size:  1991
+No default model type passed, set to linear.
+No default imputer passed, set to [mean, median]
+No default imputer scope passed, set to [float, categorical]
 No default scaler_scope passed, set to data
 No default sampler passed, set to None
+No default sample on passed, set to original_targets_key
 No default feat selector passed, set to None
-No default num CV splits passed, set to 3
+No default splits passed, set to 3
 No default num CV repeats passed, set to 2
-No default num internal CV splits passed, set to 3
+No default num search splits passed, set to 3
+No default ensemble type passed, set to basic ensemble
+No default ensemble split passed, set to .2
 No default search type passed, set to None
-No default data scaler param ind passed, set to 0
-No default sampler param ind passed, set to 0
-No default feat selector param ind passed, set to 0
+No default model_type param ind passed, set to 0
+No default imputer scaler params passed, set to 0
+No default data scaler params passed, set to 0
+No default sampler params passed, set to 0
+No default feat selector params passed, set to 0
 No default class weight setting passed, set to None
-No default data_to_use passed, set to all
+No default feats_to_use passed, set to all
 No default compute_train_score passed, set to False
 No default random state passed, using class random state value of 1
 No default calc_base_feature_importances passed, set to True
@@ -95,19 +115,19 @@ Note, if the following values are not desired, call self.Set_ML_Verbosity()
 Running Evaluate with:
 problem_type = binary
 model_type = rf
-model_type_param_ind = 0
+model_type_params = 0
 metric = ['macro roc auc', 'f1', 'precision', 'recall']
 scaler = standard
 scaler_scope = data
-scaler_param_ind = 0
+scaler_params = 0
 sampler = None
 feat_selector = None
-n_splits = 3
+splits = 3
 n_repeats = 2
 search_type = None
 class_weight = None
 n_jobs = 8
-data_to_use = all
+feats_to_use = all
 compute_train_score = False
 random_state = 1
 calc_base_feature_importances = True
@@ -120,9 +140,9 @@ Saving scores and settings with unique name: rf
 Validation Scores
 _________________
 Metric:  macro roc auc
-Mean Validation score:  0.46954417562146833
-Macro Std in Validation score:  0.017228109628990657
-Micro Std in Validation score:  0.028222731348665417
+Mean Validation score:  0.4950530090924931
+Macro Std in Validation score:  0.017692287219678693
+Micro Std in Validation score:  0.025091640516723582
 
 Metric:  f1
 Mean Validation score:  0.0
@@ -138,76 +158,4 @@ Metric:  recall
 Mean Validation score:  0.0
 Macro Std in Validation score:  0.0
 Micro Std in Validation score:  0.0
-
-Running Evaluate with:
-problem_type = binary
-model_type = random forest classifier
-model_type_param_ind = 0
-metric = ['macro roc auc', 'f1', 'precision', 'recall']
-scaler = standard
-scaler_scope = all
-scaler_param_ind = 0
-sampler = None
-feat_selector = None
-n_splits = 3
-n_repeats = 2
-search_type = None
-class_weight = balanced
-n_jobs = 8
-data_to_use = all
-compute_train_score = False
-random_state = 1
-calc_base_feature_importances = True
-calc_shap_feature_importances = False
-extra_params = {}
-
-Saving scores and settings with unique name: random forest classifier
-
-
-Validation Scores
-_________________
-Metric:  macro roc auc
-Mean Validation score:  0.5276360770453683
-Macro Std in Validation score:  0.0018765564520469291
-Micro Std in Validation score:  0.020923260728868635
-
-Metric:  f1
-Mean Validation score:  0.0
-Macro Std in Validation score:  0.0
-Micro Std in Validation score:  0.0
-
-Metric:  precision
-Mean Validation score:  0.0
-Macro Std in Validation score:  0.0
-Micro Std in Validation score:  0.0
-
-Metric:  recall
-Mean Validation score:  0.0
-Macro Std in Validation score:  0.0
-Micro Std in Validation score:  0.0
-
-Running Evaluate with:
-problem_type = binary
-model_type = random forest classifier
-model_type_param_ind = 0
-metric = ['macro roc auc', 'f1', 'precision', 'recall']
-scaler = standard
-scaler_scope = data
-scaler_param_ind = 0
-sampler = random over sampler
-sampler_param_ind = 0
-feat_selector = None
-n_splits = 3
-n_repeats = 2
-search_type = None
-class_weight = None
-n_jobs = 8
-data_to_use = all
-compute_train_score = False
-random_state = 1
-calc_base_feature_importances = True
-calc_shap_feature_importances = False
-extra_params = {}
-
-Saving scores and settings with unique name: random over sampler
 

@@ -1,0 +1,62 @@
+exp_name = example
+log_dr = /home/sage/ABCD_ML/Examples
+existing_log = overwrite
+verbose = True
+exp log dr setup at: /home/sage/ABCD_ML/Examples/example
+log file at: /home/sage/ABCD_ML/Examples/example/logs.txt
+notebook = True
+default subject id col = src_subject_id
+eventname = baseline_year_1_arm_1
+use default subject ids = True
+default dataset type = basic
+default NaN values = ['777', '999']
+original targets key col = targets
+low memory mode = False
+random state = None
+ABCD_ML object initialized
+Loading /mnt/sdb2/ABCDFixRelease2p0p1/Fix Release Notes 2.0.1_Public/24. ABCD_Release_2.0.1_Updates/abcd_2.0.1_mapping.csv assumed to be dataset type: explorer
+Loaded map file
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_stq01.txt assumed to be dataset type: basic
+4951 subjects dropped for eventname
+Dropped 0 cols for all missing values
+Dropped 30 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
+Final shape:  (11845, 1)
+
+Total valid overlapping subjects = 11845
+
+Loading /mnt/sdb2/ABCD2p0NDA/abcd_stq01.txt assumed to be dataset type: basic
+4951 subjects dropped for eventname
+Dropped 0 cols for all missing values
+Dropped 32 rows for missing values, based on the provided drop_nan param: True with actual nan_thresh: 0
+Loaded rows with NaN remaining: 0
+Final shape:  (11843, 1)
+
+Total valid overlapping subjects = 11843
+
+cleared targets.
+-- Target --
+            targets
+count  11838.000000
+mean       7.097166
+std        7.752232
+min        0.000000
+25%        1.750000
+50%        4.000000
+75%        9.000000
+max       28.000000
+
+Num. of unique vals: 44
+
+Binarizing loaded targets!
+Keeping: 1208 as 1.
+Keeping: 1976 as 0.
+
+Total valid overlapping subjects = 3184
+
+-- Target --
+              Original Name  Counts  Frequency
+Internal Name                                 
+0.0                      <1    1976   0.620603
+1.0                     >20    1208   0.379397
+

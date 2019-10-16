@@ -529,7 +529,13 @@ def find_substr(data):
     for val in data[1:]:
         s.intersection_update(substrs(val))
 
-    return max(s, key=len)
+    try:
+        mx = max(s, key=len)
+
+    except ValueError:
+        mx = ''
+
+    return mx
 
 
 def get_top_substrs(keys):

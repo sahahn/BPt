@@ -1324,6 +1324,7 @@ def _print_model_params(self, ML_params, test=False):
     else:
         self._print('Running Evaluate with:')
 
+    self._print('target =', ML_params['target'])
     self._print('problem_type =', ML_params['problem_type'])
 
     self._print('model =', ML_params['model'])

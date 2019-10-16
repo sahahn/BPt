@@ -32,8 +32,8 @@ from ABCD_ML.Ensembles import (get_ensemble_and_params, Basic_Ensemble,
 
 
 class Model_Pipeline():
-    '''Helper class for handling all of the different parameters involved in model
-    training, scaling, handling different datatypes ect...
+    '''Helper class for handling all of the different parameters involved in
+    model training, scaling, handling different datatypes ect...
     '''
 
     def __init__(self, ML_params, CV, search_split_vals,
@@ -2010,8 +2010,8 @@ class Categorical_Model_Pipeline(Model_Pipeline):
         check = super()._check_avaliable(in_strs, avaliable)
 
         if not check and self.sub_problem_type == 'multilabel':
-            self._print('Not all input supports multilabel,')
-            self._print('Switching to multiclass for compatibility!')
+            # self._print('Not all input supports multilabel,')
+            # self._print('Switching to multiclass for compatibility!')
 
             self.sub_problem_type = 'multiclass'
             check = super()._check_avaliable(in_strs, avaliable)

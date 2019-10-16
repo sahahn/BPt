@@ -1863,6 +1863,10 @@ def _prepare_data(self):
     into self.all_data for use directly in ML.
     '''
 
+    self._print('Preparing final data, in self.all_data')
+    self._print('Any changes to loaded data, covars or strat will not be',
+                'included.')
+
     dfs = []
 
     assert len(self.data) > 0 or len(self.covars) > 0, \

@@ -25,6 +25,7 @@ class RFE(RFE):
 
         return self._fit(X, y)
 
+
 AVALIABLE = {
         'binary': {
                 'univariate selection':
@@ -38,18 +39,12 @@ AVALIABLE = {
                 'rfe': 'rfe',
                 'variance threshold': 'variance threshold',
         },
-        'categorical': {
-            'multilabel': {
+        'multilabel': {
                 'variance threshold': 'variance threshold',
-            },
-            'multiclass': {
-                'univariate selection':
-                'univariate selection classification',
-                'rfe': 'rfe',
-                'variance threshold': 'variance threshold',
-            }
         }
 }
+
+AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 
 SELECTORS = {
     'univariate selection regression': (SelectPercentile,
@@ -119,7 +114,7 @@ def Show_Feat_Selectors(self, problem_type=None, feat_selector_str=None,
 
     Parameters
     ----------
-    problem_type : {binary, categorical, regression, None}, optional
+    problem_type : str or None, optional
         Where `problem_type` is the underlying ML problem
 
         (default = None)

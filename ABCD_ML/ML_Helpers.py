@@ -256,34 +256,17 @@ def get_avaliable_by_type(AVALIABLE):
 
     for pt in AVALIABLE:
 
-            if pt == 'categorical':
-                    for st in AVALIABLE[pt]:
-                            avaliable_by_type[pt + ' ' + st] = set()
+        avaliable_by_type[pt] = set()
+        for select in AVALIABLE[pt]:
+                avaliable_by_type[pt].add(AVALIABLE[pt][select])
 
-                            key = pt + ' ' + st
-
-                            for select in AVALIABLE[pt][st]:
-                                    avaliable_by_type[key].add(
-                                        AVALIABLE[pt][st][select])
-
-                            avaliable_by_type[key] =\
-                                list(avaliable_by_type[key])
-                            avaliable_by_type[key].sort()
-
-            else:
-                    avaliable_by_type[pt] = set()
-                    for select in AVALIABLE[pt]:
-                            avaliable_by_type[pt].add(AVALIABLE[pt][select])
-
-                    avaliable_by_type[pt] = list(avaliable_by_type[pt])
-                    avaliable_by_type[pt].sort()
+        avaliable_by_type[pt] = list(avaliable_by_type[pt])
+        avaliable_by_type[pt].sort()
 
     return avaliable_by_type
 
 
 def get_objects_by_type(problem_type, AVALIABLE=None, OBJS=None):
-    '''problem_type must be binary, regression or categorical multilabel or
-    categorical multiclass'''
 
     avaliable_by_type = get_avaliable_by_type(AVALIABLE)
 
@@ -313,12 +296,7 @@ def get_objects(OBJS):
 def proc_problem_type(problem_type, avaliable_by_type):
 
     if problem_type is not None:
-        if problem_type == 'categorical':
-            problem_types = ['categorical multilabel',
-                             'categorical multiclass']
-
-        else:
-            problem_types = [problem_type]
+        problem_types = [problem_type]
 
     else:
         problem_types = list(avaliable_by_type)

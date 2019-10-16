@@ -11,12 +11,14 @@ from ABCD_ML.Data_Helpers import (process_binary_input,
                                   process_ordinal_input,
                                   process_categorical_input,
                                   process_float_input,
+                                  process_multilabel_input,
                                   scale_input,
                                   get_unused_drop_val,
                                   filter_float_by_outlier,
                                   drop_duplicate_cols,
                                   get_top_substrs,
-                                  proc_datatypes)
+                                  proc_datatypes,
+                                  get_common_name)
 
 
 def Load_Name_Map(self, loc, dataset_type='default',
@@ -393,15 +395,22 @@ def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
 
         Note: Must be in the same order as data types passed in.
 
-    data_type : {'binary', 'categorical', 'ordinal', 'float'} or list of
+    data_type : {'binary', 'categorical', 'multilabel', 'ordinal', 'float'}
         The data types of the different columns to load,
         in the same order as the column names passed in.
-        Shorthands for datatypes can be used as well
+        Shorthands for datatypes can be used as well.
 
         - 'binary' or 'b' : Binary input
         - 'categorical' or 'c' : Categorical input
+        - 'multilabel' or 'm' : Multilabel categorical input
         - 'ordinal' or 'o' : Ordinal input
         - 'float' or 'f' : Float numerical input
+
+        .. WARNING::
+            If 'multilabel' datatype is specified, then the associated col name
+            should be a list of columns, and will be assumed to be.
+            For example, if loading multiple targets and one is multilabel,
+            a nested list should be passed to col_name.
 
     drop_nan : bool, int, float or 'default', optional
         If set to True, then will drop any row within the loaded
@@ -528,13 +537,13 @@ def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
     if clear_existing:
         self.Clear_Covars()
 
-    self._print('Loading covariates!')
+    self._print('Loading Covars!')
     covars, col_names = self._common_load(loc, dataset_type,
                                           overlap_subjects,
                                           col_names=col_name,
                                           drop_nan=drop_nan)
 
-    data_types = proc_datatypes(data_type, col_names)
+    data_types, col_names = proc_datatypes(data_type, col_names)
 
     if drop_or_nan == 'nan':
         drop_val = np.nan
@@ -578,7 +587,7 @@ def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
                 covars = covars.reindex(columns=list(non_nan_covars))
 
         elif (d_type == 'float' or d_type == 'ordinal' or
-                d_type == 'f' or d_type == 'o'):
+              d_type == 'f' or d_type == 'o'):
 
             if (filter_float_outlier_percent is not None) and \
                     (d_type == 'float' or d_type == 'f'):
@@ -593,6 +602,15 @@ def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
             non_nan_covars = scale_input(non_nan_covars, key, standardize,
                                          normalize, in_place=False,
                                          drop_val=drop_val)
+
+            self.covars_encoders[key] = None
+
+        elif d_type == 'multilabel' or d_type == 'm':
+            common_name = process_multilabel_input(key)
+
+            self.covars_encoders[common_name] = key
+            self._print('Base str indicator/name for loaded multilabel =',
+                        common_name)
 
         # Now update the changed values within covars
         covars.loc[non_nan_subjects] = non_nan_covars
@@ -632,15 +650,22 @@ def Load_Targets(self, loc, col_name, data_type,
 
         Note: Must be in the same order as data types passed in.
 
-    data_type : {'binary', 'categorical', 'ordinal', 'float'} or list of
+    data_type : {'binary', 'categorical', 'multilabel', 'ordinal', 'float'}
         The data types of the different columns to load,
         in the same order as the column names passed in.
-        Shorthands for datatypes can be used as well
+        Shorthands for datatypes can be used as well.
 
         - 'binary' or 'b' : Binary input
         - 'categorical' or 'c' : Categorical input
+        - 'multilabel' or 'm' : Multilabel categorical input
         - 'ordinal' or 'o' : Ordinal input
         - 'float' or 'f' : Float numerical input
+
+        .. WARNING::
+            If 'multilabel' datatype is specified, then the associated col name
+            should be a list of columns, and will be assumed to be.
+            For example, if loading multiple targets and one is multilabel,
+            a nested list should be passed to col_name.
 
         Datatypes are explained further in Notes.
 
@@ -708,20 +733,21 @@ def Load_Targets(self, loc, col_name, data_type,
 
     Notes
     ----------
-    Targets can be either 'binary', 'categorical', 'ordinal' or 'float',
-    where ordinal and float are treated the same.
+    Targets can be either 'binary', 'categorical', 'multilabel',
+    'ordinal' or 'float',
+    where ordinal and float are generally treated the same.
 
-    - Binary : Targets are read in and label encoded to be 0 or 1, \
+    - binary : Targets are read in and label encoded to be 0 or 1, \
     Will also work if passed column of unique string also, e.g. 'M' and 'F'
 
-    - Categorical : Targets are read in and by default one-hot encoded,\
-        Note: This function is designed only to work with categorical targets\
-        read in from one column!\
-        Reading multiple targets from multiple places is not\
-        supported as of now.
+    - categorical : Targets are treated as taking on one fixed value from a\
+    limited set of possible values.
 
-    - Ordinal and Float : Targets are read in as a floating point number,\
-        and optionally then filtered.
+    - multilabel : Simmilar to categorical, but targets can take on multiple\
+    values, and therefore cannot be reduced to an ordinal representation.
+
+    - ordinal and float : Targets are read in as a floating point number,\
+    and optionally then filtered.
     '''
 
     if clear_existing:
@@ -731,29 +757,28 @@ def Load_Targets(self, loc, col_name, data_type,
                                            overlap_subjects,
                                            col_names=col_name)
 
-    data_types = proc_datatypes(data_type, col_names)
+    data_types, col_names = proc_datatypes(data_type, col_names)
 
     for key, d_type in zip(col_names, data_types):
 
         self._print('loading:', key)
         targets_key = key
 
+        # Processing for binary, with some tolerance to funky input
         if d_type == 'binary' or d_type == 'b':
 
-            # Processing for binary, with some tolerance to funky input
             targets, self.targets_encoders[key] =\
                 process_binary_input(targets, targets_key, self._print)
 
+        # Categorical proc, defaults to ordinal encoding
         elif d_type == 'categorical' or d_type == 'c':
 
-            # Processing for categorical input,
-            # targets encoder is a tuple with encoder to ordinal
-            # then encoder from ordinal to sparse.
-            targets, targets_key, self.targets_encoders[key] =\
-                process_categorical_input(targets, targets_key,
-                                          'one hot', categorical_drop_percent,
-                                          _print=self._print)
+            targets, self.targets_encoders[key] =\
+                process_ordinal_input(targets, targets_key,
+                                      categorical_drop_percent,
+                                      in_place=True, _print=self._print)
 
+        # For float or ordinal, just optionally apply outlier percent filter
         elif (d_type == 'float' or d_type == 'ordinal' or
               d_type == 'f' or d_type == 'o'):
 
@@ -762,6 +787,16 @@ def Load_Targets(self, loc, col_name, data_type,
                                                   filter_outlier_percent,
                                                   in_place=True,
                                                   _print=self._print)
+
+            self.targets_encoders[key] = None
+
+        # Multilabel type must be read in from multiple columns
+        elif d_type == 'multilabel' or d_type == 'm':
+            common_name = process_multilabel_input(targets_key)
+
+            self.targets_encoders[common_name] = targets_key
+            self._print('Base str indicator/name for loaded multilabel =',
+                        common_name)
 
         # Keep track of each loaded target in targets_keys
         if targets_key not in self.targets_keys:
@@ -1379,8 +1414,11 @@ def _common_load(self, loc, dataset_type, overlap_subjects,
     data = self._proc_df(data)
 
     if overlap_subjects:
-        data = data[data.index.isin(self._get_overlapping_subjects())]
-        self._print('Set to overlap subjects only')
+        valid_subjects = self._get_overlapping_subjects()
+
+        if len(valid_subjects) > 0:
+            data = data[data.index.isin(valid_subjects)]
+            self._print('Set to overlap subjects only')
 
     if col_name is not None:
 
@@ -1954,33 +1992,6 @@ def _set_all_data_keys(self):
     self.all_data_keys['cat_keys'] = self._get_cat_keys()
 
 
-def _get_base_covar_names(self):
-
-    encoded = list(self.covars_encoders)
-    all_cols = list(self.covars)
-
-    base_covars = set()
-
-    for col in all_cols:
-        in_one_flag = False
-
-        for e in encoded:
-
-            if e == col:
-                base_covars.add(col)
-            elif e in col:
-                in_one_flag = True
-
-                col = col.replace(e + '_', '')
-                if col.isnumeric():
-                    base_covars.add(e)
-
-        if not in_one_flag:
-            base_covars.add(col)
-
-    return list(base_covars)
-
-
 def _get_base_targets_names(self):
 
     targets_base_keys = []
@@ -1988,45 +1999,53 @@ def _get_base_targets_names(self):
     for targets_key in self.targets_keys:
 
         if isinstance(targets_key, list):
-            targets_base_keys.append('_'.join(targets_key[0].split('_')[:-1]))
+            base_targets_key = get_common_name(targets_key)
         else:
-            targets_base_keys.append(targets_key)
+            base_targets_key = targets_key
+
+        targets_base_keys.append(base_targets_key)
 
     return targets_base_keys
 
 
 def _get_covar_scopes(self):
 
+    # categorical also includes multilabel
+
     covar_scopes = {'float': [],
                     'categorical': [],
                     'ordinal categorical': []}
     cat_encoders = []
 
-    for base_covar in self._get_base_covar_names():
+    for base_covar in list(self.covars_encoders):
 
-        # Categorical or binary
-        if base_covar in self.covars_encoders:
-            cov_encoders = self.covars_encoders[base_covar]
+        cov_encoder = self.covars_encoders[base_covar]
 
-            if isinstance(cov_encoders, tuple):
+        # One-hot or dummy
+        if isinstance(cov_encoder, tuple):
 
-                one_hot_encoder = cov_encoders[1]
-                cat_encoders.append(cov_encoders)
+            one_hot_encoder = cov_encoder[1]
+            cat_encoders.append(cov_encoder)
 
-                categories = one_hot_encoder.categories_[0]
-                covar_df_names = [base_covar + '_' + str(c) for
-                                  c in categories]
-                valid_df_names = [c for c in covar_df_names if
-                                  c in self.all_data]
+            categories = one_hot_encoder.categories_[0]
+            covar_df_names = [base_covar + '_' + str(c) for
+                              c in categories]
+            valid_df_names = [c for c in covar_df_names if
+                              c in self.all_data]
 
-                covar_scopes['categorical'].append(valid_df_names)
+            covar_scopes['categorical'].append(valid_df_names)
 
-            # Binary or ordinal
-            else:
-                covar_scopes['ordinal categorical'].append(base_covar)
+        # Multilabel
+        elif isinstance(cov_encoder, list):
+            cat_encoders.append(None)
+            covar_scopes['categorical'].append(cov_encoder)
 
         # Float
-        else:
+        elif cov_encoder is None:
             covar_scopes['float'].append(base_covar)
+
+        # Binary/ordinal
+        else:
+            covar_scopes['ordinal categorical'].append(base_covar)
 
     return covar_scopes, cat_encoders

@@ -120,8 +120,7 @@ AVALIABLE = {
                         'mean squared log error': 'mean squared log error',
                         'median absolute error': 'median absolute error',
             },
-        'categorical': {
-            'multilabel': {
+        'multilabel': {
                         'weighted roc auc': 'weighted roc auc',
                         'macro roc auc': 'macro roc auc',
                         'micro roc auc': 'micro roc auc',
@@ -159,7 +158,7 @@ AVALIABLE = {
                         'samples jaccard': 'samples jaccard',
                         'by class jaccard': 'by class jaccard',
             },
-            'multiclass': {
+        'categorical': {
                         'weighted roc auc': 'multiclass weighted roc auc',
                         'macro roc auc': 'multiclass macro roc auc',
                         'micro roc auc': 'multiclass micro roc auc',
@@ -196,7 +195,6 @@ AVALIABLE = {
                         'micro jaccard': 'micro jaccard',
                         'by class jaccard': 'by class jaccard',
                         'matthews': 'matthews',
-            }
         }
     }
 
@@ -430,7 +428,7 @@ def Show_Metrics(self, problem_type=None, metric=None):
 
     Parameters
     ----------
-    problem_type : {binary, categorical, regression, None}, optional
+    problem_type : str or None, optional
         Where `problem_type` is the underlying ML problem
 
         (default = None)
@@ -454,11 +452,7 @@ def Show_Metrics(self, problem_type=None, metric=None):
     avaliable_by_type = get_avaliable_by_type(AVALIABLE)
 
     if problem_type is not None:
-        if problem_type == 'categorical':
-            problem_types = ['categorical multilabel',
-                             'categorical multilabel']
-        else:
-            problem_types = [problem_type]
+        problem_types = [problem_type]
 
     else:
         problem_types = list(avaliable_by_type)

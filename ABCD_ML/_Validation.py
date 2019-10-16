@@ -12,9 +12,9 @@ from ABCD_ML.CV import CV
 
 def Define_Validation_Strategy(self, groups=None, stratify=None,
                                train_only_loc=None, train_only_subjects=None,
-                               show_original=True):
-    '''Define a validation stratagy to be used during different train/test splits,
-    in addition to model selection and model hyperparameter CV.
+                               show=True, show_original=True):
+    '''Define a validation stratagy to be used during different train/test
+    splits, in addition to model selection and model hyperparameter CV.
     See Notes for more info.
 
     Parameters
@@ -39,8 +39,8 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         and they will be combined into all unique combinations of
         the elements of the list.
 
-        If any targets cols are passed, they should be categorical or binary
-        compatible!
+        Any target_cols passed must be categorical or binary, and cannot be
+        float/ordinal/multilabel.
 
         (default = None)
 
@@ -62,6 +62,12 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         This parameter is compatible with groups / stratify.
 
         (default = None)
+
+    show : bool, optional
+        By default, if True, information about the defined validation
+        strategy will be shown, including a dataframe if stratify is defined.
+
+        (default = True)
 
     show_original : bool, optional
         By default when you define stratifying behavior, a dataframe will
@@ -113,39 +119,50 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
               'stratify together!')
 
     if groups is not None:
-        groups = self._add_strat_u_name(groups)
 
         if isinstance(groups, str):
             groups = [groups]
 
+        groups = [self.name_map[g] if g in self.name_map else g
+                  for g in groups]
+        groups = self._add_strat_u_name(groups)
+
         grp, l_e = get_unique_combo_df(self.strat, groups)
 
         self.CV = CV(groups=grp, train_only=train_only)
-        self._get_info_on(self.CV.groups, groups, 'groups', l_e, train_only)
+
+        if show:
+            self._get_info_on(self.CV.groups, groups, 'groups', l_e,
+                              train_only)
 
     elif stratify is not None:
 
         if isinstance(stratify, str):
             stratify = [stratify]
 
+        stratify = [self.name_map[s] if s in self.name_map else s
+                    for s in stratify]
+
         # Check if any target keys passed
         targets = self._get_base_targets_names()
         for target in targets:
             if target in stratify:
                 self.strat[target + self.strat_u_name] =\
-                    self._get_one_col_targets(target)
+                    self.targets[target].copy()
 
         stratify = self._add_strat_u_name(stratify)
         strat, l_e = get_unique_combo_df(self.strat, stratify)
 
         self.CV = CV(stratify=strat, train_only=train_only)
-        self._get_info_on(self.CV.stratify, stratify, 'stratify', l_e,
-                          train_only, show_original)
+
+        if show:
+            self._get_info_on(self.CV.stratify, stratify, 'stratify', l_e,
+                              train_only, show_original)
 
         # Now drop any loaded targets from strat
         for target in targets:
-
             strat_target_name = target + self.strat_u_name
+
             if strat_target_name in self.strat:
                 self.strat = self.strat.drop(strat_target_name, axis=1)
 
@@ -249,43 +266,6 @@ def _add_strat_u_name(self, in_vals):
     return new_vals
 
 
-def _get_one_col_targets(self, key):
-    '''Helper method that returns a target col as one col,
-    if orginally multicolumn, then converts back to one column.
-    key is the base target name!
-    '''
-
-    try:
-        len(self.targets_keys) > 0
-    except AttributeError:
-        raise AttributeError('Targets must be loaded before a validation',
-                             'strategy can',
-                             'be defined with targets included!')
-
-    targets_key = self._get_targets_key(key)
-
-    if isinstance(targets_key, list):
-
-        # Reverse encoding
-        encoder = self.targets_encoders[key][1]
-        encoded = encoder.inverse_transform(self.targets[targets_key])
-        encoded = np.squeeze(encoded)
-
-        # To preserve subject index, set to a col in self.targets, then remove
-        self.targets[key] = encoded
-        targets_one_col = self.targets[key]
-        self.targets = self.targets.drop(key, axis=1)
-
-    else:
-        targets_one_col = self.targets[key]
-
-    if targets_one_col.dtype == float:
-        raise TypeError('Stratify by targets can only be used by binary',
-                        'or categorical target types!')
-
-    return targets_one_col
-
-
 def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only,
                  show_original=True):
 
@@ -330,14 +310,10 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only,
 
             if show_original:
 
-                if isinstance(encoder, tuple):
-                    encoder = encoder[0]
-
                 if isinstance(encoder, dict):
                     display_df[name] = [encoder[v] for v in col_split[:, n]]
 
                 else:
-
                     try:
                         display_df[name] =\
                             encoder.inverse_transform(col_split[:, n])

@@ -63,33 +63,28 @@ class Basic_Ensemble(_BaseVoting):
 
         preds = np.array([model.predict(X) for model in self.estimators_])
 
-        if preds[0].dtype == 'float':
+        try:
+            self.estimators_[0].predict_proba([0])
+        except AttributeError:
+            regression = True
+        except ValueError:
+            regression = False
 
-            # Regression
-            if len(preds[0].shape) == 1:
+        if len(preds[0].shape) == 1:
 
-                mean_preds = np.mean(preds, axis=0)
-                return mean_preds
+            if regression:
+                return np.mean(preds, axis=0)
 
-            # Multi-label
             else:
-                vote_results = np.zeros(preds[0].shape)
+                preds = preds.astype(int)
 
-                for i in range(len(vote_results)):
-                    mx = np.argmax(np.bincount(np.argmax(preds[:, i],
-                                   axis=1)))
-                    vote_results[i][mx] = 1
+                class_preds = [np.argmax(np.bincount(preds[:, i]))
+                               for i in range(preds.shape[1])]
+                class_preds = np.array(class_preds)
+                return class_preds
 
-                return vote_results
-
-        # Binary or multi-class
         else:
-
-            class_preds = [np.argmax(np.bincount(preds[:, i]))
-                           for i in range(preds.shape[1])]
-
-            class_preds = np.array(class_preds)
-            return class_preds
+            return np.round(np.mean(preds, axis=0))
 
     def predict_proba(self, X):
         '''Calls predict_proba on each model and
@@ -179,6 +174,7 @@ class DES_Ensemble(_BaseVoting):
         self._set_params('estimators', **kwargs)
         return self
 
+
 AVALIABLE = {
         'binary': {
             'basic ensemble': 'basic ensemble',
@@ -213,16 +209,14 @@ AVALIABLE = {
                 None: 'basic ensemble',
                 'bagging': 'bagging regressor',
         },
-        'categorical': {
-            'multilabel': {
+        'multilabel': {
                 'basic ensemble': 'basic ensemble',
                 None: 'basic ensemble',
-            },
-        }
+        },
 }
 
 # Should be the same
-AVALIABLE['categorical']['multiclass'] = AVALIABLE['binary'].copy()
+AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 
 ENSEMBLES = {
     'aposteriori': (APosteriori, ['des default']),
@@ -291,13 +285,15 @@ def Show_Ensembles(self, problem_type=None, ensemble=None,
 
     Parameters
     ----------
-    problem_type : {binary, categorical, regression, None}, optional
+    problem_type : str or None, optional
         Where `problem_type` is the underlying ML problem
 
         (default = None)
 
     ensemble : str or list
         Where ensemble is a specific str indicator
+
+        (default = None)
 
     show_object : bool, optional
         Flag, if set to True, then will print the

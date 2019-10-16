@@ -37,7 +37,7 @@ class Model_Pipeline():
     '''
 
     def __init__(self, ML_params, CV, search_split_vals,
-                 all_data_keys, targets_key, targets_encoder, covar_scopes,
+                 all_data_keys, targets_key, covar_scopes,
                  cat_encoders, progress_bar, param_search_verbose,
                  _print=print):
         ''' Init function for Model
@@ -180,7 +180,6 @@ class Model_Pipeline():
         self.strat_keys = all_data_keys['strat_keys']
         self.cat_keys = all_data_keys['cat_keys']
         self.targets_key = targets_key
-        self.targets_encoder = targets_encoder
         self.covar_scopes = covar_scopes
         self.cat_encoders = cat_encoders
         self.progress_bar = progress_bar
@@ -489,6 +488,11 @@ class Model_Pipeline():
                                               imputer_param,
                                               scope)
 
+        for c_encoder in self.cat_encoders:
+            if c_encoder is None:
+                raise RuntimeError('Impution on multilabel-type covars is not',
+                                   'currently supported!')
+
         imputer, imputer_params =\
             get_imputer_and_params(imputer_str, self.extra_params,
                                    imputer_param, self.search_type, inds,
@@ -741,14 +745,6 @@ class Model_Pipeline():
         if self.problem_type == 'regression':
             categorical = False
 
-        # Set targets_encoder if multilabel
-        targets_encoder = None
-        if self.targets_encoder is not None:
-
-            # If multi-label, target_encoder saved in index 1
-            if len(self.targets_encoder) > 1:
-                targets_encoder = self.targets_encoder[1]
-
         cat_inds, ordinal_inds =\
             self._get_cat_ordinal_inds()
         covars_inds = cat_inds + [[o] for o in ordinal_inds]
@@ -760,7 +756,6 @@ class Model_Pipeline():
                                    sample_target=sample_target,
                                    sample_strat=sample_strat,
                                    categorical=categorical,
-                                   targets_encoder=targets_encoder,
                                    recover_strat=recover_strat,
                                    covars_inds=covars_inds)
 
@@ -2003,64 +1998,6 @@ class Categorical_Model_Pipeline(Model_Pipeline):
 
         super()._set_default_params()
         self.problem_type = 'categorical'
-        self.sub_problem_type = 'multilabel'
-
-    def _check_avaliable(self, in_strs, avaliable):
-
-        check = super()._check_avaliable(in_strs, avaliable)
-
-        if not check and self.sub_problem_type == 'multilabel':
-            # self._print('Not all input supports multilabel,')
-            # self._print('Switching to multiclass for compatibility!')
-
-            self.sub_problem_type = 'multiclass'
-            check = super()._check_avaliable(in_strs, avaliable)
-
-        return check
-
-    def _get_avaliable_by_type(self, avaliable, in_strs, problem_type='class'):
-
-        if problem_type == 'class':
-            avaliable_by_type =\
-                avaliable[self.problem_type][self.sub_problem_type]
-        else:
-            if problem_type in avaliable[self.problem_type]:
-                avaliable_by_type =\
-                    avaliable[self.problem_type][problem_type]
-            elif problem_type in avaliable:
-                avaliable_by_type = avaliable[problem_type]
-            else:
-                avaliable_by_type = {}
-
-        for s in in_strs:
-            if 'user passed' in s:
-                avaliable_by_type[s] = s
-
-        return avaliable_by_type
-
-    def _conv_targets(self, y):
-        '''Overrides parent method, if the sub problem type
-        is multi-class, then the target will need to be inverse transform.
-
-        Parameters
-        ----------
-        y : array-like
-            ML target
-
-        Returns
-        ----------
-        array-like
-            inverse encoded y if multiclass, otherwise input y
-        '''
-
-        # If multiclass, convert to correct score format
-        if self.sub_problem_type == 'multiclass':
-            y = self.targets_encoder[1].inverse_transform(y).squeeze()
-
-        else:
-            y = y.astype(int)
-
-        return y
 
     def _init_shap_df(self, data):
 
@@ -2104,3 +2041,23 @@ class Categorical_Model_Pipeline(Model_Pipeline):
 
             # Reset self.shap_dfs to clear memory
             self.shap_dfs = []
+
+
+class Multilabel_Model_Pipeline(Categorical_Model_Pipeline):
+    '''Child class of Model for multilabel problem types.'''
+
+    def _set_default_params(self):
+        '''Set default params'''
+
+        super()._set_default_params()
+        self.problem_type = 'multilabel'
+
+    def _process_samplers(self):
+
+        if self.sampler_strs is not None:
+            raise RuntimeError('Samplers with multilabel data is not',
+                               'currently supported!')
+
+        else:
+            self.samplers = []
+            self.sampler_params = {}

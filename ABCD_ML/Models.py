@@ -56,18 +56,17 @@ AVALIABLE = {
                         'lasso':              'lasso regressor',
                         'xgb':                'xgb regressor',
         },
-        'categorical': {
-                'multilabel': {
+
+        'multilabel': {
                         'knn':                'knn classifier',
                         'dt':                 'dt classifier',
                         'random forest':      'random forest classifier',
                         'mlp':                'mlp classifier',
-                }
         }
 }
 
 # Should be the same
-AVALIABLE['categorical']['multiclass'] = AVALIABLE['binary'].copy()
+AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 
 
 MODELS = {
@@ -135,7 +134,7 @@ def Show_Models(self, problem_type=None, model=None,
                 Where `problem_type` is the underlying ML problem or
                 rather type of problem...
                 Note enter either 'binary', 'regression',
-                'categorical multilabel', 'categorical multiclass'
+                'categorical', 'multilabel'
                 or None.
 
                 (default = None)

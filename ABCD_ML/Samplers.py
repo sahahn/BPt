@@ -21,7 +21,7 @@ class Sampler_Wrapper():
 
     def __init__(self, sampler_obj, sampler_type='change', strat_inds=[],
                  sample_target=True, sample_strat=[], categorical=True,
-                 targets_categories=None, recover_strat=False, covars_inds=[],
+                 recover_strat=False, covars_inds=[],
                  regression_bins=5, regression_bin_strategy='uniform',
                  copy=True, **kwargs):
 
@@ -31,8 +31,6 @@ class Sampler_Wrapper():
 
         # Which inds are strat (to be ignored / re-filled)
         self.strat_inds = strat_inds
-
-        self.targets_categories = targets_categories
 
         # Binary, sample target or not
         self.sample_target = sample_target
@@ -59,14 +57,6 @@ class Sampler_Wrapper():
 
         # Init sampler, w/ rest of passed args if any
         self.init_sampler(kwargs)
-
-        # Init targets encoder
-        self.init_targets_encoder()
-
-    def init_targets_encoder(self):
-        self.targets_encoder = OneHotEncoder(sparse=False)
-        self.targets_encoder.categories_ = self.targets_categories
-        self.targets_encoder._legacy_mode = False
 
     def init_sampler(self, kwargs):
 
@@ -210,14 +200,11 @@ class Sampler_Wrapper():
 
         return X_resamp
 
-    def categorical_fit_resample(self, X_copy, base_X, y, multilabel):
+    def categorical_fit_resample(self, X_copy, base_X, y):
 
         if self.sample_target is True:
 
-            if multilabel:
-                y_multiclass = self.targets_encoder.inverse_transform(y)
-            else:
-                y_multiclass = y.reshape(-1, 1)
+            y_multiclass = y.reshape(-1, 1)
 
             # Just sample on y
             if len(self.sample_strat) == 0:
@@ -254,31 +241,23 @@ class Sampler_Wrapper():
             X_resamp = self.get_return_X(X_copy, X_resamp, strat_resamp)
 
             # Convert multiclass y back to encoded y
-            if multilabel:
-                y_resamp = self.targets_encoder.transform(y_multiclass_resamp)
-            else:
-                y_resamp = np.squeeze(y_multiclass_resamp)
+            y_resamp = np.squeeze(y_multiclass_resamp)
 
             return X_resamp, y_resamp
 
         else:
 
-            # For multiclass, want one-hot encoded here
-            if not multilabel:
-                y_encoder = OneHotEncoder(categories='auto', sparse=False)
+            y_encoder = OneHotEncoder(categories='auto', sparse=False)
 
-                if len(y.shape) == 1:
-                    flat_input = True
-                    y = y.reshape(-1, 1)
-                else:
-                    flat_input = False
+            if len(y.shape) == 1:
+                flat_input = True
+                y = y.reshape(-1, 1)
+            else:
+                flat_input = False
 
-                # Multiclass
-                if np.max(y) > 1:
-                    y_one_hot = y_encoder.fit_transform(y)
-                else:
-                    y_one_hot = y
-
+            # Multiclass
+            if np.max(y) > 1:
+                y_one_hot = y_encoder.fit_transform(y)
             else:
                 y_one_hot = y
 
@@ -317,14 +296,12 @@ class Sampler_Wrapper():
             X_resamp = self.fix_X_resamp(X_copy, X_resamp)
             X_resamp = self.get_return_X(X_copy, X_resamp, strat_resamp)
 
-            if not multilabel:
+            # Multiclass
+            if y_resamp.shape[1] > 1:
+                y_resamp = y_encoder.transform(y_resamp)
 
-                # Multiclass
-                if y_resamp.shape[1] > 1:
-                    y_resamp = y_encoder.transform(y_resamp)
-
-                if flat_input:
-                    y_resamp = np.squeeze(y_resamp)
+            if flat_input:
+                y_resamp = np.squeeze(y_resamp)
 
             return X_resamp, y_resamp
 
@@ -432,15 +409,7 @@ class Sampler_Wrapper():
         base_X = X_copy[:, self.base_X_mask]
 
         if self.categorical:
-
-            # Check if multilabel or not
-            multilabel = False
-            if len(y.shape) > 1:
-                if y.shape[1] > 1:
-                    multilabel = True
-
-            return self.categorical_fit_resample(X_copy, base_X, y_copy,
-                                                 multilabel)
+            return self.categorical_fit_resample(X_copy, base_X, y_copy)
 
         # Regression type problem
         else:
@@ -469,7 +438,6 @@ class Sampler_Wrapper():
                   'categorical': self.categorical,
                   'recover_strat': self.recover_strat,
                   'covars_inds': self.covars_inds,
-                  'targets_categories': self.targets_categories,
                   'regression_bins': self.regression_bins,
                   'regression_bin_strategy': self.regression_bin_strategy,
                   'copy': self.copy
@@ -504,8 +472,8 @@ SAMPLERS = {
 
 def get_sampler_and_params(sampler_str, extra_params, params, search_type,
                            strat_inds=[], sample_target=False, sample_strat=[],
-                           categorical=True, targets_encoder=None,
-                           recover_strat=False, covars_inds=[]):
+                           categorical=True, recover_strat=False,
+                           covars_inds=[]):
 
     # Grab base object, params, and param distributions
     base_sampler_obj, sampler_wrapper_params, sampler_params =\
@@ -518,7 +486,6 @@ def get_sampler_and_params(sampler_str, extra_params, params, search_type,
     sampler_wrapper_params['sample_target'] = sample_target
     sampler_wrapper_params['sample_strat'] = sample_strat
     sampler_wrapper_params['categorical'] = categorical
-    sampler_wrapper_params['targets_categories'] = targets_encoder.categories_
     sampler_wrapper_params['recover_strat'] = recover_strat
     sampler_wrapper_params['covars_inds'] = covars_inds
 

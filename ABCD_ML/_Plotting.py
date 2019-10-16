@@ -199,7 +199,7 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
         covars_df = self.covars.copy()
 
     if covars == 'SHOW_ALL':
-        covars = self._get_base_covar_names()
+        covars = list(self.covars_encoders)
 
     if not isinstance(covars, list):
         covars = [covars]
@@ -213,14 +213,40 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
 def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
                       show=True):
 
-    # Binary or categorical
-    if name in all_encoders:
+    try:
+        encoder = all_encoders[name]
+    except KeyError:
+        raise KeyError('No col named', name, 'found!')
+
+    # list = multilabel
+    # 3-tuple = one-hot or dummy
+    # OrdinalEncoder = ordinal categorical
+    # None = regression
+    # dict = Binary conv'ed from regression
+
+    # Regression
+    if encoder is None:
+
+        single_df = df[[name]].copy()
+        self._show_dist(single_df, plot_key=name,
+                        cat_show_original_name=cat_show_original_name,
+                        encoder=encoder, original_key=name, show=show)
+
+    # Multilabel
+    elif isinstance(encoder, list):
+        single_df = df[encoder].copy()
+        self._show_dist(single_df, plot_key=name,
+                        cat_show_original_name=cat_show_original_name,
+                        encoder=encoder, original_key=name, show=show)
+
+    # Binary/ordinal or one-hot/dummy
+    else:
 
         dropped_name = None
-        encoders = all_encoders[name]
 
-        if isinstance(encoders, tuple):
-            categories = encoders[1].categories_[0]
+        # One-hot / dummy
+        if isinstance(encoder, tuple):
+            categories = encoder[1].categories_[0]
             categories = sorted(categories)
 
             df_names = [name + '_' + str(cat) for cat in categories]
@@ -234,8 +260,12 @@ def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
             if len(dropped_name) > 0:
                 dropped_name = list(dropped_name)[0]
 
+                nans = single_df[single_df.isna().any(axis=1)].index
+
                 single_df[dropped_name] =\
                     np.where(single_df.sum(axis=1) == 1, 0, 1)
+
+                single_df.loc[nans] = np.nan
 
                 single_df[dropped_name] =\
                     single_df[dropped_name].astype('category')
@@ -243,26 +273,16 @@ def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
             # Back into order
             single_df = single_df[df_names]
 
+        # Binary / ordinal
         else:
             single_df = df[[name]].copy()
 
         self._show_dist(single_df, name, cat_show_original_name,
-                        encoders=encoders, original_key=name,
+                        encoder=encoder, original_key=name,
                         dropped_name=dropped_name, show=show)
 
-    # Regression
-    elif name in df:
 
-        single_df = df[[name]].copy()
-        self._show_dist(single_df, plot_key=name,
-                        cat_show_original_name=cat_show_original_name,
-                        original_key=name, show=show)
-
-    else:
-        self._print('No col named', name, 'found!')
-
-
-def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
+def _show_dist(self, data, plot_key, cat_show_original_name, encoder=None,
                original_key=None, dropped_name=None, show=True):
 
     # Ensure works with NaN data loaded
@@ -272,29 +292,52 @@ def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
 
     self._print('--', plot_key, '--')
 
-    # Binary or categorical
-    if no_nan_data.dtypes[0].name == 'category':
+    # Regression
+    if encoder is None:
 
-        # Categorical
-        if isinstance(encoders, tuple):
-            encoder = encoders[0]
+        summary = no_nan_data.describe()
+
+        self._display_df(summary)
+
+        vals = no_nan_data[original_key]
+        self._print('Num. of unique vals:', len(np.unique(vals)))
+        self._print()
+
+        sns.distplot(no_nan_data)
+
+    # Binary/ordinal or one-hot
+    else:
+
+        # One-hot
+        if isinstance(encoder, tuple):
+            encoder = encoder[0]
             sums = no_nan_data.sum()
 
-        # Binary
+        # Multilabel
+        elif isinstance(encoder, list):
+            cat_show_original_name = False
+            sums = no_nan_data.sum()
+
+        # Binary/ordinal
         else:
-            encoder = encoders
             unique, counts = np.unique(no_nan_data, return_counts=True)
             sums = pd.Series(counts, unique)
 
-        original_names = get_original_cat_names(sums.index,
-                                                encoder,
-                                                original_key)
-
         display_df = pd.DataFrame(sums, columns=['Counts'])
         display_df.index.name = 'Internal Name'
-        display_df['Original Name'] = original_names
         display_df['Frequency'] = sums / len(no_nan_data)
-        display_df = display_df[['Original Name', 'Counts', 'Frequency']]
+
+        if cat_show_original_name:
+
+            original_names = get_original_cat_names(sums.index,
+                                                    encoder,
+                                                    original_key)
+
+            display_df['Original Name'] = original_names
+            display_df = display_df[['Original Name', 'Counts', 'Frequency']]
+
+        else:
+            display_df = display_df[['Counts', 'Frequency']]
 
         self._display_df(display_df)
 
@@ -310,19 +353,6 @@ def _show_dist(self, data, plot_key, cat_show_original_name, encoders=None,
 
         sns.barplot(x=sums.values, y=display_names, orient='h')
         plt.xlabel('Counts')
-
-    # Regression, float / ordinal
-    else:
-
-        summary = no_nan_data.describe()
-
-        self._display_df(summary)
-
-        vals = no_nan_data[original_key]
-        self._print('Num. of unique vals:', len(np.unique(vals)))
-        self._print()
-
-        sns.distplot(no_nan_data)
 
     # If any NaN
     if len(nan_subjects) > 0:

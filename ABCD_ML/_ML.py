@@ -11,28 +11,28 @@ from ABCD_ML.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ABCD_ML.ML_Helpers import compute_macro_micro
 from ABCD_ML.Model_Pipeline import (Regression_Model_Pipeline,
                                     Binary_Model_Pipeline,
-                                    Categorical_Model_Pipeline)
+                                    Categorical_Model_Pipeline,
+                                    Multilabel_Model_Pipeline)
 
 
 def Set_Default_ML_Params(self, problem_type='default', target='default',
                           model='default', model_params='default',
                           metric='default', imputer='default',
                           imputer_scope='default', imputer_params='default',
-                          scaler='default',
-                          scaler_scope='default', scaler_params='default',
-                          sampler='default', sample_on='default',
-                          sampler_params='default', feat_selector='default',
-                          feat_selector_params='default',
-                          ensemble='default', ensemble_split='default',
-                          ensemble_params='default', splits='default',
-                          n_repeats='default', search_type='default',
-                          search_splits='default', search_n_iter='default',
-                          feats_to_use='default', subjects_to_use='default',
+                          scaler='default', scaler_scope='default',
+                          scaler_params='default', sampler='default',
+                          sample_on='default', sampler_params='default',
+                          feat_selector='default',
+                          feat_selector_params='default', ensemble='default',
+                          ensemble_split='default', ensemble_params='default',
+                          splits='default', n_repeats='default',
+                          search_type='default', search_splits='default',
+                          search_n_iter='default', feats_to_use='default',
+                          subjects_to_use='default',
                           calc_base_feature_importances='default',
                           calc_shap_feature_importances='default',
-                          n_jobs='default',
-                          random_state='default',
-                          compute_train_score='default',
+                          n_jobs='default', random_state='default',
+                          compute_train_score='default', 
                           extra_params='default'):
     '''Sets self.default_ML_params dictionary with user passed or default
     values. In general, if any argument is left as 'default' and it has
@@ -42,12 +42,14 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     Parameters
     ----------
-    problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
+    problem_type : {'regression', 'binary', 'categorical', 'multilabel', \
+'default'}, optional
 
         - 'regression' : For ML on float or ordinal target data.
         - 'binary' : For ML on binary target data.
         - 'categorical' : For ML on categorical target data,\
-                          as either multilabel or multiclass.
+                          as multiclass.
+        - 'multilabel' : On categorical multilabel data.
         - 'default' : Use 'regression' if nothing else already defined.
 
         If 'default', and not already defined, set to 'regression'
@@ -104,8 +106,9 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         metric for the problem type.
 
         - 'regression'  : 'r2'
-        - 'binary'      : 'roc'
-        - 'categorical' : 'weighted roc auc'
+        - 'binary'      : 'macro roc auc'
+        - 'categorical' : 'macro f1'
+        - 'multilabel' : 'macro roc auc'
 
         (default = 'default')
 
@@ -574,7 +577,8 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     '''
 
     default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
-                       'categorical': 'weighted roc auc'}
+                       'categorical': 'macro f1',
+                       'multilabel': 'macro roc auc'}
 
     if problem_type != 'default':
         problem_type = problem_type.lower()
@@ -1496,7 +1500,8 @@ def _init_model(self, ML_params):
 
     problem_types = {'binary': Binary_Model_Pipeline,
                      'regression': Regression_Model_Pipeline,
-                     'categorical': Categorical_Model_Pipeline}
+                     'categorical': Categorical_Model_Pipeline,
+                     'multilabel': Multilabel_Model_Pipeline}
 
     assert ML_params['problem_type'] in problem_types, \
         "Invalid problem type!"
@@ -1504,9 +1509,6 @@ def _init_model(self, ML_params):
     Model_Pipeline = problem_types[ML_params['problem_type']]
 
     targets_key = self._get_targets_key(ML_params['target'])
-    targets_encoder =\
-        self.targets_encoders[self._get_targets_key(ML_params['target'],
-                              base_key=True)]
 
     # Grab index info
     covar_scopes, cat_encoders = self._get_covar_scopes()
@@ -1529,7 +1531,7 @@ def _init_model(self, ML_params):
     self.Model_Pipeline =\
         Model_Pipeline(ML_params, self.CV, search_split_vals,
                        self.all_data_keys, targets_key,
-                       targets_encoder, covar_scopes, cat_encoders,
+                       covar_scopes, cat_encoders,
                        self.ML_verbosity['progress_bar'],
                        self.ML_verbosity['param_search_verbose'],
                        self._ML_print)

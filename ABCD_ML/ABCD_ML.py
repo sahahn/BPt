@@ -340,16 +340,14 @@ class ABCD_ML():
                                _prepare_data,
                                _get_cat_keys,
                                _set_all_data_keys,
-                               _get_base_covar_names,
                                _get_base_targets_names,
                                _get_covar_scopes)
 
     # Validation / CV funcationality
-    from ABCD_ML._Validation import(Define_Validation_Strategy,
-                                    Train_Test_Split,
-                                    _add_strat_u_name,
-                                    _get_one_col_targets,
-                                    _get_info_on)
+    from ABCD_ML._Validation import (Define_Validation_Strategy,
+                                     Train_Test_Split,
+                                     _add_strat_u_name,
+                                     _get_info_on)
 
     # Machine Learning functionality
     from ABCD_ML._ML import (Set_Default_ML_Params,

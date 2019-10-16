@@ -554,6 +554,10 @@ def get_top_substrs(keys):
 
 def proc_datatypes(data_types, col_names):
 
+    # For multi-label case
+    if data_types == 'multilabel' or data_types == 'm':
+        col_names = [col_names]
+
     if not isinstance(data_types, list):
         data_types = list([data_types])
 
@@ -561,4 +565,26 @@ def proc_datatypes(data_types, col_names):
         raise RuntimeError('The same number of datatypes were not passed as',
                            'columns!')
 
-    return data_types
+    return data_types, col_names
+
+
+def process_multilabel_input(keys):
+
+    if not isinstance(keys, list):
+        raise RuntimeError(key, 'must be a list for',
+                           'multilabel type')
+
+    if len(keys) < 2:
+        raise RuntimeError(keys, 'must be read from multiple',
+                           'columns for multilabel type')
+
+    return get_common_name(keys)
+
+
+def get_common_name(keys):
+
+    top_strs = get_top_substrs(keys)
+    if len(top_strs) == 0:
+        return keys[0]
+    else:
+        return top_strs[0]

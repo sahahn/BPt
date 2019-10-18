@@ -1,12 +1,12 @@
-.. _Model Types:
+.. _Models:
  
-***********
-Model Types
-***********
+******
+Models
+******
 
-Different availible choices for the `model_type` parameter are shown below.
-`model_type` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `model_type` is represented by the sub-heading (within "")
+Different availible choices for the `model` parameter are shown below.
+`model` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `model` is represented by the sub-heading (within "")
 The avaliable models are further broken down by which can workwith different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
@@ -23,10 +23,11 @@ binary
 
 		defaults only
 
-	1. "dt rs" ::
+	1. "dt classifier rs" ::
 
 		max_depth: Random Integer Distribution (1, 19)
 		min_samples_split: Random Integer Distribution (2, 49)
+		class_weight: [None, 'balanced']
 
 
 "elastic net logistic"
@@ -42,6 +43,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
+		class_weight: [None, 'balanced']
 		l1_ratio: 0.5
 
 	1. "elastic classifier" ::
@@ -50,6 +52,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
+		class_weight: [None, 'balanced']
 		l1_ratio: Random Uniform Distribution (0.0, 1.0)
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
@@ -108,6 +111,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
+		class_weight: [None, 'balanced']
 
 	1. "lasso C" ::
 
@@ -115,6 +119,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
+		class_weight: [None, 'balanced']
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
@@ -129,7 +134,7 @@ binary
 
 		silent: True
 
-	1. "lgbm rs" ::
+	1. "lgbm classifier rs1" ::
 
 		silent: True
 		boosting_type: ['gbdt', 'dart', 'goss']
@@ -141,12 +146,12 @@ binary
 		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
 		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
 		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
+		class_weight: [None, 'balanced']
 
-	2. "lgbm 2" ::
+	2. "lgbm classifier rs2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		histogram_pool_size: 16384
 		boosting_type: ['gbdt', 'dart']
 		min_child_samples: [1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000]
 		num_leaves: [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250]
@@ -154,6 +159,7 @@ binary
 		subsample: [0.7, 0.9, 1.0]
 		learning_rate: [0.01, 0.05, 0.1]
 		n_estimators: [5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000]
+		class_weight: [None, 'balanced']
 
 
 "logistic"
@@ -169,6 +175,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: none
+		class_weight: [None, 'balanced']
 
 
 "mlp classifier"
@@ -224,13 +231,14 @@ binary
 
 		n_estimators: 100
 
-	1. "rf rs" ::
+	1. "rf classifier rs" ::
 
 		n_estimators: Random Integer Distribution (3, 499)
 		max_depth: Random Integer Distribution (2, 199)
 		max_features: Random Uniform Distribution (0.0, 1.0)
 		min_samples_split: Random Uniform Distribution (0.0, 1.0)
 		bootstrap: True
+		class_weight: [None, 'balanced']
 
 
 "ridge logistic"
@@ -246,6 +254,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
+		class_weight: [None, 'balanced']
 
 	1. "ridge C" ::
 
@@ -253,6 +262,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
+		class_weight: [None, 'balanced']
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
@@ -275,6 +285,7 @@ binary
 		gamma: Random Reciprical Distribution (1e-06, 0.1)
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 		probability: True
+		class_weight: [None, 'balanced']
 
 
 "xgb classifier"
@@ -394,7 +405,7 @@ regression
 
 		silent: True
 
-	1. "lgbm rs" ::
+	1. "lgbm rs1" ::
 
 		silent: True
 		boosting_type: ['gbdt', 'dart', 'goss']
@@ -407,11 +418,10 @@ regression
 		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
 		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
 
-	2. "lgbm 2" ::
+	2. "lgbm rs2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		histogram_pool_size: 16384
 		boosting_type: ['gbdt', 'dart']
 		min_child_samples: [1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000]
 		num_leaves: [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250]
@@ -419,35 +429,6 @@ regression
 		subsample: [0.7, 0.9, 1.0]
 		learning_rate: [0.01, 0.05, 0.1]
 		n_estimators: [5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000]
-
-
-"light gbm regressor early stop"
-********************************
-
-  Base Class Documenation: :class:`ABCD_ML.Early_Stop.EarlyStopLGBMRegressor`
-
-  Param Distributions
-
-	0. "base lgbm es" ::
-
-		silent: True
-		val_split_percent: 0.1
-		early_stop_rounds: 50
-
-	1. "lgbm es rs" ::
-
-		silent: True
-		boosting_type: ['gbdt', 'dart', 'goss']
-		n_estimators: Random Integer Distribution (3, 499)
-		num_leaves: Random Integer Distribution (6, 49)
-		min_child_samples: Random Integer Distribution (100, 499)
-		min_child_weight: Random Reciprical Distribution (1e-05, 10000.0)
-		subsample: Random Uniform Distribution (0.2, 1.0)
-		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
-		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
-		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
-		val_split_percent: Random Uniform Distribution (0.05, 0.25)
-		early_stop_rounds: Random Integer Distribution (10, 149)
 
 
 "linear regressor"
@@ -582,8 +563,8 @@ regression
 
 
 
-categorical multilabel
-======================
+categorical
+===========
 "dt classifier"
 ***************
 
@@ -595,109 +576,11 @@ categorical multilabel
 
 		defaults only
 
-	1. "dt rs" ::
+	1. "dt classifier rs" ::
 
 		max_depth: Random Integer Distribution (1, 19)
 		min_samples_split: Random Integer Distribution (2, 49)
-
-
-"knn classifier"
-****************
-
-  Base Class Documenation: :class:`sklearn.neighbors.KNeighborsClassifier`
-
-  Param Distributions
-
-	0. "base knn" ::
-
-		n_neighbors: 5
-
-	1. "knn rs" ::
-
-		weights: ['uniform', 'distance']
-		n_neighbors: Random Integer Distribution (2, 19)
-
-
-"mlp classifier"
-****************
-
-  Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
-
-  Param Distributions
-
-	0. "base mlp" ::
-
-		defaults only
-
-	1. "mlp rs" ::
-
-		hidden_layer_sizes: Too many params to show
-		activation: ['identity', 'logistic', 'tanh', 'relu']
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		batch_size: Random Integer Distribution (2, 199)
-		learning_rate: ['constant', 'invscaling', 'adaptive']
-		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
-		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Uniform Distribution (0.5, 1.0)
-		beta_2: Random Uniform Distribution (0.5, 1.0)
-
-	2. "mlp rs es" ::
-
-		hidden_layer_sizes: Too many params to show
-		activation: ['identity', 'logistic', 'tanh', 'relu']
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		batch_size: Random Integer Distribution (2, 199)
-		learning_rate: ['constant', 'invscaling', 'adaptive']
-		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
-		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Uniform Distribution (0.5, 1.0)
-		beta_2: Random Uniform Distribution (0.5, 1.0)
-		early_stopping: True
-		n_iter_no_change: Random Integer Distribution (5, 49)
-
-	3. "mlp layers search" ::
-
-		hidden_layer_sizes: Too many params to show
-
-
-"random forest classifier"
-**************************
-
-  Base Class Documenation: :class:`sklearn.ensemble.RandomForestClassifier`
-
-  Param Distributions
-
-	0. "base rf" ::
-
-		n_estimators: 100
-
-	1. "rf rs" ::
-
-		n_estimators: Random Integer Distribution (3, 499)
-		max_depth: Random Integer Distribution (2, 199)
-		max_features: Random Uniform Distribution (0.0, 1.0)
-		min_samples_split: Random Uniform Distribution (0.0, 1.0)
-		bootstrap: True
-
-
-
-categorical multiclass
-======================
-"dt classifier"
-***************
-
-  Base Class Documenation: :class:`sklearn.tree.DecisionTreeClassifier`
-
-  Param Distributions
-
-	0. "base dt" ::
-
-		defaults only
-
-	1. "dt rs" ::
-
-		max_depth: Random Integer Distribution (1, 19)
-		min_samples_split: Random Integer Distribution (2, 49)
+		class_weight: [None, 'balanced']
 
 
 "elastic net logistic"
@@ -713,6 +596,7 @@ categorical multiclass
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
+		class_weight: [None, 'balanced']
 		l1_ratio: 0.5
 
 	1. "elastic classifier" ::
@@ -721,6 +605,7 @@ categorical multiclass
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
+		class_weight: [None, 'balanced']
 		l1_ratio: Random Uniform Distribution (0.0, 1.0)
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
@@ -779,6 +664,7 @@ categorical multiclass
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
+		class_weight: [None, 'balanced']
 
 	1. "lasso C" ::
 
@@ -786,6 +672,7 @@ categorical multiclass
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
+		class_weight: [None, 'balanced']
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
@@ -800,7 +687,7 @@ categorical multiclass
 
 		silent: True
 
-	1. "lgbm rs" ::
+	1. "lgbm classifier rs1" ::
 
 		silent: True
 		boosting_type: ['gbdt', 'dart', 'goss']
@@ -812,12 +699,12 @@ categorical multiclass
 		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
 		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
 		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
+		class_weight: [None, 'balanced']
 
-	2. "lgbm 2" ::
+	2. "lgbm classifier rs2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		histogram_pool_size: 16384
 		boosting_type: ['gbdt', 'dart']
 		min_child_samples: [1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000]
 		num_leaves: [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250]
@@ -825,6 +712,7 @@ categorical multiclass
 		subsample: [0.7, 0.9, 1.0]
 		learning_rate: [0.01, 0.05, 0.1]
 		n_estimators: [5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000]
+		class_weight: [None, 'balanced']
 
 
 "logistic"
@@ -840,6 +728,7 @@ categorical multiclass
 		max_iter: 5000
 		multi_class: auto
 		penalty: none
+		class_weight: [None, 'balanced']
 
 
 "mlp classifier"
@@ -895,13 +784,14 @@ categorical multiclass
 
 		n_estimators: 100
 
-	1. "rf rs" ::
+	1. "rf classifier rs" ::
 
 		n_estimators: Random Integer Distribution (3, 499)
 		max_depth: Random Integer Distribution (2, 199)
 		max_features: Random Uniform Distribution (0.0, 1.0)
 		min_samples_split: Random Uniform Distribution (0.0, 1.0)
 		bootstrap: True
+		class_weight: [None, 'balanced']
 
 
 "ridge logistic"
@@ -917,6 +807,7 @@ categorical multiclass
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
+		class_weight: [None, 'balanced']
 
 	1. "ridge C" ::
 
@@ -924,6 +815,7 @@ categorical multiclass
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
+		class_weight: [None, 'balanced']
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 
 
@@ -946,6 +838,7 @@ categorical multiclass
 		gamma: Random Reciprical Distribution (1e-06, 0.1)
 		C: Random Reciprical Distribution (0.0001, 10000.0)
 		probability: True
+		class_weight: [None, 'balanced']
 
 
 "xgb classifier"
@@ -968,6 +861,107 @@ categorical multiclass
 		min_child_weight: [1, 5, 10, 50]
 		subsample: Random Uniform Distribution (0.2, 1.0)
 		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
+
+
+
+multilabel
+==========
+"dt classifier"
+***************
+
+  Base Class Documenation: :class:`sklearn.tree.DecisionTreeClassifier`
+
+  Param Distributions
+
+	0. "base dt" ::
+
+		defaults only
+
+	1. "dt classifier rs" ::
+
+		max_depth: Random Integer Distribution (1, 19)
+		min_samples_split: Random Integer Distribution (2, 49)
+		class_weight: [None, 'balanced']
+
+
+"knn classifier"
+****************
+
+  Base Class Documenation: :class:`sklearn.neighbors.KNeighborsClassifier`
+
+  Param Distributions
+
+	0. "base knn" ::
+
+		n_neighbors: 5
+
+	1. "knn rs" ::
+
+		weights: ['uniform', 'distance']
+		n_neighbors: Random Integer Distribution (2, 19)
+
+
+"mlp classifier"
+****************
+
+  Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
+
+  Param Distributions
+
+	0. "base mlp" ::
+
+		defaults only
+
+	1. "mlp rs" ::
+
+		hidden_layer_sizes: Too many params to show
+		activation: ['identity', 'logistic', 'tanh', 'relu']
+		alpha: Random Reciprical Distribution (1e-05, 100.0)
+		batch_size: Random Integer Distribution (2, 199)
+		learning_rate: ['constant', 'invscaling', 'adaptive']
+		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
+		max_iter: Random Integer Distribution (100, 499)
+		beta_1: Random Uniform Distribution (0.5, 1.0)
+		beta_2: Random Uniform Distribution (0.5, 1.0)
+
+	2. "mlp rs es" ::
+
+		hidden_layer_sizes: Too many params to show
+		activation: ['identity', 'logistic', 'tanh', 'relu']
+		alpha: Random Reciprical Distribution (1e-05, 100.0)
+		batch_size: Random Integer Distribution (2, 199)
+		learning_rate: ['constant', 'invscaling', 'adaptive']
+		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
+		max_iter: Random Integer Distribution (100, 499)
+		beta_1: Random Uniform Distribution (0.5, 1.0)
+		beta_2: Random Uniform Distribution (0.5, 1.0)
+		early_stopping: True
+		n_iter_no_change: Random Integer Distribution (5, 49)
+
+	3. "mlp layers search" ::
+
+		hidden_layer_sizes: Too many params to show
+
+
+"random forest classifier"
+**************************
+
+  Base Class Documenation: :class:`sklearn.ensemble.RandomForestClassifier`
+
+  Param Distributions
+
+	0. "base rf" ::
+
+		n_estimators: 100
+
+	1. "rf classifier rs" ::
+
+		n_estimators: Random Integer Distribution (3, 499)
+		max_depth: Random Integer Distribution (2, 199)
+		max_features: Random Uniform Distribution (0.0, 1.0)
+		min_samples_split: Random Uniform Distribution (0.0, 1.0)
+		bootstrap: True
+		class_weight: [None, 'balanced']
 
 
 
@@ -1085,8 +1079,166 @@ regression
   Base Func Documenation: :func:`sklearn.metrics.r2_score`
 
 
-categorical multilabel
-======================
+categorical
+===========
+"accuracy"
+**********
+
+  Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
+
+"balanced accuracy"
+*******************
+
+  Base Func Documenation: :func:`sklearn.metrics.balanced_accuracy_score`
+
+"by class f1"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"by class jaccard"
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"by class precision"
+********************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"by class recall"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"hamming"
+*********
+
+  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
+
+"log"
+*****
+
+  Base Func Documenation: :func:`sklearn.metrics.log_loss`
+
+"macro f1"
+**********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"macro jaccard"
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"macro precision"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"macro recall"
+**************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"matthews"
+**********
+
+  Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
+
+"micro f1"
+**********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"micro jaccard"
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"micro precision"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"micro recall"
+**************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"multiclass by class average precision"
+***************************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+"multiclass by class roc auc"
+*****************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"multiclass macro average precision"
+************************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+"multiclass macro roc auc"
+**************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"multiclass micro average precision"
+************************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+"multiclass micro roc auc"
+**************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"multiclass samples average precision"
+**************************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+"multiclass samples roc auc"
+****************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"multiclass weighted average precision"
+***************************************
+
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
+
+"multiclass weighted roc auc"
+*****************************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"weighted f1"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"weighted jaccard"
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"weighted precision"
+********************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"weighted recall"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+
+multilabel
+==========
 "accuracy"
 **********
 
@@ -1253,164 +1405,6 @@ categorical multilabel
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
 
-categorical multiclass
-======================
-"accuracy"
-**********
-
-  Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
-
-"balanced accuracy"
-*******************
-
-  Base Func Documenation: :func:`sklearn.metrics.balanced_accuracy_score`
-
-"by class f1"
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"by class jaccard"
-******************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"by class precision"
-********************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"by class recall"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-"hamming"
-*********
-
-  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
-
-"log"
-*****
-
-  Base Func Documenation: :func:`sklearn.metrics.log_loss`
-
-"macro f1"
-**********
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"macro jaccard"
-***************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"macro precision"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"macro recall"
-**************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-"matthews"
-**********
-
-  Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
-
-"micro f1"
-**********
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"micro jaccard"
-***************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"micro precision"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"micro recall"
-**************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-"multiclass by class average precision"
-***************************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"multiclass by class roc auc"
-*****************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"multiclass macro average precision"
-************************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"multiclass macro roc auc"
-**************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"multiclass micro average precision"
-************************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"multiclass micro roc auc"
-**************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"multiclass samples average precision"
-**************************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"multiclass samples roc auc"
-****************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"multiclass weighted average precision"
-***************************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"multiclass weighted roc auc"
-*****************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"weighted f1"
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"weighted jaccard"
-******************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"weighted precision"
-********************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"weighted recall"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-
 .. _Imputers:
  
 ********
@@ -1421,10 +1415,10 @@ Different availible choices for the `imputer` parameter are shown below.
 imputer is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
 The exact str indicator for each `imputer` is represented by the sub-heading (within "")
 Additionally, a link to the original imputers documentation as well as the implemented parameter distributions are shown.
-Imputers are also special, in that a model_type can be passed instead of the imputer str. In that case, the model_type will be used to fill any NaN by column.
-For `imputer_scope` of float, or custom column names, only regression type models are valid, and for scope of categorical, only binary / multiclass model types are valid!
-The sklearn iterative imputer is used when a model_type is passed.
-Also, if a model_type is passed, then the `imputer_params` argument will then be considered as applied to the base  estimator / model_type!
+Imputers are also special, in that a model can be passed instead of the imputer str. In that case, the model will be used to fill any NaN by column.
+For `imputer_scope` of float, or custom column names, only regression type models are valid, and for scope of categorical, only binary / multiclass model are valid!
+The sklearn iterative imputer is used when a model is passed.
+Also, if a model is passed, then the `imputer_params` argument will then be considered as applied to the base  estimator / model!
 
 All Problem Types
 =================
@@ -1957,23 +1951,8 @@ regression
 
 
 
-categorical multilabel
-======================
-"variance threshold"
-********************
-
-  Base Class Documenation: :class:`sklearn.feature_selection.VarianceThreshold`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-
-categorical multiclass
-======================
+categorical
+===========
 "rfe"
 *****
 
@@ -2026,15 +2005,30 @@ categorical multiclass
 
 
 
+multilabel
+==========
+"variance threshold"
+********************
+
+  Base Class Documenation: :class:`sklearn.feature_selection.VarianceThreshold`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+
 .. _Ensemble Types:
  
 **************
 Ensemble Types
 **************
 
-Different availible choices for the `ensemble_type` parameter are shown below.
-`ensemble_type` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `ensemble_type` is represented by the sub-heading (within "")
+Different availible choices for the `ensemble` parameter are shown below.
+`ensemble` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `ensemble` is represented by the sub-heading (within "")
 The avaliable ensemble types are further broken down by which can work with different problem_types.
 Additionally, a link to the original ensemble types  documentation as well as the implemented parameter distributions are shown.
 
@@ -2047,9 +2041,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "apriori"
@@ -2059,9 +2054,36 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
+
+
+"bagging classifier"
+********************
+
+  Base Class Documenation: :class:`sklearn.ensemble.bagging.BaggingClassifier`
+
+  Param Distributions
+
+	0. "single default" ::
+
+		needs_split: False
+		single_estimator: True
+
+
+"balanced bagging classifier"
+*****************************
+
+  Base Class Documenation: :class:`imblearn.ensemble.BalancedBaggingClassifier`
+
+  Param Distributions
+
+	0. "bb default" ::
+
+		needs_split: False
+		single_estimator: True
 
 
 "des clustering"
@@ -2071,9 +2093,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "des knn"
@@ -2083,9 +2106,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "deskl"
@@ -2095,9 +2119,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "desmi"
@@ -2107,9 +2132,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "desp"
@@ -2119,9 +2145,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "exponential"
@@ -2131,9 +2158,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "knop"
@@ -2143,9 +2171,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "knorae"
@@ -2155,9 +2184,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "knrau"
@@ -2167,9 +2197,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "lca"
@@ -2179,9 +2210,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "logarithmic"
@@ -2191,9 +2223,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "mcb"
@@ -2203,9 +2236,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "metades"
@@ -2215,9 +2249,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "min dif"
@@ -2227,9 +2262,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "mla"
@@ -2239,9 +2275,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "ola"
@@ -2251,9 +2288,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "rank"
@@ -2263,9 +2301,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "rrc"
@@ -2275,9 +2314,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "single best"
@@ -2287,9 +2327,10 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "stacked"
@@ -2299,20 +2340,31 @@ binary
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 
 regression
 ==========
+"bagging regressor"
+*******************
 
-categorical multilabel
-======================
+  Base Class Documenation: :class:`sklearn.ensemble.bagging.BaggingRegressor`
 
-categorical multiclass
-======================
+  Param Distributions
+
+	0. "single default" ::
+
+		needs_split: False
+		single_estimator: True
+
+
+
+categorical
+===========
 "aposteriori"
 *************
 
@@ -2320,9 +2372,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "apriori"
@@ -2332,9 +2385,36 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
+
+
+"bagging classifier"
+********************
+
+  Base Class Documenation: :class:`sklearn.ensemble.bagging.BaggingClassifier`
+
+  Param Distributions
+
+	0. "single default" ::
+
+		needs_split: False
+		single_estimator: True
+
+
+"balanced bagging classifier"
+*****************************
+
+  Base Class Documenation: :class:`imblearn.ensemble.BalancedBaggingClassifier`
+
+  Param Distributions
+
+	0. "bb default" ::
+
+		needs_split: False
+		single_estimator: True
 
 
 "des clustering"
@@ -2344,9 +2424,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "des knn"
@@ -2356,9 +2437,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "deskl"
@@ -2368,9 +2450,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "desmi"
@@ -2380,9 +2463,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "desp"
@@ -2392,9 +2476,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "exponential"
@@ -2404,9 +2489,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "knop"
@@ -2416,9 +2502,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "knorae"
@@ -2428,9 +2515,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "knrau"
@@ -2440,9 +2528,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "lca"
@@ -2452,9 +2541,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "logarithmic"
@@ -2464,9 +2554,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "mcb"
@@ -2476,9 +2567,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "metades"
@@ -2488,9 +2580,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "min dif"
@@ -2500,9 +2593,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "mla"
@@ -2512,9 +2606,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "ola"
@@ -2524,9 +2619,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "rank"
@@ -2536,9 +2632,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "rrc"
@@ -2548,9 +2645,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "single best"
@@ -2560,9 +2658,10 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
 "stacked"
@@ -2572,9 +2671,13 @@ categorical multiclass
 
   Param Distributions
 
-	0. "default" ::
+	0. "des default" ::
 
-		defaults only
+		needs_split: True
+		single_estimator: False
 
 
+
+multilabel
+==========
 

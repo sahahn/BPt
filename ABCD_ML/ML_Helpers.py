@@ -360,22 +360,22 @@ def show_obj(obj_str, show_params_options, show_object,
              show_all_possible_params, OBJS):
 
         print('- - - - - - - - - - - - - - - - - - - - ')
-        O = OBJS[obj_str]
-        print(O[0].__name__, end='')
+        OBJ = OBJS[obj_str]
+        print(OBJ[0].__name__, end='')
         print(' ("', obj_str, '")', sep='')
         print('- - - - - - - - - - - - - - - - - - - - ')
         print()
 
         if show_object:
-                print('Object: ', O[0])
+            print('Object: ', OBJ[0])
 
         print()
         if show_params_options:
-                show_param_options(O[1])
+            show_param_options(OBJ[1])
 
         if show_all_possible_params:
-                possible_params = get_possible_init_params(O[0])
-                print('All Possible Params:', possible_params)
+            possible_params = get_possible_init_params(OBJ[0])
+            print('All Possible Params:', possible_params)
         print()
 
 

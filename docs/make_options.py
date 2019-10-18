@@ -192,8 +192,8 @@ def add_param(lines, params):
     return lines
 
 
-problem_types = ['binary', 'regression', 'categorical multilabel',
-                 'categorical multiclass']
+problem_types = ['binary', 'regression', 'categorical',
+                 'multilabel']
 
 lines = []
 
@@ -248,7 +248,7 @@ lines.append('Imputers are also special, in that a model can be passed ' +
              ' be used to fill any NaN by column.')
 lines.append('For `imputer_scope` of float, or custom column names, only ' +
              'regression type models are valid, and for scope of categorical' +
-             ', only binary / multiclass model types are valid!')
+             ', only binary / multiclass model are valid!')
 lines.append('The sklearn iterative imputer is used when a model is' +
              ' passed.')
 lines.append('Also, if a model is passed, then the `imputer_params`' +

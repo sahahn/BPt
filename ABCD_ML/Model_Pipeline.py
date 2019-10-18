@@ -107,7 +107,7 @@ class Model_Pipeline():
                 The number of jobs to use during model training.
             - search_n_iter : int
                 The number of random searches to conduct in random search
-                model types.
+                models.
             - feats_to_use : {'all', 'data', 'covars'}
                 The subset of data to use, either all avaliable, just
                 the data, or just the covars.
@@ -361,7 +361,7 @@ class Model_Pipeline():
         return params
 
     def _process_model(self):
-        '''Class function to convert input model types to final
+        '''Class function to convert input model to final
         str indicator, based on problem type and common input correction.
         '''
 

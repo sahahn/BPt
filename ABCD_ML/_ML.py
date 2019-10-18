@@ -32,7 +32,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
                           calc_base_feature_importances='default',
                           calc_shap_feature_importances='default',
                           n_jobs='default', random_state='default',
-                          compute_train_score='default', 
+                          compute_train_score='default',
                           extra_params='default'):
     '''Sets self.default_ML_params dictionary with user passed or default
     values. In general, if any argument is left as 'default' and it has
@@ -87,7 +87,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
         The different parameter distributions avaliable for each
         `model`, can be shown by calling :func:`Show_Models`
-        or on the docs at :ref:`Model Types`
+        or on the docs at :ref:`Models`
 
         If 'default', and not already defined, set to 0
         (default = 'default')
@@ -327,7 +327,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         or 'basic ensemble' (default) for base behavior.
         Base ensemble behavior is either to not ensemble,
         if only one model type is passed,
-        or when multiple model types are passed,
+        or when multiple models are passed,
         to simply train each one independently and
         average the predictions at test time (or max vote).
 

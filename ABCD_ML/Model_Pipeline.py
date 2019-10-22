@@ -30,6 +30,8 @@ from ABCD_ML.Imputers import get_imputer_and_params
 from ABCD_ML.Ensembles import (get_ensemble_and_params, Basic_Ensemble,
                                DES_Ensemble)
 
+from ABCD_ML.nevergrad import NevergradSearchCV
+
 
 class Model_Pipeline():
     '''Helper class for handling all of the different parameters involved in
@@ -91,7 +93,7 @@ class Model_Pipeline():
                 i.e., not "basic ensemble", then this param is
                 the porportion of the train_data within each fold to
                 use towards fitting the ensemble.
-            - search_type : {'random', 'grid', None}
+            - search_type : {str, None}
                 The type of parameter search to conduct if any.
             - model_type_params : int, str or list of
                 The index or str name of the param index for `model_type`
@@ -1483,7 +1485,7 @@ class Model_Pipeline():
         return X, y
 
     def _conv_targets(self, y):
-        '''Returns y, overriden by Categorical_Model
+        '''Returns y, overriden in future perhaps.
 
         Parameters
         ----------
@@ -1541,19 +1543,16 @@ class Model_Pipeline():
 
         # Set the search params
         search_params = {}
-        search_params['iid'] = False
+        search_params['optimizer_name'] = self.search_type
         search_params['verbose'] = self.param_search_verbose
         search_params['estimator'] = model
-        search_params['pre_dispatch'] = 'n_jobs - 1'
         search_params['cv'] = search_cv
         search_params['scoring'] = self.metric
         search_params['n_jobs'] = self.n_jobs
-
-        if self.search_type == 'random':
-            search_params['n_iter'] = self.search_n_iter
+        search_params['n_iter'] = self.search_n_iter
+        search_params['random_state'] = self.random_state
 
         # Merge the different params / grids of params
-        # into one dict.
         all_params = {}
         all_params.update(self.col_scaler_params)
         all_params.update(self.col_imputer_params)
@@ -1562,15 +1561,9 @@ class Model_Pipeline():
         all_params.update(self.model_params)
         all_params.update(self.ensemble_params)
 
-        # Create the search model
-        if self.search_type == 'random':
-            search_params['random_state'] = self.random_state
-            search_params['param_distributions'] = all_params
-            search_model = RandomizedSearchCV(**search_params)
-
-        else:
-            search_params['param_grid'] = all_params
-            search_model = GridSearchCV(**search_params)
+        # Create the search object
+        search_params['param_distributions'] = all_params
+        search_model = NevergradSearchCV(**search_params)
 
         return search_model
 

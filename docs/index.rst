@@ -21,6 +21,12 @@ This is a project.
 
    options
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Search Types
+
+   search_types
+
 
 
 

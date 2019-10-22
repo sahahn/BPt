@@ -49,13 +49,11 @@ AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 SELECTORS = {
     'univariate selection regression': (SelectPercentile,
                                         ['base univar fs regression',
-                                         'univar fs regression rs',
-                                         'univar fs regression gs']),
+                                         'univar fs regression rs']),
 
     'univariate selection classification': (SelectPercentile,
                                             ['base univar fs classifier',
-                                             'univar fs classifier rs',
-                                             'univar fs classifier gs']),
+                                             'univar fs classifier rs']),
 
     'rfe': (RFE, ['base rfe', 'rfe num feats rs']),
 
@@ -147,8 +145,6 @@ def Show_Feat_Selectors(self, problem_type=None, feat_selector_str=None,
         (default = False)
     '''
 
-    print('Note: Param distributions with a Rand Distribution')
-    print('cannot be used in search_type = "grid"')
     print('More information through this function is avaliable')
     print('By passing optional extra optional params! Please view',
           'the help function for more info!')

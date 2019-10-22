@@ -170,7 +170,7 @@ def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
             print('Setting to default base params setting instead!')
             params = 0
 
-    # If passed param ind is a dict, assume that a grid of params passed
+    # If passed param ind is a dict, assume that user passed
     if isinstance(params, dict):
         base_params = params.copy()
 

@@ -76,10 +76,13 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     model_params : int, str, or list of
         Each `model` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
+        saved with it.
+
+        This parameter is used to select between different
+        distributions to be used with different search types,
         when `search_type` == None, `model_params` is automatically
         set to default 0.
+
         This parameter can be selected with either an integer index
         (zero based), or the str name for a given `model`.
         Likewise with `model`, if passed list input, this means
@@ -160,8 +163,8 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         own custom values.
 
         This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `scaler_params` is automatically
+        distributions to be used with different search types,
+        when `search_type` == None, `model_params` is automatically
         set to default 0.
 
         The different parameter distributions avaliable for each
@@ -212,10 +215,13 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     scaler_params : int, str, or list of
         Each `scaler` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `scaler_params` is automatically
+        saved with it.
+
+        This parameter is used to select between different
+        distributions to be used with different search types,
+        when `search_type` == None, `model_params` is automatically
         set to default 0.
+
         This parameter can be selected with either an integer index
         (zero based), or the str name for a given `scaler`.
         Likewise with `scaler`, if passed list input, this means
@@ -276,10 +282,13 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     sampler_params :  int, str, or list of
         Each `sampler` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `sampler_params` is automatically
+        saved with it.
+
+        This parameter is used to select between different
+        distributions to be used with different search types,
+        when `search_type` == None, `model_params` is automatically
         set to default 0.
+
         This parameter can be selected with either an integer index
         (zero based), or the str name for a given `sampler`.
         Likewise with `sampler`, if passed list input, this means
@@ -306,10 +315,13 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     feat_selector_params : int, str, or list of
          Each `feat_selector` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `feat_selector_params` is automatically
+        saved with it.
+
+        This parameter is used to select between different
+        distributions to be used with different search types,
+        when `search_type` == None, `model_params` is automatically
         set to default 0.
+
         This parameter can be selected with either an integer index
         (zero based), or the str name for a given `feat_selector` param option.
         Likewise with `feat_selector`, if passed list input, this means
@@ -371,10 +383,13 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     ensemble_params : int, str, or list of
          Each `ensemble` has atleast one default parameter distribution
-        saved with it. This parameter is used to select between different
-        distributions to be used with `search_type` == 'random' or 'grid',
-        when `search_type` == None, `ensemble_params` is automatically
+        saved with it.
+
+        This parameter is used to select between different
+        distributions to be used with different search types,
+        when `search_type` == None, `model_params` is automatically
         set to default 0.
+
         This parameter can be selected with either an integer index
         (zero based), or the str name for a given `ensemble` param option.
         Likewise with `ensemble`, if passed list input, this means
@@ -414,19 +429,11 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         If 'default', and not already defined, set to 2
         (default = 'default')
 
-    search_type : {'random', 'grid', None, 'default'}
-        The type of parameter search to conduct if any.
+    search_type : {None, str}
+        The type of parameter search to conduct if any. If set to None,
+        no hyperparameter search will be conducted.
 
-        - 'random' : Uses :class:`sklearn.model_selection.RandomizedSearchCV`
-        - 'grid' : Uses :class:`sklearn.model_selection.GridSearchCV`
-        - None : No search
-
-        .. WARNING::
-
-            If search type is set to "grid", and any of model_params,
-            scaler_params and feat_selector_params are set
-            to a random distribution (rather then discrete values),
-            this will lead to an error.
+        The option is to pass the name of a nevergrad optimizer.
 
         If 'default', and not already defined, set to None
         (default = 'default')

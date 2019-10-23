@@ -459,11 +459,7 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
     load_params = self._make_load_params(args=locals())
 
     # Load in the raw dataframe - based on dataset type and/or passed user df
-    data = self._load_datasets(loc, df, load_params['dataset_type'],
-                               load_params['na_values'])
-
-    # Perform proc common operations
-    data = self._proc_df(data, load_params)
+    data = self._load_datasets(loc, df, load_params)
 
     # Set to only overlap subjects if passed
     data = self._set_overlap(data, load_params['overlap_subjects'])
@@ -1209,7 +1205,7 @@ def Drop_Data_Cols(self, drop_keys=None, inclusion_keys=None):
     self.data = self._drop_data_cols(self.data, drop_keys, inclusion_keys)
 
 
-def _drop_data_cols(self, drop_keys, inclusion_keys):
+def _drop_data_cols(self, data, drop_keys, inclusion_keys):
 
     if drop_keys is not None:
 
@@ -1601,7 +1597,7 @@ def _get_targets_key(self, key, base_key=False):
     return self.targets_keys[ind]
 
 
-def _load_datasets(self, locs, df, dataset_types, na_values):
+def _load_datasets(self, locs, df, load_params):
     '''Helper function to load in multiple datasets with default
     load and drop behavior based on type. And calls proc_df on each
     before merging.
@@ -1614,11 +1610,8 @@ def _load_datasets(self, locs, df, dataset_types, na_values):
     df : pandas df
         User passed
 
-    dataset_types : str or list,
-        str or list of the dataset types
-
-    na_values : list
-        The NaN values
+    load_params : dict
+        load params
 
     Returns
     ----------
@@ -1629,29 +1622,40 @@ def _load_datasets(self, locs, df, dataset_types, na_values):
 
     dfs = []
 
+    # Load from file
     if locs is not None:
 
         # If only one dataset type, use it for all
-        if not isinstance(dataset_types, list):
-            dataset_types = [dataset_types for i in range(len(locs))]
+        if not isinstance(load_params['dataset_type'], list):
+            dataset_types = [load_params['dataset_type']
+                             for i in range(len(locs))]
+        else:
+            dataset_types = load_params['dataset_type']
 
-        dfs = [self._load_dataset(locs[i], dataset_types[i], na_values)
-               for i in range(len(locs))]
+        dfs = [self._load_dataset(locs[i], dataset_types[i],
+               load_params['na_values']) for i in range(len(locs))]
 
+    # Load from user-passed df
     if df is not None:
+
+        self._print('Loading user passed df')
+
+        df = df.reset_index()
+        df = df.replace(load_params['na_values'], np.nan)
         dfs.append(df)
 
     # Set first df
-    data = dfs[0]
+    data = self._proc_df(dfs[0], load_params)
 
     # For each additional
     for more_data in dfs[1:]:
 
+        more_data = self._proc_df(more_data, load_params)
         repeat_col_names = set(list(data)).intersection(set(list(more_data)))
 
         if len(repeat_col_names) > 0:
             self._print('Warning,', repeat_col_names,
-                        'exist in multiple dataframes!')
+                        'exist in both dataframes!')
             self._print('By default repeats will be added as new unique',
                         'columns within merged data.')
 

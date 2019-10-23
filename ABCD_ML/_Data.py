@@ -321,7 +321,7 @@ def Load_Name_Map(self, name_map=None, loc=None, dataset_type='default',
             print('Name map not loaded from loc!')
 
 
-def Load_Data(self, loc, dataset_type='default', drop_keys=None,
+def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
               inclusion_keys=None, subject_id='default', eventname='default',
               eventname_col='default', overlap_subjects='default',
               na_values='default', drop_na='default', drop_or_na='default',
@@ -333,7 +333,7 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=None,
 
     Parameters
     ----------
-    loc : str, Path or list of
+    loc : str Path, list of or None, optional
         The location of the file to load data load from.
         If passed a list, then will load each loc in the list,
         and will assume them all to be of the same dataset_type if one
@@ -344,6 +344,17 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=None,
         with the rest (duplicate subjects, proc for eventname ect...), but
         other dataset loading behavior won't occur until after the merge,
         e.g., dropping cols by key, filtering for outlier, ect...
+
+    df : pandas DataFrame or None, optional
+        This parameter represents the option for the user to pass in
+        a raw custom dataframe. A loc and/or a df must be passed.
+
+        When pasing a raw DataFrame, the loc and dataset_type
+        param will be ignored, as those are for loading data from a file.
+        Otherwise, it will be treated the same as
+        if loading from a file, which means, there should be a column within
+        the passed dataframe with subject_id, and e.g. if eventname params are
+        passed, they will be applied along with any other proc. specified.
 
     dataset_type :
     drop_keys : str, list or None, optional
@@ -447,8 +458,8 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=None,
     # Get the common load params as a mix of user-passed + default values
     load_params = self._make_load_params(args=locals())
 
-    # Load in the raw dataframe - based on dataset type
-    data = self._load_datasets(loc, load_params['dataset_type'],
+    # Load in the raw dataframe - based on dataset type and/or passed user df
+    data = self._load_datasets(loc, df, load_params['dataset_type'],
                                load_params['na_values'])
 
     # Perform proc common operations
@@ -1590,7 +1601,7 @@ def _get_targets_key(self, key, base_key=False):
     return self.targets_keys[ind]
 
 
-def _load_datasets(self, locs, dataset_types, na_values):
+def _load_datasets(self, locs, df, dataset_types, na_values):
     '''Helper function to load in multiple datasets with default
     load and drop behavior based on type. And calls proc_df on each
     before merging.
@@ -1600,8 +1611,14 @@ def _load_datasets(self, locs, dataset_types, na_values):
     locs : list of str, Path
         The location of the  files to load data load from.
 
+    df : pandas df
+        User passed
+
     dataset_types : str or list,
         str or list of the dataset types
+
+    na_values : list
+        The NaN values
 
     Returns
     ----------
@@ -1610,24 +1627,31 @@ def _load_datasets(self, locs, dataset_types, na_values):
         and merged minimally proc'ed data.
     '''
 
-    # If only one dataset type, use it for all
-    if not isinstance(dataset_types, list):
-        dataset_types = [dataset_types for i in range(len(locs))]
+    dfs = []
 
-    # Load the first loc
-    data = self._load_dataset(locs[0], dataset_types[0], na_values)
+    if locs is not None:
 
-    # For the rest
-    for loc, dataset_type in zip(locs[1:], dataset_types[1:]):
+        # If only one dataset type, use it for all
+        if not isinstance(dataset_types, list):
+            dataset_types = [dataset_types for i in range(len(locs))]
 
-        # Load & Merge
-        more_data = self._load_dataset(loc, dataset_type, na_values)
+        dfs = [self._load_dataset(locs[i], dataset_types[i], na_values)
+               for i in range(len(locs))]
+
+    if df is not None:
+        dfs.append(df)
+
+    # Set first df
+    data = dfs[0]
+
+    # For each additional
+    for more_data in dfs[1:]:
 
         repeat_col_names = set(list(data)).intersection(set(list(more_data)))
 
         if len(repeat_col_names) > 0:
             self._print('Warning,', repeat_col_names,
-                        'exist in both dataframes!')
+                        'exist in multiple dataframes!')
             self._print('By default repeats will be added as new unique',
                         'columns within merged data.')
 

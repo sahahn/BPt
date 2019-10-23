@@ -14,12 +14,8 @@ from ABCD_ML.CV import CV
 class ABCD_ML():
     '''The main class used in ABCD_ML project'''
 
-    def __init__(self, exp_name='some_exp', log_dr='', existing_log='new',
-                 verbose=True, notebook=True, subject_id='src_subject_id',
-                 eventname='baseline_year_1_arm_1',
-                 use_default_subject_ids=True,
-                 default_dataset_type='basic', drop_nan=True,
-                 default_na_values=['777', '999'],
+    def __init__(self, exp_name='Exp', log_dr='', existing_log='new',
+                 verbose=True, notebook=True, use_default_subject_ids=True,
                  low_memory_mode=False,
                  random_state=None):
         '''Main class init
@@ -34,7 +30,7 @@ class ABCD_ML():
             then a folder is created within the log dr
             with the exp_name.
 
-            (default = 'some_exp')
+            (default = 'Exp')
 
         log_dr : str, Path or None, optional
             The directory in which to store logs...
@@ -72,24 +68,6 @@ class ABCD_ML():
 
             (default = True)
 
-        subject_id : str, optional
-            The name of the column with unique subject ids in different
-            dataset, for default ABCD datasets this is 'src_subject_id',
-            but if a user wanted to load and work with a different dataset,
-            they just need to change this accordingly
-            (in addition to setting eventname most likely to None and
-            use_default_subject_ids to False)
-
-            (default = 'src_subject_id')
-
-        eventname : str or None, optional
-            Optional value to provide, specifying to keep certain rows
-            when reading data based on the eventname flag.
-            As ABCD is a longitudinal study, this flag lets you select only
-            one specific time point, or if set to None, will load everything.
-
-            (default = 'baseline_year_1_arm_1')
-
         use_default_subject_ids : bool, optional
             Flag to determine the usage of 'default' subject id behavior.
             If set to True, this will convert input NDAR subject ids
@@ -98,51 +76,6 @@ class ABCD_ML():
             explicitly the same, no preprocessing will be done on them.
 
             (default = True)
-
-        default_dataset_type : {'basic', 'explorer', 'custom'}, optional
-            The default dataset_type / file-type to load from.
-            Dataset types are,
-
-            - 'basic' : ABCD2p0NDA style (.txt and tab seperated)
-
-            - 'explorer' : 2.0_ABCD_Data_Explorer style \
-                           (.csv and comma seperated)
-
-            - 'custom' : A user-defined custom dataset. Right now this is only\
-                supported as a comma seperated file, with the subject names in\
-                a column called self.subject_id.
-
-            (default = 'basic')
-
-        drop_nan : bool, int, float or 'default', optional
-            This setting just sets the default value for drop_nan,
-            which is used when loading data and covars.
-
-            If set to True, then will drop any row within the loaded
-            data if there are any NaN! If False, the will not drop any
-            rows for missing values.
-
-            If an int or float, then this means some NaN entries
-            will potentially be preserved! Missing data imputation
-            will therefore be required later on!
-
-            If an int > 1, then will drop any row with more than drop_nan
-            NaN values. If a float, will determine the drop threshold as
-            a percentage of the possible values, where 1 would not drop any
-            rows as it would require the number of columns + 1 NaN, and .5
-            would require that more than half the column entries are NaN in
-            order to drop that row.
-
-            (default = True)
-
-        default_na_values : list, optional
-            Additional values to treat as NaN, by default ABCD specific
-            values of '777' and '999' are treated as NaN,
-            and those set to default by pandas 'read_csv' function.
-            Note: if new values are passed here,
-            it will override these default '777' and '999' NaN values.
-
-            (default = ['777', '999'])
 
         low_memory_mode : bool, optional
             This parameter dictates behavior around loading in data,
@@ -167,6 +100,11 @@ class ABCD_ML():
             The default random state, either as int for a specific seed,
             or if None then the random seed is set by np.random.
 
+            This parameters if set will be the default random_state class-wide,
+            so any place random_state is left to default, unless a different
+            default is set (e.g. default load value or default ML value) this
+            random state will be used.
+
             (default = None)
         '''
 
@@ -187,45 +125,41 @@ class ABCD_ML():
 
         # Set rest of class params
         self.notebook = notebook
-        self.subject_id = subject_id
-        self.eventname = eventname
         self.use_default_subject_ids = use_default_subject_ids
-        self.default_dataset_type = default_dataset_type
-        self.drop_nan = drop_nan
-        self.default_na_values = default_na_values
         self.low_memory_mode = low_memory_mode
         self.random_state = random_state
 
         self._print('notebook =', self.notebook)
-        self._print('default subject id col =', self.subject_id)
-        self._print('eventname =', self.eventname)
-        self._print('use default subject ids =', self.use_default_subject_ids)
-        self._print('default dataset type =', self.default_dataset_type)
-        self._print('default NaN values =', self.default_na_values)
+        self._print('use_default_subject_ids =', self.use_default_subject_ids)
         self._print('low memory mode =', self.low_memory_mode)
         self._print('random state =', self.random_state)
 
         # Initialze various variables
+        self.name_map, self.exclusions, self.inclusions = {}, set(), set()
         self.data, self.covars = pd.DataFrame(), pd.DataFrame()
         self.targets, self.strat = pd.DataFrame(), pd.DataFrame()
 
-        self.name_map, self.exclusions, self.inclusions = {}, set(), set()
-
-        self.covars_encoders, self.targets_encoders = {}, {}
+        # Dict objects to hold encoders
+        self.covars_encoders = {},
+        self.targets_encoders = {}
         self.strat_encoders = {}
 
+        # Class values to be set later
         self.all_data, self.all_data_keys = None, {}
-        self.train_subjects, self.test_subjects = None, None
-
         self.targets_keys = []
 
+        # Stores the gloabl train/test split
+        self.train_subjects, self.test_subjects = None, None
+
         self.CV = CV()
+        self.default_load_params = {}
         self.default_ML_params = {}
         self.ML_verbosity = {}
 
         self.eval_scores, self.eval_settings = {}, {}
 
         self.strat_u_name = '_STRAT'
+        self.subject_id = 'src_subject_id'
 
         if self.notebook:
             shap.initjs()
@@ -301,13 +235,27 @@ class ABCD_ML():
         pass
 
     # Data loader functionality
-    from ABCD_ML._Data import (Load_Name_Map,
+    from ABCD_ML._Data import (Set_Default_Load_Params,
+                               _make_load_params,
+                               Load_Name_Map,
                                Load_Data,
-                               Load_Covars,
                                Load_Targets,
+                               _proc_target,
+                               Load_Covars,
+                               _proc_covar,
                                Load_Strat,
+                               _proc_strat,
                                Load_Exclusions,
                                Load_Inclusions,
+                               Drop_Data_Cols,
+                               _drop_data_cols,
+                               Filter_Data_Cols,
+                               _filter_data_cols,
+                               Proc_Data_Unique_Cols,
+                               _proc_data_unique_cols,
+                               Drop_Data_Duplicates,
+                               Binarize_Target,
+                               Get_Overlapping_Subjects,
                                Clear_Name_Map,
                                Clear_Data,
                                Clear_Covars,
@@ -315,14 +263,12 @@ class ABCD_ML():
                                Clear_Strat,
                                Clear_Exclusions,
                                Clear_Inclusions,
-                               Drop_Data_Duplicates,
-                               Binarize_Target,
-                               Get_Overlapping_Subjects,
                                _get_targets_key,
                                _load_datasets,
                                _load_dataset,
                                _common_load,
                                _load,
+                               _set_overlap,
                                _merge_existing,
                                _proc_df,
                                _load_set_of_subjects,
@@ -330,7 +276,7 @@ class ABCD_ML():
                                _drop_na,
                                _drop_from_filter,
                                _filter_by_eventname,
-                               _show_nan_info,
+                               _show_na_info,
                                _drop_excluded,
                                _drop_included,
                                _filter_excluded,
@@ -343,6 +289,22 @@ class ABCD_ML():
                                _get_base_targets_names,
                                _get_covar_scopes)
 
+    # Update loader docstrings
+    Load_Data.__doc__ =\
+        get_new_docstring(Set_Default_Load_Params, Load_Data)
+    Load_Targets.__doc__ =\
+        get_new_docstring(Set_Default_Load_Params, Load_Targets)
+    Load_Covars.__doc__ =\
+        get_new_docstring(Set_Default_Load_Params, Load_Covars)
+    Load_Strat.__doc__ =\
+        get_new_docstring(Set_Default_Load_Params, Load_Strat)
+    Filter_Data_Cols.__doc__ =\
+        get_new_docstring(Set_Default_Load_Params, Filter_Data_Cols)
+    Proc_Data_Unique_Cols.__doc__ =\
+        get_new_docstring(Set_Default_Load_Params, Proc_Data_Unique_Cols)
+    Drop_Data_Duplicates.__doc__ =\
+        get_new_docstring(Set_Default_Load_Params, Drop_Data_Duplicates)
+
     # Validation / CV funcationality
     from ABCD_ML._Validation import (Define_Validation_Strategy,
                                      Train_Test_Split,
@@ -351,7 +313,7 @@ class ABCD_ML():
 
     # Machine Learning functionality
     from ABCD_ML._ML import (Set_Default_ML_Params,
-                             Set_ML_Verbosity,
+                             Set_Default_ML_Verbosity,
                              _ML_print,
                              Evaluate,
                              Test,
@@ -369,10 +331,9 @@ class ABCD_ML():
                              Get_Base_Feat_Importances,
                              Get_Shap_Feat_Importances)
 
-    new_eval = get_new_docstring(Set_Default_ML_Params, Evaluate)
-    Evaluate.__doc__ = new_eval
-    new_test = get_new_docstring(Evaluate, Test)
-    Test.__doc__ = new_test
+    # Fill Evaluate and Test's docstring
+    Evaluate.__doc__ = get_new_docstring(Set_Default_ML_Params, Evaluate)
+    Test.__doc__ = get_new_docstring(Evaluate, Test)
 
     from ABCD_ML.Models import Show_Models
     from ABCD_ML.Metrics import Show_Metrics

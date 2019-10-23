@@ -6,101 +6,34 @@ the ABCD_ML class.
 """
 import numpy as np
 import pandas as pd
-from scipy.stats.mstats import winsorize
 from ABCD_ML.Data_Helpers import (process_binary_input,
                                   process_ordinal_input,
                                   process_categorical_input,
                                   process_float_input,
                                   process_multilabel_input,
-                                  scale_input,
                                   get_unused_drop_val,
                                   filter_float_by_outlier,
                                   drop_duplicate_cols,
                                   get_top_substrs,
                                   proc_datatypes,
+                                  proc_args,
                                   get_common_name)
 
 
-def Load_Name_Map(self, loc, dataset_type='default',
-                  source_name_col="NDAR name",
-                  target_name_col="REDCap name/NDA alias"):
-    '''Loads a mapping dictionary for loading column names
+def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
+                            eventname='default', eventname_col='default',
+                            overlap_subjects='default', na_values='default',
+                            drop_na='default', drop_or_na='default'):
+    ''' This function is used to define default values for a series of
+    params accessible to all or most of the different loading functions.
+    By setting common values here, it reduces the need to repeat params within
+    each loader (e.g. Load_Data, Load_Targets, ect...)
 
     Parameters
     ----------
-    loc : str, Path or None
-        The location of the csv file which contains the mapping.
-
-    dataset_type : {'default', 'basic', 'explorer', 'custom'}, optional
-        The type of file to load from.
+    dataset_type : {'basic', 'explorer', 'custom'}, optional
+        The dataset_type / file-type to load from.
         Dataset types are,
-
-        - 'default' : Use the class defined default dataset type,\
-            if not set by the user this is 'basic'.
-
-        - 'basic' : ABCD2p0NDA style (.txt and tab seperated)
-
-        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
-
-        - 'custom' : A user-defined custom dataset. Right now this is only\
-            supported as a comma seperated file, with the subject names in a\
-            column called self.subject_id.
-
-        (default = 'default')
-
-    source_name_col : str, optional
-        The column name with the file which lists names to be changed.
-        (default = "NDAR name")
-
-    target_name_col : str, optional
-        The column name within the file which lists the new name.
-        (default = "REDCap name/NDA alias")
-    '''
-
-    # Load mapping based on dataset type
-    mapping = self._load(loc, dataset_type)
-
-    try:
-        self.name_map = dict(zip(mapping[source_name_col],
-                                 mapping[target_name_col]))
-        self._print('Loaded map file')
-
-    except KeyError:
-        print('Error: One or both provided column names do not exist!')
-        print('Name map not loaded!')
-
-
-def Load_Data(self, loc, dataset_type='default', overlap_subjects=False,
-              drop_keys=[], drop_nan='default', filter_outlier_percent=None,
-              winsorize_val=None, unique_val_drop_thresh=2,
-              unique_val_warn_percent=.2, drop_col_duplicates=None,
-              drop_or_nan='drop', clear_existing=False):
-    """Load a ABCD2p0NDA (default) or 2.0_ABCD_Data_Explorer (explorer)
-    release formatted neuroimaging dataset - of derived ROI level info.
-
-    Parameters
-    ----------
-    loc : str, Path or list of
-        The location of the csv file to load data load from.
-        If passed a list, then will load each loc in the list,
-        and will assume them all to be of the same dataset_type if one
-        dataset_type is passed, or if they differ in type, a list must be
-        passed to dataset_type with the different types in order.
-
-        Note: some proc will be done on each loaded dataset before merging
-        with the rest (duplicate subjects, proc for eventname ect...), but
-        other dataset loading behavior won't occur until after the merge,
-        e.g., dropping cols by key, filtering for outlier, ect...
-
-    dataset_type : {'default', 'basic', 'explorer', 'custom'} or list, optional
-        The type of dataset to load from. If a list is passed, then loc must
-        also be a list, and the indices should correspond.
-        Likewise, if loc is a list and dataset_type is not,
-        it is assumed all datasets are the same type.
-        Where each dataset type is,
-
-        - 'default' : Use the class defined default dataset type,\
-            if not set by the user this is 'basic'.
 
         - 'basic' : ABCD2p0NDA style (.txt and tab seperated)\
             Typically the default columns, and therefore not neuroimaging\
@@ -117,50 +50,326 @@ def Load_Data(self, loc, dataset_type='default', overlap_subjects=False,
             'eventname'. No columns will be dropped,\
             (except eventname) or unless specific drop keys are passed.
 
+        If loading multiple locs as a list, dataset_type can be a list with
+        inds corresponding to which datatype for each loc.
+
+        if 'default', and not already defined, set to 'basic'
+        (default = 'default')
+
+    subject_id : str, optional
+        The name of the column with unique subject ids in different
+        dataset, for default ABCD datasets this is 'src_subject_id',
+        but if a user wanted to load and work with a different dataset,
+        they just need to change this accordingly
+        (in addition to setting eventname most likely to None and
+        use_default_subject_ids to False)
+
+        if 'default', and not already defined, set to src_subject_id'.
+        (default = 'default')
+
+    eventname : value, list of values or None, optional
+        Optional value to provide, specifying to optional keep certain rows
+        when reading data based on the eventname flag, where eventname
+        is the value and eventname_col is the name of the value.
+
+        If a list of values are passed, then it will be treated as keeping a
+        row if that row's value within the eventname_col is equal to ANY
+        of the passed eventname values.
+
+        As ABCD is a longitudinal study, this flag lets you select only
+        one specific time point, or if set to None, will load everything.
+
+        if 'default', and not already defined, set to 'baseline_year_1_arm_1'
+        (default = 'default')
+
+    eventname_col : str or None, optional
+        If an eventname is provided, this param refers to
+        the column name containing the eventname. This could
+        also be used along with eventname to be set to any
+        arbitrary value, in order to perform selection by specific
+        column value.
+
+        Note: The eventname col is dropped after proc'ed!
+
+        if 'default', and not already defined, set to 'eventname'
         (default = 'default')
 
     overlap_subjects : bool, optional
-        This parameter dictates if the loaded data,
-        (after initial basic proc and merge w/ other passed loc's),
-        should be restricted to only the overlapping subjects from previously
-        loaded data, targets, covars or strat. If False, then all subjects will
+        This parameter dictates when loading data, covars, targets or strat
+        (after initial basic proc and/or merge w/ other passed loc's),
+        if the loaded data should be restricted to only the
+        overlapping subjects from previously loaded data, targets, covars
+        or strat - important when performing intermediate proc.
+        If False, then all subjects will
         be kept throughout the rest of the optional processing - and only
-        merged at the end with only the existing loaded data (if any).
+        merged at the end AFTER processing has been done.
 
         Note: Inclusions and Exclusions are always applied regardless of this
         parameter.
 
-        (default = False)
+        if 'default', and not already defined, set to False
+        (default = 'default')
 
-    drop_keys : list, optional
-        A list of keys to drop columns by, where if any key given in a columns
-        name, then that column will be dropped.
-        (Note: if a name mapping exists, this drop step will be
-        conducted after renaming)
+    na_values : list, optional
+        Additional values to treat as NaN, by default ABCD specific
+        values of '777' and '999' are treated as NaN,
+        and those set to default by pandas 'read_csv' function.
+        Note: if new values are passed here,
+        it will override these default '777' and '999' NaN values,
+        so if it desired to keep these, they should be passed explicitly,
+        along with any new values.
 
-        (default = [])
+        if 'default', and not already defined, set to ['777', '999']
+        (default = 'default')
 
-    drop_nan : bool, int, float or 'default', optional
+    drop_na : bool, int, float or 'default', optional
+        This setting sets the value for drop_na,
+        which is used when loading data and covars only!
+
         If set to True, then will drop any row within the loaded
         data if there are any NaN! If False, the will not drop any
         rows for missing values.
-
-        If set to 'default' will use
-        the saved value within the class.
 
         If an int or float, then this means some NaN entries
         will potentially be preserved! Missing data imputation
         will therefore be required later on!
 
-        If an int > 1, then will drop any row with more than drop_nan
+        If an int > 1, then will drop any row with more than drop_na
         NaN values. If a float, will determine the drop threshold as
-        a percentage of the possible values, where 1 would not drop any rows
-        as it would require the number of columns + 1 NaN, and .5 would require
-        that more than half the column entries are NaN in order to drop that
-        row.
+        a percentage of the possible values, where 1 would not drop any
+        rows as it would require the number of columns + 1 NaN, and .5
+        would require that more than half the column entries are NaN in
+        order to drop that row.
 
+        if 'default', and not already defined, set to True
         (default = 'default')
 
+    drop_or_na : {'drop', 'na'}, optional
+
+        This setting sets the value for drop_na,
+        which is used when loading data and covars only!
+
+        filter_outlier_percent, or when loading a binary variable
+        in load covars and more then two classes are present - are both
+        instances where rows/subjects are by default dropped.
+        If drop_or_na is set to 'na', then these values will instead be
+        set to 'na' rather then the whole row dropped!
+
+        Otherwise, if left as default value of 'drop', then rows will be
+        dropped!
+
+        if 'default', and not already defined, set to 'drop'
+        (default = 'default')
+    '''
+
+    if dataset_type != 'default':
+        self.default_load_params['dataset_type'] = dataset_type
+    elif 'dataset_type' not in self.default_load_params:
+        self.default_load_params['dataset_type'] = 'basic'
+        self._print('No default dataset_type passed, set to "basic"')
+
+    if subject_id != 'default':
+        self.default_load_params['subject_id'] = subject_id
+    elif 'subject_id' not in self.default_load_params:
+        self.default_load_params['subject_id'] = 'src_subject_id'
+        self._print('No default subject_id passed, set to "src_subject_id"')
+
+    if eventname != 'default':
+        self.default_load_params['eventname'] = eventname
+    elif 'eventname' not in self.default_load_params:
+        self.default_load_params['eventname'] = 'baseline_year_1_arm_1'
+        self._print('No default eventname passed,',
+                    'set to "baseline_year_1_arm_1"')
+
+    if eventname_col != 'default':
+        self.default_load_params['eventname_col'] = eventname_col
+    elif 'eventname_col' not in self.default_load_params:
+        self.default_load_params['eventname_col'] = 'eventname'
+        self._print('No default eventname_col passed,',
+                    'set to "eventname"')
+
+    if overlap_subjects != 'default':
+        self.default_load_params['overlap_subjects'] = overlap_subjects
+    elif 'overlap_subjects' not in self.default_load_params:
+        self.default_load_params['overlap_subjects'] = False
+        self._print('No default overlap_subjects passed, set to False')
+
+    if na_values != 'default':
+        self.default_load_params['na_values'] = na_values
+    elif 'na_values' not in self.default_load_params:
+        self.default_load_params['na_values'] = ['777', '999']
+        self._print('No default na_values passed, set to ["777", "999"]')
+
+    if drop_na != 'default':
+        self.default_load_params['drop_na'] = drop_na
+    elif 'drop_na' not in self.default_load_params:
+        self.default_load_params['drop_na'] = True
+        self._print('No default drop_na passed, set to True')
+
+    if drop_or_na != 'default':
+        self.default_load_params['drop_or_na'] = drop_or_na
+    elif 'drop_or_na' not in self.default_load_params:
+        self.default_load_params['drop_or_na'] = 'drop'
+        self._print('No default drop_or_na passed, set to "drop"')
+
+    self._print('Default load params set within self.default_load_params.')
+    self._print()
+
+    # subject_id='src_subject_id',
+    # eventname='baseline_year_1_arm_1',
+    # default_dataset_type='basic',
+    # drop_nan=True,
+    # default_na_values=['777', '999'],
+
+
+def _make_load_params(self, args):
+
+    if len(self.default_load_params) == 0:
+
+        # Set default load params with default vals
+        self.Set_Default_Load_Params()
+        self._print('To change the default load params, call',
+                    'self.Set_Default_Load_Params()')
+
+    load_params = self.default_load_params.copy()
+
+    for key in args:
+        if key in load_params:
+            if key != 'default' and key != 'self':
+                load_params[key] = args[key]
+
+    return load_params
+
+
+def Load_Name_Map(self, name_map=None, loc=None, dataset_type='custom',
+                  source_name_col="NDAR name",
+                  target_name_col="REDCap name/NDA alias",
+                  clear_existing=False):
+    '''Loads a mapping dictionary for loading column names. Either a loc
+    or name_map must be passed! Note: If both a name_map and loc are passed,
+    the name_map will be loaded first, then updated with values from the loc.
+
+    Parameters
+    ----------
+    name_map : dict or None, optional
+        A dictionary containing the mapping to be passed directly.
+        Set to None if using loc instead!
+
+        (default = None)
+
+    loc : str, Path or None, optional
+        The location of the csv file which contains the mapping.
+
+        (default = None)
+
+    dataset_type : {'basic', 'explorer', 'custom'}, optional
+        The type of file to load from. (If loc passed!)
+        Dataset types are,
+
+        - 'basic' : ABCD2p0NDA style (.txt and tab seperated)
+
+        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
+
+        - 'custom' : A user-defined custom dataset. Right now this is only\
+            supported as a comma seperated file, with the subject names in a\
+            column called self.subject_id.
+
+        The name maps in ABCD are csv by default, so default is custom.
+
+        (default = 'custom')
+
+    source_name_col : str, optional
+        The column name with the file which lists names to be changed.
+
+        (default = "NDAR name")
+
+    target_name_col : str, optional
+        The column name within the file which lists the new name.
+
+        (default = "REDCap name/NDA alias")
+
+    clear_existing : bool, optional
+        If set to True, will clear the existing loaded name_map, otherwise the
+        name_map dictionary will be updated if already loaded!
+    '''
+
+    if clear_existing:
+        self.Clear_Name_Map()
+
+    if name_map is not None:
+        self.name_map.update(name_map)
+        self._print('Loaded passed name_map')
+
+    if loc is not None:
+
+        # Load mapping based on dataset type
+        mapping = self._load(loc, dataset_type)
+
+        try:
+            name_map_from_loc = dict(zip(mapping[source_name_col],
+                                         mapping[target_name_col]))
+
+            self.name_map.update(name_map_from_loc)
+            self._print('Loaded map file')
+
+        except KeyError:
+            print('Error: One or both provided column names do not exist!')
+            print('Name map not loaded from loc!')
+
+
+def Load_Data(self, loc, dataset_type='default', drop_keys=None,
+              inclusion_keys=None, subject_id='default', eventname='default',
+              eventname_col='default', overlap_subjects='default',
+              na_values='default', drop_na='default', drop_or_na='default',
+              filter_outlier_percent=None, unique_val_drop=2,
+              unique_val_warn=.2, drop_col_duplicates=None,
+              clear_existing=False):
+    """Class method for loading ROI-style data, assuming all loaded
+    columns are continuous / float datatype.
+
+    Parameters
+    ----------
+    loc : str, Path or list of
+        The location of the file to load data load from.
+        If passed a list, then will load each loc in the list,
+        and will assume them all to be of the same dataset_type if one
+        dataset_type is passed, or if they differ in type, a list must be
+        passed to dataset_type with the different types in order.
+
+        Note: some proc will be done on each loaded dataset before merging
+        with the rest (duplicate subjects, proc for eventname ect...), but
+        other dataset loading behavior won't occur until after the merge,
+        e.g., dropping cols by key, filtering for outlier, ect...
+
+    dataset_type :
+    drop_keys : str, list or None, optional
+        A list of keys to drop columns by, where if any key given in a columns
+        name, then that column will be dropped. If a str, then same behavior,
+        just with one col.
+        (Note: if a name mapping exists, this drop step will be
+        conducted after renaming)
+
+        (default = None)
+
+    inclusion_keys : str, list or None, optional
+        A list of keys in which to only keep a loaded data
+        column if ANY of the passed inclusion_keys are present
+        within that column name.
+
+        If passed only with drop_keys will be proccessed second.
+
+        (Note: if a name mapping exists, this drop step will be
+        conducted after renaming)
+
+        (default = None)
+
+    subject_id :
+    eventname :
+    eventname_col :
+    overlap_subjects :
+    na_values :
+    drop_na :
+    drop_or_na :
     filter_outlier_percent : int, float, tuple or None, optional
         *For float / ordinal data only.*
         A percent of values to exclude from either end of the
@@ -170,48 +379,30 @@ def Load_Data(self, loc, dataset_type='default', overlap_subjects=False,
         If over 1 then treated as a percent, if under 1, then
         used directly.
 
-        If drop_or_nan == 'drop', then all rows/subjects with >= 1
+        If drop_or_na == 'drop', then all rows/subjects with >= 1
         value(s) found outside of the percent will be dropped.
-        Otherwise, if drop_or_nan = 'nan', then any outside values
+        Otherwise, if drop_or_na = 'na', then any outside values
         will be set to NaN.
 
         (default = None)
 
-    winsorize_val : float, tuple or None, optional
-        The (winsorize_val[0])th lowest values are set to
-        the (winsorize_val[0])th percentile,
-        and the (winsorize_val[1])th highest values
-        are set to the (1 - winsorize_val[1])th percentile.
-        If one value passed, used for both ends.
-        If None, then no winsorization performed.
+    unique_val_drop : int, float None, optional
+        This parameter allows you to drops columns within loaded data
+        where there are under a certain threshold of unique values.
 
-        Note: Winsorizing will be performed after
-        filtering for outliers if values are passed for both.
+        The threshold is determined by the passed value as first converted
+        to a float between 0 and 1 (e.g. if passed 5, to .05), and then
+        computed as unique_val_drop * len(data). Any column with less unique
+        values then this threshold will be dropped
 
         (default = None)
 
-    unique_val_drop_thresh : int, optional
-        This parameter allows you to drop a column within data,
-        or rather a feature, if there are under the passed
-        `unique_val_drop_thresh` number of unique values.
-        By default this is 2, so any feature with only 1 unique value
-        will be dropped.
+    unique_val_warn : int or float, optional
+        This parameter is simmilar to unique_val_drop, but only
+        warns about columns with under the threshold (see unique_val_drop for
+        how the threshold is computed) unique vals.
 
-        (default = 2)
-
-    unique_val_warn_percent : int or float, optional
-        This value controls the warn threshold for printing
-        out potential data columns with a suspiciously low
-        number of unique values. Specifically, it refers to
-        the percentage of the total data that a features number of
-        unique values has to be under. For example, if 5 is passed,
-        that any column / feature with under .05 * len(data) unique
-        vals.
-
-        If float, then pass a value between 0 and 1, otherwise if greater
-        than 1, will turn to a percent.
-
-        (default = .2)
+        (default = .05)
 
     drop_col_duplicates : float or None/False, optional
         If set to None, will not drop any.
@@ -230,16 +421,6 @@ def Load_Data(self, loc, dataset_type='default', overlap_subjects=False,
 
         (default = None)
 
-    drop_or_nan : {'drop', 'nan'}, optional
-
-        filter_outlier_percent by default drops rows with extreme values, if
-        drop_or_nan is set to 'nan', then these values will be replaced with
-        NaN instead.
-
-        Otherwise, will continue to drop with default param == 'drop'
-
-        (default = 'drop')
-
     clear_existing : bool, optional
         If this parameter is set to True, then any existing
         loaded data will first be cleared before loading new data!
@@ -253,389 +434,58 @@ def Load_Data(self, loc, dataset_type='default', overlap_subjects=False,
             then reloading the notebook or re-running the script.
 
         (default = False)
-
-    Notes
-    ----------
-    For loading a truly custom dataset, an advanced user can
-    load all the data themselves into a pandas DataFrame.
-    They will need to have the DataFrame indexed by self.subject_id
-    e.g., ::
-
-        data = data.set_index(self.subject_id)
-
-    and subject ids will need to be in the correct style...
-    but if they do all this, then they can just set ::
-
-        self.data = data
-
     """
+
+    # Clear existing if requested, otherwise append to
     if clear_existing:
         self.Clear_Data()
-        self._print()
 
-    # Load in the dataset & proc. dataset type
-    if isinstance(loc, list):
-        data = self._load_datasets(loc, dataset_type)
-    else:
-        data = self._load_dataset(loc, dataset_type)
+    # Get the common load params as a mix of user-passed + default values
+    load_params = self._make_load_params(args=locals())
 
-    if overlap_subjects:
-        data = data[data.index.isin(self._get_overlapping_subjects())]
-        self._print('Set to overlap subjects only')
+    # Load in the raw dataframe - based on dataset type
+    data = self._load_datasets(loc, load_params['dataset_type'])
 
-    # Drop any columns if any of the drop keys occur in the column name
-    column_names = list(data)
+    # Perform proc common operations
+    data = self._proc_df(data, load_params)
 
-    assert isinstance(drop_keys, list), "drop_keys must be list!"
+    # Set to only overlap subjects if passed
+    data = self._set_overlap(data, load_params['overlap_subjects'])
 
-    to_drop = [name for name in column_names for drop_key in drop_keys
-               if drop_key in name]
-    data = data.drop(to_drop, axis=1)
-    self._print('Dropped', len(to_drop), 'columns, per drop_keys argument')
+    # Drop cols by drop keys and inclusion_keys
+    data = self._drop_data_cols(data, drop_keys, inclusion_keys)
 
-    # Drop any cols with all missing and rows by drop_nan argument
-    data = self._drop_na(data, drop_nan)
-    self._print()
+    # Handle missing data
+    data = self._drop_na(data, load_params['drop_na'])
 
-    data_keys = list(data)
+    # Filter based on passed filter_outlier_percent
+    data = self._filter_data_cols(data, filter_outlier_percent,
+                                  load_params['drop_or_na'])
 
-    # Filter based on outlier percent
-    if filter_outlier_percent is not None:
+    # Drop/warn about number of unique cols
+    data = self._proc_data_unique_cols(data, unique_val_drop, unique_val_warn)
 
-        if drop_or_nan == 'nan':
-            drop_val = np.nan
-        else:
-            drop_val = get_unused_drop_val(data)
+    # Drop column duplicates if param passed
+    data = drop_duplicate_cols(data, drop_col_duplicates)
 
-        for key in data_keys:
-            data = filter_float_by_outlier(data, key, filter_outlier_percent,
-                                           in_place=False, drop_val=drop_val,
-                                           _print=self._print_nothing)
+    # Show final na info after all proc
+    self._show_na_info(data)
 
-        # Only remove if not NaN
-        if drop_val is not np.nan:
-            data = self._drop_from_filter(data, drop_val)
-
-    if winsorize_val is not None:
-        if type(winsorize_val) != tuple:
-            winsorize_val = (winsorize_val)
-
-        for key in data_keys:
-            non_nan_subjects = ~data[key].isna()
-            data.loc[non_nan_subjects, key] =\
-                winsorize(data.loc[non_nan_subjects, key], winsorize_val)
-
-        self._print('Winsorized data with value: ', winsorize_val)
-
-    # Check for questionable loaded columns & print warning
-    if unique_val_warn_percent > 1:
-        unique_val_warn_percent /= 100
-
-    warn_thresh = unique_val_warn_percent * len(data)
-
-    unique_counts = [np.sum(~np.isnan(np.unique(data[x]))) for x in data]
-
-    if (np.array(unique_counts) < unique_val_drop_thresh).any():
-
-        self._print()
-        self._print('The following columns were dropped due to being under',
-                    'the passed unique_val_drop_thresh of: ',
-                    unique_val_drop_thresh)
-
-        for col, count in zip(list(data), unique_counts):
-            if count < unique_val_drop_thresh:
-                data = data.drop(col, axis=1)
-                self._print('Dropped', col, 'unique vals:', count)
-
-        self._print()
-        unique_counts = [np.sum(~np.isnan(np.unique(data[x]))) for x in data]
-
-    if (np.array(unique_counts) < warn_thresh).any():
-
-        self._print()
-        self._print('The following columns have a questionable number',
-                    'of unique values (under the warn thresh of', warn_thresh,
-                    '): ')
-        for col, count in zip(list(data), unique_counts):
-            if count < warn_thresh:
-                self._print(col, 'unique vals:', count)
-        self._print()
-
-    if drop_col_duplicates is False:
-        drop_col_duplicates = None
-    if drop_col_duplicates is not None:
-        data, dropped = drop_duplicate_cols(data, drop_col_duplicates)
-        self._print('Dropped', len(dropped), 'columns as duplicate cols!')
-
-    self._show_nan_info(data)
-
+    # Display final shape
     self._print('loaded shape: ', data.shape)
 
-    # If other data is already loaded,
-    # merge this data with existing loaded data
+    # Merge self.data with new loaded data
     self.data = self._merge_existing(self.data, data)
+
+    # Process new loaded subjects
     self._process_new(self.low_memory_mode)
 
 
-def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
-                overlap_subjects=False, drop_nan='default',
-                code_categorical_as='dummy',
-                categorical_drop_percent=None,
-                filter_float_outlier_percent=None, standardize=False,
-                normalize=False, drop_or_nan='drop', clear_existing=False):
-    '''Load a covariate or covariates, type data.
-
-    Parameters
-    ----------
-    loc : str, Path or None
-        The location of the csv file to load co-variates load from.
-
-    col_name : str or list
-        The name(s) of the column(s) to load.
-
-        Note: Must be in the same order as data types passed in.
-
-    data_type : {'binary', 'categorical', 'multilabel', 'ordinal', 'float'}
-        The data types of the different columns to load,
-        in the same order as the column names passed in.
-        Shorthands for datatypes can be used as well.
-
-        - 'binary' or 'b' : Binary input
-        - 'categorical' or 'c' : Categorical input
-        - 'multilabel' or 'm' : Multilabel categorical input
-        - 'ordinal' or 'o' : Ordinal input
-        - 'float' or 'f' : Float numerical input
-
-        .. WARNING::
-            If 'multilabel' datatype is specified, then the associated col name
-            should be a list of columns, and will be assumed to be.
-            For example, if loading multiple targets and one is multilabel,
-            a nested list should be passed to col_name.
-
-    drop_nan : bool, int, float or 'default', optional
-        If set to True, then will drop any row within the loaded
-        data if there are any NaN! If False, the will not drop any
-        rows for missing values.
-
-        If set to 'default' will use
-        the saved value within the class.
-
-        If an int or float, then this means some NaN entries
-        will potentially be preserved! Missing data imputation
-        will therefore be required later on!
-
-        If an int > 1, then will drop any row with more than drop_nan
-        NaN values. If a float, will determine the drop threshold as
-        a percentage of the possible values, where 1 would not drop any rows
-        as it would require the number of columns + 1 NaN, and .5 would require
-        that more than half the column entries are NaN in order to drop that
-        row.
-
-        (default = 'default')
-
-    dataset_type : {'default', 'basic', 'explorer', 'custom'}, optional
-        The type of file to load from.
-        Dataset types are,
-
-        - 'default' : Use the class defined default dataset type,\
-            if not set by the user this is 'basic'.
-
-        - 'basic' : ABCD2p0NDA style (.txt and tab seperated)
-
-        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
-
-        - 'custom' : A user-defined custom dataset. Right now this is only\
-            supported as a comma seperated file, with the subject names in a\
-            column called self.subject_id.
-
-        (default = 'default')
-
-     overlap_subjects : bool, optional
-        This parameter dictates if the loaded covars,
-        (after initial basic proc)
-        should be restricted to only the overlapping subjects from previously
-        loaded data, targets, covars or strat. If False, then all subjects will
-        be kept throughout the rest of the optional processing - and only
-        merged at the end with only the existing loaded covars (if any).
-
-        Note: Inclusions and Exclusions are always applied regardless of this
-        parameter.
-
-        (default = False)
-
-    code_categorical_as: {'dummy', 'one hot', 'ordinal'}
-        How to code categorical data,
-
-        - 'dummy' : perform dummy coding, to len(unique classes)-1 columns
-
-        - 'one hot' : for one hot encoding, to len(unique classes) columns
-
-        - 'ordinal' : for just ordinal, one column values 0 to \
-                      len(unique classes) -1
-
-        (default = 'dummy')
-
-    categorical_drop_percent: float or None, optional
-        Optional percentage threshold for dropping categories when
-        loading categorical data. If a float is given, then a category
-        will be dropped if it makes up less than that % of the data points.
-        E.g. if .01 is passed, then any datapoints with a category with less
-        then 1% of total valid datapoints is dropped.
-
-        (default = None)
-
-    filter_float_outlier_percent : float, int, tuple or None, optional
-        For float datatypes only.
-        A percent of values to exclude from either end of the
-        targets distribution, provided as either 1 number,
-        or a tuple (% from lower, % from higher).
-        set `filter_float_outlier_percent` to None for no filtering.
-
-        (default = None)
-
-    standardize : bool, optional
-        If True, scales any float/ordinal covariate loaded to have
-        a mean of 0 and std of 1.
-
-        Note: Computed before normalization, if both set to True,
-        and both computed after filter_float_outlier_percent.
-
-        (default = False)
-
-    normalize : bool, optional
-        If True, scales any float/ordinal covariates loaded
-        to be between 0 and 1.
-
-        Note: Computed after standardization, if both set to True.
-
-        (default = False)
-
-    drop_or_nan : {'drop', 'nan'}, optional
-        When loading a binary variable and more than two classed are present,
-        or when using filter_float_outlier_percent or categorical_drop_percent,
-        by default rows are dropped.
-        This parameter allows alternatively to instead specify those
-        values that would be dropped as NaN instead.
-
-        (default = 'drop')
-
-    clear_existing : bool, optional
-        If this parameter is set to True, then any existing
-        loaded covars will first be cleared before loading new covars!
-
-        .. WARNING::
-            If any subjects have been dropped from a different place,
-            e.g. targets or data, then simply reloading / clearing existing
-            covars might result in computing a misleading overlap of final
-            valid subjects. Reloading should therefore be best used
-            right after loading the original data, or if not possible,
-            then reloading the notebook or re-running the script.
-
-        (default = False)
-    '''
-
-    if clear_existing:
-        self.Clear_Covars()
-
-    self._print('Loading Covars!')
-    covars, col_names = self._common_load(loc, dataset_type,
-                                          overlap_subjects,
-                                          col_names=col_name,
-                                          drop_nan=drop_nan)
-
-    data_types, col_names = proc_datatypes(data_type, col_names)
-
-    if drop_or_nan == 'nan':
-        drop_val = np.nan
-    else:
-        drop_val = get_unused_drop_val(covars)
-
-    for key, d_type in zip(col_names, data_types):
-
-        self._print('loading:', key)
-
-        non_nan_subjects = covars[~covars[key].isna()].index
-        non_nan_covars = covars.loc[non_nan_subjects]
-
-        if d_type == 'binary' or d_type == 'b':
-
-            non_nan_covars, self.covars_encoders[key] =\
-                process_binary_input(non_nan_covars, key, in_place=False,
-                                     drop_val=drop_val, _print=self._print)
-
-        elif d_type == "categorical" or d_type == 'c':
-
-            if code_categorical_as == 'ordinal':
-                non_nan_covars, self.covars_encoders[key] =\
-                    process_ordinal_input(non_nan_covars, key,
-                                          categorical_drop_percent,
-                                          in_place=False, drop_val=drop_val,
-                                          _print=self._print)
-
-            # If using one hot or dummy coding, encoder will
-            # contain 2 transformers
-            else:
-                non_nan_covars, new_keys, self.covars_encoders[key] =\
-                    process_categorical_input(non_nan_covars, key,
-                                              code_categorical_as,
-                                              categorical_drop_percent,
-                                              in_place=False,
-                                              drop_val=drop_val,
-                                              _print=self._print)
-
-                # Add any new cols
-                covars = covars.reindex(columns=list(non_nan_covars))
-
-        elif (d_type == 'float' or d_type == 'ordinal' or
-              d_type == 'f' or d_type == 'o'):
-
-            if (filter_float_outlier_percent is not None) and \
-                    (d_type == 'float' or d_type == 'f'):
-
-                non_nan_covars =\
-                    filter_float_by_outlier(non_nan_covars, key,
-                                            filter_float_outlier_percent,
-                                            in_place=False, drop_val=drop_val,
-                                            _print=self._print)
-
-            # Perform scaling if needed
-            non_nan_covars = scale_input(non_nan_covars, key, standardize,
-                                         normalize, in_place=False,
-                                         drop_val=drop_val)
-
-            self.covars_encoders[key] = None
-
-        elif d_type == 'multilabel' or d_type == 'm':
-            common_name = process_multilabel_input(key)
-
-            self.covars_encoders[common_name] = key
-            self._print('Base str indicator/name for loaded multilabel =',
-                        common_name)
-
-        # Now update the changed values within covars
-        covars.loc[non_nan_subjects] = non_nan_covars
-
-        # Make sure col types are right
-        for dtype, key in zip(non_nan_covars.dtypes, list(covars)):
-            covars[key] = covars[key].astype(dtype.name)
-
-    # Have to remove rows with drop_val if drop_val not NaN
-    if drop_val is not np.nan:
-        covars = self._drop_from_filter(covars, drop_val)
-
-    self._print('loaded shape: ', covars.shape)
-
-    # If other data is already loaded,
-    # merge this data with existing loaded data.
-    self.covars = self._merge_existing(self.covars, covars)
-    self._process_new(self.low_memory_mode)
-
-
-def Load_Targets(self, loc, col_name, data_type,
-                 dataset_type='default', overlap_subjects=False,
-                 filter_outlier_percent=None,
-                 categorical_drop_percent=None,
-                 clear_existing=False):
+def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
+                 subject_id='default', eventname='default',
+                 eventname_col='default', overlap_subjects='default',
+                 filter_outlier_percent=None, categorical_drop_percent=None,
+                 na_values='default', clear_existing=False):
     '''Loads in a set of subject ids and associated targets from a
     2.0_ABCD_Data_Explorer release formatted csv.
     See Notes for more info.
@@ -669,53 +519,41 @@ def Load_Targets(self, loc, col_name, data_type,
 
         Datatypes are explained further in Notes.
 
-    dataset_type : {'default', 'basic', 'explorer', 'custom'}, optional
-        The type of file to load from.
-        Dataset types are,
+    dataset_type :
+    subject_id :
+    eventname :
+    eventname_col :
+    overlap_subjects :
 
-        - 'default' : Use the class defined default dataset type,\
-            if not set by the user this is 'basic'.\
-
-        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
-
-        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
-
-        - 'custom' : A user-defined custom dataset. Right now this is only\
-            supported as a comma seperated file, with the subject names in a\
-            column called self.subject_id.
-
-        (default = 'default')
-
-     overlap_subjects : bool, optional
-        This parameter dictates if the loaded targets,
-        (after initial basic proc)
-        should be restricted to only the overlapping subjects from previously
-        loaded data, targets, covars or strat. If False, then all subjects will
-        be kept throughout the rest of the optional processing - and only
-        merged at the end with only the existing loaded targets (if any).
-
-        Note: Inclusions and Exclusions are always applied regardless of this
-        parameter.
-
-        (default = False)
-
-    filter_outlier_percent : float, tuple or None, optional
+    filter_outlier_percent : float, tuple, list of or None, optional
         For float or ordinal datatypes only.
         A percent of values to exclude from either end of the
         target distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
 
+        A list of values can also be passed in the case that
+        multiple col_names / targets are being loaded. In this
+        case, the index should correspond. If a list is not passed
+        then the same value is used for all targets.
+
         (default = None).
 
-    categorical_drop_percent: float or None, optional
+    categorical_drop_percent: float, list of or None, optional
         Optional percentage threshold for dropping categories when
         loading categorical data. If a float is given, then a category
         will be dropped if it makes up less than that % of the data points.
         E.g. if .01 is passed, then any datapoints with a category with less
         then 1% of total valid datapoints is dropped.
 
+        A list of values can also be passed in the case that
+        multiple col_names / targets are being loaded. In this
+        case, the index should correspond. If a list is not passed
+        then the same value is used for all targets.
+
         (default = None)
+
+    na_values :
 
     clear_existing : bool, optional
         If this parameter is set to True, then any existing
@@ -753,70 +591,303 @@ def Load_Targets(self, loc, col_name, data_type,
     if clear_existing:
         self.Clear_Targets()
 
+    # Get the common load params as a mix of user-passed + default values
+    load_params = self._make_load_params(args=locals())
+
+    # Load in the targets w/ basic pre-processing
     targets, col_names = self._common_load(loc, dataset_type,
-                                           overlap_subjects,
+                                           load_params,
                                            col_names=col_name)
 
+    # Proccess the passed in data_types - get right number and in list
     data_types, col_names = proc_datatypes(data_type, col_names)
 
-    for key, d_type in zip(col_names, data_types):
+    # Process pass in other args to be list of len(datatypes)
+    fops = proc_args(filter_outlier_percent, data_types)
+    cdps = proc_args(categorical_drop_percent, data_types)
 
-        self._print('loading:', key)
-        targets_key = key
-
-        # Processing for binary, with some tolerance to funky input
-        if d_type == 'binary' or d_type == 'b':
-
-            targets, self.targets_encoders[key] =\
-                process_binary_input(targets, targets_key, self._print)
-
-        # Categorical proc, defaults to ordinal encoding
-        elif d_type == 'categorical' or d_type == 'c':
-
-            targets, self.targets_encoders[key] =\
-                process_ordinal_input(targets, targets_key,
-                                      categorical_drop_percent,
-                                      in_place=True, _print=self._print)
-
-        # For float or ordinal, just optionally apply outlier percent filter
-        elif (d_type == 'float' or d_type == 'ordinal' or
-              d_type == 'f' or d_type == 'o'):
-
-            if filter_outlier_percent is not None:
-                targets = filter_float_by_outlier(targets, targets_key,
-                                                  filter_outlier_percent,
-                                                  in_place=True,
-                                                  _print=self._print)
-
-            self.targets_encoders[key] = None
-
-        # Multilabel type must be read in from multiple columns
-        elif d_type == 'multilabel' or d_type == 'm':
-            common_name = process_multilabel_input(targets_key)
-
-            self.targets_encoders[common_name] = targets_key
-            self._print('Base str indicator/name for loaded multilabel =',
-                        common_name)
-
-        # Keep track of each loaded target in targets_keys
-        if targets_key not in self.targets_keys:
-            self.targets_keys.append(targets_key)
+    # Process each target to load
+    for key, d_type, fop, cdp in zip(col_names, data_types, fops, cdps):
+        targets = self._proc_target(targets, key, d_type, fop, cdp)
 
     self._print('Final shape: ', targets.shape)
 
-    # By default only load one set of targets note now, so no merging
+    # Merge with existing and set self.targets
     self.targets = self._merge_existing(self.targets, targets)
+
+    # Process new subjects
     self._process_new(self.low_memory_mode)
 
+    # Print out info on all loaded targets, w/ index names / keys
     self._print('All loaded targets')
     for i in range(len(self.targets_keys)):
         self._print(i, ':', self.targets_keys[i])
 
 
+def _proc_target(self, targets, key, d_type, fop, cdp):
+
+    self._print('loading:', key)
+
+    targets_key = key
+    d_type = d_type[0]
+
+    # Processing for binary, with some tolerance to funky input
+    if d_type == 'b':
+
+        targets, self.targets_encoders[key] =\
+            process_binary_input(targets, targets_key, self._print)
+
+    # Proc. Categoirical as ordinal
+    elif d_type == 'c':
+
+        targets, self.targets_encoders[key] =\
+            process_ordinal_input(targets, targets_key, cdp, in_place=True,
+                                  _print=self._print)
+
+    # For float or ordinal, just optionally apply outlier percent filter
+    elif d_type == 'f' or d_type == 'o':
+
+        if fop is not None:
+            targets = filter_float_by_outlier(targets, targets_key,
+                                              fop, in_place=True,
+                                              _print=self._print)
+
+        self.targets_encoders[key] = None
+
+    # Multilabel type must be read in from multiple columns
+    elif d_type == 'multilabel' or d_type == 'm':
+        common_name = process_multilabel_input(targets_key)
+
+        self.targets_encoders[common_name] = targets_key
+        self._print('Base str indicator/name for loaded multilabel =',
+                    common_name)
+
+    # Keep track of each loaded target in targets_keys
+    if targets_key not in self.targets_keys:
+        self.targets_keys.append(targets_key)
+
+    return targets
+
+
+def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
+                subject_id='default', eventname='default',
+                eventname_col='default', overlap_subjects='default',
+                na_values='default', drop_na='default', drop_or_na='default',
+                code_categorical_as='dummy', categorical_drop_percent=None,
+                filter_float_outlier_percent=None, clear_existing=False):
+    '''Load a covariate or covariates, type data.
+
+    Parameters
+    ----------
+    loc : str, Path or None
+        The location of the csv file to load co-variates load from.
+
+    col_name : str or list
+        The name(s) of the column(s) to load.
+
+        Note: Must be in the same order as data types passed in.
+
+    data_type : {'binary', 'categorical', 'multilabel', 'ordinal', 'float'}
+        The data types of the different columns to load,
+        in the same order as the column names passed in.
+        Shorthands for datatypes can be used as well.
+
+        - 'binary' or 'b' : Binary input
+        - 'categorical' or 'c' : Categorical input
+        - 'multilabel' or 'm' : Multilabel categorical input
+        - 'ordinal' or 'o' : Ordinal input
+        - 'float' or 'f' : Float numerical input
+
+        .. WARNING::
+            If 'multilabel' datatype is specified, then the associated col name
+            should be a list of columns, and will be assumed to be.
+            For example, if loading multiple targets and one is multilabel,
+            a nested list should be passed to col_name.
+
+    dataset_type :
+    subject_id :
+    eventname :
+    eventname_col :
+    overlap_subjects :
+    na_values :
+    drop_na :
+    drop_or_na :
+
+    code_categorical_as: {'dummy', 'one hot', 'ordinal', list of}, optional
+        How to code categorical data,
+
+        - 'dummy' : perform dummy coding, to len(unique classes)-1 columns
+
+        - 'one hot' : for one hot encoding, to len(unique classes) columns
+
+        - 'ordinal' : one column values 0 to len(unique classes) -1
+
+        A list of values can also be passed in the case that
+        multiple col_names / covars are being loaded. In this
+        case, the index should correspond. If a list is not passed
+        here, then the same value is used when loading all covars.
+
+        (default = 'dummy')
+
+    categorical_drop_percent: float, None or list of, optional
+        Optional percentage threshold for dropping categories when
+        loading categorical data. If a float is given, then a category
+        will be dropped if it makes up less than that % of the data points.
+        E.g. if .01 is passed, then any datapoints with a category with less
+        then 1% of total valid datapoints is dropped.
+
+        A list of values can also be passed in the case that
+        multiple col_names / covars are being loaded. In this
+        case, the index should correspond. If a list is not passed
+        here, then the same value is used when loading all covars.
+
+        (default = None)
+
+    filter_float_outlier_percent : float, int, tuple, None or list of, optional
+        For float datatypes only.
+        A percent of values to exclude from either end of the
+        targets distribution, provided as either 1 number,
+        or a tuple (% from lower, % from higher).
+        set `filter_float_outlier_percent` to None for no filtering.
+
+        A list of values can also be passed in the case that
+        multiple col_names / covars are being loaded. In this
+        case, the index should correspond. If a list is not passed
+        here, then the same value is used when loading all covars.
+
+        (default = None)
+
+    clear_existing : bool, optional
+        If this parameter is set to True, then any existing
+        loaded covars will first be cleared before loading new covars!
+
+        .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            covars might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original data, or if not possible,
+            then reloading the notebook or re-running the script.
+
+        (default = False)
+    '''
+
+    if clear_existing:
+        self.Clear_Covars()
+
+    # Get the common load params as a mix of user-passed + default values
+    load_params = self._make_load_params(args=locals())
+
+    # Load in covars w/ basic pre-proc
+    covars, col_names = self._common_load(loc, dataset_type,
+                                          load_params,
+                                          col_names=col_name)
+
+    # Proccess the passed in data_types / get right number and in list
+    data_types, col_names = proc_datatypes(data_type, col_names)
+
+    # Process pass in other args to be list of len(datatypes)
+    ccas = proc_args(code_categorical_as, data_types)
+    cdps = proc_args(categorical_drop_percent, data_types)
+    ffops = proc_args(filter_float_outlier_percent, data_types)
+
+    # Set the drop_val
+    if load_params['drop_or_na'] == 'na':
+        drop_val = np.nan
+    else:
+        drop_val = get_unused_drop_val(covars)
+
+    # Load in each covar
+    for key, d_type, cca, cdp, ffop in zip(col_names, data_types,
+                                           ccas, cdps, ffops):
+        covars =\
+            self._proc_covar(covars, key, d_type, cca, cdp, ffop, drop_val)
+
+    # Have to remove rows with drop_val if drop_val not NaN
+    if drop_val is not np.nan:
+        covars = self._drop_from_filter(covars, drop_val)
+
+    self._print('loaded shape: ', covars.shape)
+
+    # If other data is already loaded,
+    # merge this data with existing loaded data.
+    self.covars = self._merge_existing(self.covars, covars)
+    self._process_new(self.low_memory_mode)
+
+
+def _proc_covar(self, covars, key, d_type, cca, cdp, ffop, drop_val):
+
+    self._print('loading:', key)
+    d_type = d_type[0]
+
+    # Set to only the non-Nan subjects for this column
+    non_nan_subjects = covars[~covars[key].isna()].index
+    non_nan_covars = covars.loc[non_nan_subjects]
+
+    # Binary
+    if d_type == 'b':
+
+        non_nan_covars, self.covars_encoders[key] =\
+            process_binary_input(non_nan_covars, key, in_place=False,
+                                 drop_val=drop_val, _print=self._print)
+
+    # Categorical
+    elif d_type == 'c':
+
+        # Cat. ordinal
+        if code_categorical_as == 'ordinal':
+            non_nan_covars, self.covars_encoders[key] =\
+                process_ordinal_input(non_nan_covars, key, cdp, in_place=False,
+                                      drop_val=drop_val, _print=self._print)
+
+        # Dummy or one-hot
+        else:
+            non_nan_covars, self.covars_encoders[key] =\
+                process_categorical_input(non_nan_covars, key, cca, cdp,
+                                          in_place=False, drop_val=drop_val,
+                                          _print=self._print)
+
+            # Add any new cols from encoding to base covars (removing old)
+            covars = covars.reindex(columns=list(non_nan_covars))
+
+    # Float / Ordinal
+    elif d_type == 'f' or d_type == 'o':
+
+        self.covars_encoders[key] = None
+
+        # If filter float outlier percent
+        if ffop is not None and d_type == 'f':
+            non_nan_covars = filter_float_by_outlier(non_nan_covars, key,
+                                                     ffop, in_place=False,
+                                                     drop_val=drop_val,
+                                                     _print=self._print)
+
+    # Multilabel
+    elif d_type == 'm':
+
+        common_name = process_multilabel_input(key)
+
+        self.covars_encoders[common_name] = key
+        self._print('Base str indicator/name for loaded multilabel =',
+                    common_name)
+
+    # Now update the changed values within covars
+    covars.loc[non_nan_subjects] = non_nan_covars
+
+    # Update col datatype
+    for dtype, key in zip(non_nan_covars.dtypes, list(covars)):
+        covars[key] = covars[key].astype(dtype.name)
+
+    return covars
+
+
 def Load_Strat(self, loc, col_name, dataset_type='default',
-               overlap_subjects=False, binary_col_inds=None,
-               float_col_inds=None, float_bins=10,
-               float_bin_strategy='uniform', clear_existing=False):
+               subject_id='default', eventname='default',
+               eventname_col='default', overlap_subjects='default',
+               binary_col=False, float_col=False,
+               float_bins=10, float_bin_strategy='uniform',
+               categorical_drop_percent=None,
+               na_values='default', clear_existing=False):
     '''Load stratification values from a file.
     See Notes for more details on what stratification values are.
 
@@ -826,81 +897,91 @@ def Load_Strat(self, loc, col_name, dataset_type='default',
         The location of the csv file to load stratification vals from.
 
     col_name : str or list
-        The name(s) of the column(s) to load.
+        The name(s) of the column(s) to load. Any datatype can be
+        loaded with the exception of multilabel, but for float variables
+        in particular, they should be specified with the `float_col` and
+        corresponding `float_bins` and `float_bin_strategy` params. Noisy
+        binary cols can also be specified with the `binary_col` param.
 
-    dataset_type : {'default', 'basic', 'explorer', 'custom'}, optional
-        The type of file to load from.
-        Dataset types are,
+    dataset_type :
+    subject_id :
+    eventname :
+    eventname_col :
+    overlap_subjects :
 
-        - 'default' : Use the class defined default dataset type,\
-            if not set by the user this is 'basic'.
-
-        - 'basic' : ABCD2p0NDA style (.txt and tab seperated)
-
-        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
-
-        - 'custom' : A user-defined custom dataset. Right now this is only\
-            supported as a comma seperated file, with the subject names in a\
-            column called self.subject_id.
-
-        (default = 'default')
-
-     overlap_subjects : bool, optional
-        This parameter dictates if the loaded strat,
-        (after initial basic proc)
-        should be restricted to only the overlapping subjects from previously
-        loaded data, targets, covars or strat. If False, then all subjects will
-        be kept throughout the rest of the optional processing - and only
-        merged at the end with only the existing loaded strat (if any).
-
-        Note: Inclusions and Exclusions are always applied regardless of this
-        parameter.
-
-        (default = False)
-
-    binary_col_inds : int, list or None, optional
+    binary_col : bool or list of, optional
         Strat values are loaded as ordinal categorical, but there still
         exists the case where the user would like to load a binary set of
         values, and would like to ensure they are binary (filtering out
-        all values but the top 2 most frequent). This input should be
-        either None, for just loading in all cols as ordinal,
-        or an int or list of ints, where each int refers to the
-        numerical index within the passed `col_names` of a column
-        which should be loaded explicitly as binary.
+        all values but the top 2 most frequent).
 
-        (default = None)
+        This input should either be one boolean True False value,
+        or a list of values corresponding the the length of col_name if
+        col_name is a list.
 
-    float_col_inds : int, list or None, optional
+        If col_name is a list and only one value for binary_col is
+        passed, then that value is applied to all loaded cols.
+
+        (default = False)
+
+    float_col : int, list or None, optional
         Strat values are loaded as ordinal categorical, but one
         could also want to load a float value, and bin it into according
-        to some strategy into ordinal categorical. This input should be
-        either None, for just loading in all cols as ordinal,
-        or an int or list of ints, where each int refers to the
-        numerical index within the passed `col_names` of a column
-        which should be loaded as a float.
+        to some strategy into ordinal categorical.
+
+        This input should either be one boolean True False value,
+        or a list of values corresponding the the length of col_name if
+        col_name is a list.
+
+        If col_name is a list and only one value for binary_col is
+        passed, then that value is applied to all loaded cols.
 
         (default = None)
 
-    float_bins : int, optional
-        If any float_col_inds are specified, then the float
+    float_bins : int or list of, optional
+        If any float_col are set to True, then the float
         input must be discretized into bins. This param controls
-        the number of bins to create. If the user desires different
-        settings for making bins for different loaded values, they should
-        just call Load_Strat seperately for each unique set of `float_bins`
-        and `float_bin_strategy` params.
+        the number of bins to create. As with float_col, if one value
+        is passed, it is applied to all columns, but if different values
+        per column loaded are desired, a list of ints (with inds correponding)
+        should be pased.
 
         (default = 10)
 
     float_bin_strategy : {'uniform', 'quantile', 'kmeans'}, optional
-        The strategy used to define the bins if any `float_col_inds`
-        are specified.
+        If any float_col are set to True, then the float
+        input must be discretized into bins. This param controls
+        the strategy used to define the bins. Options are,
 
         - 'uniform' : All bins in each feature have identical widths.
         - 'quantile' : All bins in each feature have the same number of points.
         - 'kmeans' : Values in each bin have the same nearest center of a 1D \
                      k-means cluster.
 
+        As with float_col and float_bins, if one value
+        is passed, it is applied to all columns, but if different values
+        per column loaded are desired, a list of choices
+        (with inds correponding) should be pased.
+
         (default = 'uniform')
+
+    categorical_drop_percent: float, None or list of, optional
+        Optional percentage threshold for dropping categories when
+        loading categorical data (so for strat these are any column that are
+        not specified as float or binary). If a float is given, then a category
+        will be dropped if it makes up less than that % of the data points.
+        E.g. if .01 is passed, then any datapoints with a category with less
+        then 1% of total valid datapoints is dropped.
+
+        A list of values can also be passed in the case that
+        multiple col_names / strat vals are being loaded. In this
+        case, the indices should correspond. If a list is not passed
+        here, then the same value is used when loading all non float non binary
+        strat cols.
+
+        (default = None)
+
+    na_values :
 
     clear_existing : bool, optional
         If this parameter is set to True, then any existing
@@ -923,56 +1004,63 @@ def Load_Strat(self, loc, col_name, dataset_type='default',
 
     For example: Sex might be loaded here, and used later to ensure
     that any validation splits retain the same distribution of each sex.
+    See :func:`Define_Validation_Strategy`, and some arguments within
+    :func:`Evaluate` (sample_on and subjects_to_use).
 
-    There is a reason strat is loaded after data, covars and targets,
-    If you re-load any of them for whatever reason, after strat is already
-    loaded, it could potentially lead to weird bugs.
-    The easiest option is to just load strat last.
+    For most relaible split behavior based off strat values, make sure to load
+    strat values after data, targets and covars.
     '''
+
     if clear_existing:
         self.Clear_Strat()
 
-    self._print('Reading strat/stratification values!')
+    # Get the common load params as a mix of user-passed + default values
+    load_params = self._make_load_params(args=locals())
+
+    # Load in strat w/ basic pre-processing
     strat, col_names = self._common_load(loc, dataset_type,
-                                         overlap_subjects,
+                                         load_params,
                                          col_names=col_name)
 
-    binary_col_names = []
-    if binary_col_inds is not None:
-
-        if isinstance(binary_col_inds, int):
-            binary_col_inds = [binary_col_inds]
-
-        binary_col_names = [col_names[i] for i in binary_col_inds]
-
-    float_col_names = []
-    if float_col_inds is not None:
-
-        if isinstance(float_col_inds, int):
-            float_col_inds = [float_col_inds]
-
-        float_col_names = [col_names[i] for i in float_col_inds]
-
-    # Encode each column into unique values
-    for col in col_names:
-
-        if col in binary_col_names:
-            strat, self.strat_encoders[col + self.strat_u_name] =\
-                process_binary_input(strat, col, self._print)
-
-        elif col in float_col_names:
-            strat, self.strat_encoders[col + self.strat_u_name] =\
-                process_float_input(strat, col, float_bins, float_bin_strategy)
-
-        else:
-            strat, self.strat_encoders[col + self.strat_u_name] =\
-                process_ordinal_input(strat, col)
-
+    # Add strat unique name to end of each col name
     col_mapping = {col: col + self.strat_u_name for col in strat}
     strat = strat.rename(col_mapping, axis=1)
 
+    # Proc list optional args to right length
+    bcs = proc_args(binary_col, col_names)
+    fcs = proc_args(float_col, col_names)
+    fbs = proc_args(float_bins, col_names)
+    fbss = proc_args(float_bin_strategy, col_names)
+    cdps = proc_args(categorical_drop_percent, col_names)
+
+    # Load in each strat w/ passed args
+    for key, bc, fc, fb, fbs, cdp in zip(col_names, bcs, fcs, fbs, fbss, cdps):
+        strat = self._proc_strat(strat, key, bc, fc, fb, fbs, cdp)
+
+    # Merge with existing if any, and process new overlap of global subjects
     self.strat = self._merge_existing(self.strat, strat)
     self._process_new(self.low_memory_mode)
+
+
+def _proc_strat(self, strat, key, bc, fc, fb, fbs, cdp):
+
+    # Binary
+    if bc:
+        strat, self.strat_encoders[key] =\
+            process_binary_input(strat, key, self._print)
+
+    # Float
+    elif fc:
+
+        strat, self.strat_encoders[key] =\
+            process_float_input(strat, key, bins=fb, strategy=fbs)
+
+    # Categorical
+    else:
+        strat, self.strat_encoders[key] =\
+            process_ordinal_input(strat, key, drop_percent=cdp)
+
+    return strat
 
 
 def Load_Exclusions(self, loc=None, subjects=None, clear_existing=False):
@@ -1070,105 +1158,228 @@ def Load_Inclusions(self, loc=None, subjects=None, clear_existing=False):
     self._filter_included()
 
 
-def Clear_Name_Map(self):
-    '''Reset name mapping'''
-    self.name_map = {}
-    self._print('cleared name map.')
+def Drop_Data_Cols(self, drop_keys=None, inclusion_keys=None):
+    '''Function to drop columns within loaded data by drop_keys
+    or inclusion_keys.
+
+    Parameters
+    ----------
+    drop_keys : str, list or None, optional
+        A list of keys to drop columns within loaded data by,
+        where if ANY key given in a columns
+        name, then that column will be dropped.
+        If a str, then same behavior, just with one col.
+
+        If passed along with inclusion_keys will be processed first.
+
+        (Note: if a name mapping exists, this drop step will be
+        conducted after renaming)
+
+        (default = None)
+
+    inclusion_keys : str, list or None, optional
+        A list of keys in which to only keep a loaded data
+        column if ANY of the passed inclusion_keys are present
+        within that column name.
+
+        If passed only with drop_keys will be proccessed second.
+
+        (Note: if a name mapping exists, this drop step will be
+        conducted after renaming)
+
+        (default = None)
+    '''
+
+    self.data = self._drop_data_cols(self.data, drop_keys, inclusion_keys)
 
 
-def Clear_Data(self):
-    '''Resets any loaded data.
+def _drop_data_cols(self, drop_keys, inclusion_keys):
 
-    .. WARNING::
-            If any subjects have been dropped from a different place,
-            e.g. targets, then simply clearing data might result
-            in computing a misleading overlap of final valid subjects.
-            Reloading should therefore be best used right after loading
-            the original data, or if not possible, then reloading the
-            notebook or re-running the script.
+    if drop_keys is not None:
+
+        column_names = list(data)
+        if isinstance(drop_keys, str):
+            drop_keys = [drop_keys]
+
+        to_drop = [name for name in column_names for drop_key in drop_keys
+                   if drop_key in name]
+
+        data = data.drop(to_drop, axis=1)
+        self._print('Dropped', len(to_drop), 'columns',
+                    'per passed drop_keys argument')
+
+    if inclusion_keys is not None:
+
+        column_names = list(data)
+        if isinstance(inclusion_keys, str):
+            inclusion_keys = [inclusion_keys]
+
+        to_keep = [name for name in column_names for
+                   inclusion_key in inclusion_keys
+                   if inclusion_key in name]
+
+        data = data[to_keep]
+        self._print('Keeping', len(to_keep), 'columns',
+                    'per passed inclusion_keys argument')
+
+    return data
+
+
+def Filter_Data_Cols(self, filter_outlier_percent, overlap_subjects='default',
+                     drop_or_na='default'):
+    '''Perform filtering on all loaded data based on an outlier percent,
+    either dropping outlier rows or setting specific outliers to NaN.
+
+    Note, if overlap_subject is set to True here, only the overlap will
+    be saved after proc within self.data.
+
+    Parameters
+    ----------
+    filter_outlier_percent : int, float, tuple or None
+        *For float / ordinal data only.*
+        A percent of values to exclude from either end of the
+        targets distribution, provided as either 1 number,
+        or a tuple (% from lower, % from higher).
+        set `filter_outlier_percent` to None for no filtering.
+        If over 1 then treated as a percent, if under 1, then
+        used directly.
+
+        If drop_or_na == 'drop', then all rows/subjects with >= 1
+        value(s) found outside of the percent will be dropped.
+        Otherwise, if drop_or_na = 'na', then any outside values
+        will be set to NaN.
+
+        (default = None)
+
+    overlap_subjects :
+    drop_or_na :
 
     '''
-    self.data = pd.DataFrame()
-    self._print('Cleared loaded data.')
+
+    load_params = self._make_load_params(args=locals())
+    data = self._set_overlap(self.data, load_params['overlap_subjects'])
+
+    self.data = self._filter_data_cols(self.data, filter_outlier_percent,
+                                       load_params['drop_or_na'])
 
 
-def Clear_Covars(self):
-    '''Reset any loaded covars.
+def _filter_data_cols(self, data, filter_outlier_percent, drop_or_na):
 
-    .. WARNING::
-            If any subjects have been dropped from a different place,
-            e.g. targets or data, then simply reloading / clearing existing
-            covars might result in computing a misleading overlap of final
-            valid subjects. Reloading should therefore be best used
-            right after loading the original covars, or if not possible,
-            then reloading the notebook or re-running the script.
+    data_keys = list(data)
 
-    '''
-    self.covars = pd.DataFrame()
-    self.covars_encoders = {}
-    self._print('cleared covars.')
+    # Filter based on outlier percent
+    if filter_outlier_percent is not None:
 
+        if drop_or_na == 'na':
+            drop_val = np.nan
+        else:
+            drop_val = get_unused_drop_val(data)
 
-def Clear_Targets(self):
-    '''Resets targets'''
-    self.targets = pd.DataFrame()
-    self.targets_encoders = {}
-    self.targets_keys = []
-    self._print('cleared targets.')
+        before = data.shape[0]
+        for key in data_keys:
+            data = filter_float_by_outlier(data, key, filter_outlier_percent,
+                                           in_place=False, drop_val=drop_val,
+                                           _print=self._print_nothing)
 
+        # Only remove if not NaN
+        if drop_val is not np.nan:
+            data = self._drop_from_filter(data, drop_val)
+        after = data.shape[0]
 
-def Clear_Strat(self):
-    '''Reset any loaded strat
+        if before != after:
+            self._print(before - after, 'subjects/rows dropped based on',
+                        'passed filter_outlier_percent:',
+                        filter_outlier_percent)
 
-    .. WARNING::
-            If any subjects have been dropped from a different place,
-            e.g. targets or data, then simply reloading / clearing existing
-            strat might result in computing a misleading overlap of final
-            valid subjects. Reloading should therefore be best used
-            right after loading the original strat, or if not possible,
-            then reloading the notebook or re-running the script.
-
-    '''
-    self.strat = pd.DataFrame()
-    self.strat_encoders = {}
-    self._print('cleared strat.')
+    return data
 
 
-def Clear_Exclusions(self):
-    '''Resets exclusions to be an empty set.
+def Proc_Data_Unique_Cols(self, unique_val_drop=None, unique_val_warn=.05,
+                          overlap_subjects='default'):
+    ''' This function performs proccessing on all loaded data based on
+    the number of unique values loaded within each column
+    (allowing users to drop or warn!).
 
-    .. WARNING::
-            If any subjects have been dropped from a different place,
-            e.g. targets or data, then simply reloading / clearing existing
-            exclusions might result in computing a misleading overlap of final
-            valid subjects. Reloading should therefore be best used
-            right after loading the original exclusions, or if not possible,
-            then reloading the notebook or re-running the script.
+    Note, if overlap_subjects is set to True here, only the overlap will
+    be saved after proc within self.data.
 
-    '''
-    self.exclusions = set()
-    self._print('cleared exclusions.')
+    Parameters
+    ----------
+    unique_val_drop : int, float None, optional
+        This parameter allows you to drops columns within loaded data
+        where there are under a certain threshold of unique values.
 
+        The threshold is determined by the passed value as first converted
+        to a float between 0 and 1 (e.g. if passed 5, to .05), and then
+        computed as unique_val_drop * len(data). Any column with less unique
+        values then this threshold will be dropped
 
-def Clear_Inclusions(self):
-    '''Resets inclusions to be an empty set.
+        (default = None)
 
-    .. WARNING::
-        If any subjects have been dropped from a different place,
-        e.g. targets or data, then simply reloading / clearing existing
-        inclusions might result in computing a misleading overlap of final
-        valid subjects. Reloading should therefore be best used
-        right after loading the original inclusions, or if not possible,
-        then reloading the notebook or re-running the script.
+    unique_val_warn : int or float, optional
+        This parameter is simmilar to unique_val_drop, but only
+        warns about columns with under the threshold (see unique_val_drop for
+        how the threshold is computed) unique vals.
+
+        (default = .05)
+
+    overlap_subjects :
 
     '''
-    self.inclusions = set()
-    self._print('cleared inclusions.')
+
+    load_params = self._make_load_params(args=locals())
+    data = self._set_overlap(self.data, load_params['overlap_subjects'])
+
+    self.data =\
+        self._proc_data_unique_cols(data, unique_val_drop, unique_val_warn)
 
 
-def Drop_Data_Duplicates(self, corr_thresh):
+def _proc_data_unique_cols(self, data, unique_val_drop, unique_val_warn):
+
+    if unique_val_drop is None:
+        unique_val_drop = 1
+    if unique_val_warn is None:
+        unique_val_warn = 1
+
+    if unique_val_drop > 1:
+        unique_val_drop /= 100
+    if unique_val_warn > 1:
+        unique_val_warn /= 100
+
+    drop_thresh = unique_val_drop * len(data)
+    warn_thresh = unique_val_warn * len(data)
+
+    unique_counts = [np.sum(~np.isnan(np.unique(data[x]))) for x in data]
+    unique_counts = np.array(unique_counts)
+
+    # If any valid for warn or drop
+    if ((unique_counts < drop_thresh).any()) or (
+     (unique_counts < warn_thresh).any()):
+
+        self._print('Processing unique col values with drop threshold:',
+                    drop_thresh, 'warn threshold:', warn_thresh, 'out of',
+                    len(data), 'rows')
+
+        for col, count in zip(list(data), unique_counts):
+
+            if count < drop_thresh:
+                data = data.drop(col, axis=1)
+                self._print('Dropped -', col, 'with unique vals:', count)
+
+            elif count < warn_thresh:
+                self._print('Warn -', col, 'has unique vals:', count)
+
+        self._print()
+
+    return data
+
+
+def Drop_Data_Duplicates(self, corr_thresh, overlap_subjects='default'):
     '''Drop duplicates columns within self.data based on
     if two data columns are >= to a certain correlation threshold.
+
+    Note, if overlap_subjects is set to True here, only the overlap will
+    be saved after proc within self.data.
 
     Parameters
     ----------
@@ -1177,10 +1388,14 @@ def Drop_Data_Duplicates(self, corr_thresh):
         are correlated >= to `corr_thresh`, the second column is removed.
 
         A value of 1 will instead make a quicker direct =='s comparison.
+
+    overlap_subjects
     '''
 
-    self.data, dropped = drop_duplicate_cols(self.data, corr_thresh)
-    self._print('Dropped', len(dropped), 'columns as duplicate cols!')
+    load_params = self._make_load_params(args=locals())
+    data = self._set_overlap(self.data, load_params['overlap_subjects'])
+
+    self.data = drop_duplicate_cols(data, corr_thresh)
 
 
 def Binarize_Target(self, lower, upper, target=0):
@@ -1253,6 +1468,109 @@ def Get_Overlapping_Subjects(self):
     return self._get_overlapping_subjects()
 
 
+def Clear_Name_Map(self):
+    '''Reset name mapping'''
+    self.name_map = {}
+    self._print('cleared name map.')
+    self._print()
+
+
+def Clear_Data(self):
+    '''Resets any loaded data.
+
+    .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets, then simply clearing data might result
+            in computing a misleading overlap of final valid subjects.
+            Reloading should therefore be best used right after loading
+            the original data, or if not possible, then reloading the
+            notebook or re-running the script.
+
+    '''
+    self.data = pd.DataFrame()
+    self._print('Cleared loaded data.')
+    self._print()
+
+
+def Clear_Covars(self):
+    '''Reset any loaded covars.
+
+    .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            covars might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original covars, or if not possible,
+            then reloading the notebook or re-running the script.
+
+    '''
+    self.covars = pd.DataFrame()
+    self.covars_encoders = {}
+    self._print('cleared covars.')
+    self._print()
+
+
+def Clear_Targets(self):
+    '''Resets targets'''
+    self.targets = pd.DataFrame()
+    self.targets_encoders = {}
+    self.targets_keys = []
+    self._print('cleared targets.')
+    self._print()
+
+
+def Clear_Strat(self):
+    '''Reset any loaded strat
+
+    .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            strat might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original strat, or if not possible,
+            then reloading the notebook or re-running the script.
+
+    '''
+    self.strat = pd.DataFrame()
+    self.strat_encoders = {}
+    self._print('cleared strat.')
+    self._print()
+
+
+def Clear_Exclusions(self):
+    '''Resets exclusions to be an empty set.
+
+    .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets or data, then simply reloading / clearing existing
+            exclusions might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original exclusions, or if not possible,
+            then reloading the notebook or re-running the script.
+
+    '''
+    self.exclusions = set()
+    self._print('cleared exclusions.')
+    self._print()
+
+
+def Clear_Inclusions(self):
+    '''Resets inclusions to be an empty set.
+
+    .. WARNING::
+        If any subjects have been dropped from a different place,
+        e.g. targets or data, then simply reloading / clearing existing
+        inclusions might result in computing a misleading overlap of final
+        valid subjects. Reloading should therefore be best used
+        right after loading the original inclusions, or if not possible,
+        then reloading the notebook or re-running the script.
+
+    '''
+    self.inclusions = set()
+    self._print('cleared inclusions.')
+    self._print()
+
+
 def _get_targets_key(self, key, base_key=False):
 
     targets_base_keys = self._get_base_targets_names()
@@ -1275,31 +1593,10 @@ def _load_datasets(self, locs, dataset_types):
     Parameters
     ----------
     locs : list of str, Path
-        The location of the csv files to load data load from.
+        The location of the  files to load data load from.
 
-    dataset_types : {'default', 'basic' 'explorer', 'custom'} or list
-        The type of dataset to load from. If a list is passed, then locs must
-        also be a list, and the indices should correspond.
-        Likewise, if locs is a list and dataset_type is not,
-        it is assumed all datasets are the same type.
-        Where each dataset type is,
-
-        - 'default': Use the class defined default dataset type,
-            if not set by the user this is 'basic'.
-
-        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
-            Typically the default columns, and therefore not neuroimaging
-            data, will be dropped, also not including the eventname column.
-
-        - 'explorer' : 2.0_ABCD_Data_Explorer tyle (.csv and comma seperated)
-            The first 2 columns before self.subject_id
-            (typically the default columns, and therefore not neuroimaging
-            data - also not including the eventname column), will be dropped.
-
-        - 'custom' : A user-defined custom dataset. Right now this is only
-            supported as a comma seperated file, with the subject names in a
-            column called self.subject_id. No columns will be dropped,
-            unless specific drop keys are passed.
+    dataset_types : str or list,
+        str or list of the dataset types
 
     Returns
     ----------
@@ -1344,24 +1641,7 @@ def _load_dataset(self, loc, dataset_type):
         The location of the csv/txt file to load data load from.
 
     dataset_type : {'default', 'basic', 'explorer', 'custom'}
-        The type of dataset to load from. Where,
-
-        - 'default' : Use the class defined default dataset type,
-            if not set by the user this is 'basic'.
-
-        - 'basic' : ABCD2p0NDA style, (.txt and tab seperated)
-            Typically the default columns, and therefore not neuroimaging
-            data, will be dropped, also not including the eventname column.
-
-        - 'explorer' : 2.0_ABCD_Data_Explorer tyle (.csv and comma seperated)
-            The first 2 columns before self.subject_id
-            (typically the default columns, and therefore not neuroimaging
-            data - also not including the eventname column), will be dropped.
-
-        - 'custom' : A user-defined custom dataset. Right now this is only
-            supported as a comma seperated file, with the subject names in a
-            column called self.subject_id. No columns will be dropped,
-            unless specific drop keys are passed.
+        The type of dataset to load from.
 
     Returns
     ----------
@@ -1369,9 +1649,6 @@ def _load_dataset(self, loc, dataset_type):
         ABCD ML formatted pd DataFrame, with the loaded
         minimally proc'ed data.
     '''
-
-    if dataset_type == 'default':
-        dataset_type = self.default_dataset_type
 
     data = self._load(loc, dataset_type)
 
@@ -1395,48 +1672,31 @@ def _load_dataset(self, loc, dataset_type):
                     ' due to dataset type')
 
     self._print()
-
-    # Perform common operations
-    # (check subject id, drop duplicate subjects ect...)
-    data = self._proc_df(data)
-
     return data
 
 
-def _common_load(self, loc, dataset_type, overlap_subjects,
-                 col_name=None, col_names=None, drop_nan=True):
+def _common_load(self, loc, dataset_type, load_params,
+                 col_names=None):
 
-    # Read csv data from loc
-    data = self._load(loc, dataset_type)
+    # Reads raw data based on dataset type
+    data = self._load(loc, load_params['dataset_type'])
 
-    # Perform common df processing, on subject ids,
-    # duplicate subjects + eventname
-    data = self._proc_df(data)
+    # Perform proc common operations
+    data = self._proc_df(data, load_params)
 
-    if overlap_subjects:
-        valid_subjects = self._get_overlapping_subjects()
+    # Set to only overlap subjects if passed
+    data = self._set_overlap(data, load_params['overlap_subjects'])
 
-        if len(valid_subjects) > 0:
-            data = data[data.index.isin(valid_subjects)]
-            self._print('Set to overlap subjects only')
-
-    if col_name is not None:
-
-        if col_name in self.name_map:
-            col_name = self.name_map[col_name]
-
-        data = self._drop_na(data[[col_name]], drop_nan)
-        return data
-
+    # Proc input col_names
     if not isinstance(col_names, list):
         col_names = list([col_names])
-
     for i in range(len(col_names)):
         if col_names[i] in self.name_map:
             col_names[i] = self.name_map[col_names[i]]
 
-    # Drop rows with NaN
-    data = self._drop_na(data[col_names], drop_nan)
+    # Set data to only the requested cols and drop_na
+    data = self._drop_na(data[col_names], load_params['drop_na'])
+
     return data, col_names
 
 
@@ -1464,6 +1724,8 @@ def _load(self, loc, dataset_type):
             supported as a comma seperated file, with the subject names in a
             column called self.subject_id.
 
+    na_values
+
     Returns
     ----------
     pandas DataFrame
@@ -1482,6 +1744,15 @@ def _load(self, loc, dataset_type):
     else:
         data = pd.read_csv(loc, na_values=self.default_na_values,
                            low_memory=self.low_memory_mode)
+
+    return data
+
+
+def _set_overlap(self, data, overlap_subjects):
+
+    if overlap_subjects:
+        data = data[data.index.isin(self._get_overlapping_subjects())]
+        self._print('Set to overlapping loaded subjects.')
 
     return data
 
@@ -1520,14 +1791,16 @@ def _merge_existing(self, class_data, local_data):
         return local_data
 
 
-def _proc_df(self, data):
-    '''Internal helper function, when passed a 2.0_ABCD_Data_Explorer
-    release formated dataframe, perform common processing steps.
+def _proc_df(self, data, load_params):
+    '''Internal helper function to perform common processing steps.
 
     Parameters
     ----------
     data : pandas DataFrame
-        A df formatted by the ABCD_ML class / 2.0_ABCD_Data_Explorer format
+        a semi-raw df
+
+    load_params : dict
+        dict containing load param values
 
     Returns
     ----------
@@ -1535,32 +1808,49 @@ def _proc_df(self, data):
         The df post-processing
     '''
 
-    assert self.subject_id in data, "Missing subject id column!"
+    # Rename columns with loaded name map
+    data = data.rename(self.name_map, axis=1)
 
-    # Perform corrects on subject ID
+    # If passed subject id is different then int name, change it
+    if load_params['subject_id'] in self.name_map:
+        load_params['subject_id'] = self.name_map[load_params['subject_id']]
+
+    if load_params['subject_id'] != self.subject_id:
+        data = data.rename({load_params['subject_id']: self.subject_id},
+                           axis=1)
+
+    # Make sure a column w/ subject id exists
+    if self.subject_id not in data:
+        raise IndexError('No valid subject id column found!')
+
+    # If using default subject ids, proc for
     data[self.subject_id] =\
         data[self.subject_id].apply(self._process_subject_name)
 
-    # Filter by eventname is applicable
-    data = self._filter_by_eventname(data)
+    # Filter by eventname is applicable.
+    if load_params['eventname_col'] in self.name_map:
+        load_params['eventname_col'] =\
+            self.name_map[load_params['eventname_col']]
 
-    # Drop any duplicate subjects, default behavior for now
-    # though, could imagine a case where you wouldn't want to when
-    # there are future releases.
+    data = self._filter_by_eventname(data, load_params['eventname'],
+                                     load_params['eventname_col'])
+
+    # Drop any duplicate subjects, longitudinal data should just change col
+    # name.
     before = data.shape[0]
     data = data.drop_duplicates(subset=self.subject_id)
     after = data.shape[0]
 
     if before != after:
-        self._print(before - after, 'duplicate subjects dropped.')
+        self._print('Note: ABCD_ML does not currently support',
+                    'duplicate subjects loaded as seperate rows!',
+                    before - after, 'subjects have been dropped',
+                    'accordingly.')
 
-    # Rename columns if loaded name map
-    if self.name_map:
-        data = data.rename(self.name_map, axis=1)
-
+    # Set the subject_id column as the index column
     data = data.set_index(self.subject_id)
 
-    # Drop excluded subjects, if any
+    # Drop excluded and/or included subjects, if any
     data = self._drop_excluded(data)
     data = self._drop_included(data)
 
@@ -1636,7 +1926,7 @@ def _process_subject_name(self, subject):
         return subject
 
 
-def _drop_na(self, data, drop_nan=True):
+def _drop_na(self, data, drop_na=True):
     '''Wrapper function to drop rows with NaN values.
 
     Parameters
@@ -1644,8 +1934,8 @@ def _drop_na(self, data, drop_nan=True):
     data : pandas DataFrame
         ABCD_ML formatted.
 
-    drop_nan : drop_nan param
-        ABCD_ML drop_nan param
+    drop_na : drop_na param
+        ABCD_ML drop_na param
 
     Returns
     ----------
@@ -1658,24 +1948,20 @@ def _drop_na(self, data, drop_nan=True):
     data = data.dropna(axis=1, how='all')
     self._print('Dropped', sum(missing_values), 'cols for all missing values')
 
-    # Handle dropping rows based on passed drop_nan param
-    if drop_nan == 'default':
-        drop_nan = self.drop_nan
+    if drop_na is not False:
 
-    if drop_nan is not False:
-
-        if drop_nan is True:
-            nan_thresh = 0
-        elif drop_nan <= 1:
-            nan_thresh = int(drop_nan * data.shape[1])
+        if drop_na is True:
+            na_thresh = 0
+        elif drop_na <= 1:
+            na_thresh = int(drop_na * data.shape[1])
         else:
-            nan_thresh = drop_nan
+            na_thresh = drop_na
 
-        to_drop = data[data.isna().sum(axis=1) > nan_thresh].index
+        to_drop = data[data.isna().sum(axis=1) > na_thresh].index
         data = data.drop(to_drop)
         self._print('Dropped', len(to_drop), 'rows for missing values, based',
-                    'on the provided drop_nan param:', drop_nan,
-                    'with actual nan_thresh:', nan_thresh)
+                    'on the provided drop_na param:', drop_na,
+                    'with actual na_thresh:', na_thresh)
 
     remaining_na_rows = data.isna().any(axis=1).sum()
     self._print('Loaded rows with NaN remaining:', remaining_na_rows)
@@ -1694,8 +1980,8 @@ def _drop_from_filter(self, data, drop_val=999):
     return data
 
 
-def _filter_by_eventname(self, data):
-    '''Internal helper function, to simply filter a dataframe by eventname,
+def _filter_by_eventname(self, data, eventname, eventname_col):
+    '''Internal helper function, to filter a dataframe by eventname,
     and then return the dataframe.
 
     Parameters
@@ -1703,40 +1989,46 @@ def _filter_by_eventname(self, data):
     data : pandas DataFrame
         ABCD_ML formatted.
 
+    eventname : value or list of values
+        The value that if eventname_col is equal to,
+        if a list, then treates as row is kept if equal to any in the list
+
+    eventname_col : str
+        The name of the eventname column
+
     Returns
     ----------
     pandas DataFrame
         Input df, with only valid eventname rows
     '''
 
-    # Filter data by eventname
-    if self.eventname:
+    if eventname is not None:
+        if eventname_col in list(data):
 
-        if 'eventname' in list(data):
+            if not isinstance(eventname, list):
+                eventname = list(eventname)
 
             before = data.shape[0]
-            data = data[data['eventname'] == self.eventname]
+            data = data[data[eventname_col].isin(eventname)]
             after = data.shape[0]
 
             if before != after:
-                self._print(before - after, 'subjects dropped for eventname')
-
-            data = data.drop('eventname', axis=1)
+                self._print(before - after, 'subjects have been dropped',
+                            'based on passed eventname params.')
 
         else:
-            self._print('Warning: filter by eventname =', self.eventname,
-                        'is set but this data does not have a column with',
-                        'eventname.')
+            self._print('Warning: filter by eventname_col:',
+                        eventname_col, 'specfied, with value:',
+                        eventname, 'but the column was not found!')
 
-    # If eventname None, but still exists, take out the column
-    else:
-        if 'eventname' in list(data):
-            data = data.drop('eventname', axis=1)
+    # Remove eventname column
+    if eventname_col in list(data):
+        data = data.drop('eventname', axis=1)
 
     return data
 
 
-def _show_nan_info(self, data):
+def _show_na_info(self, data):
 
     na_counts = data.isna().sum().sort_values(ascending=False)
 

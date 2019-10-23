@@ -28,8 +28,8 @@ def _plot(self, save_name, show=True):
 
 
 def Show_Data_Dist(self, num_feats=20, frame_interval=500,
-                   plot_type='bar', save=True,
-                   save_name='data distribution'):
+                   plot_type='bar', show_only_overlap=True,
+                   save=True, save_name='data distribution'):
 
     '''This method displays some summary statistics about
     the loaded targets, as well as plots the distibution if possible.
@@ -54,6 +54,13 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
 
         (default = 'bar')
 
+    show_only_overlap : bool, optional
+        If True, then displays only the distributions for valid overlapping
+        subjects across data, covars, ect... otherwise, if False,
+        shows the current loaded distribution as is.
+
+        (default = True)
+
     save : bool, optional
         If the animation should be saved as a gif, True or False.
 
@@ -65,12 +72,14 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
         (default = 'data distribution')
     '''
 
+    data = self._set_overlap(self.data, show_only_overlap).copy()
+
     fig, ax = plt.subplots()
 
     def update(i):
         fig.clear()
 
-        col = self.data[list(self.data)[i]]
+        col = data[list(data)[i]]
         non_nan_col = col[~pd.isnull(col)]
 
         if plot_type == 'hist':
@@ -79,7 +88,7 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
             sns.boxplot(non_nan_col)
 
     np.random.seed(1)
-    frames = np.random.randint(0, self.data.shape[1], size=num_feats)
+    frames = np.random.randint(0, data.shape[1], size=num_feats)
     anim = FuncAnimation(fig, update, frames=frames, interval=500)
     html = HTML(anim.to_html5_video())
 
@@ -135,11 +144,7 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
         (default = True)
     '''
 
-    if show_only_overlap:
-        overlap = self._get_overlapping_subjects()
-        targets_df = self.targets[self.targets.index.isin(overlap)].copy()
-    else:
-        targets_df = self.targets.copy()
+    targets_df = self._set_overlap(self.targets, show_only_overlap).copy()
 
     if targets == 'SHOW_ALL':
         targets = self._get_base_targets_names()
@@ -164,7 +169,7 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
         The single covar (str) or multiple covars (list),
         in which to display the distributions of. The str input
         'SHOW_ALL' is reserved, and set to default, for showing
-        the distributions of all avaliable covars.
+        the distributions of all loaded covars.
 
         (default = 'SHOW_ALL')
 
@@ -192,11 +197,59 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
         (default = True)
     '''
 
-    if show_only_overlap:
-        overlap = self._get_overlapping_subjects()
-        covars_df = self.covars[self.covars.index.isin(overlap)].copy()
-    else:
-        covars_df = self.covars.copy()
+    covars_df = self._set_overlap(self.covars, show_only_overlap).copy()
+
+    if covars == 'SHOW_ALL':
+        covars = list(self.covars_encoders)
+
+    if not isinstance(covars, list):
+        covars = [covars]
+
+    for covar in covars:
+        self._show_single_dist(covar, covars_df, self.covars_encoders,
+                               cat_show_original_name, show)
+        self._print()
+
+
+def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
+                    show_only_overlap=True, show=True):
+    '''Plot a single or multiple strat distributions, along with
+    outputting useful summary statistics.
+
+    Parameters
+    ----------
+    strat : str or list, optional
+        The single strat (str) or multiple strats (list),
+        in which to display the distributions of. The str input
+        'SHOW_ALL' is reserved, and set to default, for showing
+        the distributions of all loaded strat cols.
+
+        (default = 'SHOW_ALL')
+
+    cat_show_original_name : bool, optional
+        If True, then make the distr. plot using the original names.
+        Otherwise, use the internally used names.
+
+        (default = True)
+
+    show_only_overlap : bool, optional
+        If True, then displays only the distributions for valid overlapping
+        subjects across data, covars, ect... otherwise, shows the current
+        loaded distribution as is.
+
+        (default = True)
+
+    show : bool, optional
+        If True, then plt.show(), the matplotlib command will be called,
+        and the figure displayed. On the other hand, if set to False,
+        then the user can customize the plot as they desire.
+        You can think of plt.show() as clearing all of the loaded settings,
+        so in order to make changes, you can't call this until you are done.
+
+        (default = True)
+    '''
+
+    strat_df = self._set_overlap(self.strat, show_only_overlap).copy()
 
     if covars == 'SHOW_ALL':
         covars = list(self.covars_encoders)

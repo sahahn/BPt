@@ -21,7 +21,7 @@ PARAMS['base logistic'] =\
          'max_iter': 5000,
          'multi_class': 'auto',
          'penalty': 'none',
-         'class_weight': ng.var.SoftmaxCategorical([None, 'balanced'])}
+         'class_weight': ng.var.OrderedDiscrete([None, 'balanced'])}
 
 PARAMS['base lasso'] = PARAMS['base logistic'].copy()
 PARAMS['base lasso']['penalty'] = 'l1'
@@ -57,7 +57,7 @@ PARAMS['base gnb'] = {'var_smoothing': 1e-9}
 
 PARAMS['base knn'] = {'n_neighbors': 5}
 PARAMS['knn rs'] = {'weights':
-                    ng.var.SoftmaxCategorical(['uniform', 'distance']),
+                    ng.var.OrderedDiscrete(['uniform', 'distance']),
                     'n_neighbors': ng.var.Scalar(int).bounded(2, 25)}
 
 PARAMS['base dt'] = {}
@@ -66,7 +66,7 @@ PARAMS['dt rs'] = {'max_depth': ng.var.Scalar(int).bounded(1, 30),
 
 PARAMS['dt classifier rs'] = PARAMS['dt rs'].copy()
 PARAMS['dt classifier rs']['class_weight'] =\
-        ng.var.SoftmaxCategorical([None, 'balanced'])
+        ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['base linear'] = {'fit_intercept': True}
 
@@ -79,13 +79,12 @@ PARAMS['rf rs'] = {'n_estimators': ng.var.Scalar(int).bounded(3, 500),
 
 PARAMS['rf classifier rs'] = PARAMS['rf rs'].copy()
 PARAMS['rf classifier rs']['class_weight'] =\
-        ng.var.SoftmaxCategorical([None, 'balanced'])
+        ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['base lgbm'] = {'silent': True}
 PARAMS['lgbm rs1'] = {'silent': True,
                       'boosting_type':
                       ng.var.OrderedDiscrete(['gbdt', 'dart', 'goss']),
-                      # ng.var.SoftmaxCategorical(),
                       'n_estimators': ng.var.Scalar(int).bounded(3, 500),
                       'num_leaves': ng.var.Scalar(int).bounded(6, 80),
                       'min_child_samples': ng.var.Scalar(int).bounded(10, 500),
@@ -104,7 +103,7 @@ PARAMS['lgbm rs1'] = {'silent': True,
 PARAMS['lgbm rs2'] = {'silent': True,
                       'lambda_l2': 0.001,
                       'boosting_type':
-                      ng.var.SoftmaxCategorical(['gbdt', 'dart']),
+                      ng.var.OrderedDiscrete(['gbdt', 'dart']),
                       'min_child_samples':
                       ng.var.OrderedDiscrete([1, 5, 7, 10, 15, 20, 35, 50, 100,
                                               200, 500, 1000]),
@@ -125,11 +124,10 @@ PARAMS['lgbm rs2'] = {'silent': True,
 PARAMS['lgbm classifier rs1'] = PARAMS['lgbm rs1'].copy()
 PARAMS['lgbm classifier rs1']['class_weight'] =\
         ng.var.OrderedDiscrete([None, 'balanced'])
-        # ng.var.SoftmaxCategorical([None, 'balanced'])
 
 PARAMS['lgbm classifier rs2'] = PARAMS['lgbm rs2'].copy()
 PARAMS['lgbm classifier rs2']['class_weight'] =\
-        ng.var.SoftmaxCategorical([None, 'balanced'])
+        ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['base lgbm es'] = {'silent': True,
                           'val_split_percent': .1,
@@ -172,7 +170,7 @@ PARAMS['base svm classifier']['probability'] = True
 PARAMS['svm classifier rs'] = PARAMS['svm rs'].copy()
 PARAMS['svm classifier rs']['probability'] = True
 PARAMS['svm classifier rs']['class_weight'] =\
-        ng.var.SoftmaxCategorical([None, 'balanced'])
+        ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['base mlp'] = {}
 
@@ -190,15 +188,15 @@ PARAMS['ridge regressor rs'] =\
 PARAMS['mlp rs'] = {'hidden_layer_sizes':
                     ng.var.Array(1, 1, 1).bounded(2, 100),
                     'activation':
-                    ng.var.SoftmaxCategorical(['identity', 'logistic',
-                                               'tanh', 'relu']),
+                    ng.var.OrderedDiscrete(['identity', 'logistic',
+                                            'tanh', 'relu']),
                     'alpha':
                     ng.var.Scalar().bounded(-2, 5).exponentiated(base=10,
                                                                  coeff=-1),
                     'batch_size': ng.var.Scalar(int).bounded(2, 200),
                     'learning_rate':
-                    ng.var.SoftmaxCategorical(['constant', 'invscaling',
-                                               'adaptive']),
+                    ng.var.OrderedDiscrete(['constant', 'invscaling',
+                                            'adaptive']),
                     'learning_rate_init':
                     ng.var.Scalar().bounded(-2, 5).exponentiated(base=10,
                                                                  coeff=-1),
@@ -315,27 +313,4 @@ def show(str_indicator):
                 print(key, ': ', sep='', end='')
 
                 value = params[key]
-
-                # If either rand int or uniform dist
-                if 'scipy' in str(type(value)):
-
-                        # Randint distr
-                        if isinstance(value.a, int):
-                                print('Random Integer Distribution (',
-                                      value.a, ', ', value.b, ')', sep='')
-
-                        else:
-                                print('Distribution Over',
-                                      value.interval(1))
-
-                elif len(value) == 1:
-                        if callable(value[0]):
-                                print(value[0].__name__)
-                        else:
-                                print(value[0])
-
-                elif len(value) > 50:
-                        print('Too many params to print')
-
-                else:
-                        print(value)
+                print(value)

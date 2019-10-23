@@ -54,24 +54,24 @@ cauchy
 
 One Shot Optimization
 =====================
-Implemented one-hot optimization methods which are,
- "hopefully better than random search by ensuring more uniformity".
+Implemented one-hot optimization methods which are 'hopefully better than random search by ensuring more uniformity'.
 The algorithms vary on the following parameters,
+
 
 sampler
     Type of random sampling. Either,
 
-    "Halton" : A low quality sampling method when the dimension is high
-    "Hammersley" : Hammersley sampling
-    "LHS" : Latin Hypercube Sampling
+    - "Halton" : A low quality sampling method when the dimension is high
+    - "Hammersley" : Hammersley sampling
+    - "LHS" : Latin Hypercube Sampling
 
     (default = "Halton")
 
 scrambled
     Adds scrambling to the search
 
-    True : scrambling is added
-    False : scrambling is not added
+    - True : scrambling is added
+    - False : scrambling is not added
 
     (default = False)
 
@@ -102,7 +102,7 @@ rescaled
 
     (default = False)
 
-recommendation_rule: str
+recommendation_rule
     Method for selecting best point.
     Either,
    
@@ -308,30 +308,35 @@ performs quite well in such a context - this is naturally close to 1+lambda."
 The algorithms vary on the following parameters,
 
 noise_handling
+    How re-evaluations are performed.
     
     - "random" : a random point is reevaluated regularly
     - "optimistic" : the best optimistic point is reevaluated regularly
     - a coefficient can to tune the regularity of these reevaluations
 
-    (default = ('random', .05))
+    (default = (None, .05))
 
 mutation
+    The strategy for producing changes / mutations.
 
-    - "gaussian" : standard mutation by adding a Gaussian random variable (with progressive
-                    widening) to the best pessimistic point
+    - "gaussian" : standard mutation by adding a Gaussian random variable (with progressive widening) to the best pessimistic point
     - "cauchy" : same as Gaussian but with a Cauchy distribution.
     - "discrete" : discrete distribution
     - "fastga" : FastGA mutations from the current best
     - "doublefastga" : double-FastGA mutations from the current best (Doerr et al, Fast Genetic Algorithms, 2017)
-    - "portfolio" : Random number of mutated bits (called niform mixing in
-                    Dang & Lehre "Self-adaptation of Mutation Rates in Non-elitist Population", 2016)
+    - "portfolio" : Random number of mutated bits (called niform mixing in Dang & Lehre "Self-adaptation of Mutation Rates in Non-elitist Population", 2016)
 
     (default = "gaussian")
 
 crossover
+    Optional additional of genetic cross over.
 
     - True : Add genetic crossover step every other step.
     - False : No crossover.
+    
+    (default = False)
+
+
 
 "OnePlusOne"
 *************************************************
@@ -814,3 +819,4 @@ random_restart=True
 
     method: "SLSQP"
     random_restart: True
+

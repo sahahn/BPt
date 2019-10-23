@@ -6,10 +6,13 @@ Import
 ======
 To start, you must import the module.
 Assuming that it has been downloaded of course.
+Import and then make an object, in this example the obj is called "Your_ABCD_ML_Object",
+but in practice you would want to choose something shorter, like "ML".
 
 ::
 
-    import ABCD_ML.ABCD_ML as ML
+    import ABCD_ML
+    Your_ABCD_ML_Object = ABCD_ML.ABCD_ML(init_params)
 
 Init
 ============
@@ -21,6 +24,21 @@ Init
 ******************
 Data Loading Phase
 ******************
+
+
+
+
+
+
+
+Get_Overlapping_Subjects,
+Clear_Name_Map,
+Clear_Data,
+Clear_Covars,
+Clear_Targets,
+Clear_Strat,
+Clear_Exclusions,
+Clear_Inclusions,
 
 Load_Name_Map
 ==============
@@ -34,21 +52,61 @@ Load_Inclusions
 ===============
 .. automethod:: ABCD_ML.Load_Inclusions
 
+Set_Default_Load_Params
+=======================
+.. automethod:: ABCD_ML.Set_Default_Load_Params
+
 Load_Data
 =========
 .. automethod:: ABCD_ML.Load_Data
+
+Drop_Data_Cols
+==============
+.. automethod:: ABCD_ML.Drop_Data_Cols
+
+Filter_Data_Cols
+================
+.. automethod:: ABCD_ML.Filter_Data_Cols
+
+Proc_Data_Unique_Cols
+=====================
+.. automethod:: ABCD_ML.Proc_Data_Unique_Cols
+
+Drop_Data_Duplicates
+=====================
+.. automethod:: ABCD_ML.Drop_Data_Duplicates
+
+Show_Data_Dist
+==============
+.. automethod:: ABCD_ML.Show_Data_Dist
 
 Load_Targets
 ============
 .. automethod:: ABCD_ML.Load_Targets
 
+Binarize_Target
+================
+.. automethod:: ABCD_ML.Binarize_Target
+
+Show_Targets_Dist
+==================
+.. automethod:: ABCD_ML.Show_Targets_Dist
+
 Load_Covars
 ============
 .. automethod:: ABCD_ML.Load_Covars
 
+Show_Covars_Dist
+==================
+.. automethod:: ABCD_ML.Show_Covars_Dist
+
 Load_Strat
 ===========
 .. automethod:: ABCD_ML.Load_Strat
+
+Get_Overlapping_Subjects
+========================
+.. automethod:: ABCD_ML.Get_Overlapping_Subjects
 
 Clear_Name_Map
 ==============
@@ -74,29 +132,6 @@ Clear_Strat
 ============
 .. automethod:: ABCD_ML.Clear_Strat
 
-Drop_Data_Duplicates
-=====================
-.. automethod:: ABCD_ML.Drop_Data_Duplicates
-
-Binarize_Target
-================
-.. automethod:: ABCD_ML.Binarize_Target
-
-Show_Data_Dist
-==============
-.. automethod:: ABCD_ML.Show_Data_Dist
-
-Show_Targets_Dist
-==================
-.. automethod:: ABCD_ML.Show_Targets_Dist
-
-Show_Covars_Dist
-==================
-.. automethod:: ABCD_ML.Show_Covars_Dist
-
-Get_Overlapping_Subjects
-========================
-.. automethod:: ABCD_ML.Get_Overlapping_Subjects
 
 ****************
 Validation Phase
@@ -119,9 +154,9 @@ Set_Default_ML_Params
 ======================
 .. automethod:: ABCD_ML.Set_Default_ML_Params
 
-Set_ML_Verbosity
-================
-.. automethod:: ABCD_ML.Set_ML_Verbosity
+Set_Default_ML_Verbosity
+=========================
+.. automethod:: ABCD_ML.Set_Default_ML_Verbosity
 
 Evaluate
 ========

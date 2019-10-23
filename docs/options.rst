@@ -25,9 +25,9 @@ binary
 
 	1. "dt classifier rs" ::
 
-		max_depth: Random Integer Distribution (1, 19)
-		min_samples_split: Random Integer Distribution (2, 49)
-		class_weight: [None, 'balanced']
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
+		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "elastic net logistic"
@@ -43,7 +43,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 		l1_ratio: 0.5
 
 	1. "elastic classifier" ::
@@ -52,9 +52,9 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: [None, 'balanced']
-		l1_ratio: Random Uniform Distribution (0.0, 1.0)
-		C: Random Reciprical Distribution (0.0001, 10000.0)
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
 "gaussian nb"
@@ -94,8 +94,8 @@ binary
 
 	1. "knn rs" ::
 
-		weights: ['uniform', 'distance']
-		n_neighbors: Random Integer Distribution (2, 19)
+		weights: SoftmaxCategorical(deterministic=False, possibilities=['uniform', 'distance'])
+		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
 
 
 "lasso logistic"
@@ -111,7 +111,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 	1. "lasso C" ::
 
@@ -119,8 +119,8 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: [None, 'balanced']
-		C: Random Reciprical Distribution (0.0001, 10000.0)
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
 "light gbm classifier"
@@ -137,29 +137,29 @@ binary
 	1. "lgbm classifier rs1" ::
 
 		silent: True
-		boosting_type: ['gbdt', 'dart', 'goss']
-		n_estimators: Random Integer Distribution (3, 499)
-		num_leaves: Random Integer Distribution (6, 49)
-		min_child_samples: Random Integer Distribution (100, 499)
-		min_child_weight: Random Reciprical Distribution (1e-05, 10000.0)
-		subsample: Random Uniform Distribution (0.2, 1.0)
-		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
-		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
-		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
-		class_weight: [None, 'balanced']
+		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart', 'goss'])
+		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
+		num_leaves: Scalar(shape=(1,), transforms=[ArctanBound(a_max=80, a_min=6)])
+		min_child_samples: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=10)])
+		min_child_weight: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
+		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
+		reg_alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		reg_lambda: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 	2. "lgbm classifier rs2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: ['gbdt', 'dart']
-		min_child_samples: [1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000]
-		num_leaves: [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250]
-		colsample_bytree: [0.7, 0.9, 1.0]
-		subsample: [0.7, 0.9, 1.0]
-		learning_rate: [0.01, 0.05, 0.1]
-		n_estimators: [5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000]
-		class_weight: [None, 'balanced']
+		boosting_type: SoftmaxCategorical(deterministic=False, possibilities=['gbdt', 'dart'])
+		min_child_samples: OrderedDiscrete(possibilities=[1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
+		num_leaves: OrderedDiscrete(possibilities=[2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
+		colsample_bytree: OrderedDiscrete(possibilities=[0.7, 0.9, 1.0])
+		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.3)])
+		learning_rate: OrderedDiscrete(possibilities=[0.01, 0.05, 0.1])
+		n_estimators: OrderedDiscrete(possibilities=[5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "logistic"
@@ -175,7 +175,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: none
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "mlp classifier"
@@ -191,33 +191,33 @@ binary
 
 	1. "mlp rs" ::
 
-		hidden_layer_sizes: Too many params to show
-		activation: ['identity', 'logistic', 'tanh', 'relu']
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		batch_size: Random Integer Distribution (2, 199)
-		learning_rate: ['constant', 'invscaling', 'adaptive']
-		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
-		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Uniform Distribution (0.5, 1.0)
-		beta_2: Random Uniform Distribution (0.5, 1.0)
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
+		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
+		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 
 	2. "mlp rs es" ::
 
-		hidden_layer_sizes: Too many params to show
-		activation: ['identity', 'logistic', 'tanh', 'relu']
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		batch_size: Random Integer Distribution (2, 199)
-		learning_rate: ['constant', 'invscaling', 'adaptive']
-		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
-		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Uniform Distribution (0.5, 1.0)
-		beta_2: Random Uniform Distribution (0.5, 1.0)
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
+		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
+		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 		early_stopping: True
-		n_iter_no_change: Random Integer Distribution (5, 49)
+		n_iter_no_change: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=5)])
 
 	3. "mlp layers search" ::
 
-		hidden_layer_sizes: Too many params to show
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 
 
 "random forest classifier"
@@ -233,12 +233,12 @@ binary
 
 	1. "rf classifier rs" ::
 
-		n_estimators: Random Integer Distribution (3, 499)
-		max_depth: Random Integer Distribution (2, 199)
-		max_features: Random Uniform Distribution (0.0, 1.0)
-		min_samples_split: Random Uniform Distribution (0.0, 1.0)
+		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		bootstrap: True
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "ridge logistic"
@@ -254,7 +254,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 	1. "ridge C" ::
 
@@ -262,8 +262,8 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
-		class_weight: [None, 'balanced']
-		C: Random Reciprical Distribution (0.0001, 10000.0)
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
 "svm classifier"
@@ -282,10 +282,10 @@ binary
 	1. "svm classifier rs" ::
 
 		kernel: rbf
-		gamma: Random Reciprical Distribution (1e-06, 0.1)
-		C: Random Reciprical Distribution (0.0001, 10000.0)
+		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
+		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 		probability: True
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "xgb classifier"
@@ -302,12 +302,12 @@ binary
 	1. "xgb rs" ::
 
 		verbosity: 0
-		max_depth: Random Integer Distribution (2, 49)
-		learning_rate: [0.01, 0.05, 0.1, 0.2]
-		n_estimators: Random Integer Distribution (3, 499)
-		min_child_weight: [1, 5, 10, 50]
-		subsample: Random Uniform Distribution (0.2, 1.0)
-		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
+		learning_rate: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.5, a_min=0.01)])
+		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
+		min_child_weight: OrderedDiscrete(possibilities=[1, 5, 10, 50])
+		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.5)])
+		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.4)])
 
 
 
@@ -326,8 +326,8 @@ regression
 
 	1. "dt rs" ::
 
-		max_depth: Random Integer Distribution (1, 19)
-		min_samples_split: Random Integer Distribution (2, 49)
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
+		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
 
 
 "elastic net regressor"
@@ -344,8 +344,8 @@ regression
 	1. "elastic regression" ::
 
 		max_iter: 5000
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		l1_ratio: Random Uniform Distribution (0.0, 1.0)
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 
 
 "gp regressor"
@@ -374,8 +374,8 @@ regression
 
 	1. "knn rs" ::
 
-		weights: ['uniform', 'distance']
-		n_neighbors: Random Integer Distribution (2, 19)
+		weights: SoftmaxCategorical(deterministic=False, possibilities=['uniform', 'distance'])
+		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
 
 
 "lasso regressor"
@@ -391,7 +391,7 @@ regression
 
 	1. "lasso regressor rs" ::
 
-		alpha: Random Reciprical Distribution (1e-05, 10000.0)
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
 "light gbm regressor"
@@ -408,27 +408,27 @@ regression
 	1. "lgbm rs1" ::
 
 		silent: True
-		boosting_type: ['gbdt', 'dart', 'goss']
-		n_estimators: Random Integer Distribution (3, 499)
-		num_leaves: Random Integer Distribution (6, 49)
-		min_child_samples: Random Integer Distribution (100, 499)
-		min_child_weight: Random Reciprical Distribution (1e-05, 10000.0)
-		subsample: Random Uniform Distribution (0.2, 1.0)
-		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
-		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
-		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
+		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart', 'goss'])
+		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
+		num_leaves: Scalar(shape=(1,), transforms=[ArctanBound(a_max=80, a_min=6)])
+		min_child_samples: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=10)])
+		min_child_weight: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
+		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
+		reg_alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		reg_lambda: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
 
 	2. "lgbm rs2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: ['gbdt', 'dart']
-		min_child_samples: [1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000]
-		num_leaves: [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250]
-		colsample_bytree: [0.7, 0.9, 1.0]
-		subsample: [0.7, 0.9, 1.0]
-		learning_rate: [0.01, 0.05, 0.1]
-		n_estimators: [5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000]
+		boosting_type: SoftmaxCategorical(deterministic=False, possibilities=['gbdt', 'dart'])
+		min_child_samples: OrderedDiscrete(possibilities=[1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
+		num_leaves: OrderedDiscrete(possibilities=[2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
+		colsample_bytree: OrderedDiscrete(possibilities=[0.7, 0.9, 1.0])
+		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.3)])
+		learning_rate: OrderedDiscrete(possibilities=[0.01, 0.05, 0.1])
+		n_estimators: OrderedDiscrete(possibilities=[5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
 
 
 "linear regressor"
@@ -456,33 +456,33 @@ regression
 
 	1. "mlp rs" ::
 
-		hidden_layer_sizes: Too many params to show
-		activation: ['identity', 'logistic', 'tanh', 'relu']
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		batch_size: Random Integer Distribution (2, 199)
-		learning_rate: ['constant', 'invscaling', 'adaptive']
-		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
-		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Uniform Distribution (0.5, 1.0)
-		beta_2: Random Uniform Distribution (0.5, 1.0)
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
+		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
+		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 
 	2. "mlp rs es" ::
 
-		hidden_layer_sizes: Too many params to show
-		activation: ['identity', 'logistic', 'tanh', 'relu']
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		batch_size: Random Integer Distribution (2, 199)
-		learning_rate: ['constant', 'invscaling', 'adaptive']
-		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
-		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Uniform Distribution (0.5, 1.0)
-		beta_2: Random Uniform Distribution (0.5, 1.0)
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
+		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
+		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 		early_stopping: True
-		n_iter_no_change: Random Integer Distribution (5, 49)
+		n_iter_no_change: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=5)])
 
 	3. "mlp layers search" ::
 
-		hidden_layer_sizes: Too many params to show
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 
 
 "random forest regressor"
@@ -498,10 +498,10 @@ regression
 
 	1. "rf rs" ::
 
-		n_estimators: Random Integer Distribution (3, 499)
-		max_depth: Random Integer Distribution (2, 199)
-		max_features: Random Uniform Distribution (0.0, 1.0)
-		min_samples_split: Random Uniform Distribution (0.0, 1.0)
+		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		bootstrap: True
 
 
@@ -518,7 +518,7 @@ regression
 
 	1. "ridge regressor rs" ::
 
-		alpha: Random Reciprical Distribution (1e-05, 10000.0)
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
 "svm regressor"
@@ -536,8 +536,8 @@ regression
 	1. "svm rs" ::
 
 		kernel: rbf
-		gamma: Random Reciprical Distribution (1e-06, 0.1)
-		C: Random Reciprical Distribution (0.0001, 10000.0)
+		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
+		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
 "xgb regressor"
@@ -554,12 +554,12 @@ regression
 	1. "xgb rs" ::
 
 		verbosity: 0
-		max_depth: Random Integer Distribution (2, 49)
-		learning_rate: [0.01, 0.05, 0.1, 0.2]
-		n_estimators: Random Integer Distribution (3, 499)
-		min_child_weight: [1, 5, 10, 50]
-		subsample: Random Uniform Distribution (0.2, 1.0)
-		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
+		learning_rate: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.5, a_min=0.01)])
+		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
+		min_child_weight: OrderedDiscrete(possibilities=[1, 5, 10, 50])
+		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.5)])
+		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.4)])
 
 
 
@@ -578,9 +578,9 @@ categorical
 
 	1. "dt classifier rs" ::
 
-		max_depth: Random Integer Distribution (1, 19)
-		min_samples_split: Random Integer Distribution (2, 49)
-		class_weight: [None, 'balanced']
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
+		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "elastic net logistic"
@@ -596,7 +596,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 		l1_ratio: 0.5
 
 	1. "elastic classifier" ::
@@ -605,9 +605,9 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: [None, 'balanced']
-		l1_ratio: Random Uniform Distribution (0.0, 1.0)
-		C: Random Reciprical Distribution (0.0001, 10000.0)
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
 "gaussian nb"
@@ -647,8 +647,8 @@ categorical
 
 	1. "knn rs" ::
 
-		weights: ['uniform', 'distance']
-		n_neighbors: Random Integer Distribution (2, 19)
+		weights: SoftmaxCategorical(deterministic=False, possibilities=['uniform', 'distance'])
+		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
 
 
 "lasso logistic"
@@ -664,7 +664,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 	1. "lasso C" ::
 
@@ -672,8 +672,8 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: [None, 'balanced']
-		C: Random Reciprical Distribution (0.0001, 10000.0)
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
 "light gbm classifier"
@@ -690,29 +690,29 @@ categorical
 	1. "lgbm classifier rs1" ::
 
 		silent: True
-		boosting_type: ['gbdt', 'dart', 'goss']
-		n_estimators: Random Integer Distribution (3, 499)
-		num_leaves: Random Integer Distribution (6, 49)
-		min_child_samples: Random Integer Distribution (100, 499)
-		min_child_weight: Random Reciprical Distribution (1e-05, 10000.0)
-		subsample: Random Uniform Distribution (0.2, 1.0)
-		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
-		reg_alpha: Random Reciprical Distribution (0.1, 100.0)
-		reg_lambda: Random Reciprical Distribution (0.1, 100.0)
-		class_weight: [None, 'balanced']
+		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart', 'goss'])
+		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
+		num_leaves: Scalar(shape=(1,), transforms=[ArctanBound(a_max=80, a_min=6)])
+		min_child_samples: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=10)])
+		min_child_weight: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
+		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
+		reg_alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		reg_lambda: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 	2. "lgbm classifier rs2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: ['gbdt', 'dart']
-		min_child_samples: [1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000]
-		num_leaves: [2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250]
-		colsample_bytree: [0.7, 0.9, 1.0]
-		subsample: [0.7, 0.9, 1.0]
-		learning_rate: [0.01, 0.05, 0.1]
-		n_estimators: [5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000]
-		class_weight: [None, 'balanced']
+		boosting_type: SoftmaxCategorical(deterministic=False, possibilities=['gbdt', 'dart'])
+		min_child_samples: OrderedDiscrete(possibilities=[1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
+		num_leaves: OrderedDiscrete(possibilities=[2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
+		colsample_bytree: OrderedDiscrete(possibilities=[0.7, 0.9, 1.0])
+		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.3)])
+		learning_rate: OrderedDiscrete(possibilities=[0.01, 0.05, 0.1])
+		n_estimators: OrderedDiscrete(possibilities=[5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "logistic"
@@ -728,7 +728,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: none
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "mlp classifier"
@@ -744,33 +744,33 @@ categorical
 
 	1. "mlp rs" ::
 
-		hidden_layer_sizes: Too many params to show
-		activation: ['identity', 'logistic', 'tanh', 'relu']
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		batch_size: Random Integer Distribution (2, 199)
-		learning_rate: ['constant', 'invscaling', 'adaptive']
-		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
-		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Uniform Distribution (0.5, 1.0)
-		beta_2: Random Uniform Distribution (0.5, 1.0)
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
+		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
+		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 
 	2. "mlp rs es" ::
 
-		hidden_layer_sizes: Too many params to show
-		activation: ['identity', 'logistic', 'tanh', 'relu']
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		batch_size: Random Integer Distribution (2, 199)
-		learning_rate: ['constant', 'invscaling', 'adaptive']
-		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
-		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Uniform Distribution (0.5, 1.0)
-		beta_2: Random Uniform Distribution (0.5, 1.0)
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
+		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
+		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 		early_stopping: True
-		n_iter_no_change: Random Integer Distribution (5, 49)
+		n_iter_no_change: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=5)])
 
 	3. "mlp layers search" ::
 
-		hidden_layer_sizes: Too many params to show
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 
 
 "random forest classifier"
@@ -786,12 +786,12 @@ categorical
 
 	1. "rf classifier rs" ::
 
-		n_estimators: Random Integer Distribution (3, 499)
-		max_depth: Random Integer Distribution (2, 199)
-		max_features: Random Uniform Distribution (0.0, 1.0)
-		min_samples_split: Random Uniform Distribution (0.0, 1.0)
+		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		bootstrap: True
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "ridge logistic"
@@ -807,7 +807,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 	1. "ridge C" ::
 
@@ -815,8 +815,8 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
-		class_weight: [None, 'balanced']
-		C: Random Reciprical Distribution (0.0001, 10000.0)
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
 "svm classifier"
@@ -835,10 +835,10 @@ categorical
 	1. "svm classifier rs" ::
 
 		kernel: rbf
-		gamma: Random Reciprical Distribution (1e-06, 0.1)
-		C: Random Reciprical Distribution (0.0001, 10000.0)
+		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
+		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 		probability: True
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "xgb classifier"
@@ -855,12 +855,12 @@ categorical
 	1. "xgb rs" ::
 
 		verbosity: 0
-		max_depth: Random Integer Distribution (2, 49)
-		learning_rate: [0.01, 0.05, 0.1, 0.2]
-		n_estimators: Random Integer Distribution (3, 499)
-		min_child_weight: [1, 5, 10, 50]
-		subsample: Random Uniform Distribution (0.2, 1.0)
-		colsample_bytree: Random Uniform Distribution (0.4, 1.0)
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
+		learning_rate: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.5, a_min=0.01)])
+		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
+		min_child_weight: OrderedDiscrete(possibilities=[1, 5, 10, 50])
+		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.5)])
+		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.4)])
 
 
 
@@ -879,9 +879,9 @@ multilabel
 
 	1. "dt classifier rs" ::
 
-		max_depth: Random Integer Distribution (1, 19)
-		min_samples_split: Random Integer Distribution (2, 49)
-		class_weight: [None, 'balanced']
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
+		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 "knn classifier"
@@ -897,8 +897,8 @@ multilabel
 
 	1. "knn rs" ::
 
-		weights: ['uniform', 'distance']
-		n_neighbors: Random Integer Distribution (2, 19)
+		weights: SoftmaxCategorical(deterministic=False, possibilities=['uniform', 'distance'])
+		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
 
 
 "mlp classifier"
@@ -914,33 +914,33 @@ multilabel
 
 	1. "mlp rs" ::
 
-		hidden_layer_sizes: Too many params to show
-		activation: ['identity', 'logistic', 'tanh', 'relu']
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		batch_size: Random Integer Distribution (2, 199)
-		learning_rate: ['constant', 'invscaling', 'adaptive']
-		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
-		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Uniform Distribution (0.5, 1.0)
-		beta_2: Random Uniform Distribution (0.5, 1.0)
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
+		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
+		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 
 	2. "mlp rs es" ::
 
-		hidden_layer_sizes: Too many params to show
-		activation: ['identity', 'logistic', 'tanh', 'relu']
-		alpha: Random Reciprical Distribution (1e-05, 100.0)
-		batch_size: Random Integer Distribution (2, 199)
-		learning_rate: ['constant', 'invscaling', 'adaptive']
-		learning_rate_init: Random Reciprical Distribution (1e-05, 0.01)
-		max_iter: Random Integer Distribution (100, 499)
-		beta_1: Random Uniform Distribution (0.5, 1.0)
-		beta_2: Random Uniform Distribution (0.5, 1.0)
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
+		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
+		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 		early_stopping: True
-		n_iter_no_change: Random Integer Distribution (5, 49)
+		n_iter_no_change: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=5)])
 
 	3. "mlp layers search" ::
 
-		hidden_layer_sizes: Too many params to show
+		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 
 
 "random forest classifier"
@@ -956,12 +956,12 @@ multilabel
 
 	1. "rf classifier rs" ::
 
-		n_estimators: Random Integer Distribution (3, 499)
-		max_depth: Random Integer Distribution (2, 199)
-		max_features: Random Uniform Distribution (0.0, 1.0)
-		min_samples_split: Random Uniform Distribution (0.0, 1.0)
+		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
+		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
+		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		bootstrap: True
-		class_weight: [None, 'balanced']
+		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
 
 
 
@@ -1534,7 +1534,7 @@ All Problem Types
 
 	1. "robust gs" ::
 
-		quantile_range: [(1, 99), (5, 95), (10, 90), (15, 85), (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)]
+		quantile_range: OrderedDiscrete(possibilities=[(1, 99), (5, 95), (10, 90), (15, 85), (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)])
 
 
 "power"
@@ -1858,7 +1858,7 @@ binary
 
 	1. "rfe num feats rs" ::
 
-		n_features_to_select: Random Uniform Distribution (0.0, 1.0)
+		n_features_to_select: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.99, a_min=0.01)])
 
 
 "univariate selection classification"
@@ -1870,18 +1870,13 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: f_classif
-		percentile: 50
+		score_func: [<function f_classif at 0x7fe0727b71e0>]
+		percentile: [50]
 
 	1. "univar fs classifier rs" ::
 
-		score_func: f_classif
-		percentile: Random Integer Distribution (1, 98)
-
-	2. "univar fs classifier gs" ::
-
-		score_func: f_classif
-		percentile: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+		score_func: [<function f_classif at 0x7fe0727b71e0>]
+		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
 "variance threshold"
@@ -1912,7 +1907,7 @@ regression
 
 	1. "rfe num feats rs" ::
 
-		n_features_to_select: Random Uniform Distribution (0.0, 1.0)
+		n_features_to_select: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.99, a_min=0.01)])
 
 
 "univariate selection regression"
@@ -1924,18 +1919,13 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: f_regression
+		score_func: <function f_regression at 0x7fe0727b7378>
 		percentile: 50
 
 	1. "univar fs regression rs" ::
 
-		score_func: f_regression
-		percentile: Random Integer Distribution (1, 98)
-
-	2. "univar fs regression gs" ::
-
-		score_func: f_regression
-		percentile: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+		score_func: <function f_regression at 0x7fe0727b7378>
+		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
 "variance threshold"
@@ -1966,7 +1956,7 @@ categorical
 
 	1. "rfe num feats rs" ::
 
-		n_features_to_select: Random Uniform Distribution (0.0, 1.0)
+		n_features_to_select: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.99, a_min=0.01)])
 
 
 "univariate selection classification"
@@ -1978,18 +1968,13 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: f_classif
-		percentile: 50
+		score_func: [<function f_classif at 0x7fe0727b71e0>]
+		percentile: [50]
 
 	1. "univar fs classifier rs" ::
 
-		score_func: f_classif
-		percentile: Random Integer Distribution (1, 98)
-
-	2. "univar fs classifier gs" ::
-
-		score_func: f_classif
-		percentile: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+		score_func: [<function f_classif at 0x7fe0727b71e0>]
+		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
 "variance threshold"

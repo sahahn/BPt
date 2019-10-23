@@ -45,29 +45,6 @@ def put_non_drop_back(data, non_drop_subjects, non_drop_data):
     return data
 
 
-def scale_input(data, key, standardize, normalize, in_place=True,
-                drop_val=np.nan):
-
-    if not standardize and not normalize:
-        return data
-
-    non_drop_data, non_drop_subjects =\
-        get_non_drop(data, key, in_place, drop_val)
-
-    scaler = None
-    if standardize:
-        scaler = StandardScaler()
-    if normalize:
-        scaler = MinMaxScaler()
-    if scaler is not None:
-        vals = np.array(non_drop_data[key]).reshape(-1, 1)
-        scaled_vals = scaler.fit_transform(vals)
-        non_drop_data[key] = np.squeeze(scaled_vals)
-
-    data = put_non_drop_back(data, non_drop_subjects, non_drop_data)
-    return data
-
-
 def process_binary_input(data, key, in_place=True, drop_val=np.nan,
                          _print=print):
     '''Helper function to perform processing on binary input
@@ -293,7 +270,7 @@ def process_categorical_input(data, key, drop='one hot', drop_percent=None,
 
         ind = new_keys.index(max_col)
 
-    return data, new_keys, (label_encoder, encoder, ind)
+    return data, (label_encoder, encoder, ind)
 
 
 def process_float_input(data, key, bins, strategy):
@@ -310,10 +287,10 @@ def process_float_input(data, key, bins, strategy):
 
 def get_unused_drop_val(data):
 
-    drop_val = random.randint(-100000, 100000)
+    drop_val = random.randint(np.nanin(data) - 5, np.nanmax(data) + 5)
 
     while (data == drop_val).any().any():
-        drop_val = random.randint(-100000, 100000)
+        drop_val = random.randint(np.nanin(data) - 5, np.nanmax(data) + 5)
 
     return drop_val
 
@@ -445,7 +422,7 @@ def reverse_unique_combo_df(unique_combo, le):
     return col_split
 
 
-def drop_duplicate_cols(data, corr_thresh):
+def drop_duplicate_cols(data, corr_thresh, _print=print):
     '''Drop duplicates columns within data based on
     if two data columns are >= to a certain correlation threshold.
 
@@ -469,37 +446,43 @@ def drop_duplicate_cols(data, corr_thresh):
         The list of columns which were dropped from `data`
     '''
 
-    dropped = []
+    if corr_thresh is not None and corr_thresh is not False:
 
-    for col1 in data:
+        dropped = []
 
-        if col1 in data:
+        for col1 in data:
 
-            A = data[col1]
-            a = ma.masked_invalid(A)
+            if col1 in data:
 
-        for col2 in data:
-            if col1 != col2 and col1 in list(data) and col2 in list(data):
+                A = data[col1]
+                a = ma.masked_invalid(A)
 
-                B = data[col2]
-                b = ma.masked_invalid(B)
+            for col2 in data:
+                if col1 != col2 and col1 in list(data) and col2 in list(data):
 
-                overlap = (~a.mask & ~b.mask)
+                    B = data[col2]
+                    b = ma.masked_invalid(B)
 
-                if corr_thresh == 1:
+                    overlap = (~a.mask & ~b.mask)
 
-                    if (np.array(A[overlap]) == np.array(B[overlap])).all():
-                        data = data.drop(col2, axis=1)
-                        dropped.append(col2)
+                    if corr_thresh == 1:
 
-                else:
+                        A_o, B_o = np.array(A[overlap]), np.array(B[overlap])
+                        if (A_o == B_o).all():
 
-                    corr = np.corrcoef(A[overlap], B[overlap])[0][1]
-                    if corr >= corr_thresh:
-                        data = data.drop(col2, axis=1)
-                        dropped.append(col2)
+                            data = data.drop(col2, axis=1)
+                            dropped.append(col2)
 
-    return data, dropped
+                    else:
+
+                        corr = np.corrcoef(A[overlap], B[overlap])[0][1]
+                        if corr >= corr_thresh:
+                            data = data.drop(col2, axis=1)
+                            dropped.append(col2)
+
+        _print('Dropped', len(dropped), 'columns as duplicate cols!')
+
+    return data
 
 
 def get_original_cat_names(names, encoder, original_key):
@@ -566,6 +549,20 @@ def proc_datatypes(data_types, col_names):
                            'columns!')
 
     return data_types, col_names
+
+
+def proc_args(args, data_types):
+
+    if not isinstance(args, list):
+        args = list([args])
+
+    # Set to same arg for all if only one passed
+    if len(args) == 1:
+        args = [args[0] for i in range(len(data_types))]
+
+    if len(args) != len(data_types):
+        raise RuntimeError('The length of', args, 'must match length of input',
+                           'cols!')
 
 
 def process_multilabel_input(keys):

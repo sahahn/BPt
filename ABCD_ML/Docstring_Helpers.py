@@ -15,7 +15,7 @@ def grab_params(func):
 def get_mapping(lines, args):
 
     r = "        If \'default\', use the saved value within"
-    r += " self.default_ML_params."
+    r += " default params."
 
     new_lines = []
     for line in lines:

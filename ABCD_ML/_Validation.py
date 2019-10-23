@@ -13,7 +13,7 @@ from ABCD_ML.CV import CV
 def Define_Validation_Strategy(self, groups=None, stratify=None,
                                train_only_loc=None, train_only_subjects=None,
                                show=True, show_original=True):
-    '''Define a validation stratagy to be used during different train/test
+    '''Define a validation strategy to be used during different train/test
     splits, in addition to model selection and model hyperparameter CV.
     See Notes for more info.
 
@@ -78,7 +78,7 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
 
     Notes
     ----------
-    Validation stratagy choices are explained in more detail:
+    Validation strategy choices are explained in more detail:
 
     - Random : Just make validation splits randomly.
 
@@ -94,7 +94,7 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
             splits could be done to ensure roughly equal distribution \
             of the dependent class.
 
-    For now, it is possible to define only one overarching stratagy
+    For now, it is possible to define only one overarching strategy
     (One could imagine combining group preserving splits
     while also trying to stratify for class,
     but the logistics become more complicated).

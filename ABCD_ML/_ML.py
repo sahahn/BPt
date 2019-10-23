@@ -591,28 +591,24 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         problem_type = problem_type.lower()
         assert problem_type in default_metrics, 'Invalid problem type passed!'
         self.default_ML_params['problem_type'] = problem_type
-
     elif 'problem_type' not in self.default_ML_params:
         self.default_ML_params['problem_type'] = 'regression'
         self._print('No default problem type passed, set to regression.')
 
     if target != 'default':
         self.default_ML_params['target'] = target
-
     elif 'target' not in self.default_ML_params:
         self.default_ML_params['target'] = 0
         self._print('No default target passed, set to 0.')
 
     if model != 'default':
         self.default_ML_params['model'] = model
-
     elif 'model' not in self.default_ML_params:
         self.default_ML_params['model'] = 'linear'
         self._print('No default model type passed, set to linear.')
 
     if metric != 'default':
         self.default_ML_params['metric'] = metric
-
     elif 'metric' not in self.default_ML_params:
 
         self.default_ML_params['metric'] = \
@@ -624,14 +620,12 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     if imputer != 'default':
         self.default_ML_params['imputer'] = imputer
-
     elif 'imputer' not in self.default_ML_params:
         self.default_ML_params['imputer'] = ['mean', 'median']
         self._print('No default imputer passed, set to [mean, median]')
 
     if imputer_scope != 'default':
         self.default_ML_params['imputer_scope'] = imputer_scope
-
     elif 'imputer_scope' not in self.default_ML_params:
         self.default_ML_params['imputer_scope'] =\
             ['float', 'categorical']
@@ -640,42 +634,36 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     if scaler != 'default':
         self.default_ML_params['scaler'] = scaler
-
     elif 'scaler' not in self.default_ML_params:
         self.default_ML_params['scaler'] = 'standard'
         self._print('No default scaler passed, set to standard')
 
     if scaler_scope != 'default':
         self.default_ML_params['scaler_scope'] = scaler_scope
-
     elif 'scaler_scope' not in self.default_ML_params:
         self.default_ML_params['scaler_scope'] = 'data'
         self._print('No default scaler_scope passed, set to data')
 
     if sampler != 'default':
         self.default_ML_params['sampler'] = sampler
-
     elif 'sampler' not in self.default_ML_params:
         self.default_ML_params['sampler'] = None
         self._print('No default sampler passed, set to None')
 
     if sample_on != 'default':
         self.default_ML_params['sample_on'] = sample_on
-
     elif 'sample_on' not in self.default_ML_params:
         self.default_ML_params['sample_on'] = 'targets'
         self._print('No default sample on passed, set to targets')
 
     if feat_selector != 'default':
         self.default_ML_params['feat_selector'] = feat_selector
-
     elif 'feat_selector' not in self.default_ML_params:
         self.default_ML_params['feat_selector'] = None
         self._print('No default feat selector passed, set to None')
 
     if splits != 'default':
         self.default_ML_params['splits'] = splits
-
     elif 'splits' not in self.default_ML_params:
         self.default_ML_params['splits'] = 3
         self._print('No default splits passed, set to 3')
@@ -684,63 +672,54 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         assert isinstance(n_repeats, int), 'n_repeats must be int'
         assert n_repeats > 0, 'n_repeats must be greater than 0'
         self.default_ML_params['n_repeats'] = n_repeats
-
     elif 'n_repeats' not in self.default_ML_params:
         self.default_ML_params['n_repeats'] = 2
         self._print('No default num CV repeats passed, set to 2')
 
     if search_splits != 'default':
         self.default_ML_params['search_splits'] = search_splits
-
     elif 'search_splits' not in self.default_ML_params:
         self.default_ML_params['search_splits'] = 3
         self._print('No default num search splits passed, set to 3')
 
     if ensemble != 'default':
         self.default_ML_params['ensemble'] = ensemble
-
     elif 'ensemble' not in self.default_ML_params:
         self.default_ML_params['ensemble'] = 'basic ensemble'
         self._print('No default ensemble type passed, set to basic ensemble')
 
     if ensemble_split != 'default':
         self.default_ML_params['ensemble_split'] = ensemble_split
-
     elif 'ensemble_split' not in self.default_ML_params:
         self.default_ML_params['ensemble_split'] = .2
         self._print('No default ensemble split passed, set to .2')
 
     if search_type != 'default':
         self.default_ML_params['search_type'] = search_type
-
     elif 'search_type' not in self.default_ML_params:
         self.default_ML_params['search_type'] = None
         self._print('No default search type passed, set to None')
 
     if model_params != 'default':
         self.default_ML_params['model_params'] = model_params
-
     elif 'model_params' not in self.default_ML_params:
         self.default_ML_params['model_params'] = 0
         self._print('No default model param ind passed, set to 0')
 
     if imputer_params != 'default':
         self.default_ML_params['imputer_params'] = imputer_params
-
     elif 'imputer_params' not in self.default_ML_params:
         self.default_ML_params['imputer_params'] = 0
         self._print('No default imputer scaler params passed, set to 0')
 
     if scaler_params != 'default':
         self.default_ML_params['scaler_params'] = scaler_params
-
     elif 'scaler_params' not in self.default_ML_params:
         self.default_ML_params['scaler_params'] = 0
         self._print('No default data scaler params passed, set to 0')
 
     if sampler_params != 'default':
         self.default_ML_params['sampler_params'] = sampler_params
-
     elif 'sampler_params' not in self.default_ML_params:
         self.default_ML_params['sampler_params'] = 0
         self._print('No default sampler params passed, set to 0')
@@ -748,7 +727,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     if feat_selector_params != 'default':
         self.default_ML_params['feat_selector_params'] =\
             feat_selector_params
-
     elif 'feat_selector_params' not in self.default_ML_params:
         self.default_ML_params['feat_selector_params'] = 0
         self._print('No default feat selector params passed, set to 0')
@@ -756,7 +734,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     if ensemble_params != 'default':
         self.default_ML_params['ensemble_params'] =\
             ensemble_params
-
     elif 'ensemble_params' not in self.default_ML_params:
         self.default_ML_params['ensemble_params'] = 0
         self._print('No default ensemble type params passed, set to 0')
@@ -764,7 +741,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     if n_jobs != 'default':
         assert isinstance(n_jobs, int), 'n_jobs must be int'
         self.default_ML_params['n_jobs'] = n_jobs
-
     elif 'n_jobs' not in self.default_ML_params:
         self.default_ML_params['n_jobs'] = 1
         self._print('No default number of jobs passed, set to 1')
@@ -773,7 +749,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         assert isinstance(search_n_iter, int), 'search_n_iter must be int'
         assert search_n_iter > 0, 'search_n_iter must be greater than 0'
         self.default_ML_params['search_n_iter'] = search_n_iter
-
     elif 'search_n_iter' not in self.default_ML_params:
         self.default_ML_params['search_n_iter'] = 10
         self._print('No default number of random search iters passed,',
@@ -781,7 +756,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     if feats_to_use != 'default':
         self.default_ML_params['feats_to_use'] = feats_to_use
-
     elif 'feats_to_use' not in self.default_ML_params:
         self.default_ML_params['feats_to_use'] = 'all'
         self._print('No default feats_to_use passed,',
@@ -789,7 +763,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     if subjects_to_use != 'default':
         self.default_ML_params['subjects_to_use'] = subjects_to_use
-
     elif 'subjects_to_use' not in self.default_ML_params:
         self.default_ML_params['subjects_to_use'] = 'all'
         self._print('No default subjects_to_use passed,',
@@ -797,7 +770,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     if compute_train_score != 'default':
         self.default_ML_params['compute_train_score'] = compute_train_score
-
     elif 'compute_train_score' not in self.default_ML_params:
         self.default_ML_params['compute_train_score'] = False
         self._print('No default compute_train_score passed,',
@@ -805,7 +777,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     if random_state != 'default':
         self.default_ML_params['random_state'] = random_state
-
     elif 'random_state' not in self.default_ML_params:
         self.default_ML_params['random_state'] = self.random_state
         self._print('No default random state passed, using class random',
@@ -814,7 +785,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     if calc_base_feature_importances != 'default':
         self.default_ML_params['calc_base_feature_importances'] =\
             calc_base_feature_importances
-
     elif 'calc_base_feature_importances' not in self.default_ML_params:
         self.default_ML_params['calc_base_feature_importances'] = True
 
@@ -825,7 +795,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     if calc_shap_feature_importances != 'default':
         self.default_ML_params['calc_shap_feature_importances'] =\
             calc_shap_feature_importances
-
     elif 'calc_shap_feature_importances' not in self.default_ML_params:
         self.default_ML_params['calc_shap_feature_importances'] = False
 
@@ -836,19 +805,17 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     if extra_params != 'default':
         assert isinstance(extra_params, dict), 'extra params must be dict'
         self.default_ML_params['extra_params'] = extra_params
-
     elif 'extra_params' not in self.default_ML_params:
         self.default_ML_params['extra_params'] = {}
         self._print('No default extra params passed, set to empty dict')
 
-    self._print('Default params set.')
-    self._print()
+    self._print('Default ML params set within self.default_ML_params.')
 
 
-def Set_ML_Verbosity(self, progress_bar=True, fold_name=False,
-                     time_per_fold=False, score_per_fold=False,
-                     fold_sizes=False, param_search_verbose=0,
-                     save_to_logs=False):
+def Set_Default_ML_Verbosity(self, progress_bar=True, fold_name=False,
+                             time_per_fold=False, score_per_fold=False,
+                             fold_sizes=False, param_search_verbose=0,
+                             save_to_logs=False):
     '''This function allows setting various verbosity options that effect
     output during :func:`Evaluate` and :func:`Test`
 
@@ -1297,9 +1264,9 @@ def _premodel_check(self, problem_type='default'):
 
         self._print('Setting default ML verbosity settings!')
         self._print('Note, if the following values are not desired,',
-                    'call self.Set_ML_Verbosity()')
+                    'call self.Set_Default_ML_Verbosity()')
 
-        self.Set_ML_Verbosity()
+        self.Set_Default_ML_Verbosity()
 
 
 def _make_ML_params(self, args):

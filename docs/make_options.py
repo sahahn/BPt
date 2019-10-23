@@ -156,39 +156,9 @@ def add_param(lines, params):
 
         line = '\t\t' + key + ': '
         value = params[key]
-
-        if 'scipy' in str(type(value)):
-
-            if isinstance(value.a, int):
-                line += 'Random Integer Distribution ('
-                line += str(value.a) + ', ' + str(value.b) + ')'
-
-            else:
-                a, b = value.interval(1)
-
-                # Rought heuristic...
-                if a == 0:
-                    line += 'Random Uniform Distribution ('
-                elif b/a < 11:
-                    line += 'Random Uniform Distribution ('
-                else:
-                    line += 'Random Reciprical Distribution ('
-
-                line += str(a) + ', ' + str(b) + ')'
-
-        elif len(value) == 1:
-            if callable(value[0]):
-                line += str(value[0].__name__)
-            else:
-                line += str(value[0])
-
-        elif len(value) > 50:
-            line += 'Too many params to show'
-
-        else:
-            line += str(value)
-
+        line += str(value)
         lines.append(line)
+
     return lines
 
 

@@ -564,6 +564,8 @@ def proc_args(args, data_types):
         raise RuntimeError('The length of', args, 'must match length of input',
                            'cols!')
 
+    return args
+
 
 def process_multilabel_input(keys):
 

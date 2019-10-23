@@ -290,6 +290,8 @@ class ABCD_ML():
                                _get_covar_scopes)
 
     # Update loader docstrings
+    Load_Name_Map.__doc__ =\
+        get_new_docstring(Set_Default_Load_Params, Load_Name_Map)
     Load_Data.__doc__ =\
         get_new_docstring(Set_Default_Load_Params, Load_Data)
     Load_Targets.__doc__ =\

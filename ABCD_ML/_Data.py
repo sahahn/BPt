@@ -227,23 +227,27 @@ def _make_load_params(self, args):
     if len(self.default_load_params) == 0:
 
         # Set default load params with default vals
+        self._print('Setting default load params, as they have not been set!')
+        self._print()
         self.Set_Default_Load_Params()
         self._print('To change the default load params, call',
                     'self.Set_Default_Load_Params()')
+        self._print()
 
     load_params = self.default_load_params.copy()
 
     for key in args:
         if key in load_params:
-            if key != 'default' and key != 'self':
+            if args[key] != 'default' and args[key] != 'self':
                 load_params[key] = args[key]
 
     return load_params
 
 
-def Load_Name_Map(self, name_map=None, loc=None, dataset_type='custom',
+def Load_Name_Map(self, name_map=None, loc=None, dataset_type='default',
                   source_name_col="NDAR name",
                   target_name_col="REDCap name/NDA alias",
+                  na_values='default',
                   clear_existing=False):
     '''Loads a mapping dictionary for loading column names. Either a loc
     or name_map must be passed! Note: If both a name_map and loc are passed,
@@ -262,21 +266,7 @@ def Load_Name_Map(self, name_map=None, loc=None, dataset_type='custom',
 
         (default = None)
 
-    dataset_type : {'basic', 'explorer', 'custom'}, optional
-        The type of file to load from. (If loc passed!)
-        Dataset types are,
-
-        - 'basic' : ABCD2p0NDA style (.txt and tab seperated)
-
-        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)
-
-        - 'custom' : A user-defined custom dataset. Right now this is only\
-            supported as a comma seperated file, with the subject names in a\
-            column called self.subject_id.
-
-        The name maps in ABCD are csv by default, so default is custom.
-
-        (default = 'custom')
+    dataset_type :
 
     source_name_col : str, optional
         The column name with the file which lists names to be changed.
@@ -288,6 +278,8 @@ def Load_Name_Map(self, name_map=None, loc=None, dataset_type='custom',
 
         (default = "REDCap name/NDA alias")
 
+    na_values :
+
     clear_existing : bool, optional
         If set to True, will clear the existing loaded name_map, otherwise the
         name_map dictionary will be updated if already loaded!
@@ -297,20 +289,32 @@ def Load_Name_Map(self, name_map=None, loc=None, dataset_type='custom',
         self.Clear_Name_Map()
 
     if name_map is not None:
+
+        if len(self.name_map) > 0:
+            self._print('Updating existing name_map with new!')
+        else:
+            self._print('Loading new name_map')
+
         self.name_map.update(name_map)
-        self._print('Loaded passed name_map')
 
     if loc is not None:
 
+        load_params = self._make_load_params(args=locals())
+
         # Load mapping based on dataset type
-        mapping = self._load(loc, dataset_type)
+        mapping = self._load(loc, load_params['dataset_type'],
+                             load_params['na_values'])
 
         try:
             name_map_from_loc = dict(zip(mapping[source_name_col],
                                          mapping[target_name_col]))
 
+            if len(self.name_map) > 0:
+                self._print('Updating existing name_map with new from file!')
+            else:
+                self._print('Loading new name_map from file!')
+
             self.name_map.update(name_map_from_loc)
-            self._print('Loaded map file')
 
         except KeyError:
             print('Error: One or both provided column names do not exist!')
@@ -444,7 +448,8 @@ def Load_Data(self, loc, dataset_type='default', drop_keys=None,
     load_params = self._make_load_params(args=locals())
 
     # Load in the raw dataframe - based on dataset type
-    data = self._load_datasets(loc, load_params['dataset_type'])
+    data = self._load_datasets(loc, load_params['dataset_type'],
+                               load_params['na_values'])
 
     # Perform proc common operations
     data = self._proc_df(data, load_params)
@@ -1585,7 +1590,7 @@ def _get_targets_key(self, key, base_key=False):
     return self.targets_keys[ind]
 
 
-def _load_datasets(self, locs, dataset_types):
+def _load_datasets(self, locs, dataset_types, na_values):
     '''Helper function to load in multiple datasets with default
     load and drop behavior based on type. And calls proc_df on each
     before merging.
@@ -1610,13 +1615,13 @@ def _load_datasets(self, locs, dataset_types):
         dataset_types = [dataset_types for i in range(len(locs))]
 
     # Load the first loc
-    data = self._load_dataset(locs[0], dataset_types[0])
+    data = self._load_dataset(locs[0], dataset_types[0], na_values)
 
     # For the rest
     for loc, dataset_type in zip(locs[1:], dataset_types[1:]):
 
         # Load & Merge
-        more_data = self._load_dataset(loc, dataset_type)
+        more_data = self._load_dataset(loc, dataset_type, na_values)
 
         repeat_col_names = set(list(data)).intersection(set(list(more_data)))
 
@@ -1631,7 +1636,7 @@ def _load_datasets(self, locs, dataset_types):
     return data
 
 
-def _load_dataset(self, loc, dataset_type):
+def _load_dataset(self, loc, dataset_type, na_values):
     '''Helper function to load in a dataset with default
     load and drop behavior based on type. And calls proc_df.
 
@@ -1650,7 +1655,7 @@ def _load_dataset(self, loc, dataset_type):
         minimally proc'ed data.
     '''
 
-    data = self._load(loc, dataset_type)
+    data = self._load(loc, dataset_type, na_values)
 
     # If dataset type is basic or explorer, drop some cols by default
     if dataset_type == 'basic' or dataset_type == 'explorer':
@@ -1679,7 +1684,8 @@ def _common_load(self, loc, dataset_type, load_params,
                  col_names=None):
 
     # Reads raw data based on dataset type
-    data = self._load(loc, load_params['dataset_type'])
+    data = self._load(loc, load_params['dataset_type'],
+                      load_params['na_values'])
 
     # Perform proc common operations
     data = self._proc_df(data, load_params)
@@ -1700,7 +1706,7 @@ def _common_load(self, loc, dataset_type, load_params,
     return data, col_names
 
 
-def _load(self, loc, dataset_type):
+def _load(self, loc, dataset_type, na_values):
     '''Base load helper function, for simply loading file
     into memory based on dataset type.
 
@@ -1732,17 +1738,14 @@ def _load(self, loc, dataset_type):
         Loaded DataFrame.
     '''
 
-    if dataset_type == 'default':
-        dataset_type = self.default_dataset_type
-
-    self._print('Loading', loc, 'assumed to be dataset type:', dataset_type)
+    self._print('Loading', loc, ' with dataset type:', dataset_type)
 
     if dataset_type == 'basic':
         data = pd.read_csv(loc, sep='\t', skiprows=[1],
-                           na_values=self.default_na_values,
+                           na_values=na_values,
                            low_memory=self.low_memory_mode)
     else:
-        data = pd.read_csv(loc, na_values=self.default_na_values,
+        data = pd.read_csv(loc, na_values=na_values,
                            low_memory=self.low_memory_mode)
 
     return data
@@ -2006,7 +2009,7 @@ def _filter_by_eventname(self, data, eventname, eventname_col):
         if eventname_col in list(data):
 
             if not isinstance(eventname, list):
-                eventname = list(eventname)
+                eventname = [eventname]
 
             before = data.shape[0]
             data = data[data[eventname_col].isin(eventname)]

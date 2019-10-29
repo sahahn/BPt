@@ -300,3 +300,10 @@ class CV():
             return inds_from_names(original_subjects, subject_splits)
 
         return subject_splits
+
+    def get_num_groups(self, subjects, groups_series):
+
+        original_subjects, subjects, train_only = self.get_train_only(subjects)
+        groups = groups_series.loc[subjects]
+
+        return len(np.unique(groups))

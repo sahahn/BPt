@@ -16,7 +16,7 @@ class ABCD_ML():
 
     def __init__(self, exp_name='Exp', log_dr='', existing_log='new',
                  verbose=True, notebook=True, use_default_subject_ids=True,
-                 low_memory_mode=False,
+                 low_memory_mode=False, strat_u_name='_Strat',
                  random_state=None):
         '''Main class init
 
@@ -96,6 +96,12 @@ class ABCD_ML():
 
             (default = False)
 
+        strat_u_name : str, optional
+            A unique str identifier to be appended to every loaded
+            strat value (to keep it seperate from covars and data).
+
+            (default = _Strat)
+
         random_state : int, RandomState instance or None, optional
             The default random state, either as int for a specific seed,
             or if None then the random seed is set by np.random.
@@ -127,11 +133,13 @@ class ABCD_ML():
         self.notebook = notebook
         self.use_default_subject_ids = use_default_subject_ids
         self.low_memory_mode = low_memory_mode
+        self.strat_u_name = strat_u_name
         self.random_state = random_state
 
         self._print('notebook =', self.notebook)
         self._print('use_default_subject_ids =', self.use_default_subject_ids)
         self._print('low memory mode =', self.low_memory_mode)
+        self._print('strat_u_name =', self.strat_u_name)
         self._print('random state =', self.random_state)
 
         # Initialze various variables
@@ -140,7 +148,7 @@ class ABCD_ML():
         self.targets, self.strat = pd.DataFrame(), pd.DataFrame()
 
         # Dict objects to hold encoders
-        self.covars_encoders = {},
+        self.covars_encoders = {}
         self.targets_encoders = {}
         self.strat_encoders = {}
 
@@ -157,8 +165,6 @@ class ABCD_ML():
         self.ML_verbosity = {}
 
         self.eval_scores, self.eval_settings = {}, {}
-
-        self.strat_u_name = '_STRAT'
         self.subject_id = 'src_subject_id'
 
         if self.notebook:
@@ -350,6 +356,7 @@ class ABCD_ML():
                                    Show_Data_Dist,
                                    Show_Targets_Dist,
                                    Show_Covars_Dist,
+                                   Show_Strat_Dist,
                                    _show_single_dist,
                                    _show_dist,
                                    _display_df,

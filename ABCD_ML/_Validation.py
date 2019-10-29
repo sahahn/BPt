@@ -244,7 +244,7 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
                                                          self.test_subjects]):
             with open(loc, 'w') as f:
                 for subject in subjects:
-                    f.write(subject + '\n')
+                    f.write(str(subject) + '\n')
 
 
 def _add_strat_u_name(self, in_vals):

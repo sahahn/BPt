@@ -251,14 +251,14 @@ def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
 
     strat_df = self._set_overlap(self.strat, show_only_overlap).copy()
 
-    if covars == 'SHOW_ALL':
-        covars = list(self.covars_encoders)
+    if strat == 'SHOW_ALL':
+        strat = list(self.strat_encoders)
 
-    if not isinstance(covars, list):
-        covars = [covars]
+    if not isinstance(strat, list):
+        strat = [strat]
 
-    for covar in covars:
-        self._show_single_dist(covar, covars_df, self.covars_encoders,
+    for s in strat:
+        self._show_single_dist(s, strat_df, self.strat_encoders,
                                cat_show_original_name, show)
         self._print()
 

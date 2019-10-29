@@ -2282,10 +2282,10 @@ def _process_new(self, remove=False):
     if len(overlap) > 0:
         self._print()
         self._print('Total valid overlapping subjects =', len(overlap))
-        self._print()
 
         if remove:
-            self._print('Removing non overlapping subjects')
+            self._print('Removing non overlapping subjects from loaded data,',
+                        'covars, ect...')
 
             if len(self.data) > 0:
                 self.data = self.data[self.data.index.isin(overlap)]
@@ -2295,6 +2295,8 @@ def _process_new(self, remove=False):
                 self.targets = self.targets[self.targets.index.isin(overlap)]
             if len(self.strat) > 0:
                 self.strat = self.strat[self.strat.index.isin(overlap)]
+
+        self._print()
 
 
 def _prepare_data(self):

@@ -1227,9 +1227,11 @@ class Model_Pipeline():
 
         else:
 
+            # Set num splits
             self.n_splits =\
-                len(np.unique(splits_vals.loc[train_subjects]))
+                self.CV.get_num_groups(train_subjects, splits_vals)
 
+            # Generate the leave-out CV
             subject_splits =\
                 self.CV.repeated_leave_one_group_out(train_subjects,
                                                      self.n_repeats,

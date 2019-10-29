@@ -265,6 +265,7 @@ class ABCD_ML():
                                Clear_Inclusions,
                                _get_targets_key,
                                _load_datasets,
+                               _load_user_passed,
                                _load_dataset,
                                _common_load,
                                _load,

@@ -493,26 +493,43 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
     self._process_new(self.low_memory_mode)
 
 
-def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
-                 subject_id='default', eventname='default',
-                 eventname_col='default', overlap_subjects='default',
-                 filter_outlier_percent=None, categorical_drop_percent=None,
-                 na_values='default', clear_existing=False):
-    '''Loads in a set of subject ids and associated targets from a
-    2.0_ABCD_Data_Explorer release formatted csv.
-    See Notes for more info.
+def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
+                 dataset_type='default', subject_id='default',
+                 eventname='default', eventname_col='default',
+                 overlap_subjects='default', filter_outlier_percent=None,
+                 categorical_drop_percent=None, na_values='default',
+                 clear_existing=False):
+    '''Loads in targets, the outcome / variable(s) to predict.
 
     Parameters
     ----------
-    loc : str, Path or None
-        The location of the csv file to load targets load from.
+    loc : str, Path or None, optional
+        The location of the file to load targets load from.
 
-    col_name : str or list
+        Either loc or df must be set, but they both cannot be set!
+
+        (default = None)
+
+    df : pandas DataFrame or None, optional
+        This parameter represents the option for the user to pass in
+        a raw custom dataframe. A loc and/or a df must be passed.
+
+        When pasing a raw DataFrame, the loc and dataset_type
+        param will be ignored, as those are for loading from a file.
+        Otherwise, it will be treated the same as
+        if loading from a file, which means, there should be a column within
+        the passed dataframe with subject_id, and e.g. if eventname params are
+        passed, they will be applied along with any other proc. specified.
+
+        Either loc or df must be set, but they both cannot be set!
+
+    col_name : str, list, optional
         The name(s) of the column(s) to load.
 
         Note: Must be in the same order as data types passed in.
+        (default = None)
 
-    data_type : {'binary', 'categorical', 'multilabel', 'ordinal', 'float'}
+    data_type : {'b', 'c', 'm', 'o', 'f'}, optional
         The data types of the different columns to load,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.
@@ -530,6 +547,8 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
             a nested list should be passed to col_name.
 
         Datatypes are explained further in Notes.
+
+        (default = None)
 
     dataset_type :
     subject_id :
@@ -607,7 +626,7 @@ def Load_Targets(self, loc, col_name, data_type, dataset_type='default',
     load_params = self._make_load_params(args=locals())
 
     # Load in the targets w/ basic pre-processing
-    targets, col_names = self._common_load(loc, dataset_type,
+    targets, col_names = self._common_load(loc, df, dataset_type,
                                            load_params,
                                            col_names=col_name)
 
@@ -681,9 +700,10 @@ def _proc_target(self, targets, key, d_type, fop, cdp):
     return targets
 
 
-def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
-                subject_id='default', eventname='default',
-                eventname_col='default', overlap_subjects='default',
+def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
+                dataset_type='default', subject_id='default',
+                eventname='default', eventname_col='default',
+                overlap_subjects='default',
                 na_values='default', drop_na='default', drop_or_na='default',
                 code_categorical_as='dummy', categorical_drop_percent=None,
                 filter_float_outlier_percent=None, clear_existing=False):
@@ -691,15 +711,34 @@ def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
 
     Parameters
     ----------
-    loc : str, Path or None
-        The location of the csv file to load co-variates load from.
+    loc : str, Path or None, optional
+        The location of the file to load co-variates load from.
 
-    col_name : str or list
+        Either loc or df must be set, but they both cannot be set!
+
+        (default = None)
+
+    df : pandas DataFrame or None, optional
+        This parameter represents the option for the user to pass in
+        a raw custom dataframe. A loc and/or a df must be passed.
+
+        When pasing a raw DataFrame, the loc and dataset_type
+        param will be ignored, as those are for loading from a file.
+        Otherwise, it will be treated the same as
+        if loading from a file, which means, there should be a column within
+        the passed dataframe with subject_id, and e.g. if eventname params are
+        passed, they will be applied along with any other proc. specified.
+
+        Either loc or df must be set, but they both cannot be set!
+
+    col_name : str or list, optional
         The name(s) of the column(s) to load.
 
         Note: Must be in the same order as data types passed in.
 
-    data_type : {'binary', 'categorical', 'multilabel', 'ordinal', 'float'}
+        (default = None)
+
+    data_type : {'b', 'c', 'm', 'o', 'f'} or None, optional
         The data types of the different columns to load,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.
@@ -715,6 +754,8 @@ def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
             should be a list of columns, and will be assumed to be.
             For example, if loading multiple targets and one is multilabel,
             a nested list should be passed to col_name.
+
+        (default = None)
 
     dataset_type :
     subject_id :
@@ -791,7 +832,7 @@ def Load_Covars(self, loc, col_name, data_type, dataset_type='default',
     load_params = self._make_load_params(args=locals())
 
     # Load in covars w/ basic pre-proc
-    covars, col_names = self._common_load(loc, dataset_type,
+    covars, col_names = self._common_load(loc, df, dataset_type,
                                           load_params,
                                           col_names=col_name)
 
@@ -893,7 +934,7 @@ def _proc_covar(self, covars, key, d_type, cca, cdp, ffop, drop_val):
     return covars
 
 
-def Load_Strat(self, loc, col_name, dataset_type='default',
+def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
                subject_id='default', eventname='default',
                eventname_col='default', overlap_subjects='default',
                binary_col=False, float_col=False,
@@ -905,15 +946,34 @@ def Load_Strat(self, loc, col_name, dataset_type='default',
 
     Parameters
     ----------
-    loc : str, Path or None
-        The location of the csv file to load stratification vals from.
+    loc : str, Path or None, optional
+        The location of the file to load stratification vals load from.
 
-    col_name : str or list
+        Either loc or df must be set, but they both cannot be set!
+
+        (default = None)
+
+    df : pandas DataFrame or None, optional
+        This parameter represents the option for the user to pass in
+        a raw custom dataframe. A loc and/or a df must be passed.
+
+        When pasing a raw DataFrame, the loc and dataset_type
+        param will be ignored, as those are for loading from a file.
+        Otherwise, it will be treated the same as
+        if loading from a file, which means, there should be a column within
+        the passed dataframe with subject_id, and e.g. if eventname params are
+        passed, they will be applied along with any other proc. specified.
+
+        Either loc or df must be set, but they both cannot be set!
+
+    col_name : str or list, optional
         The name(s) of the column(s) to load. Any datatype can be
         loaded with the exception of multilabel, but for float variables
         in particular, they should be specified with the `float_col` and
         corresponding `float_bins` and `float_bin_strategy` params. Noisy
         binary cols can also be specified with the `binary_col` param.
+
+        (default = None)
 
     dataset_type :
     subject_id :
@@ -1030,7 +1090,7 @@ def Load_Strat(self, loc, col_name, dataset_type='default',
     load_params = self._make_load_params(args=locals())
 
     # Load in strat w/ basic pre-processing
-    strat, col_names = self._common_load(loc, dataset_type,
+    strat, col_names = self._common_load(loc, df, dataset_type,
                                          load_params,
                                          col_names=col_name)
 
@@ -1055,6 +1115,8 @@ def Load_Strat(self, loc, col_name, dataset_type='default',
 
 
 def _proc_strat(self, strat, key, bc, fc, fb, fbs, cdp):
+
+    key = key + self.strat_u_name
 
     # Binary
     if bc:
@@ -1638,10 +1700,7 @@ def _load_datasets(self, locs, df, load_params):
     # Load from user-passed df
     if df is not None:
 
-        self._print('Loading user passed df')
-
-        df = df.reset_index()
-        df = df.replace(load_params['na_values'], np.nan)
+        df = self._load_user_passed(df, load_params['na_values'])
         dfs.append(df)
 
     # Set first df
@@ -1662,6 +1721,16 @@ def _load_datasets(self, locs, df, load_params):
         data = pd.merge(data, more_data, on=self.subject_id)
 
     return data
+
+
+def _load_user_passed(self, df, na_values):
+
+    self._print('Loading user passed df')
+
+    df = df.reset_index()
+    df = df.replace(na_values, np.nan)
+
+    return df
 
 
 def _load_dataset(self, loc, dataset_type, na_values):
@@ -1708,12 +1777,22 @@ def _load_dataset(self, loc, dataset_type, na_values):
     return data
 
 
-def _common_load(self, loc, dataset_type, load_params,
+def _common_load(self, loc, df, dataset_type, load_params,
                  col_names=None):
 
+    if loc is not None and df is not None:
+        raise AssertionError('Both loc and df cannot be set!')
+    if loc is None and df is None:
+        raise AssertionError('Either loc or df must be passed!')
+
     # Reads raw data based on dataset type
-    data = self._load(loc, load_params['dataset_type'],
-                      load_params['na_values'])
+    if loc is not None:
+        data = self._load(loc, load_params['dataset_type'],
+                          load_params['na_values'])
+
+    # User passed
+    if df is not None:
+        data = self._load_user_passed(df, load_params['na_values'])
 
     # Perform proc common operations
     data = self._proc_df(data, load_params)

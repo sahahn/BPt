@@ -14,3 +14,4 @@ scikit-image>=0.15
 tqdm
 dill
 nevergrad
+Ipython

@@ -15,7 +15,7 @@ class ABCD_ML():
     '''The main class used in ABCD_ML project'''
 
     def __init__(self, exp_name='Exp', log_dr='', existing_log='new',
-                 verbose=True, notebook=True, use_default_subject_ids=True,
+                 verbose=True, notebook=True, use_default_subject_ids=False,
                  low_memory_mode=False, strat_u_name='_Strat',
                  random_state=None):
         '''Main class init
@@ -75,7 +75,7 @@ class ABCD_ML():
             If set to False, then all input subject names must be entered
             explicitly the same, no preprocessing will be done on them.
 
-            (default = True)
+            (default = False)
 
         low_memory_mode : bool, optional
             This parameter dictates behavior around loading in data,

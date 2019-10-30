@@ -45,7 +45,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     problem_type : {'regression', 'binary', 'categorical', 'multilabel', \
 'default'}, optional
 
-        - 'regression' : For ML on float or ordinal target data.
+        - 'regression' : For ML on float target data.
         - 'binary' : For ML on binary target data.
         - 'categorical' : For ML on categorical target data,\
                           as multiclass.
@@ -146,7 +146,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         (in data / covars), for each `imputer` passed.
         Options are,
 
-        - 'float' or 'f' : To select just float / ordinal data
+        - 'float' or 'f' : To select just float data
         - 'categorical' or 'c' : To select any categorical type\
                                  (including binary) data\
                                  regardless of encoding (e.g. one hot)
@@ -1230,7 +1230,7 @@ def _premodel_check(self, problem_type='default'):
     ----------
     problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
 
-        - 'regression' : For ML on float or ordinal target data
+        - 'regression' : For ML on float target data
         - 'binary' : For ML on binary target data
         - 'categorical' : For ML on categorical target data,
                           as either multilabel or multiclass.

@@ -1,7 +1,7 @@
 """
 _Data.py
 ====================================
-Main class extension file for the Data loading functionality methods of
+Main class extension file for the Loading functionality methods of
 the ABCD_ML class.
 """
 import numpy as np
@@ -386,7 +386,7 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
     drop_na :
     drop_or_na :
     filter_outlier_percent : int, float, tuple or None, optional
-        *For float / ordinal data only.*
+        *For float data only.*
         A percent of values to exclude from either end of the
         targets distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
@@ -537,7 +537,6 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         - 'binary' or 'b' : Binary input
         - 'categorical' or 'c' : Categorical input
         - 'multilabel' or 'm' : Multilabel categorical input
-        - 'ordinal' or 'o' : Ordinal input
         - 'float' or 'f' : Float numerical input
 
         .. WARNING::
@@ -557,7 +556,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     overlap_subjects :
 
     filter_outlier_percent : float, tuple, list of or None, optional
-        For float or ordinal datatypes only.
+        For float datatypes only.
         A percent of values to exclude from either end of the
         target distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
@@ -603,8 +602,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     Notes
     ----------
     Targets can be either 'binary', 'categorical', 'multilabel',
-    'ordinal' or 'float',
-    where ordinal and float are generally treated the same.
+    or 'float',
 
     - binary : Targets are read in and label encoded to be 0 or 1, \
     Will also work if passed column of unique string also, e.g. 'M' and 'F'
@@ -615,7 +613,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     - multilabel : Simmilar to categorical, but targets can take on multiple\
     values, and therefore cannot be reduced to an ordinal representation.
 
-    - ordinal and float : Targets are read in as a floating point number,\
+    - float : Targets are read in as a floating point number,\
     and optionally then filtered.
     '''
 
@@ -675,8 +673,8 @@ def _proc_target(self, targets, key, d_type, fop, cdp):
             process_ordinal_input(targets, targets_key, cdp, in_place=True,
                                   _print=self._print)
 
-    # For float or ordinal, just optionally apply outlier percent filter
-    elif d_type == 'f' or d_type == 'o':
+    # For float, just optionally apply outlier percent filter
+    elif d_type == 'f':
 
         if fop is not None:
             targets = filter_float_by_outlier(targets, targets_key,
@@ -738,7 +736,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
         (default = None)
 
-    data_type : {'b', 'c', 'm', 'o', 'f'} or None, optional
+    data_type : {'b', 'c', 'm', 'f'} or None, optional
         The data types of the different columns to load,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.
@@ -746,7 +744,6 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         - 'binary' or 'b' : Binary input
         - 'categorical' or 'c' : Categorical input
         - 'multilabel' or 'm' : Multilabel categorical input
-        - 'ordinal' or 'o' : Ordinal input
         - 'float' or 'f' : Float numerical input
 
         .. WARNING::
@@ -903,13 +900,13 @@ def _proc_covar(self, covars, key, d_type, cca, cdp, ffop, drop_val):
             # Add any new cols from encoding to base covars (removing old)
             covars = covars.reindex(columns=list(non_nan_covars))
 
-    # Float / Ordinal
-    elif d_type == 'f' or d_type == 'o':
+    # Float
+    elif d_type == 'f':
 
         self.covars_encoders[key] = None
 
         # If filter float outlier percent
-        if ffop is not None and d_type == 'f':
+        if ffop is not None:
             non_nan_covars = filter_float_by_outlier(non_nan_covars, key,
                                                      ffop, in_place=False,
                                                      drop_val=drop_val,
@@ -1168,7 +1165,7 @@ def Load_Exclusions(self, loc=None, subjects=None, clear_existing=False):
 
     Notes
     ----------
-    For best/most reliable performance across all data loading cases,
+    For best/most reliable performance across all Loading cases,
     exclusions should be loaded before data, covars and targets.
 
     If default subject id behavior is set to False,
@@ -1216,7 +1213,7 @@ def Load_Inclusions(self, loc=None, subjects=None, clear_existing=False):
 
     Notes
     ----------
-    For best/most reliable performance across all data loading cases,
+    For best/most reliable performance across all Loading cases,
     inclusions should be loaded before data, covars and targets.
 
     If default subject id behavior is set to False,
@@ -1310,7 +1307,7 @@ def Filter_Data_Cols(self, filter_outlier_percent, overlap_subjects='default',
     Parameters
     ----------
     filter_outlier_percent : int, float, tuple or None
-        *For float / ordinal data only.*
+        *For float data only.*
         A percent of values to exclude from either end of the
         targets distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
@@ -1474,7 +1471,7 @@ def Drop_Data_Duplicates(self, corr_thresh, overlap_subjects='default'):
 
 def Binarize_Target(self, lower, upper, target=0):
     '''This function binarizes a loaded target variable,
-    assuming that an ordinal or float type target is loaded,
+    assuming that a float type target is loaded,
     otherwise this function will break!
 
     Parameters

@@ -40,7 +40,7 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         the elements of the list.
 
         Any target_cols passed must be categorical or binary, and cannot be
-        float/ordinal/multilabel.
+        float/multilabel.
 
         (default = None)
 

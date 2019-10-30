@@ -27,7 +27,7 @@ binary
 
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
 		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "elastic net logistic"
@@ -43,7 +43,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 		l1_ratio: 0.5
 
 	1. "elastic classifier" ::
@@ -52,7 +52,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
@@ -94,7 +94,7 @@ binary
 
 	1. "knn rs" ::
 
-		weights: SoftmaxCategorical(deterministic=False, possibilities=['uniform', 'distance'])
+		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
 		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
 
 
@@ -111,7 +111,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 	1. "lasso C" ::
 
@@ -119,7 +119,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
@@ -152,14 +152,14 @@ binary
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: SoftmaxCategorical(deterministic=False, possibilities=['gbdt', 'dart'])
+		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart'])
 		min_child_samples: OrderedDiscrete(possibilities=[1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
 		num_leaves: OrderedDiscrete(possibilities=[2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
 		colsample_bytree: OrderedDiscrete(possibilities=[0.7, 0.9, 1.0])
 		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.3)])
 		learning_rate: OrderedDiscrete(possibilities=[0.01, 0.05, 0.1])
 		n_estimators: OrderedDiscrete(possibilities=[5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "logistic"
@@ -175,7 +175,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: none
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "mlp classifier"
@@ -192,10 +192,10 @@ binary
 	1. "mlp rs" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
 		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
 		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
@@ -204,10 +204,10 @@ binary
 	2. "mlp rs es" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
 		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
 		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
@@ -238,7 +238,7 @@ binary
 		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		bootstrap: True
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "ridge logistic"
@@ -254,7 +254,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 	1. "ridge C" ::
 
@@ -262,7 +262,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
@@ -285,7 +285,7 @@ binary
 		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
 		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 		probability: True
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "xgb classifier"
@@ -374,7 +374,7 @@ regression
 
 	1. "knn rs" ::
 
-		weights: SoftmaxCategorical(deterministic=False, possibilities=['uniform', 'distance'])
+		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
 		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
 
 
@@ -422,7 +422,7 @@ regression
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: SoftmaxCategorical(deterministic=False, possibilities=['gbdt', 'dart'])
+		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart'])
 		min_child_samples: OrderedDiscrete(possibilities=[1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
 		num_leaves: OrderedDiscrete(possibilities=[2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
 		colsample_bytree: OrderedDiscrete(possibilities=[0.7, 0.9, 1.0])
@@ -457,10 +457,10 @@ regression
 	1. "mlp rs" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
 		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
 		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
@@ -469,10 +469,10 @@ regression
 	2. "mlp rs es" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
 		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
 		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
@@ -580,7 +580,7 @@ categorical
 
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
 		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "elastic net logistic"
@@ -596,7 +596,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 		l1_ratio: 0.5
 
 	1. "elastic classifier" ::
@@ -605,7 +605,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
@@ -647,7 +647,7 @@ categorical
 
 	1. "knn rs" ::
 
-		weights: SoftmaxCategorical(deterministic=False, possibilities=['uniform', 'distance'])
+		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
 		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
 
 
@@ -664,7 +664,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 	1. "lasso C" ::
 
@@ -672,7 +672,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
@@ -705,14 +705,14 @@ categorical
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: SoftmaxCategorical(deterministic=False, possibilities=['gbdt', 'dart'])
+		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart'])
 		min_child_samples: OrderedDiscrete(possibilities=[1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
 		num_leaves: OrderedDiscrete(possibilities=[2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
 		colsample_bytree: OrderedDiscrete(possibilities=[0.7, 0.9, 1.0])
 		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.3)])
 		learning_rate: OrderedDiscrete(possibilities=[0.01, 0.05, 0.1])
 		n_estimators: OrderedDiscrete(possibilities=[5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "logistic"
@@ -728,7 +728,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: none
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "mlp classifier"
@@ -745,10 +745,10 @@ categorical
 	1. "mlp rs" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
 		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
 		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
@@ -757,10 +757,10 @@ categorical
 	2. "mlp rs es" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
 		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
 		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
@@ -791,7 +791,7 @@ categorical
 		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		bootstrap: True
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "ridge logistic"
@@ -807,7 +807,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 	1. "ridge C" ::
 
@@ -815,7 +815,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
 
@@ -838,7 +838,7 @@ categorical
 		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
 		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
 		probability: True
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "xgb classifier"
@@ -881,7 +881,7 @@ multilabel
 
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
 		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 "knn classifier"
@@ -897,7 +897,7 @@ multilabel
 
 	1. "knn rs" ::
 
-		weights: SoftmaxCategorical(deterministic=False, possibilities=['uniform', 'distance'])
+		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
 		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
 
 
@@ -915,10 +915,10 @@ multilabel
 	1. "mlp rs" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
 		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
 		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
@@ -927,10 +927,10 @@ multilabel
 	2. "mlp rs es" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: SoftmaxCategorical(deterministic=False, possibilities=['identity', 'logistic', 'tanh', 'relu'])
+		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
 		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: SoftmaxCategorical(deterministic=False, possibilities=['constant', 'invscaling', 'adaptive'])
+		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
 		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
@@ -961,7 +961,7 @@ multilabel
 		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
 		bootstrap: True
-		class_weight: SoftmaxCategorical(deterministic=False, possibilities=[None, 'balanced'])
+		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
 
 
@@ -1870,12 +1870,12 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: [<function f_classif at 0x7fe0727b71e0>]
+		score_func: [<function f_classif at 0x7f74d9a26950>]
 		percentile: [50]
 
 	1. "univar fs classifier rs" ::
 
-		score_func: [<function f_classif at 0x7fe0727b71e0>]
+		score_func: [<function f_classif at 0x7f74d9a26950>]
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
@@ -1919,12 +1919,12 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7fe0727b7378>
+		score_func: <function f_regression at 0x7f74d9a26ae8>
 		percentile: 50
 
 	1. "univar fs regression rs" ::
 
-		score_func: <function f_regression at 0x7fe0727b7378>
+		score_func: <function f_regression at 0x7f74d9a26ae8>
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
@@ -1968,12 +1968,12 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: [<function f_classif at 0x7fe0727b71e0>]
+		score_func: [<function f_classif at 0x7f74d9a26950>]
 		percentile: [50]
 
 	1. "univar fs classifier rs" ::
 
-		score_func: [<function f_classif at 0x7fe0727b71e0>]
+		score_func: [<function f_classif at 0x7f74d9a26950>]
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 

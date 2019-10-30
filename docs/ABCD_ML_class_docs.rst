@@ -25,20 +25,9 @@ Init
 Data Loading Phase
 ******************
 
-
-
-
-
-
-
-Get_Overlapping_Subjects,
-Clear_Name_Map,
-Clear_Data,
-Clear_Covars,
-Clear_Targets,
-Clear_Strat,
-Clear_Exclusions,
-Clear_Inclusions,
+Set_Default_Load_Params
+=======================
+.. automethod:: ABCD_ML.Set_Default_Load_Params
 
 Load_Name_Map
 ==============
@@ -51,10 +40,6 @@ Load_Exclusions
 Load_Inclusions
 ===============
 .. automethod:: ABCD_ML.Load_Inclusions
-
-Set_Default_Load_Params
-=======================
-.. automethod:: ABCD_ML.Set_Default_Load_Params
 
 Load_Data
 =========

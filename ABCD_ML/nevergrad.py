@@ -21,7 +21,7 @@ class NevergradSearchCV():
         self.n_iter = n_iter
         self.n_jobs = n_jobs
         self.random_state = random_state
-        self.verbose = 0
+        self.verbose = verbose
 
     def ng_cv_score(self, X, y, **kwargs):
 
@@ -64,6 +64,10 @@ class NevergradSearchCV():
         # Fit best estimator
         self.best_estimator_ = self.estimator
         self.best_estimator_.set_params(**recommendation.kwargs)
+
+        # print(recommendation.kwargs)
+        # print(optimizer.current_bests["pessimistic"].mean)
+
         self.best_estimator_.fit(X, y)
 
     def predict(self, X):

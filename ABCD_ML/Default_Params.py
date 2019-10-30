@@ -237,10 +237,10 @@ PARAMS['univar fs regression rs'] = {'score_func': f_regression,
                                      ng.var.Scalar(int).bounded(1, 99)}
 
 
-PARAMS['base univar fs classifier'] = {'score_func': [f_classif],
+PARAMS['base univar fs classifier'] = {'score_func': f_classif,
                                        'percentile': [50]}
 
-PARAMS['univar fs classifier rs'] = {'score_func': [f_classif],
+PARAMS['univar fs classifier rs'] = {'score_func': f_classif,
                                      'percentile':
                                      ng.var.Scalar(int).bounded(1, 99)}
 

@@ -287,10 +287,10 @@ def process_float_input(data, key, bins, strategy):
 
 def get_unused_drop_val(data):
 
-    drop_val = random.randint(np.nanin(data) - 5, np.nanmax(data) + 5)
+    drop_val = random.randint(np.nanmin(data) - 5, np.nanmax(data) + 5)
 
     while (data == drop_val).any().any():
-        drop_val = random.randint(np.nanin(data) - 5, np.nanmax(data) + 5)
+        drop_val = random.randint(np.nanmin(data) - 5, np.nanmax(data) + 5)
 
     return drop_val
 

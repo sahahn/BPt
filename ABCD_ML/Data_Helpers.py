@@ -297,7 +297,23 @@ def get_unused_drop_val(data):
     return drop_val
 
 
-def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
+def proc_fop(fop):
+
+    if type(fop) != tuple:
+
+        # If provided as just % number, divide by 100
+        if fop >= 1:
+            fop /= 100
+
+        fop = (fop, 1-fop)
+
+    elif fop[0] >= 1 or fop[1] >= 1:
+        fop = tuple([f/100 for f in fop])
+
+    return fop
+
+
+def filter_float_by_outlier(data, key, filter_outlier_percent,
                             drop_val=999, _print=print):
     '''Helper function to perform filtering on a dataframe,
     by setting values to be NaN, then optionally removing rows inplace
@@ -317,13 +333,6 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
         set `filter_outlier_percent` to None for no filtering.
         If over 1, then treated as a percent.
 
-    in_place : bool
-        Defines if rows with float outliers should be removed right away,
-        or just set to drop_val. If performing outlier removal on multiple
-        columns, this should be set to False, as you would only want to
-        remove rows with missing values after all columns have been checked.
-        If only filtering one column, this can be set to True.
-
     _print : print func, optional
         Either python print statement or overriden print
         func.
@@ -337,34 +346,58 @@ def filter_float_by_outlier(data, key, filter_outlier_percent, in_place,
     '''
 
     # For length of code / readability
-    fop = filter_outlier_percent
+    fop = proc_fop(filter_outlier_percent)
 
     _print('Filtering for outliers, dropping rows with params: ', fop)
     _print('Min-Max Score (before outlier filtering):',
            np.nanmin(data[key]), np.nanmax(data[key]))
 
-    if type(fop) != tuple:
-
-        # If provided as just % number, divide by 100
-        if fop >= 1:
-            fop /= 100
-
-        fop = (fop, 1-fop)
-
-    elif fop[0] >= 1 or fop[1] >= 1:
-        fop = tuple([f/100 for f in fop])
-
-    if in_place:
-        data = data[data[key] > data[key].quantile(fop[0])]
-        data = data[data[key] < data[key].quantile(fop[1])]
-    else:
-        q1 = data[key].quantile(fop[0])
-        q2 = data[key].quantile(fop[1])
-        data.loc[data[key] < q1, key] = drop_val
-        data.loc[data[key] > q2, key] = drop_val
+    q1 = data[key].quantile(fop[0])
+    q2 = data[key].quantile(fop[1])
+    data.loc[data[key] < q1, key] = drop_val
+    data.loc[data[key] > q2, key] = drop_val
 
     _print('Min-Max Score (post outlier filtering):',
            np.nanmin(data[key]), np.nanmax(data[key]))
+
+    return data
+
+
+def filter_float_by_std(data, key, n_std,
+                        drop_val=999, _print=print):
+
+    _print('Filtering for outliers by std')
+    _print('Min-Max Score (before outlier filtering):',
+           np.nanmin(data[key]), np.nanmax(data[key]))
+
+    mean = data[key].abs().mean()
+    scale = n_std * data[key].std()
+    data.loc[data[key].abs() > mean + scale, key] = drop_val
+
+    _print('Min-Max Score (post outlier filtering):',
+           np.nanmin(data[key]), np.nanmax(data[key]))
+
+    return data
+
+
+def filter_float_df_by_outlier(data, filter_outlier_percent,
+                               drop_val=999):
+
+    # For length of code / readability
+    fop = proc_fop(filter_outlier_percent)
+
+    data[data < data.quantile(fop[0])] = drop_val
+    data[data > data.quantile(fop[1])] = drop_val
+
+    return data
+
+
+def filter_float_df_by_std(data, n_std,
+                           drop_val=999):
+
+    mean = data.abs().mean()
+    scale = n_std * data.std()
+    data[data.abs() > mean + scale] = drop_val
 
     return data
 

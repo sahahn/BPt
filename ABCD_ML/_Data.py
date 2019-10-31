@@ -13,6 +13,9 @@ from ABCD_ML.Data_Helpers import (process_binary_input,
                                   process_multilabel_input,
                                   get_unused_drop_val,
                                   filter_float_by_outlier,
+                                  filter_float_by_std,
+                                  filter_float_df_by_outlier,
+                                  filter_float_df_by_std,
                                   drop_duplicate_cols,
                                   get_top_substrs,
                                   proc_datatypes,
@@ -325,8 +328,8 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
               inclusion_keys=None, subject_id='default', eventname='default',
               eventname_col='default', overlap_subjects='default',
               na_values='default', drop_na='default', drop_or_na='default',
-              filter_outlier_percent=None, unique_val_drop=2,
-              unique_val_warn=.2, drop_col_duplicates=None,
+              filter_outlier_percent=None, filter_outlier_std=None,
+              unique_val_drop=2, unique_val_warn=.2, drop_col_duplicates=None,
               clear_existing=False):
     """Class method for loading ROI-style data, assuming all loaded
     columns are continuous / float datatype.
@@ -401,6 +404,18 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
 
         (default = None)
 
+    filter_outlier_std : int, float or None, optional
+        *For float data only.*
+        Determines outliers as data points within each column where their
+        absolute value is greater than the absolute mean of the column +
+        `filter_outlier_std` * the standard deviation of the column.
+
+        If drop_or_na == 'drop', then all rows/subjects with >= 1
+        value(s) found will be dropped. Otherwise, if drop_or_na = 'na',
+        then any outside values will be set to NaN.
+
+        (default = None)
+
     unique_val_drop : int, float None, optional
         This parameter allows you to drops columns within loaded data
         where there are under a certain threshold of unique values.
@@ -472,6 +487,7 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
 
     # Filter based on passed filter_outlier_percent
     data = self._filter_data_cols(data, filter_outlier_percent,
+                                  filter_outlier_std,
                                   load_params['drop_or_na'])
 
     # Drop/warn about number of unique cols
@@ -704,7 +720,9 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                 overlap_subjects='default',
                 na_values='default', drop_na='default', drop_or_na='default',
                 code_categorical_as='dummy', categorical_drop_percent=None,
-                filter_float_outlier_percent=None, clear_existing=False):
+                filter_float_outlier_percent=None,
+                filter_float_outlier_std=None,
+                clear_existing=False):
     '''Load a covariate or covariates, type data.
 
     Parameters
@@ -793,12 +811,29 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
         (default = None)
 
-    filter_float_outlier_percent : float, int, tuple, None or list of, optional
+    filter_float_outlier_percent : int, float, tuple, None or list of, optional
         For float datatypes only.
         A percent of values to exclude from either end of the
-        targets distribution, provided as either 1 number,
+        covars distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_float_outlier_percent` to None for no filtering.
+
+        A list of values can also be passed in the case that
+        multiple col_names / covars are being loaded. In this
+        case, the index should correspond. If a list is not passed
+        here, then the same value is used when loading all covars.
+
+        (default = None)
+
+    filter_float_outlier_std : int, float, None or list of, optional
+        For float datatypes only.
+        Determines outliers as data points within the covar column where their
+        absolute value is greater than the absolute mean of the column +
+        `filter_outlier_std` * the standard deviation of the column.
+
+        If drop_or_na == 'drop', then all rows/subjects with >= 1
+        value(s) found will be dropped. Otherwise, if drop_or_na = 'na',
+        then any outside values will be set to NaN.
 
         A list of values can also be passed in the case that
         multiple col_names / covars are being loaded. In this
@@ -840,6 +875,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     ccas = proc_args(code_categorical_as, data_types)
     cdps = proc_args(categorical_drop_percent, data_types)
     ffops = proc_args(filter_float_outlier_percent, data_types)
+    ffoss = proc_args(filter_float_outlier_std, data_types)
 
     # Set the drop_val
     if load_params['drop_or_na'] == 'na':
@@ -848,10 +884,11 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         drop_val = get_unused_drop_val(covars)
 
     # Load in each covar
-    for key, d_type, cca, cdp, ffop in zip(col_names, data_types,
-                                           ccas, cdps, ffops):
+    for key, d_type, cca, cdp, ffop, ffos in zip(col_names, data_types,
+                                                 ccas, cdps, ffops, ffoss):
         covars =\
-            self._proc_covar(covars, key, d_type, cca, cdp, ffop, drop_val)
+            self._proc_covar(covars, key, d_type, cca, cdp, ffop, ffos,
+                             drop_val)
 
     # Have to remove rows with drop_val if drop_val not NaN
     if drop_val is not np.nan:
@@ -865,7 +902,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     self._process_new(self.low_memory_mode)
 
 
-def _proc_covar(self, covars, key, d_type, cca, cdp, ffop, drop_val):
+def _proc_covar(self, covars, key, d_type, cca, cdp, ffop, ffos, drop_val):
 
     self._print('loading:', key)
     d_type = d_type[0]
@@ -908,9 +945,14 @@ def _proc_covar(self, covars, key, d_type, cca, cdp, ffop, drop_val):
         # If filter float outlier percent
         if ffop is not None:
             non_nan_covars = filter_float_by_outlier(non_nan_covars, key,
-                                                     ffop, in_place=False,
-                                                     drop_val=drop_val,
+                                                     ffop, drop_val=drop_val,
                                                      _print=self._print)
+
+        # if filter float by std
+        if ffos is not None:
+            non_nan_covars = filter_float_by_std(non_nan_covars, key, ffos,
+                                                 drop_val=drop_val,
+                                                 _print=self._print)
 
     # Multilabel
     elif d_type == 'm':
@@ -1296,7 +1338,8 @@ def _drop_data_cols(self, data, drop_keys, inclusion_keys):
     return data
 
 
-def Filter_Data_Cols(self, filter_outlier_percent, overlap_subjects='default',
+def Filter_Data_Cols(self, filter_outlier_percent=None,
+                     filter_outlier_std=None, overlap_subjects='default',
                      drop_or_na='default'):
     '''Perform filtering on all loaded data based on an outlier percent,
     either dropping outlier rows or setting specific outliers to NaN.
@@ -1322,6 +1365,18 @@ def Filter_Data_Cols(self, filter_outlier_percent, overlap_subjects='default',
 
         (default = None)
 
+    filter_outlier_std : int, float or None, optional
+        *For float data only.*
+        Determines outliers as data points within each column where their
+        absolute value is greater than the absolute mean of the column +
+        `filter_outlier_std` * the standard deviation of the column.
+
+        If drop_or_na == 'drop', then all rows/subjects with >= 1
+        value(s) found will be dropped. Otherwise, if drop_or_na = 'na',
+        then any outside values will be set to NaN.
+
+        (default = None)
+
     overlap_subjects :
     drop_or_na :
 
@@ -1331,36 +1386,36 @@ def Filter_Data_Cols(self, filter_outlier_percent, overlap_subjects='default',
     data = self._set_overlap(self.data, load_params['overlap_subjects'])
 
     self.data = self._filter_data_cols(self.data, filter_outlier_percent,
+                                       filter_outlier_std,
                                        load_params['drop_or_na'])
 
 
-def _filter_data_cols(self, data, filter_outlier_percent, drop_or_na):
+def _filter_data_cols(self, data, filter_outlier_percent, filter_outlier_std,
+                      drop_or_na):
 
-    data_keys = list(data)
+    if filter_outlier_percent is None and filter_outlier_std is None:
+        return data
+
+    if drop_or_na == 'na':
+        drop_val = np.nan
+    else:
+        drop_val = get_unused_drop_val(data)
 
     # Filter based on outlier percent
     if filter_outlier_percent is not None:
 
-        if drop_or_na == 'na':
-            drop_val = np.nan
-        else:
-            drop_val = get_unused_drop_val(data)
+        data = filter_float_df_by_outlier(data, filter_outlier_percent,
+                                          drop_val=drop_val)
 
-        before = data.shape[0]
-        for key in data_keys:
-            data = filter_float_by_outlier(data, key, filter_outlier_percent,
-                                           in_place=False, drop_val=drop_val,
-                                           _print=self._print_nothing)
+    # Filter by std
+    if filter_outlier_std is not None:
 
-        # Only remove if not NaN
-        if drop_val is not np.nan:
-            data = self._drop_from_filter(data, drop_val)
-        after = data.shape[0]
+        data = filter_float_df_by_std(data, filter_outlier_std,
+                                      drop_val=drop_val)
 
-        if before != after:
-            self._print(before - after, 'subjects/rows dropped based on',
-                        'passed filter_outlier_percent:',
-                        filter_outlier_percent)
+    # Only remove if not NaN
+    if drop_val is not np.nan:
+        data = self._drop_from_filter(data, drop_val)
 
     return data
 

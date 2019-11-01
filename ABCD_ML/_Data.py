@@ -413,7 +413,8 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
         * the standard deviation of the column.
 
         If a singler number is passed, that number is applied to both the lower
-        and upper range.
+        and upper range. If a tuple with None on one side is passed, e.g.
+        (None, 3), then nothing will be taken off that lower or upper bound.
 
         If drop_or_na == 'drop', then all rows/subjects with >= 1
         value(s) found will be dropped. Otherwise, if drop_or_na = 'na',
@@ -600,7 +601,8 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         * the standard deviation of the column.
 
         If a single number is passed, that number is applied to both the lower
-        and upper range.
+        and upper range.  If a tuple with None on one side is passed, e.g.
+        (None, 3), then nothing will be taken off that lower or upper bound.
 
         A list of values can also be passed in the case that
         multiple col_names / covars are being loaded. In this
@@ -679,11 +681,15 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     # Get drop val, no option for keeping NaN for targets
     drop_val = get_unused_drop_val(targets)
 
+    self._print()
+
     # Process each target to load
     for key, d_type, fop, fos, cdp in zip(col_names, data_types,
                                           fops, foss, cdps):
         targets =\
             self._proc_target(targets, key, d_type, fop, fos, cdp, drop_val)
+
+    self._print()
 
     # Drop rows set to drop
     targets = self._drop_from_filter(targets, drop_val)
@@ -700,6 +706,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     self._print('All loaded targets')
     for i in range(len(self.targets_keys)):
         self._print(i, ':', self.targets_keys[i])
+    self._print()
 
 
 def _proc_target(self, targets, key, d_type, fop, fos, cdp, drop_val):
@@ -873,7 +880,8 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         * the standard deviation of the column.
 
         If a single number is passed, that number is applied to both the lower
-        and upper range.
+        and upper range. If a tuple with None on one side is passed, e.g.
+        (None, 3), then nothing will be taken off that lower or upper bound.
 
         A list of values can also be passed in the case that
         multiple col_names / covars are being loaded. In this
@@ -1419,7 +1427,8 @@ def Filter_Data_Cols(self, filter_outlier_percent=None,
         * the standard deviation of the column.
 
         If a single number is passed, that number is applied to both the lower
-        and upper range.
+        and upper range.  If a tuple with None on one side is passed, e.g.
+        (None, 3), then nothing will be taken off that lower or upper bound.
 
         (default = None)
 

@@ -279,7 +279,7 @@ def get_unused_drop_val(data):
 
         return drop_val
 
-    except TypeError:
+    except ValueError:
         return random.randint(-10000, 10000)
 
 
@@ -355,15 +355,20 @@ def filter_float_by_std(data, key, n_std,
     if not isinstance(n_std, tuple):
         n_std = (n_std, n_std)
 
-    _print('Filtering for outliers by stds': n_std)
+    _print('Filtering for outliers by stds:', n_std)
     _print('Min-Max Score (before outlier filtering):',
            np.nanmin(data[key]), np.nanmax(data[key]))
 
     mean = data[key].mean()
-    scale = n_std * data[key].std()
+    std = data[key].std()
 
-    data.loc[data[key] > mean + scale, key] = drop_val
-    data.loc[data[key] < mean - scale, key] = drop_val
+    if n_std[0] is not None:
+        l_scale = n_std[0] * std
+        data.loc[data[key] < mean - l_scale, key] = drop_val
+
+    if n_std[1] is not None:
+        u_scale = n_std[1] * std
+        data.loc[data[key] > mean + u_scale, key] = drop_val
 
     _print('Min-Max Score (post outlier filtering):',
            np.nanmin(data[key]), np.nanmax(data[key]))
@@ -390,10 +395,15 @@ def filter_float_df_by_std(data, n_std,
         n_std = (n_std, n_std)
 
     mean = data.abs().mean()
-    scale = n_std * data.std()
+    std = data.std()
 
-    data[data > mean + scale] = drop_val
-    data[data < mean - scale] = drop_val
+    if n_std[0] is not None:
+        l_scale = n_std[0] * std
+        data[data < mean - l_scale] = drop_val
+
+    if n_std[1] is not None:
+        u_scale = n_std[1] * std
+        data[data > mean + u_scale] = drop_val
 
     return data
 

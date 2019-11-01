@@ -1802,21 +1802,20 @@ def _load_datasets(self, locs, df, load_params):
             dataset_types = load_params['dataset_type']
 
         dfs = [self._load_dataset(locs[i], dataset_types[i],
-               load_params['na_values']) for i in range(len(locs))]
+               load_params) for i in range(len(locs))]
 
     # Load from user-passed df
     if df is not None:
 
         df = self._load_user_passed(df, load_params['na_values'])
+        df = self._proc_df(df, load_params)
         dfs.append(df)
 
     # Set first df
-    data = self._proc_df(dfs[0], load_params)
+    data = dfs[0]
 
     # For each additional
     for more_data in dfs[1:]:
-
-        more_data = self._proc_df(more_data, load_params)
         repeat_col_names = set(list(data)).intersection(set(list(more_data)))
 
         if len(repeat_col_names) > 0:
@@ -1834,13 +1833,14 @@ def _load_user_passed(self, df, na_values):
 
     self._print('Loading user passed df')
 
-    df = df.reset_index()
-    df = df.replace(na_values, np.nan)
+    if len(df.index.name) > 0:
+        df = df.reset_index()
 
+    df = df.replace(na_values, np.nan)
     return df
 
 
-def _load_dataset(self, loc, dataset_type, na_values):
+def _load_dataset(self, loc, dataset_type, load_params):
     '''Helper function to load in a dataset with default
     load and drop behavior based on type. And calls proc_df.
 
@@ -1859,7 +1859,7 @@ def _load_dataset(self, loc, dataset_type, na_values):
         minimally proc'ed data.
     '''
 
-    data = self._load(loc, dataset_type, na_values)
+    data = self._load(loc, dataset_type, load_params['na_values'])
 
     # If dataset type is basic or explorer, drop some cols by default
     if dataset_type == 'basic' or dataset_type == 'explorer':
@@ -1880,7 +1880,9 @@ def _load_dataset(self, loc, dataset_type, na_values):
         self._print('dropped', non_data_cols + to_drop, 'columns by default',
                     ' due to dataset type')
 
+    data = self._proc_df(data, load_params)
     self._print()
+
     return data
 
 

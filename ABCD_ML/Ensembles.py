@@ -256,7 +256,7 @@ def move_keys(ensemble_params, extra_ensemble_params):
     for key in keys:
         for move_key in to_move:
             if move_key in key:
-                extra_ensemble_params[move_key] = ensemble_params[key][0]
+                extra_ensemble_params[move_key] = ensemble_params[key]
                 ensemble_params.pop(key)
 
     return ensemble_params, extra_ensemble_params

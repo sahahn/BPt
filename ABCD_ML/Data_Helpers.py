@@ -269,18 +269,10 @@ def process_float_input(data, key, bins, strategy):
 
 def get_unused_drop_val(data):
 
-    try:
-        low, hi = int(np.nanmin(data)), int(np.nanmax(data))
-        drop_val = random.randint(low - 5, hi + 5)
-
-        while (data == drop_val).any().any():
-            low, hi = int(np.nanmin(data)), int(np.nanmax(data))
-            drop_val = random.randint(low - 5, hi + 5)
-
-        return drop_val
-
-    except ValueError:
-        return random.randint(-10000, 10000)
+    drop_val = random.random()
+    while (data == drop_val).any().any():
+        drop_val = random.random()
+    return drop_val
 
 
 def proc_fop(fop):

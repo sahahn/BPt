@@ -1178,9 +1178,6 @@ class Model_Pipeline():
         # Ensure data being used is just the selected col / feats
         data = data[self.all_keys]
 
-        # Check for any NaN
-        self._nan_check(data)
-
         # Init raw_preds_df
         if fold_ind == 'test':
             self._init_raw_preds_df(test_subjects)
@@ -1239,16 +1236,6 @@ class Model_Pipeline():
                                                      return_index=False)
 
         return subject_splits
-
-    def _nan_check(self, data):
-        '''If no nans, can set imputers to None, regardless
-        of passed params.'''
-
-        nans = pd.isnull(data).any().any()
-
-        if nans is False:
-            self.col_imputers = []
-            self.col_imputer_params = {}
 
     def _update_model_ensemble_params(self, to_add, model=True, ensemble=True):
 

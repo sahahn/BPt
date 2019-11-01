@@ -231,10 +231,11 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         self.test_subjects = pd.Index(test_subjects,
                                       name=self.subject_id)
 
-    self._print('Performed train/test split, train size:',
-                len(self.train_subjects), 'test size: ',
-                len(self.test_subjects))
+    self._print('Performed train test split!')
+    self._print('Train size:', len(self.train_subjects))
+    self._print('Test size: ', len(self.test_subjects))
 
+    # Save train / test subjects if log_dr
     if self.log_dr is not None:
 
         train_loc = os.path.join(self.exp_log_dr, 'train_subjects.txt')

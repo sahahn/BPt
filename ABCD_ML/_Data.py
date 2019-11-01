@@ -969,7 +969,7 @@ def _proc_covar(self, covars, key, d_type, cca, cdp, fop, fos, drop_val):
     elif d_type == 'c':
 
         # Cat. ordinal
-        if code_categorical_as == 'ordinal':
+        if cca == 'ordinal':
             non_nan_covars, self.covars_encoders[key] =\
                 process_ordinal_input(non_nan_covars, key, cdp,
                                       drop_val=drop_val, _print=self._print)
@@ -2414,7 +2414,8 @@ def _prepare_data(self):
 
     self._print('Preparing final data, in self.all_data')
     self._print('Any changes to loaded data, covars or strat will not be',
-                'included.')
+                'included, from now on.')
+    self._print()
 
     dfs = []
 

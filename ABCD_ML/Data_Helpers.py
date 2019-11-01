@@ -299,7 +299,7 @@ def get_unused_drop_val(data):
 
 def proc_fop(fop):
 
-    if type(fop) != tuple:
+    if not isinstance(fop, tuple):
 
         # If provided as just % number, divide by 100
         if fop >= 1:
@@ -366,13 +366,18 @@ def filter_float_by_outlier(data, key, filter_outlier_percent,
 def filter_float_by_std(data, key, n_std,
                         drop_val=999, _print=print):
 
-    _print('Filtering for outliers by std')
+    if not isinstance(n_std, tuple):
+        n_std = (n_std, n_std)
+
+    _print('Filtering for outliers by stds': n_std)
     _print('Min-Max Score (before outlier filtering):',
            np.nanmin(data[key]), np.nanmax(data[key]))
 
-    mean = data[key].abs().mean()
+    mean = data[key].mean()
     scale = n_std * data[key].std()
-    data.loc[data[key].abs() > mean + scale, key] = drop_val
+
+    data.loc[data[key] > mean + scale, key] = drop_val
+    data.loc[data[key] < mean - scale, key] = drop_val
 
     _print('Min-Max Score (post outlier filtering):',
            np.nanmin(data[key]), np.nanmax(data[key]))
@@ -395,9 +400,14 @@ def filter_float_df_by_outlier(data, filter_outlier_percent,
 def filter_float_df_by_std(data, n_std,
                            drop_val=999):
 
+    if not isinstance(n_std, tuple):
+        n_std = (n_std, n_std)
+
     mean = data.abs().mean()
     scale = n_std * data.std()
-    data[data.abs() > mean + scale] = drop_val
+
+    data[data > mean + scale] = drop_val
+    data[data < mean - scale] = drop_val
 
     return data
 

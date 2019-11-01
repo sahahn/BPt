@@ -404,11 +404,16 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
 
         (default = None)
 
-    filter_outlier_std : int, float or None, optional
+    filter_outlier_std : int, float, tuple or None, optional
         *For float data only.*
         Determines outliers as data points within each column where their
-        absolute value is greater than the absolute mean of the column +
-        `filter_outlier_std` * the standard deviation of the column.
+        value is less than the mean of the column - `filter_outlier_std[0]`
+        * the standard deviation of the column,
+        and greater than the mean of the column + `filter_outlier_std[1]`
+        * the standard deviation of the column.
+
+        If a singler number is passed, that number is applied to both the lower
+        and upper range.
 
         If drop_or_na == 'drop', then all rows/subjects with >= 1
         value(s) found will be dropped. Otherwise, if drop_or_na = 'na',
@@ -513,6 +518,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
                  dataset_type='default', subject_id='default',
                  eventname='default', eventname_col='default',
                  overlap_subjects='default', filter_outlier_percent=None,
+                 filter_outlier_std=None,
                  categorical_drop_percent=None, na_values='default',
                  clear_existing=False):
     '''Loads in targets, the outcome / variable(s) to predict.
@@ -585,6 +591,24 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
 
         (default = None).
 
+    filter_outlier__std : int, float, tuple, None or list of, optional
+        For float datatypes only.
+        Determines outliers as data points within each column where their
+        value is less than the mean of the column - `filter_outlier_std[0]`
+        * the standard deviation of the column,
+        and greater than the mean of the column + `filter_outlier_std[1]`
+        * the standard deviation of the column.
+
+        If a single number is passed, that number is applied to both the lower
+        and upper range.
+
+        A list of values can also be passed in the case that
+        multiple col_names / covars are being loaded. In this
+        case, the index should correspond. If a list is not passed
+        here, then the same value is used when loading all targets.
+
+        (default = None)
+
     categorical_drop_percent: float, list of or None, optional
         Optional percentage threshold for dropping categories when
         loading categorical data. If a float is given, then a category
@@ -632,6 +656,9 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     - float : Targets are read in as a floating point number,\
     and optionally then filtered.
     '''
+
+    ACTUALLY FINISH MAKING THE CHANGES, MAKE SURE TARGETS AND COVARS HAVE
+    THE SAME ARGS ALSO AND YEAH
 
     if clear_existing:
         self.Clear_Targets()
@@ -825,15 +852,16 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
         (default = None)
 
-    filter_float_outlier_std : int, float, None or list of, optional
-        For float datatypes only.
-        Determines outliers as data points within the covar column where their
-        absolute value is greater than the absolute mean of the column +
-        `filter_outlier_std` * the standard deviation of the column.
+    filter_float_outlier_std : int, float, tuple, None or list of, optional
+        *For float data only.*
+        Determines outliers as data points within each column where their
+        value is less than the mean of the column - `filter_outlier_std[0]`
+        * the standard deviation of the column,
+        and greater than the mean of the column + `filter_outlier_std[1]`
+        * the standard deviation of the column.
 
-        If drop_or_na == 'drop', then all rows/subjects with >= 1
-        value(s) found will be dropped. Otherwise, if drop_or_na = 'na',
-        then any outside values will be set to NaN.
+        If a single number is passed, that number is applied to both the lower
+        and upper range.
 
         A list of values can also be passed in the case that
         multiple col_names / covars are being loaded. In this
@@ -1365,15 +1393,16 @@ def Filter_Data_Cols(self, filter_outlier_percent=None,
 
         (default = None)
 
-    filter_outlier_std : int, float or None, optional
+    filter_outlier_std : int, float, tuple or None, optional
         *For float data only.*
         Determines outliers as data points within each column where their
-        absolute value is greater than the absolute mean of the column +
-        `filter_outlier_std` * the standard deviation of the column.
+        value is less than the mean of the column - `filter_outlier_std[0]`
+        * the standard deviation of the column,
+        and greater than the mean of the column + `filter_outlier_std[1]`
+        * the standard deviation of the column.
 
-        If drop_or_na == 'drop', then all rows/subjects with >= 1
-        value(s) found will be dropped. Otherwise, if drop_or_na = 'na',
-        then any outside values will be set to NaN.
+        If a single number is passed, that number is applied to both the lower
+        and upper range.
 
         (default = None)
 

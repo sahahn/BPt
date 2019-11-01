@@ -15,20 +15,15 @@ from operator import add
 from functools import reduce
 
 
-def get_non_drop(data, key, in_place, drop_val):
+def get_non_drop(data, key, drop_val):
 
-    if in_place:
-        non_drop_subjects = data.index
+    # If drop_val np.nan, means treating dropped as missing value
+    if drop_val is np.nan:
+        non_drop_subjects = data[~(data[key].isna())].index
 
+    # Otherwise
     else:
-
-        # If drop_val np.nan, means treating dropped as missing value
-        if drop_val is np.nan:
-            non_drop_subjects = data[~(data[key].isna())].index
-
-        # Otherwise
-        else:
-            non_drop_subjects = data[~(data[key] == drop_val)].index
+        non_drop_subjects = data[~(data[key] == drop_val)].index
 
     non_drop_data = data.loc[non_drop_subjects]
     return non_drop_data, non_drop_subjects
@@ -45,7 +40,7 @@ def put_non_drop_back(data, non_drop_subjects, non_drop_data):
     return data
 
 
-def process_binary_input(data, key, in_place=True, drop_val=np.nan,
+def process_binary_input(data, key, drop_val=np.nan,
                          _print=print):
     '''Helper function to perform processing on binary input
 
@@ -56,9 +51,6 @@ def process_binary_input(data, key, in_place=True, drop_val=np.nan,
 
     key : str
         Column key of the column to process within `data` input.
-
-    in_place : bool
-        If True, drop in place, otherwise replace with drop_val
 
     drop_val : NaN or int
         If a row needs to be dropped, replace with drop_val
@@ -95,18 +87,15 @@ def process_binary_input(data, key, in_place=True, drop_val=np.nan,
         keep_vals = unique_vals[keep_inds]
         keep_vals.sort()
 
-        if in_place:
-            data.drop(data.index[~data[key].isin(keep_vals)], inplace=True)
-        else:
-            to_drop = data.index[~data[key].isin(keep_vals)]
-            data.loc[to_drop, key] = drop_val
+        to_drop = data.index[~data[key].isin(keep_vals)]
+        data.loc[to_drop, key] = drop_val
 
         _print('More than two unique score values found,',
                'filtered all but', keep_vals)
 
     # Work on only non_dropped data / non NaN data if applicable
     non_drop_data, non_drop_subjects =\
-        get_non_drop(data, key, in_place, drop_val)
+        get_non_drop(data, key, drop_val)
 
     # Perform actual binary encoding
     encoder = LabelEncoder()
@@ -121,7 +110,7 @@ def process_binary_input(data, key, in_place=True, drop_val=np.nan,
     return data, encoder
 
 
-def process_ordinal_input(data, key, drop_percent=None, in_place=True,
+def process_ordinal_input(data, key, drop_percent=None,
                           drop_val=np.nan, _print=print):
     '''Helper function to perform processing on ordinal input,
     where note this definition of ordinal means categorical ordinal...
@@ -137,9 +126,6 @@ def process_ordinal_input(data, key, drop_percent=None, in_place=True,
 
     drop_percent : float
         % to drop
-
-    in_place : bool
-        If True, drop in place, otherwise replace with drop_val
 
     drop_val : NaN or int
         If a row needs to be dropped, replace with drop_val
@@ -163,18 +149,15 @@ def process_ordinal_input(data, key, drop_percent=None, in_place=True,
         drop_inds = np.where(counts / len(data) < drop_percent)
         drop_vals = unique_vals[drop_inds]
 
-        if in_place:
-            data.drop(data.index[data[key].isin(drop_vals)], inplace=True)
-        else:
-            to_drop = data.index[data[key].isin(drop_vals)]
-            data.loc[to_drop, key] = drop_val
+        to_drop = data.index[data[key].isin(drop_vals)]
+        data.loc[to_drop, key] = drop_val
 
         _print('Dropping', drop_vals, 'according to passed drop percent of',
                drop_percent)
 
     # Work on only non_dropped data / non NaN data if applicable
     non_drop_data, non_drop_subjects =\
-        get_non_drop(data, key, in_place, drop_val)
+        get_non_drop(data, key, drop_val)
 
     # Encode ordinally
     label_encoder = LabelEncoder()
@@ -187,7 +170,7 @@ def process_ordinal_input(data, key, drop_percent=None, in_place=True,
 
 
 def process_categorical_input(data, key, drop='one hot', drop_percent=None,
-                              in_place=True, drop_val=np.nan, _print=print):
+                              drop_val=np.nan, _print=print):
     '''Helper function to perform processing on categorical input
 
     Parameters
@@ -228,13 +211,12 @@ def process_categorical_input(data, key, drop='one hot', drop_percent=None,
     # want to be able to do reverse transform w/ 1-hot encoder
     # between label encoded results.
     data, label_encoder = process_ordinal_input(data, key, drop_percent,
-                                                in_place=in_place,
                                                 drop_val=drop_val,
                                                 _print=_print)
 
     # Work on only non_dropped data / non NaN data if applicable
     non_drop_data, non_drop_subjects =\
-        get_non_drop(data, key, in_place, drop_val)
+        get_non_drop(data, key, drop_val)
 
     vals = np.array(non_drop_data[key]).reshape(-1, 1)
 
@@ -287,14 +269,18 @@ def process_float_input(data, key, bins, strategy):
 
 def get_unused_drop_val(data):
 
-    low, hi = int(np.nanmin(data)), int(np.nanmax(data))
-    drop_val = random.randint(low - 5, hi + 5)
-
-    while (data == drop_val).any().any():
+    try:
         low, hi = int(np.nanmin(data)), int(np.nanmax(data))
         drop_val = random.randint(low - 5, hi + 5)
 
-    return drop_val
+        while (data == drop_val).any().any():
+            low, hi = int(np.nanmin(data)), int(np.nanmax(data))
+            drop_val = random.randint(low - 5, hi + 5)
+
+        return drop_val
+
+    except TypeError:
+        return random.randint(-10000, 10000)
 
 
 def proc_fop(fop):

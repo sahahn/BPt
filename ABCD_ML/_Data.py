@@ -518,9 +518,8 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
                  dataset_type='default', subject_id='default',
                  eventname='default', eventname_col='default',
                  overlap_subjects='default', filter_outlier_percent=None,
-                 filter_outlier_std=None,
-                 categorical_drop_percent=None, na_values='default',
-                 clear_existing=False):
+                 filter_outlier_std=None, categorical_drop_percent=None,
+                 na_values='default', clear_existing=False):
     '''Loads in targets, the outcome / variable(s) to predict.
 
     Parameters
@@ -591,9 +590,10 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
 
         (default = None).
 
-    filter_outlier__std : int, float, tuple, None or list of, optional
+    filter_outlier_std : int, float, tuple, None or list of, optional
         For float datatypes only.
-        Determines outliers as data points within each column where their
+        Determines outliers as data points within each column
+        (target distribution) where their
         value is less than the mean of the column - `filter_outlier_std[0]`
         * the standard deviation of the column,
         and greater than the mean of the column + `filter_outlier_std[1]`
@@ -657,9 +657,6 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     and optionally then filtered.
     '''
 
-    ACTUALLY FINISH MAKING THE CHANGES, MAKE SURE TARGETS AND COVARS HAVE
-    THE SAME ARGS ALSO AND YEAH
-
     if clear_existing:
         self.Clear_Targets()
 
@@ -676,11 +673,20 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
 
     # Process pass in other args to be list of len(datatypes)
     fops = proc_args(filter_outlier_percent, data_types)
+    foss = proc_args(filter_outlier_std, data_types)
     cdps = proc_args(categorical_drop_percent, data_types)
 
+    # Get drop val, no option for keeping NaN for targets
+    drop_val = get_unused_drop_val(targets)
+
     # Process each target to load
-    for key, d_type, fop, cdp in zip(col_names, data_types, fops, cdps):
-        targets = self._proc_target(targets, key, d_type, fop, cdp)
+    for key, d_type, fop, fos, cdp in zip(col_names, data_types,
+                                          fops, foss, cdps):
+        targets =\
+            self._proc_target(targets, key, d_type, fop, fos, cdp, drop_val)
+
+    # Drop rows set to drop
+    targets = self._drop_from_filter(targets, drop_val)
 
     self._print('Final shape: ', targets.shape)
 
@@ -696,7 +702,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         self._print(i, ':', self.targets_keys[i])
 
 
-def _proc_target(self, targets, key, d_type, fop, cdp):
+def _proc_target(self, targets, key, d_type, fop, fos, cdp, drop_val):
 
     self._print('loading:', key)
 
@@ -707,24 +713,30 @@ def _proc_target(self, targets, key, d_type, fop, cdp):
     if d_type == 'b':
 
         targets, self.targets_encoders[key] =\
-            process_binary_input(targets, targets_key, self._print)
+            process_binary_input(targets, targets_key, drop_val, self._print)
 
     # Proc. Categoirical as ordinal
     elif d_type == 'c':
 
         targets, self.targets_encoders[key] =\
-            process_ordinal_input(targets, targets_key, cdp, in_place=True,
+            process_ordinal_input(targets, targets_key, cdp, drop_val,
                                   _print=self._print)
 
     # For float, just optionally apply outlier percent filter
     elif d_type == 'f':
 
+        # Encoder set to None for targets
+        self.targets_encoders[key] = None
+
         if fop is not None:
             targets = filter_float_by_outlier(targets, targets_key,
-                                              fop, in_place=True,
+                                              fop, drop_val=drop_val,
                                               _print=self._print)
 
-        self.targets_encoders[key] = None
+        if fos is not None:
+            targets = filter_float_by_std(targets, targets_key,
+                                          fop, drop_val=drop_val,
+                                          _print=self._print)
 
     # Multilabel type must be read in from multiple columns
     elif d_type == 'multilabel' or d_type == 'm':
@@ -747,8 +759,8 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                 overlap_subjects='default',
                 na_values='default', drop_na='default', drop_or_na='default',
                 code_categorical_as='dummy', categorical_drop_percent=None,
-                filter_float_outlier_percent=None,
-                filter_float_outlier_std=None,
+                filter_outlier_percent=None,
+                filter_outlier_std=None,
                 clear_existing=False):
     '''Load a covariate or covariates, type data.
 
@@ -838,12 +850,12 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
         (default = None)
 
-    filter_float_outlier_percent : int, float, tuple, None or list of, optional
+    filter_outlier_percent : int, float, tuple, None or list of, optional
         For float datatypes only.
         A percent of values to exclude from either end of the
         covars distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
-        set `filter_float_outlier_percent` to None for no filtering.
+        set `filter_outlier_percent` to None for no filtering.
 
         A list of values can also be passed in the case that
         multiple col_names / covars are being loaded. In this
@@ -852,8 +864,8 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
         (default = None)
 
-    filter_float_outlier_std : int, float, tuple, None or list of, optional
-        *For float data only.*
+    filter_outlier_std : int, float, tuple, None or list of, optional
+        For float datatypes only.
         Determines outliers as data points within each column where their
         value is less than the mean of the column - `filter_outlier_std[0]`
         * the standard deviation of the column,
@@ -902,8 +914,8 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     # Process pass in other args to be list of len(datatypes)
     ccas = proc_args(code_categorical_as, data_types)
     cdps = proc_args(categorical_drop_percent, data_types)
-    ffops = proc_args(filter_float_outlier_percent, data_types)
-    ffoss = proc_args(filter_float_outlier_std, data_types)
+    fops = proc_args(filter_outlier_percent, data_types)
+    foss = proc_args(filter_outlier_std, data_types)
 
     # Set the drop_val
     if load_params['drop_or_na'] == 'na':
@@ -912,11 +924,10 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         drop_val = get_unused_drop_val(covars)
 
     # Load in each covar
-    for key, d_type, cca, cdp, ffop, ffos in zip(col_names, data_types,
-                                                 ccas, cdps, ffops, ffoss):
+    for key, d_type, cca, cdp, fop, fos in zip(col_names, data_types,
+                                               ccas, cdps, fops, foss):
         covars =\
-            self._proc_covar(covars, key, d_type, cca, cdp, ffop, ffos,
-                             drop_val)
+            self._proc_covar(covars, key, d_type, cca, cdp, fop, fos, drop_val)
 
     # Have to remove rows with drop_val if drop_val not NaN
     if drop_val is not np.nan:
@@ -930,7 +941,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     self._process_new(self.low_memory_mode)
 
 
-def _proc_covar(self, covars, key, d_type, cca, cdp, ffop, ffos, drop_val):
+def _proc_covar(self, covars, key, d_type, cca, cdp, fop, fos, drop_val):
 
     self._print('loading:', key)
     d_type = d_type[0]
@@ -943,8 +954,8 @@ def _proc_covar(self, covars, key, d_type, cca, cdp, ffop, ffos, drop_val):
     if d_type == 'b':
 
         non_nan_covars, self.covars_encoders[key] =\
-            process_binary_input(non_nan_covars, key, in_place=False,
-                                 drop_val=drop_val, _print=self._print)
+            process_binary_input(non_nan_covars, key, drop_val=drop_val,
+                                 _print=self._print)
 
     # Categorical
     elif d_type == 'c':
@@ -952,14 +963,14 @@ def _proc_covar(self, covars, key, d_type, cca, cdp, ffop, ffos, drop_val):
         # Cat. ordinal
         if code_categorical_as == 'ordinal':
             non_nan_covars, self.covars_encoders[key] =\
-                process_ordinal_input(non_nan_covars, key, cdp, in_place=False,
+                process_ordinal_input(non_nan_covars, key, cdp,
                                       drop_val=drop_val, _print=self._print)
 
         # Dummy or one-hot
         else:
             non_nan_covars, self.covars_encoders[key] =\
                 process_categorical_input(non_nan_covars, key, cca, cdp,
-                                          in_place=False, drop_val=drop_val,
+                                          drop_val=drop_val,
                                           _print=self._print)
 
             # Add any new cols from encoding to base covars (removing old)
@@ -968,17 +979,18 @@ def _proc_covar(self, covars, key, d_type, cca, cdp, ffop, ffos, drop_val):
     # Float
     elif d_type == 'f':
 
+        # Float type need an encoder set to None
         self.covars_encoders[key] = None
 
         # If filter float outlier percent
-        if ffop is not None:
+        if fop is not None:
             non_nan_covars = filter_float_by_outlier(non_nan_covars, key,
-                                                     ffop, drop_val=drop_val,
+                                                     fop, drop_val=drop_val,
                                                      _print=self._print)
 
         # if filter float by std
-        if ffos is not None:
-            non_nan_covars = filter_float_by_std(non_nan_covars, key, ffos,
+        if fos is not None:
+            non_nan_covars = filter_float_by_std(non_nan_covars, key, fos,
                                                  drop_val=drop_val,
                                                  _print=self._print)
 
@@ -1172,34 +1184,39 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
     fbss = proc_args(float_bin_strategy, col_names)
     cdps = proc_args(categorical_drop_percent, col_names)
 
+    # Get drop val, no option for keeping NaN for strat
+    drop_val = get_unused_drop_val(strat)
+
     # Load in each strat w/ passed args
     for key, bc, fc, fb, fbs, cdp in zip(col_names, bcs, fcs, fbs, fbss, cdps):
-        strat = self._proc_strat(strat, key, bc, fc, fb, fbs, cdp)
+        strat = self._proc_strat(strat, key, bc, fc, fb, fbs, cdp, drop_val)
+
+    # Drop rows set to drop
+    strat = self._drop_from_filter(strat, drop_val)
 
     # Merge with existing if any, and process new overlap of global subjects
     self.strat = self._merge_existing(self.strat, strat)
     self._process_new(self.low_memory_mode)
 
 
-def _proc_strat(self, strat, key, bc, fc, fb, fbs, cdp):
+def _proc_strat(self, strat, key, bc, fc, fb, fbs, cdp, drop_val):
 
     key = key + self.strat_u_name
 
     # Binary
     if bc:
         strat, self.strat_encoders[key] =\
-            process_binary_input(strat, key, self._print)
+            process_binary_input(strat, key, drop_val, self._print)
 
     # Float
     elif fc:
-
         strat, self.strat_encoders[key] =\
             process_float_input(strat, key, bins=fb, strategy=fbs)
 
     # Categorical
     else:
         strat, self.strat_encoders[key] =\
-            process_ordinal_input(strat, key, drop_percent=cdp)
+            process_ordinal_input(strat, key, cdp, drop_val, self._print)
 
     return strat
 

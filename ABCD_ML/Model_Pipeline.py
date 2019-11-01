@@ -1468,25 +1468,7 @@ class Model_Pipeline():
 
         y = np.array(y).astype(float)
 
-        # Convert/decode y/score if needed
-        y = self._conv_targets(y)
-
         return X, y
-
-    def _conv_targets(self, y):
-        '''Returns y, overriden in future perhaps.
-
-        Parameters
-        ----------
-        y : array-like
-            ML target
-
-        Returns
-        ----------
-        array-like
-            input y as is
-        '''
-        return y
 
     def _get_search_cv(self, train_data_index):
 

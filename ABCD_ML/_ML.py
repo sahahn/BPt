@@ -1040,8 +1040,8 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     ML_params = self._make_ML_params(args=locals())
 
     # If no NaN, no imputer
-    if pd.isnull(self.all_data).any().any() is False:
-        ML_params['imputer'] = False
+    if not pd.isnull(self.all_data).any().any():
+        ML_params['imputer'] = None
 
     # Print the params being used
     self._print_model_params(ML_params, test=False)
@@ -1171,8 +1171,8 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
     ML_params = self._make_ML_params(args=locals())
 
     # If no NaN, no imputer
-    if pd.isnull(self.all_data).any().any() is False:
-        ML_params['imputer'] = False
+    if not pd.isnull(self.all_data).any().any():
+        ML_params['imputer'] = None
 
     # Print the params being used
     self._print_model_params(ML_params, test=True)

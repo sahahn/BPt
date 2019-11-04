@@ -38,19 +38,22 @@ def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
         The dataset_type / file-type to load from.
         Dataset types are,
 
-        - 'basic' : ABCD2p0NDA style (.txt and tab seperated)\
-            Typically the default columns, and therefore not neuroimaging\
+        - 'basic'
+            ABCD2p0NDA style (.txt and tab seperated).
+            Typically the default columns, and therefore not neuroimaging
             data, will be dropped, also not including the eventname column.
 
-        - 'explorer' : 2.0_ABCD_Data_Explorer style (.csv and comma seperated)\
-            The first 2 columns before self.subject_id\
-            (typically the default columns, and therefore not neuroimaging\
-            data - also not including the eventname column), will be dropped.\
+        - 'explorer'
+            2.0_ABCD_Data_Explorer style (.csv and comma seperated).
+            The first 2 columns before self.subject_id
+            (typically the default columns, and therefore not neuroimaging
+            data - also not including the eventname column), will be dropped.
 
-        - 'custom' : A user-defined custom dataset. Right now this is only\
-            supported as a comma seperated file, with the subject names in a\
-            column called self.subject_id, and can optionally have\
-            'eventname'. No columns will be dropped,\
+        - 'custom'
+            A user-defined custom dataset. Right now this is only.
+            supported as a comma seperated file, with the subject names in a
+            column called self.subject_id, and can optionally have
+            'eventname'. No columns will be dropped,
             (except eventname) or unless specific drop keys are passed.
 
         If loading multiple locs as a list, dataset_type can be a list with
@@ -332,7 +335,8 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
               eventname_col='default', overlap_subjects='default',
               na_values='default', drop_na='default', drop_or_na='default',
               filter_outlier_percent=None, filter_outlier_std=None,
-              unique_val_drop=2, unique_val_warn=.2, drop_col_duplicates=None,
+              unique_val_drop=None, unique_val_warn=.05,
+              drop_col_duplicates=None,
               clear_existing=False):
     """Class method for loading ROI-style data, assuming all loaded
     columns are continuous / float datatype.
@@ -559,10 +563,17 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.
 
-        - 'binary' or 'b' : Binary input
-        - 'categorical' or 'c' : Categorical input
-        - 'multilabel' or 'm' : Multilabel categorical input
-        - 'float' or 'f' : Float numerical input
+        - 'binary' or 'b'
+            Binary input
+
+        - 'categorical' or 'c'
+            Categorical input
+
+        - 'multilabel' or 'm'
+            Multilabel categorical input
+
+        - 'float' or 'f'
+            Float numerical input
 
         .. WARNING::
             If 'multilabel' datatype is specified, then the associated col name
@@ -649,17 +660,22 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     Targets can be either 'binary', 'categorical', 'multilabel',
     or 'float',
 
-    - binary : Targets are read in and label encoded to be 0 or 1, \
-    Will also work if passed column of unique string also, e.g. 'M' and 'F'
+    - binary
+        Targets are read in and label encoded to be 0 or 1,
+        Will also work if passed column of unique string also,
+        e.g. 'M' and 'F'.
 
-    - categorical : Targets are treated as taking on one fixed value from a\
-    limited set of possible values.
+    - categorical
+        Targets are treated as taking on one fixed value from a
+        limited set of possible values.
 
-    - multilabel : Simmilar to categorical, but targets can take on multiple\
-    values, and therefore cannot be reduced to an ordinal representation.
+    - multilabel
+        Simmilar to categorical, but targets can take on multiple
+        values, and therefore cannot be reduced to an ordinal representation.
 
-    - float : Targets are read in as a floating point number,\
-    and optionally then filtered.
+    - float
+        Targets are read in as a floating point number,
+        and optionally then filtered.
     '''
 
     if clear_existing:
@@ -808,10 +824,18 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.
 
-        - 'binary' or 'b' : Binary input
-        - 'categorical' or 'c' : Categorical input
-        - 'multilabel' or 'm' : Multilabel categorical input
-        - 'float' or 'f' : Float numerical input
+        - 'binary' or 'b'
+            Binary input
+
+        - 'categorical' or 'c'
+            Categorical input
+
+        - 'multilabel' or 'm'
+            Multilabel categorical input
+
+        - 'float' or 'f'
+            Float numerical input
+
 
         .. WARNING::
             If 'multilabel' datatype is specified, then the associated col name
@@ -1115,10 +1139,15 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
         input must be discretized into bins. This param controls
         the strategy used to define the bins. Options are,
 
-        - 'uniform' : All bins in each feature have identical widths.
-        - 'quantile' : All bins in each feature have the same number of points.
-        - 'kmeans' : Values in each bin have the same nearest center of a 1D \
-                     k-means cluster.
+        - 'uniform'
+            All bins in each feature have identical widths.
+
+        - 'quantile'
+            All bins in each feature have the same number of points.
+
+        - 'kmeans'
+            Values in each bin have the same nearest center of a 1D
+            k-means cluster.
 
         As with float_col and float_bins, if one value
         is passed, it is applied to all columns, but if different values
@@ -1521,9 +1550,9 @@ def Proc_Data_Unique_Cols(self, unique_val_drop=None, unique_val_warn=.05,
 def _proc_data_unique_cols(self, data, unique_val_drop, unique_val_warn):
 
     if unique_val_drop is None:
-        unique_val_drop = 1
+        unique_val_drop = 0
     if unique_val_warn is None:
-        unique_val_warn = 1
+        unique_val_warn = 0
 
     if unique_val_drop > 1:
         unique_val_drop /= 100
@@ -1536,12 +1565,14 @@ def _proc_data_unique_cols(self, data, unique_val_drop, unique_val_warn):
     unique_counts = [np.sum(~np.isnan(np.unique(data[x]))) for x in data]
     unique_counts = np.array(unique_counts)
 
+    self._print()
+
     # If any valid for warn or drop
     if ((unique_counts < drop_thresh).any()) or (
      (unique_counts < warn_thresh).any()):
 
         self._print('Processing unique col values with drop threshold:',
-                    drop_thresh, 'warn threshold:', warn_thresh, 'out of',
+                    drop_thresh, '- warn threshold:', warn_thresh, '- out of',
                     len(data), 'rows')
 
         for col, count in zip(list(data), unique_counts):

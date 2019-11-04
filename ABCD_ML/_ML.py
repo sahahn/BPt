@@ -42,15 +42,22 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     Parameters
     ----------
-    problem_type : {'regression', 'binary', 'categorical', 'multilabel', \
-'default'}, optional
+    problem_type : str, optional
 
-        - 'regression' : For ML on float target data.
-        - 'binary' : For ML on binary target data.
-        - 'categorical' : For ML on categorical target data,\
-                          as multiclass.
-        - 'multilabel' : On categorical multilabel data.
-        - 'default' : Use 'regression' if nothing else already defined.
+        - 'regression'
+            For ML on float target data.
+        
+        - 'binary'
+            For ML on binary target data.
+        
+        - 'categorical'
+            For ML on categorical target data, as multiclass.
+        
+        - 'multilabel'
+            On categorical multilabel data.
+        
+        - 'default'
+            Use 'regression', if nothing else already defined.
 
         If 'default', and not already defined, set to 'regression'
         (default = 'default')
@@ -146,12 +153,17 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         (in data / covars), for each `imputer` passed.
         Options are,
 
-        - 'float' or 'f' : To select just float data
-        - 'categorical' or 'c' : To select any categorical type\
-                                 (including binary) data\
-                                 regardless of encoding (e.g. one hot)
-        - array-like of strs : Can pass specific col names in as array-like\
-                               to select only those cols.
+        - 'float' or 'f'
+            To select just float data
+
+        - 'categorical' or 'c'
+            To select any categorical type
+            (including binary) data
+            regardless of encoding (e.g. one hot)
+
+        - array-like of strs
+            Can pass specific col names in as array-like
+            to select only those cols.
 
         If 'default', and not already defined, set to ['float', 'categorical']
         (default = 'default')
@@ -202,13 +214,18 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
         Each scaler scope can be either,
 
-        - 'all' or 'a' : To apply to all non-categorical\
-                         columns.
-        - 'data' or 'd' : To apply to all loaded data columns only.
-        - 'covars' or 'c' : To apply to all non-categorical covars columns\
-                            only.
-        - array-like of strs : Can pass specific col names in as array-like\
-                               to select only those cols.
+        - 'all' or 'a'
+            To apply to all non-categorical columns.
+
+        - 'data' or 'd'
+            To apply to all loaded data columns only.
+
+        - 'covars' or 'c'
+            To apply to all non-categorical covars columns only.
+
+        - array-like of strs
+            Can pass specific col names in as array-like
+            to select only those cols.
 
         If 'default', and not already defined, set to 'data'
         (default = 'default')
@@ -470,13 +487,22 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         exist for selecting these, or alternatively, an array-like
         of column keys can be passed in explicitly.
 
-        - 'all' : Uses all data + covars loaded
-        - 'data' : Uses only the loaded data, and drops covars if any
-        - 'covars' : Uses only the loaded covars, and drops data if any
-        - array-like of strs : Can pass specific col names in as array-like\
-                               to select only those cols.
-        - wild card str or array-like : If user passed str doesn't match with\
-                                        valid col name, will use as wildcard.
+        - 'all'
+            Uses all data + covars loaded
+
+        - 'data'
+            Uses only the loaded data, and drops covars if any.
+
+        - 'covars'
+            Uses only the loaded covars, and drops data if any
+
+        - array-like of strs
+            Can pass specific col names in as array-like
+            to select only those cols.
+
+        - wild card str or array-like
+            If user passed str doesn't match with
+            valid col name, will use as wildcard.
 
         The way the wild card system works is that if for all user
         passed strs that do not match a column name, they will be treated
@@ -486,7 +512,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
         You can also pass a list combination of any of the above,
         for example you could pass ['covars', specific_column_name, wildcard]
-        to select all of the covariate columns, the specific column name(s),\
+        to select all of the covariate columns, the specific column name(s)
         and any extra columns which match the wildcard(s).
 
         if 'default', and not already defined, set to 'all'.

@@ -80,19 +80,22 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
     ----------
     Validation strategy choices are explained in more detail:
 
-    - Random : Just make validation splits randomly.
+    - Random
+        Just make validation splits randomly.
 
-    - Group Preserving : Make splits that ensure subjects that are\
-            part of specific group are all within the same fold\
-            e.g., split by family, so that people with the same family id\
-            are always a part of the same fold.
+    - Group Preserving
+        Make splits that ensure subjects that are
+        part of specific group are all within the same fold
+        e.g., split by family, so that people with the same family id
+        are always a part of the same fold.
 
-    - Stratifying : Make splits such that the distribution of a given \
-            group is as equally split between two folds as possible, \
-            so simmilar to matched halves or \
-            e.g., in a binary or categorical predictive context, \
-            splits could be done to ensure roughly equal distribution \
-            of the dependent class.
+    - Stratifying
+        Make splits such that the distribution of a given
+        group is as equally split between two folds as possible,
+        so simmilar to matched halves or
+        e.g., in a binary or categorical predictive context,
+        splits could be done to ensure roughly equal distribution
+        of the dependent class.
 
     For now, it is possible to define only one overarching strategy
     (One could imagine combining group preserving splits
@@ -216,8 +219,23 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         random_state = self.random_state
 
     if test_size is not None:
+
+        original_subjects, subjects, train_only =\
+            self.CV.get_train_only(self.all_data.index)
+
+        self._print('Performing split on', len(subjects), '', end='')
+
+        if len(train_only) > 0:
+            self._print(, 'with', len(train_only), 'considered train only!')
+        else:
+            self._print()
+
+        self._print('Test split size:' test_size)
+
         self.train_subjects, self.test_subjects = self.CV.train_test_split(
                                 self.all_data.index, test_size, random_state)
+
+        self._print()
 
     else:
         test_subjects = self._load_set_of_subjects(loc=test_loc,

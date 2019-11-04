@@ -223,8 +223,8 @@ class CV():
         if self.groups is not None:
 
             groups = self.groups.loc[subjects]
-
             unique_groups = np.unique(groups)
+
             splitter = MS.KFold(n_splits=n_splits, shuffle=True,
                                 random_state=random_state)
 
@@ -262,15 +262,30 @@ class CV():
 
         return subject_splits
 
-    def get_train_only(self, subjects):
+    def get_train_only(self, subjects, ignore_by_group=False):
 
         original_subjects = subjects.copy()
 
         if self.train_only is not None:
             train_only = np.intersect1d(subjects, self.train_only,
                                         assume_unique=True)
-            subjects = np.setdiff1d(subjects, self.train_only,
+
+            # If groups, then train only also includes any subjects
+            # with the same group ID. Though don't apply for e.g.
+            # leave_one_group_out, since could lead to funky behavior.
+            if self.groups is not None and not ignore_by_group:
+
+                groups = self.groups.loc[subjects]
+
+                train_only_unique_groups =\
+                    np.unique(self.groups.loc[train_only])
+
+                train_only =\
+                    groups[groups.isin(train_only_unique_groups)].index
+
+            subjects = np.setdiff1d(subjects, train_only,
                                     assume_unique=True)
+
         else:
             train_only = np.array([])
 
@@ -288,7 +303,8 @@ class CV():
 
     def leave_one_group_out(self, subjects, groups_series, return_index=False):
 
-        original_subjects, subjects, train_only = self.get_train_only(subjects)
+        original_subjects, subjects, train_only =\
+            self.get_train_only(subjects, ignore_by_group=True)
 
         logo = MS.LeaveOneGroupOut()
         [*inds] = logo.split(subjects, groups=groups_series.loc[subjects])
@@ -302,8 +318,10 @@ class CV():
         return subject_splits
 
     def get_num_groups(self, subjects, groups_series):
+        '''Func to get number of leave one out groups'''
 
-        original_subjects, subjects, train_only = self.get_train_only(subjects)
+        original_subjects, subjects, train_only =\
+            self.get_train_only(subjects, ignore_by_group=True)
         groups = groups_series.loc[subjects]
 
         return len(np.unique(groups))

@@ -82,7 +82,10 @@ def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
         As ABCD is a longitudinal study, this flag lets you select only
         one specific time point, or if set to None, will load everything.
 
-        if 'default', and not already defined, set to 'baseline_year_1_arm_1'
+        For selecting only baseline imagine data one might consider
+        setting this param to 'baseline_year_1_arm_1'.
+
+        if 'default', and not already defined, set to None.
         (default = 'default')
 
     eventname_col : str or None, optional
@@ -180,9 +183,9 @@ def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
     if eventname != 'default':
         self.default_load_params['eventname'] = eventname
     elif 'eventname' not in self.default_load_params:
-        self.default_load_params['eventname'] = 'baseline_year_1_arm_1'
+        self.default_load_params['eventname'] = None
         self._print('No default eventname passed,',
-                    'set to "baseline_year_1_arm_1"')
+                    'set to None')
 
     if eventname_col != 'default':
         self.default_load_params['eventname_col'] = eventname_col

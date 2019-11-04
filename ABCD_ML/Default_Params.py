@@ -238,7 +238,7 @@ PARAMS['univar fs regression rs'] = {'score_func': f_regression,
 
 
 PARAMS['base univar fs classifier'] = {'score_func': f_classif,
-                                       'percentile': [50]}
+                                       'percentile': 50}
 
 PARAMS['univar fs classifier rs'] = {'score_func': f_classif,
                                      'percentile':

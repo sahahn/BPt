@@ -226,7 +226,7 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         self._print('Performing split on', len(subjects), '', end='')
 
         if len(train_only) > 0:
-            self._print(, 'with', len(train_only), 'considered train only!')
+            self._print('with', len(train_only), 'considered train only!')
         else:
             self._print()
 

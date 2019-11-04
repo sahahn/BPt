@@ -223,12 +223,12 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         original_subjects, subjects, train_only =\
             self.CV.get_train_only(self.all_data.index)
 
-        self._print('Performing split on', len(subjects), '', end='')
+        self._print('Performing split on', len(subjects), 'subjects', end='')
 
         if len(train_only) > 0:
-            self._print('with', len(train_only), 'considered train only!')
+            self._print(' with', len(train_only), 'considered train only!')
         else:
-            self._print()
+            self._print('!')
 
         self._print('Test split size:', test_size)
 

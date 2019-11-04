@@ -230,7 +230,7 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         else:
             self._print()
 
-        self._print('Test split size:' test_size)
+        self._print('Test split size:', test_size)
 
         self.train_subjects, self.test_subjects = self.CV.train_test_split(
                                 self.all_data.index, test_size, random_state)

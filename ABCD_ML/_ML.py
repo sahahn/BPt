@@ -32,7 +32,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
                           calc_base_feature_importances='default',
                           calc_shap_feature_importances='default',
                           n_jobs='default', random_state='default',
-                          compute_train_score='default',
+                          compute_train_score='default', cache='default',
                           extra_params='default'):
     '''Sets self.default_ML_params dictionary with user passed or default
     values. In general, if any argument is left as 'default' and it has
@@ -46,16 +46,16 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
         - 'regression'
             For ML on float target data.
-        
+
         - 'binary'
             For ML on binary target data.
-        
+
         - 'categorical'
             For ML on categorical target data, as multiclass.
-        
+
         - 'multilabel'
             On categorical multilabel data.
-        
+
         - 'default'
             Use 'regression', if nothing else already defined.
 
@@ -593,6 +593,18 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         if 'default', and not already defined, set to False.
         (default = 'default')
 
+    cache : None or str, optional
+        sklearn pipeline's allow the caching of fitted transformers.
+        If this behavior is desired (in the cases where a non-model step take
+        a long time to fit), then a str indicating the directory where
+        the cache should be stored should be passed.
+
+        Note: cache dr's are not automatically removed, as different Evaluate
+        calls may benefit from overlapping cached steps. That said, throughout
+        a longer expiriment, the size of the cache will grow fairly quickly!
+        Therefore be careful to delete the cache when you are done, and to
+        only use this option if you have the free storage.
+
     extra_params : dict or 'default', optional
         Any extra params being passed. Typically, extra params are
         added when the user wants to provide a specific model/classifier,
@@ -828,6 +840,12 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
                     'set to',
                     self.default_ML_params['calc_shap_feature_importances'])
 
+    if cache != 'default':
+        self.default_ML_params['cache'] = cache
+    elif 'cache' not in self.default_ML_params:
+        self.default_ML_params['cache'] = None
+        self._print('No default cache passed, set to None')
+
     if extra_params != 'default':
         assert isinstance(extra_params, dict), 'extra params must be dict'
         self.default_ML_params['extra_params'] = extra_params
@@ -976,7 +994,8 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
              calc_base_feature_importances='default',
              calc_shap_feature_importances='default',
              n_jobs='default', random_state='default',
-             compute_train_score='default', extra_params='default'):
+             compute_train_score='default', cache='default',
+             extra_params='default'):
     '''Class method to be called during the model selection phase.
     Used to evaluated different combination of models and scaling, ect...
 
@@ -1020,6 +1039,7 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     n_jobs :
     random_state :
     compute_train_score :
+    cache :
     extra_params :
 
     Returns
@@ -1125,7 +1145,8 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
          calc_base_feature_importances='default',
          calc_shap_feature_importances='default',
          n_jobs='default', random_state='default',
-         compute_train_score='default', extra_params='default'):
+         compute_train_score='default', cache='default',
+         extra_params='default'):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
 
@@ -1174,6 +1195,7 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
     n_jobs :
     random_state :
     compute_train_score :
+    cache :
     extra_params :
 
     Returns
@@ -1407,6 +1429,7 @@ def _print_model_params(self, ML_params, test=False):
     self._print('calc_shap_feature_importances =',
                 ML_params['calc_shap_feature_importances'])
 
+    self._print('cache =', ML_params['cache'])
     self._print('extra_params =', ML_params['extra_params'])
     self._print()
 

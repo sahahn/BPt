@@ -31,6 +31,7 @@ from ABCD_ML.Ensembles import (get_ensemble_and_params, Basic_Ensemble,
                                DES_Ensemble)
 
 from ABCD_ML.nevergrad import NevergradSearchCV
+import os
 
 
 class Model_Pipeline():
@@ -118,6 +119,8 @@ class Model_Pipeline():
                 if false only computes the testing score.
             - random_state : int or None
                 The random state to use for CV splits / within modeling.
+            - cache : str or None
+                Cache dr
             - extra_params : dict
                 The dictionary of any extra params to be passed to models or
                 data scalers.
@@ -211,6 +214,7 @@ class Model_Pipeline():
             ML_params['calc_base_feature_importances']
         self.calc_shap_feature_importances =\
             ML_params['calc_shap_feature_importances']
+        self.cache = ML_params['cache']
         self.extra_params = ML_params['extra_params'].copy()
 
         # Un-pack param search ML_params
@@ -1357,7 +1361,7 @@ class Model_Pipeline():
 
         Returns
         ----------
-        sklearn Pipeline
+        imblearn Pipeline
             Pipeline object with all relevant column specific data
             scalers, and then the passed in model.
         '''
@@ -1365,7 +1369,10 @@ class Model_Pipeline():
         steps = self.col_scalers + self.col_imputers + self.samplers \
             + self.drop_strat + self.feat_selectors + models
 
-        model_pipeline = Pipeline(steps)
+        if self.cache is not None:
+            os.makedirs(self.cache, exist_ok=True)
+
+        model_pipeline = Pipeline(steps, memory=self.cache)
 
         return model_pipeline
 

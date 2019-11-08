@@ -204,7 +204,7 @@ class Feat_Importances():
     def col_abs_mean(self, vals):
 
         if self.params['shap__global__avg_abs']:
-            col_means = np.abs(np.mean(vals, axis=0))
+            col_means = np.mean(np.abs(vals), axis=0)
         else:
             col_means = np.mean(vals, axis=0)
 
@@ -303,9 +303,9 @@ class Feat_Importances():
 
             content += 'importance type: '
             if self.flags['linear']:
-                content += 'beta weight + <br>'
+                content += 'beta weight <br>'
             elif self.flags['tree']:
-                content += 'tree based + <br>'
+                content += 'tree based <br>'
 
         if 'global' in self.scopes:
             content += 'contains global feat importances: self.global_df <br>'

@@ -433,7 +433,7 @@ def _display_df(self, display_df):
 def _get_top_global(self, df, top_n, get_abs):
 
     if get_abs:
-        imps = np.abs(np.mean(df))
+        imps = np.mean(np.abs(df))
     else:
         imps = np.mean(df)
 

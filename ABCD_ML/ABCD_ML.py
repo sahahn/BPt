@@ -360,7 +360,9 @@ class ABCD_ML():
                                    _show_single_dist,
                                    _show_dist,
                                    _display_df,
-                                   Plot_Base_Feat_Importances,
-                                   Plot_Shap_Feat_Importances,
-                                   Plot_Shap_Summary,
-                                   _plot_feature_importance)
+                                   _get_top_global,
+                                   Plot_Global_Feat_Importances,
+                                   _plot_multiclass_global_feat_importances,
+                                   _plot_global_feat_importances,
+                                   Plot_Local_Feat_Importances,
+                                   _plot_shap_summary)

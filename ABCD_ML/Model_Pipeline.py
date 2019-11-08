@@ -6,7 +6,6 @@ from imblearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import FunctionTransformer
 
-import shap
 import pandas as pd
 from collections import Counter
 
@@ -21,6 +20,7 @@ from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
 from ABCD_ML.Metrics import AVALIABLE as AVALIABLE_METRICS
 from ABCD_ML.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
+from ABCD_ML.Feat_Importances import AVALIABLE as AVALIABLE_IMPORTANCES
 
 from ABCD_ML.Samplers import get_sampler_and_params
 from ABCD_ML.Feature_Selectors import get_feat_selector_and_params
@@ -29,6 +29,7 @@ from ABCD_ML.Scalers import get_scaler_and_params
 from ABCD_ML.Imputers import get_imputer_and_params
 from ABCD_ML.Ensembles import (get_ensemble_and_params, Basic_Ensemble,
                                DES_Ensemble)
+from ABCD_ML.Feat_Importances import get_feat_importances_and_params
 
 from ABCD_ML.nevergrad import NevergradSearchCV
 import os
@@ -151,19 +152,6 @@ class Model_Pipeline():
         cat_encoders : list of tuples
             The encoders for conv'ing categorical.
 
-        calc_base_feature_importances : bool
-            If set to True, will store the base feature importances
-            when running Evaluate or Test. Note, base feature importances
-            are only avaliable for tree-based or linear models, specifically
-            those with either coefs_ or feature_importance_ attributbes.
-
-        calc_shap_feature_importances : bool
-            If set to True, will calculate SHapley Additive exPlanations
-            for the model when running Evaluate or Test. Note: any case
-            where the model isnt tree or linear based, e.g. an ensemble of
-            different methods, or non-linear svm, these values are estimated
-            by a kernel function which is very compute intensive.
-
         progress_bar : None or tqdm obj
             Either None, to not use progress bar or a tqdm object, to
             display progress.
@@ -201,6 +189,8 @@ class Model_Pipeline():
         self.sampler_strs = conv_to_list(ML_params['sampler'])
         self.sample_on = conv_to_list(ML_params['sample_on'])
         self.feat_selector_strs = conv_to_list(ML_params['feat_selector'])
+        self.feat_importances_strs =\
+            conv_to_list(ML_params['feat_importances'])
         self.splits = ML_params['splits']
         self.n_repeats = ML_params['n_repeats']
         self.search_splits = ML_params['search_splits']
@@ -210,10 +200,6 @@ class Model_Pipeline():
         self.search_n_iter = ML_params['search_n_iter']
         self.compute_train_score = ML_params['compute_train_score']
         self.random_state = ML_params['random_state']
-        self.calc_base_feature_importances =\
-            ML_params['calc_base_feature_importances']
-        self.calc_shap_feature_importances =\
-            ML_params['calc_shap_feature_importances']
         self.cache = ML_params['cache']
         self.extra_params = ML_params['extra_params'].copy()
 
@@ -232,6 +218,8 @@ class Model_Pipeline():
             conv_to_list(ML_params['feat_selector_params'])
         self.ensemble_params =\
             conv_to_list(ML_params['ensemble_params'])
+        self.feat_importances_params =\
+            conv_to_list(ML_params['feat_importances_params'])
 
         # Default params just sets (sub)problem type for now
         self._set_default_params()
@@ -250,6 +238,7 @@ class Model_Pipeline():
         self._process_samplers()
         self._process_ensemble_types()
         self._process_metrics()
+        self._process_feat_importances()
 
         # Make the model pipeline, save to self.base_model_pipeline
         self._make_drop_strat()
@@ -259,12 +248,9 @@ class Model_Pipeline():
         self.problem_type = ''
         self.n_splits = None
         self.user_passed_objs = {}
-        self.shap_dfs = []
 
-        # Flags for feat importance things
-        self.ensemble_flag = False
-        self.linear_flag = False
-        self.tree_flag = False
+        self.flags = {'linear': False,
+                      'tree': False}
 
     def _set_all_keys(self, feats_to_use):
         '''Strat keys then target keys should always be last,
@@ -800,6 +786,27 @@ class Model_Pipeline():
             self.ensembles = [('basic ensemble', None)]
             self.ensemble_params = {}
 
+    def _process_feat_importances(self):
+        '''Process the feat importances.
+        Note: cannot pass user define objects here.'''
+
+        if self.feat_importances_strs is not None:
+
+            # Proc input strs and params
+            names = self._proc_type_dep_str(self.feat_importances_strs,
+                                            AVALIABLE_IMPORTANCES)
+            params = self._param_len_check(names, self.feat_importances_params)
+
+            # Create the feat importance objects
+            self.feat_importances =\
+                [get_feat_importances_and_params(name, self.extra_params,
+                                                 param, self.problem_type,
+                                                 self.n_jobs)
+                 for name, param in zip(names, params)]
+
+        else:
+            self.feat_importances = []
+
     def _make_drop_strat(self):
         '''This creates a columntransformer in order to drop
         the strat cols from X!'''
@@ -1010,7 +1017,7 @@ class Model_Pipeline():
         cat_inds = [self._get_inds_from_scope(k) for k in cat_keys]
         ordinal_inds = self._get_inds_from_scope(ordinal_keys)
 
-        return cat_keys, ordinal_inds
+        return cat_inds, ordinal_inds
 
     def _replace_base_rfe_estimator(self):
         '''Check feat selectors for a RFE model'''
@@ -1146,12 +1153,13 @@ class Model_Pipeline():
             folds_bar.refresh()
             folds_bar.close()
 
-        # Average feature importances across folds / repeats
-        self._average_feature_importances()
+        # If any local feat importances
+        for feat_imp in self.feat_importances:
+            feat_imp.set_final_local()
 
         # Return all scores
         return (np.array(all_train_scores), np.array(all_scores),
-                self.raw_preds_df)
+                self.raw_preds_df, self.feat_importances)
 
     def Test(self, data, train_subjects, test_subjects, fold_ind='test'):
         '''Method to test given input data, training a model on train_subjects
@@ -1383,30 +1391,113 @@ class Model_Pipeline():
             self._get_search_model(self.base_model_pipeline,
                                    self._get_search_cv(train_data.index))
 
+    def _get_base_fitted_pipeline(self):
+
+        if self.search_type is None:
+            base_pipeline = self.Model
+        else:
+            base_pipeline = self.Model.best_estimator_
+
+        return base_pipeline
+
+    def _get_base_fitted_model(self):
+
+        base_pipeline = self._get_base_fitted_pipeline()
+        last_name = base_pipeline.steps[-1][0]
+        base_model = base_pipeline[last_name]
+
+        return base_model
+
+    def _set_model_flags(self):
+
+        base_model = self._get_base_fitted_model()
+
+        try:
+            base_model.coef_
+            self.flags['linear'] = True
+        except AttributeError:
+            pass
+
+        try:
+            base_model.feature_importances_
+            self.flags['tree'] = True
+        except AttributeError:
+            pass
+
     def _proc_feat_importance(self, train_data, test_data, fold_ind):
 
-        if self.calc_base_feature_importances:
+        # Ensure model flags are set / there are feat importances to proc
+        if len(self.feat_importances) > 0:
+            self._set_model_flags()
+        else:
+            return
+
+        # Process each feat importance
+        for feat_imp in self.feat_importances:
+
+            split = feat_imp.split
+
+            # Init global feature df
             if fold_ind == 0 or fold_ind == 'test':
-                self._init_feature_importances(train_data)
 
-        if self.calc_shap_feature_importances:
+                X, y = self._get_X_y(train_data, X_as_df=True)
+                feat_imp.init_global(X, y)
 
-            # If fold ind test, init with test_data
+            # Local init - Test
             if fold_ind == 'test':
-                self._init_shap_df(test_data)
 
-            # Otherwise, using Evaluate, init with all data only every n_splits
+                if split == 'test':
+                    X, y = self._get_X_y(test_data)
+
+                elif split == 'train':
+                    X, y = self._get_X_y(train_data, X_as_df=True)
+
+                elif split == 'all':
+                    X, y =\
+                        self._get_X_y(pd.concat([train_data, test_data]),
+                                      X_as_df=True)
+
+                feat_imp.init_local(X, y, test=True, n_splits=None)
+
+            # Local init - Evaluate
             elif fold_ind % self.n_splits == 0:
-                self._init_shap_df(pd.concat([train_data, test_data]))
 
-        # Compute feature importance
-        self._get_feature_importance(train_data, test_data)
+                X, y = self._get_X_y(pd.concat([train_data, test_data]),
+                                     X_as_df=True)
 
-        # Need a check to add self.shap_df to self.shap_dfs
-        # Only during Evalaute, not for test
-        if isinstance(fold_ind, int) and self.calc_shap_feature_importances:
-            if fold_ind % self.n_splits == self.n_splits-1:
-                self.shap_dfs.append(self.shap_df)
+                feat_imp.init_local(X, y, n_splits=self.n_splits)
+
+            self._print('Calculate', feat_imp.name, 'feat importances',
+                        level='name')
+
+            # Get base fitted model
+            base_model = self._get_base_fitted_model()
+
+            # Optionally proc train, though train is always train
+            if feat_imp.get_data_needed_flags(self.flags):
+                X_train = self._proc_X_train(train_data)
+            else:
+                X_train = None
+
+            # Test depends on scope
+            if split == 'test':
+                test = test_data
+            elif split == 'train':
+                test = train_data
+            elif split == 'all':
+                test = pd.concat([train_data, test_data])
+
+            # Always proc test.
+            X_test = self._proc_X_test(test)
+
+            # Process the feature importance, provide all needed
+            feat_imp.proc_importances(base_model, X_test, X_train,
+                                      fold_ind % self.n_splits)
+
+            # For local, need an intermediate average, move df to dfs
+            if isinstance(fold_ind, int):
+                if fold_ind % self.n_splits == self.n_splits-1:
+                    feat_imp.proc_local()
 
     def _get_ensemble_split(self, train_data):
         '''Split the train subjects further only if an ensemble split
@@ -1550,7 +1641,7 @@ class Model_Pipeline():
 
         model, extra_model_params, model_type_params =\
             get_obj_and_params(model_type, MODELS, self.extra_params,
-                               model_type_params, self.search_type)
+                               model_type_params, search_type)
 
         # Set class param values from possible model init params
         possible_params = get_possible_init_params(model)
@@ -1683,141 +1774,25 @@ class Model_Pipeline():
         else:
             self.raw_preds_df.loc[subjects, self.targets_key] = y_test
 
-    def _init_feature_importances(self, data):
-
-        X, y = self._get_X_y(data, X_as_df=True)
-        feat_names = list(X)
-
-        self.feature_importances = pd.DataFrame(columns=feat_names)
-
     def _init_raw_preds_df(self, subjects):
 
         self.raw_preds_df = pd.DataFrame(index=subjects)
 
-    def _init_shap_df(self, data):
+    def _get_objs_from_pipeline(self, names_objs):
 
-        self.shap_df, y = self._get_X_y(data, X_as_df=True, copy=True)
-
-        for col in self.shap_df.columns:
-            self.shap_df[col].values[:] = 0
-
-    def _get_feature_importance(self, train_data, test_data):
-
-        base_model = self._check_feat_importance_type()
-
-        if self.calc_base_feature_importances:
-            self._print('Calculate base feature importances', level='name')
-            self._get_base_feature_importance(base_model, test_data)
-
-        if self.calc_shap_feature_importances:
-            self._print('Calculate shap feature importances', level='name')
-            self._get_shap_feature_importance(base_model, train_data,
-                                              test_data)
-
-    def _get_base_feature_importance(self, base_model, test_data):
-
-        if self.tree_flag or self.linear_flag:
-
-            X_test = self._proc_X_test(test_data)
-
-            if self.linear_flag:
-                feat_importance = np.squeeze(base_model.coef_)
-            elif self.tree_flag:
-                feat_importance = base_model.feature_importances_
-
-            # For both
-            self._add_to_feature_importances(list(X_test), feat_importance)
-
-    def _get_shap_feature_importance(self, base_model, train_data, test_data):
-
-        if self.tree_flag or self.linear_flag:
-
-            X_test = self._proc_X_test(test_data)
-
-            if self.linear_flag:
-                X_train = self._proc_X_train(train_data)
-                explainer =\
-                    shap.LinearExplainer(base_model, X_train,
-                                         feature_dependence="independent")
-
-            elif self.tree_flag:
-                explainer = shap.TreeExplainer(base_model)
-
-            shap_values = self._get_shap_values(explainer, X_test)
-
-        else:
-            shap_values, X_test =\
-                self._get_kernel_shap_values(train_data, test_data)
-
-        # Set to df
-        self._add_new_shap_values(X_test, shap_values)
-
-    def _add_new_shap_values(self, X_test, shap_values):
-
-        shap_df = X_test.copy()
-        shap_df[list(X_test)] = shap_values
-
-        self.shap_df.update(shap_df)
-
-    def _check_feat_importance_type(self):
-
-        base_model = None
-
-        # Try grabbing a base model, if it doesnt exist,
-        # it means there is some type of ensemble being used
-        try:
-            base_model = self.Model[self.model_strs[0]]
-        except:
-            self.ensemble_flag = True
-
-        if self.ensemble_flag:
-
-            try:
-                base_model = self.Model.best_estimator_[self.model_strs[0]]
-                self.ensemble_flag = False
-            except:
-                self.ensemble_flag = True
-
-        if not self.ensemble_flag:
-
-            try:
-                base_model.coef_
-                self.linear_flag = True
-            except AttributeError:
-                pass
-
-            try:
-                base_model.feature_importances_
-                self.tree_flag = True
-            except AttributeError:
-                pass
-
-        return base_model
-
-    def _get_objs_from_pipeline(self, names_objs, model, as_steps=False):
-        '''Assumes that the self.Model is a pipeline object only,
-        no ensemble, or within a search object
-        '''
+        pipeline = self._get_base_fitted_pipeline()
 
         names = [n[0] for n in names_objs]
-
-        try:
-            objs = [model[n] for n in names]
-        except TypeError:
-            objs = [model.best_estimator_[n] for n in names]
-
-        if as_steps:
-            objs = [(names[i], objs[i]) for i in range(len(names))]
+        objs = [pipeline[n] for n in names]
 
         return objs
 
     def _proc_X_test(self, test_data):
 
-        scalers = self._get_objs_from_pipeline(self.col_scalers, self.Model)
-        imputers = self._get_objs_from_pipeline(self.col_imputers, self.Model)
-        drop_strat = self._get_objs_from_pipeline(self.drop_strat, self.Model)
-        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors,
-                                                      self.Model)
+        scalers = self._get_objs_from_pipeline(self.col_scalers)
+        imputers = self._get_objs_from_pipeline(self.col_imputers)
+        drop_strat = self._get_objs_from_pipeline(self.drop_strat)
+        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 
         # Grab the test data, X as df + copy
         X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
@@ -1849,12 +1824,11 @@ class Model_Pipeline():
 
     def _proc_X_train(self, train_data):
 
-        scalers = self._get_objs_from_pipeline(self.col_scalers, self.Model)
-        imputers = self._get_objs_from_pipeline(self.col_imputers, self.Model)
-        samplers = self._get_objs_from_pipeline(self.samplers, self.Model)
-        drop_strat = self._get_objs_from_pipeline(self.drop_strat, self.Model)
-        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors,
-                                                      self.Model)
+        scalers = self._get_objs_from_pipeline(self.col_scalers)
+        imputers = self._get_objs_from_pipeline(self.col_imputers)
+        samplers = self._get_objs_from_pipeline(self.samplers)
+        drop_strat = self._get_objs_from_pipeline(self.drop_strat)
+        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 
         X_train, y_train = self._get_X_y(train_data)
 
@@ -1871,65 +1845,6 @@ class Model_Pipeline():
 
         return X_train
 
-    def _add_to_feature_importances(self, feat_names, feat_importance):
-
-        feat_importance_dict = {name: importance for name, importance in
-                                zip(feat_names, feat_importance)}
-
-        self.feature_importances =\
-            self.feature_importances.append(feat_importance_dict,
-                                            ignore_index=True)
-        self.feature_importances = self.feature_importances.fillna(0)
-
-    def _get_shap_values(self, explainer, X_test):
-
-        shap_values = explainer.shap_values(X_test)
-        return self._proc_shap_values(shap_values)
-
-    def _proc_shap_values(self, shap_values):
-        return shap_values
-
-    def _get_kernel_shap_values(self, train_data, test_data):
-
-        X_train, y_train = self._get_X_y(train_data)
-        X_test, y_test = self._get_X_y(test_data, X_as_df=True)
-
-        # Generate summary of X_train, w/ k = 10 default
-        X_train_summary = shap.kmeans(X_train, 10)
-
-        explainer = self._get_kernel_explainer(self.Model, X_train_summary)
-
-        shap_values = explainer.shap_values(np.array(X_test), l1_reg='aic',
-                                            n_samples='auto')
-
-        return self._proc_shap_values(shap_values), X_test
-
-    def _get_kernel_explainer(self, model, X_train_summary):
-        '''Base behavior for binary / multi-class'''
-
-        explainer = shap.KernelExplainer(model.predict_proba,
-                                         X_train_summary, link='logit')
-
-        return explainer
-
-    def _average_feature_importances(self):
-
-        if self.calc_shap_feature_importances:
-
-            # Set to copy of 1st one to start, as base to fill
-            self.shap_df = self.shap_dfs[0].copy()
-
-            # Only need to average if more than one repeat
-            if len(self.shap_dfs) > 1:
-
-                shap_df_arrays = [np.array(df) for df in self.shap_dfs]
-                mean_shap_array = np.mean(shap_df_arrays, axis=0)
-
-                self.shap_df[list(self.shap_df)] = mean_shap_array
-
-            # Reset self.shap_dfs to clear memory
-            self.shap_dfs = []
-
 
 class Regression_Model_Pipeline(Model_Pipeline):
     '''Child class of Model for regression problem types.'''
@@ -1939,13 +1854,6 @@ class Regression_Model_Pipeline(Model_Pipeline):
 
         super()._set_default_params()
         self.problem_type = 'regression'
-
-    def _get_kernel_explainer(self, model, X_train_summary):
-
-        explainer = shap.KernelExplainer(model.predict, X_train_summary,
-                                         link='identity')
-
-        return explainer
 
 
 class Binary_Model_Pipeline(Model_Pipeline):
@@ -1957,9 +1865,6 @@ class Binary_Model_Pipeline(Model_Pipeline):
         super()._set_default_params()
         self.problem_type = 'binary'
 
-    def _proc_shap_values(self, shap_values):
-        return shap_values[1]
-
 
 class Categorical_Model_Pipeline(Model_Pipeline):
     '''Child class of Model for categorical problem types.'''
@@ -1969,49 +1874,6 @@ class Categorical_Model_Pipeline(Model_Pipeline):
 
         super()._set_default_params()
         self.problem_type = 'categorical'
-
-    def _init_shap_df(self, data):
-
-        self.shap_df = []
-
-        for i in range(len(self.targets_key)):
-
-            shap_df, y = self._get_X_y(data, X_as_df=True, copy=True)
-
-            for col in shap_df.columns:
-                shap_df[col].values[:] = 0
-
-            self.shap_df.append(shap_df)
-
-    def _add_new_shap_values(self, X_test, shap_values):
-
-        for i in range(len(shap_values)):
-
-            shap_df = X_test.copy()
-            shap_df[list(X_test)] = shap_values[i]
-
-            self.shap_df[i].update(shap_df)
-
-    def _average_feature_importances(self):
-
-        if self.calc_shap_feature_importances:
-
-            # Set to copy of 1st one to start, as base to fill
-            self.shap_df = self.shap_dfs[0].copy()
-
-            # Only need to average if more than one repeat
-            if len(self.shap_dfs) > 1:
-
-                # For each class within the target variable
-                for i in range(len(self.shap_df)):
-
-                    shap_df_arrays = [np.array(df[i]) for df in self.shap_dfs]
-                    mean_shap_array = np.mean(shap_df_arrays, axis=0)
-
-                    self.shap_df[i][list(self.shap_df[i])] = mean_shap_array
-
-            # Reset self.shap_dfs to clear memory
-            self.shap_dfs = []
 
 
 class Multilabel_Model_Pipeline(Categorical_Model_Pipeline):

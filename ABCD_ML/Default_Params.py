@@ -21,7 +21,7 @@ PARAMS['base logistic'] =\
          'max_iter': 5000,
          'multi_class': 'auto',
          'penalty': 'none',
-         'class_weight': ng.var.OrderedDiscrete([None, 'balanced'])}
+         'class_weight': None}
 
 PARAMS['base lasso'] = PARAMS['base logistic'].copy()
 PARAMS['base lasso']['penalty'] = 'l1'
@@ -36,15 +36,21 @@ PARAMS['base elastic']['l1_ratio'] = .5
 PARAMS['lasso C'] = PARAMS['base lasso'].copy()
 PARAMS['lasso C']['C'] =\
         ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
+PARAMS['lasso C']['class_weight'] =\
+        ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['ridge C'] = PARAMS['base ridge'].copy()
 PARAMS['ridge C']['C'] =\
         ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
+PARAMS['ridge C']['class_weight'] =\
+        ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['elastic classifier'] = PARAMS['base elastic'].copy()
 PARAMS['elastic classifier']['C'] =\
         ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
 PARAMS['elastic classifier']['l1_ratio'] = ng.var.Scalar().bounded(0, 1)
+PARAMS['elastic classifier']['class_weight'] =\
+        ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['base elastic net'] = {'max_iter': 5000}
 PARAMS['elastic regression'] = PARAMS['base elastic net'].copy()
@@ -280,6 +286,19 @@ PARAMS['single default'] = {'needs_split': False,
 PARAMS['bb default'] = PARAMS['single default'].copy()
 
 
+# Feat Importances
+PARAMS['base shap'] =\
+        {'shap__linear__nsamples': 1000,
+         'shap__linear__feature_dependence': 'independent',
+         'shap__tree__feature_dependence': 'tree_path_dependent',
+         'shap__tree__model_output': 'margin',
+         'shap__tree__tree_limit': None,
+         'shap__kernel__nkmean': 10,
+         'shap__kernel__nsamples': 'auto',
+         'shap__kernel__l1_reg': 'aic',
+         'shap__global__avg_abs': False}
+
+
 def get_base_params(str_indicator):
 
         base_params = PARAMS[str_indicator].copy()
@@ -288,16 +307,8 @@ def get_base_params(str_indicator):
 
 def proc_params(base_params, prepend=None):
 
-        # Return dict with prepend on all keys
-        if prepend is not None:
-                params = {prepend + '__' + key: base_params[key] for key in
-                          base_params}
-
-        # Grabs param grid as single set of fixed params
-        else:
-                params = {}
-                for key in base_params:
-                        params[key] = base_params[key]
+        params = {prepend + '__' + key: base_params[key] for key in
+                  base_params}
 
         return params
 

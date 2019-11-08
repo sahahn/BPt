@@ -191,7 +191,8 @@ def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
     # Special case if search type None, convert param grid to
     # be one set of params
     if search_type is None:
-        params = proc_params(base_params)
+
+        params = base_params.copy()
 
         if obj_str in extra_params:
             params.update(extra_params[obj_str])

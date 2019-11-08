@@ -29,8 +29,8 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
                           search_type='default', search_splits='default',
                           search_n_iter='default', feats_to_use='default',
                           subjects_to_use='default',
-                          calc_base_feature_importances='default',
-                          calc_shap_feature_importances='default',
+                          feat_importances='default',
+                          feat_importances_params='default',
                           n_jobs='default', random_state='default',
                           compute_train_score='default', cache='default',
                           extra_params='default'):
@@ -387,7 +387,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         If 'default', and not already defined, set to 'basic ensemble'
         (default = 'default')
 
-    ensemble_split : float, int or None
+    ensemble_split : float, int or None, optional
         If an ensemble(s) that requires fitting is passed,
         i.e., not "basic ensemble", then this param is
         the porportion of the train_data within each fold to
@@ -398,7 +398,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         If 'default', and not already defined, set to .2
         (default = 'default')
 
-    ensemble_params : int, str, or list of
+    ensemble_params : int, str, or list of, optional
          Each `ensemble` has atleast one default parameter distribution
         saved with it.
 
@@ -546,27 +546,47 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         if 'default', and not already defined, set to 'all'.
         (default = 'default')
 
-    calc_base_feature_importances : bool or 'default, optional
-        If set to True, will store the base feature importances
-        when running Evaluate or Test. Note, base feature importances
-        are only avaliable for tree-based or linear models, specifically
-        those with either coefs or feature_importance attributes.
+    feat_importances : None, str or list, optional
+        This parameter controls which feature importances should
+        be calculated, and can be set to None, a single feature
+        importance, or a list of different types.
 
-        If 'default', and not already defined, set to True.
+        Different feature importances are restricted by problem_type
+        in some cases, as well as will vary based on specific type of
+        model used. For example, only linear models and tree based models
+        are supported for calculating 'base' feature importances. With
+        'shap' feature importance, any underlying model is supported, but
+        only tree based and linear models can be computed quickly, with
+        other models requiring a great deal of computation.
+
+        Please view the docs section to learn more about the different
+        options for calculating feature importance, as well as the
+        distinction between 'local' and 'global' measures of
+        feature importance, and also the tradeoffs and differences
+        between computing
+        feature importance based of only train data, only test or all
+        of the data.
+
+        If 'default', and not already defined, set to 'base'
         (default = 'default')
 
-    calc_shap_feature_importances : bool or 'default, optional
-        If set to True, will calculate SHAP (SHapley Additive exPlanations)
-        for the model when running Evaluate or Test.
-        Note: For any case where the underlytin model is not tree or linear
-        based, e.g. an ensemble of different methods, or non-linear svm,
-        these values are estimated by a kernel explainer function which is
-        very compute intensive.
-        Read more about shap on their github:
+    feat_importances_params : int, str, dict or list of, optional
+        Different feature importances may vary on different
+        hyperparameters. If the selected feature importance has
+        hyperparameters, this parameter either selects from default
+        choices (using either int input, or str for selecting the name
+        of the preset). If a list of feat_importances is passed, a
+        corresponding list of feat_importances_params should be passed.
 
-        https://github.com/slundberg/shap
+        A user-defined dictionary can passed as well, containing user
+        specified values. When only changing one
+        or two parameters from the default, any non-specified params
+        will be replaced with the default value.
 
-        If 'default', and not already defined, set to False.
+        See the docs for which parameters are required by which
+        feature importance types, and for what the default values are.
+
+        If 'default', and not already defined, set to 0
         (default = 'default')
 
     n_jobs : int or 'default', optional
@@ -820,25 +840,21 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self._print('No default random state passed, using class random',
                     'state value of', self.random_state)
 
-    if calc_base_feature_importances != 'default':
-        self.default_ML_params['calc_base_feature_importances'] =\
-            calc_base_feature_importances
-    elif 'calc_base_feature_importances' not in self.default_ML_params:
-        self.default_ML_params['calc_base_feature_importances'] = True
+    if feat_importances != 'default':
+        self.default_ML_params['feat_importances'] =\
+            feat_importances
+    elif 'feat_importances' not in self.default_ML_params:
+        self.default_ML_params['feat_importances'] = 'base'
+        self._print('No default feat_importances passed,',
+                    'set to base')
 
-        self._print('No default calc_base_feature_importances passed,',
-                    'set to',
-                    self.default_ML_params['calc_base_feature_importances'])
-
-    if calc_shap_feature_importances != 'default':
-        self.default_ML_params['calc_shap_feature_importances'] =\
-            calc_shap_feature_importances
-    elif 'calc_shap_feature_importances' not in self.default_ML_params:
-        self.default_ML_params['calc_shap_feature_importances'] = False
-
-        self._print('No default calc_shap_feature_importances passed,',
-                    'set to',
-                    self.default_ML_params['calc_shap_feature_importances'])
+    if feat_importances_params != 'default':
+        self.default_ML_params['feat_importances_params'] =\
+            feat_importances_params
+    elif 'feat_importances_params' not in self.default_ML_params:
+        self.default_ML_params['feat_importances_params'] = 0
+        self._print('No default feat_importances_params passed,',
+                    'set to, set to 0')
 
     if cache != 'default':
         self.default_ML_params['cache'] = cache
@@ -991,8 +1007,8 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
              n_repeats='default', search_type='default',
              search_splits='default', search_n_iter='default',
              feats_to_use='default', subjects_to_use='default',
-             calc_base_feature_importances='default',
-             calc_shap_feature_importances='default',
+             feat_importances='default',
+             feat_importances_params='default',
              n_jobs='default', random_state='default',
              compute_train_score='default', cache='default',
              extra_params='default'):
@@ -1034,8 +1050,8 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     search_n_iter :
     feats_to_use :
     subjects_to_use :
-    calc_base_feature_importances :
-    calc_shap_feature_importances :
+    feat_importances :
+    feat_importances_params :
     n_jobs :
     random_state :
     compute_train_score :
@@ -1109,9 +1125,14 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     split_names, split_vals, sv_le = self._get_split_vals(ML_params['splits'])
 
     # Evaluate the model
-    train_scores, scores, raw_preds =\
+    train_scores, scores, raw_preds, FIs =\
         self.Model_Pipeline.Evaluate(self.all_data, self.train_subjects,
                                      split_vals)
+
+    # Set target and run name
+    for fi in FIs:
+        fi.set_target(ML_params['target'])
+        fi.set_run_name(run_name)
 
     self._print()
 
@@ -1128,7 +1149,7 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
                             self.Model_Pipeline.n_splits)
 
     # Return the raw scores from each fold
-    return score_list, raw_preds
+    return score_list, raw_preds, FIs
 
 
 def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
@@ -1142,8 +1163,8 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
          ensemble_params='default', search_type='default',
          search_splits='default', search_n_iter='default',
          feats_to_use='default', subjects_to_use='default',
-         calc_base_feature_importances='default',
-         calc_shap_feature_importances='default',
+         feat_importances='default',
+         feat_importances_params='default',
          n_jobs='default', random_state='default',
          compute_train_score='default', cache='default',
          extra_params='default'):
@@ -1190,8 +1211,8 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
     search_n_iter :
     feats_to_use :
     subjects_to_use :
-    calc_base_feature_importances :
-    calc_shap_feature_importances :
+    feat_importances :
+    feat_importances_params :
     n_jobs :
     random_state :
     compute_train_score :
@@ -1235,9 +1256,13 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
         test_subjects = self.test_subjects
 
     # Train the model w/ selected parameters and test on test subjects
-    train_scores, scores, raw_preds =\
+    train_scores, scores, raw_preds, FIs =\
         self.Model_Pipeline.Test(self.all_data, train_subjects,
                                  test_subjects)
+
+    # Set run name
+    for fi in FIs:
+        fi.set_target(ML_params['target'])
 
     # Print out score for all passed metrics
     metric_strs = self.Model_Pipeline.metric_strs
@@ -1274,7 +1299,7 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
                 self._print(name + ' Score: ', scr)
                 self._print()
 
-    return score_list, raw_preds
+    return score_list, raw_preds, FIs
 
 
 def _premodel_check(self, problem_type='default'):
@@ -1409,7 +1434,7 @@ def _print_model_params(self, ML_params, test=False):
 
     self._print('n_jobs =', ML_params['n_jobs'])
 
-    if len(ML_params['feats_to_use']) > 20:
+    if len(ML_params['feats_to_use']) > 50:
         self._print('feats_to_use = custom passed keys with len',
                     len(ML_params['feats_to_use']))
     else:
@@ -1424,10 +1449,10 @@ def _print_model_params(self, ML_params, test=False):
     self._print('compute_train_score =', ML_params['compute_train_score'])
     self._print('random_state =', ML_params['random_state'])
 
-    self._print('calc_base_feature_importances =',
-                ML_params['calc_base_feature_importances'])
-    self._print('calc_shap_feature_importances =',
-                ML_params['calc_shap_feature_importances'])
+    self._print('feat_importances =',
+                ML_params['feat_importances'])
+    self._print('feat_importances_params =',
+                ML_params['feat_importances_params'])
 
     self._print('cache =', ML_params['cache'])
     self._print('extra_params =', ML_params['extra_params'])
@@ -1486,7 +1511,6 @@ def _proc_feats_to_use(self, feats_to_use):
 
     # If any repeats
     final_feats_to_use = list(set(final_feats_to_use))
-
     return final_feats_to_use
 
 
@@ -1690,7 +1714,7 @@ def Get_Base_Feat_Importances(self, top_n=None):
     last run :func:`Evaluate` or :func:`Test`.
 
     .. WARNING::
-        `calc_base_feature_importances` must have been set to True,
+        `feat_importances` must have been set to True,
         during the last call to :func:`Evaluate` or :func:`Test`,
         AND the `model` must have been a linear or tree-based model
         (with no extra ensembling).
@@ -1731,7 +1755,7 @@ def Get_Shap_Feat_Importances(self, top_n=None):
     by further averaging over each target variables mean shap values.
 
     .. WARNING::
-        `calc_shap_feature_importances` must have been set to True,
+        `feat_importances_params` must have been set to True,
         during the last call to :func:`Evaluate` or :func:`Test`
 
     Parameters
@@ -1749,7 +1773,7 @@ def Get_Shap_Feat_Importances(self, top_n=None):
         features is returned.
     '''
     assert len(self.Model_Pipeline.shap_df) > 0, \
-        "calc_shap_feature_importances must be set to True!"
+        "feat_importances_params must be set to True!"
 
     # for categorical
     if 'pandas' not in str(type(self.Model_Pipeline.shap_df)):

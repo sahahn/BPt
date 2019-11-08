@@ -157,9 +157,6 @@ class Sampler_Wrapper():
 
     def fix_cat(self, X_copy, X_resamp, c_inds, y=None):
 
-        if len(c_inds) == 0:
-            return X_resamp
-
         try:
             original_col_vals = X_copy[:, c_inds]
         except IndexError:

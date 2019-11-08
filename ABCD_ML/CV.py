@@ -65,7 +65,8 @@ class CV():
                 self.train_only = None
 
     def train_test_split(self, subjects, test_size=.2, random_state=None):
-        '''Define a train test split on input subjects, with a given target test size.
+        '''Define a train test split on input subjects, with a given target
+        test size.
 
         Parameters
         ----------

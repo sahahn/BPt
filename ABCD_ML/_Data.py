@@ -1825,6 +1825,9 @@ def _load_datasets(self, locs, df, load_params):
 
     dfs = []
 
+    if not isinstance(locs, list):
+        locs = [locs]
+
     # Load from file
     if locs is not None:
 

@@ -4,8 +4,9 @@ _Data.py
 Main class extension file for the Loading functionality methods of
 the ABCD_ML class.
 """
-import numpy as np
 import pandas as pd
+import numpy as np
+
 from ABCD_ML.Data_Helpers import (process_binary_input,
                                   process_ordinal_input,
                                   process_categorical_input,
@@ -1825,7 +1826,7 @@ def _load_datasets(self, locs, df, load_params):
 
     dfs = []
 
-    if not isinstance(locs, list):
+    if not isinstance(locs, list) and locs is not None:
         locs = [locs]
 
     # Load from file

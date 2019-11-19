@@ -3,8 +3,8 @@ _Plotting.py
 ====================================
 Main class extension file for the some plotting functionality.
 """
-import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import math

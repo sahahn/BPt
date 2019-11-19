@@ -298,6 +298,8 @@ PARAMS['base shap'] =\
          'shap__kernel__l1_reg': 'aic',
          'shap__global__avg_abs': False}
 
+PARAMS['base perm'] = {'perm__n_perm': 10}
+
 
 def get_base_params(str_indicator):
 

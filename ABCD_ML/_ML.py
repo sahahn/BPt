@@ -3,8 +3,9 @@ _ML.py
 ====================================
 Main class extension file for the Machine Learning functionality
 """
-import numpy as np
 import pandas as pd
+import numpy as np
+
 from tqdm import tqdm, tqdm_notebook
 
 from ABCD_ML.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df

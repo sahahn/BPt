@@ -1,3 +1,5 @@
+import pandas as pd
+
 import numpy as np
 import time
 
@@ -5,8 +7,6 @@ from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from imblearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import FunctionTransformer
-
-import pandas as pd
 from collections import Counter
 
 from ABCD_ML.Models import MODELS
@@ -1488,11 +1488,12 @@ class Model_Pipeline():
                 test = pd.concat([train_data, test_data])
 
             # Always proc test.
-            X_test = self._proc_X_test(test)
+            X_test, y_test = self._proc_X_test(test)
 
             # Process the feature importance, provide all needed
-            feat_imp.proc_importances(base_model, X_test, X_train,
-                                      fold_ind % self.n_splits)
+            feat_imp.proc_importances(base_model, X_test, y_test=y_test,
+                                      X_train=X_train, scorer=self.metric,
+                                      fold=fold_ind % self.n_splits)
 
             # For local, need an intermediate average, move df to dfs
             if isinstance(fold_ind, int):
@@ -1820,7 +1821,7 @@ class Model_Pipeline():
             X_test[feat_names] = feat_selector.transform(X_test)
             X_test = X_test[feat_names]
 
-        return X_test
+        return X_test, y_test
 
     def _proc_X_train(self, train_data):
 

@@ -560,7 +560,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         only tree based and linear models can be computed quickly, with
         other models requiring a great deal of computation.
 
-        Please view the docs section to learn more about the different
+        Please view :ref:`Feat Importances` to learn more about the different
         options for calculating feature importance, as well as the
         distinction between 'local' and 'global' measures of
         feature importance, and also the tradeoffs and differences

@@ -288,15 +288,15 @@ PARAMS['bb default'] = PARAMS['single default'].copy()
 
 # Feat Importances
 PARAMS['base shap'] =\
-        {'shap__linear__nsamples': 1000,
+        {'shap__global__avg_abs': False,
          'shap__linear__feature_dependence': 'independent',
+         'shap__linear__nsamples': 1000,
          'shap__tree__feature_dependence': 'tree_path_dependent',
          'shap__tree__model_output': 'margin',
          'shap__tree__tree_limit': None,
          'shap__kernel__nkmean': 10,
          'shap__kernel__nsamples': 'auto',
-         'shap__kernel__l1_reg': 'aic',
-         'shap__global__avg_abs': False}
+         'shap__kernel__l1_reg': 'aic'}
 
 PARAMS['base perm'] = {'perm__n_perm': 10}
 

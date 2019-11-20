@@ -11,13 +11,13 @@ but in practice you would want to choose something shorter, like "ML".
 
 ::
 
-    import ABCD_ML
-    Your_ABCD_ML_Object = ABCD_ML.ABCD_ML(init_params)
+    from ABCD_ML import ABCD_ML
+    Your_ABCD_ML_Object = ABCD_ML(init_params)
 
 Init
 ============
 
-.. currentmodule:: ABCD_ML.ABCD_ML
+.. currentmodule:: ABCD_ML
 .. autoclass:: ABCD_ML
 
 
@@ -89,6 +89,10 @@ Load_Strat
 ===========
 .. automethod:: ABCD_ML.Load_Strat
 
+Show_Strat_Dist
+===============
+.. automethod:: ABCD_ML.Show_Strat_Dist
+
 Get_Overlapping_Subjects
 ========================
 .. automethod:: ABCD_ML.Get_Overlapping_Subjects
@@ -147,6 +151,14 @@ Evaluate
 ========
 .. automethod:: ABCD_ML.Evaluate
 
+Plot_Global_Feat_Importances
+=============================
+.. automethod:: ABCD_ML.Plot_Global_Feat_Importances
+
+Plot_Local_Feat_Importances
+=============================
+.. automethod:: ABCD_ML.Plot_Local_Feat_Importances
+
 Show_Models
 ================
 .. automethod:: ABCD_ML.Show_Models
@@ -175,13 +187,6 @@ Show_Ensembles
 ===================
 .. automethod:: ABCD_ML.Show_Ensembles
 
-Get_Base_Feat_Importances
-=========================
-.. automethod:: ABCD_ML.Get_Base_Feat_Importances
-
-Get_Shap_Feat_Importances
-=========================
-.. automethod:: ABCD_ML.Get_Shap_Feat_Importances
 
 
 *************

@@ -43,7 +43,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: None
 		l1_ratio: 0.5
 
 	1. "elastic classifier" ::
@@ -111,7 +111,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: None
 
 	1. "lasso C" ::
 
@@ -175,7 +175,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: none
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: None
 
 
 "mlp classifier"
@@ -254,7 +254,7 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: None
 
 	1. "ridge C" ::
 
@@ -596,7 +596,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: None
 		l1_ratio: 0.5
 
 	1. "elastic classifier" ::
@@ -664,7 +664,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: None
 
 	1. "lasso C" ::
 
@@ -728,7 +728,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: none
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: None
 
 
 "mlp classifier"
@@ -807,7 +807,7 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l2
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: None
 
 	1. "ridge C" ::
 
@@ -1848,7 +1848,7 @@ binary
 "rfe"
 *****
 
-  Base Class Documenation: :class:`ABCD_ML.Feature_Selectors.RFE`
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Feature_Selectors.RFE`
 
   Param Distributions
 
@@ -1870,12 +1870,12 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: [<function f_classif at 0x7f74d9a26950>]
-		percentile: [50]
+		score_func: <function f_classif at 0x7f5b62928f28>
+		percentile: 50
 
 	1. "univar fs classifier rs" ::
 
-		score_func: [<function f_classif at 0x7f74d9a26950>]
+		score_func: <function f_classif at 0x7f5b62928f28>
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
@@ -1897,7 +1897,7 @@ regression
 "rfe"
 *****
 
-  Base Class Documenation: :class:`ABCD_ML.Feature_Selectors.RFE`
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Feature_Selectors.RFE`
 
   Param Distributions
 
@@ -1919,12 +1919,12 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f74d9a26ae8>
+		score_func: <function f_regression at 0x7f5b62946158>
 		percentile: 50
 
 	1. "univar fs regression rs" ::
 
-		score_func: <function f_regression at 0x7f74d9a26ae8>
+		score_func: <function f_regression at 0x7f5b62946158>
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
@@ -1946,7 +1946,7 @@ categorical
 "rfe"
 *****
 
-  Base Class Documenation: :class:`ABCD_ML.Feature_Selectors.RFE`
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Feature_Selectors.RFE`
 
   Param Distributions
 
@@ -1968,12 +1968,12 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: [<function f_classif at 0x7f74d9a26950>]
-		percentile: [50]
+		score_func: <function f_classif at 0x7f5b62928f28>
+		percentile: 50
 
 	1. "univar fs classifier rs" ::
 
-		score_func: [<function f_classif at 0x7f74d9a26950>]
+		score_func: <function f_classif at 0x7f5b62928f28>
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 

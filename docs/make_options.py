@@ -1,20 +1,22 @@
-from ABCD_ML.ML_Helpers import get_objects_by_type, get_objects
-from ABCD_ML.Metrics import get_metrics_by_type
+from ABCD_ML.helpers.ML_Helpers import get_objects_by_type, get_objects
+from ABCD_ML.pipeline.Metrics import get_metrics_by_type
 
-from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
-from ABCD_ML.Models import MODELS
+from ABCD_ML.pipeline.Models import AVALIABLE as AVALIABLE_MODELS
+from ABCD_ML.pipeline.Models import MODELS
 
-from ABCD_ML.Imputers import IMPUTERS
-from ABCD_ML.Scalers import SCALERS
-from ABCD_ML.Samplers import SAMPLERS
+from ABCD_ML.pipeline.Imputers import IMPUTERS
+from ABCD_ML.pipeline.Scalers import SCALERS
+from ABCD_ML.pipeline.Samplers import SAMPLERS
 
-from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
-from ABCD_ML.Feature_Selectors import SELECTORS
+from ABCD_ML.pipeline.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
+from ABCD_ML.pipeline.Feature_Selectors import SELECTORS
 
-from ABCD_ML.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
-from ABCD_ML.Ensembles import ENSEMBLES
+from ABCD_ML.pipeline.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
+from ABCD_ML.pipeline.Ensembles import ENSEMBLES
 
-from ABCD_ML.Default_Params import PARAMS
+from ABCD_ML.pipeline.Feat_Importances import IMPORTANCES
+
+from ABCD_ML.helpers.Default_Params import PARAMS
 
 
 def get_name(obj):
@@ -287,6 +289,27 @@ lines = add_block(lines, problem_types, AVALIABLE_ENSEMBLES, ENSEMBLES)
 
 
 with open('options.rst', 'w') as f:
+    for line in lines:
+        f.write(line)
+        f.write('\n')
+
+
+with open('base_feature_importance.txt', 'r') as f:
+    lines = f.readlines()
+    lines = [line.replace('\n', '') for line in lines]
+
+for imp in IMPORTANCES:
+    name = imp
+    try:
+        ri = lines.index('replacewithparams--'+name)
+    except ValueError:
+        continue
+
+    p_name = IMPORTANCES[imp][1]
+    rel_lines = add_params([], p_name)
+    lines = lines[:ri] + rel_lines + lines[ri+1:]
+
+with open('feat_importances.rst', 'w') as f:
     for line in lines:
         f.write(line)
         f.write('\n')

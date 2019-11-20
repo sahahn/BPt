@@ -27,6 +27,14 @@ This is a project.
 
    search_types
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Feature Importances
+
+   feat_importances
+
+
+
 
 
 

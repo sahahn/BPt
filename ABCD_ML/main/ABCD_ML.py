@@ -337,9 +337,7 @@ class ABCD_ML():
                       _get_avaliable_eval_scores_name,
                       _handle_scores,
                       _print_summary_score,
-                      _add_to_eval_scores,
-                      Get_Base_Feat_Importances,
-                      Get_Shap_Feat_Importances)
+                      _add_to_eval_scores)
 
     # Fill Evaluate and Test's docstring
     Evaluate.__doc__ = get_new_docstring(Set_Default_ML_Params, Evaluate)

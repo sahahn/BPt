@@ -340,8 +340,9 @@ def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
                         dropped_name=dropped_name, show=show)
 
 
-def _show_dist(self, data, plot_key, cat_show_original_name, encoder=None,
-               original_key=None, dropped_name=None, show=True):
+def _show_dist(
+ self, data, plot_key, cat_show_original_name, encoder=None, original_key=None,
+ dropped_name=None, show=True):
 
     # Ensure works with NaN data loaded
     no_nan_subjects = data[~data.isna().any(axis=1)].index
@@ -459,20 +460,26 @@ def _get_top_global(self, df, top_n, get_abs):
     return wide
 
 
-def Plot_Global_Feat_Importances(self, feat_importances, top_n=10,
-                                 show_abs=False, multiclass=False,
-                                 ci=95, palette='default', figsize=(10, 10),
-                                 title='default',
-                                 titles='default', xlabel='default',
-                                 n_cols=1, ax=None, show=True):
+def Plot_Global_Feat_Importances(
+ self, feat_importances='most recent', top_n=10, show_abs=False,
+ multiclass=False, ci=95, palette='default', figsize=(10, 10),
+ title='default', titles='default', xlabel='default', n_cols=1, ax=None,
+ show=True):
     '''Plots any global feature importance, e.g. base or shap, values per
     feature not per prediction.
 
     Parameters
     ----------
-    feat_importances : Feat_Importances object
-        Input should be a Feat_Importances object as output from a
-        call to Evaluate, or Test.
+    feat_importances : 'most recent' or Feat_Importances object
+        Input should be either a Feat_Importances object as output from a
+        call to Evaluate, or Test, or if left as default 'most recent',
+        the passed params will be used to plot any valid calculated feature
+        importances from the last call to Evaluate or Test.
+
+        Note, if there exist multiple valid feature importances in the
+        last call, passing custom ax will most likely break things.
+
+        (default = 'most recent')
 
     top_n : int, optional
         The number of top features to display. In the case where
@@ -561,6 +568,15 @@ def Plot_Global_Feat_Importances(self, feat_importances, top_n=10,
 
         (default = True)
     '''
+
+    if feat_importances == 'most recent':
+        for fis in self.Model_Pipeline:
+            if 'global' in fis.scope:
+                self.Plot_Global_Feat_Importances(
+                 fis, top_n, show_abs, multiclass, ci, palette, figsize, title,
+                 titles, xlabel, n_cols, ax, show)
+
+        return
 
     # Initial check to make sure valid feat importances passed
     if feat_importances.global_df is None:
@@ -744,7 +760,7 @@ def _plot_global_feat_importances(self, df, feat_importances, top_n=10,
         return ax
 
 
-def Plot_Local_Feat_Importances(self, feat_importances, top_n=10,
+def Plot_Local_Feat_Importances(self, feat_importances='most recent', top_n=10,
                                 title='default', titles='default',
                                 xlabel='default', one_class=None, show=True):
     '''Plots any local feature importance, e.g. shap, values per
@@ -752,9 +768,13 @@ def Plot_Local_Feat_Importances(self, feat_importances, top_n=10,
 
     Parameters
     ----------
-    feat_importances : Feat_Importances object
-        Input should be a Feat_Importances object as output from a
-        call to Evaluate, or Test.
+    feat_importances : 'most recent' or Feat_Importances object
+        Input should be either a Feat_Importances object as output from a
+        call to Evaluate, or Test, or if left as default 'most recent',
+        the passed params will be used to plot any valid calculated feature
+        importances from the last call to Evaluate or Test.
+
+        (default = 'most recent')
 
     top_n : int, optional
         The number of top features to display. In the case where
@@ -807,6 +827,14 @@ def Plot_Local_Feat_Importances(self, feat_importances, top_n=10,
 
         (default = True)
     '''
+
+    if feat_importances == 'most recent':
+        for fis in self.Model_Pipeline:
+            if 'local' in fis.scope:
+                self.Plot_Local_Feat_Importances(
+                 fis, top_n, title, titles, xlabel, one_class, show)
+
+        return
 
     if feat_importances.local_df is None:
         raise AttributeError('You must pass a feature importances object with',

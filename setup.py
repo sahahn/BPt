@@ -1,7 +1,7 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='ABCD_ML',
-      version='0.1',
+      version='1.0',
       description='Python based Machine Learning library, for tabular ' +
                   'Neuroimaging data, specifically geared towards the' +
                   ' ABCD dataset.',
@@ -9,7 +9,7 @@ setup(name='ABCD_ML',
       author='Sage Hahn',
       author_email='sahahn@euvm.edu',
       license='MIT',
-      packages=['ABCD_ML'],
+      packages=find_packages(),
       install_requires=[
           'scikit-learn>=0.21',
           'lightgbm>=2',
@@ -27,6 +27,7 @@ setup(name='ABCD_ML',
           'dill',
           'nevergrad',
           'Ipython',
+          'joblib',
       ],
       test_suite='nose.collector',
       tests_require=['nose'],

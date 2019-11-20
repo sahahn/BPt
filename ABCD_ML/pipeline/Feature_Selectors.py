@@ -3,8 +3,8 @@ Feature_Selectors.py
 ====================================
 File with different Feature Selectors
 """
-from ABCD_ML.ML_Helpers import (show_objects, get_possible_init_params,
-                                get_obj_and_params)
+from ..helpers.ML_Helpers import (show_objects, get_possible_init_params,
+                                  get_obj_and_params)
 from sklearn.feature_selection import *
 
 

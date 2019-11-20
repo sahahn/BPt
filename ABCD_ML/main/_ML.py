@@ -8,12 +8,12 @@ import numpy as np
 
 from tqdm import tqdm, tqdm_notebook
 
-from ABCD_ML.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
-from ABCD_ML.ML_Helpers import compute_macro_micro
-from ABCD_ML.Model_Pipeline import (Regression_Model_Pipeline,
-                                    Binary_Model_Pipeline,
-                                    Categorical_Model_Pipeline,
-                                    Multilabel_Model_Pipeline)
+from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
+from ..helpers.ML_Helpers import compute_macro_micro
+from ..pipeline.Model_Pipeline import (Regression_Model_Pipeline,
+                                       Binary_Model_Pipeline,
+                                       Categorical_Model_Pipeline,
+                                       Multilabel_Model_Pipeline)
 
 
 def Set_Default_ML_Params(self, problem_type='default', target='default',

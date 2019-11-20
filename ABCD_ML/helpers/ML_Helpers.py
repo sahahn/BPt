@@ -6,7 +6,7 @@ These are non-class functions that are used in _ML.py and Scoring.py
 """
 import numpy as np
 import inspect
-from ABCD_ML.Default_Params import get_base_params, proc_params, show
+from .Default_Params import get_base_params, proc_params, show
 
 
 def compute_macro_micro(scores, n_repeats, n_splits):

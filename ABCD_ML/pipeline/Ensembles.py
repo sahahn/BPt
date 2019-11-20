@@ -1,7 +1,7 @@
 import numpy as np
 
-from ABCD_ML.ML_Helpers import get_avaliable_by_type, get_obj_and_params
-from ABCD_ML.ML_Helpers import show_objects
+from ..helpers.ML_Helpers import get_avaliable_by_type, get_obj_and_params
+from ..helpers.ML_Helpers import show_objects
 
 from deslib.dcs.a_posteriori import APosteriori
 from deslib.dcs.a_priori import APriori

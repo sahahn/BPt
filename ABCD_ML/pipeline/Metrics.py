@@ -6,7 +6,8 @@ File with functions related to calculating metrics/scores from ML models
 import numpy as np
 import sklearn.metrics as M
 from sklearn.preprocessing import label_binarize
-from ABCD_ML.ML_Helpers import get_avaliable_by_type
+
+from ..helpers.ML_Helpers import get_avaliable_by_type
 
 
 def roc_auc_score_wrapper(y_true, y_score, average='macro', sample_weight=None,

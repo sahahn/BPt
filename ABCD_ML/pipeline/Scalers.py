@@ -3,8 +3,8 @@ Scalers.py
 ====================================
 File containing the various data scalers.
 """
-from ABCD_ML.ML_Helpers import (show_param_options, get_possible_init_params,
-                                get_obj_and_params, show_objects)
+from ..helpers.ML_Helpers import (show_param_options, get_possible_init_params,
+                                  get_obj_and_params, show_objects)
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer)
 

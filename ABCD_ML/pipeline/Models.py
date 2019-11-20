@@ -5,7 +5,6 @@ This file contains the different models avaliable for training,
 with additional information on which work with which problem types
 and default params.
 """
-from ABCD_ML.ML_Helpers import show_objects
 from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
@@ -22,6 +21,8 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from xgboost import XGBClassifier, XGBRegressor
 from lightgbm import LGBMRegressor, LGBMClassifier
+
+from ..helpers.ML_Helpers import show_objects
 
 AVALIABLE = {
         'binary': {

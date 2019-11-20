@@ -7,8 +7,9 @@ import pandas as pd
 import shutil
 import shap
 import os
-from ABCD_ML.Docstring_Helpers import get_new_docstring
-from ABCD_ML.CV import CV
+
+from ..helpers.Docstring_Helpers import get_new_docstring
+from ..helpers.CV import CV
 
 
 class ABCD_ML():
@@ -241,60 +242,60 @@ class ABCD_ML():
         pass
 
     # Data loader functionality
-    from ABCD_ML._Data import (Set_Default_Load_Params,
-                               _make_load_params,
-                               Load_Name_Map,
-                               Load_Data,
-                               Load_Targets,
-                               _proc_target,
-                               Load_Covars,
-                               _proc_covar,
-                               Load_Strat,
-                               _proc_strat,
-                               Load_Exclusions,
-                               Load_Inclusions,
-                               Drop_Data_Cols,
-                               _drop_data_cols,
-                               Filter_Data_Cols,
-                               _filter_data_cols,
-                               Proc_Data_Unique_Cols,
-                               _proc_data_unique_cols,
-                               Drop_Data_Duplicates,
-                               Binarize_Target,
-                               Get_Overlapping_Subjects,
-                               Clear_Name_Map,
-                               Clear_Data,
-                               Clear_Covars,
-                               Clear_Targets,
-                               Clear_Strat,
-                               Clear_Exclusions,
-                               Clear_Inclusions,
-                               _get_targets_key,
-                               _load_datasets,
-                               _load_user_passed,
-                               _load_dataset,
-                               _common_load,
-                               _load,
-                               _set_overlap,
-                               _merge_existing,
-                               _proc_df,
-                               _load_set_of_subjects,
-                               _process_subject_name,
-                               _drop_na,
-                               _drop_from_filter,
-                               _filter_by_eventname,
-                               _show_na_info,
-                               _drop_excluded,
-                               _drop_included,
-                               _filter_excluded,
-                               _filter_included,
-                               _get_overlapping_subjects,
-                               _process_new,
-                               _prepare_data,
-                               _get_cat_keys,
-                               _set_all_data_keys,
-                               _get_base_targets_names,
-                               _get_covar_scopes)
+    from ._Data import (Set_Default_Load_Params,
+                        _make_load_params,
+                        Load_Name_Map,
+                        Load_Data,
+                        Load_Targets,
+                        _proc_target,
+                        Load_Covars,
+                        _proc_covar,
+                        Load_Strat,
+                        _proc_strat,
+                        Load_Exclusions,
+                        Load_Inclusions,
+                        Drop_Data_Cols,
+                        _drop_data_cols,
+                        Filter_Data_Cols,
+                        _filter_data_cols,
+                        Proc_Data_Unique_Cols,
+                        _proc_data_unique_cols,
+                        Drop_Data_Duplicates,
+                        Binarize_Target,
+                        Get_Overlapping_Subjects,
+                        Clear_Name_Map,
+                        Clear_Data,
+                        Clear_Covars,
+                        Clear_Targets,
+                        Clear_Strat,
+                        Clear_Exclusions,
+                        Clear_Inclusions,
+                        _get_targets_key,
+                        _load_datasets,
+                        _load_user_passed,
+                        _load_dataset,
+                        _common_load,
+                        _load,
+                        _set_overlap,
+                        _merge_existing,
+                        _proc_df,
+                        _load_set_of_subjects,
+                        _process_subject_name,
+                        _drop_na,
+                        _drop_from_filter,
+                        _filter_by_eventname,
+                        _show_na_info,
+                        _drop_excluded,
+                        _drop_included,
+                        _filter_excluded,
+                        _filter_included,
+                        _get_overlapping_subjects,
+                        _process_new,
+                        _prepare_data,
+                        _get_cat_keys,
+                        _set_all_data_keys,
+                        _get_base_targets_names,
+                        _get_covar_scopes)
 
     # Update loader docstrings
     Load_Name_Map.__doc__ =\
@@ -315,54 +316,54 @@ class ABCD_ML():
         get_new_docstring(Set_Default_Load_Params, Drop_Data_Duplicates)
 
     # Validation / CV funcationality
-    from ABCD_ML._Validation import (Define_Validation_Strategy,
-                                     Train_Test_Split,
-                                     _add_strat_u_name,
-                                     _get_info_on)
+    from ._Validation import (Define_Validation_Strategy,
+                              Train_Test_Split,
+                              _add_strat_u_name,
+                              _get_info_on)
 
     # Machine Learning functionality
-    from ABCD_ML._ML import (Set_Default_ML_Params,
-                             Set_Default_ML_Verbosity,
-                             _ML_print,
-                             Evaluate,
-                             Test,
-                             _premodel_check,
-                             _make_ML_params,
-                             _print_model_params,
-                             _get_split_vals,
-                             _proc_feats_to_use,
-                             _get_final_subjects_to_use,
-                             _init_model,
-                             _get_avaliable_eval_scores_name,
-                             _handle_scores,
-                             _print_summary_score,
-                             _add_to_eval_scores,
-                             Get_Base_Feat_Importances,
-                             Get_Shap_Feat_Importances)
+    from ._ML import (Set_Default_ML_Params,
+                      Set_Default_ML_Verbosity,
+                      _ML_print,
+                      Evaluate,
+                      Test,
+                      _premodel_check,
+                      _make_ML_params,
+                      _print_model_params,
+                      _get_split_vals,
+                      _proc_feats_to_use,
+                      _get_final_subjects_to_use,
+                      _init_model,
+                      _get_avaliable_eval_scores_name,
+                      _handle_scores,
+                      _print_summary_score,
+                      _add_to_eval_scores,
+                      Get_Base_Feat_Importances,
+                      Get_Shap_Feat_Importances)
 
     # Fill Evaluate and Test's docstring
     Evaluate.__doc__ = get_new_docstring(Set_Default_ML_Params, Evaluate)
     Test.__doc__ = get_new_docstring(Evaluate, Test)
 
-    from ABCD_ML.Models import Show_Models
-    from ABCD_ML.Metrics import Show_Metrics
-    from ABCD_ML.Imputers import Show_Imputers
-    from ABCD_ML.Scalers import Show_Scalers
-    from ABCD_ML.Samplers import Show_Samplers
-    from ABCD_ML.Feature_Selectors import Show_Feat_Selectors
-    from ABCD_ML.Ensembles import Show_Ensembles
+    from ..pipeline.Models import Show_Models
+    from ..pipeline.Metrics import Show_Metrics
+    from ..pipeline.Imputers import Show_Imputers
+    from ..pipeline.Scalers import Show_Scalers
+    from ..pipeline.Samplers import Show_Samplers
+    from ..pipeline.Feature_Selectors import Show_Feat_Selectors
+    from ..pipeline.Ensembles import Show_Ensembles
 
-    from ABCD_ML._Plotting import (_plot,
-                                   Show_Data_Dist,
-                                   Show_Targets_Dist,
-                                   Show_Covars_Dist,
-                                   Show_Strat_Dist,
-                                   _show_single_dist,
-                                   _show_dist,
-                                   _display_df,
-                                   _get_top_global,
-                                   Plot_Global_Feat_Importances,
-                                   _plot_multiclass_global_feat_importances,
-                                   _plot_global_feat_importances,
-                                   Plot_Local_Feat_Importances,
-                                   _plot_shap_summary)
+    from ._Plotting import (_plot,
+                            Show_Data_Dist,
+                            Show_Targets_Dist,
+                            Show_Covars_Dist,
+                            Show_Strat_Dist,
+                            _show_single_dist,
+                            _show_dist,
+                            _display_df,
+                            _get_top_global,
+                            Plot_Global_Feat_Importances,
+                            _plot_multiclass_global_feat_importances,
+                            _plot_global_feat_importances,
+                            Plot_Local_Feat_Importances,
+                            _plot_shap_summary)

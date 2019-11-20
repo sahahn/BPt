@@ -12,7 +12,8 @@ import shap
 import os
 from IPython.display import display, HTML
 from matplotlib.animation import FuncAnimation
-from ABCD_ML.Data_Helpers import get_original_cat_names
+
+from ..helpers.Data_Helpers import get_original_cat_names
 
 
 def _plot(self, save_name, show=True):

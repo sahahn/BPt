@@ -6,8 +6,9 @@ Main class extension file for defining validation and train test splits.
 import pandas as pd
 import numpy as np
 import os
-from ABCD_ML.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
-from ABCD_ML.CV import CV
+
+from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
+from ..helpers.CV import CV
 
 
 def Define_Validation_Strategy(self, groups=None, stratify=None,

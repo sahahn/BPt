@@ -9,29 +9,29 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import FunctionTransformer
 from collections import Counter
 
-from ABCD_ML.Models import MODELS
-from ABCD_ML.ML_Helpers import (conv_to_list, proc_input,
-                                get_possible_init_params,
-                                get_obj_and_params,
-                                user_passed_param_check,
-                                f_array, replace_with_in_params)
+from .Models import MODELS
+from ..helpers.ML_Helpers import (conv_to_list, proc_input,
+                                  get_possible_init_params,
+                                  get_obj_and_params,
+                                  user_passed_param_check,
+                                  f_array, replace_with_in_params)
 
-from ABCD_ML.Models import AVALIABLE as AVALIABLE_MODELS
-from ABCD_ML.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
-from ABCD_ML.Metrics import AVALIABLE as AVALIABLE_METRICS
-from ABCD_ML.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
-from ABCD_ML.Feat_Importances import AVALIABLE as AVALIABLE_IMPORTANCES
+from .Models import AVALIABLE as AVALIABLE_MODELS
+from .Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
+from .Metrics import AVALIABLE as AVALIABLE_METRICS
+from .Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
+from .Feat_Importances import AVALIABLE as AVALIABLE_IMPORTANCES
 
-from ABCD_ML.Samplers import get_sampler_and_params
-from ABCD_ML.Feature_Selectors import get_feat_selector_and_params
-from ABCD_ML.Metrics import get_metric
-from ABCD_ML.Scalers import get_scaler_and_params
-from ABCD_ML.Imputers import get_imputer_and_params
-from ABCD_ML.Ensembles import (get_ensemble_and_params, Basic_Ensemble,
-                               DES_Ensemble)
-from ABCD_ML.Feat_Importances import get_feat_importances_and_params
+from .Samplers import get_sampler_and_params
+from .Feature_Selectors import get_feat_selector_and_params
+from .Metrics import get_metric
+from .Scalers import get_scaler_and_params
+from .Imputers import get_imputer_and_params
+from .Ensembles import (get_ensemble_and_params, Basic_Ensemble,
+                        DES_Ensemble)
+from .Feat_Importances import get_feat_importances_and_params
 
-from ABCD_ML.nevergrad import NevergradSearchCV
+from .Nevergrad import NevergradSearchCV
 import os
 
 

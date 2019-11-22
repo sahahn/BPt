@@ -32,9 +32,33 @@ def _plot(self, save_name, show=True):
             plt.show()
 
 
+def _proc_subjects(self, data, subjects):
+
+    if subjects == 'train':
+
+        try:
+            return data.loc[self.train_subjects]
+        except KeyError:
+            raise RuntimeError('No train subjects defined!')
+
+    elif subjects == 'test':
+
+        try:
+            return data.loc[self.test_subjects]
+        except KeyError:
+            raise RuntimeError('No test subjects defined!')
+
+    else:
+
+        try:
+            return data.loc[subjects]
+        except KeyError:
+            raise RuntimeError('Invalid subjects passed!')
+
+
 def Show_Data_Dist(self, num_feats=20, frame_interval=500,
                    plot_type='bar', show_only_overlap=True,
-                   save=True, save_name='data distribution'):
+                   subjects=None, save=True, save_name='data distribution'):
 
     '''This method displays some summary statistics about
     the loaded targets, as well as plots the distibution if possible.
@@ -64,7 +88,16 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
         subjects across data, covars, ect... otherwise, if False,
         shows the current loaded distribution as is.
 
+        If subjects is set (anything but None), this param will be ignored.
+
         (default = True)
+
+    subjects : None, 'train', 'test' or array-like, optional
+        If not None, then plot only the subjects loaded as train_subjects,
+        or as test subjects, of you can pass a custom list or array-like of
+        subjects.
+
+        (default = None)
 
     save : bool, optional
         If the animation should be saved as a gif, True or False.
@@ -77,7 +110,10 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
         (default = 'data distribution')
     '''
 
-    data = self._set_overlap(self.data, show_only_overlap).copy()
+    if subjects is None:
+        data = self._set_overlap(self.data, show_only_overlap).copy()
+    else:
+        data = self._proc_subjects(self.data, subjects).copy()
 
     fig, ax = plt.subplots()
 
@@ -111,17 +147,19 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
 
 
 def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
-                      show_only_overlap=True, show=True):
+                      show_only_overlap=True, subjects=None, show=True):
     '''This method displays some summary statistics about
     the loaded targets, as well as plots the distibution if possible.
 
     Parameters
     ----------
-    targets : str or list, optional
+    targets : str, int or list, optional
         The single (str) or multiple targets (list),
         in which to display the distributions of. The str input
         'SHOW_ALL' is reserved, and set to default, for showing
         the distributions of loaded targets.
+
+        You can also pass the int index of the loaded target to show!
 
         (default = 'SHOW_ALL')
 
@@ -139,6 +177,13 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
 
         (default = True)
 
+    subjects : None, 'train', 'test' or array-like, optional
+        If not None, then plot only the subjects loaded as train_subjects,
+        or as test subjects, of you can pass a custom list or array-like of
+        subjects.
+
+        (default = None)
+
     show : bool, optional
         If True, then plt.show(), the matplotlib command will be called,
         and the figure displayed. On the other hand, if set to False,
@@ -149,7 +194,10 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
         (default = True)
     '''
 
-    targets_df = self._set_overlap(self.targets, show_only_overlap).copy()
+    if subjects is None:
+        targets_df = self._set_overlap(self.targets, show_only_overlap).copy()
+    else:
+        targets_df = self._proc_subjects(self.targets, subjects).copy()
 
     if targets == 'SHOW_ALL':
         targets = self._get_base_targets_names()
@@ -158,13 +206,15 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
         targets = [targets]
 
     for target in targets:
+
+        target = self._get_targets_key(target)
         self._show_single_dist(target, targets_df, self.targets_encoders,
                                cat_show_original_name, show)
         self._print()
 
 
 def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
-                     show_only_overlap=True, show=True):
+                     show_only_overlap=True, subjects=None, show=True):
     '''Plot a single or multiple covar distributions, along with
     outputting useful summary statistics.
 
@@ -192,6 +242,13 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
 
         (default = True)
 
+    subjects : None, 'train', 'test' or array-like, optional
+        If not None, then plot only the subjects loaded as train_subjects,
+        or as test subjects, of you can pass a custom list or array-like of
+        subjects.
+
+        (default = None)
+
     show : bool, optional
         If True, then plt.show(), the matplotlib command will be called,
         and the figure displayed. On the other hand, if set to False,
@@ -202,7 +259,10 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
         (default = True)
     '''
 
-    covars_df = self._set_overlap(self.covars, show_only_overlap).copy()
+    if subjects is None:
+        covars_df = self._set_overlap(self.covars, show_only_overlap).copy()
+    else:
+        covars_df = self._proc_subjects(self.covars, subjects).copy()
 
     if covars == 'SHOW_ALL':
         covars = list(self.covars_encoders)
@@ -217,7 +277,7 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
 
 
 def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
-                    show_only_overlap=True, show=True):
+                    show_only_overlap=True, subjects=None, show=True):
     '''Plot a single or multiple strat distributions, along with
     outputting useful summary statistics.
 
@@ -244,6 +304,13 @@ def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
 
         (default = True)
 
+    subjects : None, 'train', 'test' or array-like, optional
+        If not None, then plot only the subjects loaded as train_subjects,
+        or as test subjects, of you can pass a custom list or array-like of
+        subjects.
+
+        (default = None)
+
     show : bool, optional
         If True, then plt.show(), the matplotlib command will be called,
         and the figure displayed. On the other hand, if set to False,
@@ -254,7 +321,10 @@ def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
         (default = True)
     '''
 
-    strat_df = self._set_overlap(self.strat, show_only_overlap).copy()
+    if subjects is None:
+        strat_df = self._set_overlap(self.strat, show_only_overlap).copy()
+    else:
+        strat_df = self._proc_subjects(self.strat, subjects).copy()
 
     if strat == 'SHOW_ALL':
         strat = list(self.strat_encoders)

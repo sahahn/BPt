@@ -270,6 +270,7 @@ class ABCD_ML():
                         Clear_Strat,
                         Clear_Exclusions,
                         Clear_Inclusions,
+                        Get_Nan_Subjects,
                         _get_targets_key,
                         _load_datasets,
                         _load_user_passed,
@@ -352,6 +353,7 @@ class ABCD_ML():
     from ..pipeline.Ensembles import Show_Ensembles
 
     from ._Plotting import (_plot,
+                            _proc_subjects,
                             Show_Data_Dist,
                             Show_Targets_Dist,
                             Show_Covars_Dist,

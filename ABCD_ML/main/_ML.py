@@ -1606,7 +1606,6 @@ def _init_model(self, ML_params):
                        self.all_data_keys, targets_key,
                        covar_scopes, cat_encoders,
                        self.ML_verbosity['progress_bar'],
-                       self.ML_verbosity['param_search_verbose'],
                        self._ML_print)
 
 
@@ -1656,8 +1655,14 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
                  n_splits) for class_scores in by_class]
 
             targets_key = self.Model_Pipeline.targets_key
+            classes = self.Model_Pipeline.classes
+
+            class_names =\
+                self.targets_encoders[targets_key].inverse_transform(
+                    classes.astype(int))
+
             for summary_scores, class_name in zip(summary_scores_by_class,
-                                                  targets_key):
+                                                  class_names):
 
                 self._print('Target class: ', class_name)
                 self._print_summary_score(name, summary_scores,

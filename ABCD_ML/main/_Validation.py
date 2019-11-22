@@ -51,14 +51,27 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         every training fold, and never to a testing fold.
         This file should be formatted as one subject per line.
 
+        You can load from a loc and pass subjects, the subjects
+        from each source will be merged.
+
         This parameter is compatible with groups / stratify.
 
         (default = None)
 
-    train_only_subjects : list, set, array-like or None, optional
+    train_only_subjects : set, array-like, 'nan', or None, optional
         An explicit list or array-like of train_only subjects, where
         any subject loaded as train_only will be assigned to every training
         fold, and never to a testing fold.
+
+        You can also optionally specify 'nan' as input, which
+        will add all subjects with any NaN data to train only.
+
+        If you want to add both all the NaN subjects and custom
+        subjects, call :func:`Get_Nan_Subjects` to get all NaN subjects,
+        and then merge them yourself with any you want to pass.
+
+        You can load from a loc and pass subjects, the subjects
+        from each source will be merged.
 
         This parameter is compatible with groups / stratify.
 
@@ -112,6 +125,9 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
 
     # Ensures only final overlap of subjects, ect...
     self._process_new(True)
+
+    if train_only_subjects == 'nan':
+        train_only_subjects = self.Get_Nan_Subjects()
 
     train_only =\
         self._load_set_of_subjects(loc=train_only_loc,

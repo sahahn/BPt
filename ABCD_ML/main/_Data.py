@@ -71,7 +71,7 @@ def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
         (in addition to setting eventname most likely to None and
         use_default_subject_ids to False)
 
-        if 'default', and not already defined, set to src_subject_id'.
+        if 'default', and not already defined, set to 'src_subject_id'.
         (default = 'default')
 
     eventname : value, list of values or None, optional
@@ -1787,13 +1787,27 @@ def Clear_Inclusions(self):
     self._print()
 
 
+def Get_Nan_Subjects(self):
+    '''Retrieves all subjects with any loaded NaN data, returns
+    their pandas index.'''
+
+    if self.all_data is None:
+        self._prepare_data()
+
+    return self.all_data[pd.isnull(self.all_data).any(axis=1)].index
+
+
 def _get_targets_key(self, key, base_key=False):
 
     targets_base_keys = self._get_base_targets_names()
 
     if isinstance(key, int):
         ind = key
+
     else:
+        if key in self.name_map:
+            key = self.name_map[key]
+
         ind = targets_base_keys.index(key)
 
     if base_key:

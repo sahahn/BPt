@@ -528,8 +528,12 @@ def get_original_cat_names(names, encoder, original_key):
 
     if isinstance(encoder, dict):
         original = [encoder[name] for name in names]
+
     else:
-        original = encoder.inverse_transform(base)
+        try:
+            original = encoder.inverse_transform(base)
+        except IndexError:
+            original = encoder.inverse_transform([int(b) for b in base])
 
     return original
 

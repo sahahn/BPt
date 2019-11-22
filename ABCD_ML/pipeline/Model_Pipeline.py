@@ -42,8 +42,7 @@ class Model_Pipeline():
 
     def __init__(self, ML_params, CV, search_split_vals,
                  all_data_keys, targets_key, covar_scopes,
-                 cat_encoders, progress_bar, param_search_verbose,
-                 _print=print):
+                 cat_encoders, progress_bar, _print=print):
         ''' Init function for Model
 
         Parameters
@@ -156,9 +155,6 @@ class Model_Pipeline():
             Either None, to not use progress bar or a tqdm object, to
             display progress.
 
-        param_search_verbose : int
-            Argument passed to sklearn param search objects, random or grid.
-
         _print : func, optional
             The print function to use, by default the python print,
             but designed to be passed ABCD_ML._ML_print
@@ -176,7 +172,6 @@ class Model_Pipeline():
         self.covar_scopes = covar_scopes
         self.cat_encoders = cat_encoders
         self.progress_bar = progress_bar
-        self.param_search_verbose = param_search_verbose
         self._print = _print
 
         # Un-pack ML_params
@@ -1614,7 +1609,6 @@ class Model_Pipeline():
         # Set the search params
         search_params = {}
         search_params['optimizer_name'] = self.search_type
-        search_params['verbose'] = self.param_search_verbose
         search_params['estimator'] = model
         search_params['cv'] = search_cv
         search_params['scoring'] = self.metric
@@ -1723,6 +1717,8 @@ class Model_Pipeline():
         fold = str((fold_ind % self.n_splits) + 1)
         repeat = str((fold_ind // self.n_splits) + 1)
 
+        self.classes = np.unique(y_test)
+
         try:
             raw_prob_preds = self.Model.predict_proba(X_test)
             pred_col = eval_type + repeat + '_prob'
@@ -1730,14 +1726,14 @@ class Model_Pipeline():
             if len(np.shape(raw_prob_preds)) == 3:
 
                 for i in range(len(raw_prob_preds)):
-                    p_col = pred_col + '_class_' + str(i)
+                    p_col = pred_col + '_class_' + str(self.classes[i])
                     class_preds = [val[1] for val in raw_prob_preds[i]]
                     self.raw_preds_df.loc[subjects, p_col] = class_preds
 
             elif len(np.shape(raw_prob_preds)) == 2:
 
                 for i in range(np.shape(raw_prob_preds)[1]):
-                    p_col = pred_col + '_class_' + str(i)
+                    p_col = pred_col + '_class_' + str(self.classes[i])
                     class_preds = raw_prob_preds[:, i]
                     self.raw_preds_df.loc[subjects, p_col] = class_preds
 
@@ -1752,7 +1748,7 @@ class Model_Pipeline():
 
         if len(np.shape(raw_preds)) == 2:
             for i in range(np.shape(raw_preds)[1]):
-                p_col = pred_col + '_class_' + str(i)
+                p_col = pred_col + '_class_' + str(self.classes[i])
                 class_preds = raw_preds[:, i]
                 self.raw_preds_df.loc[subjects, p_col] = class_preds
 

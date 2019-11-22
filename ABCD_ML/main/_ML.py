@@ -873,10 +873,9 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     self._print('Default ML params set within self.default_ML_params.')
 
 
-def Set_Default_ML_Verbosity(self, progress_bar=True, fold_name=False,
-                             time_per_fold=False, score_per_fold=False,
-                             fold_sizes=False, param_search_verbose=0,
-                             save_to_logs=False):
+def Set_Default_ML_Verbosity(self, progress_bar='default', fold_name='default',
+                             time_per_fold='default', score_per_fold='default',
+                             fold_sizes='default', save_to_logs='default'):
     '''This function allows setting various verbosity options that effect
     output during :func:`Evaluate` and :func:`Test`
 
@@ -889,7 +888,8 @@ def Set_Default_ML_Verbosity(self, progress_bar=True, fold_name=False,
         This bar should work both in a notebook env and outside one,
         assuming self.notebook has been set correctly.
 
-        (default = True)
+        if 'default', and not already defined, set to True.
+        (default = 'default')
 
     fold_name : bool, optional
         If True, prints a rough measure of progress via
@@ -898,65 +898,82 @@ def Set_Default_ML_Verbosity(self, progress_bar=True, fold_name=False,
         time per fold, then it is helpful to have the time printed
         with each fold). If False, nothing is shown.
 
-        (default = False)
+        if 'default', and not already defined, set to False.
+        (default = 'default')
 
     time_per_fold : bool, optional
         If True, prints the full time that a fold took to complete.
 
-        (default = False)
+        if 'default', and not already defined, set to False.
+        (default = 'default')
 
     score_per_fold : bool, optional
         If True, displays the score for each fold, though slightly less
         formatted then in the final display.
 
-        (default = False)
+        if 'default', and not already defined, set to False.
+        (default = 'default')
 
     fold_sizes : bool, optional
         If True, will show the number of subjects within each train
         and val/test fold.
 
-        (default = False)
-
-    param_search_verbose : int, optional
-        This value is passed directly to the sklearn parameter selection
-        object. See:
-
-            - :class:`sklearn.model_selection.RandomizedSearchCV`
-            - :class:`sklearn.model_selection.GridSearchCV`
-
-        If 0, no verbose output is shown, and from there higher numbers
-        show more output.
-
-        (default = 0)
+        if 'default', and not already defined, set to False.
+        (default = 'default')
 
     save_to_logs : bool, optional
         If True, then when possible, and with the selected model
         verbosity options, verbosity ouput will be saved to the
         log file.
 
-        (default = False)
+        if 'default', and not already defined, set to False.
+        (default = 'default')
     '''
 
-    if progress_bar:
+    if progress_bar != 'default':
+        if progress_bar is True:
+            if self.notebook:
+                self.ML_verbosity['progress_bar'] = tqdm_notebook
+            else:
+                self.ML_verbosity['progress_bar'] = tqdm
+        else:
+            self.ML_verbosity['progress_bar'] = None
+    elif 'progress_bar' not in self.ML_verbosity:
         if self.notebook:
             self.ML_verbosity['progress_bar'] = tqdm_notebook
         else:
             self.ML_verbosity['progress_bar'] = tqdm
+        self._print('No default progress bar passed, set to True.')
 
-    else:
-        self.ML_verbosity['progress_bar'] = None
+    if fold_name != 'default':
+        self.ML_verbosity['fold_name'] = fold_name
+    elif 'fold_name' not in self.ML_verbosity:
+        self.ML_verbosity['fold_name'] = False
+        self._print('No default fold name passed, set to False.')
 
-    self.ML_verbosity['fold_name'] = fold_name
-    self.ML_verbosity['time_per_fold'] = time_per_fold
-    self.ML_verbosity['score_per_fold'] = score_per_fold
-    self.ML_verbosity['fold_sizes'] = fold_sizes
-    self.ML_verbosity['param_search_verbose'] = param_search_verbose
-    self.ML_verbosity['save_to_logs'] = save_to_logs
+    if time_per_fold != 'default':
+        self.ML_verbosity['time_per_fold'] = time_per_fold
+    elif 'time_per_fold' not in self.ML_verbosity:
+        self.ML_verbosity['time_per_fold'] = False
+        self._print('No default time per fold passed, set to False.')
 
-    if self.verbose is False and self.log_file is None:
-        self._print('Warning: self.verbose is set to False and not logs are',
-                    'being recorded! Some passed settings therefore might not',
-                    'take any effect.')
+    if score_per_fold != 'default':
+        self.ML_verbosity['score_per_fold'] = score_per_fold
+    elif 'score_per_fold' not in self.ML_verbosity:
+        self.ML_verbosity['score_per_fold'] = False
+        self._print('No default score per fold passed, set to False.')
+
+    if fold_sizes != 'default':
+        self.ML_verbosity['fold_sizes'] = fold_sizes
+    elif 'fold_sizes' not in self.ML_verbosity:
+        self.ML_verbosity['fold_sizes'] = False
+        self._print('No default fold sizes passed, set to False.')
+
+    if save_to_logs != 'default':
+        self.ML_verbosity['save_to_logs'] = save_to_logs
+    elif 'save_to_logs' not in self.ML_verbosity:
+        self.ML_verbosity['save_to_logs'] = False
+        self._print('No default save to logs passed, set to False.')
 
     self._print()
 
@@ -1707,4 +1724,3 @@ def _add_to_eval_scores(self, run_name, name, metric_name, val_type, val,
 
         self.eval_scores[run_name][name][metric_name][class_name][val_type] =\
             val
-

@@ -87,39 +87,39 @@ MODELS = {
 
     'gaussian nb': (GaussianNB, ['base gnb']),
 
-    'knn classifier': (KNeighborsClassifier, ['base knn', 'knn rs']),
-    'knn regressor': (KNeighborsRegressor, ['base knn', 'knn rs']),
+    'knn classifier': (KNeighborsClassifier, ['base knn', 'knn dist']),
+    'knn regressor': (KNeighborsRegressor, ['base knn', 'knn dist']),
 
-    'dt classifier': (DecisionTreeClassifier, ['base dt', 'dt classifier rs']),
-    'dt regressor':  (DecisionTreeRegressor, ['base dt', 'dt rs']),
+    'dt classifier': (DecisionTreeClassifier, ['base dt', 'dt classifier dist']),
+    'dt regressor':  (DecisionTreeRegressor, ['base dt', 'dt dist']),
 
     'linear regressor': (LinearRegression, ['base linear']),
 
-    'random forest regressor': (RandomForestRegressor, ['base rf', 'rf rs']),
+    'random forest regressor': (RandomForestRegressor, ['base rf', 'rf dist']),
     'random forest classifier': (RandomForestClassifier, ['base rf',
-                                                          'rf classifier rs']),
+                                                          'rf classifier dist']),
 
-    'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm rs1',
-                                            'lgbm rs2']),
+    'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm dist1',
+                                            'lgbm dist2']),
     'light gbm classifier': (LGBMClassifier,
-                             ['base lgbm', 'lgbm classifier rs1',
-                              'lgbm classifier rs2']),
+                             ['base lgbm', 'lgbm classifier dist1',
+                              'lgbm classifier dist2']),
 
     'gp regressor': (GaussianProcessRegressor, ['base gp regressor']),
     'gp classifier': (GaussianProcessClassifier,  ['base gp classifier']),
 
-    'svm regressor': (SVR, ['base svm', 'svm rs']),
-    'svm classifier': (SVC, ['base svm classifier', 'svm classifier rs']),
+    'svm regressor': (SVR, ['base svm', 'svm dist']),
+    'svm classifier': (SVC, ['base svm classifier', 'svm classifier dist']),
 
-    'mlp regressor': (MLPRegressor, ['base mlp', 'mlp rs', 'mlp rs es',
+    'mlp regressor': (MLPRegressor, ['base mlp', 'mlp dist', 'mlp dist es',
                                      'mlp layers search']),
-    'mlp classifier': (MLPClassifier, ['base mlp', 'mlp rs', 'mlp rs es',
+    'mlp classifier': (MLPClassifier, ['base mlp', 'mlp dist', 'mlp dist es',
                                        'mlp layers search']),
-    'ridge regressor': (Ridge, ['base ridge regressor', 'ridge regressor rs']),
-    'lasso regressor': (Lasso, ['base lasso regressor', 'lasso regressor rs']),
+    'ridge regressor': (Ridge, ['base ridge regressor', 'ridge regressor dist']),
+    'lasso regressor': (Lasso, ['base lasso regressor', 'lasso regressor dist']),
 
-    'xgb regressor': (XGBRegressor, ['base xgb', 'xgb rs']),
-    'xgb classifier': (XGBClassifier, ['base xgb', 'xgb rs']),
+    'xgb regressor': (XGBRegressor, ['base xgb', 'xgb dist']),
+    'xgb classifier': (XGBClassifier, ['base xgb', 'xgb dist']),
     }
 
 

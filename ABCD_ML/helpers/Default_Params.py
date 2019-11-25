@@ -62,33 +62,33 @@ PARAMS['base huber'] = {'epsilon': 1.35}
 PARAMS['base gnb'] = {'var_smoothing': 1e-9}
 
 PARAMS['base knn'] = {'n_neighbors': 5}
-PARAMS['knn rs'] = {'weights':
+PARAMS['knn dist'] = {'weights':
                     ng.var.OrderedDiscrete(['uniform', 'distance']),
                     'n_neighbors': ng.var.Scalar(int).bounded(2, 25)}
 
 PARAMS['base dt'] = {}
-PARAMS['dt rs'] = {'max_depth': ng.var.Scalar(int).bounded(1, 30),
+PARAMS['dt dist'] = {'max_depth': ng.var.Scalar(int).bounded(1, 30),
                    'min_samples_split': ng.var.Scalar(int).bounded(2, 50)}
 
-PARAMS['dt classifier rs'] = PARAMS['dt rs'].copy()
-PARAMS['dt classifier rs']['class_weight'] =\
+PARAMS['dt classifier dist'] = PARAMS['dt dist'].copy()
+PARAMS['dt classifier dist']['class_weight'] =\
         ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['base linear'] = {'fit_intercept': True}
 
 PARAMS['base rf'] = {'n_estimators': 100}
-PARAMS['rf rs'] = {'n_estimators': ng.var.Scalar(int).bounded(3, 500),
+PARAMS['rf dist'] = {'n_estimators': ng.var.Scalar(int).bounded(3, 500),
                    'max_depth': ng.var.Scalar(int).bounded(2, 200),
                    'max_features': ng.var.Scalar().bounded(0, 1),
                    'min_samples_split': ng.var.Scalar().bounded(0, 1),
                    'bootstrap': True}
 
-PARAMS['rf classifier rs'] = PARAMS['rf rs'].copy()
-PARAMS['rf classifier rs']['class_weight'] =\
+PARAMS['rf classifier dist'] = PARAMS['rf dist'].copy()
+PARAMS['rf classifier dist']['class_weight'] =\
         ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['base lgbm'] = {'silent': True}
-PARAMS['lgbm rs1'] = {'silent': True,
+PARAMS['lgbm dist1'] = {'silent': True,
                       'boosting_type':
                       ng.var.OrderedDiscrete(['gbdt', 'dart', 'goss']),
                       'n_estimators': ng.var.Scalar(int).bounded(3, 500),
@@ -106,7 +106,7 @@ PARAMS['lgbm rs1'] = {'silent': True,
                       ng.var.Scalar().bounded(-2, 1).exponentiated(base=10,
                                                                    coeff=-1)}
 
-PARAMS['lgbm rs2'] = {'silent': True,
+PARAMS['lgbm dist2'] = {'silent': True,
                       'lambda_l2': 0.001,
                       'boosting_type':
                       ng.var.OrderedDiscrete(['gbdt', 'dart']),
@@ -127,25 +127,25 @@ PARAMS['lgbm rs2'] = {'silent': True,
                       ng.var.OrderedDiscrete([5, 20, 35, 50, 75, 100, 150, 200,
                                               350, 500, 750, 1000])}
 
-PARAMS['lgbm classifier rs1'] = PARAMS['lgbm rs1'].copy()
-PARAMS['lgbm classifier rs1']['class_weight'] =\
+PARAMS['lgbm classifier dist1'] = PARAMS['lgbm dist1'].copy()
+PARAMS['lgbm classifier dist1']['class_weight'] =\
         ng.var.OrderedDiscrete([None, 'balanced'])
 
-PARAMS['lgbm classifier rs2'] = PARAMS['lgbm rs2'].copy()
-PARAMS['lgbm classifier rs2']['class_weight'] =\
+PARAMS['lgbm classifier dist2'] = PARAMS['lgbm dist2'].copy()
+PARAMS['lgbm classifier dist2']['class_weight'] =\
         ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['base lgbm es'] = {'silent': True,
                           'val_split_percent': .1,
                           'early_stop_rounds': 50}
 
-PARAMS['lgbm es rs'] = PARAMS['lgbm rs1'].copy()
-PARAMS['lgbm es rs']['val_split_percent'] = ng.var.Scalar().bounded(.05, .2)
-PARAMS['lgbm es rs']['early_stop_rounds'] = ng.var.Scalar(int).bounded(10, 150)
+PARAMS['lgbm es dist'] = PARAMS['lgbm dist1'].copy()
+PARAMS['lgbm es dist']['val_split_percent'] = ng.var.Scalar().bounded(.05, .2)
+PARAMS['lgbm es dist']['early_stop_rounds'] = ng.var.Scalar(int).bounded(10, 150)
 
 PARAMS['base xgb'] = {'verbosity': 0}
 
-PARAMS['xgb rs'] =\
+PARAMS['xgb dist'] =\
         {'verbosity': 0,
          'max_depth': ng.var.Scalar(int).bounded(2, 50),
          'learning_rate': ng.var.Scalar().bounded(.01, .5),
@@ -162,36 +162,36 @@ PARAMS['base gp classifier'] = {'n_restarts_optimizer': 5}
 PARAMS['base svm'] = {'kernel': 'rbf',
                       'gamma': 'scale'}
 
-PARAMS['svm rs'] = PARAMS['base svm'].copy()
-PARAMS['svm rs']['C'] =\
+PARAMS['svm dist'] = PARAMS['base svm'].copy()
+PARAMS['svm dist']['C'] =\
         ng.var.Scalar().bounded(-4, 4).exponentiated(base=10,
                                                      coeff=-1)
-PARAMS['svm rs']['gamma'] =\
+PARAMS['svm dist']['gamma'] =\
         ng.var.Scalar().bounded(1, 6).exponentiated(base=10,
                                                     coeff=-1)
 
 PARAMS['base svm classifier'] = PARAMS['base svm'].copy()
 PARAMS['base svm classifier']['probability'] = True
 
-PARAMS['svm classifier rs'] = PARAMS['svm rs'].copy()
-PARAMS['svm classifier rs']['probability'] = True
-PARAMS['svm classifier rs']['class_weight'] =\
+PARAMS['svm classifier dist'] = PARAMS['svm dist'].copy()
+PARAMS['svm classifier dist']['probability'] = True
+PARAMS['svm classifier dist']['class_weight'] =\
         ng.var.OrderedDiscrete([None, 'balanced'])
 
 PARAMS['base mlp'] = {}
 
 PARAMS['base lasso regressor'] = {'max_iter': 5000}
-PARAMS['lasso regressor rs'] =\
+PARAMS['lasso regressor dist'] =\
         {'alpha': ng.var.Scalar().bounded(-4, 5).exponentiated(base=10,
                                                                coeff=-1)}
 
 PARAMS['base ridge regressor'] = PARAMS['base lasso regressor'].copy()
-PARAMS['ridge regressor rs'] =\
+PARAMS['ridge regressor dist'] =\
         {'alpha': ng.var.Scalar().bounded(-4, 5).exponentiated(base=10,
                                                                coeff=-1)}
 
 
-PARAMS['mlp rs'] = {'hidden_layer_sizes':
+PARAMS['mlp dist'] = {'hidden_layer_sizes':
                     ng.var.Array(1, 1, 1).bounded(2, 100),
                     'activation':
                     ng.var.OrderedDiscrete(['identity', 'logistic',
@@ -210,9 +210,9 @@ PARAMS['mlp rs'] = {'hidden_layer_sizes':
                     'beta_1': ng.var.Scalar().bounded(.1, .95),
                     'beta_2': ng.var.Scalar().bounded(.1, .95)}
 
-PARAMS['mlp rs es'] = PARAMS['mlp rs'].copy()
-PARAMS['mlp rs es']['early_stopping'] = True
-PARAMS['mlp rs es']['n_iter_no_change'] = ng.var.Scalar(int).bounded(5, 50)
+PARAMS['mlp dist es'] = PARAMS['mlp dist'].copy()
+PARAMS['mlp dist es']['early_stopping'] = True
+PARAMS['mlp dist es']['n_iter_no_change'] = ng.var.Scalar(int).bounded(5, 50)
 
 PARAMS['mlp layers search'] = {'hidden_layer_sizes':
                                ng.var.Array(1, 1, 1).bounded(2, 100)}
@@ -238,7 +238,7 @@ PARAMS['base power'] = {'method': 'yeo-johnson',
 PARAMS['base univar fs regression'] = {'score_func': f_regression,
                                        'percentile': 50}
 
-PARAMS['univar fs regression rs'] = {'score_func': f_regression,
+PARAMS['univar fs regression dist'] = {'score_func': f_regression,
                                      'percentile':
                                      ng.var.Scalar(int).bounded(1, 99)}
 
@@ -246,14 +246,14 @@ PARAMS['univar fs regression rs'] = {'score_func': f_regression,
 PARAMS['base univar fs classifier'] = {'score_func': f_classif,
                                        'percentile': 50}
 
-PARAMS['univar fs classifier rs'] = {'score_func': f_classif,
+PARAMS['univar fs classifier dist'] = {'score_func': f_classif,
                                      'percentile':
                                      ng.var.Scalar(int).bounded(1, 99)}
 
 
 PARAMS['base rfe'] = {'n_features_to_select': None}
 
-PARAMS['rfe num feats rs'] = {'n_features_to_select':
+PARAMS['rfe num feats dist'] = {'n_features_to_select':
                               ng.var.Scalar().bounded(.01, .99)}
 
 # Imputers

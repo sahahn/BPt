@@ -6,25 +6,7 @@ File with different Feature Selectors
 from ..helpers.ML_Helpers import (show_objects, get_possible_init_params,
                                   get_obj_and_params)
 from sklearn.feature_selection import *
-
-
-class RFE(RFE):
-    def fit(self, X, y):
-        '''Override the fit function for slight added functionality,
-           specifically allow passing in float % to keep.
-        '''
-
-        if isinstance(self.n_features_to_select, float):
-
-            if self.n_features_to_select <= 0:
-                self.n_features_to_select = 1
-
-            if self.n_features_to_select < 1:
-                divide_by = self.n_features_to_select ** -1
-                self.n_features_to_select = X.shape[1] // divide_by
-
-        return self._fit(X, y)
-
+from .extensions.Feat_Selectors import RFE
 
 AVALIABLE = {
         'binary': {

@@ -33,6 +33,11 @@ This is a project.
 
    feat_importances
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Extension Classes
+   
+   extensions
 
 
 

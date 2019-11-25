@@ -42,7 +42,7 @@ cauchy
 
 ::
 
-    middle_point: False
+    middle_point: True
 
 'CauchyRandomSearch'
 ********************

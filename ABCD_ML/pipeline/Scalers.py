@@ -7,6 +7,7 @@ from ..helpers.ML_Helpers import (show_param_options, get_possible_init_params,
                                   get_obj_and_params, show_objects)
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer)
+from .extensions.Scalers import Winsorizer
 
 
 # Scalers differs from metrics and models in that the types are not restricted
@@ -19,7 +20,9 @@ SCALERS = {
 
     'robust': (RobustScaler, ['base robust', 'robust gs']),
 
-    'power': (PowerTransformer, ['base power'])
+    'power': (PowerTransformer, ['base power']),
+
+    'winsorize': (Winsorizer, ['base robust', 'robust gs']),
     }
 
 

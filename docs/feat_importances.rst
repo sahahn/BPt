@@ -1,5 +1,3 @@
-.. _Feat Importances:
-
 *******************
 Feat Importances
 *******************

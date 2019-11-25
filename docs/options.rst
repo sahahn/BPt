@@ -23,7 +23,7 @@ binary
 
 		defaults only
 
-	1. "dt classifier rs" ::
+	1. "dt classifier dist" ::
 
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
 		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
@@ -92,7 +92,7 @@ binary
 
 		n_neighbors: 5
 
-	1. "knn rs" ::
+	1. "knn dist" ::
 
 		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
 		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
@@ -134,7 +134,7 @@ binary
 
 		silent: True
 
-	1. "lgbm classifier rs1" ::
+	1. "lgbm classifier dist1" ::
 
 		silent: True
 		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart', 'goss'])
@@ -148,7 +148,7 @@ binary
 		reg_lambda: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
-	2. "lgbm classifier rs2" ::
+	2. "lgbm classifier dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
@@ -189,7 +189,7 @@ binary
 
 		defaults only
 
-	1. "mlp rs" ::
+	1. "mlp dist" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
@@ -201,7 +201,7 @@ binary
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 
-	2. "mlp rs es" ::
+	2. "mlp dist es" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
@@ -231,7 +231,7 @@ binary
 
 		n_estimators: 100
 
-	1. "rf classifier rs" ::
+	1. "rf classifier dist" ::
 
 		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
@@ -279,7 +279,7 @@ binary
 		gamma: scale
 		probability: True
 
-	1. "svm classifier rs" ::
+	1. "svm classifier dist" ::
 
 		kernel: rbf
 		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
@@ -299,7 +299,7 @@ binary
 
 		verbosity: 0
 
-	1. "xgb rs" ::
+	1. "xgb dist" ::
 
 		verbosity: 0
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
@@ -324,7 +324,7 @@ regression
 
 		defaults only
 
-	1. "dt rs" ::
+	1. "dt dist" ::
 
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
 		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
@@ -372,7 +372,7 @@ regression
 
 		n_neighbors: 5
 
-	1. "knn rs" ::
+	1. "knn dist" ::
 
 		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
 		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
@@ -389,7 +389,7 @@ regression
 
 		max_iter: 5000
 
-	1. "lasso regressor rs" ::
+	1. "lasso regressor dist" ::
 
 		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
@@ -405,7 +405,7 @@ regression
 
 		silent: True
 
-	1. "lgbm rs1" ::
+	1. "lgbm dist1" ::
 
 		silent: True
 		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart', 'goss'])
@@ -418,7 +418,7 @@ regression
 		reg_alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		reg_lambda: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
 
-	2. "lgbm rs2" ::
+	2. "lgbm dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
@@ -454,7 +454,7 @@ regression
 
 		defaults only
 
-	1. "mlp rs" ::
+	1. "mlp dist" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
@@ -466,7 +466,7 @@ regression
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 
-	2. "mlp rs es" ::
+	2. "mlp dist es" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
@@ -496,7 +496,7 @@ regression
 
 		n_estimators: 100
 
-	1. "rf rs" ::
+	1. "rf dist" ::
 
 		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
@@ -516,7 +516,7 @@ regression
 
 		max_iter: 5000
 
-	1. "ridge regressor rs" ::
+	1. "ridge regressor dist" ::
 
 		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
 
@@ -533,7 +533,7 @@ regression
 		kernel: rbf
 		gamma: scale
 
-	1. "svm rs" ::
+	1. "svm dist" ::
 
 		kernel: rbf
 		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
@@ -551,7 +551,7 @@ regression
 
 		verbosity: 0
 
-	1. "xgb rs" ::
+	1. "xgb dist" ::
 
 		verbosity: 0
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
@@ -576,7 +576,7 @@ categorical
 
 		defaults only
 
-	1. "dt classifier rs" ::
+	1. "dt classifier dist" ::
 
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
 		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
@@ -645,7 +645,7 @@ categorical
 
 		n_neighbors: 5
 
-	1. "knn rs" ::
+	1. "knn dist" ::
 
 		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
 		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
@@ -687,7 +687,7 @@ categorical
 
 		silent: True
 
-	1. "lgbm classifier rs1" ::
+	1. "lgbm classifier dist1" ::
 
 		silent: True
 		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart', 'goss'])
@@ -701,7 +701,7 @@ categorical
 		reg_lambda: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
 		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
 
-	2. "lgbm classifier rs2" ::
+	2. "lgbm classifier dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
@@ -742,7 +742,7 @@ categorical
 
 		defaults only
 
-	1. "mlp rs" ::
+	1. "mlp dist" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
@@ -754,7 +754,7 @@ categorical
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 
-	2. "mlp rs es" ::
+	2. "mlp dist es" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
@@ -784,7 +784,7 @@ categorical
 
 		n_estimators: 100
 
-	1. "rf classifier rs" ::
+	1. "rf classifier dist" ::
 
 		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
@@ -832,7 +832,7 @@ categorical
 		gamma: scale
 		probability: True
 
-	1. "svm classifier rs" ::
+	1. "svm classifier dist" ::
 
 		kernel: rbf
 		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
@@ -852,7 +852,7 @@ categorical
 
 		verbosity: 0
 
-	1. "xgb rs" ::
+	1. "xgb dist" ::
 
 		verbosity: 0
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
@@ -877,7 +877,7 @@ multilabel
 
 		defaults only
 
-	1. "dt classifier rs" ::
+	1. "dt classifier dist" ::
 
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
 		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
@@ -895,7 +895,7 @@ multilabel
 
 		n_neighbors: 5
 
-	1. "knn rs" ::
+	1. "knn dist" ::
 
 		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
 		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
@@ -912,7 +912,7 @@ multilabel
 
 		defaults only
 
-	1. "mlp rs" ::
+	1. "mlp dist" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
@@ -924,7 +924,7 @@ multilabel
 		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
 
-	2. "mlp rs es" ::
+	2. "mlp dist es" ::
 
 		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
 		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
@@ -954,7 +954,7 @@ multilabel
 
 		n_estimators: 100
 
-	1. "rf classifier rs" ::
+	1. "rf classifier dist" ::
 
 		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
 		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
@@ -1550,6 +1550,22 @@ All Problem Types
 		standardize: True
 
 
+"winsorize"
+***********
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Scalers.Winsorizer`
+
+  Param Distributions
+
+	0. "base robust" ::
+
+		quantile_range: (5, 95)
+
+	1. "robust gs" ::
+
+		quantile_range: OrderedDiscrete(possibilities=[(1, 99), (5, 95), (10, 90), (15, 85), (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)])
+
+
 
 .. _Samplers:
  
@@ -1848,7 +1864,7 @@ binary
 "rfe"
 *****
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Feature_Selectors.RFE`
+  Base Class Documenation: :class:`sklearn.feature_selection.RFE`
 
   Param Distributions
 
@@ -1856,7 +1872,7 @@ binary
 
 		n_features_to_select: None
 
-	1. "rfe num feats rs" ::
+	1. "rfe num feats dist" ::
 
 		n_features_to_select: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.99, a_min=0.01)])
 
@@ -1870,12 +1886,12 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f5b62928f28>
+		score_func: <function f_classif at 0x7f9f75183268>
 		percentile: 50
 
-	1. "univar fs classifier rs" ::
+	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f5b62928f28>
+		score_func: <function f_classif at 0x7f9f75183268>
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
@@ -1897,7 +1913,7 @@ regression
 "rfe"
 *****
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Feature_Selectors.RFE`
+  Base Class Documenation: :class:`sklearn.feature_selection.RFE`
 
   Param Distributions
 
@@ -1905,7 +1921,7 @@ regression
 
 		n_features_to_select: None
 
-	1. "rfe num feats rs" ::
+	1. "rfe num feats dist" ::
 
 		n_features_to_select: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.99, a_min=0.01)])
 
@@ -1919,12 +1935,12 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f5b62946158>
+		score_func: <function f_regression at 0x7f9f75183400>
 		percentile: 50
 
-	1. "univar fs regression rs" ::
+	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f5b62946158>
+		score_func: <function f_regression at 0x7f9f75183400>
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
@@ -1946,7 +1962,7 @@ categorical
 "rfe"
 *****
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Feature_Selectors.RFE`
+  Base Class Documenation: :class:`sklearn.feature_selection.RFE`
 
   Param Distributions
 
@@ -1954,7 +1970,7 @@ categorical
 
 		n_features_to_select: None
 
-	1. "rfe num feats rs" ::
+	1. "rfe num feats dist" ::
 
 		n_features_to_select: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.99, a_min=0.01)])
 
@@ -1968,12 +1984,12 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f5b62928f28>
+		score_func: <function f_classif at 0x7f9f75183268>
 		percentile: 50
 
-	1. "univar fs classifier rs" ::
+	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f5b62928f28>
+		score_func: <function f_classif at 0x7f9f75183268>
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 

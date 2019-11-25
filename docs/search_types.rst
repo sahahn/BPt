@@ -30,21 +30,21 @@ cauchy
 
     (default = False)
 
-"RandomSearch"
+'RandomSearch'
 **************
 
 ::
 
     Defaults Only
 
-"RandomSearchPlusMiddlePoint"
+'RandomSearchPlusMiddlePoint'
 *****************************
 
 ::
 
     middle_point: False
 
-"CauchyRandomSearch"
+'CauchyRandomSearch'
 ********************
 
 ::
@@ -61,11 +61,11 @@ The algorithms vary on the following parameters,
 sampler
     Type of random sampling. Either,
 
-    - "Halton" : A low quality sampling method when the dimension is high
-    - "Hammersley" : Hammersley sampling
-    - "LHS" : Latin Hypercube Sampling
+    - 'Halton' : A low quality sampling method when the dimension is high
+    - 'Hammersley' : Hammersley sampling
+    - 'LHS' : Latin Hypercube Sampling
 
-    (default = "Halton")
+    (default = 'Halton')
 
 scrambled
     Adds scrambling to the search
@@ -106,13 +106,13 @@ recommendation_rule
     Method for selecting best point.
     Either,
    
-    - "average_of_best" : take average over all better then median
-    - "pessimistic" : selecting pessimistic best
+    - 'average_of_best' : take average over all better then median
+    - 'pessimistic' : selecting pessimistic best
     
-    (default = "pessimistic")
+    (default = 'pessimistic')
 
 
-"HaltonSearch"
+'HaltonSearch'
 **************
 
 ::
@@ -120,7 +120,7 @@ recommendation_rule
     Defaults Only
 
 
-"HaltonSearchPlusMiddlePoint"
+'HaltonSearchPlusMiddlePoint'
 *****************************
 
 ::
@@ -128,7 +128,7 @@ recommendation_rule
     middle_point: True
 
 
-"ScrHaltonSearch"
+'ScrHaltonSearch'
 *****************
 
 ::
@@ -136,7 +136,7 @@ recommendation_rule
     scrambled: True 
 
 
-"ScrHaltonSearchPlusMiddlePoint"
+'ScrHaltonSearchPlusMiddlePoint'
 ********************************
 
 ::
@@ -144,174 +144,79 @@ recommendation_rule
     middle_point: True
     scrambled: True
 
-"HammersleySearch"
+'HammersleySearch'
 ******************
 
 ::
 
-    sampler: "Hammersley"
+    sampler: 'Hammersley'
 
 
-"HammersleySearchPlusMiddlePoint"
+'HammersleySearchPlusMiddlePoint'
 *********************************
 
 ::
 
-    sampler: "Hammersley"
+    sampler: 'Hammersley'
     middle_point: True 
 
-"ScrHammersleySearchPlusMiddlePoint"
+'ScrHammersleySearchPlusMiddlePoint'
 ************************************
 
 ::
 
     scrambled: True
-    sampler: "Hammersley"
+    sampler: 'Hammersley'
     middle_point: True
 
-"ScrHammersleySearch"
+'ScrHammersleySearch'
 *********************
 
 ::
 
-    sampler: "Hammersley"
+    sampler: 'Hammersley'
     scrambled: True
 
 
-"CauchyScrHammersleySearch"
+'CauchyScrHammersleySearch'
 ***************************
 
 ::
 
     cauchy: True
-    sampler: "Hammersley"
+    sampler: 'Hammersley'
     scrambled: True
 
-"LHSSearch"
+'LHSSearch'
 ***********
 
 ::
 
-    sampler: "LHS"
+    sampler: 'LHS'
 
-"CauchyLHSSearch"
+'CauchyLHSSearch'
 *****************
 
 ::
 
-    sampler: "LHS", cauchy: True
-
-"AvgHaltonSearch"
-*************************************************
-
-::
-
-    recommendation_rule: "average_of_best"
-
-"AvgHaltonSearchPlusMiddlePoint"
-*************************************************
-
-::
-
-    middle_point: True
-    recommendation_rule: "average_of_best"
-
-"AvgScrHaltonSearch"
-*************************************************
-
-::
-
-    scrambled: True
-    recommendation_rule: "average_of_best"
-
-"AvgScrHaltonSearchPlusMiddlePoint"
-*************************************************
-
-::
-
-    middle_point: True
-    scrambled: True
-    recommendation_rule: "average_of_best"
-
-"AvgHammersleySearch"
-*************************************************
-
-::
-
-    sampler: "Hammersley"
-    recommendation_rule: "average_of_best"
-
-"AvgHammersleySearchPlusMiddlePoint"
-*************************************************
-
-::
-
-    sampler: "Hammersley"
-    middle_point: True
-    recommendation_rule: "average_of_best"
-
-"AvgScrHammersleySearchPlusMiddlePoint"
-*************************************************
-
-::
-
-    scrambled: True
-    sampler: "Hammersley"
-    middle_point: True
-    recommendation_rule: "average_of_best"
-
-"AvgScrHammersleySearch"
-*************************************************
-
-::
-
-    sampler: "Hammersley"
-    scrambled: True
-    recommendation_rule: "average_of_best"
-
-"AvgCauchyScrHammersleySearch"
-*************************************************
-
-::
-
-    cauchy: True
-    sampler: "Hammersley"
-    scrambled: True
-    recommendation_rule: "average_of_best"
-
-"AvgLHSSearch"
-*************************************************
-
-::
-
-    sampler: "LHS"
-    recommendation_rule: "average_of_best"
-
-"AvgCauchyLHSSearch"
-*************************************************
-
-::
-
-    sampler: "LHS"
-    cauchy: True
-    recommendation_rule: "average_of_best"
+    sampler: 'LHS', cauchy: True
 
 
 
 One Plus One
 =============
 This is a family of evolutionary algorithms that use a technique called 1+1 or One Plus One.
-"simple but sometimes powerful class of optimization algorithm.
+'simple but sometimes powerful class of optimization algorithm.
 We use asynchronous updates, so that the 1+1 can actually be parallel and even
-performs quite well in such a context - this is naturally close to 1+lambda."
+performs quite well in such a context - this is naturally close to 1+lambda.'
 
 The algorithms vary on the following parameters,
 
 noise_handling
     How re-evaluations are performed.
     
-    - "random" : a random point is reevaluated regularly
-    - "optimistic" : the best optimistic point is reevaluated regularly
+    - 'random' : a random point is reevaluated regularly
+    - 'optimistic' : the best optimistic point is reevaluated regularly
     - a coefficient can to tune the regularity of these reevaluations
 
     (default = (None, .05))
@@ -319,14 +224,14 @@ noise_handling
 mutation
     The strategy for producing changes / mutations.
 
-    - "gaussian" : standard mutation by adding a Gaussian random variable (with progressive widening) to the best pessimistic point
-    - "cauchy" : same as Gaussian but with a Cauchy distribution.
-    - "discrete" : discrete distribution
-    - "fastga" : FastGA mutations from the current best
-    - "doublefastga" : double-FastGA mutations from the current best (Doerr et al, Fast Genetic Algorithms, 2017)
-    - "portfolio" : Random number of mutated bits (called niform mixing in Dang & Lehre "Self-adaptation of Mutation Rates in Non-elitist Population", 2016)
+    - 'gaussian' : standard mutation by adding a Gaussian random variable (with progressive widening) to the best pessimistic point
+    - 'cauchy' : same as Gaussian but with a Cauchy distribution.
+    - 'discrete' : discrete distribution
+    - 'fastga' : FastGA mutations from the current best
+    - 'doublefastga' : double-FastGA mutations from the current best (Doerr et al, Fast Genetic Algorithms, 2017)
+    - 'portfolio' : Random number of mutated bits (called niform mixing in Dang & Lehre 'Self-adaptation of Mutation Rates in Non-elitist Population', 2016)
 
-    (default = "gaussian")
+    (default = 'gaussian')
 
 crossover
     Optional additional of genetic cross over.
@@ -338,7 +243,7 @@ crossover
 
 
 
-"OnePlusOne"
+'OnePlusOne'
 *************************************************
 
 ::
@@ -346,143 +251,143 @@ crossover
     Defaults Only
 
 
-"NoisyOnePlusOne"
+'NoisyOnePlusOne'
 *********************************************************
 
 ::
     
-    noise_handling: "random"
+    noise_handling: 'random'
 
 
-"OptimisticNoisyOnePlusOne"
+'OptimisticNoisyOnePlusOne'
 *********************************************************
 
 ::
     
-    noise_handling: "optimistic"
+    noise_handling: 'optimistic'
 
 
-"DiscreteOnePlusOne"
+'DiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    mutation: "discrete"
+    mutation: 'discrete'
 
 
-"OptimisticDiscreteOnePlusOne"
+'OptimisticDiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    noise_handling: "optimistic"
-    mutation: "discrete"
+    noise_handling: 'optimistic'
+    mutation: 'discrete'
 
 
-"NoisyDiscreteOnePlusOne"
+'NoisyDiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    noise_handling: ("random", 1.0)
-    mutation: "discrete"
+    noise_handling: ('random', 1.0)
+    mutation: 'discrete'
 
 
-"DoubleFastGADiscreteOnePlusOne"
+'DoubleFastGADiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    mutation: "doublefastga"
+    mutation: 'doublefastga'
 
 
-"FastGADiscreteOnePlusOne"
+'FastGADiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    mutation: "fastga"
+    mutation: 'fastga'
 
 
-"DoubleFastGAOptimisticNoisyDiscreteOnePlusOne"
+'DoubleFastGAOptimisticNoisyDiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    noise_handling: "optimistic"
-    mutation: "doublefastga"
+    noise_handling: 'optimistic'
+    mutation: 'doublefastga'
 
 
-"FastGAOptimisticNoisyDiscreteOnePlusOne"
+'FastGAOptimisticNoisyDiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    noise_handling: "optimistic"
-    mutation: "fastga"
+    noise_handling: 'optimistic'
+    mutation: 'fastga'
 
 
-"FastGANoisyDiscreteOnePlusOne"
+'FastGANoisyDiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    noise_handling: "random"
-    mutation: "fastga"
+    noise_handling: 'random'
+    mutation: 'fastga'
 
 
-"PortfolioDiscreteOnePlusOne"
+'PortfolioDiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    mutation: "portfolio"
+    mutation: 'portfolio'
 
 
-"PortfolioOptimisticNoisyDiscreteOnePlusOne"
+'PortfolioOptimisticNoisyDiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    noise_handling: "optimistic"
-    mutation: "portfolio"
+    noise_handling: 'optimistic'
+    mutation: 'portfolio'
 
 
-"PortfolioNoisyDiscreteOnePlusOne"
+'PortfolioNoisyDiscreteOnePlusOne'
 *********************************************************
 
 ::
     
-    noise_handling: "random"
-    mutation: "portfolio"
+    noise_handling: 'random'
+    mutation: 'portfolio'
 
 
-"CauchyOnePlusOne"
+'CauchyOnePlusOne'
 *********************************************************
 
 ::
     
-    mutation: "cauchy"
+    mutation: 'cauchy'
 
 
-"RecombiningOptimisticNoisyDiscreteOnePlusOne"
-*********************************************************
-
-::
-    
-    crossover: True
-    mutation: "discrete"
-    noise_handling: "optimistic"
-
-
-"RecombiningPortfolioOptimisticNoisyDiscreteOnePlusOne"
+'RecombiningOptimisticNoisyDiscreteOnePlusOne'
 *********************************************************
 
 ::
     
     crossover: True
-    mutation: "portfolio"
-    noise_handling: "optimistic"
+    mutation: 'discrete'
+    noise_handling: 'optimistic'
+
+
+'RecombiningPortfolioOptimisticNoisyDiscreteOnePlusOne'
+*********************************************************
+
+::
+    
+    crossover: True
+    mutation: 'portfolio'
+    noise_handling: 'optimistic'
 
 
 CMA
@@ -498,14 +403,14 @@ diagonal
     - True : Use diagonal
     - False : Don't use diagonal
 
-"CMA"
+'CMA'
 *****
 
 ::
 
     Defaults Only
 
-"DiagonalCMA"
+'DiagonalCMA'
 *************
 
 ::
@@ -513,73 +418,6 @@ diagonal
     diagonal: True
  
 
-Bayesian Optimzation
-====================
-This refers to the rechnique of optiziming parameters with bayesian optimzation.
-Background: https://en.wikipedia.org/wiki/Bayesian_optimization
-
-
-initialization
-    The type of initialization to use
-
-    - None : No initialization
-    - "random" : Gaussian
-    - "Hammersley" : Hammersley sampling
-    - "LHS" : Latin Hypercube Sampling
-
-    (default = None)
-
-middle_point
-    Optional enforcement of the first suggested point as zero.
-    Either,
-
-    - True : Enforced middle suggested point
-    - False : Not enforced
-
-    (default = False)
-
-
-
-
-"BO"
-*****
-
-::
-
-    Defaults Only
-
-
-"RBO"
-*****
-
-::
-
-    initialization: "random"
-
-
-"QRBO"
-******
-
-::
-
-    initialization: "Hammersley"
-
-
-"MidQRBO"
-*********
-
-::
-
-    initialization: "Hammersley"
-    middle_point: True
-
-
-"LBO"
-******
-::
-
-    initialization: "LHS"
-        
 
 Differential Evolution
 ======================
@@ -592,11 +430,11 @@ initialization
     The algorithm/distribution used for the initialization phase.
     Either,
 
-    - "LHS" : Latin Hypercube Sampling
-    - "QR" : Quasi-Random
-    - "gaussian" : Normal Distribution
+    - 'LHS' : Latin Hypercube Sampling
+    - 'QR' : Quasi-Random
+    - 'gaussian' : Normal Distribution
 
-    (default = "gaussian")
+    (default = 'gaussian')
 
 scale
     The scale of random component of the updates
@@ -612,10 +450,10 @@ crossover
     The crossover rate value / strategy used during DE.
     Either,
 
-    - "dimension" : crossover rate of  1 / dimension
-    - "random" : different random (uniform) crossover rate at each iteration
-    - "onepoint" : one point crossover
-    - "twopoints" : two points crossover
+    - 'dimension' : crossover rate of  1 / dimension
+    - 'random' : different random (uniform) crossover rate at each iteration
+    - 'onepoint' : one point crossover
+    - 'twopoints' : two points crossover
     
     (default = .5)
 
@@ -623,25 +461,25 @@ popsize
     The size of the population to use.
     Either,
 
-    - "standard" : max(num_workers, 30)
-    - "dimension" : max(num_workers, 30, dimension +1)
-    - "large" : max(num_workers, 30, 7 * dimension)
+    - 'standard' : max(num_workers, 30)
+    - 'dimension' : max(num_workers, 30, dimension +1)
+    - 'large' : max(num_workers, 30, 7 * dimension)
     
     Note: dimension refers to the dimensions of the hyperparameters being searched over.
-    "standard" by default.s
+    'standard' by default.s
 
-    (default = "standard")
+    (default = 'standard')
 
 recommendation
     Choice of the criterion for the best point to recommend.
     Either,
 
-    - "optimistic" : best
-    - "noisy" : add noise to choice of best
+    - 'optimistic' : best
+    - 'noisy' : add noise to choice of best
 
-    (default = "optimistic")
+    (default = 'optimistic')
 
-"DE"
+'DE'
 ****
 
 ::
@@ -649,29 +487,29 @@ recommendation
     Defaults Only
 
 
-"OnePointDE"
+'OnePointDE'
 ************
 
 ::
 
-    crossover: "onepoint"
+    crossover: 'onepoint'
 
-"TwoPointsDE"
+'TwoPointsDE'
 *************
 
 ::
 
-    crossover: "twopoint"
+    crossover: 'twopoint'
 
 
-"LhsDE"
+'LhsDE'
 *******
 
 ::
 
     initialization: 'LHS'
 
-"QrDE"
+'QrDE'
 ******
 
 ::
@@ -679,7 +517,7 @@ recommendation
     initialization: 'QE'
     
 
-"MiniDE"
+'MiniDE'
 ********
 
 ::
@@ -687,7 +525,7 @@ recommendation
     scale: 'mini'
 
 
-"MiniLhsDE"
+'MiniLhsDE'
 ***********
 
 ::
@@ -696,7 +534,7 @@ recommendation
     scale: 'mini'
 
 
-"MiniQrDE"
+'MiniQrDE'
 ***********
 
 ::
@@ -705,14 +543,14 @@ recommendation
     scale: 'mini'
 
 
-"NoisyDE"
+'NoisyDE'
 **********
 
 ::
 
-    recommendation: "noisy"
+    recommendation: 'noisy'
 
-"AlmostRotationInvariantDE"
+'AlmostRotationInvariantDE'
 ***************************
 
 ::
@@ -720,31 +558,31 @@ recommendation
     crossover: .9
 
 
-"AlmostRotationInvariantDEAndBigPop"
+'AlmostRotationInvariantDEAndBigPop'
 ************************************
 
 ::
 
     crossover: .9
-    popsize: "dimension"
+    popsize: 'dimension'
 
 
-"RotationInvariantDE"
+'RotationInvariantDE'
 *********************
 
 ::
 
     crossover: 1
-    popsize: "dimension"
+    popsize: 'dimension'
 
 
-"BPRotationInvariantDE"
+'BPRotationInvariantDE'
 ***********************
 
 ::
 
     crossover: 1
-    popsize: "large"
+    popsize: 'large'
 
 
 Scipy Optimizers
@@ -757,10 +595,10 @@ Params vary on,
 method
     The scipy implemented method to use
 
-    - "Nelder-Mead" : https://docs.scipy.org/doc/scipy/reference/optimize.minimize-neldermead.html
-    - "Powell" : https://docs.scipy.org/doc/scipy/reference/optimize.minimize-powell.html
-    - "COBYLA" : https://docs.scipy.org/doc/scipy/reference/optimize.minimize-cobyla.html
-    - "SLSQP" : https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html
+    - 'Nelder-Mead' : https://docs.scipy.org/doc/scipy/reference/optimize.minimize-neldermead.html
+    - 'Powell' : https://docs.scipy.org/doc/scipy/reference/optimize.minimize-powell.html
+    - 'COBYLA' : https://docs.scipy.org/doc/scipy/reference/optimize.minimize-cobyla.html
+    - 'SLSQP' : https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html
 
 random_restart
     Whether to restart at a random point if the optimizer converged but the budget is not entirely
@@ -769,54 +607,54 @@ random_restart
     - True : True
     - False : False
 
-"NelderMead"
+'NelderMead'
 ************
 
 ::
 
-    method: "Nelder-Mead"
+    method: 'Nelder-Mead'
 
-"Powell"
+'Powell'
 ********
 
 ::
 
-    method: "Powell"
+    method: 'Powell'
 
 
-"RPowell"
+'RPowell'
 *********
 
-method="Powell"
+method='Powell'
 random_restart=True
 
-"Cobyla"
+'Cobyla'
 *********
 
 ::
 
-    method: "COBYLA"
+    method: 'COBYLA'
 
-"RCobyla"
+'RCobyla'
 **********
 
 ::
 
-    method: "COBYLA"
+    method: 'COBYLA'
     random_restart: True
 
-"SQP"
+'SQP'
 ******
 
 ::
 
-    method: "SLSQP"
+    method: 'SLSQP'
 
-"RSQP"
+'RSQP'
 *******
 
 ::
 
-    method: "SLSQP"
+    method: 'SLSQP'
     random_restart: True
 

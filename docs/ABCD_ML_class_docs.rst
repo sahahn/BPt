@@ -121,6 +121,10 @@ Clear_Strat
 ============
 .. automethod:: ABCD_ML.Clear_Strat
 
+Get_Nan_Subjects
+================
+.. automethod:: ABCD_ML.Get_Nan_Subjects
+
 
 ****************
 Validation Phase

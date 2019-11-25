@@ -7,15 +7,75 @@ import pandas as pd
 import shutil
 import shap
 import os
+import pickle as pkl
 
 from ..helpers.Docstring_Helpers import get_new_docstring
 from ..helpers.CV import CV
 
 
+def Load(loc, exp_name='default', log_dr='default', existing_log='default',
+         verbose='default', notebook='default', random_state='default'):
+    '''
+    This function is designed to load in a saved previously created
+    ABCD_ML object.
+
+    See :func:`Save <ABCD_ML.ABCD_ML.Save>` for saving an object.
+    See :func:`Init <ABCD_ML.ABCD_ML>` for the
+    rest of changable param descriptions, e.g., log_dr, existing_log, ect...
+
+    Parameters
+    ----------
+    loc : str or Path
+
+        A path/str to a saved ABCD_ML object,
+        (One saved with :func:`Save`), then that object will be
+        loaded. Notably, if any additional params are passed along
+        with it, e.g., exp_name, notebook, ect... they will override
+        the saved values with the newly passed values.
+        If left as 'default', all params will be set to the loaded value,
+        though see the warning below.
+
+        .. WARNING::
+            The exp_name or log_dr may need to be changed, especially
+            in the case where the object is being loaded in a new
+            location or enviroment from where the original was created,
+            as it will by default try to create logs with the saved path
+            information as the original.
+
+        You can only change exp_name, log_dr, existing_log, verbose,
+        notebook and random_state when loading a new object, for the
+        remaining params, even if a value is passed, it will not be
+        applied. If the user really wishes to change one of these params,
+        they can change it manually via self.name_of_param = whatever.
+    '''
+
+    with open(loc, 'rb') as f:
+        ML = pkl.load(f)
+
+    if exp_name != 'default':
+        ML.exp_name = exp_name
+    if log_dr != 'default':
+        ML.log_dr = log_dr
+    if existing_log != 'default':
+        ML.existing_log = existing_log
+    if verbose != 'default':
+        ML.verbose = verbose
+
+    ML._init_logs()
+
+    if notebook != 'default':
+        ML.notebook = notebook
+    if random_state != 'default':
+        ML.random_state = random_state
+
+    ML._print('ABCD_ML object loaded from save!')
+    return ML
+
+
 class ABCD_ML():
     '''The main class used in ABCD_ML project'''
 
-    def __init__(self, exp_name='Exp', log_dr='', existing_log='new',
+    def __init__(self, exp_name='Exp', log_dr='', existing_log='append',
                  verbose=True, notebook=True, use_default_subject_ids=False,
                  low_memory_mode=False, strat_u_name='_Strat',
                  random_state=None):
@@ -51,7 +111,7 @@ class ABCD_ML():
             log folder with the same exp_name will be cleared
             upon __init__.
 
-            (default = 'new')
+            (default = 'append')
 
         verbose: bool, optional
             If set to true will print diagnostic and other output during
@@ -91,7 +151,6 @@ class ABCD_ML():
             data, and doesn't want automatic drops to occur.
             If set to True, individual dataframes self.data, self.covars ect...
             will also be deleted from memory as soon as modeling begins.
-
             This parameter also controls the pandas read_csv behavior,
             which also has a low_memory flag.
 
@@ -101,12 +160,11 @@ class ABCD_ML():
             A unique str identifier to be appended to every loaded
             strat value (to keep it seperate from covars and data).
 
-            (default = _Strat)
+            (default = '_Strat')
 
         random_state : int, RandomState instance or None, optional
             The default random state, either as int for a specific seed,
             or if None then the random seed is set by np.random.
-
             This parameters if set will be the default random_state class-wide,
             so any place random_state is left to default, unless a different
             default is set (e.g. default load value or default ML value) this
@@ -168,10 +226,48 @@ class ABCD_ML():
         self.eval_scores, self.eval_settings = {}, {}
         self.subject_id = 'src_subject_id'
 
-        if self.notebook:
-            shap.initjs()
+        # if self.notebook:
+        #    shap.initjs()
 
         self._print('ABCD_ML object initialized')
+
+    def Save(self, loc, low_memory=False):
+        '''This class method is used to save an existing ABCD_ML
+        object for further use.
+
+        Parameters
+        ----------
+        loc : str or Path
+            The location in which the pickle of the ABCD_ML object
+            should be saved! This is the same loc which should be
+            passed to :func:`Load <ABCD_ML.main.ABCD_ML.Load>` in order to
+            re-load the object.
+
+        low_memory : bool, optional
+            If this parameter is set to True, then self.data,
+            self.targets, self.covars, self.strat will be deleted
+            before saving. The assumption for the param to be used is
+            that self.all_data has already been created, and therefore
+            the individual dataframes with data, covars ect... can safely
+            be deleted as the user will not need to work with them directly
+            any more.
+
+            In addition, self.Model_Pipeline (which contains
+            information about the last run Evaluate or Test call) will be
+            deleted.
+        '''
+
+        if low_memory:
+            self.data, self.covars = pd.DataFrame(), pd.DataFrame()
+            self.targets, self.strat = pd.DataFrame(), pd.DataFrame()
+
+            try:
+                del self.Model_Pipeline
+            except AttributeError:
+                pass
+
+        with open(loc, 'wb') as f:
+            pkl.dump(self, f)
 
     def _init_logs(self):
 

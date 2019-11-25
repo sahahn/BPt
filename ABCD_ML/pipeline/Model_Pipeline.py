@@ -653,7 +653,7 @@ class Model_Pipeline():
 
             self.sample_on = self._scope_len_check(conv_sampler_strs,
                                                    self.sample_on,
-                                                   'imputers')
+                                                   'samplers')
 
             recover_strats = self._get_recover_strats(len(conv_sampler_strs))
 

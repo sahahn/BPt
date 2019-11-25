@@ -14,12 +14,28 @@ but in practice you would want to choose something shorter, like "ML".
     from ABCD_ML import ABCD_ML
     Your_ABCD_ML_Object = ABCD_ML(init_params)
 
+
+Alternatively, if you wish to load from an already saved object, you would do as follows
+
+::
+
+    from ABCD_ML import Load
+    Your_ABCD_ML_Object = Load(location)
+
+
+Load
+====
+.. automethod:: ABCD_ML.main.ABCD_ML.Load
+
 Init
 ============
 
 .. currentmodule:: ABCD_ML
 .. autoclass:: ABCD_ML
 
+Save
+======
+.. automethod:: ABCD_ML.Save
 
 ******************
 Loading Phase

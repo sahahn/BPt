@@ -115,6 +115,9 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
     else:
         data = self._proc_subjects(self.data, subjects).copy()
 
+    self._print('Loaded data top columns by skew:')
+    self._print(self.data.skew().sort_values())
+
     fig, ax = plt.subplots()
 
     def update(i):

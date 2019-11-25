@@ -90,14 +90,15 @@ MODELS = {
     'knn classifier': (KNeighborsClassifier, ['base knn', 'knn dist']),
     'knn regressor': (KNeighborsRegressor, ['base knn', 'knn dist']),
 
-    'dt classifier': (DecisionTreeClassifier, ['base dt', 'dt classifier dist']),
+    'dt classifier': (DecisionTreeClassifier, ['base dt',
+                                               'dt classifier dist']),
     'dt regressor':  (DecisionTreeRegressor, ['base dt', 'dt dist']),
 
     'linear regressor': (LinearRegression, ['base linear']),
 
     'random forest regressor': (RandomForestRegressor, ['base rf', 'rf dist']),
-    'random forest classifier': (RandomForestClassifier, ['base rf',
-                                                          'rf classifier dist']),
+    'random forest classifier': (RandomForestClassifier,
+                                 ['base rf', 'rf classifier dist']),
 
     'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm dist1',
                                             'lgbm dist2']),
@@ -115,8 +116,10 @@ MODELS = {
                                      'mlp layers search']),
     'mlp classifier': (MLPClassifier, ['base mlp', 'mlp dist', 'mlp dist es',
                                        'mlp layers search']),
-    'ridge regressor': (Ridge, ['base ridge regressor', 'ridge regressor dist']),
-    'lasso regressor': (Lasso, ['base lasso regressor', 'lasso regressor dist']),
+    'ridge regressor': (Ridge, ['base ridge regressor',
+                                'ridge regressor dist']),
+    'lasso regressor': (Lasso, ['base lasso regressor',
+                                'lasso regressor dist']),
 
     'xgb regressor': (XGBRegressor, ['base xgb', 'xgb dist']),
     'xgb classifier': (XGBClassifier, ['base xgb', 'xgb dist']),

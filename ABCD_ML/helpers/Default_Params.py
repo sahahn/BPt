@@ -63,12 +63,12 @@ PARAMS['base gnb'] = {'var_smoothing': 1e-9}
 
 PARAMS['base knn'] = {'n_neighbors': 5}
 PARAMS['knn dist'] = {'weights':
-                    ng.var.OrderedDiscrete(['uniform', 'distance']),
-                    'n_neighbors': ng.var.Scalar(int).bounded(2, 25)}
+                      ng.var.OrderedDiscrete(['uniform', 'distance']),
+                      'n_neighbors': ng.var.Scalar(int).bounded(2, 25)}
 
 PARAMS['base dt'] = {}
 PARAMS['dt dist'] = {'max_depth': ng.var.Scalar(int).bounded(1, 30),
-                   'min_samples_split': ng.var.Scalar(int).bounded(2, 50)}
+                     'min_samples_split': ng.var.Scalar(int).bounded(2, 50)}
 
 PARAMS['dt classifier dist'] = PARAMS['dt dist'].copy()
 PARAMS['dt classifier dist']['class_weight'] =\
@@ -78,10 +78,10 @@ PARAMS['base linear'] = {'fit_intercept': True}
 
 PARAMS['base rf'] = {'n_estimators': 100}
 PARAMS['rf dist'] = {'n_estimators': ng.var.Scalar(int).bounded(3, 500),
-                   'max_depth': ng.var.Scalar(int).bounded(2, 200),
-                   'max_features': ng.var.Scalar().bounded(0, 1),
-                   'min_samples_split': ng.var.Scalar().bounded(0, 1),
-                   'bootstrap': True}
+                     'max_depth': ng.var.Scalar(int).bounded(2, 200),
+                     'max_features': ng.var.Scalar().bounded(0, 1),
+                     'min_samples_split': ng.var.Scalar().bounded(0, 1),
+                     'bootstrap': True}
 
 PARAMS['rf classifier dist'] = PARAMS['rf dist'].copy()
 PARAMS['rf classifier dist']['class_weight'] =\
@@ -89,43 +89,44 @@ PARAMS['rf classifier dist']['class_weight'] =\
 
 PARAMS['base lgbm'] = {'silent': True}
 PARAMS['lgbm dist1'] = {'silent': True,
-                      'boosting_type':
-                      ng.var.OrderedDiscrete(['gbdt', 'dart', 'goss']),
-                      'n_estimators': ng.var.Scalar(int).bounded(3, 500),
-                      'num_leaves': ng.var.Scalar(int).bounded(6, 80),
-                      'min_child_samples': ng.var.Scalar(int).bounded(10, 500),
-                      'min_child_weight':
-                      ng.var.Scalar().bounded(-4, 5).exponentiated(base=10,
-                                                                   coeff=-1),
-                      'subsample': ng.var.Scalar().bounded(.3, .95),
-                      'colsample_bytree': ng.var.Scalar().bounded(.3, .95),
-                      'reg_alpha':
-                      ng.var.Scalar().bounded(-2, 1).exponentiated(base=10,
-                                                                   coeff=-1),
-                      'reg_lambda':
-                      ng.var.Scalar().bounded(-2, 1).exponentiated(base=10,
-                                                                   coeff=-1)}
+                        'boosting_type':
+                        ng.var.OrderedDiscrete(['gbdt', 'dart', 'goss']),
+                        'n_estimators': ng.var.Scalar(int).bounded(3, 500),
+                        'num_leaves': ng.var.Scalar(int).bounded(6, 80),
+                        'min_child_samples': ng.var.Scalar(int).bounded(10,
+                                                                        500),
+                        'min_child_weight':
+                        ng.var.Scalar().bounded(-4, 5).exponentiated(base=10,
+                                                                     coeff=-1),
+                        'subsample': ng.var.Scalar().bounded(.3, .95),
+                        'colsample_bytree': ng.var.Scalar().bounded(.3, .95),
+                        'reg_alpha':
+                        ng.var.Scalar().bounded(-2, 1).exponentiated(base=10,
+                                                                     coeff=-1),
+                        'reg_lambda':
+                        ng.var.Scalar().bounded(-2, 1).exponentiated(base=10,
+                                                                     coeff=-1)}
 
 PARAMS['lgbm dist2'] = {'silent': True,
-                      'lambda_l2': 0.001,
-                      'boosting_type':
-                      ng.var.OrderedDiscrete(['gbdt', 'dart']),
-                      'min_child_samples':
-                      ng.var.OrderedDiscrete([1, 5, 7, 10, 15, 20, 35, 50, 100,
-                                              200, 500, 1000]),
-                      'num_leaves':
-                      ng.var.OrderedDiscrete([2, 4, 7, 10, 15, 20, 25, 30, 35,
-                                              40, 50, 65, 80, 100, 125, 150,
-                                              200, 250]),
-                      'colsample_bytree':
-                      ng.var.OrderedDiscrete([0.7, 0.9, 1.0]),
-                      'subsample':
-                      ng.var.Scalar().bounded(.3, 1),
-                      'learning_rate':
-                      ng.var.OrderedDiscrete([0.01, 0.05, 0.1]),
-                      'n_estimators':
-                      ng.var.OrderedDiscrete([5, 20, 35, 50, 75, 100, 150, 200,
-                                              350, 500, 750, 1000])}
+                        'lambda_l2': 0.001,
+                        'boosting_type':
+                        ng.var.OrderedDiscrete(['gbdt', 'dart']),
+                        'min_child_samples':
+                        ng.var.OrderedDiscrete([1, 5, 7, 10, 15, 20, 35, 50,
+                                                100, 200, 500, 1000]),
+                        'num_leaves':
+                        ng.var.OrderedDiscrete([2, 4, 7, 10, 15, 20, 25, 30,
+                                                35, 40, 50, 65, 80, 100, 125,
+                                                150, 200, 250]),
+                        'colsample_bytree':
+                        ng.var.OrderedDiscrete([0.7, 0.9, 1.0]),
+                        'subsample':
+                        ng.var.Scalar().bounded(.3, 1),
+                        'learning_rate':
+                        ng.var.OrderedDiscrete([0.01, 0.05, 0.1]),
+                        'n_estimators':
+                        ng.var.OrderedDiscrete([5, 20, 35, 50, 75, 100, 150,
+                                                200, 350, 500, 750, 1000])}
 
 PARAMS['lgbm classifier dist1'] = PARAMS['lgbm dist1'].copy()
 PARAMS['lgbm classifier dist1']['class_weight'] =\
@@ -134,14 +135,6 @@ PARAMS['lgbm classifier dist1']['class_weight'] =\
 PARAMS['lgbm classifier dist2'] = PARAMS['lgbm dist2'].copy()
 PARAMS['lgbm classifier dist2']['class_weight'] =\
         ng.var.OrderedDiscrete([None, 'balanced'])
-
-PARAMS['base lgbm es'] = {'silent': True,
-                          'val_split_percent': .1,
-                          'early_stop_rounds': 50}
-
-PARAMS['lgbm es dist'] = PARAMS['lgbm dist1'].copy()
-PARAMS['lgbm es dist']['val_split_percent'] = ng.var.Scalar().bounded(.05, .2)
-PARAMS['lgbm es dist']['early_stop_rounds'] = ng.var.Scalar(int).bounded(10, 150)
 
 PARAMS['base xgb'] = {'verbosity': 0}
 
@@ -192,23 +185,23 @@ PARAMS['ridge regressor dist'] =\
 
 
 PARAMS['mlp dist'] = {'hidden_layer_sizes':
-                    ng.var.Array(1, 1, 1).bounded(2, 100),
-                    'activation':
-                    ng.var.OrderedDiscrete(['identity', 'logistic',
-                                            'tanh', 'relu']),
-                    'alpha':
-                    ng.var.Scalar().bounded(-2, 5).exponentiated(base=10,
-                                                                 coeff=-1),
-                    'batch_size': ng.var.Scalar(int).bounded(2, 200),
-                    'learning_rate':
-                    ng.var.OrderedDiscrete(['constant', 'invscaling',
-                                            'adaptive']),
-                    'learning_rate_init':
-                    ng.var.Scalar().bounded(-2, 5).exponentiated(base=10,
-                                                                 coeff=-1),
-                    'max_iter': ng.var.Scalar(int).bounded(100, 500),
-                    'beta_1': ng.var.Scalar().bounded(.1, .95),
-                    'beta_2': ng.var.Scalar().bounded(.1, .95)}
+                      ng.var.Array(1, 1, 1).bounded(2, 100),
+                      'activation':
+                      ng.var.OrderedDiscrete(['identity', 'logistic',
+                                              'tanh', 'relu']),
+                      'alpha':
+                      ng.var.Scalar().bounded(-2, 5).exponentiated(base=10,
+                                                                   coeff=-1),
+                      'batch_size': ng.var.Scalar(int).bounded(2, 200),
+                      'learning_rate':
+                      ng.var.OrderedDiscrete(['constant', 'invscaling',
+                                              'adaptive']),
+                      'learning_rate_init':
+                      ng.var.Scalar().bounded(-2, 5).exponentiated(base=10,
+                                                                   coeff=-1),
+                      'max_iter': ng.var.Scalar(int).bounded(100, 500),
+                      'beta_1': ng.var.Scalar().bounded(.1, .95),
+                      'beta_2': ng.var.Scalar().bounded(.1, .95)}
 
 PARAMS['mlp dist es'] = PARAMS['mlp dist'].copy()
 PARAMS['mlp dist es']['early_stopping'] = True
@@ -239,22 +232,22 @@ PARAMS['base univar fs regression'] = {'score_func': f_regression,
                                        'percentile': 50}
 
 PARAMS['univar fs regression dist'] = {'score_func': f_regression,
-                                     'percentile':
-                                     ng.var.Scalar(int).bounded(1, 99)}
+                                       'percentile':
+                                       ng.var.Scalar(int).bounded(1, 99)}
 
 
 PARAMS['base univar fs classifier'] = {'score_func': f_classif,
                                        'percentile': 50}
 
 PARAMS['univar fs classifier dist'] = {'score_func': f_classif,
-                                     'percentile':
-                                     ng.var.Scalar(int).bounded(1, 99)}
+                                       'percentile':
+                                       ng.var.Scalar(int).bounded(1, 99)}
 
 
 PARAMS['base rfe'] = {'n_features_to_select': None}
 
 PARAMS['rfe num feats dist'] = {'n_features_to_select':
-                              ng.var.Scalar().bounded(.01, .99)}
+                                ng.var.Scalar().bounded(.01, .99)}
 
 # Imputers
 PARAMS['mean imp'] = {'strategy': 'mean'}

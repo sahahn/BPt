@@ -685,6 +685,10 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     # Get the common load params as a mix of user-passed + default values
     load_params = self._make_load_params(args=locals())
 
+    # For targets, set these regardless
+    load_params['drop_na'] = True
+    load_params['drop_or_na'] = 'drop'
+
     # Load in the targets w/ basic pre-processing
     targets, col_names = self._common_load(loc, df, dataset_type,
                                            load_params,
@@ -762,7 +766,7 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, drop_val):
 
         if fos is not None:
             targets = filter_float_by_std(targets, targets_key,
-                                          fop, drop_val=drop_val,
+                                          fos, drop_val=drop_val,
                                           _print=self._print)
 
     # Multilabel type must be read in from multiple columns
@@ -1208,6 +1212,10 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
 
     # Get the common load params as a mix of user-passed + default values
     load_params = self._make_load_params(args=locals())
+
+    # For strat, set these regardless
+    load_params['drop_na'] = True
+    load_params['drop_or_na'] = 'drop'
 
     # Load in strat w/ basic pre-processing
     strat, col_names = self._common_load(loc, df, dataset_type,

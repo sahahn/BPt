@@ -49,13 +49,13 @@ AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 SELECTORS = {
     'univariate selection regression': (SelectPercentile,
                                         ['base univar fs regression',
-                                         'univar fs regression rs']),
+                                         'univar fs regression dist']),
 
     'univariate selection classification': (SelectPercentile,
                                             ['base univar fs classifier',
-                                             'univar fs classifier rs']),
+                                             'univar fs classifier dist']),
 
-    'rfe': (RFE, ['base rfe', 'rfe num feats rs']),
+    'rfe': (RFE, ['base rfe', 'rfe num feats dist']),
 
     'variance threshold': (VarianceThreshold, ['default']),
 }

@@ -1534,7 +1534,7 @@ All Problem Types
 
 	1. "robust gs" ::
 
-		quantile_range: OrderedDiscrete(possibilities=[(1, 99), (5, 95), (10, 90), (15, 85), (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)])
+		quantile_range: OrderedDiscrete(possibilities=[(1, 99), (3, 97), (5, 95), (10, 90), (15, 85), (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)])
 
 
 "power"
@@ -1557,13 +1557,13 @@ All Problem Types
 
   Param Distributions
 
-	0. "base robust" ::
+	0. "base winsorize" ::
 
-		quantile_range: (5, 95)
+		quantile_range: (1, 99)
 
-	1. "robust gs" ::
+	1. "winsorize gs" ::
 
-		quantile_range: OrderedDiscrete(possibilities=[(1, 99), (5, 95), (10, 90), (15, 85), (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)])
+		quantile_range: OrderedDiscrete(possibilities=[(0.1, 99.9), (0.5, 99.5), (1, 99), (1.5, 98.5), (2, 98), (2.5, 97.5), (3, 97), (3.5, 96.5), (4, 96), (4.5, 95.5), (5, 95)])
 
 
 
@@ -1886,12 +1886,12 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f9f75183268>
+		score_func: <function f_classif at 0x7f59f9b75268>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f9f75183268>
+		score_func: <function f_classif at 0x7f59f9b75268>
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
@@ -1935,12 +1935,12 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f9f75183400>
+		score_func: <function f_regression at 0x7f59f9b75400>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f9f75183400>
+		score_func: <function f_regression at 0x7f59f9b75400>
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 
@@ -1984,12 +1984,12 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f9f75183268>
+		score_func: <function f_classif at 0x7f59f9b75268>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f9f75183268>
+		score_func: <function f_classif at 0x7f59f9b75268>
 		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
 
 

@@ -218,11 +218,18 @@ PARAMS['base minmax'] = {'feature_range': (0, 1)}
 
 PARAMS['base robust'] = {'quantile_range': (5, 95)}
 
+PARAMS['base winsorize'] = {'quantile_range': (1, 99)}
+
 PARAMS['robust gs'] =\
         {'quantile_range': ng.var.OrderedDiscrete(
-                [(1, 99), (5, 95), (10, 90), (15, 85),
-                 (20, 80), (25, 75), (30, 70),
-                 (35, 65), (40, 60)])}
+                [(1, 99), (3, 97), (5, 95), (10, 90), (15, 85),
+                 (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)])}
+
+PARAMS['winsorize gs'] =\
+        {'quantile_range': ng.var.OrderedDiscrete(
+                [(.1, 99.9), (.5, 99.5), (1, 99), (1.5, 98.5), (2, 98),
+                 (2.5, 97.5), (3, 97), (3.5, 96.5), (4, 96), (4.5, 95.5),
+                 (5, 95)])}
 
 PARAMS['base power'] = {'method': 'yeo-johnson',
                         'standardize': True}

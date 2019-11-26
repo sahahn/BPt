@@ -15,10 +15,7 @@ class Winsorizer(TransformerMixin, BaseEstimator):
         values to.
 
     copy : boolean, optional, default is True
-        If False, try to avoid a copy and do inplace scaling instead.
-        This is not guaranteed to always work inplace; e.g. if the data is
-        not a NumPy array or scipy.sparse CSR matrix, a copy may still be
-        returned.
+        Make a copy of the data.
     '''
 
     def __init__(self, quantile_range=(5, 95), copy=True):

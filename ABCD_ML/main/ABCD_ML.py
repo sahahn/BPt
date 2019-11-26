@@ -344,6 +344,7 @@ class ABCD_ML():
                         Load_Data,
                         Load_Targets,
                         _proc_target,
+                        _print_loaded_targets,
                         Load_Covars,
                         _proc_covar,
                         Load_Strat,

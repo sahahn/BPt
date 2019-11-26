@@ -22,7 +22,7 @@ SCALERS = {
 
     'power': (PowerTransformer, ['base power']),
 
-    'winsorize': (Winsorizer, ['base robust', 'robust gs']),
+    'winsorize': (Winsorizer, ['base winsorize', 'winsorize gs']),
     }
 
 

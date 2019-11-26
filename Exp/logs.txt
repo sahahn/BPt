@@ -1,0 +1,12 @@
+exp_name = Exp
+log_dr = /gpfs1/home/s/a/sahahn/ABCD_ML
+existing_log = new
+verbose = True
+exp log dr setup at: /gpfs1/home/s/a/sahahn/ABCD_ML/Exp
+log file at: /gpfs1/home/s/a/sahahn/ABCD_ML/Exp/logs.txt
+notebook = True
+use_default_subject_ids = False
+low memory mode = False
+strat_u_name = _Strat
+random state = None
+ABCD_ML object initialized

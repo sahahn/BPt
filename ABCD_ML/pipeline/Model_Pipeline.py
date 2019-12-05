@@ -1719,8 +1719,12 @@ class Model_Pipeline():
 
     def _add_raw_preds(self, X_test, y_test, subjects, eval_type, fold_ind):
 
-        fold = str((fold_ind % self.n_splits) + 1)
-        repeat = str((fold_ind // self.n_splits) + 1)
+        if fold_ind == 'test':
+            fold = 'test'
+            repeat = ''
+        else:
+            fold = str((fold_ind % self.n_splits) + 1)
+            repeat = str((fold_ind // self.n_splits) + 1)
 
         self.classes = np.unique(y_test)
 

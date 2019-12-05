@@ -1485,10 +1485,15 @@ class Model_Pipeline():
             # Always proc test.
             X_test, y_test = self._proc_X_test(test)
 
+            try:
+                fold = fold_ind % self.n_splits
+            except TypeError:
+                fold = 'test'
+
             # Process the feature importance, provide all needed
             feat_imp.proc_importances(base_model, X_test, y_test=y_test,
                                       X_train=X_train, scorer=self.metric,
-                                      fold=fold_ind % self.n_splits)
+                                      fold=fold)
 
             # For local, need an intermediate average, move df to dfs
             if isinstance(fold_ind, int):

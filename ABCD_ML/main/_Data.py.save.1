@@ -1971,7 +1971,7 @@ def _load_user_passed(self, df, na_values):
 
     self._print('Loading user passed df')
 
-    if df.index.name is not None:
+    if len(df.index.name) > 0:
         df = df.reset_index()
 
     df = df.replace(na_values, np.nan)

@@ -12,6 +12,7 @@ setup(name='ABCD_ML',
       packages=find_packages(),
       install_requires=[
           'scikit-learn>=0.21',
+          'lightgbm',
           'xgboost',
           'numpy>=1.16',
           'scipy>=1.2',

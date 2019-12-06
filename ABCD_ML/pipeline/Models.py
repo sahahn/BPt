@@ -20,9 +20,18 @@ from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from xgboost import XGBClassifier, XGBRegressor
-#from lightgbm import LGBMRegressor, LGBMClassifier
 
 from ..helpers.ML_Helpers import show_objects
+
+try:
+        from lightgbm import LGBMRegressor, LGBMClassifier
+
+except ImportError:
+        raise ImportWarning('lightgbm does not seem to be properly installed!',
+                            'Please see:',
+                            'https://lightgbm.readthedocs.io/en/latest/Installation-Guide.html',
+                            'for instructions specific to your os, if you',
+                            ' want to use lighgbm.')
 
 AVALIABLE = {
         'binary': {

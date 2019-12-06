@@ -1,5 +1,6 @@
 scikit-learn>=0.21
 xgboost
+lightgbm
 numpy>=1.16
 scipy>=1.2
 pandas>=0.24

@@ -1187,7 +1187,12 @@ class Model_Pipeline():
 
         # Init raw_preds_df
         if fold_ind == 'test':
-            self._init_raw_preds_df(test_subjects)
+
+            if self.compute_train_score:
+                self._init_raw_preds_df(np.concatenate([train_subjects,
+                                                        test_subjects]))
+            else:
+                self._init_raw_preds_df(test_subjects)
 
         # Assume the train_subjects and test_subjects passed here are final.
         train_data = data.loc[train_subjects]

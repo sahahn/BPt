@@ -1262,7 +1262,7 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
         ML_params['imputer'] = None
 
     # Print the params being used
-    self._print_model_params(ML_params, test=True)
+    self._print_model_params(ML_params, test=True, kwargs=kwargs)
 
     # Init the Model_Pipeline object with modeling params
     self._init_model(ML_params)
@@ -1394,7 +1394,7 @@ def _make_ML_params(self, args):
     return ML_params
 
 
-def _print_model_params(self, ML_params, test=False):
+def _print_model_params(self, ML_params, test=False, kwargs=None):
 
     if test:
         self._print('Running Test with:')
@@ -1474,6 +1474,11 @@ def _print_model_params(self, ML_params, test=False):
 
     self._print('cache =', ML_params['cache'])
     self._print('extra_params =', ML_params['extra_params'])
+
+    if kwargs is not None:
+        self._print('Ignoring the following invalid passed params:')
+        for k in kwargs:
+            self._print(k, '=', kwargs[k])
     self._print()
 
 

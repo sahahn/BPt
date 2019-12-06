@@ -140,7 +140,10 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
 
         save_name = os.path.join(self.exp_log_dr,
                                  save_name.replace(' ', '_') + '.gif')
-        anim.save(save_name, dpi=80, writer='imagemagick')
+
+        # anim.save(save_name, dpi=80, writer='imagemagick')
+
+        anim.save(save_name, writer='ffmpeg')
         plt.close()
 
     if self.notebook:

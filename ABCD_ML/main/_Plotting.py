@@ -57,7 +57,7 @@ def _proc_subjects(self, data, subjects):
 
 
 def Show_Data_Dist(self, num_feats=20, frame_interval=500,
-                   plot_type='bar', show_only_overlap=True,
+                   plot_type='hist', show_only_overlap=True,
                    subjects=None, save=True, save_name='data distribution'):
 
     '''This method displays some summary statistics about
@@ -79,9 +79,9 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
 
     plot_type : {'bar', 'hist'}
         The type of base seaborn plot to generate for each datapoint.
-        Either 'bar' for barplot, or 'hist' or seaborns dist plot.
+        Either 'bar' for barplot, or 'hist' for seaborns dist plot.
 
-        (default = 'bar')
+        (default = 'hist')
 
     show_only_overlap : bool, optional
         If True, then displays only the distributions for valid overlapping
@@ -141,9 +141,11 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
         save_name = os.path.join(self.exp_log_dr,
                                  save_name.replace(' ', '_') + '.gif')
 
-        # anim.save(save_name, dpi=80, writer='imagemagick')
-
-        anim.save(save_name, writer='ffmpeg')
+        try:
+            anim.save(save_name, dpi=80, writer='imagemagick')
+        except BrokenPipeError:
+            print('Warning: could not save gif, please make sure you have',
+                  'imagemagick installed')
         plt.close()
 
     if self.notebook:
@@ -519,7 +521,7 @@ def _get_top_global(self, df, top_n, get_abs):
 
     to_get = list(range(top_n))
     if not get_abs:
-        to_get += [-i for i in range(top_n)]
+        to_get += [-i for i in range(top_n)][::-1]
 
     top = imps[to_get]
     feats = imps[to_get].index

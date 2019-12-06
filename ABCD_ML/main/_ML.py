@@ -1039,7 +1039,9 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
         All results from `Evaluate`, or rather the metrics are
         saved within self.eval_scores by default (in addition to in
         the logs, though this way saves them in a more programatically
-        avaliable way). `run_name` refers to the specific name under which to
+        avaliable way). This name is also used to
+        store the exact params used in self.eval_settings.
+        `run_name` refers to the specific name under which to
         store this Evaluate's run on results. If left as None, then will just
         use a default name.
     problem_type :
@@ -1114,7 +1116,7 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     '''
 
     # Perform pre-modeling check
-    self._premodel_check(problem_type)
+    self._premodel_check()
 
     # Create the set of ML_params from passed args + default args
     ML_params = self._make_ML_params(args=locals())
@@ -1170,10 +1172,10 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     return score_list, raw_preds, FIs
 
 
-def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
-         target='default', model='default', model_params='default',
-         metric='default', imputer='default', imputer_scope='default',
-         imputer_params='default',
+def Test(self, run_name=None, train_subjects=None, test_subjects=None,
+         problem_type='default', target='default', model='default',
+         model_params='default', metric='default', imputer='default',
+         imputer_scope='default', imputer_params='default',
          scaler='default', scaler_scope='default', scaler_params='default',
          sampler='default', sample_on='default', sampler_params='default',
          feat_selector='default', feat_selector_params='default',
@@ -1191,6 +1193,16 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
 
     Parameters
     ----------
+    run_name : str or None, optional
+        A run_name within Test if set to a previous Evaluate run name
+        will load the settings used from that Evaluate call instead of
+        additional params passed! This is useful when testing a best
+        model on the test set, but be wary that it will ignore any
+        new params passed. If left as None, will act as a normal, and
+        used the passed params.
+
+        (default = None)
+
     train_subjects : array-like or None, optional
         If passed None, (default), then the class defined train subjects will
         be used. Otherwise, an array or pandas Index of
@@ -1255,7 +1267,15 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
     self._premodel_check()
 
     # Create the set of ML_params from passed args + default args
-    ML_params = self._make_ML_params(args=locals())
+    # or from a passed run name.
+    if run_name is None:
+        args = locals()
+    else:
+        self._print('Loading existing settings from run:', run_name)
+        self._print()
+        args = self.eval_settings[run_name]
+
+    ML_params = self._make_ML_params(args=args)
 
     # If no NaN, no imputer
     if not pd.isnull(self.all_data).any().any():
@@ -1320,20 +1340,10 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
     return score_list, raw_preds, FIs
 
 
-def _premodel_check(self, problem_type='default'):
+def _premodel_check(self):
     '''Internal helper function to ensure that self._prepare_data()
     has been called, and to force a train/test split if not already done.
     Will also call Set_Default_ML_Params if not already called.
-
-    Parameters
-    ----------
-    problem_type : {'regression', 'binary', 'categorical', 'default'}, optional
-
-        - 'regression' : For ML on float target data
-        - 'binary' : For ML on binary target data
-        - 'categorical' : For ML on categorical target data,
-                          as either multilabel or multiclass.
-        - 'default' : Use the name problem type within self.default_ML_params.
     '''
 
     if self.all_data is None:
@@ -1350,14 +1360,14 @@ def _premodel_check(self, problem_type='default'):
 
     if self.default_ML_params == {}:
 
-        self._print('Setting default ML params.')
+        self._print('Setting default ML params!')
         self._print('Note, if the following values are not desired,',
                     'call self.Set_Default_ML_Params()')
         self._print('Or just pass values everytime to Evaluate',
                     'or Test, and these default values will be ignored')
         self._print('')
 
-        self.Set_Default_ML_Params(problem_type=problem_type)
+        self.Set_Default_ML_Params()
 
     if self.ML_verbosity == {}:
 
@@ -1394,7 +1404,7 @@ def _make_ML_params(self, args):
     return ML_params
 
 
-def _print_model_params(self, ML_params, test=False, kwargs=None):
+def _print_model_params(self, ML_params, test=False, kwargs={}):
 
     if test:
         self._print('Running Test with:')
@@ -1475,7 +1485,7 @@ def _print_model_params(self, ML_params, test=False, kwargs=None):
     self._print('cache =', ML_params['cache'])
     self._print('extra_params =', ML_params['extra_params'])
 
-    if kwargs is not None:
+    if len(kwargs) > 0:
         self._print('Ignoring the following invalid passed params:')
         for k in kwargs:
             self._print(k, '=', kwargs[k])

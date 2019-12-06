@@ -1185,7 +1185,7 @@ def Test(self, train_subjects=None, test_subjects=None, problem_type='default',
          feat_importances_params='default',
          n_jobs='default', random_state='default',
          compute_train_score='default', cache='default',
-         extra_params='default'):
+         extra_params='default', **kwargs):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
 

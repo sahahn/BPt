@@ -109,11 +109,11 @@ MODELS = {
     'random forest classifier': (RandomForestClassifier,
                                  ['base rf', 'rf classifier dist']),
 
-    #'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm dist1',
-    #                                        'lgbm dist2']),
-    #'light gbm classifier': (LGBMClassifier,
-    #                         ['base lgbm', 'lgbm classifier dist1',
-    #                          'lgbm classifier dist2']),
+    'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm dist1',
+                                            'lgbm dist2']),
+    'light gbm classifier': (LGBMClassifier,
+                             ['base lgbm', 'lgbm classifier dist1',
+                              'lgbm classifier dist2']),
 
     'gp regressor': (GaussianProcessRegressor, ['base gp regressor']),
     'gp classifier': (GaussianProcessClassifier,  ['base gp classifier']),

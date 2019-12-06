@@ -1214,7 +1214,9 @@ class Model_Pipeline():
         scores = self._get_scores(test_data, '', fold_ind)
 
         if fold_ind == 'test':
-            return train_scores, scores, self.raw_preds_df
+
+            return (train_scores, scores, self.raw_preds_df,
+                    self.feat_importances)
 
         return train_scores, scores
 
@@ -1442,7 +1444,7 @@ class Model_Pipeline():
             if fold_ind == 'test':
 
                 if split == 'test':
-                    X, y = self._get_X_y(test_data)
+                    X, y = self._get_X_y(test_data, X_as_df=True)
 
                 elif split == 'train':
                     X, y = self._get_X_y(train_data, X_as_df=True)

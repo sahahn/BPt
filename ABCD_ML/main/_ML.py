@@ -836,11 +836,12 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     self._print()
 
 
-def Set_Default_ML_Verbosity(self, progress_bar='default', fold_name='default',
-                             time_per_fold='default', score_per_fold='default',
-                             fold_sizes='default', save_to_logs='default'):
+def Set_Default_ML_Verbosity(
+ self, progress_bar='default', show_init_params='default', fold_name='default',
+ time_per_fold='default', score_per_fold='default', fold_sizes='default',
+ save_to_logs='default'):
     '''This function allows setting various verbosity options that effect
-    output during :func:`Evaluate` and :func:`Test`
+    output during :func:`Evaluate` and :func:`Test`.
 
     Parameters
     ----------
@@ -850,6 +851,13 @@ def Set_Default_ML_Verbosity(self, progress_bar='default', fold_name='default',
         :func:`Evaluate` , If False, then no progress bar is shown.
         This bar should work both in a notebook env and outside one,
         assuming self.notebook has been set correctly.
+
+        if 'default', and not already defined, set to True.
+        (default = 'default')
+
+    show_init_params : bool, optional
+        If True, then print/show the parameters used before running
+        Evaluate / Test. If False, then don't print the params used.
 
         if 'default', and not already defined, set to True.
         (default = 'default')
@@ -907,6 +915,11 @@ def Set_Default_ML_Verbosity(self, progress_bar='default', fold_name='default',
         else:
             self.ML_verbosity['progress_bar'] = tqdm
 
+    if show_init_params != 'default':
+        self.ML_verbosity['show_init_params'] = show_init_params
+    elif 'show_init_params' not in self.ML_verbosity:
+        self.ML_verbosity['show_init_params'] = True
+
     if fold_name != 'default':
         self.ML_verbosity['fold_name'] = fold_name
     elif 'fold_name' not in self.ML_verbosity:
@@ -935,7 +948,15 @@ def Set_Default_ML_Verbosity(self, progress_bar='default', fold_name='default',
     self._print('Default ML verbosity set within self.ML_verbosity.')
     self._print('----------------------')
     for param in self.ML_verbosity:
-        self._print(param + ':', self.ML_verbosity[param])
+
+        if param == 'progress_bar':
+            if self.ML_verbosity[param] is None:
+                self._print(param + ':', False)
+            else:
+                self._print(param + ':', True)
+
+        else:
+            self._print(param + ':', self.ML_verbosity[param])
 
     self._print()
 
@@ -1088,7 +1109,8 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
         ML_params['imputer'] = None
 
     # Print the params being used
-    self._print_model_params(ML_params, test=False)
+    if self.ML_verbosity['show_init_params']:
+        self._print_model_params(ML_params, test=False)
 
     run_name = self._get_avaliable_eval_scores_name(run_name,
                                                     ML_params['model'])
@@ -1244,7 +1266,8 @@ def Test(self, run_name=None, train_subjects=None, test_subjects=None,
         ML_params['imputer'] = None
 
     # Print the params being used
-    self._print_model_params(ML_params, test=True, kwargs=kwargs)
+    if self.ML_verbosity['show_init_params']:
+        self._print_model_params(ML_params, test=True, kwargs=kwargs)
 
     # Init the Model_Pipeline object with modeling params
     self._init_model(ML_params)
@@ -1313,12 +1336,9 @@ def _premodel_check(self):
 
     if self.train_subjects is None:
 
-        print('No train-test set defined! \
-              Performing one automatically with default test split =.25')
-        print('If no test set is intentional, \
-              call self.Train_Test_Split(test_size=0)')
-
-        self.Train_Test_Split(test_size=.25)
+        raise RuntimeError('No train-test set defined!',
+                           'If this is intentional, call Train_Test_Split',
+                           'with test_size = 0')
 
     if self.default_ML_params == {}:
 

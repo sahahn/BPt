@@ -176,60 +176,48 @@ def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
         self.default_load_params['dataset_type'] = dataset_type
     elif 'dataset_type' not in self.default_load_params:
         self.default_load_params['dataset_type'] = 'basic'
-        self._print('No default dataset_type passed, set to "basic"')
 
     if subject_id != 'default':
         self.default_load_params['subject_id'] = subject_id
     elif 'subject_id' not in self.default_load_params:
         self.default_load_params['subject_id'] = 'src_subject_id'
-        self._print('No default subject_id passed, set to "src_subject_id"')
 
     if eventname != 'default':
         self.default_load_params['eventname'] = eventname
     elif 'eventname' not in self.default_load_params:
         self.default_load_params['eventname'] = None
-        self._print('No default eventname passed,',
-                    'set to None')
 
     if eventname_col != 'default':
         self.default_load_params['eventname_col'] = eventname_col
     elif 'eventname_col' not in self.default_load_params:
         self.default_load_params['eventname_col'] = 'eventname'
-        self._print('No default eventname_col passed,',
-                    'set to "eventname"')
 
     if overlap_subjects != 'default':
         self.default_load_params['overlap_subjects'] = overlap_subjects
     elif 'overlap_subjects' not in self.default_load_params:
         self.default_load_params['overlap_subjects'] = False
-        self._print('No default overlap_subjects passed, set to False')
 
     if na_values != 'default':
         self.default_load_params['na_values'] = na_values
     elif 'na_values' not in self.default_load_params:
         self.default_load_params['na_values'] = ['777', '999']
-        self._print('No default na_values passed, set to ["777", "999"]')
 
     if drop_na != 'default':
         self.default_load_params['drop_na'] = drop_na
     elif 'drop_na' not in self.default_load_params:
         self.default_load_params['drop_na'] = True
-        self._print('No default drop_na passed, set to True')
 
     if drop_or_na != 'default':
         self.default_load_params['drop_or_na'] = drop_or_na
     elif 'drop_or_na' not in self.default_load_params:
         self.default_load_params['drop_or_na'] = 'drop'
-        self._print('No default drop_or_na passed, set to "drop"')
 
     self._print('Default load params set within self.default_load_params.')
-    self._print()
+    self._print('----------------------')
+    for param in self.default_load_params:
+        self._print(param + ':', self.default_load_params[param])
 
-    # subject_id='src_subject_id',
-    # eventname='baseline_year_1_arm_1',
-    # default_dataset_type='basic',
-    # drop_nan=True,
-    # default_na_values=['777', '999'],
+    self._print()
 
 
 def _make_load_params(self, args):
@@ -773,6 +761,9 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, drop_val):
         self.targets_encoders[common_name] = targets_key
         self._print('Base str indicator/name for loaded multilabel =',
                     common_name)
+
+    else:
+        raise RuntimeError('Invalid data type passed:', d_type)
 
     # Keep track of each loaded target in targets_keys
     if targets_key not in self.targets_keys:

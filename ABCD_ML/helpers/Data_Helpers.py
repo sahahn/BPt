@@ -388,7 +388,7 @@ def filter_float_df_by_std(data, n_std,
     if not isinstance(n_std, tuple):
         n_std = (n_std, n_std)
 
-    mean = data.abs().mean()
+    mean = data.mean()
     std = data.std()
 
     if n_std[0] is not None:

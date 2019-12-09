@@ -77,7 +77,7 @@ class ABCD_ML():
 
     def __init__(self, exp_name='Exp', log_dr='', existing_log='append',
                  verbose=True, notebook=True, use_default_subject_ids=False,
-                 low_memory_mode=False, strat_u_name='_Strat',
+                 low_memory_mode=False, strat_u_name='_Strat', dpi=100,
                  random_state=None):
         '''Main class init
 
@@ -162,6 +162,12 @@ class ABCD_ML():
 
             (default = '_Strat')
 
+        dpi : int, optional
+            The default dpi in which to save any distribution or feature
+            importance plots.
+
+            (default = 100)
+
         random_state : int, RandomState instance or None, optional
             The default random state, either as int for a specific seed,
             or if None then the random seed is set by np.random.
@@ -193,6 +199,7 @@ class ABCD_ML():
         self.use_default_subject_ids = use_default_subject_ids
         self.low_memory_mode = low_memory_mode
         self.strat_u_name = strat_u_name
+        self.dpi = dpi
         self.random_state = random_state
 
         self._print('notebook =', self.notebook)

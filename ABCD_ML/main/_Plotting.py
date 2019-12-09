@@ -26,7 +26,7 @@ def _plot(self, save_name, show=True):
 
             save_spot = os.path.join(self.exp_log_dr,
                                      save_name.replace(' ', '_') + '.png')
-            plt.savefig(save_spot, dpi=100, bbox_inches='tight')
+            plt.savefig(save_spot, dpi=self.dpi, bbox_inches='tight')
 
         if self.notebook:
             plt.show()
@@ -37,28 +37,56 @@ def _proc_subjects(self, data, subjects):
     if subjects == 'train':
 
         try:
-            return data.loc[self.train_subjects]
+            return data.loc[self.train_subjects].copy()
         except KeyError:
             raise RuntimeError('No train subjects defined!')
 
     elif subjects == 'test':
 
         try:
-            return data.loc[self.test_subjects]
+            return data.loc[self.test_subjects].copy()
         except KeyError:
             raise RuntimeError('No test subjects defined!')
+
+    elif subjects == 'both':
+
+        try:
+            return (data.loc[self.train_subjects].copy(),
+                    data.loc[self.test_subjects].copy())
+        except KeyError:
+            raise RuntimeError('No train/test subjects defined!')
 
     else:
 
         try:
-            return data.loc[subjects]
+            return data.loc[subjects].copy()
         except KeyError:
             raise RuntimeError('Invalid subjects passed!')
 
 
-def Show_Data_Dist(self, num_feats=20, frame_interval=500,
+def _get_col(data, i):
+
+    col = data[list(data)[i]]
+    non_nan_col = col[~pd.isnull(col)]
+    n_nan_subjects = len(col) - len(non_nan_col)
+
+    return non_nan_col, n_nan_subjects
+
+
+def _plot_seaborn_dist(data, plot_type, label=None):
+
+    if plot_type == 'kde':
+        sns.kdeplot(data, label=label)
+    elif plot_type == 'bar':
+        sns.boxplot(data, label=label)
+    else:
+        sns.distplot(data, label=label)
+
+
+def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
                    plot_type='hist', show_only_overlap=True,
-                   subjects=None, save=True, save_name='data distribution'):
+                   subjects=None, save=True, dpi='default',
+                   save_name='data distribution', random_state='default'):
 
     '''This method displays some summary statistics about
     the loaded targets, as well as plots the distibution if possible.
@@ -66,20 +94,33 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
     Parameters
     ----------
     num_feats: int, optional
-        The number of random features's distributions in which to view.
+        The number of features' distributions in which to view.
         Note: If too many are selected it may take a long time to render
         and/or consume a lot of memory!
 
         (default = 20)
+
+    feats : {'random', 'skew'}, optional
+        The features in which to display, if 'random' then
+        will select `num_feats` random features to display.
+        If 'skew', will show the top `num_feats` features by
+        absolute skew.
+
+        If 'skew' and subjects == 'both', will
+        compute the top skewed features based on
+        the training set.
+
+        (default = 'random')
 
     frame_interval: int, optional
         The number of milliseconds between each frame.
 
         (default = 500)
 
-    plot_type : {'bar', 'hist'}
+    plot_type : {'bar', 'hist', 'kde'}
         The type of base seaborn plot to generate for each datapoint.
-        Either 'bar' for barplot, or 'hist' for seaborns dist plot.
+        Either 'bar' for barplot, or 'hist' for seaborns dist plot, or
+        'kde' for just a kernel density estimate plot.
 
         (default = 'hist')
 
@@ -92,10 +133,15 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
 
         (default = True)
 
-    subjects : None, 'train', 'test' or array-like, optional
+    subjects : None, 'train', 'test', 'both' or array-like, optional
         If not None, then plot only the subjects loaded as train_subjects,
         or as test subjects, of you can pass a custom list or array-like of
         subjects.
+
+        If 'both', then will plot the train and test distributions seperately.
+        Note: This only works for plot_type == 'hist' or 'kde'.
+        Also take into account, specifying 'both' will show some
+        different information, then the default settings.
 
         (default = None)
 
@@ -104,35 +150,90 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
 
         (default = True)
 
+    dpi : int, 'default', optional
+        The dpi in which to save the distribution gif.
+        If 'default' use the class default value.
+
+        (default = 'default')
+
     save_name : str, optional
         The name in which the gif should be saved under.
 
         (default = 'data distribution')
+
+    random_state : 'default', int or None
+        The random state in which to choose random features from.
+        If 'default' use the class define value, otherwise set to the value
+        passed. None for random.
+
+        (default = 'default')
     '''
 
-    if subjects is None:
-        data = self._set_overlap(self.data, show_only_overlap).copy()
-    else:
-        data = self._proc_subjects(self.data, subjects).copy()
+    if random_state == 'default':
+        random_state = self.random_state
 
-    self._print('Loaded data top columns by skew:')
-    self._print(self.data.skew().sort_values())
+    self._print('Plotting data distribution.')
+
+    if subjects == 'both':
+        if plot_type == 'bar':
+            raise RuntimeWarning('Switching plot type to dist due to subjects',
+                                 ' == "both"')
+            plot_type = 'dist'
+
+        data, test_data = self._proc_subjects(self.data, subjects)
+
+        self._print('Viewing train data with shape:', data.shape)
+        self._print('Viewing test data with shape:', test_data.shape)
+
+    else:
+        if subjects is None:
+            data = self._set_overlap(self.data, show_only_overlap)
+        else:
+            data = self._proc_subjects(self.data, subjects)
+
+        self._print('Viewing data with shape:', data.shape)
+        self._print()
+
+        self._print('Loaded data top columns by skew:')
+        self._print(self.data.skew().sort_values())
+        self._print()
 
     fig, ax = plt.subplots()
 
     def update(i):
         fig.clear()
+        title = ''
 
-        col = data[list(data)[i]]
-        non_nan_col = col[~pd.isnull(col)]
+        if subjects == 'both':
+            non_nan_col_tr, n_tr = _get_col(data, i)
+            non_nan_col_test, n_test = _get_col(test_data, i)
 
-        if plot_type == 'hist':
-            sns.distplot(non_nan_col)
+            if n_tr > 0 or n_test > 0:
+                title = 'Train - NaN subjects not shown: ' + str(n_tr)
+                title += '\nTest - NaN subjects not shown: ' + str(n_test)
+
+            _plot_seaborn_dist(non_nan_col_tr, plot_type, label='train')
+            _plot_seaborn_dist(non_nan_col_test, plot_type, label='test')
+
+            plt.legend()
+
         else:
-            sns.boxplot(non_nan_col)
+            non_nan_col, n = _get_col(data, i)
 
-    np.random.seed(1)
-    frames = np.random.randint(0, data.shape[1], size=num_feats)
+            if n > 0:
+                title = 'NaN subjects not shown: ' + str(n)
+
+            _plot_seaborn_dist(non_nan_col, plot_type)
+
+        plt.title(title, fontdict={'fontsize': 'medium'})
+
+    if 'skew':
+        most_skewed = data.skew().abs().sort_values()[-num_feats:].index
+        frames = [list(data).index(m) for m in most_skewed][::-1]
+    else:
+        np.random.seed(random_state)
+        frames = np.random.randint(0, data.shape[1], size=num_feats)
+
     anim = FuncAnimation(fig, update, frames=frames, interval=500)
     html = HTML(anim.to_html5_video())
 
@@ -142,7 +243,7 @@ def Show_Data_Dist(self, num_feats=20, frame_interval=500,
                                  save_name.replace(' ', '_') + '.gif')
 
         try:
-            anim.save(save_name, dpi=80, writer='imagemagick')
+            anim.save(save_name, dpi=self.dpi, writer='imagemagick')
         except BrokenPipeError:
             print('Warning: could not save gif, please make sure you have',
                   'imagemagick installed')
@@ -205,7 +306,7 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
     if subjects is None:
         targets_df = self._set_overlap(self.targets, show_only_overlap).copy()
     else:
-        targets_df = self._proc_subjects(self.targets, subjects).copy()
+        targets_df = self._proc_subjects(self.targets, subjects)
 
     if targets == 'SHOW_ALL':
         targets = self._get_base_targets_names()
@@ -270,7 +371,7 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
     if subjects is None:
         covars_df = self._set_overlap(self.covars, show_only_overlap).copy()
     else:
-        covars_df = self._proc_subjects(self.covars, subjects).copy()
+        covars_df = self._proc_subjects(self.covars, subjects)
 
     if covars == 'SHOW_ALL':
         covars = list(self.covars_encoders)
@@ -332,7 +433,7 @@ def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
     if subjects is None:
         strat_df = self._set_overlap(self.strat, show_only_overlap).copy()
     else:
-        strat_df = self._proc_subjects(self.strat, subjects).copy()
+        strat_df = self._proc_subjects(self.strat, subjects)
 
     if strat == 'SHOW_ALL':
         strat = list(self.strat_encoders)

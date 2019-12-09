@@ -652,19 +652,16 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self.default_ML_params['problem_type'] = problem_type
     elif 'problem_type' not in self.default_ML_params:
         self.default_ML_params['problem_type'] = 'regression'
-        self._print('No default problem type passed, set to regression.')
 
     if target != 'default':
         self.default_ML_params['target'] = target
     elif 'target' not in self.default_ML_params:
         self.default_ML_params['target'] = 0
-        self._print('No default target passed, set to 0.')
 
     if model != 'default':
         self.default_ML_params['model'] = model
     elif 'model' not in self.default_ML_params:
         self.default_ML_params['model'] = 'linear'
-        self._print('No default model type passed, set to linear.')
 
     if metric != 'default':
         self.default_ML_params['metric'] = metric
@@ -673,59 +670,46 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self.default_ML_params['metric'] = \
             default_metrics[self.default_ML_params['problem_type']]
 
-        self._print('No default metric passed, set to,',
-                    self.default_ML_params['metric'],
-                    'based on default problem type.')
-
     if imputer != 'default':
         self.default_ML_params['imputer'] = imputer
     elif 'imputer' not in self.default_ML_params:
         self.default_ML_params['imputer'] = ['mean', 'median']
-        self._print('No default imputer passed, set to [mean, median]')
 
     if imputer_scope != 'default':
         self.default_ML_params['imputer_scope'] = imputer_scope
     elif 'imputer_scope' not in self.default_ML_params:
         self.default_ML_params['imputer_scope'] =\
             ['float', 'categorical']
-        self._print('No default imputer scope passed, set to',
-                    '[float, categorical]')
 
     if scaler != 'default':
         self.default_ML_params['scaler'] = scaler
     elif 'scaler' not in self.default_ML_params:
         self.default_ML_params['scaler'] = 'standard'
-        self._print('No default scaler passed, set to standard')
 
     if scaler_scope != 'default':
         self.default_ML_params['scaler_scope'] = scaler_scope
     elif 'scaler_scope' not in self.default_ML_params:
         self.default_ML_params['scaler_scope'] = 'data'
-        self._print('No default scaler_scope passed, set to data')
 
     if sampler != 'default':
         self.default_ML_params['sampler'] = sampler
     elif 'sampler' not in self.default_ML_params:
         self.default_ML_params['sampler'] = None
-        self._print('No default sampler passed, set to None')
 
     if sample_on != 'default':
         self.default_ML_params['sample_on'] = sample_on
     elif 'sample_on' not in self.default_ML_params:
         self.default_ML_params['sample_on'] = 'targets'
-        self._print('No default sample on passed, set to targets')
 
     if feat_selector != 'default':
         self.default_ML_params['feat_selector'] = feat_selector
     elif 'feat_selector' not in self.default_ML_params:
         self.default_ML_params['feat_selector'] = None
-        self._print('No default feat selector passed, set to None')
 
     if splits != 'default':
         self.default_ML_params['splits'] = splits
     elif 'splits' not in self.default_ML_params:
         self.default_ML_params['splits'] = 3
-        self._print('No default splits passed, set to 3')
 
     if n_repeats != 'default':
         assert isinstance(n_repeats, int), 'n_repeats must be int'
@@ -733,76 +717,64 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self.default_ML_params['n_repeats'] = n_repeats
     elif 'n_repeats' not in self.default_ML_params:
         self.default_ML_params['n_repeats'] = 2
-        self._print('No default num CV repeats passed, set to 2')
 
     if search_splits != 'default':
         self.default_ML_params['search_splits'] = search_splits
     elif 'search_splits' not in self.default_ML_params:
         self.default_ML_params['search_splits'] = 3
-        self._print('No default num search splits passed, set to 3')
 
     if ensemble != 'default':
         self.default_ML_params['ensemble'] = ensemble
     elif 'ensemble' not in self.default_ML_params:
         self.default_ML_params['ensemble'] = 'basic ensemble'
-        self._print('No default ensemble type passed, set to basic ensemble')
 
     if ensemble_split != 'default':
         self.default_ML_params['ensemble_split'] = ensemble_split
     elif 'ensemble_split' not in self.default_ML_params:
         self.default_ML_params['ensemble_split'] = .2
-        self._print('No default ensemble split passed, set to .2')
 
     if search_type != 'default':
         self.default_ML_params['search_type'] = search_type
     elif 'search_type' not in self.default_ML_params:
         self.default_ML_params['search_type'] = None
-        self._print('No default search type passed, set to None')
 
     if model_params != 'default':
         self.default_ML_params['model_params'] = model_params
     elif 'model_params' not in self.default_ML_params:
         self.default_ML_params['model_params'] = 0
-        self._print('No default model param ind passed, set to 0')
 
     if imputer_params != 'default':
         self.default_ML_params['imputer_params'] = imputer_params
     elif 'imputer_params' not in self.default_ML_params:
         self.default_ML_params['imputer_params'] = 0
-        self._print('No default imputer scaler params passed, set to 0')
 
     if scaler_params != 'default':
         self.default_ML_params['scaler_params'] = scaler_params
     elif 'scaler_params' not in self.default_ML_params:
         self.default_ML_params['scaler_params'] = 0
-        self._print('No default data scaler params passed, set to 0')
 
     if sampler_params != 'default':
         self.default_ML_params['sampler_params'] = sampler_params
     elif 'sampler_params' not in self.default_ML_params:
         self.default_ML_params['sampler_params'] = 0
-        self._print('No default sampler params passed, set to 0')
 
     if feat_selector_params != 'default':
         self.default_ML_params['feat_selector_params'] =\
             feat_selector_params
     elif 'feat_selector_params' not in self.default_ML_params:
         self.default_ML_params['feat_selector_params'] = 0
-        self._print('No default feat selector params passed, set to 0')
 
     if ensemble_params != 'default':
         self.default_ML_params['ensemble_params'] =\
             ensemble_params
     elif 'ensemble_params' not in self.default_ML_params:
         self.default_ML_params['ensemble_params'] = 0
-        self._print('No default ensemble type params passed, set to 0')
 
     if n_jobs != 'default':
         assert isinstance(n_jobs, int), 'n_jobs must be int'
         self.default_ML_params['n_jobs'] = n_jobs
     elif 'n_jobs' not in self.default_ML_params:
         self.default_ML_params['n_jobs'] = 1
-        self._print('No default number of jobs passed, set to 1')
 
     if search_n_iter != 'default':
         assert isinstance(search_n_iter, int), 'search_n_iter must be int'
@@ -810,8 +782,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self.default_ML_params['search_n_iter'] = search_n_iter
     elif 'search_n_iter' not in self.default_ML_params:
         self.default_ML_params['search_n_iter'] = 10
-        self._print('No default number of random search iters passed,',
-                    'set to 10')
 
     if feats_to_use != 'default':
         self.default_ML_params['feats_to_use'] = feats_to_use
@@ -824,53 +794,46 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self.default_ML_params['subjects_to_use'] = subjects_to_use
     elif 'subjects_to_use' not in self.default_ML_params:
         self.default_ML_params['subjects_to_use'] = 'all'
-        self._print('No default subjects_to_use passed,',
-                    'set to all')
 
     if compute_train_score != 'default':
         self.default_ML_params['compute_train_score'] = compute_train_score
     elif 'compute_train_score' not in self.default_ML_params:
         self.default_ML_params['compute_train_score'] = False
-        self._print('No default compute_train_score passed,',
-                    'set to False')
 
     if random_state != 'default':
         self.default_ML_params['random_state'] = random_state
     elif 'random_state' not in self.default_ML_params:
         self.default_ML_params['random_state'] = self.random_state
-        self._print('No default random state passed, using class random',
-                    'state value of', self.random_state)
 
     if feat_importances != 'default':
         self.default_ML_params['feat_importances'] =\
             feat_importances
     elif 'feat_importances' not in self.default_ML_params:
         self.default_ML_params['feat_importances'] = 'base'
-        self._print('No default feat_importances passed,',
-                    'set to base')
 
     if feat_importances_params != 'default':
         self.default_ML_params['feat_importances_params'] =\
             feat_importances_params
     elif 'feat_importances_params' not in self.default_ML_params:
         self.default_ML_params['feat_importances_params'] = 0
-        self._print('No default feat_importances_params passed,',
-                    'set to, set to 0')
 
     if cache != 'default':
         self.default_ML_params['cache'] = cache
     elif 'cache' not in self.default_ML_params:
         self.default_ML_params['cache'] = None
-        self._print('No default cache passed, set to None')
 
     if extra_params != 'default':
         assert isinstance(extra_params, dict), 'extra params must be dict'
         self.default_ML_params['extra_params'] = extra_params
     elif 'extra_params' not in self.default_ML_params:
         self.default_ML_params['extra_params'] = {}
-        self._print('No default extra params passed, set to empty dict')
 
     self._print('Default ML params set within self.default_ML_params.')
+    self._print('----------------------')
+    for param in self.default_ML_params:
+        self._print(param + ':', self.default_ML_params[param])
+
+    self._print()
 
 
 def Set_Default_ML_Verbosity(self, progress_bar='default', fold_name='default',
@@ -943,37 +906,36 @@ def Set_Default_ML_Verbosity(self, progress_bar='default', fold_name='default',
             self.ML_verbosity['progress_bar'] = tqdm_notebook
         else:
             self.ML_verbosity['progress_bar'] = tqdm
-        self._print('No default progress bar passed, set to True.')
 
     if fold_name != 'default':
         self.ML_verbosity['fold_name'] = fold_name
     elif 'fold_name' not in self.ML_verbosity:
         self.ML_verbosity['fold_name'] = False
-        self._print('No default fold name passed, set to False.')
 
     if time_per_fold != 'default':
         self.ML_verbosity['time_per_fold'] = time_per_fold
     elif 'time_per_fold' not in self.ML_verbosity:
         self.ML_verbosity['time_per_fold'] = False
-        self._print('No default time per fold passed, set to False.')
 
     if score_per_fold != 'default':
         self.ML_verbosity['score_per_fold'] = score_per_fold
     elif 'score_per_fold' not in self.ML_verbosity:
         self.ML_verbosity['score_per_fold'] = False
-        self._print('No default score per fold passed, set to False.')
 
     if fold_sizes != 'default':
         self.ML_verbosity['fold_sizes'] = fold_sizes
     elif 'fold_sizes' not in self.ML_verbosity:
         self.ML_verbosity['fold_sizes'] = False
-        self._print('No default fold sizes passed, set to False.')
 
     if save_to_logs != 'default':
         self.ML_verbosity['save_to_logs'] = save_to_logs
     elif 'save_to_logs' not in self.ML_verbosity:
         self.ML_verbosity['save_to_logs'] = False
-        self._print('No default save to logs passed, set to False.')
+
+    self._print('Default ML verbosity set within self.ML_verbosity.')
+    self._print('----------------------')
+    for param in self.ML_verbosity:
+        self._print(param + ':', self.ML_verbosity[param])
 
     self._print()
 

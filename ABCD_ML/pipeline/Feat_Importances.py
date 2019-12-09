@@ -329,7 +329,7 @@ class Feat_Importances():
         if 'global' in self.scopes:
             content += 'contains global feat importances: self.global_df <br>'
         if 'local' in self.scopes:
-            content += 'contains local feat importances: self.global_df <br>'
+            content += 'contains local feat importances: self.local_df <br>'
 
         content += 'importance computed on: ' + self.split + '<br>'
 

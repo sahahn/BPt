@@ -6,6 +6,7 @@ import time
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from imblearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
+from .extensions.Col_Selector import InPlaceColumnTransformer
 from sklearn.preprocessing import FunctionTransformer
 from collections import Counter
 
@@ -564,7 +565,7 @@ class Model_Pipeline():
             inds = self._get_inds_from_scope(scopes[i])
 
             col_obj =\
-                ('col_' + name, ColumnTransformer([(name, obj, inds)],
+                ('col_' + name, InPlaceColumnTransformer([(name, obj, inds)],
                  remainder='passthrough', sparse_threshold=0))
 
             col_objs.append(col_obj)

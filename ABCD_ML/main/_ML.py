@@ -228,7 +228,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
             Can pass specific col names in as array-like
             to select only those cols.
 
-        If 'default', and not already defined, set to 'data'
+        If 'default', and not already defined, set to 'all'
         (default = 'default')
 
     scaler_params : int, str, or list of
@@ -689,7 +689,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     if scaler_scope != 'default':
         self.default_ML_params['scaler_scope'] = scaler_scope
     elif 'scaler_scope' not in self.default_ML_params:
-        self.default_ML_params['scaler_scope'] = 'data'
+        self.default_ML_params['scaler_scope'] = 'all'
 
     if sampler != 'default':
         self.default_ML_params['sampler'] = sampler

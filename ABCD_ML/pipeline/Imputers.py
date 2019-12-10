@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
@@ -96,6 +97,14 @@ class Categorical_Imputer():
         self.valid_mask = None
         self.copy = copy
 
+    def get_ohe(self, categories):
+
+        ohe = OneHotEncoder(categories='auto', sparse=False)
+        ohe.categories_ = categories
+        ohe._legacy_mode = False
+
+        return ohe
+
     def fit(self, X, y=None):
 
         if self.copy:
@@ -110,7 +119,12 @@ class Categorical_Imputer():
 
         if self.valid_mask is None:
             self.valid_mask = ~pd.isnull(X).any(axis=0)
-            self.valid_mask[self.encoder_inds] = False
+
+            all_encoder_inds = []
+            for e in self.encoder_inds:
+                all_encoder_inds += e
+
+            self.valid_mask[all_encoder_inds] = False
             self.valid_mask[self.ordinal_inds] = False
 
         valid_extra_X = X[:, self.valid_mask]
@@ -153,7 +167,9 @@ class Categorical_Imputer():
         for i in range(len(self.encoder_inds)):
 
             imputed_col = imputed[:, [ind+i]]
-            encoded = self.encoders[i][1].transform(imputed_col)
+
+            encoder = self.get_ohe(self.encoders[i][1])
+            encoded = encoder.transform(imputed_col)
 
             # If originally dummy coded
             if len(self.encoders[i]) > 2:
@@ -174,13 +190,12 @@ class Categorical_Imputer():
         selection = X[:, inds]
         non_nan_mask = ~pd.isnull(selection).any(axis=1)
 
-        enc = encoder[1]
         non_nan_selection = selection[non_nan_mask]
-
         if len(encoder) > 2:
             non_nan_selection =\
                 self.add_back_dummy_col(non_nan_selection, encoder[2])
 
+        enc = self.get_ohe(encoder[1])
         ordinal = enc.inverse_transform(non_nan_selection)
 
         to_fill = np.full((len(non_nan_mask), 1), np.nan)
@@ -284,8 +299,17 @@ def get_imputer_and_params(imputer_str, extra_params, params, search_type,
 
     # Categorical
     if len(inds) == 0:
+
+        encoders_to_pass = []
+
+        for e in encoders:
+            if len(e) > 1:
+                encoders_to_pass.append(
+                    tuple(i.categories_ if hasattr(i, 'categories_') else i
+                          for i in e))
+
         imputer = Categorical_Imputer(base_imputer, encoder_inds,
-                                      ordinal_inds, encoders)
+                                      ordinal_inds, encoders_to_pass)
 
     # Float or Binary
     else:

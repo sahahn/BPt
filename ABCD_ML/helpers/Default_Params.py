@@ -39,11 +39,19 @@ PARAMS['lasso C']['C'] =\
 PARAMS['lasso C']['class_weight'] =\
         ng.var.OrderedDiscrete([None, 'balanced'])
 
+PARAMS['lasso C extra'] = PARAMS['lasso C'].copy()
+PARAMS['lasso C extra']['max_iter'] = ng.var.Scalar(int).bounded(1000, 10000)
+PARAMS['lasso C extra']['tol'] = ng.var.Scalar(float).bounded(.000001, .01)
+
 PARAMS['ridge C'] = PARAMS['base ridge'].copy()
 PARAMS['ridge C']['C'] =\
         ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
 PARAMS['ridge C']['class_weight'] =\
         ng.var.OrderedDiscrete([None, 'balanced'])
+
+PARAMS['ridge C extra'] = PARAMS['ridge C'].copy()
+PARAMS['ridge C extra']['max_iter'] = ng.var.Scalar(int).bounded(1000, 10000)
+PARAMS['ridge C extra']['tol'] = ng.var.Scalar(float).bounded(.000001, .01)
 
 PARAMS['elastic classifier'] = PARAMS['base elastic'].copy()
 PARAMS['elastic classifier']['C'] =\
@@ -52,11 +60,23 @@ PARAMS['elastic classifier']['l1_ratio'] = ng.var.Scalar().bounded(0, 1)
 PARAMS['elastic classifier']['class_weight'] =\
         ng.var.OrderedDiscrete([None, 'balanced'])
 
+PARAMS['elastic classifier extra'] = PARAMS['elastic classifier'].copy()
+PARAMS['elastic classifier extra']['max_iter'] =\
+        ng.var.Scalar(int).bounded(1000, 10000)
+PARAMS['elastic classifier extra']['tol'] =\
+        ng.var.Scalar(float).bounded(.000001, .01)
+
 PARAMS['base elastic net'] = {'max_iter': 5000}
 PARAMS['elastic regression'] = PARAMS['base elastic net'].copy()
 PARAMS['elastic regression']['alpha'] =\
         ng.var.Scalar().bounded(-2, 5).exponentiated(base=10, coeff=-1)
 PARAMS['elastic regression']['l1_ratio'] = ng.var.Scalar().bounded(0, 1)
+
+PARAMS['elastic regression extra'] = PARAMS['elastic regression'].copy()
+PARAMS['elastic regression extra']['max_iter'] =\
+        ng.var.Scalar(int).bounded(1000, 10000)
+PARAMS['elastic regression extra']['tol'] =\
+        ng.var.Scalar(float).bounded(.000001, .01)
 
 PARAMS['base huber'] = {'epsilon': 1.35}
 PARAMS['base gnb'] = {'var_smoothing': 1e-9}
@@ -185,7 +205,7 @@ PARAMS['ridge regressor dist'] =\
 
 
 PARAMS['mlp dist'] = {'hidden_layer_sizes':
-                      ng.var.Array(1, 1, 1).bounded(2, 100),
+                      ng.var.Array(1, 1, 1).asscalar(int).bounded(2, 100),
                       'activation':
                       ng.var.OrderedDiscrete(['identity', 'logistic',
                                               'tanh', 'relu']),
@@ -207,8 +227,10 @@ PARAMS['mlp dist es'] = PARAMS['mlp dist'].copy()
 PARAMS['mlp dist es']['early_stopping'] = True
 PARAMS['mlp dist es']['n_iter_no_change'] = ng.var.Scalar(int).bounded(5, 50)
 
-PARAMS['mlp layers search'] = {'hidden_layer_sizes':
-                               ng.var.Array(1, 1, 1).bounded(2, 100)}
+PARAMS['mlp layers search'] =\
+        {'hidden_layer_sizes': ng.var.Array(1,
+                                            1, 1).asscalar(int).bounded(2,
+                                                                        100)}
 
 # Scalers
 PARAMS['base standard'] = {'with_mean': True,
@@ -275,6 +297,12 @@ PARAMS['base special sampler'] = {'sampler_type': 'special',
 PARAMS['base change sampler'] = {'sampler_type': 'change',
                                  'regression_bins': 3,
                                  'regression_bin_strategy': 'uniform'}
+
+
+PARAMS['rus binary ratio'] = PARAMS['base no change sampler'].copy()
+PARAMS['rus binary ratio']['sampling_strategy'] =\
+        ng.var.Scalar().bounded(.1, 1)
+
 
 # Ensemblers
 PARAMS['des default'] = {'needs_split': True,

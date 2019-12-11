@@ -11,7 +11,7 @@ class NevergradSearchCV():
 
     def __init__(self, optimizer_name, estimator, param_distributions,
                  scoring=None, cv=3,
-                 n_iter=10, n_jobs=1, random_state=None, verbose=0):
+                 n_iter=10, n_jobs=1, random_state=None):
 
         self.optimizer_name = optimizer_name
         self.estimator = estimator
@@ -21,7 +21,8 @@ class NevergradSearchCV():
         self.n_iter = n_iter
         self.n_jobs = n_jobs
         self.random_state = random_state
-        self.verbose = verbose
+
+        self.name = 'nevergrad'
 
     def ng_cv_score(self, X, y, **kwargs):
 
@@ -58,15 +59,13 @@ class NevergradSearchCV():
             with futures.ProcessPoolExecutor(max_workers=self.n_jobs) as ex:
                 recommendation = optimizer.minimize(self.ng_cv_score,
                                                     executor=ex,
-                                                    batch_mode=False,
-                                                    verbosity=self.verbose)
+                                                    batch_mode=False)
 
         # Fit best estimator
         self.best_estimator_ = self.estimator
         self.best_estimator_.set_params(**recommendation.kwargs)
 
-        # print(recommendation.kwargs)
-        # print(optimizer.current_bests["pessimistic"].mean)
+        # optimizer.current_bests["pessimistic"].mean,
 
         self.best_estimator_.fit(X, y)
 

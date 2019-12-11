@@ -15,7 +15,8 @@ from ..helpers.ML_Helpers import (conv_to_list, proc_input,
                                   get_possible_init_params,
                                   get_obj_and_params,
                                   user_passed_param_check,
-                                  f_array, replace_with_in_params)
+                                  f_array, replace_with_in_params,
+                                  type_check)
 
 from .Models import AVALIABLE as AVALIABLE_MODELS
 from .Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
@@ -1612,6 +1613,51 @@ class Model_Pipeline():
         # Fit the model
         self.Model.fit(X, y)
 
+        # If a search object, show the best params
+        self._show_best_params()
+
+    def _show_best_params(self):
+
+        try:
+            name = self.Model.name
+        except AttributeError:
+            return
+
+        if name == 'nevergrad':
+
+            all_params = [self.col_scaler_params, self.col_imputer_params,
+                          self.sampler_params, self.feat_selector_params,
+                          self.model_params, self.ensemble_params]
+        names = ['Scalers', 'Imputers', 'Samplers', 'Feat Selectors',
+                 'Models', 'Ensembles']
+
+        self._print('Params Selected by Best Pipeline:', level='params')
+
+        for params, name in zip(all_params, names):
+
+            if len(params) > 0:
+
+                to_show = []
+
+                base = list(params)[0].split('__')[0]
+                all_ps = self.Model.best_estimator_[base].get_params()
+
+                for p in params:
+
+                    ud = params[p]
+
+                    if type_check(ud):
+                        nm = p.replace(base + '__', '')
+                        to_show.append(nm + ': ' + str(all_ps[nm]))
+
+                if len(to_show) > 0:
+                    self._print(name, level='params')
+
+                    for show in to_show:
+                        self._print(show, level='params')
+
+                    self._print('', level='params')
+
     def _get_search_model(self, model, search_cv):
         '''Passed model as a created pipeline object + search_cv info,
         if search_type isn't None, creates the search wrapper.'''
@@ -1667,30 +1713,6 @@ class Model_Pipeline():
         model = model(**extra_model_params)
 
         return model, model_type_params
-
-    def _fit_ensemble(self, models, ensemble_data, i):
-
-        # Grab data
-        ensemble_X, ensemble_y = self._get_X_y(ensemble_data)
-
-        # Grab ensemble + params from ind (i)
-        ensemble_model = self.ensembles[i][0]
-        ensemble_params = self.ensembles[i][1]
-
-        # Init the ensemble model & fit
-        ensemble_model = ensemble_model(models, **ensemble_params)
-        ensemble_model.fit(ensemble_X, ensemble_y)
-
-        return ensemble_model
-
-    def _get_one_or_basic_ensemble(self, models):
-
-        if len(models) == 1:
-            model = models[0]
-        else:
-            model = Ensemble_Model(models)
-
-        return model
 
     def _get_scores(self, test_data, eval_type, fold_ind):
         '''Helper method to get the scores of

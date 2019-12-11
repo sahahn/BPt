@@ -839,7 +839,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 def Set_Default_ML_Verbosity(
  self, progress_bar='default', show_init_params='default', fold_name='default',
  time_per_fold='default', score_per_fold='default', fold_sizes='default',
- save_to_logs='default'):
+ best_params='default', save_to_logs='default'):
     '''This function allows setting various verbosity options that effect
     output during :func:`Evaluate` and :func:`Test`.
 
@@ -892,6 +892,10 @@ def Set_Default_ML_Verbosity(
         if 'default', and not already defined, set to False.
         (default = 'default')
 
+    best_params : bool, optional
+        If True, print the best search params found after every
+        param search.
+
     save_to_logs : bool, optional
         If True, then when possible, and with the selected model
         verbosity options, verbosity ouput will be saved to the
@@ -939,6 +943,11 @@ def Set_Default_ML_Verbosity(
         self.ML_verbosity['fold_sizes'] = fold_sizes
     elif 'fold_sizes' not in self.ML_verbosity:
         self.ML_verbosity['fold_sizes'] = False
+
+    if best_params != 'default':
+        self.ML_verbosity['best_params'] = best_params
+    elif 'best_params' not in self.ML_verbosity:
+        self.ML_verbosity['best_params'] = False
 
     if save_to_logs != 'default':
         self.ML_verbosity['save_to_logs'] = save_to_logs
@@ -993,6 +1002,9 @@ def _ML_print(self, *args, **kwargs):
         _print(*args, **kwargs)
 
     elif level == 'size' and self.ML_verbosity['fold_sizes']:
+        _print(*args, **kwargs)
+
+    elif level == 'params' and self.ML_verbosity['best_params']:
         _print(*args, **kwargs)
 
 

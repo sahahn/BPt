@@ -19,9 +19,15 @@ from sklearn.linear_model import (LogisticRegression, ElasticNet,
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from xgboost import XGBClassifier, XGBRegressor
+
 
 from ..helpers.ML_Helpers import show_objects
+
+try:
+        from xgboost import XGBClassifier, XGBRegressor
+except ImportError:
+        pass
+
 
 try:
         from lightgbm import LGBMRegressor, LGBMClassifier
@@ -82,15 +88,19 @@ AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 MODELS = {
     'logistic': (LogisticRegression, ['base logistic']),
 
-    'lasso logistic': (LogisticRegression, ['base lasso', 'lasso C']),
+    'lasso logistic': (LogisticRegression, ['base lasso', 'lasso C',
+                                            'lasso C extra']),
 
-    'ridge logistic': (LogisticRegression, ['base ridge', 'ridge C']),
+    'ridge logistic': (LogisticRegression, ['base ridge', 'ridge C',
+                                            'ridge C extra']),
 
     'elastic net logistic': (LogisticRegression, ['base elastic',
-                                                  'elastic classifier']),
+                                                  'elastic classifier',
+                                                  'elastic classifier extra']),
 
     'elastic net regressor': (ElasticNet, ['base elastic net',
-                                           'elastic regression']),
+                                           'elastic regression',
+                                           'elastic regression extra']),
 
     'huber': (HuberRegressor, ['base huber']),
 

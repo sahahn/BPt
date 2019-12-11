@@ -432,3 +432,15 @@ def replace_with_in_params(params, original, replace):
         new_params[key.replace(original, replace)] = params[key]
 
     return new_params
+
+
+def type_check(ud):
+    '''Check if a nevergrad dist'''
+
+    types_to_check = [int, float, list, tuple, str, bool, dict, set]
+
+    for ttc in types_to_check:
+        if isinstance(ud, ttc):
+            return False
+
+    return True

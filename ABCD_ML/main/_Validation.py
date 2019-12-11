@@ -243,15 +243,24 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
 
         self._print('Performing split on', len(subjects), 'subjects', end='')
 
-        if len(train_only) > 0:
-            self._print(' with', len(train_only), 'considered train only!')
+        if test_size == 0:
+            self.train_subjects = subjects
+            self.test_subjects = []
+            self._print('Warning: Test size of 0 passed, all subjects set to',
+                        'train.')
+
         else:
-            self._print('!')
 
-        self._print('Test split size:', test_size)
+            if len(train_only) > 0:
+                self._print(' with', len(train_only), 'considered train only!')
+            else:
+                self._print('!')
 
-        self.train_subjects, self.test_subjects = self.CV.train_test_split(
-                                self.all_data.index, test_size, random_state)
+            self._print('Test split size:', test_size)
+
+            self.train_subjects, self.test_subjects = self.CV.train_test_split(
+                                    self.all_data.index, test_size,
+                                    random_state)
 
         self._print()
 

@@ -418,13 +418,29 @@ class Sampler_Wrapper():
 
     def set_params(self, **params):
 
+        if 'sampler_obj' in params:
+            self.sampler_obj = params.pop('sampler_obj')
         if 'sampler_type' in params:
             self.sampler_type = params.pop('sampler_type')
+        if 'strat_inds' in params:
+            self.strat_inds = params.pop('strat_inds')
+        if 'sample_target' in params:
+            self.sample_target = params.pop('sample_target')
+        if 'sample_strat' in params:
+            self.sample_strat = params.pop('sample_strat')
+        if 'sample_strat' in params:
+            self.sample_strat = params.pop('sample_strat')
+        if 'recover_strat' in params:
+            self.recover_strat = params.pop('recover_strat')
+        if 'covars_inds' in params:
+            self.covars_inds = params.pop('covars_inds')
         if 'regression_bins' in params:
             self.regression_bins = params.pop('regression_bins')
         if 'regression_bin_strategy' in params:
             self.regression_bin_strategy =\
                 params.pop('regression_bin_strategy')
+        if 'copy' in params:
+            self.copy = params.pop('copy')
 
         # Set rest of passed params to the sampler object
         self.sampler.set_params(**params)
@@ -444,6 +460,9 @@ class Sampler_Wrapper():
                   'copy': self.copy
                   }
 
+        # Add the sampler params
+        params.update(self.sampler.get_params())
+
         return params
 
 
@@ -456,7 +475,8 @@ SAMPLERS = {
     'kmeans smote': (KMeansSMOTE, ['base change sampler']),
     'smote nc': (SMOTENC, ['base special sampler']),
     'cluster centroids': (ClusterCentroids, ['base change sampler']),
-    'random under sampler': (RandomUnderSampler, ['base no change sampler']),
+    'random under sampler': (RandomUnderSampler, ['base no change sampler',
+                                                  'rus binary ratio']),
     'near miss': (NearMiss, ['base no change sampler']),
     'tomek links': (TomekLinks, ['base no change sampler']),
     'enn': (EditedNearestNeighbours, ['base no change sampler']),

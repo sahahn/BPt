@@ -749,8 +749,8 @@ def Plot_Global_Feat_Importances(
     '''
 
     if feat_importances == 'most recent':
-        for fis in self.Model_Pipeline:
-            if 'global' in fis.scope:
+        for fis in self.Model_Pipeline.feat_importances:
+            if 'global' in fis.scopes:
                 self.Plot_Global_Feat_Importances(
                  fis, top_n, show_abs, multiclass, ci, palette, figsize, title,
                  titles, xlabel, n_cols, ax, show)
@@ -1008,8 +1008,8 @@ def Plot_Local_Feat_Importances(self, feat_importances='most recent', top_n=10,
     '''
 
     if feat_importances == 'most recent':
-        for fis in self.Model_Pipeline:
-            if 'local' in fis.scope:
+        for fis in self.Model_Pipeline.feat_importances:
+            if 'local' in fis.scopes:
                 self.Plot_Local_Feat_Importances(
                  fis, top_n, title, titles, xlabel, one_class, show)
 

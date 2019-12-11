@@ -299,7 +299,6 @@ def get_imputer_and_params(imputer_str, extra_params, params, search_type,
 
     # Categorical
     if len(inds) == 0:
-
         encoders_to_pass = []
 
         for e in encoders:

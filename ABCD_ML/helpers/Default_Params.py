@@ -253,8 +253,15 @@ PARAMS['winsorize gs'] =\
                  (2.5, 97.5), (3, 97), (3.5, 96.5), (4, 96), (4.5, 95.5),
                  (5, 95)])}
 
-PARAMS['base power'] = {'method': 'yeo-johnson',
-                        'standardize': True}
+PARAMS['base yeo'] = {'method': 'yeo-johnson',
+                      'standardize': True}
+
+PARAMS['base boxcox'] = {'method': 'box-cox',
+                         'standardize': True}
+
+PARAMS['quantile norm'] = {'output_distribution': 'normal'}
+
+PARAMS['quantile uniform'] = {'output_distribution': 'uniform'}
 
 # Feat Selectors
 PARAMS['base univar fs regression'] = {'score_func': f_regression,

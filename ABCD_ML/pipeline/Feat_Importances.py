@@ -158,7 +158,7 @@ class Feat_Importances():
 
             # Replace any rows with all zeros as NaN instead of 0
             ind_df = self.local_df[fold]
-            to_nan = [ind_df.sum(axis=1) == 0].index
+            to_nan = ind_df[ind_df.sum(axis=1) == 0].index
             class_df[fold].loc[to_nan] = np.nan
 
         elif self.split == 'all':

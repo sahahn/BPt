@@ -448,10 +448,16 @@ class Model_Pipeline():
             cat_inds, ordinal_inds =\
                 self._get_cat_ordinal_inds()
 
+            valid_cat_inds = []
+            for c in cat_inds:
+                if len(c) > 0:
+                    valid_cat_inds.append(c)
+            cat_inds = valid_cat_inds
+
             inds = []
 
             # If scope doesn't match any actual data, skip
-            if len(cat_inds) == 0 and len(ordinal_inds) == 0:
+            if len(ordinal_inds) == 0 and len(cat_inds) == 0:
                 return None
 
         else:

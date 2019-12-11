@@ -113,6 +113,7 @@ def proc_str_input(in_str):
 
     startwith_replace_dict = {'rf ': 'random forest ',
                               'lgbm ': 'light gbm ',
+                              'lightgbm ': 'light gbm ',
                               'svc ': 'svm ',
                               'svr ': 'svm ',
                               }

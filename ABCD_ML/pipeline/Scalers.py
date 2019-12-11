@@ -6,7 +6,8 @@ File containing the various data scalers.
 from ..helpers.ML_Helpers import (show_param_options, get_possible_init_params,
                                   get_obj_and_params, show_objects)
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
-                                   PowerTransformer)
+                                   PowerTransformer, MaxAbsScaler,
+                                   QuantileTransformer, Normalizer)
 from .extensions.Scalers import Winsorizer
 
 
@@ -18,11 +19,23 @@ SCALERS = {
 
     'minmax': (MinMaxScaler, ['base minmax']),
 
+    'minmax': (MinMaxScaler, ['base minmax']),
+
+    'maxabs': (MaxAbsScaler, ['base minmax']),
+
     'robust': (RobustScaler, ['base robust', 'robust gs']),
 
-    'power': (PowerTransformer, ['base power']),
+    'yeo': (PowerTransformer, ['base yeo']),
+
+    'boxcox': (PowerTransformer, ['base boxcox']),
 
     'winsorize': (Winsorizer, ['base winsorize', 'winsorize gs']),
+
+    'quantile norm': (QuantileTransformer, ['base quant norm']),
+
+    'quantile uniform': (QuantileTransformer, ['base quant uniform']),
+
+    'normalize': (Normalizer, ['default'])
     }
 
 

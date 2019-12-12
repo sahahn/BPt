@@ -146,7 +146,7 @@ class DES_Ensemble(VotingClassifier):
                              stratify=y)
 
         # Fit estimators
-        self.estimators_ = [estimator.fit(X_train, y_train, sample_weight)
+        self.estimators_ = [estimator[1].fit(X, y, sample_weight)
                             for estimator in self.estimators]
         # super().fit(X_train, y_train, sample_weight)
 

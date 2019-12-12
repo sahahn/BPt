@@ -19,20 +19,7 @@ from sklearn.linear_model import (LogisticRegression, ElasticNet,
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-
-
 from ..helpers.ML_Helpers import show_objects
-
-try:
-        from xgboost import XGBClassifier, XGBRegressor
-except ImportError:
-        pass
-
-try:
-        from lightgbm import LGBMRegressor, LGBMClassifier
-except ImportError:
-        pass
-
 
 AVALIABLE = {
         'binary': {
@@ -47,10 +34,8 @@ AVALIABLE = {
                         'dt':                 'dt classifier',
                         'random forest':      'random forest classifier',
                         'gp':                 'gp classifier',
-                        'light gbm':          'light gbm classifier',
                         'svm':                'svm classifier',
                         'mlp':                'mlp classifier',
-                        'xgb':                'xgb classifier',
         },
         'regression': {
                         'linear':             'linear regressor',
@@ -60,12 +45,10 @@ AVALIABLE = {
                         'elastic net':        'elastic net regressor',
                         'random forest':      'random forest regressor',
                         'gp':                 'gp regressor',
-                        'light gbm':          'light gbm regressor',
                         'svm':                'svm regressor',
                         'mlp':                'mlp regressor',
                         'ridge':              'ridge regressor',
                         'lasso':              'lasso regressor',
-                        'xgb':                'xgb regressor',
         },
 
         'multilabel': {
@@ -114,12 +97,6 @@ MODELS = {
     'random forest classifier': (RandomForestClassifier,
                                  ['base rf', 'rf classifier dist']),
 
-    'light gbm regressor': (LGBMRegressor, ['base lgbm', 'lgbm dist1',
-                                            'lgbm dist2']),
-    'light gbm classifier': (LGBMClassifier,
-                             ['base lgbm', 'lgbm classifier dist1',
-                              'lgbm classifier dist2']),
-
     'gp regressor': (GaussianProcessRegressor, ['base gp regressor']),
     'gp classifier': (GaussianProcessClassifier,  ['base gp classifier']),
 
@@ -133,11 +110,38 @@ MODELS = {
     'ridge regressor': (Ridge, ['base ridge regressor',
                                 'ridge regressor dist']),
     'lasso regressor': (Lasso, ['base lasso regressor',
-                                'lasso regressor dist']),
-
-    'xgb regressor': (XGBRegressor, ['base xgb', 'xgb dist']),
-    'xgb classifier': (XGBClassifier, ['base xgb', 'xgb dist']),
+                                'lasso regressor dist'])
     }
+
+try:
+        from xgboost import XGBClassifier, XGBRegressor
+
+        AVALIABLE['binary']['xgb'] = 'xgb classifier'
+        AVALIABLE['regression']['xgb'] = 'xgb regressor'
+        AVALIABLE['categorical']['light gbm'] = 'light gbm classifier'
+
+        MODELS['xgb regressor'] = (XGBRegressor, ['base xgb', 'xgb dist'])
+        MODELS['xgb classifier'] = (XGBClassifier, ['base xgb', 'xgb dist'])
+
+except ImportError:
+        pass
+
+try:
+        from lightgbm import LGBMRegressor, LGBMClassifier
+
+        AVALIABLE['binary']['light gbm'] = 'light gbm classifier'
+        AVALIABLE['regression']['light gbm'] = 'light gbm regressor'
+        AVALIABLE['categorical']['light gbm'] = 'light gbm classifier'
+
+        MODELS['light gbm regressor'] = (LGBMRegressor, ['base lgbm',
+                                                         'lgbm dist1',
+                                                         'lgbm dist2'])
+        MODELS['light gbm classifier'] = (LGBMClassifier,
+                                          ['base lgbm',
+                                           'lgbm classifier dist1',
+                                           'lgbm classifier dist2'])
+except ImportError:
+        pass
 
 
 def Show_Models(self, problem_type=None, model=None,

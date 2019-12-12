@@ -1,6 +1,4 @@
-scikit-learn>=0.21
-xgboost
-lightgbm
+scikit-learn>=0.22
 numpy>=1.16
 scipy>=1.2
 pandas>=0.24
@@ -12,7 +10,6 @@ imbalanced-learn
 shap
 scikit-image>=0.15
 tqdm
-dill
 nevergrad
 Ipython
 joblib

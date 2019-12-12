@@ -29,14 +29,15 @@ from deslib.des.probabilistic import Logarithmic
 from deslib.static.single_best import SingleBest
 from deslib.static.stacked import StackedClassifier
 
-from sklearn.ensemble.voting import _BaseVoting
+from sklearn.ensemble import VotingClassifier
+
 from copy import deepcopy
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import BaggingClassifier, BaggingRegressor
 from imblearn.ensemble import BalancedBaggingClassifier
 
 
-class Basic_Ensemble(_BaseVoting):
+class Basic_Ensemble(VotingClassifier):
 
     def __init__(self, estimators, weights=None, n_jobs=1):
         self.estimators = estimators
@@ -47,7 +48,13 @@ class Basic_Ensemble(_BaseVoting):
 
         self.classes_ = np.unique(y)
         self.n_classes_ = len(self.classes_)
-        return super().fit(X, y, sample_weight)
+
+        # Fit estimators
+        self.estimators_ = [estimator[1].fit(X, y, sample_weight)
+                            for estimator in self.estimators]
+
+        return self
+        # return super().fit(X, y, sample_weight)
 
     def predict(self, X):
         '''Calls predict on each model and
@@ -115,7 +122,7 @@ class Basic_Ensemble(_BaseVoting):
         return self
 
 
-class DES_Ensemble(_BaseVoting):
+class DES_Ensemble(VotingClassifier):
 
     def __init__(self, estimators, ensemble, ensemble_name, ensemble_split,
                  ensemble_params={}, random_state=None, weights=None,
@@ -139,7 +146,9 @@ class DES_Ensemble(_BaseVoting):
                              stratify=y)
 
         # Fit estimators
-        super().fit(X_train, y_train, sample_weight)
+        self.estimators_ = [estimator.fit(X_train, y_train, sample_weight)
+                            for estimator in self.estimators]
+        # super().fit(X_train, y_train, sample_weight)
 
         self.ensemble_ = deepcopy(self.ensemble)
         self.ensemble_.set_params(pool_classifiers=self.estimators_)

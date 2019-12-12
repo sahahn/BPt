@@ -1127,6 +1127,7 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     run_name = self._get_avaliable_eval_scores_name(run_name,
                                                     ML_params['model'])
     self._print('Saving scores and settings with unique name:', run_name)
+    self.last_run_name = run_name
     self._print()
 
     # Save this specific set of settings
@@ -1554,14 +1555,16 @@ def _get_final_subjects_to_use(self, subjects_to_use):
         subjects = set(selected.index)
 
         rev_values = reverse_unique_combo_df(selected, sv_le)[0]
-        self._print('subjects_to_use set to: ', end='')
 
+        self.last_subjects_to_use_names = []
         for strat_name, value in zip(split_names, rev_values):
             if self.strat_u_name in strat_name:
                 strat_name = strat_name.replace(self.strat_u_name, '')
-            self._print(strat_name, '=', value, ',', end='', sep='')
 
-        self._print()
+            self.last_subjects_to_use_names.append((strat_name, value))
+
+        self._print('subjects_to_use set to: ',
+                    self.last_subjects_to_use_names)
         self._print()
 
     else:

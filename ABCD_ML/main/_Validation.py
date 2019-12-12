@@ -193,7 +193,8 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         self._print(len(train_only), 'Train only subjects defined.')
 
     else:
-        self._print('No params passed, nothing done.')
+        self.CV = CV()
+        self._print('No params passed, CV set to random.')
 
 
 def Train_Test_Split(self, test_size=None, test_loc=None,
@@ -229,6 +230,9 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
 
         (default = 'default')
     '''
+
+    if test_size is None and test_loc is None and test_subjects is None:
+        test_size = .2
 
     if self.all_data is None:
         self._prepare_data()

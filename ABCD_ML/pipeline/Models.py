@@ -38,6 +38,12 @@ except ImportError:
                             'https://lightgbm.readthedocs.io/en/latest/Installation-Guide.html',
                             'for instructions specific to your os, if you',
                             ' want to use lighgbm.')
+except OSError:
+        raise ImportWarning('lightgbm does not seem to be properly installed!',
+                            'Please see:',
+                            'https://lightgbm.readthedocs.io/en/latest/Installation-Guide.html',
+                            'for instructions specific to your os, if you',
+                            ' want to use lighgbm.')
 
 AVALIABLE = {
         'binary': {

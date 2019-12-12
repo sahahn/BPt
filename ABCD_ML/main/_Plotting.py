@@ -441,6 +441,8 @@ def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
     if not isinstance(strat, list):
         strat = [strat]
 
+    strat = [self._add_strat_u_name(s) for s in strat]
+
     for s in strat:
         self._show_single_dist(s, strat_df, self.strat_encoders,
                                cat_show_original_name, show)

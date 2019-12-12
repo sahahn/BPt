@@ -80,10 +80,10 @@ class Model_Pipeline():
                 to use if any. If list, selectors will be applied in that
                 order.
             - n_splits : int
-                The number of folds to use during the Evaluate_Model repeated
+                The number of folds to use during the Evaluate repeated
                 k-fold.
             - n_repeats : int
-                The number of repeats to do during the Evaluate_Model repeated
+                The number of repeats to do during the Evaluate repeated
                 k-fold.
             - search_splits : int, str or list
                 The number of internal folds to use during modeling training
@@ -1160,6 +1160,8 @@ class Model_Pipeline():
         for feat_imp in self.feat_importances:
             feat_imp.set_final_local()
 
+        self.micro_scores = self._compute_micro_scores()
+
         # Return all scores
         return (np.array(all_train_scores), np.array(all_scores),
                 self.raw_preds_df, self.feat_importances)
@@ -1815,6 +1817,52 @@ class Model_Pipeline():
 
         else:
             self.raw_preds_df.loc[subjects, self.targets_key] = y_test
+
+    def _compute_micro_scores(self):
+
+        micro_scores = []
+
+        # For each metric
+        for metric in self.metrics:
+            score_func = metric._score_func
+            sign = metric._sign
+
+            if 'needs_proba=True' in metric._factory_args():
+                prob = '_prob'
+            else:
+                prob = ''
+
+            eval_type = ''
+
+            by_repeat = []
+            for repeat in range(1, self.n_repeats+1):
+
+                p_col = eval_type + str(repeat) + prob
+
+                try:
+                    pred_col = self.raw_preds_df[p_col]
+                    valid_subjects = pred_col[~pred_col.isnull()].index
+
+                except KeyError:
+
+                    if len(self.classes) == 2:
+                        pred_col = self.raw_preds_df[p_col + '_class_' +
+                                                     str(self.classes[1])]
+                        valid_subjects = pred_col[~pred_col.isnull()].index
+                    else:
+                        pred_col = self.raw_preds_df[[p_col + '_class_' +
+                                                      str(i) for
+                                                      i in self.classes]]
+                        valid_subjects =\
+                            pred_col[~pred_col.isnull().any(axis=1)].index
+
+                # Only for the target is one col case
+                truth = self.raw_preds_df.loc[valid_subjects, self.targets_key]
+                predicted = pred_col.loc[valid_subjects]
+
+                by_repeat.append(sign * score_func(truth, predicted))
+            micro_scores.append(by_repeat)
+        return micro_scores
 
     def _init_raw_preds_df(self, subjects):
 

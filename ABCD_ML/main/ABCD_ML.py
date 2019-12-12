@@ -233,6 +233,9 @@ class ABCD_ML():
         self.eval_scores, self.eval_settings = {}, {}
         self.subject_id = 'src_subject_id'
 
+        self.last_run_name = None
+        self.last_subjects_to_use_names = None
+
         # if self.notebook:
         #    shap.initjs()
 

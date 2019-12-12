@@ -1160,7 +1160,7 @@ class Model_Pipeline():
         for feat_imp in self.feat_importances:
             feat_imp.set_final_local()
 
-        self.micro_scores = self._compute_micro_scores()
+        # self.micro_scores = self._compute_micro_scores()
 
         # Return all scores
         return (np.array(all_train_scores), np.array(all_scores),

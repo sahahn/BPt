@@ -232,6 +232,22 @@ PARAMS['mlp layers search'] =\
                                             1, 1).asscalar(int).bounded(2,
                                                                         100)}
 
+PARAMS['base linear svc'] = {'penalty': 'l2',
+                             'loss': 'squared hinge'}
+
+PARAMS['linear svc dist'] = PARAMS['base linear svc'].copy()
+PARAMS['linear svc dist']['C'] =\
+        ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
+PARAMS['linear svc dist']['class_weight'] =\
+        ng.var.OrderedDiscrete([None, 'balanced'])
+
+PARAMS['base linear svr'] = {'loss': 'epsilon_insensitive'}
+
+PARAMS['linear svr dist'] = PARAMS['base linear svr'].copy()
+PARAMS['linear svr dist']['C'] =\
+        ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
+
+
 # Scalers
 PARAMS['base standard'] = {'with_mean': True,
                            'with_std': True}

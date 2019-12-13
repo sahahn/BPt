@@ -35,6 +35,7 @@ AVALIABLE = {
                         'random forest':      'random forest classifier',
                         'gp':                 'gp classifier',
                         'svm':                'svm classifier',
+                        'linear svm':         'linear svm classifier',
                         'mlp':                'mlp classifier',
         },
         'regression': {
@@ -46,6 +47,7 @@ AVALIABLE = {
                         'random forest':      'random forest regressor',
                         'gp':                 'gp regressor',
                         'svm':                'svm regressor',
+                        'linear svm':         'linear svm regressor',
                         'mlp':                'mlp regressor',
                         'ridge':              'ridge regressor',
                         'lasso':              'lasso regressor',
@@ -110,7 +112,14 @@ MODELS = {
     'ridge regressor': (Ridge, ['base ridge regressor',
                                 'ridge regressor dist']),
     'lasso regressor': (Lasso, ['base lasso regressor',
-                                'lasso regressor dist'])
+                                'lasso regressor dist']),
+
+    'linear svm classifier': (LinearSVC, ['base linear svc',
+                                          'linear svc dist']),
+
+    'linear svm regressor': (LinearSVR, ['base linear svr',
+                                         'linear svr dist']),
+
     }
 
 try:

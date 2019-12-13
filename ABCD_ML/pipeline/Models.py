@@ -105,10 +105,12 @@ MODELS = {
     'svm regressor': (SVR, ['base svm', 'svm dist']),
     'svm classifier': (SVC, ['base svm classifier', 'svm classifier dist']),
 
-    'mlp regressor': (MLPRegressor, ['base mlp', 'mlp dist', 'mlp dist es',
-                                     'mlp layers search']),
-    'mlp classifier': (MLPClassifier, ['base mlp', 'mlp dist', 'mlp dist es',
-                                       'mlp layers search']),
+    'mlp regressor': (MLPRegressor, ['base mlp', 'mlp dist 3 layers',
+                                     'mlp dist 2 layers', 'mlp dist 1 layer',
+                                     'mlp dist es 3 layers']),
+    'mlp classifier': (MLPClassifier, ['base mlp', 'mlp dist 3 layers',
+                                       'mlp dist 2 layers', 'mlp dist 1 layer',
+                                       'mlp dist es 3 layers']),
     'ridge regressor': (Ridge, ['base ridge regressor',
                                 'ridge regressor dist']),
     'lasso regressor': (Lasso, ['base lasso regressor',
@@ -119,7 +121,6 @@ MODELS = {
 
     'linear svm regressor': (LinearSVR, ['base linear svr',
                                          'linear svr dist']),
-
     }
 
 try:

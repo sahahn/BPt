@@ -204,33 +204,35 @@ PARAMS['ridge regressor dist'] =\
                                                                coeff=-1)}
 
 
-PARAMS['mlp dist'] = {'hidden_layer_sizes':
-                      ng.var.Array(1, 1, 1).asscalar(int).bounded(2, 100),
-                      'activation':
-                      ng.var.OrderedDiscrete(['identity', 'logistic',
-                                              'tanh', 'relu']),
-                      'alpha':
-                      ng.var.Scalar().bounded(-2, 5).exponentiated(base=10,
-                                                                   coeff=-1),
-                      'batch_size': ng.var.Scalar(int).bounded(2, 200),
-                      'learning_rate':
-                      ng.var.OrderedDiscrete(['constant', 'invscaling',
-                                              'adaptive']),
-                      'learning_rate_init':
-                      ng.var.Scalar().bounded(-2, 5).exponentiated(base=10,
-                                                                   coeff=-1),
-                      'max_iter': ng.var.Scalar(int).bounded(100, 500),
-                      'beta_1': ng.var.Scalar().bounded(.1, .95),
-                      'beta_2': ng.var.Scalar().bounded(.1, .95)}
+PARAMS['mlp dist 3 layers'] =\
+        {'hidden_layer_sizes':
+         ng.var.Array(1, 1, 1).asscalar(int).bounded(2, 100),
+         'activation':
+         ng.var.OrderedDiscrete(['identity', 'logistic',
+                                 'tanh', 'relu']),
+         'alpha':
+         ng.var.Scalar().bounded(-2, 5).exponentiated(base=10, coeff=-1),
+         'batch_size': ng.var.Scalar(int).bounded(2, 200),
+         'learning_rate':
+         ng.var.OrderedDiscrete(['constant', 'invscaling', 'adaptive']),
+         'learning_rate_init':
+         ng.var.Scalar().bounded(-2, 5).exponentiated(base=10, coeff=-1),
+         'max_iter': ng.var.Scalar(int).bounded(100, 500),
+         'beta_1': ng.var.Scalar().bounded(.1, .95),
+         'beta_2': ng.var.Scalar().bounded(.1, .95)}
 
-PARAMS['mlp dist es'] = PARAMS['mlp dist'].copy()
-PARAMS['mlp dist es']['early_stopping'] = True
-PARAMS['mlp dist es']['n_iter_no_change'] = ng.var.Scalar(int).bounded(5, 50)
+PARAMS['mlp dist 2 layers'] = PARAMS['mlp dist 3 layers'].copy()
+PARAMS['mlp dist 2 layers']['hidden_layer_sizes'] =\
+        ng.var.Array(1, 1).asscalar(int).bounded(2, 100)
 
-PARAMS['mlp layers search'] =\
-        {'hidden_layer_sizes': ng.var.Array(1,
-                                            1, 1).asscalar(int).bounded(2,
-                                                                        100)}
+PARAMS['mlp dist 1 layer'] = PARAMS['mlp dist 3 layers'].copy()
+PARAMS['mlp dist 1 layer']['hidden_layer_sizes'] =\
+        ng.var.Array(1).asscalar(int).bounded(2, 100)
+
+PARAMS['mlp dist es 3 layers'] = PARAMS['mlp dist 3 layers'].copy()
+PARAMS['mlp dist es 3 layers']['early_stopping'] = True
+PARAMS['mlp dist es 3 layers']['n_iter_no_change'] =\
+        ng.var.Scalar(int).bounded(5, 50)
 
 PARAMS['base linear svc'] = {'penalty': 'l2',
                              'loss': 'squared hinge'}

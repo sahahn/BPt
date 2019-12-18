@@ -231,6 +231,8 @@ class ABCD_ML():
         self.ML_verbosity = {}
 
         self.eval_scores, self.eval_settings = {}, {}
+        self.test_scores, self.test_settings = {}, {}
+
         self.subject_id = 'src_subject_id'
 
         self.last_run_name = None
@@ -442,10 +444,11 @@ class ABCD_ML():
                       _proc_feats_to_use,
                       _get_final_subjects_to_use,
                       _init_model,
-                      _get_avaliable_eval_scores_name,
+                      _get_avaliable_run_name,
                       _handle_scores,
                       _print_summary_score,
-                      _add_to_eval_scores)
+                      _add_to_scores,
+                      _save_results)
 
     # Fill Evaluate and Test's docstring
     Evaluate.__doc__ = get_new_docstring(Set_Default_ML_Params, Evaluate)

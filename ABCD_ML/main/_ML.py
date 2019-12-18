@@ -5,6 +5,8 @@ Main class extension file for the Machine Learning functionality
 """
 import pandas as pd
 import numpy as np
+import os
+import pickle as pkl
 
 from tqdm import tqdm, tqdm_notebook
 
@@ -787,8 +789,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self.default_ML_params['feats_to_use'] = feats_to_use
     elif 'feats_to_use' not in self.default_ML_params:
         self.default_ML_params['feats_to_use'] = 'all'
-        self._print('No default feats_to_use passed,',
-                    'set to all')
 
     if subjects_to_use != 'default':
         self.default_ML_params['subjects_to_use'] = subjects_to_use
@@ -837,7 +837,8 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
 
 def Set_Default_ML_Verbosity(
- self, progress_bar='default', show_init_params='default', fold_name='default',
+ self, save_results='default', progress_bar='default',
+ show_init_params='default', fold_name='default',
  time_per_fold='default', score_per_fold='default', fold_sizes='default',
  best_params='default', save_to_logs='default'):
     '''This function allows setting various verbosity options that effect
@@ -845,6 +846,15 @@ def Set_Default_ML_Verbosity(
 
     Parameters
     ----------
+    save_results : bool, optional
+        If True, all results returned by Evaluate
+        will be saved within the log dr (if one exists!),
+        under run_name + .eval, and simmilarly for results
+        returned by Test, but as run_name + .test.
+
+        if 'default', and not already defined, set to False.
+        (default = 'default')
+
     progress_bar : bool, optional
         If True, a progress bar, implemented in the python
         library tqdm, is used to show progress during use of
@@ -904,6 +914,11 @@ def Set_Default_ML_Verbosity(
         if 'default', and not already defined, set to False.
         (default = 'default')
     '''
+
+    if save_results != 'default':
+        self.ML_verbosity['save_results'] = save_results
+    elif 'save_results' not in self.ML_verbosity:
+        self.ML_verbosity['save_results'] = False
 
     if progress_bar != 'default':
         if progress_bar is True:
@@ -1032,13 +1047,14 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     ----------
     run_name : str or None, optional
         All results from `Evaluate`, or rather the metrics are
-        saved within self.eval_scores by default (in addition to in
-        the logs, though this way saves them in a more programatically
-        avaliable way). This name is also used to
+        saved within self.eval_scores by default. This name is also used to
         store the exact params used in self.eval_settings.
         `run_name` refers to the specific name under which to
         store this Evaluate's run on results. If left as None, then will just
         use a default name.
+
+        (default = None)
+
     problem_type :
     target :
     model :
@@ -1075,22 +1091,25 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
 
     Returns
     ----------
-    raw_scores : array-like of array-like
-        numpy array of numpy arrays,
-        where each internal array contains the raw scores as computed for
-        all passed in metrics, computed for each fold within
-        each repeat.
-        e.g., array will have a length of `n_repeats` * number of folds,
-        and each internal array will have the same length as the number of
-        metrics.
-        Optionally, this could instead return a list containing as the first
-        element the raw training score in this same format,
-        and then the raw testing scores.
+    results : dict
+    Dictionary containing:
+    'summary_scores', A list representation of the
+    printed summary scores, where the 0 index is the mean,
+    1 index is the macro std, then second index is the micro std.
+    'train_summary_scores', Same as summary scores, but only exists
+    if train scores are computed.
+    'raw_scores', a numpy array of numpy arrays,
+    where each internal array contains the raw scores as computed for
+    all passed in metrics, computed for each fold within
+    each repeat. e.g., array will have a length of `n_repeats` * number of
+    folds, and each internal array will have the same length as the number of
+    metrics. Optionally, this could instead return a list containing as
+    the first element the raw training score in this same format,
+    and then the raw testing scores.
+    'raw_preds', A pandas dataframe containing the raw predictions
+    for each subject, in the test set, and
+    'FIs' a list where each element corresponds to a passed feature importance.
 
-    raw_preds : pandas DataFrame
-        A pandas dataframe containing the raw prediction for each subject,
-        with both prob. and prediction. Will show the predictions per repeat by
-        subject, as well as the internal fold the prediction was made in.
 
     Notes
     ----------
@@ -1124,8 +1143,9 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     if self.ML_verbosity['show_init_params']:
         self._print_model_params(ML_params, test=False)
 
-    run_name = self._get_avaliable_eval_scores_name(run_name,
-                                                    ML_params['model'])
+    # Get a free run name
+    run_name = self._get_avaliable_run_name(run_name, ML_params['model'],
+                                            self.eval_scores)
     self._print('Saving scores and settings with unique name:', run_name)
     self.last_run_name = run_name
     self._print()
@@ -1161,15 +1181,26 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
         score_list = [scores]
         score_type_list = ['Validation']
 
+    results = {}
     for scrs, name in zip(score_list, score_type_list):
-        self._handle_scores(scrs, name, ML_params, run_name,
-                            self.Model_Pipeline.n_splits)
+        summary_scores = self._handle_scores(scrs, name, ML_params, run_name,
+                                             self.Model_Pipeline.n_splits)
 
-    # Return the raw scores from each fold
-    return score_list, raw_preds, FIs
+        if name == 'Validation':
+            results['summary_scores'] = summary_scores
+        else:
+            results['train_summary_scores'] = summary_scores
+
+    results['raw_scores'] = score_list
+    results['raw_preds'] = raw_preds
+    results['FIs'] = FIs
+
+    self._save_results(results, run_name + '.eval')
+    return results
 
 
-def Test(self, run_name=None, train_subjects=None, test_subjects=None,
+def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
+         test_subjects=None,
          problem_type='default', target='default', model='default',
          model_params='default', metric='default', imputer='default',
          imputer_scope='default', imputer_params='default',
@@ -1191,7 +1222,18 @@ def Test(self, run_name=None, train_subjects=None, test_subjects=None,
     Parameters
     ----------
     run_name : str or None, optional
-        A run_name within Test if set to a previous Evaluate run name
+        Note: This param is seperate from eval_run_name, where
+        eval_run_name refers to an optional name to load from,
+        run_name refers to the name under which these results
+        from Test should be stored. They are stored in self.test_scores,
+        and the exact parameters used in self.test_settings.
+        If left as None, then will just
+        use a default name.
+
+        (default = None)
+
+    eval_run_name : str or None, optional
+        eval_run_name within Test if set to a previous Evaluate run name
         will load the settings used from that Evaluate call instead of
         additional params passed! This is useful when testing a best
         model on the test set, but be wary that it will ignore any
@@ -1248,16 +1290,12 @@ def Test(self, run_name=None, train_subjects=None, test_subjects=None,
 
     Returns
     ----------
-    raw_scores : array-like
-        A numpy array of scores as determined by the passed
-        metric(s) on the provided testing set. Optionally,
-        this could instead return a list containing as the first
-        element the raw training score in this same format,
-        and then the raw testing scores.
-
-    raw_preds : pandas DataFrame
-        A pandas dataframe containing the raw predictions for each subject,
-        in the test set.
+    results : dict
+        Dictionary containing:
+        'scores', the score on the test set by each metric,
+        'raw_preds', A pandas dataframe containing the raw predictions
+        for each subject, in the test set, and 'FIs' a list where
+        each element corresponds to a passed feature importance.
     '''
 
     # Perform pre-modeling check
@@ -1265,12 +1303,12 @@ def Test(self, run_name=None, train_subjects=None, test_subjects=None,
 
     # Create the set of ML_params from passed args + default args
     # or from a passed run name.
-    if run_name is None:
+    if eval_run_name is None:
         args = locals()
     else:
-        self._print('Loading existing settings from run:', run_name)
+        self._print('Loading existing settings from eval run:', eval_run_name)
         self._print()
-        args = self.eval_settings[run_name]
+        args = self.eval_settings[eval_run_name]
 
     ML_params = self._make_ML_params(args=args)
 
@@ -1281,6 +1319,18 @@ def Test(self, run_name=None, train_subjects=None, test_subjects=None,
     # Print the params being used
     if self.ML_verbosity['show_init_params']:
         self._print_model_params(ML_params, test=True, kwargs=kwargs)
+
+    # Get a free run name
+    run_name = self._get_avaliable_run_name(run_name, ML_params['model'],
+                                            self.test_scores)
+    self._print('Saving scores and settings with unique name:', run_name)
+    self.last_run_name = run_name
+    self._print()
+
+    # Save this specific set of settings, in test settings
+    run_settings = ML_params.copy()
+    run_settings.update({'run_name': run_name})
+    self.test_settings[run_name] = run_settings
 
     # Init the Model_Pipeline object with modeling params
     self._init_model(ML_params)
@@ -1319,7 +1369,8 @@ def Test(self, run_name=None, train_subjects=None, test_subjects=None,
 
         for i in range(len(metric_strs)):
 
-            self._print('Metric: ', metric_strs[i])
+            metric_name = metric_strs[i]
+            self._print('Metric: ', metric_name)
 
             scr = s[i]
             if len(scr.shape) > 0:
@@ -1330,12 +1381,23 @@ def Test(self, run_name=None, train_subjects=None, test_subjects=None,
                     self._print('for target class: ', class_name)
                     self._print(name + ' Score: ', score_by_class)
                     self._print()
+                    self._add_to_scores(run_name, name, metric_name,
+                                        'score', score_by_class,
+                                        self.test_scores, class_name)
 
             else:
                 self._print(name + ' Score: ', scr)
                 self._print()
+                self._add_to_scores(run_name, name, metric_name,
+                                    'score', scr, self.test_scores)
 
-    return score_list, raw_preds, FIs
+    results = {}
+    results['scores'] = score_list
+    results['raw_preds'] = raw_preds
+    results['FIs'] = FIs
+
+    self._save_results(results, run_name + '.test')
+    return results
 
 
 def _premodel_check(self):
@@ -1621,7 +1683,7 @@ def _init_model(self, ML_params):
                        self._ML_print)
 
 
-def _get_avaliable_eval_scores_name(self, name, model):
+def _get_avaliable_run_name(self, name, model, scores):
 
     if name is None:
         if isinstance(model, list):
@@ -1633,10 +1695,10 @@ def _get_avaliable_eval_scores_name(self, name, model):
         else:
             name = model
 
-    if name in self.eval_scores:
+    if name in scores:
 
         n = 0
-        while name + str(n) in self.eval_scores:
+        while name + str(n) in scores:
             n += 1
 
         name = name + str(n)
@@ -1646,6 +1708,7 @@ def _get_avaliable_eval_scores_name(self, name, model):
 
 def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
 
+    all_summary_scores = []
     metric_strs = self.Model_Pipeline.metric_strs
 
     self._print(name + ' Scores')
@@ -1681,6 +1744,8 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
                                           ML_params['n_repeats'], run_name,
                                           metric_name, class_name)
 
+            all_summary_scores.append(summary_scores_by_class)
+
         else:
 
             # Compute macro / micro summary of scores
@@ -1692,6 +1757,10 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
                                       ML_params['n_repeats'], run_name,
                                       metric_name)
 
+            all_summary_scores.append(summary_scores)
+
+    return all_summary_scores
+
 
 def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
                          metric_name, class_name=None):
@@ -1699,45 +1768,57 @@ def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
     under run name.'''
 
     self._print('Mean ' + name + ' score: ', summary_scores[0])
-    self._add_to_eval_scores(run_name, name, metric_name, 'Mean',
-                             summary_scores[0], class_name)
+    self._add_to_scores(run_name, name, metric_name, 'Mean',
+                        summary_scores[0], self.eval_scores,  class_name)
 
     if n_repeats > 1:
         self._print('Macro Std in ' + name + ' score: ',
                     summary_scores[1])
         self._print('Micro Std in ' + name + ' score: ',
                     summary_scores[2])
-        self._add_to_eval_scores(run_name, name, metric_name, 'Macro Std',
-                                 summary_scores[1], class_name)
-        self._add_to_eval_scores(run_name, name, metric_name, 'Micro Std',
-                                 summary_scores[2], class_name)
+        self._add_to_scores(run_name, name, metric_name, 'Macro Std',
+                            summary_scores[1], self.eval_scores, class_name)
+        self._add_to_scores(run_name, name, metric_name, 'Micro Std',
+                            summary_scores[2], self.eval_scores, class_name)
     else:
         self._print('Std in ' + name + ' score: ',
                     summary_scores[2])
-        self._add_to_eval_scores(run_name, name, metric_name, 'Std',
-                                 summary_scores[2], class_name)
+        self._add_to_scores(run_name, name, metric_name, 'Std',
+                            summary_scores[2], self.eval_scores, class_name)
 
     self._print()
 
 
-def _add_to_eval_scores(self, run_name, name, metric_name, val_type, val,
-                        class_name=None):
+def _add_to_scores(self, run_name, name, metric_name, val_type, val, scores,
+                   class_name=None):
 
-    if run_name not in self.eval_scores:
-        self.eval_scores[run_name] = {}
+    if run_name not in scores:
+        scores[run_name] = {}
 
-    if name not in self.eval_scores[run_name]:
-        self.eval_scores[run_name][name] = {}
+    if name not in scores[run_name]:
+        scores[run_name][name] = {}
 
-    if metric_name not in self.eval_scores[run_name][name]:
-        self.eval_scores[run_name][name][metric_name] = {}
+    if metric_name not in scores[run_name][name]:
+        scores[run_name][name][metric_name] = {}
 
     if class_name is None:
-        self.eval_scores[run_name][name][metric_name][val_type] = val
+        scores[run_name][name][metric_name][val_type] = val
 
     else:
-        if class_name not in self.eval_scores[run_name][name][metric_name]:
-            self.eval_scores[run_name][name][metric_name][class_name] = {}
+        if class_name not in scores[run_name][name][metric_name]:
+            scores[run_name][name][metric_name][class_name] = {}
 
-        self.eval_scores[run_name][name][metric_name][class_name][val_type] =\
+        scores[run_name][name][metric_name][class_name][val_type] =\
             val
+
+
+def _save_results(self, results, save_name):
+
+    if self.ML_verbosity['save_results'] and self.log_dr is not None:
+
+        save_dr = os.path.join(self.exp_log_dr, 'results')
+        os.makedirs(save_dr, exist_ok=True)
+
+        save_spot = os.path.join(save_dr, save_name)
+        with open(save_spot, 'wb') as f:
+            pkl.dump(results, f)

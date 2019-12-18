@@ -1,6 +1,7 @@
 import pandas as pd
 import shap
 import numpy as np
+import warnings
 
 from .Perm_Feat_Importance import Perm_Feat_Importance
 from ..helpers.ML_Helpers import get_obj_and_params
@@ -35,8 +36,8 @@ class Feat_Importances():
             params['shap__linear__nsamples'] = 1000
         if 'shap__linear__feature_dependence' not in params:
             params['shap__linear__feature_dependence'] = 'independent'
-        if 'shap__tree__feature_dependence' not in params:
-            params['shap__tree__feature_dependence'] = 'tree_path_dependent'
+        if 'shap__tree__feature_perturbation' not in params:
+            params['shap__tree__feature_perturbation'] = 'tree_path_dependent'
         if 'shap__tree__model_output' not in params:
             params['shap__tree__model_output'] = 'margin'
         if 'shap__tree__tree_limit' not in params:
@@ -254,14 +255,18 @@ class Feat_Importances():
 
             elif self.flags['tree']:
 
-                fd = self.params['shap__tree__feature_dependence']
-                mo = self.params['shap__tree__model_output']
-                explainer = shap.TreeExplainer(base_model,
-                                               feature_dependence=fd,
-                                               model_output=mo)
+                # Damn shap giving so many warnings...
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
 
-                tl = self.params['shap__tree__tree_limit']
-                shap_values = explainer.shap_values(X_test, tree_limit=tl)
+                    fp = self.params['shap__tree__feature_perturbation']
+                    mo = self.params['shap__tree__model_output']
+                    explainer = shap.TreeExplainer(base_model,
+                                                   feature_perturbation=fp,
+                                                   model_output=mo)
+
+                    tl = self.params['shap__tree__tree_limit']
+                    shap_values = explainer.shap_values(X_test, tree_limit=tl)
 
         # Kernel
         else:
@@ -280,6 +285,9 @@ class Feat_Importances():
             shap_values = explainer.shap_values(np.array(X_test), l1_reg=reg,
                                                 n_samples=ns)
 
+        return self.proc_shap_vals(shap_values)
+
+    def proc_shap_vals(self, shap_values):
         return shap_values
 
     def get_kernel_explainer(self, model, X_train_summary):
@@ -340,6 +348,12 @@ class Feat_Importances():
 
     def set_run_name(self, run_name):
         self.run_name = run_name
+
+
+class Binary_Feat_Importances(Feat_Importances):
+
+    def proc_shap_vals(self, shap_values):
+        return shap_values[1]
 
 
 class Regression_Feat_Importances(Feat_Importances):
@@ -537,7 +551,7 @@ def get_feat_importances_and_params(feat_imp_str, extra_params, params,
         get_obj_and_params(feat_imp_str, IMPORTANCES, extra_params, params,
                            search_type=None)
 
-    problem_types = {'binary': Feat_Importances,
+    problem_types = {'binary': Binary_Feat_Importances,
                      'regression': Regression_Feat_Importances,
                      'categorical': Cat_Feat_Importances,
                      'multilabel': Cat_Feat_Importances}

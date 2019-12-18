@@ -7,7 +7,7 @@ seaborn>=0.9
 sphinx==2.0.1
 deslib
 imbalanced-learn>=0.6
-shap
+shap>=0.33
 scikit-image>=0.15
 tqdm
 nevergrad

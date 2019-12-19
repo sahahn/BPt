@@ -3,7 +3,7 @@
 
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sahahn/ABCD_ML/master/docs/logo/logo.png"/>
+  <img src="https://raw.githubusercontent.com/sahahn/ABCD_ML/master/docs/logo/logo3.png"/>
 </p>
   
 

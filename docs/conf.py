@@ -59,7 +59,8 @@ html_static_path = ['_static']
 html_logo = 'logo/logo.png'
 autoclass_content = 'both'
 
-html_theme_options = {'collapse_navigation': False}
+html_theme_options = {'collapse_navigation': False,
+                      'style_nav_header_background': '#000000'}
 
 intersphinx_mapping =\
     {'deslib': ('http://deslib.readthedocs.io/en/latest', None),

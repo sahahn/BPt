@@ -277,9 +277,9 @@ PARAMS['base yeo'] = {'method': 'yeo-johnson',
 PARAMS['base boxcox'] = {'method': 'box-cox',
                          'standardize': True}
 
-PARAMS['quantile norm'] = {'output_distribution': 'normal'}
+PARAMS['base quant norm'] = {'output_distribution': 'normal'}
 
-PARAMS['quantile uniform'] = {'output_distribution': 'uniform'}
+PARAMS['base quant uniform'] = {'output_distribution': 'uniform'}
 
 # Feat Selectors
 PARAMS['base univar fs regression'] = {'score_func': f_regression,

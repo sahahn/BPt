@@ -1,12 +1,11 @@
 
 
-<body bgcolor="#000000">
+
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/sahahn/ABCD_ML/master/docs/logo/logo.png"/>
 </p>
   
-<font color="white">
 
 ABCD_ML, a Python based Machine Learning library for tabular Neuroimaging data, specifically geared towards the ABCD dataset.
 
@@ -17,5 +16,3 @@ and the jupyter notebooks within Examples/
 
 Visit https://abcdstudy.org/ for more information on the ABCD study.
 
-</font>
-</body>

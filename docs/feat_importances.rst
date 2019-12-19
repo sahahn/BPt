@@ -102,19 +102,16 @@ shap__linear__nsamples
 
     (default = 1000)
 
-
-shap__tree__feature_dependence
+shap__tree__feature_perturbation
     Only used with tree base models.
     Since SHAP values rely on conditional expectations we need to decide how to handle correlated
-    (or otherwise dependent) input features. The default "tree_path_dependent" approach is to just
-    follow the trees and use the number of training examples that went down each leaf to represent
-    the background distribution. This approach repects feature dependecies along paths in the trees.
-    However, for non-linear marginal transforms (like explaining the model loss)  we don't yet
-    have fast algorithms that respect the tree path dependence, so instead we offer an "independent"
-    approach that breaks the dependencies between features, but allows us to explain non-linear
-    transforms of the model's output. Note that the "independent" option requires a background
-    dataset and its runtime scales linearly with the size of the background dataset you use. Anywhere
-    from 100 to 1000 random background samples are good sizes to use.
+    (or otherwise dependent) input features. The "interventional" approach breaks the dependencies between
+    features according to the rules dictated by casual inference (Janzing et al. 2019). Note that the
+    "interventional" option requires a background dataset and its runtime scales linearly with the size
+    of the background dataset you use. Anywhere from 100 to 1000 random background samples are good
+    sizes to use. The "tree_path_dependent" approach is to just follow the trees and use the number
+    of training examples that went down each leaf to represent the background distribution. This approach
+    does not require a background dataset and so is used by default when no background dataset is provided.
 
     (default = 'tree_path_dependent')
 
@@ -177,7 +174,7 @@ shap__kernel__l1_reg
 		shap__global__avg_abs: False
 		shap__linear__feature_dependence: independent
 		shap__linear__nsamples: 1000
-		shap__tree__feature_dependence: tree_path_dependent
+		shap__tree__feature_perturbation: tree_path_dependent
 		shap__tree__model_output: margin
 		shap__tree__tree_limit: None
 		shap__kernel__nkmean: 10

@@ -16,7 +16,7 @@ from ..helpers.ML_Helpers import (conv_to_list, proc_input,
                                   get_obj_and_params,
                                   user_passed_param_check,
                                   f_array, replace_with_in_params,
-                                  type_check)
+                                  type_check, mem_check)
 
 from .Models import AVALIABLE as AVALIABLE_MODELS
 from .Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
@@ -35,6 +35,8 @@ from .Feat_Importances import get_feat_importances_and_params
 
 from .Nevergrad import NevergradSearchCV
 import os
+
+MEM_MODE = False
 
 
 class Model_Pipeline():
@@ -1123,10 +1125,18 @@ class Model_Pipeline():
                 folds_bar.n = int(fold) - 1
                 folds_bar.refresh()
 
+            if MEM_MODE:
+                print('Pre-Test')
+                mem_check()
+
             # Run actual code for this evaluate fold
             start_time = time.time()
             train_scores, scores = self.Test(data, train_subjects,
                                              test_subjects, fold_ind)
+
+            if MEM_MODE:
+                print('Post-Test')
+                mem_check()
 
             # Time by fold verbosity
             elapsed_time = time.time() - start_time

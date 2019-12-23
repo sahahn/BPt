@@ -282,7 +282,9 @@ class Model_Pipeline():
         else:
             self.all_keys = list(feats_to_use) + keys_at_end
 
-        self._print('Using:', len(self.all_keys) - len(keys_at_end), 'feats',
+        # Hacky way to store this info, change in future
+        self.num_feat_keys = len(self.all_keys) - len(keys_at_end)
+        self._print('Using:', self.num_feat_keys, 'feats',
                     level='size')
 
     def _get_subjects_overlap(self, subjects):
@@ -910,7 +912,9 @@ class Model_Pipeline():
             else:
 
                 objs_and_params.append((name, get_func(name, self.extra_params,
-                                                       param, self.search_type)
+                                                       param, self.search_type,
+                                                       self.random_state,
+                                                       self.num_feat_keys)
                                         ))
 
         objs, params = self._proc_objs_and_params(objs_and_params)
@@ -1709,7 +1713,7 @@ class Model_Pipeline():
         return search_model
 
     def _get_base_model(self, model_type, extra_params, model_type_params,
-                        search_type):
+                        search_type, random_state=None, num_feat_keys=None):
 
         model, extra_model_params, model_type_params =\
             get_obj_and_params(model_type, MODELS, self.extra_params,

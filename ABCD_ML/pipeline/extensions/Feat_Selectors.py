@@ -1,4 +1,7 @@
 from sklearn.feature_selection import RFE
+from sklearn.base import BaseEstimator
+from sklearn.feature_selection._base import SelectorMixin
+import numpy as np
 
 
 class RFE(RFE):
@@ -17,3 +20,17 @@ class RFE(RFE):
                 self.n_features_to_select = X.shape[1] // divide_by
 
         return self._fit(X, y)
+
+
+class FeatureSelector(SelectorMixin, BaseEstimator):
+
+    def __init__(self, mask):
+        self.mask=mask
+
+    def fit(self, X, y=None):
+        
+        self.mask = np.array(self.mask) > .5
+        return self
+    
+    def _get_support_mask(self):
+        return self.mask

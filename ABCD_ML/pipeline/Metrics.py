@@ -107,19 +107,19 @@ AVALIABLE = {
                         'balanced accuracy': 'balanced accuracy',
                         'log': 'log',
                         'accuracy': 'accuracy',
-                        'brier': 'brier',
-                        'hamming': 'hamming',
+                        'brier': 'neg brier',
+                        'hamming': 'neg hamming',
                         'jaccard': 'jaccard',
                         'matthews': 'matthews',
             },
         'regression': {
                         'r2': 'r2',
-                        'mean squared error': 'mean squared error',
+                        'mean squared error': 'neg mean squared error',
                         'explained variance': 'explained variance',
-                        'max error': 'max error',
-                        'mean absolute error': 'mean absolute error',
-                        'mean squared log error': 'mean squared log error',
-                        'median absolute error': 'median absolute error',
+                        'max error': 'neg max error',
+                        'mean absolute error': 'neg mean absolute error',
+                        'mean squared log error': 'neg mean squared log error',
+                        'median absolute error': 'neg median absolute error',
             },
         'multilabel': {
                         'weighted roc auc': 'weighted roc auc',
@@ -152,7 +152,7 @@ AVALIABLE = {
                         'samples average precision',
                         'by class average precision':
                         'by class average precision',
-                        'hamming': 'hamming',
+                        'hamming': 'neg hamming',
                         'weighted jaccard': 'weighted jaccard',
                         'macro jaccard': 'macro jaccard',
                         'micro jaccard': 'micro jaccard',
@@ -178,7 +178,7 @@ AVALIABLE = {
                         'by class average precision':
                         'multiclass by class average precision',
                         'log': 'log',
-                        'hamming': 'hamming',
+                        'hamming': 'neg hamming',
                         'weighted f1': 'weighted f1',
                         'macro f1': 'macro f1',
                         'micro f1': 'micro f1',
@@ -202,22 +202,22 @@ AVALIABLE = {
 METRICS = {
     'r2': {'score_func': M.r2_score, 'greater_is_better': True},
 
-    'mean squared error': {'score_func': M.mean_squared_error,
+    'neg mean squared error': {'score_func': M.mean_squared_error,
                            'greater_is_better': False},
 
     'explained variance': {'score_func': M.explained_variance_score,
                            'greater_is_better': True},
 
-    'max error': {'score_func': M.max_error, 'greater_is_better': False},
+    'neg max error': {'score_func': M.max_error, 'greater_is_better': False},
 
-    'mean absolute error': {'score_func': M.mean_absolute_error,
-                            'greater_is_better': False},
+    'neg mean absolute error': {'score_func': M.mean_absolute_error,
+                                'greater_is_better': False},
 
-    'mean squared log error': {'score_func': M.mean_squared_log_error,
-                               'greater_is_better': False},
+    'neg mean squared log error': {'score_func': M.mean_squared_log_error,
+                                   'greater_is_better': False},
 
-    'median absolute error': {'score_func': M.median_absolute_error,
-                              'greater_is_better': False},
+    'neg median absolute error': {'score_func': M.median_absolute_error,
+                                  'greater_is_better': False},
 
     'macro roc auc': {'score_func': roc_auc_score_wrapper,
                       'greater_is_better': True, 'needs_proba': True,
@@ -369,12 +369,12 @@ METRICS = {
         'greater_is_better': True, 'needs_proba': True, 'average': None,
         'multiclass': True},
 
-    'brier': {'score_func': M.brier_score_loss,
-              'greater_is_better': False,
-              'needs_proba': True},
+    'neg brier': {'score_func': M.brier_score_loss,
+                  'greater_is_better': False,
+                  'needs_proba': True},
 
-    'hamming': {'score_func': M.hamming_loss, 'greater_is_better': False,
-                'needs_proba': False},
+    'neg hamming': {'score_func': M.hamming_loss, 'greater_is_better': False,
+                    'needs_proba': False},
 
     'jaccard': {'score_func': jaccard_score_wrapper,
                 'greater_is_better': True},

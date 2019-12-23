@@ -271,7 +271,8 @@ def move_keys(ensemble_params, extra_ensemble_params):
     return ensemble_params, extra_ensemble_params
 
 
-def get_ensemble_and_params(ensemble_str, extra_params, params, search_type):
+def get_ensemble_and_params(ensemble_str, extra_params, params, search_type,
+                            random_state=None, num_feat_keys=None):
 
     if ensemble_str == 'basic ensemble' or ensemble_str is None:
         return None, {}

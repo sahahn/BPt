@@ -51,7 +51,8 @@ def get_scaler_objects():
     return objs
 
 
-def get_scaler_and_params(scaler_str, extra_params, params, search_type):
+def get_scaler_and_params(scaler_str, extra_params, params, search_type,
+                          random_state=None, num_feat_keys=None):
     '''Returns a scaler based on proced str indicator input,
 
     Parameters

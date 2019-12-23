@@ -117,6 +117,7 @@ def proc_str_input(in_str):
                               'lightgbm ': 'light gbm ',
                               'svc ': 'svm ',
                               'svr ': 'svm ',
+                              'neg ': '',
                               }
 
     for chunk in startwith_replace_dict:

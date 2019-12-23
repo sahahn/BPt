@@ -6,7 +6,9 @@ File with different Feature Selectors
 from ..helpers.ML_Helpers import (show_objects, get_possible_init_params,
                                   get_obj_and_params)
 from sklearn.feature_selection import *
-from .extensions.Feat_Selectors import RFE
+from .extensions.Feat_Selectors import RFE, FeatureSelector
+import numpy as np
+import nevergrad as ng
 
 AVALIABLE = {
         'binary': {
@@ -14,15 +16,18 @@ AVALIABLE = {
                 'univariate selection classification',
                 'rfe': 'rfe',
                 'variance threshold': 'variance threshold',
+                'selector' : 'selector',
         },
         'regression': {
                 'univariate selection':
                 'univariate selection regression',
                 'rfe': 'rfe',
                 'variance threshold': 'variance threshold',
+                'selector' : 'selector',
         },
         'multilabel': {
                 'variance threshold': 'variance threshold',
+                'selector' : 'selector',
         }
 }
 
@@ -40,11 +45,38 @@ SELECTORS = {
     'rfe': (RFE, ['base rfe', 'rfe num feats dist']),
 
     'variance threshold': (VarianceThreshold, ['default']),
+
+    'selector': (FeatureSelector, ['random', 'searchable']),
 }
 
 
+def get_special_selector(feat_selector, feat_selector_params, random_state, num_feat_keys):
+
+    # Init feat selector with mask of random feats
+    if random_state is None:
+        r_state = np.random.RandomState(np.random.randint(1000))
+    elif isinstance(random_state, int):
+        r_state = np.random.RandomState(random_state)
+    else:
+        r_state = random_state
+    
+    init_mask = (r_state.random(num_feat_keys) > .5)
+    feat_selector = feat_selector(mask=init_mask)
+
+    # Figure out param passed
+    if 'selector__mask' in feat_selector_params:
+        p_name = 'selector__mask'
+
+        # If set to searchable, set to searchable...
+        if feat_selector_params[p_name] == 'sets as hyperparameters':
+            feat_selector_params[p_name] =\
+                ng.var.Array(num_feat_keys).bounded(0, 1)
+
+    return feat_selector, feat_selector_params
+
+
 def get_feat_selector_and_params(feat_selector_str, extra_params, params,
-                                 search_type):
+                                 search_type, random_state, num_feat_keys):
     '''Returns a scaler based on proced str indicator input,
 
     Parameters
@@ -74,16 +106,26 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
 
     feat_selector, extra_feat_selector_params, feat_selector_params =\
         get_obj_and_params(feat_selector_str, SELECTORS, extra_params,
-                           params, search_type)
+                        params, search_type)
 
-    # Need to check for estimator, as RFE needs a default param for estimator
-    # Though, only replaced if not passed in user extra params already.
-    possible_params = get_possible_init_params(feat_selector)
-    if 'estimator' in possible_params:
-            if 'estimator' not in extra_feat_selector_params:
-                extra_feat_selector_params['estimator'] = None
+    # Special behavior for selector... 
+    if feat_selector_str == 'selector':
 
-    return feat_selector(**extra_feat_selector_params), feat_selector_params
+        feat_selector, feat_selector_params =\
+            get_special_selector(feat_selector, feat_selector_params,
+                                 random_state, num_feat_keys)
+
+        return feat_selector, feat_selector_params
+
+    else:
+        # Need to check for estimator, as RFE needs a default param for estimator
+        # Though, only replaced if not passed in user extra params already.
+        possible_params = get_possible_init_params(feat_selector)
+        if 'estimator' in possible_params:
+                if 'estimator' not in extra_feat_selector_params:
+                    extra_feat_selector_params['estimator'] = None
+
+        return feat_selector(**extra_feat_selector_params), feat_selector_params
 
 
 def Show_Feat_Selectors(self, problem_type=None, feat_selector_str=None,

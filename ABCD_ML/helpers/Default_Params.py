@@ -202,11 +202,9 @@ PARAMS['base ridge regressor'] = PARAMS['base lasso regressor'].copy()
 PARAMS['ridge regressor dist'] =\
         {'alpha': ng.var.Scalar().bounded(-4, 5).exponentiated(base=10,
                                                                coeff=-1)}
-
-
-PARAMS['mlp dist 3 layers'] =\
+PARAMS['mlp dist 1 layer'] =\
         {'hidden_layer_sizes':
-         ng.var.Array(1, 1, 1).asscalar(int).bounded(2, 100),
+         ng.var.Scalar(int).bounded(2, 200),
          'activation':
          ng.var.OrderedDiscrete(['identity', 'logistic',
                                  'tanh', 'relu']),
@@ -221,17 +219,9 @@ PARAMS['mlp dist 3 layers'] =\
          'beta_1': ng.var.Scalar().bounded(.1, .95),
          'beta_2': ng.var.Scalar().bounded(.1, .95)}
 
-PARAMS['mlp dist 2 layers'] = PARAMS['mlp dist 3 layers'].copy()
-PARAMS['mlp dist 2 layers']['hidden_layer_sizes'] =\
-        ng.var.Array(1, 1).asscalar(int).bounded(2, 100)
-
-PARAMS['mlp dist 1 layer'] = PARAMS['mlp dist 3 layers'].copy()
-PARAMS['mlp dist 1 layer']['hidden_layer_sizes'] =\
-        ng.var.Array(1).asscalar(int).bounded(2, 100)
-
-PARAMS['mlp dist es 3 layers'] = PARAMS['mlp dist 3 layers'].copy()
-PARAMS['mlp dist es 3 layers']['early_stopping'] = True
-PARAMS['mlp dist es 3 layers']['n_iter_no_change'] =\
+PARAMS['mlp dist es 1 layer'] = PARAMS['mlp dist 1 layer'].copy()
+PARAMS['mlp dist es 1 layer']['early_stopping'] = True
+PARAMS['mlp dist es 1 layer']['n_iter_no_change'] =\
         ng.var.Scalar(int).bounded(5, 50)
 
 PARAMS['base linear svc'] = {'penalty': 'l2',
@@ -302,6 +292,9 @@ PARAMS['base rfe'] = {'n_features_to_select': None}
 
 PARAMS['rfe num feats dist'] = {'n_features_to_select':
                                 ng.var.Scalar().bounded(.01, .99)}
+
+PARAMS['random'] = {'mask': 'sets as random features'}
+PARAMS['searchable'] = {'mask': 'sets as hyperparameters'}
 
 # Imputers
 PARAMS['mean imp'] = {'strategy': 'mean'}

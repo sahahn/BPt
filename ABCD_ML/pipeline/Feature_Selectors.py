@@ -16,18 +16,18 @@ AVALIABLE = {
                 'univariate selection classification',
                 'rfe': 'rfe',
                 'variance threshold': 'variance threshold',
-                'selector' : 'selector',
+                'selector': 'selector',
         },
         'regression': {
                 'univariate selection':
                 'univariate selection regression',
                 'rfe': 'rfe',
                 'variance threshold': 'variance threshold',
-                'selector' : 'selector',
+                'selector': 'selector',
         },
         'multilabel': {
                 'variance threshold': 'variance threshold',
-                'selector' : 'selector',
+                'selector': 'selector',
         }
 }
 
@@ -50,7 +50,8 @@ SELECTORS = {
 }
 
 
-def get_special_selector(feat_selector, feat_selector_params, random_state, num_feat_keys):
+def get_special_selector(feat_selector, feat_selector_params, random_state,
+                         num_feat_keys):
 
     # Init feat selector with mask of random feats
     if random_state is None:
@@ -59,7 +60,7 @@ def get_special_selector(feat_selector, feat_selector_params, random_state, num_
         r_state = np.random.RandomState(random_state)
     else:
         r_state = random_state
-    
+
     init_mask = (r_state.random(num_feat_keys) > .5)
     feat_selector = feat_selector(mask=init_mask)
 
@@ -106,9 +107,9 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
 
     feat_selector, extra_feat_selector_params, feat_selector_params =\
         get_obj_and_params(feat_selector_str, SELECTORS, extra_params,
-                        params, search_type)
+                           params, search_type)
 
-    # Special behavior for selector... 
+    # Special behavior for selector...
     if feat_selector_str == 'selector':
 
         feat_selector, feat_selector_params =\
@@ -118,14 +119,15 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
         return feat_selector, feat_selector_params
 
     else:
-        # Need to check for estimator, as RFE needs a default param for estimator
+        # Need to check for estimator, as RFE needs a default param for est.
         # Though, only replaced if not passed in user extra params already.
         possible_params = get_possible_init_params(feat_selector)
         if 'estimator' in possible_params:
                 if 'estimator' not in extra_feat_selector_params:
                     extra_feat_selector_params['estimator'] = None
 
-        return feat_selector(**extra_feat_selector_params), feat_selector_params
+        return (feat_selector(**extra_feat_selector_params),
+                feat_selector_params)
 
 
 def Show_Feat_Selectors(self, problem_type=None, feat_selector_str=None,

@@ -4,6 +4,7 @@ import numpy as np
 import warnings
 
 from .Perm_Feat_Importance import Perm_Feat_Importance
+from sklearn.inspection import permutation_importance
 from ..helpers.ML_Helpers import get_obj_and_params
 
 
@@ -183,7 +184,7 @@ class Feat_Importances():
             self.local_df = None
 
     def proc_importances(self, base_model, X_test, y_test=None,
-                         X_train=None, scorer=None, fold=0):
+                         X_train=None, scorer=None, fold=0, random_state=None):
         '''X_test should be a df, and X_train either None or as np array.'''
 
         if not self.valid:
@@ -197,6 +198,13 @@ class Feat_Importances():
             feat_imps = self.get_perm_feat_importances(base_model,
                                                        np.array(X_test),
                                                        y_test, scorer)
+            self.add_to_global(list(X_test), feat_imps)
+
+        elif self.name == 'sklearn perm':
+            feat_imps = self.get_perm_feat_importances2(base_model,
+                                                        np.array(X_test),
+                                                        y_test, scorer,
+                                                        random_state)
             self.add_to_global(list(X_test), feat_imps)
 
         elif self.name == 'shap':
@@ -238,6 +246,16 @@ class Feat_Importances():
                                            n_jobs=self.n_jobs)
         feat_imps = perm_import.compute(base_model, scorer, X_test, y_test)
         return feat_imps
+
+    def get_perm_feat_importances2(self, base_model, X_test, y_test, scorer,
+                                   random_state):
+
+        results = permutation_importance(base_model, X_test, y_test,
+                                         scoring=scorer,
+                                         n_repeats=self.params['perm__n_perm'],
+                                         n_jobs=self.n_jobs,
+                                         random_state=random_state)
+        return results.importances_mean
 
     def get_shap_feature_importance(self, base_model, X_test, X_train):
 
@@ -499,6 +517,11 @@ AVALIABLE = {
             'shap train': 'shap train',
             'shap all': 'shap all',
             'perm': 'perm',
+            'perm train': 'perm train',
+            'perm all': 'perm all',
+            'sklearn perm': 'sklearn perm',
+            'sklearn perm train': 'sklearn perm train',
+            'sklearn perm all': 'sklearn perm all',
         },
         'regression': {
             'base': 'base',
@@ -506,6 +529,11 @@ AVALIABLE = {
             'shap train': 'shap train',
             'shap all': 'shap all',
             'perm': 'perm',
+            'perm train': 'perm train',
+            'perm all': 'perm all',
+            'sklearn perm': 'sklearn perm',
+            'sklearn perm train': 'sklearn perm train',
+            'sklearn perm all': 'sklearn perm all',
         },
         'categorical': {
             'base': 'base',
@@ -513,10 +541,20 @@ AVALIABLE = {
             'shap train': 'shap train',
             'shap all': 'shap all',
             'perm': 'perm',
+            'perm train': 'perm train',
+            'perm all': 'perm all',
+            'sklearn perm': 'sklearn perm',
+            'sklearn perm train': 'sklearn perm train',
+            'sklearn perm all': 'sklearn perm all',
         },
         'multilabel': {
             'base': 'base',
             'perm': 'perm',
+            'perm train': 'perm train',
+            'perm all': 'perm all',
+            'sklearn perm': 'sklearn perm',
+            'sklearn perm train': 'sklearn perm train',
+            'sklearn perm all': 'sklearn perm all',
         }
 }
 
@@ -540,6 +578,26 @@ IMPORTANCES = {
     'perm': ({'name': 'perm',
               'scopes': ('global'),
               'split': 'test'}, ['base perm']),
+
+    'perm train': ({'name': 'perm',
+                    'scopes': ('global'),
+                    'split': 'train'}, ['base perm']),
+
+    'perm all': ({'name': 'perm',
+                  'scopes': ('global'),
+                  'split': 'all'}, ['base perm']),
+
+    'sklearn perm': ({'name': 'sklearn perm',
+                     'scopes': ('global'),
+                      'split': 'test'}, ['base perm'])
+
+    'sklearn perm train': ({'name': 'sklearn perm',
+                            'scopes': ('global'),
+                            'split': 'train'}, ['base perm'])
+
+    'sklearn perm all': ({'name': 'sklearn perm',
+                          'scopes': ('global'),
+                          'split': 'all'}, ['base perm'])
 }
 
 

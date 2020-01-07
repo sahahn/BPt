@@ -1514,7 +1514,8 @@ class Model_Pipeline():
             # Process the feature importance, provide all needed
             feat_imp.proc_importances(base_model, X_test, y_test=y_test,
                                       X_train=X_train, scorer=self.metric,
-                                      fold=fold)
+                                      fold=fold,
+                                      random_state=self.random_state)
 
             # For local, need an intermediate average, move df to dfs
             if isinstance(fold_ind, int):

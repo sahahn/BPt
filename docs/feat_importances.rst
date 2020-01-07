@@ -232,3 +232,30 @@ See above "perm", this option simply changes the split to
 computing permutation values on both the training and testing/validation set.
 The parameters are
 the same.
+
+
+"sklearn perm"
+**************
+This is also permutation feature importance, but it has a few differences from the base 'perm'.
+This will notably call sklearns implementation of permutation feature importance.
+See: https://scikit-learn.org/dev/modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance
+
+What nice about their implementation is that it can respect random_state.
+Their implementation is likely better tested then mine as well, but for whatever reason mine
+runs much quicker than theirs, and with ~100 permutations they seem to give roughly the same
+results. It is therefore up to user which implementation they would like to use.
+
+"sklearn perm train"
+**************
+See above "sklearn perm", this option simply changes the split to
+computing permutation values on both the training and testing/validation set.
+The parameters are
+the same.
+
+"sklearn perm all"
+**************
+See above "sklearn perm", this option simply changes the split to
+computing permutation values on both the training and testing/validation set.
+The parameters are
+the same.
+

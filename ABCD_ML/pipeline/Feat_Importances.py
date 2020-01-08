@@ -589,15 +589,15 @@ IMPORTANCES = {
 
     'sklearn perm': ({'name': 'sklearn perm',
                      'scopes': ('global'),
-                      'split': 'test'}, ['base perm'])
+                      'split': 'test'}, ['base perm']),
 
     'sklearn perm train': ({'name': 'sklearn perm',
                             'scopes': ('global'),
-                            'split': 'train'}, ['base perm'])
+                            'split': 'train'}, ['base perm']),
 
     'sklearn perm all': ({'name': 'sklearn perm',
                           'scopes': ('global'),
-                          'split': 'all'}, ['base perm'])
+                          'split': 'all'}, ['base perm']),
 }
 
 

@@ -13,77 +13,86 @@ from sklearn.svm import SVR
 
 PARAMS = {}
 
+cls_weight = ng.var.UnorderedDiscrete([None, 'balanced'])
 PARAMS['default'] = {}
 
 # Models
 PARAMS['base logistic'] =\
-        {'solver': 'saga',
-         'max_iter': 5000,
+        {'max_iter': 5000,
          'multi_class': 'auto',
          'penalty': 'none',
-         'class_weight': None}
+         'class_weight': None,
+         'solver': 'liblinear'}
 
-PARAMS['base lasso'] = PARAMS['base logistic'].copy()
-PARAMS['base lasso']['penalty'] = 'l1'
+# Ridge classifier
+PARAMS['base ridge'] = {'max_iter': 5000,
+                        'solver': 'lsqr'}
 
-PARAMS['base ridge'] = PARAMS['base logistic'].copy()
-PARAMS['base ridge']['penalty'] = 'l2'
-
-PARAMS['base elastic'] = PARAMS['base logistic'].copy()
-PARAMS['base elastic']['penalty'] = 'elasticnet'
-PARAMS['base elastic']['l1_ratio'] = .5
-
-PARAMS['lasso C'] = PARAMS['base lasso'].copy()
-PARAMS['lasso C']['C'] =\
-        ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
-PARAMS['lasso C']['class_weight'] =\
-        ng.var.OrderedDiscrete([None, 'balanced'])
-
-PARAMS['lasso C extra'] = PARAMS['lasso C'].copy()
-PARAMS['lasso C extra']['max_iter'] = ng.var.Scalar(int).bounded(1000, 10000)
-PARAMS['lasso C extra']['tol'] = ng.var.Scalar(float).bounded(.000001, .01)
-
-PARAMS['ridge C'] = PARAMS['base ridge'].copy()
-PARAMS['ridge C']['C'] =\
-        ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
-PARAMS['ridge C']['class_weight'] =\
-        ng.var.OrderedDiscrete([None, 'balanced'])
+PARAMS['ridge C'] =\
+        {'max_iter': 5000,
+         'solver': 'lsqr',
+         'alpha': ng.var.Log(1e-3, 1e5),
+         'class_weight': cls_weight}
 
 PARAMS['ridge C extra'] = PARAMS['ridge C'].copy()
 PARAMS['ridge C extra']['max_iter'] = ng.var.Scalar(int).bounded(1000, 10000)
-PARAMS['ridge C extra']['tol'] = ng.var.Scalar(float).bounded(.000001, .01)
+PARAMS['ridge C extra']['tol'] = ng.var.Log(1e-6, .01)
+
+# Ridge regressor
+PARAMS['ridge regressor dist'] = PARAMS['base ridge'].copy()
+PARAMS['ridge regressor dist']['alpha'] = ng.var.Log(1e-3, 1e5)
+
+# Lasso regressor
+PARAMS['base lasso regressor'] = {'max_iter': 5000}
+PARAMS['lasso regressor dist'] = PARAMS['base lasso regressor'].copy()
+PARAMS['lasso regressor dist']['alpha'] = ng.var.Log(1e-3, 1e5)
+
+# Lasso classifier
+PARAMS['base lasso'] = PARAMS['base logistic'].copy()
+PARAMS['base lasso']['penalty'] = 'l1'
+
+PARAMS['lasso C'] = PARAMS['base lasso'].copy()
+PARAMS['lasso C']['C'] = ng.var.Log(1e-5, 1e3)
+PARAMS['lasso C']['class_weight'] = cls_weight
+
+PARAMS['lasso C extra'] = PARAMS['lasso C'].copy()
+PARAMS['lasso C extra']['max_iter'] = ng.var.Scalar(int).bounded(1000, 10000)
+PARAMS['lasso C extra']['tol'] = ng.var.Log(1e-6, .01)
+
+# Elastic net classifier
+PARAMS['base elastic'] = PARAMS['base logistic'].copy()
+PARAMS['base elastic']['penalty'] = 'elasticnet'
+PARAMS['base elastic']['l1_ratio'] = .5
+PARAMS['base elastic']['solver'] = 'saga'
 
 PARAMS['elastic classifier'] = PARAMS['base elastic'].copy()
-PARAMS['elastic classifier']['C'] =\
-        ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
+PARAMS['elastic classifier']['C'] = ng.var.Log(1e-5, 1e3)
 PARAMS['elastic classifier']['l1_ratio'] = ng.var.Scalar().bounded(0, 1)
-PARAMS['elastic classifier']['class_weight'] =\
-        ng.var.OrderedDiscrete([None, 'balanced'])
+PARAMS['elastic classifier']['class_weight'] = cls_weight
 
 PARAMS['elastic classifier extra'] = PARAMS['elastic classifier'].copy()
 PARAMS['elastic classifier extra']['max_iter'] =\
         ng.var.Scalar(int).bounded(1000, 10000)
-PARAMS['elastic classifier extra']['tol'] =\
-        ng.var.Scalar(float).bounded(.000001, .01)
+PARAMS['elastic classifier extra']['tol'] = ng.var.Log(1e-6, .01)
 
+# Elastic net regression
 PARAMS['base elastic net'] = {'max_iter': 5000}
 PARAMS['elastic regression'] = PARAMS['base elastic net'].copy()
-PARAMS['elastic regression']['alpha'] =\
-        ng.var.Scalar().bounded(-2, 5).exponentiated(base=10, coeff=-1)
+PARAMS['elastic regression']['alpha'] = ng.var.Log(1e-3, 1e5)
 PARAMS['elastic regression']['l1_ratio'] = ng.var.Scalar().bounded(0, 1)
 
 PARAMS['elastic regression extra'] = PARAMS['elastic regression'].copy()
 PARAMS['elastic regression extra']['max_iter'] =\
         ng.var.Scalar(int).bounded(1000, 10000)
-PARAMS['elastic regression extra']['tol'] =\
-        ng.var.Scalar(float).bounded(.000001, .01)
+PARAMS['elastic regression extra']['tol'] = ng.var.Log(1e-6, .01)
+
 
 PARAMS['base huber'] = {'epsilon': 1.35}
 PARAMS['base gnb'] = {'var_smoothing': 1e-9}
 
 PARAMS['base knn'] = {'n_neighbors': 5}
 PARAMS['knn dist'] = {'weights':
-                      ng.var.OrderedDiscrete(['uniform', 'distance']),
+                      ng.var.UnorderedDiscrete(['uniform', 'distance']),
                       'n_neighbors': ng.var.Scalar(int).bounded(2, 25)}
 
 PARAMS['base dt'] = {}
@@ -91,8 +100,7 @@ PARAMS['dt dist'] = {'max_depth': ng.var.Scalar(int).bounded(1, 30),
                      'min_samples_split': ng.var.Scalar(int).bounded(2, 50)}
 
 PARAMS['dt classifier dist'] = PARAMS['dt dist'].copy()
-PARAMS['dt classifier dist']['class_weight'] =\
-        ng.var.OrderedDiscrete([None, 'balanced'])
+PARAMS['dt classifier dist']['class_weight'] = cls_weight
 
 PARAMS['base linear'] = {'fit_intercept': True}
 
@@ -104,20 +112,17 @@ PARAMS['rf dist'] = {'n_estimators': ng.var.Scalar(int).bounded(3, 500),
                      'bootstrap': True}
 
 PARAMS['rf classifier dist'] = PARAMS['rf dist'].copy()
-PARAMS['rf classifier dist']['class_weight'] =\
-        ng.var.OrderedDiscrete([None, 'balanced'])
+PARAMS['rf classifier dist']['class_weight'] = cls_weight
 
 PARAMS['base lgbm'] = {'silent': True}
 PARAMS['lgbm dist1'] = {'silent': True,
                         'boosting_type':
-                        ng.var.OrderedDiscrete(['gbdt', 'dart', 'goss']),
+                        ng.var.UnorderedDiscrete(['gbdt', 'dart', 'goss']),
                         'n_estimators': ng.var.Scalar(int).bounded(3, 500),
                         'num_leaves': ng.var.Scalar(int).bounded(6, 80),
                         'min_child_samples': ng.var.Scalar(int).bounded(10,
                                                                         500),
-                        'min_child_weight':
-                        ng.var.Scalar().bounded(-4, 5).exponentiated(base=10,
-                                                                     coeff=-1),
+                        'min_child_weight': ng.var.Log(1e-5, 1e4),
                         'subsample': ng.var.Scalar().bounded(.3, .95),
                         'colsample_bytree': ng.var.Scalar().bounded(.3, .95),
                         'reg_alpha':
@@ -130,7 +135,7 @@ PARAMS['lgbm dist1'] = {'silent': True,
 PARAMS['lgbm dist2'] = {'silent': True,
                         'lambda_l2': 0.001,
                         'boosting_type':
-                        ng.var.OrderedDiscrete(['gbdt', 'dart']),
+                        ng.var.UnorderedDiscrete(['gbdt', 'dart']),
                         'min_child_samples':
                         ng.var.OrderedDiscrete([1, 5, 7, 10, 15, 20, 35, 50,
                                                 100, 200, 500, 1000]),
@@ -149,12 +154,10 @@ PARAMS['lgbm dist2'] = {'silent': True,
                                                 200, 350, 500, 750, 1000])}
 
 PARAMS['lgbm classifier dist1'] = PARAMS['lgbm dist1'].copy()
-PARAMS['lgbm classifier dist1']['class_weight'] =\
-        ng.var.OrderedDiscrete([None, 'balanced'])
+PARAMS['lgbm classifier dist1']['class_weight'] = cls_weight
 
 PARAMS['lgbm classifier dist2'] = PARAMS['lgbm dist2'].copy()
-PARAMS['lgbm classifier dist2']['class_weight'] =\
-        ng.var.OrderedDiscrete([None, 'balanced'])
+PARAMS['lgbm classifier dist2']['class_weight'] = cls_weight
 
 PARAMS['base xgb'] = {'verbosity': 0}
 
@@ -176,45 +179,29 @@ PARAMS['base svm'] = {'kernel': 'rbf',
                       'gamma': 'scale'}
 
 PARAMS['svm dist'] = PARAMS['base svm'].copy()
-PARAMS['svm dist']['C'] =\
-        ng.var.Scalar().bounded(-4, 4).exponentiated(base=10,
-                                                     coeff=-1)
-PARAMS['svm dist']['gamma'] =\
-        ng.var.Scalar().bounded(1, 6).exponentiated(base=10,
-                                                    coeff=-1)
+PARAMS['svm dist']['C'] = ng.var.Log(1e-4, 1e4)
+PARAMS['svm dist']['gamma'] = ng.var.Log(1e-6, 1)
 
 PARAMS['base svm classifier'] = PARAMS['base svm'].copy()
 PARAMS['base svm classifier']['probability'] = True
 
 PARAMS['svm classifier dist'] = PARAMS['svm dist'].copy()
 PARAMS['svm classifier dist']['probability'] = True
-PARAMS['svm classifier dist']['class_weight'] =\
-        ng.var.OrderedDiscrete([None, 'balanced'])
+PARAMS['svm classifier dist']['class_weight'] = cls_weight
 
 PARAMS['base mlp'] = {}
 
-PARAMS['base lasso regressor'] = {'max_iter': 5000}
-PARAMS['lasso regressor dist'] =\
-        {'alpha': ng.var.Scalar().bounded(-4, 5).exponentiated(base=10,
-                                                               coeff=-1)}
-
-PARAMS['base ridge regressor'] = PARAMS['base lasso regressor'].copy()
-PARAMS['ridge regressor dist'] =\
-        {'alpha': ng.var.Scalar().bounded(-4, 5).exponentiated(base=10,
-                                                               coeff=-1)}
 PARAMS['mlp dist 1 layer'] =\
         {'hidden_layer_sizes':
          ng.var.Scalar(int).bounded(2, 200),
          'activation':
-         ng.var.OrderedDiscrete(['identity', 'logistic',
-                                 'tanh', 'relu']),
-         'alpha':
-         ng.var.Scalar().bounded(-2, 5).exponentiated(base=10, coeff=-1),
+         ng.var.UnorderedDiscrete(['identity', 'logistic',
+                                   'tanh', 'relu']),
+         'alpha': ng.var.Log(1e-5, 1e2),
          'batch_size': ng.var.Scalar(int).bounded(2, 200),
          'learning_rate':
-         ng.var.OrderedDiscrete(['constant', 'invscaling', 'adaptive']),
-         'learning_rate_init':
-         ng.var.Scalar().bounded(-2, 5).exponentiated(base=10, coeff=-1),
+         ng.var.UnorderedDiscrete(['constant', 'invscaling', 'adaptive']),
+         'learning_rate_init': ng.var.Log(1e-5, 1e2),
          'max_iter': ng.var.Scalar(int).bounded(100, 500),
          'beta_1': ng.var.Scalar().bounded(.1, .95),
          'beta_2': ng.var.Scalar().bounded(.1, .95)}
@@ -228,16 +215,13 @@ PARAMS['base linear svc'] = {'penalty': 'l2',
                              'loss': 'squared hinge'}
 
 PARAMS['linear svc dist'] = PARAMS['base linear svc'].copy()
-PARAMS['linear svc dist']['C'] =\
-        ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
-PARAMS['linear svc dist']['class_weight'] =\
-        ng.var.OrderedDiscrete([None, 'balanced'])
+PARAMS['linear svc dist']['C'] = ng.var.Log(1e-4, 1e4)
+PARAMS['linear svc dist']['class_weight'] = cls_weight
 
 PARAMS['base linear svr'] = {'loss': 'epsilon_insensitive'}
 
 PARAMS['linear svr dist'] = PARAMS['base linear svr'].copy()
-PARAMS['linear svr dist']['C'] =\
-        ng.var.Scalar().bounded(-4, 4).exponentiated(base=10, coeff=-1)
+PARAMS['linear svr dist']['C'] = ng.var.Log(1e-4, 1e4)
 
 
 # Scalers
@@ -251,12 +235,12 @@ PARAMS['base robust'] = {'quantile_range': (5, 95)}
 PARAMS['base winsorize'] = {'quantile_range': (1, 99)}
 
 PARAMS['robust gs'] =\
-        {'quantile_range': ng.var.OrderedDiscrete(
+        {'quantile_range': ng.var.UnorderedDiscrete(
                 [(1, 99), (3, 97), (5, 95), (10, 90), (15, 85),
                  (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)])}
 
 PARAMS['winsorize gs'] =\
-        {'quantile_range': ng.var.OrderedDiscrete(
+        {'quantile_range': ng.var.UnorderedDiscrete(
                 [(.1, 99.9), (.5, 99.5), (1, 99), (1.5, 98.5), (2, 98),
                  (2.5, 97.5), (3, 97), (3.5, 96.5), (4, 96), (4.5, 95.5),
                  (5, 95)])}

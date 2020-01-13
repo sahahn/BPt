@@ -15,7 +15,8 @@ from sklearn.ensemble import (GradientBoostingClassifier, AdaBoostClassifier,
                               RandomForestRegressor, RandomForestClassifier)
 from sklearn.linear_model import (LogisticRegression, ElasticNet,
                                   LinearRegression, HuberRegressor,
-                                  Lasso, Ridge)
+                                  Lasso, Ridge, RidgeClassifier)
+
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
@@ -71,8 +72,8 @@ MODELS = {
     'lasso logistic': (LogisticRegression, ['base lasso', 'lasso C',
                                             'lasso C extra']),
 
-    'ridge logistic': (LogisticRegression, ['base ridge', 'ridge C',
-                                            'ridge C extra']),
+    'ridge logistic': (RidgeClassifier, ['base ridge', 'ridge C',
+                                         'ridge C extra']),
 
     'elastic net logistic': (LogisticRegression, ['base elastic',
                                                   'elastic classifier',
@@ -81,6 +82,11 @@ MODELS = {
     'elastic net regressor': (ElasticNet, ['base elastic net',
                                            'elastic regression',
                                            'elastic regression extra']),
+
+    'ridge regressor': (Ridge, ['base ridge',
+                                'ridge regressor dist']),
+    'lasso regressor': (Lasso, ['base lasso regressor',
+                                'lasso regressor dist']),
 
     'huber': (HuberRegressor, ['base huber']),
 
@@ -109,11 +115,6 @@ MODELS = {
                                      'mlp dist es 1 layer']),
     'mlp classifier': (MLPClassifier, ['base mlp', 'mlp dist 1 layer',
                                        'mlp dist es 1 layer']),
-
-    'ridge regressor': (Ridge, ['base ridge regressor',
-                                'ridge regressor dist']),
-    'lasso regressor': (Lasso, ['base lasso regressor',
-                                'lasso regressor dist']),
 
     'linear svm classifier': (LinearSVC, ['base linear svc',
                                           'linear svc dist']),

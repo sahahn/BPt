@@ -347,7 +347,7 @@ class Model_Pipeline():
                             'though params were passed.')
                 self._print()
 
-                params = [0 for i in range(len(params))]
+                # params = [0 for i in range(len(params))]
 
         return params
 

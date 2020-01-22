@@ -170,7 +170,7 @@ PARAMS['xgb dist'] =\
          'subsample': ng.var.Scalar().bounded(.5, 1),
          'colsample_bytree': ng.var.Scalar().bounded(.4, .95)}
 
-PARAMS['xgb dist 2'] =\
+PARAMS['xgb dist2'] =\
         {'verbosity': 0,
          'n_estimators': ng.var.Scalar(int).bounded(3, 500),
          'min_child_weight': ng.var.Log(1e-5, 1e4),
@@ -181,13 +181,13 @@ PARAMS['xgb dist 2'] =\
          'reg_lambda': ng.var.Scalar().bounded(-2, 1).exponentiated(base=10,
                                                                     coeff=-1)}
 
-PARAMS['xgb dist 3'] =\
+PARAMS['xgb dist3'] =\
         {'verbosity': 0,
          'learning_rate': ng.var.Log(1e-4, 1),
          'n_estimators': ng.var.Scalar(int).bounded(3, 50),
          'boosting_type': ng.var.UnorderedDiscrete(['gbtree', 'dart'])}
 
-PARAMS['xgb dist 4'] =\
+PARAMS['xgb dist4'] =\
         {'verbosity': 0,
          'learning_rare': ng.var.Scalar().bounded(.005, .3),
          'min_child_weight': ng.var.Scalar().bounded(.5, 10),

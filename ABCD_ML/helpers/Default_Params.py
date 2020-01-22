@@ -170,6 +170,32 @@ PARAMS['xgb dist'] =\
          'subsample': ng.var.Scalar().bounded(.5, 1),
          'colsample_bytree': ng.var.Scalar().bounded(.4, .95)}
 
+PARAMS['xgb dist 2'] =\
+        {'verbosity': 0,
+         'n_estimators': ng.var.Scalar(int).bounded(3, 500),
+         'min_child_weight': ng.var.Log(1e-5, 1e4),
+         'subsample': ng.var.Scalar().bounded(.3, .95),
+         'colsample_bytree': ng.var.Scalar().bounded(.3, .95),
+         'reg_alpha': ng.var.Scalar().bounded(-2, 1).exponentiated(base=10,
+                                                                   coeff=-1),
+         'reg_lambda': ng.var.Scalar().bounded(-2, 1).exponentiated(base=10,
+                                                                    coeff=-1)}
+
+PARAMS['xgb dist 3'] =\
+        {'verbosity': 0,
+         'learning_rate': ng.var.Log(1e-4, 1),
+         'n_estimators': ng.var.Scalar(int).bounded(3, 50),
+         'boosting_type': ng.var.UnorderedDiscrete(['gbtree', 'dart'])}
+
+PARAMS['xgb dist 4'] =\
+        {'verbosity': 0,
+         'learning_rare': ng.var.Scalar().bounded(.005, .3),
+         'min_child_weight': ng.var.Scalar().bounded(.5, 10),
+         'max_depth': ng.var.Scalar(int).bounded(3, 10),
+         'subsample': ng.var.Scalar().bounded(.5, 1),
+         'colsample_bytree': ng.var.Scalar().bounded(.5, 1),
+         'reg_alpha': ng.var.Log(.00001, 1)}
+
 PARAMS['base gp regressor'] = {'n_restarts_optimizer': 5,
                                'normalize_y': True}
 PARAMS['base gp classifier'] = {'n_restarts_optimizer': 5}
@@ -212,13 +238,15 @@ PARAMS['mlp dist es 1 layer']['n_iter_no_change'] =\
         ng.var.Scalar(int).bounded(5, 50)
 
 PARAMS['base linear svc'] = {'penalty': 'l2',
-                             'loss': 'squared hinge'}
+                             'loss': 'squared hinge',
+                             'max_iter': 5000}
 
 PARAMS['linear svc dist'] = PARAMS['base linear svc'].copy()
 PARAMS['linear svc dist']['C'] = ng.var.Log(1e-4, 1e4)
 PARAMS['linear svc dist']['class_weight'] = cls_weight
 
-PARAMS['base linear svr'] = {'loss': 'epsilon_insensitive'}
+PARAMS['base linear svr'] = {'loss': 'epsilon_insensitive',
+                             'max_iter': 5000}
 
 PARAMS['linear svr dist'] = PARAMS['base linear svr'].copy()
 PARAMS['linear svr dist']['C'] = ng.var.Log(1e-4, 1e4)

@@ -130,8 +130,8 @@ try:
         AVALIABLE['regression']['xgb'] = 'xgb regressor'
         AVALIABLE['categorical']['light gbm'] = 'light gbm classifier'
 
-        MODELS['xgb regressor'] = (XGBRegressor, ['base xgb', 'xgb dist', 'xgb dist2', 'xgb dist3', 'xgb dist4'])
-        MODELS['xgb classifier'] = (XGBClassifier, ['base xgb', 'xgb dist', 'xgb dist2', 'xgb dist3', 'xgb dist4'])
+        MODELS['xgb regressor'] = (XGBRegressor, ['base xgb', 'xgb dist1', 'xgb dist2', 'xgb dist3'])
+        MODELS['xgb classifier'] = (XGBClassifier, ['base xgb', 'xgb dist1', 'xgb dist2', 'xgb dist3'])
 
 except ImportError:
         pass

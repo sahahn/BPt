@@ -161,16 +161,8 @@ PARAMS['lgbm classifier dist2']['class_weight'] = cls_weight
 
 PARAMS['base xgb'] = {'verbosity': 0}
 
-PARAMS['xgb dist'] =\
-        {'verbosity': 0,
-         'max_depth': ng.var.Scalar(int).bounded(2, 50),
-         'learning_rate': ng.var.Scalar().bounded(.01, .5),
-         'n_estimators': ng.var.Scalar(int).bounded(3, 500),
-         'min_child_weight': ng.var.OrderedDiscrete([1, 5, 10, 50]),
-         'subsample': ng.var.Scalar().bounded(.5, 1),
-         'colsample_bytree': ng.var.Scalar().bounded(.4, .95)}
 
-PARAMS['xgb dist2'] =\
+PARAMS['xgb dist1'] =\
         {'verbosity': 0,
          'n_estimators': ng.var.Scalar(int).bounded(3, 500),
          'min_child_weight': ng.var.Log(1e-5, 1e4),
@@ -180,14 +172,16 @@ PARAMS['xgb dist2'] =\
                                                                    coeff=-1),
          'reg_lambda': ng.var.Scalar().bounded(-2, 1).exponentiated(base=10,
                                                                     coeff=-1)}
+PARAMS['xgb dist2'] =\
+        {'verbosity': 0,
+         'max_depth': ng.var.Scalar(int).bounded(2, 50),
+         'learning_rate': ng.var.Scalar().bounded(.01, .5),
+         'n_estimators': ng.var.Scalar(int).bounded(3, 500),
+         'min_child_weight': ng.var.OrderedDiscrete([1, 5, 10, 50]),
+         'subsample': ng.var.Scalar().bounded(.5, 1),
+         'colsample_bytree': ng.var.Scalar().bounded(.4, .95)}
 
 PARAMS['xgb dist3'] =\
-        {'verbosity': 0,
-         'learning_rate': ng.var.Log(1e-4, 1),
-         'n_estimators': ng.var.Scalar(int).bounded(3, 50),
-         'boosting_type': ng.var.UnorderedDiscrete(['gbtree', 'dart'])}
-
-PARAMS['xgb dist4'] =\
         {'verbosity': 0,
          'learning_rare': ng.var.Scalar().bounded(.005, .3),
          'min_child_weight': ng.var.Scalar().bounded(.5, 10),

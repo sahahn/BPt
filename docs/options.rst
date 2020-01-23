@@ -25,9 +25,9 @@ binary
 
 	1. "dt classifier dist" ::
 
-		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
-		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		max_depth: Array((1,), [ArctanBound(a_max=[30], a_min=[1], name=At(1,30), shape=(1,))])
+		min_samples_split: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "elastic net logistic"
@@ -39,33 +39,33 @@ binary
 
 	0. "base elastic" ::
 
-		solver: saga
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
 		class_weight: None
+		solver: saga
 		l1_ratio: 0.5
 
 	1. "elastic classifier" ::
 
-		solver: saga
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
+		solver: saga
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		C: Log({a_min},{a_max},{width})
 
 	2. "elastic classifier extra" ::
 
-		solver: saga
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=10000, a_min=1000)])
+		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		tol: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.01, a_min=1e-06)])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
+		solver: saga
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		C: Log({a_min},{a_max},{width})
+		tol: Log({a_min},{a_max},{width})
 
 
 "gaussian nb"
@@ -105,8 +105,8 @@ binary
 
 	1. "knn dist" ::
 
-		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
-		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
+		weights: UnorderedDiscrete(['uniform', 'distance'])
+		n_neighbors: Array((1,), [ArctanBound(a_max=[25], a_min=[2], name=At(2,25), shape=(1,))])
 
 
 "lasso logistic"
@@ -118,30 +118,30 @@ binary
 
 	0. "base lasso" ::
 
-		solver: saga
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
 		class_weight: None
+		solver: liblinear
 
 	1. "lasso C" ::
 
-		solver: saga
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
+		solver: liblinear
+		C: Log({a_min},{a_max},{width})
 
 	2. "lasso C extra" ::
 
-		solver: saga
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=10000, a_min=1000)])
+		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
 		multi_class: auto
 		penalty: l1
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		tol: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.01, a_min=1e-06)])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
+		solver: liblinear
+		C: Log({a_min},{a_max},{width})
+		tol: Log({a_min},{a_max},{width})
 
 
 "light gbm classifier"
@@ -158,29 +158,29 @@ binary
 	1. "lgbm classifier dist1" ::
 
 		silent: True
-		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart', 'goss'])
-		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
-		num_leaves: Scalar(shape=(1,), transforms=[ArctanBound(a_max=80, a_min=6)])
-		min_child_samples: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=10)])
-		min_child_weight: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
-		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
-		reg_alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		reg_lambda: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		boosting_type: UnorderedDiscrete(['gbdt', 'dart', 'goss'])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		num_leaves: Array((1,), [ArctanBound(a_max=[80], a_min=[6], name=At(6,80), shape=(1,))])
+		min_child_samples: Array((1,), [ArctanBound(a_max=[500], a_min=[10], name=At(10,500), shape=(1,))])
+		min_child_weight: Log({a_min},{a_max},{width})
+		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
+		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
+		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 	2. "lgbm classifier dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart'])
-		min_child_samples: OrderedDiscrete(possibilities=[1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
-		num_leaves: OrderedDiscrete(possibilities=[2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
-		colsample_bytree: OrderedDiscrete(possibilities=[0.7, 0.9, 1.0])
-		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.3)])
-		learning_rate: OrderedDiscrete(possibilities=[0.01, 0.05, 0.1])
-		n_estimators: OrderedDiscrete(possibilities=[5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		boosting_type: UnorderedDiscrete(['gbdt', 'dart'])
+		min_child_samples: OrderedDiscrete([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
+		num_leaves: OrderedDiscrete([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
+		colsample_bytree: OrderedDiscrete([0.7, 0.9, 1.0])
+		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.3], name=At(0.3,1), shape=(1,))])
+		learning_rate: OrderedDiscrete([0.01, 0.05, 0.1])
+		n_estimators: OrderedDiscrete([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "linear svm classifier"
@@ -194,13 +194,15 @@ binary
 
 		penalty: l2
 		loss: squared hinge
+		max_iter: 5000
 
 	1. "linear svc dist" ::
 
 		penalty: l2
 		loss: squared hinge
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		max_iter: 5000
+		C: Log({a_min},{a_max},{width})
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "logistic"
@@ -212,11 +214,11 @@ binary
 
 	0. "base logistic" ::
 
-		solver: saga
 		max_iter: 5000
 		multi_class: auto
 		penalty: none
 		class_weight: None
+		solver: liblinear
 
 
 "mlp classifier"
@@ -230,55 +232,31 @@ binary
 
 		defaults only
 
-	1. "mlp dist 3 layers" ::
+	1. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Log({a_min},{a_max},{width})
+		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Log({a_min},{a_max},{width})
+		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
+		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
 
-	2. "mlp dist 2 layers" ::
+	2. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Array(shape=(1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-
-	3. "mlp dist 1 layer" ::
-
-		hidden_layer_sizes: Array(shape=(1,), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-
-	4. "mlp dist es 3 layers" ::
-
-		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Log({a_min},{a_max},{width})
+		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Log({a_min},{a_max},{width})
+		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
+		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
 		early_stopping: True
-		n_iter_no_change: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=5)])
+		n_iter_no_change: Array((1,), [ArctanBound(a_max=[50], a_min=[5], name=At(5,50), shape=(1,))])
 
 
 "random forest classifier"
@@ -294,47 +272,40 @@ binary
 
 	1. "rf classifier dist" ::
 
-		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
-		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
-		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		max_depth: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		max_features: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		min_samples_split: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
 		bootstrap: True
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "ridge logistic"
 ****************
 
-  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.RidgeClassifier`
 
   Param Distributions
 
 	0. "base ridge" ::
 
-		solver: saga
 		max_iter: 5000
-		multi_class: auto
-		penalty: l2
-		class_weight: None
+		solver: lsqr
 
 	1. "ridge C" ::
 
-		solver: saga
 		max_iter: 5000
-		multi_class: auto
-		penalty: l2
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		solver: lsqr
+		alpha: Log({a_min},{a_max},{width})
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 	2. "ridge C extra" ::
 
-		solver: saga
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=10000, a_min=1000)])
-		multi_class: auto
-		penalty: l2
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		tol: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.01, a_min=1e-06)])
+		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
+		solver: lsqr
+		alpha: Log({a_min},{a_max},{width})
+		class_weight: UnorderedDiscrete([None, 'balanced'])
+		tol: Log({a_min},{a_max},{width})
 
 
 "svm classifier"
@@ -353,10 +324,10 @@ binary
 	1. "svm classifier dist" ::
 
 		kernel: rbf
-		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		gamma: Log({a_min},{a_max},{width})
+		C: Log({a_min},{a_max},{width})
 		probability: True
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "xgb classifier"
@@ -370,15 +341,35 @@ binary
 
 		verbosity: 0
 
-	1. "xgb dist" ::
+	1. "xgb dist1" ::
 
 		verbosity: 0
-		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
-		learning_rate: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.5, a_min=0.01)])
-		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
-		min_child_weight: OrderedDiscrete(possibilities=[1, 5, 10, 50])
-		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.5)])
-		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.4)])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		min_child_weight: Log({a_min},{a_max},{width})
+		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
+		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
+		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+
+	2. "xgb dist2" ::
+
+		verbosity: 0
+		max_depth: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
+		learning_rate: Array((1,), [ArctanBound(a_max=[0.5], a_min=[0.01], name=At(0.01,0.5), shape=(1,))])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		min_child_weight: OrderedDiscrete([1, 5, 10, 50])
+		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
+		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.4], name=At(0.4,0.95), shape=(1,))])
+
+	3. "xgb dist3" ::
+
+		verbosity: 0
+		learning_rare: Array((1,), [ArctanBound(a_max=[0.3], a_min=[0.005], name=At(0.005,0.3), shape=(1,))])
+		min_child_weight: Array((1,), [ArctanBound(a_max=[10], a_min=[0.5], name=At(0.5,10), shape=(1,))])
+		max_depth: Array((1,), [ArctanBound(a_max=[10], a_min=[3], name=At(3,10), shape=(1,))])
+		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
+		colsample_bytree: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
+		reg_alpha: Log({a_min},{a_max},{width})
 
 
 
@@ -397,8 +388,8 @@ regression
 
 	1. "dt dist" ::
 
-		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
-		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
+		max_depth: Array((1,), [ArctanBound(a_max=[30], a_min=[1], name=At(1,30), shape=(1,))])
+		min_samples_split: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
 
 
 "elastic net regressor"
@@ -415,15 +406,15 @@ regression
 	1. "elastic regression" ::
 
 		max_iter: 5000
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		alpha: Log({a_min},{a_max},{width})
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
 
 	2. "elastic regression extra" ::
 
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=10000, a_min=1000)])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
-		tol: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.01, a_min=1e-06)])
+		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
+		alpha: Log({a_min},{a_max},{width})
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		tol: Log({a_min},{a_max},{width})
 
 
 "gp regressor"
@@ -452,8 +443,8 @@ regression
 
 	1. "knn dist" ::
 
-		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
-		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
+		weights: UnorderedDiscrete(['uniform', 'distance'])
+		n_neighbors: Array((1,), [ArctanBound(a_max=[25], a_min=[2], name=At(2,25), shape=(1,))])
 
 
 "lasso regressor"
@@ -469,7 +460,8 @@ regression
 
 	1. "lasso regressor dist" ::
 
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		max_iter: 5000
+		alpha: Log({a_min},{a_max},{width})
 
 
 "light gbm regressor"
@@ -486,27 +478,27 @@ regression
 	1. "lgbm dist1" ::
 
 		silent: True
-		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart', 'goss'])
-		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
-		num_leaves: Scalar(shape=(1,), transforms=[ArctanBound(a_max=80, a_min=6)])
-		min_child_samples: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=10)])
-		min_child_weight: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
-		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
-		reg_alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		reg_lambda: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
+		boosting_type: UnorderedDiscrete(['gbdt', 'dart', 'goss'])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		num_leaves: Array((1,), [ArctanBound(a_max=[80], a_min=[6], name=At(6,80), shape=(1,))])
+		min_child_samples: Array((1,), [ArctanBound(a_max=[500], a_min=[10], name=At(10,500), shape=(1,))])
+		min_child_weight: Log({a_min},{a_max},{width})
+		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
+		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
+		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
 
 	2. "lgbm dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart'])
-		min_child_samples: OrderedDiscrete(possibilities=[1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
-		num_leaves: OrderedDiscrete(possibilities=[2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
-		colsample_bytree: OrderedDiscrete(possibilities=[0.7, 0.9, 1.0])
-		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.3)])
-		learning_rate: OrderedDiscrete(possibilities=[0.01, 0.05, 0.1])
-		n_estimators: OrderedDiscrete(possibilities=[5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
+		boosting_type: UnorderedDiscrete(['gbdt', 'dart'])
+		min_child_samples: OrderedDiscrete([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
+		num_leaves: OrderedDiscrete([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
+		colsample_bytree: OrderedDiscrete([0.7, 0.9, 1.0])
+		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.3], name=At(0.3,1), shape=(1,))])
+		learning_rate: OrderedDiscrete([0.01, 0.05, 0.1])
+		n_estimators: OrderedDiscrete([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
 
 
 "linear regressor"
@@ -531,11 +523,13 @@ regression
 	0. "base linear svr" ::
 
 		loss: epsilon_insensitive
+		max_iter: 5000
 
 	1. "linear svr dist" ::
 
 		loss: epsilon_insensitive
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		max_iter: 5000
+		C: Log({a_min},{a_max},{width})
 
 
 "mlp regressor"
@@ -549,55 +543,31 @@ regression
 
 		defaults only
 
-	1. "mlp dist 3 layers" ::
+	1. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Log({a_min},{a_max},{width})
+		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Log({a_min},{a_max},{width})
+		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
+		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
 
-	2. "mlp dist 2 layers" ::
+	2. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Array(shape=(1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-
-	3. "mlp dist 1 layer" ::
-
-		hidden_layer_sizes: Array(shape=(1,), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-
-	4. "mlp dist es 3 layers" ::
-
-		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Log({a_min},{a_max},{width})
+		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Log({a_min},{a_max},{width})
+		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
+		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
 		early_stopping: True
-		n_iter_no_change: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=5)])
+		n_iter_no_change: Array((1,), [ArctanBound(a_max=[50], a_min=[5], name=At(5,50), shape=(1,))])
 
 
 "random forest regressor"
@@ -613,10 +583,10 @@ regression
 
 	1. "rf dist" ::
 
-		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
-		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
-		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		max_depth: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		max_features: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		min_samples_split: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
 		bootstrap: True
 
 
@@ -627,13 +597,16 @@ regression
 
   Param Distributions
 
-	0. "base ridge regressor" ::
+	0. "base ridge" ::
 
 		max_iter: 5000
+		solver: lsqr
 
 	1. "ridge regressor dist" ::
 
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		max_iter: 5000
+		solver: lsqr
+		alpha: Log({a_min},{a_max},{width})
 
 
 "svm regressor"
@@ -651,8 +624,8 @@ regression
 	1. "svm dist" ::
 
 		kernel: rbf
-		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		gamma: Log({a_min},{a_max},{width})
+		C: Log({a_min},{a_max},{width})
 
 
 "xgb regressor"
@@ -666,15 +639,35 @@ regression
 
 		verbosity: 0
 
-	1. "xgb dist" ::
+	1. "xgb dist1" ::
 
 		verbosity: 0
-		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
-		learning_rate: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.5, a_min=0.01)])
-		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
-		min_child_weight: OrderedDiscrete(possibilities=[1, 5, 10, 50])
-		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.5)])
-		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.4)])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		min_child_weight: Log({a_min},{a_max},{width})
+		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
+		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
+		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+
+	2. "xgb dist2" ::
+
+		verbosity: 0
+		max_depth: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
+		learning_rate: Array((1,), [ArctanBound(a_max=[0.5], a_min=[0.01], name=At(0.01,0.5), shape=(1,))])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		min_child_weight: OrderedDiscrete([1, 5, 10, 50])
+		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
+		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.4], name=At(0.4,0.95), shape=(1,))])
+
+	3. "xgb dist3" ::
+
+		verbosity: 0
+		learning_rare: Array((1,), [ArctanBound(a_max=[0.3], a_min=[0.005], name=At(0.005,0.3), shape=(1,))])
+		min_child_weight: Array((1,), [ArctanBound(a_max=[10], a_min=[0.5], name=At(0.5,10), shape=(1,))])
+		max_depth: Array((1,), [ArctanBound(a_max=[10], a_min=[3], name=At(3,10), shape=(1,))])
+		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
+		colsample_bytree: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
+		reg_alpha: Log({a_min},{a_max},{width})
 
 
 
@@ -693,9 +686,9 @@ categorical
 
 	1. "dt classifier dist" ::
 
-		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
-		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		max_depth: Array((1,), [ArctanBound(a_max=[30], a_min=[1], name=At(1,30), shape=(1,))])
+		min_samples_split: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "elastic net logistic"
@@ -707,33 +700,33 @@ categorical
 
 	0. "base elastic" ::
 
-		solver: saga
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
 		class_weight: None
+		solver: saga
 		l1_ratio: 0.5
 
 	1. "elastic classifier" ::
 
-		solver: saga
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
+		solver: saga
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		C: Log({a_min},{a_max},{width})
 
 	2. "elastic classifier extra" ::
 
-		solver: saga
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=10000, a_min=1000)])
+		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		l1_ratio: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		tol: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.01, a_min=1e-06)])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
+		solver: saga
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		C: Log({a_min},{a_max},{width})
+		tol: Log({a_min},{a_max},{width})
 
 
 "gaussian nb"
@@ -773,8 +766,8 @@ categorical
 
 	1. "knn dist" ::
 
-		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
-		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
+		weights: UnorderedDiscrete(['uniform', 'distance'])
+		n_neighbors: Array((1,), [ArctanBound(a_max=[25], a_min=[2], name=At(2,25), shape=(1,))])
 
 
 "lasso logistic"
@@ -786,30 +779,30 @@ categorical
 
 	0. "base lasso" ::
 
-		solver: saga
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
 		class_weight: None
+		solver: liblinear
 
 	1. "lasso C" ::
 
-		solver: saga
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
+		solver: liblinear
+		C: Log({a_min},{a_max},{width})
 
 	2. "lasso C extra" ::
 
-		solver: saga
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=10000, a_min=1000)])
+		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
 		multi_class: auto
 		penalty: l1
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		tol: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.01, a_min=1e-06)])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
+		solver: liblinear
+		C: Log({a_min},{a_max},{width})
+		tol: Log({a_min},{a_max},{width})
 
 
 "light gbm classifier"
@@ -826,29 +819,29 @@ categorical
 	1. "lgbm classifier dist1" ::
 
 		silent: True
-		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart', 'goss'])
-		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
-		num_leaves: Scalar(shape=(1,), transforms=[ArctanBound(a_max=80, a_min=6)])
-		min_child_samples: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=10)])
-		min_child_weight: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
-		colsample_bytree: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.3)])
-		reg_alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		reg_lambda: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		boosting_type: UnorderedDiscrete(['gbdt', 'dart', 'goss'])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		num_leaves: Array((1,), [ArctanBound(a_max=[80], a_min=[6], name=At(6,80), shape=(1,))])
+		min_child_samples: Array((1,), [ArctanBound(a_max=[500], a_min=[10], name=At(10,500), shape=(1,))])
+		min_child_weight: Log({a_min},{a_max},{width})
+		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
+		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
+		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 	2. "lgbm classifier dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: OrderedDiscrete(possibilities=['gbdt', 'dart'])
-		min_child_samples: OrderedDiscrete(possibilities=[1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
-		num_leaves: OrderedDiscrete(possibilities=[2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
-		colsample_bytree: OrderedDiscrete(possibilities=[0.7, 0.9, 1.0])
-		subsample: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.3)])
-		learning_rate: OrderedDiscrete(possibilities=[0.01, 0.05, 0.1])
-		n_estimators: OrderedDiscrete(possibilities=[5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		boosting_type: UnorderedDiscrete(['gbdt', 'dart'])
+		min_child_samples: OrderedDiscrete([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
+		num_leaves: OrderedDiscrete([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
+		colsample_bytree: OrderedDiscrete([0.7, 0.9, 1.0])
+		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.3], name=At(0.3,1), shape=(1,))])
+		learning_rate: OrderedDiscrete([0.01, 0.05, 0.1])
+		n_estimators: OrderedDiscrete([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "linear svm classifier"
@@ -862,13 +855,15 @@ categorical
 
 		penalty: l2
 		loss: squared hinge
+		max_iter: 5000
 
 	1. "linear svc dist" ::
 
 		penalty: l2
 		loss: squared hinge
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		max_iter: 5000
+		C: Log({a_min},{a_max},{width})
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "logistic"
@@ -880,11 +875,11 @@ categorical
 
 	0. "base logistic" ::
 
-		solver: saga
 		max_iter: 5000
 		multi_class: auto
 		penalty: none
 		class_weight: None
+		solver: liblinear
 
 
 "mlp classifier"
@@ -898,55 +893,31 @@ categorical
 
 		defaults only
 
-	1. "mlp dist 3 layers" ::
+	1. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Log({a_min},{a_max},{width})
+		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Log({a_min},{a_max},{width})
+		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
+		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
 
-	2. "mlp dist 2 layers" ::
+	2. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Array(shape=(1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-
-	3. "mlp dist 1 layer" ::
-
-		hidden_layer_sizes: Array(shape=(1,), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-
-	4. "mlp dist es 3 layers" ::
-
-		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Log({a_min},{a_max},{width})
+		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Log({a_min},{a_max},{width})
+		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
+		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
 		early_stopping: True
-		n_iter_no_change: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=5)])
+		n_iter_no_change: Array((1,), [ArctanBound(a_max=[50], a_min=[5], name=At(5,50), shape=(1,))])
 
 
 "random forest classifier"
@@ -962,47 +933,40 @@ categorical
 
 	1. "rf classifier dist" ::
 
-		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
-		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
-		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		max_depth: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		max_features: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		min_samples_split: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
 		bootstrap: True
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "ridge logistic"
 ****************
 
-  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
+  Base Class Documenation: :class:`sklearn.linear_model.RidgeClassifier`
 
   Param Distributions
 
 	0. "base ridge" ::
 
-		solver: saga
 		max_iter: 5000
-		multi_class: auto
-		penalty: l2
-		class_weight: None
+		solver: lsqr
 
 	1. "ridge C" ::
 
-		solver: saga
 		max_iter: 5000
-		multi_class: auto
-		penalty: l2
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		solver: lsqr
+		alpha: Log({a_min},{a_max},{width})
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 	2. "ridge C extra" ::
 
-		solver: saga
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=10000, a_min=1000)])
-		multi_class: auto
-		penalty: l2
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
-		tol: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.01, a_min=1e-06)])
+		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
+		solver: lsqr
+		alpha: Log({a_min},{a_max},{width})
+		class_weight: UnorderedDiscrete([None, 'balanced'])
+		tol: Log({a_min},{a_max},{width})
 
 
 "svm classifier"
@@ -1021,10 +985,10 @@ categorical
 	1. "svm classifier dist" ::
 
 		kernel: rbf
-		gamma: Scalar(shape=(1,), transforms=[ArctanBound(a_max=6, a_min=1), Exponentiate(base=10, coeff=-1)])
-		C: Scalar(shape=(1,), transforms=[ArctanBound(a_max=4, a_min=-4), Exponentiate(base=10, coeff=-1)])
+		gamma: Log({a_min},{a_max},{width})
+		C: Log({a_min},{a_max},{width})
 		probability: True
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 
@@ -1043,9 +1007,9 @@ multilabel
 
 	1. "dt classifier dist" ::
 
-		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=30, a_min=1)])
-		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=2)])
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		max_depth: Array((1,), [ArctanBound(a_max=[30], a_min=[1], name=At(1,30), shape=(1,))])
+		min_samples_split: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "knn classifier"
@@ -1061,8 +1025,8 @@ multilabel
 
 	1. "knn dist" ::
 
-		weights: OrderedDiscrete(possibilities=['uniform', 'distance'])
-		n_neighbors: Scalar(shape=(1,), transforms=[ArctanBound(a_max=25, a_min=2)])
+		weights: UnorderedDiscrete(['uniform', 'distance'])
+		n_neighbors: Array((1,), [ArctanBound(a_max=[25], a_min=[2], name=At(2,25), shape=(1,))])
 
 
 "mlp classifier"
@@ -1076,55 +1040,31 @@ multilabel
 
 		defaults only
 
-	1. "mlp dist 3 layers" ::
+	1. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Log({a_min},{a_max},{width})
+		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Log({a_min},{a_max},{width})
+		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
+		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
 
-	2. "mlp dist 2 layers" ::
+	2. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Array(shape=(1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-
-	3. "mlp dist 1 layer" ::
-
-		hidden_layer_sizes: Array(shape=(1,), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-
-	4. "mlp dist es 3 layers" ::
-
-		hidden_layer_sizes: Array(shape=(1, 1, 1), transforms=[ArctanBound(a_max=100, a_min=2)])
-		activation: OrderedDiscrete(possibilities=['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		batch_size: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		learning_rate: OrderedDiscrete(possibilities=['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Scalar(shape=(1,), transforms=[ArctanBound(a_max=5, a_min=-2), Exponentiate(base=10, coeff=-1)])
-		max_iter: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=100)])
-		beta_1: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
-		beta_2: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.95, a_min=0.1)])
+		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: Log({a_min},{a_max},{width})
+		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: Log({a_min},{a_max},{width})
+		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
+		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
 		early_stopping: True
-		n_iter_no_change: Scalar(shape=(1,), transforms=[ArctanBound(a_max=50, a_min=5)])
+		n_iter_no_change: Array((1,), [ArctanBound(a_max=[50], a_min=[5], name=At(5,50), shape=(1,))])
 
 
 "random forest classifier"
@@ -1140,12 +1080,12 @@ multilabel
 
 	1. "rf classifier dist" ::
 
-		n_estimators: Scalar(shape=(1,), transforms=[ArctanBound(a_max=500, a_min=3)])
-		max_depth: Scalar(shape=(1,), transforms=[ArctanBound(a_max=200, a_min=2)])
-		max_features: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
-		min_samples_split: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0)])
+		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
+		max_depth: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
+		max_features: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		min_samples_split: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
 		bootstrap: True
-		class_weight: OrderedDiscrete(possibilities=[None, 'balanced'])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 
@@ -1174,20 +1114,10 @@ binary
 
   Base Func Documenation: :func:`sklearn.metrics.balanced_accuracy_score`
 
-"brier"
-*******
-
-  Base Func Documenation: :func:`sklearn.metrics.brier_score_loss`
-
 "f1"
 ****
 
   Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"hamming"
-*********
-
-  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
 
 "jaccard"
 *********
@@ -1214,6 +1144,16 @@ binary
 
   Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
 
+"neg brier"
+***********
+
+  Base Func Documenation: :func:`sklearn.metrics.brier_score_loss`
+
+"neg hamming"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
+
 "precision"
 ***********
 
@@ -1232,28 +1172,28 @@ regression
 
   Base Func Documenation: :func:`sklearn.metrics.explained_variance_score`
 
-"max error"
-***********
+"neg max error"
+***************
 
   Base Func Documenation: :func:`sklearn.metrics.max_error`
 
-"mean absolute error"
-*********************
+"neg mean absolute error"
+*************************
 
   Base Func Documenation: :func:`sklearn.metrics.mean_absolute_error`
 
-"mean squared error"
-********************
+"neg mean squared error"
+************************
 
   Base Func Documenation: :func:`sklearn.metrics.mean_squared_error`
 
-"mean squared log error"
-************************
+"neg mean squared log error"
+****************************
 
   Base Func Documenation: :func:`sklearn.metrics.mean_squared_log_error`
 
-"median absolute error"
-***********************
+"neg median absolute error"
+***************************
 
   Base Func Documenation: :func:`sklearn.metrics.median_absolute_error`
 
@@ -1294,11 +1234,6 @@ categorical
 *****************
 
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-"hamming"
-*********
-
-  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
 
 "log"
 *****
@@ -1400,6 +1335,11 @@ categorical
 
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
+"neg hamming"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
+
 "weighted f1"
 *************
 
@@ -1457,11 +1397,6 @@ multilabel
 ******************
 
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"hamming"
-*********
-
-  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
 
 "log"
 *****
@@ -1527,6 +1462,11 @@ multilabel
 ***************
 
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"neg hamming"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
 
 "samples average precision"
 ***************************
@@ -1730,7 +1670,7 @@ All Problem Types
 
 	1. "robust gs" ::
 
-		quantile_range: OrderedDiscrete(possibilities=[(1, 99), (3, 97), (5, 95), (10, 90), (15, 85), (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)])
+		quantile_range: UnorderedDiscrete([(1, 99), (3, 97), (5, 95), (10, 90), (15, 85), (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)])
 
 
 "yeo"
@@ -1772,7 +1712,7 @@ All Problem Types
 
 	1. "winsorize gs" ::
 
-		quantile_range: OrderedDiscrete(possibilities=[(0.1, 99.9), (0.5, 99.5), (1, 99), (1.5, 98.5), (2, 98), (2.5, 97.5), (3, 97), (3.5, 96.5), (4, 96), (4.5, 95.5), (5, 95)])
+		quantile_range: UnorderedDiscrete([(0.1, 99.9), (0.5, 99.5), (1, 99), (1.5, 98.5), (2, 98), (2.5, 97.5), (3, 97), (3.5, 96.5), (4, 96), (4.5, 95.5), (5, 95)])
 
 
 "quantile norm"
@@ -1955,7 +1895,7 @@ All Problem Types
 		sampler_type: no change
 		regression_bins: 3
 		regression_bin_strategy: uniform
-		sampling_strategy: Scalar(shape=(1,), transforms=[ArctanBound(a_max=1, a_min=0.1)])
+		sampling_strategy: Array((1,), [ArctanBound(a_max=[1], a_min=[0.1], name=At(0.1,1), shape=(1,))])
 
 
 "near miss"
@@ -2126,7 +2066,23 @@ binary
 
 	1. "rfe num feats dist" ::
 
-		n_features_to_select: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.99, a_min=0.01)])
+		n_features_to_select: Array((1,), [ArctanBound(a_max=[0.99], a_min=[0.01], name=At(0.01,0.99), shape=(1,))])
+
+
+"selector"
+**********
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Feat_Selectors.FeatureSelector`
+
+  Param Distributions
+
+	0. "random" ::
+
+		mask: sets as random features
+
+	1. "searchable" ::
+
+		mask: sets as hyperparameters
 
 
 "univariate selection classification"
@@ -2138,13 +2094,13 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f1da6374ae8>
+		score_func: <function f_classif at 0x7f700d9a2950>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f1da6374ae8>
-		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
+		score_func: <function f_classif at 0x7f700d9a2950>
+		percentile: Array((1,), [ArctanBound(a_max=[99], a_min=[1], name=At(1,99), shape=(1,))])
 
 
 "variance threshold"
@@ -2175,7 +2131,23 @@ regression
 
 	1. "rfe num feats dist" ::
 
-		n_features_to_select: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.99, a_min=0.01)])
+		n_features_to_select: Array((1,), [ArctanBound(a_max=[0.99], a_min=[0.01], name=At(0.01,0.99), shape=(1,))])
+
+
+"selector"
+**********
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Feat_Selectors.FeatureSelector`
+
+  Param Distributions
+
+	0. "random" ::
+
+		mask: sets as random features
+
+	1. "searchable" ::
+
+		mask: sets as hyperparameters
 
 
 "univariate selection regression"
@@ -2187,13 +2159,13 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f1da6374c80>
+		score_func: <function f_regression at 0x7f700d9a2cb0>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f1da6374c80>
-		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
+		score_func: <function f_regression at 0x7f700d9a2cb0>
+		percentile: Array((1,), [ArctanBound(a_max=[99], a_min=[1], name=At(1,99), shape=(1,))])
 
 
 "variance threshold"
@@ -2224,7 +2196,23 @@ categorical
 
 	1. "rfe num feats dist" ::
 
-		n_features_to_select: Scalar(shape=(1,), transforms=[ArctanBound(a_max=0.99, a_min=0.01)])
+		n_features_to_select: Array((1,), [ArctanBound(a_max=[0.99], a_min=[0.01], name=At(0.01,0.99), shape=(1,))])
+
+
+"selector"
+**********
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Feat_Selectors.FeatureSelector`
+
+  Param Distributions
+
+	0. "random" ::
+
+		mask: sets as random features
+
+	1. "searchable" ::
+
+		mask: sets as hyperparameters
 
 
 "univariate selection classification"
@@ -2236,13 +2224,13 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f1da6374ae8>
+		score_func: <function f_classif at 0x7f700d9a2950>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f1da6374ae8>
-		percentile: Scalar(shape=(1,), transforms=[ArctanBound(a_max=99, a_min=1)])
+		score_func: <function f_classif at 0x7f700d9a2950>
+		percentile: Array((1,), [ArctanBound(a_max=[99], a_min=[1], name=At(1,99), shape=(1,))])
 
 
 "variance threshold"
@@ -2260,6 +2248,22 @@ categorical
 
 multilabel
 ==========
+"selector"
+**********
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Feat_Selectors.FeatureSelector`
+
+  Param Distributions
+
+	0. "random" ::
+
+		mask: sets as random features
+
+	1. "searchable" ::
+
+		mask: sets as hyperparameters
+
+
 "variance threshold"
 ********************
 

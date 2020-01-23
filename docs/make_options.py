@@ -312,7 +312,10 @@ for imp in IMPORTANCES:
     rel_lines = add_params([], p_name)
     lines = lines[:ri] + rel_lines + lines[ri+1:]
 
+lines = ['.. _Feat Importances:', ''] + lines
+
 with open('feat_importances.rst', 'w') as f:
     for line in lines:
         f.write(line)
         f.write('\n')
+

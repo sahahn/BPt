@@ -1346,6 +1346,7 @@ class Model_Pipeline():
                                 'if this is not the case.')
                     needs_split = True
 
+                # Right now needs split essential means DES Ensemble, maybe change this
                 if needs_split:
 
                     # Init with default params
@@ -1361,8 +1362,13 @@ class Model_Pipeline():
 
                     self._update_model_ensemble_params(ensemble_name)
 
-                else:
+                # If no split and single estimator, then add the new ensemble obj
+                # W/ passed params.
+                elif single_estimator:
 
+
+                    # Models here since single estimator is assumed to be just a list with
+                    # of one tuple as [(model or ensemble name, model or ensemble)]
                     new_ensembles.append(
                         (ensemble_name,
                          ensemble_obj(base_estimator=models[0][1],
@@ -1373,6 +1379,23 @@ class Model_Pipeline():
                         replace_with_in_params(self.model_params, models[0][0],
                                                'base_estimator')
 
+                    # Append ensemble name to all model params
+                    self._update_model_ensemble_params(ensemble_name,
+                                                       ensemble=False)
+
+                # Last case is, no split/DES ensemble and also not single estimator based
+                # e.g., in case of stacking regressor.
+                else:
+
+                    # Models here just self.models a list of tuple of all models.
+                    # So, ensemble_extra_params should contain the final estimator,
+                    # + other params
+                    new_ensembles.append(
+                        (ensemble_name,
+                         ensemble_obj(estimators=models,
+                                      **ensemble_extra_params)))
+
+                    # Append ensemble name to all model params
                     self._update_model_ensemble_params(ensemble_name,
                                                        ensemble=False)
 

@@ -5,6 +5,7 @@ File with different saved default parameter grids,
 for various classifiers within ABCD_ML.
 """
 
+import copy
 from scipy.stats import randint, uniform, reciprocal
 from sklearn.feature_selection import f_regression, f_classif
 import nevergrad as ng
@@ -159,11 +160,15 @@ PARAMS['lgbm classifier dist1']['class_weight'] = cls_weight
 PARAMS['lgbm classifier dist2'] = PARAMS['lgbm dist2'].copy()
 PARAMS['lgbm classifier dist2']['class_weight'] = cls_weight
 
-PARAMS['base xgb'] = {'verbosity': 0}
+PARAMS['base xgb'] = {'verbosity': 0,
+                      'objective': 'reg:squarederror'}
 
+PARAMS['base xgb classifier'] = PARAMS['base xgb'].copy()
+PARAMS['base xgb classifier']['objective'] = 'binary:logistic'
 
 PARAMS['xgb dist1'] =\
         {'verbosity': 0,
+         'objective': 'reg:squarederror',
          'n_estimators': ng.var.Scalar(int).bounded(3, 500),
          'min_child_weight': ng.var.Log(1e-5, 1e4),
          'subsample': ng.var.Scalar().bounded(.3, .95),
@@ -174,6 +179,7 @@ PARAMS['xgb dist1'] =\
                                                                     coeff=-1)}
 PARAMS['xgb dist2'] =\
         {'verbosity': 0,
+         'objective': 'reg:squarederror',
          'max_depth': ng.var.Scalar(int).bounded(2, 50),
          'learning_rate': ng.var.Scalar().bounded(.01, .5),
          'n_estimators': ng.var.Scalar(int).bounded(3, 500),
@@ -183,12 +189,22 @@ PARAMS['xgb dist2'] =\
 
 PARAMS['xgb dist3'] =\
         {'verbosity': 0,
+         'objective': 'reg:squarederror',
          'learning_rare': ng.var.Scalar().bounded(.005, .3),
          'min_child_weight': ng.var.Scalar().bounded(.5, 10),
          'max_depth': ng.var.Scalar(int).bounded(3, 10),
          'subsample': ng.var.Scalar().bounded(.5, 1),
          'colsample_bytree': ng.var.Scalar().bounded(.5, 1),
          'reg_alpha': ng.var.Log(.00001, 1)}
+
+PARAMS['xgb classifier dist1'] = PARAMS['xgb dist1'].copy()
+PARAMS['xgb classifier dist1']['objective'] = 'binary:logistic'
+
+PARAMS['xgb classifier dist2'] = PARAMS['xgb dist2'].copy()
+PARAMS['xgb classifier dist2']['objective'] = 'binary:logistic'
+
+PARAMS['xgb classifier dist3'] = PARAMS['xgb dist3'].copy()
+PARAMS['xgb classifier dist3']['objective'] = 'binary:logistic'
 
 PARAMS['base gp regressor'] = {'n_restarts_optimizer': 5,
                                'normalize_y': True}
@@ -337,6 +353,10 @@ PARAMS['single default'] = {'needs_split': False,
 
 PARAMS['bb default'] = PARAMS['single default'].copy()
 
+PARAMS['stacking default'] = {'needs_split': False,
+                              'single_estimator': False,
+                              'cv': 3}
+
 
 # Feat Importances
 PARAMS['base shap'] =\
@@ -355,7 +375,7 @@ PARAMS['base perm'] = {'perm__n_perm': 10}
 
 def get_base_params(str_indicator):
 
-        base_params = PARAMS[str_indicator].copy()
+        base_params = copy.deepcopy(PARAMS[str_indicator])
         return base_params
 
 

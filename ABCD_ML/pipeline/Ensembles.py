@@ -33,8 +33,10 @@ from sklearn.ensemble import VotingClassifier
 
 from copy import deepcopy
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import BaggingClassifier, BaggingRegressor
+from sklearn.ensemble import (BaggingClassifier, BaggingRegressor,
+                              AdaBoostRegressor, AdaBoostClassifier)
 from imblearn.ensemble import BalancedBaggingClassifier
+from sklearn.ensemble import StackingRegressor, StackingClassifier
 
 
 class Basic_Ensemble(VotingClassifier):
@@ -50,8 +52,16 @@ class Basic_Ensemble(VotingClassifier):
         self.n_classes_ = len(self.classes_)
 
         # Fit estimators
-        self.estimators_ = [estimator[1].fit(X, y, sample_weight)
-                            for estimator in self.estimators]
+        try:
+            self.estimators_ = [estimator[1].fit(X, y, sample_weight=sample_weight)
+                                for estimator in self.estimators]
+        
+        # Not best solution, but for regression models w/o sample weight param,
+        # the sample weight arg will break it. Think this solution will results
+        # in a worst case where estimators that don't fail will be fit again...
+        except TypeError:
+            self.estimators_ = [estimator[1].fit(X, y)
+                                for estimator in self.estimators]
 
         return self
         # return super().fit(X, y, sample_weight)
@@ -146,8 +156,13 @@ class DES_Ensemble(VotingClassifier):
                              stratify=y)
 
         # Fit estimators
-        self.estimators_ = [estimator[1].fit(X, y, sample_weight)
-                            for estimator in self.estimators]
+        # See Base Ensemble for why this implementation is bad
+        try:
+            self.estimators_ = [estimator[1].fit(X, y, sample_weight=sample_weight)
+                                for estimator in self.estimators]
+        except TypeError:
+            self.estimators_ = [estimator[1].fit(X, y)
+                                for estimator in self.estimators]
         # super().fit(X_train, y_train, sample_weight)
 
         self.ensemble_ = deepcopy(self.ensemble)
@@ -211,12 +226,16 @@ AVALIABLE = {
             'single best': 'single best',
             'stacked': 'stacked',
             'bagging': 'bagging classifier',
+            'adaboost': 'adaboost classifier',
             'balanced bagging': 'balanced bagging classifier',
+            'stacking': 'stacking classifier',
         },
         'regression': {
                 'basic ensemble': 'basic ensemble',
                 None: 'basic ensemble',
                 'bagging': 'bagging regressor',
+                'stacking': 'stacking regressor',
+                'adaboost': 'adaboost regressor',
         },
         'multilabel': {
                 'basic ensemble': 'basic ensemble',
@@ -252,8 +271,14 @@ ENSEMBLES = {
     'stacked': (StackedClassifier, ['des default']),
     'bagging classifier': (BaggingClassifier, ['single default']),
     'bagging regressor': (BaggingRegressor, ['single default']),
+    'adaboost classifier': (AdaBoostClassifier, ['single default']),
+    'adaboost regressor': (AdaBoostRegressor, ['single default']),
     'balanced bagging classifier': (BalancedBaggingClassifier,
                                     ['bb default']),
+    'stacking regressor': (StackingRegressor,
+                           ['stacking default']),
+    'stacking classifier': (StackingClassifier,
+                           ['stacking default']),
 }
 
 

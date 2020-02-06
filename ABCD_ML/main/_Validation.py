@@ -260,6 +260,7 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
             else:
                 self._print('!')
 
+            self._print('random_state:', random_state)
             self._print('Test split size:', test_size)
 
             self.train_subjects, self.test_subjects = self.CV.train_test_split(
@@ -280,7 +281,7 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         self.test_subjects = pd.Index(test_subjects,
                                       name=self.subject_id)
 
-    self._print('Performed train test split!')
+    self._print('Performed train test split')
     self._print('Train size:', len(self.train_subjects))
     self._print('Test size: ', len(self.test_subjects))
 

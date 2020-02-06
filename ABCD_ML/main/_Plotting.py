@@ -624,7 +624,7 @@ def _get_top_global(self, df, top_n, get_abs):
 
     to_get = list(range(top_n))
     if not get_abs:
-        to_get += [-i for i in range(top_n)][::-1]
+        to_get += [-i for i in range(1, top_n+1)][::-1]
 
     top = imps[to_get]
     feats = imps[to_get].index

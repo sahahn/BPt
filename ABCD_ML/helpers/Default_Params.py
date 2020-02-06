@@ -23,7 +23,7 @@ PARAMS['base logistic'] =\
          'multi_class': 'auto',
          'penalty': 'none',
          'class_weight': None,
-         'solver': 'liblinear'}
+         'solver': 'lbfgs'}
 
 # Ridge classifier
 PARAMS['base ridge'] = {'max_iter': 5000,
@@ -50,6 +50,7 @@ PARAMS['lasso regressor dist']['alpha'] = ng.var.Log(1e-3, 1e5)
 
 # Lasso classifier
 PARAMS['base lasso'] = PARAMS['base logistic'].copy()
+PARAMS['base lasso']['solver'] = 'liblinear'
 PARAMS['base lasso']['penalty'] = 'l1'
 
 PARAMS['lasso C'] = PARAMS['base lasso'].copy()

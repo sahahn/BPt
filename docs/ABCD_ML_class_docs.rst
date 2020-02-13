@@ -208,7 +208,6 @@ Show_Ensembles
 .. automethod:: ABCD_ML.Show_Ensembles
 
 
-
 *************
 Testing Phase
 *************
@@ -217,3 +216,19 @@ Test
 ========
 .. automethod:: ABCD_ML.Test
 
+Plot_Global_Feat_Importances
+=============================
+.. automethod:: ABCD_ML.Plot_Global_Feat_Importances
+
+Plot_Local_Feat_Importances
+=============================
+.. automethod:: ABCD_ML.Plot_Local_Feat_Importances
+
+
+*************
+Extras
+*************
+
+Save_Table
+=============
+.. automethod:: ABCD_ML.Save_Table

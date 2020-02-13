@@ -248,9 +248,7 @@ PARAMS['mlp dist es 1 layer']['early_stopping'] = True
 PARAMS['mlp dist es 1 layer']['n_iter_no_change'] =\
         ng.var.Scalar(int).bounded(5, 50)
 
-PARAMS['base linear svc'] = {'penalty': 'l2',
-                             'loss': 'squared hinge',
-                             'max_iter': 5000}
+PARAMS['base linear svc'] = {'max_iter': 5000}
 
 PARAMS['linear svc dist'] = PARAMS['base linear svc'].copy()
 PARAMS['linear svc dist']['C'] = ng.var.Log(1e-4, 1e4)

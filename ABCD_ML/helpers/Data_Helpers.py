@@ -522,16 +522,17 @@ def drop_duplicate_cols(data, corr_thresh, _print=print):
 
 def get_original_cat_names(names, encoder, original_key):
 
-    try:
-        float(names[0])
-        base = names
-    except ValueError:
-        base = [int(name.replace(original_key + '_', '')) for name in names]
-
     if isinstance(encoder, dict):
         original = [encoder[name] for name in names]
 
     else:
+
+        try:
+            float(names[0])
+            base = names
+        except ValueError:
+            base = [int(name.replace(original_key + '_', '')) for name in names]
+
         try:
             original = encoder.inverse_transform(base)
         except IndexError:

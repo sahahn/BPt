@@ -255,6 +255,43 @@ def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
     return None
 
 
+def _input_targets(self, targets):
+
+    if targets == 'SHOW_ALL':
+        targets = self._get_base_targets_names()
+
+    if not isinstance(targets, list):
+        targets = [targets]
+
+    targets = [self._get_targets_key(t) for t in targets]
+
+    return targets
+
+
+def _input_covars(self, covars):
+
+    if covars == 'SHOW_ALL':
+        covars = list(self.covars_encoders)
+
+    if not isinstance(covars, list):
+        covars = [covars]
+
+    return covars
+
+
+def _input_strat(self, strat):
+
+    if strat == 'SHOW_ALL':
+        strat = list(self.strat_encoders)
+
+    if not isinstance(strat, list):
+        strat = [strat]
+
+    strat = [self._add_strat_u_name(s) for s in strat]
+
+    return strat
+
+
 def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
                       show_only_overlap=True, subjects=None, show=True):
     '''This method displays some summary statistics about
@@ -287,8 +324,9 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
         (default = True)
 
     subjects : None, 'train', 'test' or array-like, optional
+        If None, plot all subjects. 
         If not None, then plot only the subjects loaded as train_subjects,
-        or as test subjects, of you can pass a custom list or array-like of
+        or as test subjects, or you can pass a custom list or array-like of
         subjects.
 
         (default = None)
@@ -308,15 +346,10 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
     else:
         targets_df = self._proc_subjects(self.targets, subjects)
 
-    if targets == 'SHOW_ALL':
-        targets = self._get_base_targets_names()
-
-    if not isinstance(targets, list):
-        targets = [targets]
+    targets = self._input_targets(targets)
 
     for target in targets:
 
-        target = self._get_targets_key(target)
         self._show_single_dist(target, targets_df, self.targets_encoders,
                                cat_show_original_name, show)
         self._print()
@@ -373,11 +406,7 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
     else:
         covars_df = self._proc_subjects(self.covars, subjects)
 
-    if covars == 'SHOW_ALL':
-        covars = list(self.covars_encoders)
-
-    if not isinstance(covars, list):
-        covars = [covars]
+    covars = self._input_covars(covars)
 
     for covar in covars:
         self._show_single_dist(covar, covars_df, self.covars_encoders,
@@ -435,13 +464,7 @@ def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
     else:
         strat_df = self._proc_subjects(self.strat, subjects)
 
-    if strat == 'SHOW_ALL':
-        strat = list(self.strat_encoders)
-
-    if not isinstance(strat, list):
-        strat = [strat]
-
-    strat = [self._add_strat_u_name(s) for s in strat]
+    strat = self._input_strat(strat)
 
     for s in strat:
         self._show_single_dist(s, strat_df, self.strat_encoders,
@@ -449,8 +472,9 @@ def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
         self._print()
 
 
-def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
-                      show=True):
+def _get_single_df(self, name, df, all_encoders):
+
+    dropped_name = None
 
     try:
         encoder = all_encoders[name]
@@ -465,23 +489,14 @@ def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
 
     # Regression
     if encoder is None:
-
         single_df = df[[name]].copy()
-        self._show_dist(single_df, plot_key=name,
-                        cat_show_original_name=cat_show_original_name,
-                        encoder=encoder, original_key=name, show=show)
 
     # Multilabel
     elif isinstance(encoder, list):
         single_df = df[encoder].copy()
-        self._show_dist(single_df, plot_key=name,
-                        cat_show_original_name=cat_show_original_name,
-                        encoder=encoder, original_key=name, show=show)
 
     # Binary/ordinal or one-hot/dummy
     else:
-
-        dropped_name = None
 
         # One-hot / dummy
         if isinstance(encoder, tuple):
@@ -516,9 +531,55 @@ def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
         else:
             single_df = df[[name]].copy()
 
-        self._show_dist(single_df, name, cat_show_original_name,
-                        encoder=encoder, original_key=name,
-                        dropped_name=dropped_name, show=show)
+    return single_df, encoder, dropped_name
+
+
+def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
+                      show=True):
+
+    single_df, encoder, dropped_name = self._get_single_df(name, df, all_encoders)
+
+    self._show_dist(single_df, plot_key=name,
+                    cat_show_original_name=cat_show_original_name,
+                    encoder=encoder, original_key=name,
+                    dropped_name=dropped_name, show=show)
+
+
+def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
+
+     # One-hot
+    if isinstance(encoder, tuple):
+        encoder = encoder[0]
+        sums = df.sum()
+
+    # Multilabel
+    elif isinstance(encoder, list):
+        cat_show_original_name = False
+        sums = df.sum()
+
+    # Binary/ordinal
+    else:
+        unique, counts = np.unique(df, return_counts=True)
+        sums = pd.Series(counts, unique)
+
+    display_df = pd.DataFrame(sums, columns=['Counts'])
+    display_df.index.name = 'Internal Name'
+    display_df['Frequency'] = sums / len(df)
+
+    original_names = None
+    if cat_show_original_name:
+
+        original_names = get_original_cat_names(sums.index,
+                                                encoder,
+                                                name)
+
+        display_df['Original Name'] = original_names
+        display_df = display_df[['Original Name', 'Counts', 'Frequency']]
+
+    else:
+        display_df = display_df[['Counts', 'Frequency']]
+
+    return display_df, sums, original_names
 
 
 def _show_dist(
@@ -548,37 +609,9 @@ def _show_dist(
     # Binary/ordinal or one-hot
     else:
 
-        # One-hot
-        if isinstance(encoder, tuple):
-            encoder = encoder[0]
-            sums = no_nan_data.sum()
-
-        # Multilabel
-        elif isinstance(encoder, list):
-            cat_show_original_name = False
-            sums = no_nan_data.sum()
-
-        # Binary/ordinal
-        else:
-            unique, counts = np.unique(no_nan_data, return_counts=True)
-            sums = pd.Series(counts, unique)
-
-        display_df = pd.DataFrame(sums, columns=['Counts'])
-        display_df.index.name = 'Internal Name'
-        display_df['Frequency'] = sums / len(no_nan_data)
-
-        if cat_show_original_name:
-
-            original_names = get_original_cat_names(sums.index,
-                                                    encoder,
-                                                    original_key)
-
-            display_df['Original Name'] = original_names
-            display_df = display_df[['Original Name', 'Counts', 'Frequency']]
-
-        else:
-            display_df = display_df[['Counts', 'Frequency']]
-
+        display_df, sums, original_names =\
+            self._get_cat_display_df(no_nan_data, encoder, original_key, cat_show_original_name)
+        
         self._display_df(display_df)
 
         if dropped_name is not None:

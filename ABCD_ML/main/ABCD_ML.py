@@ -465,10 +465,15 @@ class ABCD_ML():
     from ._Plotting import (_plot,
                             _proc_subjects,
                             Show_Data_Dist,
+                            _input_targets,
+                            _input_covars,
+                            _input_strat,
                             Show_Targets_Dist,
                             Show_Covars_Dist,
                             Show_Strat_Dist,
+                            _get_single_df,
                             _show_single_dist,
+                            _get_cat_display_df,
                             _show_dist,
                             _display_df,
                             _get_top_global,
@@ -477,3 +482,8 @@ class ABCD_ML():
                             _plot_global_feat_importances,
                             Plot_Local_Feat_Importances,
                             _plot_shap_summary)
+
+    from ._Tables import (Save_Table,
+                          _get_single_dfs,
+                          _get_table_contents,
+                          _get_group_titles)

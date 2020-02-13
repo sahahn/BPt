@@ -13,3 +13,4 @@ tqdm
 nevergrad>=0.3.0
 Ipython
 joblib
+python-docx

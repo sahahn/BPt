@@ -1,0 +1,1 @@
+This folder contains full worked examples, from loading, model exploration to differing levels of final testing / looking at feature importance ect... Note: some examples may be less developed then others/

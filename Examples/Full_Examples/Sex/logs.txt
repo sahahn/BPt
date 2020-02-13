@@ -1,0 +1,500 @@
+ABCD_ML object loaded from save!
+Default ML params set within self.default_ML_params.
+----------------------
+problem_type: binary
+target: 0
+model: linear
+metric: ['matthews', 'roc auc']
+imputer: ['mean', 'median']
+imputer_scope: ['float', 'categorical']
+scaler: robust
+scaler_scope: all
+sampler: None
+sample_on: targets
+feat_selector: None
+splits: 3
+n_repeats: 2
+search_splits: 3
+ensemble: basic ensemble
+ensemble_split: 0.2
+search_type: None
+model_params: 0
+imputer_params: 0
+scaler_params: 0
+sampler_params: 0
+feat_selector_params: 0
+ensemble_params: 0
+n_jobs: 8
+search_n_iter: 30
+feats_to_use: all
+subjects_to_use: all
+compute_train_score: False
+random_state: 1
+feat_importances: base
+feat_importances_params: 0
+cache: None
+extra_params: {}
+
+Default ML verbosity set within self.ML_verbosity.
+----------------------
+save_results: False
+progress_bar: True
+show_init_params: True
+fold_name: False
+time_per_fold: False
+score_per_fold: False
+fold_sizes: False
+best_params: False
+save_to_logs: False
+
+Running Evaluate with:
+target = 0
+problem_type = binary
+model = dt
+model_params = 0
+metric = ['matthews', 'roc auc']
+imputer = ['mean', 'median']
+imputer_scope = ['float', 'categorical']
+imputer_params = 0
+scaler = robust
+scaler_scope = all
+scaler_params = 0
+sampler = None
+feat_selector = None
+splits = 3
+n_repeats = 2
+search_type = None
+n_jobs = 8
+feats_to_use = all
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+feat_importances = base
+feat_importances_params = 0
+cache = None
+extra_params = {}
+
+Saving scores and settings with unique name: dt
+
+
+Validation Scores
+_________________
+Metric:  matthews
+Mean Validation score:  0.2683475435686058
+Macro Std in Validation score:  0.009360092110831608
+Micro Std in Validation score:  0.015811476496292783
+
+Metric:  macro roc auc
+Mean Validation score:  0.6340939389133602
+Macro Std in Validation score:  0.004851201553506046
+Micro Std in Validation score:  0.007856714575581838
+
+Running Evaluate with:
+target = 0
+problem_type = binary
+model = dt
+model_params = 0
+metric = ['matthews', 'roc auc']
+imputer = ['mean', 'median']
+imputer_scope = ['float', 'categorical']
+imputer_params = 0
+scaler = robust
+scaler_scope = all
+scaler_params = 0
+sampler = None
+feat_selector = None
+splits = 3
+n_repeats = 2
+search_type = None
+n_jobs = 8
+feats_to_use = smri_thick_cort
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+feat_importances = base
+feat_importances_params = 0
+cache = None
+extra_params = {}
+
+Saving scores and settings with unique name: dt0
+
+
+Validation Scores
+_________________
+Metric:  matthews
+Mean Validation score:  0.10288934103214717
+Macro Std in Validation score:  0.006939860779901913
+Micro Std in Validation score:  0.014700895023449515
+
+Metric:  macro roc auc
+Mean Validation score:  0.5514749284316858
+Macro Std in Validation score:  0.0034956611834954243
+Micro Std in Validation score:  0.007465433870493032
+
+Default ML params set within self.default_ML_params.
+----------------------
+problem_type: binary
+target: 0
+model: linear
+metric: ['matthews', 'roc auc']
+imputer: ['mean', 'median']
+imputer_scope: ['float', 'categorical']
+scaler: robust
+scaler_scope: all
+sampler: None
+sample_on: targets
+feat_selector: None
+splits: 3
+n_repeats: 2
+search_splits: 3
+ensemble: basic ensemble
+ensemble_split: 0.2
+search_type: None
+model_params: 0
+imputer_params: 0
+scaler_params: 0
+sampler_params: 0
+feat_selector_params: 0
+ensemble_params: 0
+n_jobs: 8
+search_n_iter: 30
+feats_to_use: smri_thick_cort
+subjects_to_use: all
+compute_train_score: False
+random_state: 1
+feat_importances: base
+feat_importances_params: 0
+cache: None
+extra_params: {}
+
+Running Evaluate with:
+target = 0
+problem_type = binary
+model = linear
+model_params = 0
+metric = ['matthews', 'roc auc']
+imputer = ['mean', 'median']
+imputer_scope = ['float', 'categorical']
+imputer_params = 0
+scaler = robust
+scaler_scope = all
+scaler_params = 0
+sampler = None
+feat_selector = None
+splits = 3
+n_repeats = 2
+search_type = None
+n_jobs = 8
+feats_to_use = smri_thick_cort
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+feat_importances = base
+feat_importances_params = 0
+cache = None
+extra_params = {}
+
+Saving scores and settings with unique name: linear
+
+
+Validation Scores
+_________________
+Metric:  matthews
+Mean Validation score:  0.4501200997626447
+Macro Std in Validation score:  0.0003444159383081402
+Micro Std in Validation score:  0.020145329126788968
+
+Metric:  macro roc auc
+Mean Validation score:  0.799126199084655
+Macro Std in Validation score:  0.0009774369646383119
+Micro Std in Validation score:  0.006374457580611404
+
+Running Evaluate with:
+target = 0
+problem_type = binary
+model = light gbm
+model_params = 0
+metric = ['matthews', 'roc auc']
+imputer = ['mean', 'median']
+imputer_scope = ['float', 'categorical']
+imputer_params = 0
+scaler = robust
+scaler_scope = all
+scaler_params = 0
+sampler = None
+feat_selector = None
+splits = 3
+n_repeats = 2
+search_type = None
+n_jobs = 8
+feats_to_use = smri_thick_cort
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+feat_importances = base
+feat_importances_params = 0
+cache = None
+extra_params = {}
+
+Saving scores and settings with unique name: light gbm
+
+
+Validation Scores
+_________________
+Metric:  matthews
+Mean Validation score:  0.3936680921522542
+Macro Std in Validation score:  0.006451907854857081
+Micro Std in Validation score:  0.0074364808502178055
+
+Metric:  macro roc auc
+Mean Validation score:  0.7666267941383991
+Macro Std in Validation score:  0.0033436090040682154
+Micro Std in Validation score:  0.003927057357564146
+
+Running Evaluate with:
+target = 0
+problem_type = binary
+model = light gbm
+model_params = 1
+metric = ['matthews', 'roc auc']
+imputer = ['mean', 'median']
+imputer_scope = ['float', 'categorical']
+imputer_params = 0
+scaler = robust
+scaler_scope = all
+scaler_params = 0
+sampler = None
+feat_selector = None
+splits = 3
+n_repeats = 2
+search_type = RandomSearch
+search_splits = 3
+search_n_iter = 50
+n_jobs = 8
+feats_to_use = smri_thick_cort
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+feat_importances = base
+feat_importances_params = 0
+cache = None
+extra_params = {}
+
+Saving scores and settings with unique name: light gbm0
+
+
+Validation Scores
+_________________
+Metric:  matthews
+Mean Validation score:  0.39953399824850766
+Macro Std in Validation score:  0.0039937801599700395
+Micro Std in Validation score:  0.011921337577818035
+
+Metric:  macro roc auc
+Mean Validation score:  0.7759234003344817
+Macro Std in Validation score:  0.001727980816549235
+Micro Std in Validation score:  0.005536055015508279
+
+Running Evaluate with:
+target = 0
+problem_type = binary
+model = elastic
+model_params = 0
+metric = ['matthews', 'roc auc']
+imputer = ['mean', 'median']
+imputer_scope = ['float', 'categorical']
+imputer_params = 0
+scaler = robust
+scaler_scope = all
+scaler_params = 0
+sampler = None
+feat_selector = None
+splits = 3
+n_repeats = 2
+search_type = None
+n_jobs = 8
+feats_to_use = smri_thick_cort
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+feat_importances = base
+feat_importances_params = 0
+cache = None
+extra_params = {}
+
+Saving scores and settings with unique name: elastic
+
+
+Validation Scores
+_________________
+Metric:  matthews
+Mean Validation score:  0.4497798198677264
+Macro Std in Validation score:  0.001795864409937259
+Micro Std in Validation score:  0.0209873415056206
+
+Metric:  macro roc auc
+Mean Validation score:  0.7991378108314878
+Macro Std in Validation score:  0.0008468454925676383
+Micro Std in Validation score:  0.006270275416931483
+
+Running Evaluate with:
+target = 0
+problem_type = binary
+model = elastic
+model_params = 1
+metric = ['matthews', 'roc auc']
+imputer = ['mean', 'median']
+imputer_scope = ['float', 'categorical']
+imputer_params = 0
+scaler = robust
+scaler_scope = all
+scaler_params = 0
+sampler = None
+feat_selector = None
+splits = 3
+n_repeats = 2
+search_type = RandomSearch
+search_splits = 3
+search_n_iter = 50
+n_jobs = 8
+feats_to_use = smri_thick_cort
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+feat_importances = base
+feat_importances_params = 0
+cache = None
+extra_params = {}
+
+Saving scores and settings with unique name: elastic0
+
+
+Validation Scores
+_________________
+Metric:  matthews
+Mean Validation score:  0.4479286208420009
+Macro Std in Validation score:  0.0023887935450380704
+Micro Std in Validation score:  0.015505807157327299
+
+Metric:  macro roc auc
+Mean Validation score:  0.799166678070153
+Macro Std in Validation score:  0.0007727970347887192
+Micro Std in Validation score:  0.00587596987336306
+
+Running Evaluate with:
+target = 0
+problem_type = binary
+model = linear svm
+model_params = 1
+metric = ['matthews', 'roc auc']
+imputer = ['mean', 'median']
+imputer_scope = ['float', 'categorical']
+imputer_params = 0
+scaler = robust
+scaler_scope = all
+scaler_params = 0
+sampler = None
+feat_selector = None
+splits = 3
+n_repeats = 2
+search_type = RandomSearch
+search_splits = 3
+search_n_iter = 50
+n_jobs = 8
+feats_to_use = smri_thick_cort
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+feat_importances = base
+feat_importances_params = 0
+cache = None
+extra_params = {}
+
+Saving scores and settings with unique name: linear svm
+
+Running Evaluate with:
+target = 0
+problem_type = binary
+model = svm
+model_params = 1
+metric = ['matthews', 'roc auc']
+imputer = ['mean', 'median']
+imputer_scope = ['float', 'categorical']
+imputer_params = 0
+scaler = robust
+scaler_scope = all
+scaler_params = 0
+sampler = None
+feat_selector = None
+splits = 3
+n_repeats = 2
+search_type = RandomSearch
+search_splits = 3
+search_n_iter = 50
+n_jobs = 8
+feats_to_use = smri_thick_cort
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+feat_importances = base
+feat_importances_params = 0
+cache = None
+extra_params = {}
+
+Saving scores and settings with unique name: svm
+
+
+Validation Scores
+_________________
+Metric:  matthews
+Mean Validation score:  0.4437245520646128
+Macro Std in Validation score:  0.0004493425908519977
+Micro Std in Validation score:  0.01661405071463136
+
+Metric:  macro roc auc
+Mean Validation score:  0.7996433408827077
+Macro Std in Validation score:  0.0012857913900291007
+Micro Std in Validation score:  0.005459957276203
+
+Running Evaluate with:
+target = 0
+problem_type = binary
+model = logistic
+model_params = 0
+metric = ['matthews', 'roc auc']
+imputer = ['mean', 'median']
+imputer_scope = ['float', 'categorical']
+imputer_params = 0
+scaler = ['robust', 'minmax']
+scaler_scope = all
+scaler_params = 0
+sampler = None
+feat_selector = None
+splits = 3
+n_repeats = 2
+search_type = None
+n_jobs = 8
+feats_to_use = smri_thick_cort
+subjects_to_use = all
+compute_train_score = False
+random_state = 1
+feat_importances = base
+feat_importances_params = 0
+cache = None
+extra_params = {}
+
+Saving scores and settings with unique name: logistic
+
+
+Validation Scores
+_________________
+Metric:  matthews
+Mean Validation score:  0.4503173243455757
+Macro Std in Validation score:  0.00014719135537713535
+Micro Std in Validation score:  0.02026001550691148
+
+Metric:  macro roc auc
+Mean Validation score:  0.7991211533163669
+Macro Std in Validation score:  0.0009668276800193776
+Micro Std in Validation score:  0.006369157676121579
+

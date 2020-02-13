@@ -27,19 +27,20 @@ Load
 ====
 .. automethod:: ABCD_ML.main.ABCD_ML.Load
 
+To init params as referenced above are those listed here under Init.
+
 Init
 ============
 
 .. currentmodule:: ABCD_ML
 .. autoclass:: ABCD_ML
 
-Save
-======
-.. automethod:: ABCD_ML.Save
-
 ******************
 Loading Phase
 ******************
+
+The next 'phase', is the where all of the loading is done, and the structure of the
+desired expiriments set up.
 
 Set_Default_Load_Params
 =======================
@@ -228,6 +229,10 @@ Plot_Local_Feat_Importances
 *************
 Extras
 *************
+
+Save
+======
+.. automethod:: ABCD_ML.Save
 
 Save_Table
 =============

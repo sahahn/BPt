@@ -203,7 +203,7 @@ METRICS = {
     'r2': {'score_func': M.r2_score, 'greater_is_better': True},
 
     'neg mean squared error': {'score_func': M.mean_squared_error,
-                           'greater_is_better': False},
+                               'greater_is_better': False},
 
     'explained variance': {'score_func': M.explained_variance_score,
                            'greater_is_better': True},
@@ -220,48 +220,48 @@ METRICS = {
                                   'greater_is_better': False},
 
     'macro roc auc': {'score_func': roc_auc_score_wrapper,
-                      'greater_is_better': True, 'needs_proba': True,
+                      'greater_is_better': True, 'needs_threshold': True,
                       'average': 'macro'},
 
     'micro roc auc': {'score_func': roc_auc_score_wrapper,
-                      'greater_is_better': True, 'needs_proba': True,
+                      'greater_is_better': True, 'needs_threshold': True,
                       'average': 'micro'},
 
     'weighted roc auc': {'score_func': roc_auc_score_wrapper,
-                         'greater_is_better': True, 'needs_proba': True,
+                         'greater_is_better': True, 'needs_threshold': True,
                          'average': 'weighted'},
 
     'samples roc auc': {'score_func': roc_auc_score_wrapper,
-                        'greater_is_better': True, 'needs_proba': True,
+                        'greater_is_better': True, 'needs_threshold': True,
                         'average': 'samples'},
 
     'by class roc auc': {'score_func': roc_auc_score_wrapper,
-                         'greater_is_better': True, 'needs_proba': True,
+                         'greater_is_better': True, 'needs_threshold': True,
                          'average': None},
 
     'multiclass weighted roc auc': {'score_func': roc_auc_score_wrapper,
                                     'greater_is_better': True,
-                                    'needs_proba': True, 'average': 'weighted',
+                                    'needs_threshold': True, 'average': 'weighted',
                                     'multiclass': True},
 
     'multiclass macro roc auc': {'score_func': roc_auc_score_wrapper,
                                  'greater_is_better': True,
-                                 'needs_proba': True, 'average': 'macro',
+                                 'needs_threshold': True, 'average': 'macro',
                                  'multiclass': True},
 
     'multiclass micro roc auc': {'score_func': roc_auc_score_wrapper,
                                  'greater_is_better': True,
-                                 'needs_proba': True, 'average': 'micro',
+                                 'needs_threshold': True, 'average': 'micro',
                                  'multiclass': True},
 
     'multiclass samples roc auc': {'score_func': roc_auc_score_wrapper,
                                    'greater_is_better': True,
-                                   'needs_proba': True, 'average': 'samples',
+                                   'needs_threshold': True, 'average': 'samples',
                                    'multiclass': True},
 
     'multiclass by class roc auc': {'score_func': roc_auc_score_wrapper,
                                     'greater_is_better': True,
-                                    'needs_proba': True, 'average': None,
+                                    'needs_threshold': True, 'average': None,
                                     'multiclass': True},
 
     'balanced accuracy': {'score_func': M.balanced_accuracy_score,
@@ -326,47 +326,47 @@ METRICS = {
 
     'macro average precision': {
         'score_func': average_precision_score_wrapper,
-        'greater_is_better': True, 'needs_proba': True, 'average': 'macro'},
+        'greater_is_better': True, 'needs_threshold': True, 'average': 'macro'},
 
     'micro average precision': {
         'score_func': average_precision_score_wrapper,
-        'greater_is_better': True, 'needs_proba': True, 'average': 'micro'},
+        'greater_is_better': True, 'needs_threshold': True, 'average': 'micro'},
 
     'weighted average precision': {
         'score_func': average_precision_score_wrapper,
-        'greater_is_better': True, 'needs_proba': True, 'average': 'weighted'},
+        'greater_is_better': True, 'needs_threshold': True, 'average': 'weighted'},
 
     'samples average precision': {
         'score_func': average_precision_score_wrapper,
-        'greater_is_better': True, 'needs_proba': True, 'average': 'samples'},
+        'greater_is_better': True, 'needs_threshold': True, 'average': 'samples'},
 
     'by class average precision': {
         'score_func': average_precision_score_wrapper,
-        'greater_is_better': True, 'needs_proba': True, 'average': None},
+        'greater_is_better': True, 'needs_threshold': True, 'average': None},
 
     'multiclass macro average precision': {
         'score_func': average_precision_score_wrapper,
-        'greater_is_better': True, 'needs_proba': True, 'average': 'macro',
+        'greater_is_better': True, 'needs_threshold': True, 'average': 'macro',
         'multiclass': True},
 
     'multiclass micro average precision': {
         'score_func': average_precision_score_wrapper,
-        'greater_is_better': True, 'needs_proba': True, 'average': 'micro',
+        'greater_is_better': True, 'needs_threshold': True, 'average': 'micro',
         'multiclass': True},
 
     'multiclass weighted average precision': {
         'score_func': average_precision_score_wrapper,
-        'greater_is_better': True, 'needs_proba': True, 'average': 'weighted',
+        'greater_is_better': True, 'needs_threshold': True, 'average': 'weighted',
         'multiclass': True},
 
     'multiclass samples average precision': {
         'score_func': average_precision_score_wrapper,
-        'greater_is_better': True, 'needs_proba': True, 'average': 'samples',
+        'greater_is_better': True, 'needs_threshold': True, 'average': 'samples',
         'multiclass': True},
 
     'multiclass by class average precision': {
         'score_func': average_precision_score_wrapper,
-        'greater_is_better': True, 'needs_proba': True, 'average': None,
+        'greater_is_better': True, 'needs_threshold': True, 'average': None,
         'multiclass': True},
 
     'neg brier': {'score_func': M.brier_score_loss,
@@ -374,7 +374,7 @@ METRICS = {
                   'needs_proba': True},
 
     'neg hamming': {'score_func': M.hamming_loss, 'greater_is_better': False,
-                    'needs_proba': False},
+                    'needs_threshold': False},
 
     'jaccard': {'score_func': jaccard_score_wrapper,
                 'greater_is_better': True},

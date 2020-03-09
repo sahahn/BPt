@@ -77,3 +77,8 @@ class NevergradSearchCV():
 
     def predict_proba(self, X):
         return self.best_estimator_.predict_proba(X)
+
+    def decision_function(self, X):
+        return self.best_estimator_.decision_function(X)
+
+    

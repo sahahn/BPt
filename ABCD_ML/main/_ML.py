@@ -1781,7 +1781,7 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits, weight_met
                 self._print('Target class: ', class_name)
                 self._print_summary_score(name, summary_scores,
                                           ML_params['n_repeats'], run_name,
-                                          metric_name, class_name)
+                                          metric_name, class_name, weights=weights)
 
             all_summary_scores.append(summary_scores_by_class)
 
@@ -1795,7 +1795,7 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits, weight_met
 
             self._print_summary_score(name, summary_scores,
                                       ML_params['n_repeats'], run_name,
-                                      metric_name)
+                                      metric_name, weights=weights)
 
             all_summary_scores.append(summary_scores)
 
@@ -1803,12 +1803,16 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits, weight_met
 
 
 def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
-                         metric_name, class_name=None):
+                         metric_name, class_name=None, weights=None):
     '''Besides printing, also adds scores to self.eval_scores dict
     under run name.'''
 
-    self._print('Mean ' + name + ' score: ', summary_scores[0])
-    self._add_to_scores(run_name, name, metric_name, 'Mean',
+    mn = 'Mean'
+    if weights is not None:
+        mn = 'Weighted ' + mn
+
+    self._print(mn + ' ' + name + ' score: ', summary_scores[0])
+    self._add_to_scores(run_name, name, metric_name, mn,
                         summary_scores[0], self.eval_scores,  class_name)
 
     if n_repeats > 1:

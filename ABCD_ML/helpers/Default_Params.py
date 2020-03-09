@@ -27,12 +27,13 @@ PARAMS['base logistic'] =\
 
 # Ridge classifier
 PARAMS['base ridge'] = {'max_iter': 5000,
-                        'solver': 'lsqr'}
+                        'penalty': 'l2',
+                        'solver': 'saga'}
 
 PARAMS['ridge C'] =\
         {'max_iter': 5000,
-         'solver': 'lsqr',
-         'alpha': ng.var.Log(1e-3, 1e5),
+         'solver': 'saga',
+         'C': ng.var.Log(1e-5, 1e3),
          'class_weight': cls_weight}
 
 PARAMS['ridge C extra'] = PARAMS['ridge C'].copy()
@@ -260,6 +261,21 @@ PARAMS['base linear svr'] = {'loss': 'epsilon_insensitive',
 PARAMS['linear svr dist'] = PARAMS['base linear svr'].copy()
 PARAMS['linear svr dist']['C'] = ng.var.Log(1e-4, 1e4)
 
+PARAMS['base sgd'] = {'loss': 'hinge'}
+PARAMS['sgd classifier'] =\
+        {'loss': ng.var.UnorderedDiscrete(['hinge', 'log', 'modified_huber',
+                                           'squared_hinge', 'perceptron']),
+         'penalty': ng.var.UnorderedDiscrete(['l2', 'l1', 'elasticnet']),
+         'alpha': ng.var.Log(1e-5, 1e2),
+         'l1_ratio': ng.var.Scalar().bounded(0, 1),
+         'max_iter': 5000,
+         'learning_rate': ng.var.UnorderedDiscrete(['optimal', 'invscaling', 'adaptive', 'constant']),
+         'eta0': ng.var.Log(1e-6, 1e3),
+         'power_t': ng.var.Scalar().bounded(.1, .9),
+         'early_stopping': ng.var.UnorderedDiscrete([False, True]),
+         'validation_fraction': ng.var.Scalar().bounded(.05, .5),
+         'n_iter_no_change': ng.var.Scalar(int).bounded(2, 20),
+         'class_weight': cls_weight}
 
 # Scalers
 PARAMS['base standard'] = {'with_mean': True,

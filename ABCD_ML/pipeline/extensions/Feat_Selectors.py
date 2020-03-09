@@ -28,8 +28,15 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
         self.mask=mask
 
     def fit(self, X, y=None):
-        
-        self.mask = np.array(self.mask) > .5
+
+        self.mask = np.array(self.mask)
+
+        threshold = .5
+        while np.sum(self.mask >= threshold) == 0:
+            threshold -= .001
+
+        self.mask = self.mask >= threshold
+
         return self
     
     def _get_support_mask(self):

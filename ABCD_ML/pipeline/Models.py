@@ -15,7 +15,7 @@ from sklearn.ensemble import (GradientBoostingClassifier, AdaBoostClassifier,
                               RandomForestRegressor, RandomForestClassifier)
 from sklearn.linear_model import (LogisticRegression, ElasticNet,
                                   LinearRegression, HuberRegressor,
-                                  Lasso, Ridge, RidgeClassifier)
+                                  Lasso, Ridge, RidgeClassifier, SGDClassifier)
 
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
@@ -38,6 +38,7 @@ AVALIABLE = {
                         'svm':                'svm classifier',
                         'linear svm':         'linear svm classifier',
                         'mlp':                'mlp classifier',
+                        'sgd':                'sgd classifier',
         },
         'regression': {
                         'linear':             'linear regressor',
@@ -72,8 +73,8 @@ MODELS = {
     'lasso logistic': (LogisticRegression, ['base lasso', 'lasso C',
                                             'lasso C extra']),
 
-    'ridge logistic': (RidgeClassifier, ['base ridge', 'ridge C',
-                                         'ridge C extra']),
+    'ridge logistic': (LogisticRegression, ['base ridge', 'ridge C',
+                                            'ridge C extra']),
 
     'elastic net logistic': (LogisticRegression, ['base elastic',
                                                   'elastic classifier',
@@ -118,9 +119,10 @@ MODELS = {
 
     'linear svm classifier': (LinearSVC, ['base linear svc',
                                           'linear svc dist']),
-
     'linear svm regressor': (LinearSVR, ['base linear svr',
                                          'linear svr dist']),
+
+    'sgd classifier': (SGDClassifier, ['base sgd', 'sgd classifier']),
     }
 
 try:

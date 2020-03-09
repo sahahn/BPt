@@ -179,6 +179,7 @@ class Model_Pipeline():
         # Un-pack ML_params
         self.model_strs = conv_to_list(ML_params['model'])
         self.metric_strs = conv_to_list(ML_params['metric'])
+        self.weight_metric = conv_to_list(ML_params['weight_metric'])[0]
         self.imputer_strs = conv_to_list(ML_params['imputer'])
         self.imputer_scopes = conv_to_list(ML_params['imputer_scope'])
         self.scaler_strs = conv_to_list(ML_params['scaler'])
@@ -1110,8 +1111,12 @@ class Model_Pipeline():
             folds_bar = self.progress_bar(total=self.n_splits,
                                           desc='Folds')
 
+        self.n_test_per_fold = []
+
         # For each split with the repeated K-fold
         for train_subjects, test_subjects in subject_splits:
+
+            self.n_test_per_fold.append(len(test_subjects))
 
             # Fold name verbosity
             repeat = str((fold_ind // self.n_splits) + 1)
@@ -1705,8 +1710,9 @@ class Model_Pipeline():
         search_params = {}
         search_params['optimizer_name'] = self.search_type
         search_params['estimator'] = model
-        search_params['cv'] = search_cv
         search_params['scoring'] = self.metric
+        search_params['cv'] = search_cv
+        search_params['weight_metric'] = self.weight_metric
         search_params['n_jobs'] = self.n_jobs
         search_params['n_iter'] = self.search_n_iter
         search_params['random_state'] = self.random_state

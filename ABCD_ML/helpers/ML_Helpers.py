@@ -10,7 +10,7 @@ from .Default_Params import get_base_params, proc_params, show
 import subprocess
 
 
-def compute_macro_micro(scores, n_repeats, n_splits):
+def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
     '''Compute and return scores, as computed froma repeated k-fold.
 
     Parameters
@@ -37,8 +37,13 @@ def compute_macro_micro(scores, n_repeats, n_splits):
         The standard deviation of the micro score
     '''
 
-    scores = np.array(scores)
-    macro_scores = np.mean(np.reshape(scores, (n_repeats, n_splits)), axis=1)
+    r_scores = np.reshape(np.array(scores), (n_repeats, n_splits))
+
+    if weights is None:
+        macro_scores = np.mean(r_scores, axis=1)
+    else:
+        r_weights = np.reshape(np.array(weights), (n_repeats, n_splits))
+        macro_scores = np.average(r_scores, weights=r_weights, axis=1)
 
     return (np.mean(macro_scores), np.std(macro_scores),
             np.std(scores))
@@ -53,13 +58,13 @@ def is_array_like(in_val):
         return False
 
 
-def conv_to_list(in_val):
+def conv_to_list(in_val, amt=1):
 
     if in_val is None:
         return None
 
     if not is_array_like(in_val):
-        in_val = [in_val]
+        in_val = [in_val for i in range(amt)]
 
     return in_val
 

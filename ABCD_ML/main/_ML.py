@@ -11,7 +11,7 @@ import pickle as pkl
 from tqdm import tqdm, tqdm_notebook
 
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
-from ..helpers.ML_Helpers import compute_macro_micro
+from ..helpers.ML_Helpers import compute_macro_micro, conv_to_list
 from ..pipeline.Model_Pipeline import (Regression_Model_Pipeline,
                                        Binary_Model_Pipeline,
                                        Categorical_Model_Pipeline,
@@ -20,7 +20,7 @@ from ..pipeline.Model_Pipeline import (Regression_Model_Pipeline,
 
 def Set_Default_ML_Params(self, problem_type='default', target='default',
                           model='default', model_params='default',
-                          metric='default', imputer='default',
+                          metric='default', weight_metric='default', imputer='default',
                           imputer_scope='default', imputer_params='default',
                           scaler='default', scaler_scope='default',
                           scaler_params='default', sampler='default',
@@ -30,7 +30,8 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
                           ensemble_split='default', ensemble_params='default',
                           splits='default', n_repeats='default',
                           search_type='default', search_splits='default',
-                          search_n_iter='default', feats_to_use='default',
+                          search_n_iter='default',
+                          feats_to_use='default',
                           subjects_to_use='default',
                           feat_importances='default',
                           feat_importances_params='default',
@@ -123,6 +124,25 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         - 'categorical' : 'macro f1'
         - 'multilabel' : 'macro roc auc'
 
+        (default = 'default')
+
+    weight_metric : bool, list of bool or 'default', optional
+        If True, then the metric of interest will be weighted within
+        each repeated fold by the number of subjects in that validation set.
+        This parameter only makes sense for custom split behavior where 
+        validation folds end up with different sizes. When default CV schemes are
+        used there is no point weighting by very simmilar numbers.
+
+        If you are passing mutiple metrics, then you can also pass a 
+        list of values for weight_metric, with each value as True or False
+        as to if the corresponding metric by index should be weighted.
+
+        As a reminder, the first metric specified will be used as the
+        parameter to optimize if a hyperparameter search is conducted.
+        Likewise, if it is specified that the first metric be weighted,
+        then the weighted metric will be used in the hyper-param search!
+
+        If 'default', and not already defined, set to False
         (default = 'default')
 
     imputer : str, list or None, optional
@@ -720,6 +740,11 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     elif 'n_repeats' not in self.default_ML_params:
         self.default_ML_params['n_repeats'] = 2
 
+    if weight_metric != 'default':
+        self.default_ML_params['weight_metric'] = weight_metric
+    elif 'weight_metric' not in self.default_ML_params:
+        self.default_ML_params['weight_metric'] = False
+
     if search_splits != 'default':
         self.default_ML_params['search_splits'] = search_splits
     elif 'search_splits' not in self.default_ML_params:
@@ -1025,6 +1050,7 @@ def _ML_print(self, *args, **kwargs):
 
 def Evaluate(self, run_name=None, problem_type='default', target='default',
              model='default', model_params='default', metric='default',
+             weight_metric='default',
              imputer='default', imputer_scope='default',
              imputer_params='default', scaler='default',
              scaler_scope='default', scaler_params='default',
@@ -1032,9 +1058,10 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
              feat_selector='default', feat_selector_params='default',
              ensemble='default', ensemble_split='default',
              ensemble_params='default', splits='default',
-             n_repeats='default', search_type='default',
-             search_splits='default', search_n_iter='default',
-             feats_to_use='default', subjects_to_use='default',
+             n_repeats='default', 
+             search_type='default', search_splits='default',
+             search_n_iter='default', feats_to_use='default',
+             subjects_to_use='default',
              feat_importances='default',
              feat_importances_params='default',
              n_jobs='default', random_state='default',
@@ -1060,6 +1087,7 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     model :
     model_params :
     metric :
+    weight_metric :
     imputer :
     imputer_scope :
     imputer_params :
@@ -1181,10 +1209,14 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
         score_list = [scores]
         score_type_list = ['Validation']
 
+    weight_metrics = conv_to_list(ML_params['weight_metric'], len(score_list))
+
     results = {}
     for scrs, name in zip(score_list, score_type_list):
+
         summary_scores = self._handle_scores(scrs, name, ML_params, run_name,
-                                             self.Model_Pipeline.n_splits)
+                                             self.Model_Pipeline.n_splits,
+                                             weight_metrics)
 
         if name == 'Validation':
             results['summary_scores'] = summary_scores
@@ -1484,6 +1516,7 @@ def _print_model_params(self, ML_params, test=False, kwargs={}):
                         ML_params['ensemble_params'])
 
     self._print('metric =', ML_params['metric'])
+    self._print('weight_metric =', ML_params['weight_metric'])
 
     if pd.isnull(self.all_data).any().any():
         self._print('imputer =', ML_params['imputer'])
@@ -1706,7 +1739,7 @@ def _get_avaliable_run_name(self, name, model, scores):
     return name
 
 
-def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
+def _handle_scores(self, scores, name, ML_params, run_name, n_splits, weight_metrics):
 
     all_summary_scores = []
     metric_strs = self.Model_Pipeline.metric_strs
@@ -1715,6 +1748,12 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
     self._print(''.join('_' for i in range(len(name) + 7)))
 
     for i in range(len(metric_strs)):
+
+        # Weight outputed scores if requested
+        if weight_metrics[i]:
+            weights = self.Model_Pipeline.n_test_per_fold
+        else:
+            weights = None
 
         metric_name = metric_strs[i]
         self._print('Metric: ', metric_name)
@@ -1727,7 +1766,7 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
 
             summary_scores_by_class =\
                 [compute_macro_micro(class_scores, ML_params['n_repeats'],
-                 n_splits) for class_scores in by_class]
+                 n_splits, weights=weights) for class_scores in by_class]
 
             targets_key = self.Model_Pipeline.targets_key
             classes = self.Model_Pipeline.classes
@@ -1751,7 +1790,8 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
             # Compute macro / micro summary of scores
             summary_scores = compute_macro_micro(score_by_metric,
                                                  ML_params['n_repeats'],
-                                                 n_splits)
+                                                 n_splits,
+                                                 weights=weights)
 
             self._print_summary_score(name, summary_scores,
                                       ML_params['n_repeats'], run_name,

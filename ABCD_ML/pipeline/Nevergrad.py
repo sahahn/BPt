@@ -10,7 +10,7 @@ from sklearn.model_selection import cross_val_score
 class NevergradSearchCV():
 
     def __init__(self, optimizer_name, estimator, param_distributions,
-                 scoring=None, cv=3,
+                 scoring=None, cv=3, weight_metric=False,
                  n_iter=10, n_jobs=1, random_state=None):
 
         self.optimizer_name = optimizer_name
@@ -18,6 +18,7 @@ class NevergradSearchCV():
         self.param_distributions = param_distributions
         self.scoring = scoring
         self.cv = cv
+        self.weight_metric = weight_metric,
         self.n_iter = n_iter
         self.n_jobs = n_jobs
         self.random_state = random_state
@@ -30,10 +31,15 @@ class NevergradSearchCV():
         estimator.set_params(**kwargs)
 
         # All sklearn scorers should return high values as better, so flip sign
-        cv_score = -cross_val_score(estimator, X=X, y=y, scoring=self.scoring,
+        cv_scores = -cross_val_score(estimator, X=X, y=y, scoring=self.scoring,
                                     cv=self.cv)
 
-        return np.mean(cv_score)
+        if self.weight_metric:
+            weights=[len(self.cv[i][1]) for i in range(len(self.cv))]
+            return np.average(cv_scores, weights=weights)
+        else:
+            return np.mean(cv_scores)
+            
 
     def fit(self, X, y=None):
 
@@ -65,7 +71,7 @@ class NevergradSearchCV():
         self.best_estimator_ = self.estimator
         self.best_estimator_.set_params(**recommendation.kwargs)
 
-        # optimizer.current_bests["pessimistic"].mean,
+        # print(optimizer.current_bests["pessimistic"].mean)
 
         self.best_estimator_.fit(X, y)
 

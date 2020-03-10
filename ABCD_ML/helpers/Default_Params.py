@@ -41,7 +41,10 @@ PARAMS['ridge C extra']['max_iter'] = ng.var.Scalar(int).bounded(1000, 10000)
 PARAMS['ridge C extra']['tol'] = ng.var.Log(1e-6, .01)
 
 # Ridge regressor
-PARAMS['ridge regressor dist'] = PARAMS['base ridge'].copy()
+PARAMS['base ridge regressor'] = {'max_iter': 5000,
+                                  'solver': 'saga'}
+
+PARAMS['ridge regressor dist'] = PARAMS['base ridge regressor'].copy()
 PARAMS['ridge regressor dist']['alpha'] = ng.var.Log(1e-3, 1e5)
 
 # Lasso regressor

@@ -84,7 +84,7 @@ MODELS = {
                                            'elastic regression',
                                            'elastic regression extra']),
 
-    'ridge regressor': (Ridge, ['base ridge',
+    'ridge regressor': (Ridge, ['base ridge regressor',
                                 'ridge regressor dist']),
     'lasso regressor': (Lasso, ['base lasso regressor',
                                 'lasso regressor dist']),

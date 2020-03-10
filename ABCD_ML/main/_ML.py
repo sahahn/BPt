@@ -1209,14 +1209,11 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
         score_list = [scores]
         score_type_list = ['Validation']
 
-    weight_metrics = conv_to_list(ML_params['weight_metric'], len(score_list))
-
     results = {}
     for scrs, name in zip(score_list, score_type_list):
 
         summary_scores = self._handle_scores(scrs, name, ML_params, run_name,
-                                             self.Model_Pipeline.n_splits,
-                                             weight_metrics)
+                                             self.Model_Pipeline.n_splits)
 
         if name == 'Validation':
             results['summary_scores'] = summary_scores
@@ -1746,6 +1743,8 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits, weight_met
 
     self._print(name + ' Scores')
     self._print(''.join('_' for i in range(len(name) + 7)))
+
+    weight_metrics = conv_to_list(ML_params['weight_metric'], len(metric_strs))
 
     for i in range(len(metric_strs)):
 

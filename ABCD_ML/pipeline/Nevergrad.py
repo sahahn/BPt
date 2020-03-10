@@ -67,11 +67,12 @@ class NevergradSearchCV():
                                                     executor=ex,
                                                     batch_mode=False)
 
+        # Save best search search score
+        self.best_search_score = optimizer.current_bests["pessimistic"].mean
+
         # Fit best estimator
         self.best_estimator_ = self.estimator
         self.best_estimator_.set_params(**recommendation.kwargs)
-
-        # print(optimizer.current_bests["pessimistic"].mean)
 
         self.best_estimator_.fit(X, y)
 

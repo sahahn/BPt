@@ -50,7 +50,7 @@ PARAMS['ridge regressor dist']['alpha'] = ng.var.Log(1e-3, 1e5)
 # Lasso regressor
 PARAMS['base lasso regressor'] = {'max_iter': 5000}
 PARAMS['lasso regressor dist'] = PARAMS['base lasso regressor'].copy()
-PARAMS['lasso regressor dist']['alpha'] = ng.var.Log(1e-3, 1e5)
+PARAMS['lasso regressor dist']['alpha'] = ng.var.Log(1e-5, 1e5)
 
 # Lasso classifier
 PARAMS['base lasso'] = PARAMS['base logistic'].copy()
@@ -72,8 +72,8 @@ PARAMS['base elastic']['l1_ratio'] = .5
 PARAMS['base elastic']['solver'] = 'saga'
 
 PARAMS['elastic classifier'] = PARAMS['base elastic'].copy()
-PARAMS['elastic classifier']['C'] = ng.var.Log(1e-5, 1e3)
-PARAMS['elastic classifier']['l1_ratio'] = ng.var.Scalar().bounded(0, 1)
+PARAMS['elastic classifier']['C'] = ng.var.Log(1e-5, 1e5)
+PARAMS['elastic classifier']['l1_ratio'] = ng.var.Scalar().bounded(.01, 1)
 PARAMS['elastic classifier']['class_weight'] = cls_weight
 
 PARAMS['elastic classifier extra'] = PARAMS['elastic classifier'].copy()
@@ -84,8 +84,8 @@ PARAMS['elastic classifier extra']['tol'] = ng.var.Log(1e-6, .01)
 # Elastic net regression
 PARAMS['base elastic net'] = {'max_iter': 5000}
 PARAMS['elastic regression'] = PARAMS['base elastic net'].copy()
-PARAMS['elastic regression']['alpha'] = ng.var.Log(1e-3, 1e5)
-PARAMS['elastic regression']['l1_ratio'] = ng.var.Scalar().bounded(0, 1)
+PARAMS['elastic regression']['alpha'] = ng.var.Log(1e-5, 1e5)
+PARAMS['elastic regression']['l1_ratio'] = ng.var.Scalar().bounded(.01, 1)
 
 PARAMS['elastic regression extra'] = PARAMS['elastic regression'].copy()
 PARAMS['elastic regression extra']['max_iter'] =\

@@ -61,7 +61,7 @@ def get_special_selector(feat_selector, feat_selector_params, random_state,
     else:
         r_state = random_state
 
-    init_mask = (r_state.random(num_feat_keys) > .5)
+    init_mask = r_state.random(num_feat_keys)
     feat_selector = feat_selector(mask=init_mask)
 
     # Figure out param passed
@@ -72,6 +72,9 @@ def get_special_selector(feat_selector, feat_selector_params, random_state,
         if feat_selector_params[p_name] == 'sets as hyperparameters':
             feat_selector_params[p_name] =\
                 ng.var.Array(num_feat_keys).bounded(0, 1)
+
+        elif feat_selector_params[p_name] == 'sets as random features':
+            del feat_selector_params[p_name]
 
     return feat_selector, feat_selector_params
 

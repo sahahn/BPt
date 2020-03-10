@@ -422,10 +422,10 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
         This parameter allows you to drops columns within loaded data
         where there are under a certain threshold of unique values.
 
-        The threshold is determined by the passed value as first converted
-        to a float between 0 and 1 (e.g. if passed 5, to .05), and then
-        computed as unique_val_drop * len(data). Any column with less unique
-        values then this threshold will be dropped
+        The threshold is determined by the passed value as either a float for 
+        a percentage of the data, e.g., computed as unique_val_drop * len(data), 
+        or if passed a number greater then 1, then that number, where a
+        ny column with less unique values then this threshold will be dropped.
 
         (default = None)
 
@@ -1527,10 +1527,10 @@ def Proc_Data_Unique_Cols(self, unique_val_drop=None, unique_val_warn=.05,
         This parameter allows you to drops columns within loaded data
         where there are under a certain threshold of unique values.
 
-        The threshold is determined by the passed value as first converted
-        to a float between 0 and 1 (e.g. if passed 5, to .05), and then
-        computed as unique_val_drop * len(data). Any column with less unique
-        values then this threshold will be dropped
+        The threshold is determined by the passed value as either a float for 
+        a percentage of the data, e.g., computed as unique_val_drop * len(data), 
+        or if passed a number greater then 1, then that number, where a
+        ny column with less unique values then this threshold will be dropped.
 
         (default = None)
 
@@ -1559,13 +1559,15 @@ def _proc_data_unique_cols(self, data, unique_val_drop, unique_val_warn):
     if unique_val_warn is None:
         unique_val_warn = 0
 
-    if unique_val_drop > 1:
-        unique_val_drop /= 100
-    if unique_val_warn > 1:
-        unique_val_warn /= 100
+    if unique_val_drop >= 1:
+        drop_thresh = unique_val_drop
+    else:
+        drop_thresh = unique_val_drop * len(data)
 
-    drop_thresh = unique_val_drop * len(data)
-    warn_thresh = unique_val_warn * len(data)
+    if unique_val_warn >= 1:
+        warn_thresh = unique_val_warn
+    else:
+        warn_thresh = unique_val_warn * len(data)
 
     unique_counts = [np.sum(~np.isnan(np.unique(data[x]))) for x in data]
     unique_counts = np.array(unique_counts)

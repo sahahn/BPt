@@ -42,7 +42,7 @@ PARAMS['ridge C extra']['tol'] = ng.var.Log(1e-6, .01)
 
 # Ridge regressor
 PARAMS['base ridge regressor'] = {'max_iter': 5000,
-                                  'solver': 'saga'}
+                                  'solver': 'lsqr'}
 
 PARAMS['ridge regressor dist'] = PARAMS['base ridge regressor'].copy()
 PARAMS['ridge regressor dist']['alpha'] = ng.var.Log(1e-3, 1e5)

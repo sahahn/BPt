@@ -1474,9 +1474,15 @@ def _make_ML_params(self, args):
     for key in args:
 
         try:
-            if args[key] == 'default':
-                ML_params[key] = self.default_ML_params[key]
-            elif key != 'self':
+
+            if isinstance(args[key], str):
+                if args[key] == 'default':
+                    ML_params[key] = self.default_ML_params[key]
+            
+                elif key != 'self':
+                    ML_params[key] = args[key]
+            
+            else:
                 ML_params[key] = args[key]
 
         # If value error, set to key
@@ -1579,7 +1585,6 @@ def _print_model_params(self, ML_params, test=False, kwargs={}):
             self._print(k, '=', kwargs[k])
     self._print()
 
-
 def _get_split_vals(self, splits):
 
     if isinstance(splits, int):
@@ -1637,9 +1642,14 @@ def _proc_feats_to_use(self, feats_to_use):
 
 def _get_final_subjects_to_use(self, subjects_to_use):
 
-    if subjects_to_use == 'all':
-        subjects = self.all_data.index
+    # If str passed, either all or loc to load
+    if isinstance(subjects_to_use, str):
+        if subjects_to_use == 'all':
+            subjects = self.all_data.index
+        else:
+            subjects = self._load_set_of_subjects(loc=subjects_to_use)
 
+    # If tuple, determine subjects to use by by value
     elif isinstance(subjects_to_use, tuple):
         split_names, split_vals, sv_le =\
             self._get_split_vals(subjects_to_use[0])
@@ -1660,16 +1670,9 @@ def _get_final_subjects_to_use(self, subjects_to_use):
                     self.last_subjects_to_use_names)
         self._print()
 
+    # Lastly, if not the above, assume it is an array-like of subjects
     else:
-        if isinstance(subjects_to_use, str):
-            loc = subjects_to_use
-            subjs = None
-
-        else:
-            loc = None
-            subjs = subjects_to_use
-
-        subjects = self._load_set_of_subjects(loc=loc, subjects=subjs)
+        subjects = self._load_set_of_subjects(subjects=subjects_to_use)
 
     return subjects
 

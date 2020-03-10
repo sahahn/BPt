@@ -1736,7 +1736,7 @@ def _get_avaliable_run_name(self, name, model, scores):
     return name
 
 
-def _handle_scores(self, scores, name, ML_params, run_name, n_splits, weight_metrics):
+def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
 
     all_summary_scores = []
     metric_strs = self.Model_Pipeline.metric_strs

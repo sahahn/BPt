@@ -1231,8 +1231,8 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
 def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
          test_subjects=None,
          problem_type='default', target='default', model='default',
-         model_params='default', metric='default', imputer='default',
-         imputer_scope='default', imputer_params='default',
+         model_params='default', metric='default', weight_metric='default',
+         imputer='default', imputer_scope='default', imputer_params='default',
          scaler='default', scaler_scope='default', scaler_params='default',
          sampler='default', sample_on='default', sampler_params='default',
          feat_selector='default', feat_selector_params='default',
@@ -1290,6 +1290,7 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
     model :
     model_params :
     metric :
+    weight_metric :
     imputer :
     imputer_scope :
     imputer_params :

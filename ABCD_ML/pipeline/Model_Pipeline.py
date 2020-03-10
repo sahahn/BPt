@@ -1797,8 +1797,13 @@ class Model_Pipeline():
         else:
             fold = str((fold_ind % self.n_splits) + 1)
             repeat = str((fold_ind // self.n_splits) + 1)
-
+        
         self.classes = np.unique(y_test)
+        
+        # Catch case where there is only one class present in y_test
+        # Assume in this case that it should be binary, 0 and 1
+        if len(self.classes) == 1:
+            self.classes = np.array([0,1])
 
         try:
             raw_prob_preds = self.Model.predict_proba(X_test)

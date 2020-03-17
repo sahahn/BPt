@@ -3,6 +3,8 @@ import numpy as np
 import nevergrad as ng
 
 from concurrent import futures
+import multiprocessing as mp
+
 from sklearn.base import clone
 from sklearn.model_selection import cross_val_score
 
@@ -62,7 +64,9 @@ class NevergradSearchCV():
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
 
-            with futures.ProcessPoolExecutor(max_workers=self.n_jobs) as ex:
+            with futures.ProcessPoolExecutor(max_workers=self.n_jobs,
+                                             mp_context=mp.get_context('spawn')) as ex:
+
                 recommendation = optimizer.minimize(self.ng_cv_score,
                                                     executor=ex,
                                                     batch_mode=False)
@@ -71,7 +75,7 @@ class NevergradSearchCV():
         self.best_search_score = optimizer.current_bests["pessimistic"].mean
 
         # Fit best estimator
-        self.best_estimator_ = self.estimator
+        self.best_estimator_ = clone(self.estimator)
         self.best_estimator_.set_params(**recommendation.kwargs)
 
         self.best_estimator_.fit(X, y)

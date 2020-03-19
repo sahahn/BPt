@@ -14,7 +14,7 @@ import numpy as np
 from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.preprocessing import OneHotEncoder
 
-from ..helpers.ML_Helpers import get_obj_and_params, show_objects, find_ind
+from ..helpers.ML_Helpers import get_obj_and_params, show_objects, find_ind, proc_mapping
 from ..helpers.Data_Helpers import get_unique_combo, reverse_unique_combo
 
 
@@ -319,8 +319,7 @@ class Sampler_Wrapper():
 
             # Then re-sample as if categorical, multiclass
             X_resamp, y_resamp =\
-                self.categorical_fit_resample(X_copy, base_X, binned_y,
-                                              False)
+                self.categorical_fit_resample(X_copy, base_X, binned_y)
 
             # Recover y values
             o_size, n_size = len(y), len(y_resamp)
@@ -388,7 +387,27 @@ class Sampler_Wrapper():
 
             return X_resamp, y_resamp
 
-    def fit_resample(self, X, y):
+    def _proc_mapping(self, mapping):
+        
+        try:
+            self._mapping
+            return
+        
+        except AttributeError:
+            self._mapping = mapping
+
+        if len(mapping) > 0:
+
+            self.strat_inds = proc_mapping(self.strat_inds, mapping)
+            self.sample_strat = proc_mapping(self.sample_strat, mapping)
+            self.covars_inds = proc_mapping(self.covars_inds, mapping)
+            self.all_covars_inds = proc_mapping(self.all_covars_inds, mapping)
+
+        return
+
+    def fit_resample(self, X, y, mapping={}):
+
+        self._proc_mapping(mapping)
 
         # Set cat inds if special
         if self.sampler_type == 'special':
@@ -410,11 +429,13 @@ class Sampler_Wrapper():
         base_X = X_copy[:, self.base_X_mask]
 
         if self.categorical:
-            return self.categorical_fit_resample(X_copy, base_X, y_copy)
+            X_resamp, y_resamp = self.categorical_fit_resample(X_copy, base_X, y_copy)
 
         # Regression type problem
         else:
-            return self.regression_fit_resample(X_copy, base_X, y_copy)
+            X_resamp, y_resamp = self.regression_fit_resample(X_copy, base_X, y_copy)
+
+        return X_resamp, y_resamp
 
     def set_params(self, **params):
 

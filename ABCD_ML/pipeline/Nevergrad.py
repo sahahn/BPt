@@ -1,5 +1,6 @@
 import warnings
 import numpy as np
+from numpy.random import RandomState
 import nevergrad as ng
 
 from concurrent import futures
@@ -56,7 +57,7 @@ class NevergradSearchCV():
         # Set random state is defined
         if isinstance(self.random_state, int):
             optimizer.instrumentation.random_state =\
-                np.random.RandomState(self.random_state)
+                RandomState(self.random_state)
 
         elif self.random_state is not None:
             optimizer.instrumentation.random_state = self.random_state

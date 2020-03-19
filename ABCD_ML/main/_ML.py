@@ -23,7 +23,9 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
                           metric='default', weight_metric='default', imputer='default',
                           imputer_scope='default', imputer_params='default',
                           scaler='default', scaler_scope='default',
-                          scaler_params='default', sampler='default',
+                          scaler_params='default', transformer='default',
+                          transformer_scope='default', transformer_params='default',
+                          sampler='default',
                           sample_on='default', sampler_params='default',
                           feat_selector='default',
                           feat_selector_params='default', ensemble='default',
@@ -253,7 +255,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         If 'default', and not already defined, set to 'all'
         (default = 'default')
 
-    scaler_params : int, str, or list of
+    scaler_params : int, str, or list of, optional
         Each `scaler` has atleast one default parameter distribution
         saved with it.
 
@@ -273,6 +275,15 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
         If 'default', and not already defined, set to 0
         (default = 'default')
+
+    transformer : str, list or None, optional
+        Placeholder
+    
+    transformer_scope : str, list or None, optional
+        Placeholder
+
+    transformer_params : int, str, or list of, optional
+        Placeholder
 
     sampler : str, list or None, optional
         `sampler` refers optional to the type of resampling
@@ -713,6 +724,16 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     elif 'scaler_scope' not in self.default_ML_params:
         self.default_ML_params['scaler_scope'] = 'all'
 
+    if transformer != 'default':
+        self.default_ML_params['transformer'] = transformer
+    elif 'transformer' not in self.default_ML_params:
+        self.default_ML_params['transformer'] = None
+
+    if transformer_scope != 'default':
+        self.default_ML_params['transformer_scope'] = transformer_scope
+    elif 'transformer_scope' not in self.default_ML_params:
+        self.default_ML_params['transformer_scope'] = 'all'
+
     if sampler != 'default':
         self.default_ML_params['sampler'] = sampler
     elif 'sampler' not in self.default_ML_params:
@@ -779,6 +800,11 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self.default_ML_params['scaler_params'] = scaler_params
     elif 'scaler_params' not in self.default_ML_params:
         self.default_ML_params['scaler_params'] = 0
+
+    if transformer_params != 'default':
+        self.default_ML_params['transformer_params'] = transformer_params
+    elif 'transformer_params' not in self.default_ML_params:
+        self.default_ML_params['transformer_params'] = 0
 
     if sampler_params != 'default':
         self.default_ML_params['sampler_params'] = sampler_params
@@ -1054,6 +1080,8 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
              imputer='default', imputer_scope='default',
              imputer_params='default', scaler='default',
              scaler_scope='default', scaler_params='default',
+             transformer='default',
+             transformer_scope='default', transformer_params='default',
              sampler='default', sample_on='default', sampler_params='default',
              feat_selector='default', feat_selector_params='default',
              ensemble='default', ensemble_split='default',
@@ -1094,6 +1122,9 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     scaler :
     scaler_scope :
     scaler_params :
+    transformer : 
+    transformer_scope :
+    transformer_params :
     sampler :
     sample_on :
     sampler_params :
@@ -1234,6 +1265,7 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
          model_params='default', metric='default', weight_metric='default',
          imputer='default', imputer_scope='default', imputer_params='default',
          scaler='default', scaler_scope='default', scaler_params='default',
+         transformer='default', transformer_scope='default', transformer_params='default',
          sampler='default', sample_on='default', sampler_params='default',
          feat_selector='default', feat_selector_params='default',
          ensemble='default', ensemble_split='default',
@@ -1297,6 +1329,9 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
     scaler :
     scaler_scope :
     scaler_params :
+    transformer : 
+    transformer_scope :
+    transformer_params :
     sampler :
     sample_on :
     sampler_params :

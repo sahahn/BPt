@@ -54,7 +54,7 @@ class Perm_Feat_Importance():
         if self.n_jobs == 1:
             scores = []
             for ind in range(X.shape[1]):
-                scores.append(self.get_feat_importance(ind))
+                scores.append(self.get_feat_importance(ind, scorer, model))
         else:
 
             changed = None
@@ -102,7 +102,7 @@ class Perm_Feat_Importance():
         difs = baseline_score - scores
         return difs
 
-    def get_feat_importance(self, ind):
+    def get_feat_importance(self, ind, scorer, model):
 
         X_copy = self.X.copy()
 
@@ -110,6 +110,6 @@ class Perm_Feat_Importance():
         for perm in range(self.n_perm):
 
             X_copy[:, ind] = np.random.permutation(X_copy[:, ind])
-            importances.append(self.scorer(self.model, X_copy, self.y))
+            importances.append(scorer(model, X_copy, self.y))
 
         return np.mean(importances)

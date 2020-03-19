@@ -4,11 +4,13 @@ import numpy as np
 import time
 
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from imblearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from .extensions.Col_Selector import InPlaceColumnTransformer
+
+from .extensions.Col_Selector import ColTransformer, InPlaceColTransformer
 from sklearn.preprocessing import FunctionTransformer
 from collections import Counter
+
+from .extensions.Pipeline import ABCD_Pipeline
+from copy import deepcopy
 
 from .Models import MODELS
 from ..helpers.ML_Helpers import (conv_to_list, proc_input,
@@ -28,6 +30,7 @@ from .Samplers import get_sampler_and_params
 from .Feature_Selectors import get_feat_selector_and_params
 from .Metrics import get_metric
 from .Scalers import get_scaler_and_params
+from .Transformers import get_transformer_and_params
 from .Imputers import get_imputer_and_params
 from .Ensembles import (get_ensemble_and_params, Basic_Ensemble,
                         DES_Ensemble)
@@ -184,6 +187,8 @@ class Model_Pipeline():
         self.imputer_scopes = conv_to_list(ML_params['imputer_scope'])
         self.scaler_strs = conv_to_list(ML_params['scaler'])
         self.scaler_scopes = conv_to_list(ML_params['scaler_scope'])
+        self.transformer_strs = conv_to_list(ML_params['transformer'])
+        self.transformer_scopes = conv_to_list(ML_params['transformer_scope'])
         self.sampler_strs = conv_to_list(ML_params['sampler'])
         self.sample_on = conv_to_list(ML_params['sample_on'])
         self.feat_selector_strs = conv_to_list(ML_params['feat_selector'])
@@ -212,6 +217,8 @@ class Model_Pipeline():
             conv_to_list(ML_params['scaler_params'])
         self.sampler_params =\
             conv_to_list(ML_params['sampler_params'])
+        self.transformer_params =\
+            conv_to_list(ML_params['transformer_params'])
         self.feat_selector_params =\
             conv_to_list(ML_params['feat_selector_params'])
         self.ensemble_params =\
@@ -229,10 +236,12 @@ class Model_Pipeline():
 
         # Process inputs
         self._check_all_for_user_passed()
+
         self._process_model()
         self._process_feat_selectors()
         self._process_imputers()
         self._process_scalers()
+        self._process_transformers()
         self._process_samplers()
         self._process_ensemble_types()
         self._process_metrics()
@@ -317,6 +326,9 @@ class Model_Pipeline():
 
         self.scaler_strs, cnt =\
             self._check_for_user_passed(self.scaler_strs, cnt)
+
+        self.transformer_strs, cnt =\
+            self._check_for_user_passed(self.transformer_strs, cnt)
 
         self.sampler_strs, cnt =\
             self._check_for_user_passed(self.sampler_strs, cnt)
@@ -565,6 +577,56 @@ class Model_Pipeline():
             self.col_scalers = []
             self.col_scaler_params = {}
 
+    def _process_transformers(self):
+        '''Processed self.transformer_strs'''
+
+        if self.transformer_strs is not None:
+
+            conv_transformer_strs = proc_input(self.transformer_strs)
+            self._update_extra_params(self.transformer_strs,
+                                      conv_transformer_strs)
+
+            # Performing proc on input lengths
+            self.transformer_params =\
+                self._param_len_check(conv_transformer_strs,
+                                      self.transformer_params)
+
+            self.transformer_params =\
+                self._check_params_by_search(self.transformer_params)
+
+            self.transformer_scopes =\
+                self._scope_len_check(conv_transformer_strs,
+                                      self.transformer_scopes,
+                                      'transformers')
+
+            # Get the transformers and params
+            transformers_and_params =\
+                [self._get_transformer(transformer_str, transformer_param,
+                 scope) for
+                 transformer_str, transformer_param, scope in
+                 zip(conv_transformer_strs, self.transformer_params,
+                 self.transformer_scopes)]
+
+            self.transformers, self.transformer_params =\
+                self._proc_objs_and_params(transformers_and_params)
+
+        else:
+            self.transformers = []
+            self.transformer_params = {}
+
+    def _get_transformer(self, transformer_str, transformer_param, scope):
+
+        inds = self._get_inds_from_scope(scope)
+
+        transformer, transformer_params =\
+            get_transformer_and_params(transformer_str, self.extra_params,
+                                       transformer_param, self.search_type,
+                                       inds=inds,
+                                       random_state=self.random_state,
+                                       n_jobs=self.n_jobs)
+
+        return transformer_str, (transformer, transformer_params)
+
     def _make_col_version(self, objs, params, scopes):
 
         # Make objects first
@@ -575,7 +637,7 @@ class Model_Pipeline():
             inds = self._get_inds_from_scope(scopes[i])
 
             col_obj =\
-                ('col_' + name, InPlaceColumnTransformer([(name, obj, inds)],
+                ('col_' + name, InPlaceColTransformer([(name, obj, inds)],
                  remainder='passthrough', sparse_threshold=0))
 
             col_objs.append(col_obj)
@@ -692,8 +754,6 @@ class Model_Pipeline():
             self.sampler_params = {}
 
     def _get_recover_strats(self, num_samplers):
-
-        recover_strats = []
 
         # Creates binary mask of, True if any strat inds used
         uses_strat = [len(self._proc_sample_on(self.sample_on[i])[1]) > 0 for
@@ -822,9 +882,9 @@ class Model_Pipeline():
 
         # Make base col_transformer, just for dropping strat cols
         col_transformer =\
-            ColumnTransformer(transformers=[('keep_all_but_strat_inds',
-                                             identity, non_strat_inds)],
-                              remainder='drop', sparse_threshold=0)
+            ColTransformer(transformers=[('keep_all_but_strat_inds',
+                                          identity, non_strat_inds)],
+                           remainder='drop', sparse_threshold=0)
 
         # Put in list, to easily add to pipeline
         self.drop_strat = [('drop_strat', col_transformer)]
@@ -1318,10 +1378,13 @@ class Model_Pipeline():
             new_ensembles = []
 
             for ensemble in self.ensembles:
-                ensemble_obj = ensemble[1][0]
-                ensemble_extra_params = ensemble[1][1]
-                ensemble_name = ensemble[0]
 
+                ensemble_name = ensemble[0]
+                ensemble_info = ensemble[1]
+
+                ensemble_obj = ensemble_info[0]
+                ensemble_extra_params = ensemble_info[1]
+                
                 try:
                     single_estimator =\
                         ensemble_extra_params.pop('single_estimator')
@@ -1351,7 +1414,8 @@ class Model_Pipeline():
                                 'if this is not the case.')
                     needs_split = True
 
-                # Right now needs split essential means DES Ensemble, maybe change this
+                # Right now needs split essential means DES Ensemble,
+                # maybe change this
                 if needs_split:
 
                     # Init with default params
@@ -1367,13 +1431,15 @@ class Model_Pipeline():
 
                     self._update_model_ensemble_params(ensemble_name)
 
-                # If no split and single estimator, then add the new ensemble obj
+                # If no split and single estimator, then add the new
+                # ensemble obj
                 # W/ passed params.
                 elif single_estimator:
 
-
-                    # Models here since single estimator is assumed to be just a list with
-                    # of one tuple as [(model or ensemble name, model or ensemble)]
+                    # Models here since single estimator is assumed
+                    # to be just a list with
+                    # of one tuple as
+                    # [(model or ensemble name, model or ensemble)]
                     new_ensembles.append(
                         (ensemble_name,
                          ensemble_obj(base_estimator=models[0][1],
@@ -1388,13 +1454,15 @@ class Model_Pipeline():
                     self._update_model_ensemble_params(ensemble_name,
                                                        ensemble=False)
 
-                # Last case is, no split/DES ensemble and also not single estimator based
+                # Last case is, no split/DES ensemble and also
+                # not single estimator based
                 # e.g., in case of stacking regressor.
                 else:
 
-                    # Models here just self.models a list of tuple of all models.
-                    # So, ensemble_extra_params should contain the final estimator,
-                    # + other params
+                    # Models here just self.models a list of tuple of
+                    # all models.
+                    # So, ensemble_extra_params should contain the
+                    # final estimator + other params
                     new_ensembles.append(
                         (ensemble_name,
                          ensemble_obj(estimators=models,
@@ -1418,22 +1486,37 @@ class Model_Pipeline():
             scalers, and then the passed in model.
         '''
 
-        steps = self.col_scalers + self.col_imputers + self.samplers \
-            + self.drop_strat + self.feat_selectors + models
+        steps = self.transformers + self.col_scalers + self.col_imputers \
+            + self.samplers + self.drop_strat + self.feat_selectors + models
 
         if self.cache is not None:
             os.makedirs(self.cache, exist_ok=True)
 
-        model_pipeline = Pipeline(steps, memory=self.cache)
+        mapping, to_map = False, []
+        if len(self.transformers) > 0:
+            mapping = True
+
+            for valid in [self.transformers, self.col_scalers, 
+                          self.col_imputers, self.samplers,
+                          self.drop_strat]:
+
+                for step in valid:
+                    to_map.append(step[0])
+
+        model_pipeline = ABCD_Pipeline(steps, memory=self.cache,
+                                       mapping=mapping, to_map=to_map)
 
         return model_pipeline
 
     def _set_model_pipeline(self, train_data):
 
-        # Set Model_Pipeline as Model
+        # Set Model
+        # Set it as a deepcopy, as each time the model gets trained,
+        # It should not be effected by changes from previous fits
         self.Model =\
-            self._get_search_model(self.base_model_pipeline,
-                                   self._get_search_cv(train_data.index))
+            deepcopy(self._get_search_model(
+                self.base_model_pipeline,
+                self._get_search_cv(train_data.index)))
 
     def _get_base_fitted_pipeline(self):
 
@@ -1719,6 +1802,7 @@ class Model_Pipeline():
 
         # Merge the different params / grids of params
         all_params = {}
+        all_params.update(self.transformer_params)
         all_params.update(self.col_scaler_params)
         all_params.update(self.col_imputer_params)
         all_params.update(self.sampler_params)
@@ -1797,13 +1881,13 @@ class Model_Pipeline():
         else:
             fold = str((fold_ind % self.n_splits) + 1)
             repeat = str((fold_ind // self.n_splits) + 1)
-        
+
         self.classes = np.unique(y_test)
-        
+
         # Catch case where there is only one class present in y_test
         # Assume in this case that it should be binary, 0 and 1
         if len(self.classes) == 1:
-            self.classes = np.array([0,1])
+            self.classes = np.array([0, 1])
 
         try:
             raw_prob_preds = self.Model.predict_proba(X_test)
@@ -1868,6 +1952,8 @@ class Model_Pipeline():
 
             if 'needs_proba=True' in metric._factory_args():
                 prob = '_prob'
+            elif 'needs_threshold=True' in metric._factory_args():
+                prob = '_threshold'
             else:
                 prob = ''
 
@@ -1918,6 +2004,7 @@ class Model_Pipeline():
 
     def _proc_X_test(self, test_data):
 
+        transformers = self._get_objs_from_pipeline(self.transformers)
         scalers = self._get_objs_from_pipeline(self.col_scalers)
         imputers = self._get_objs_from_pipeline(self.col_imputers)
         drop_strat = self._get_objs_from_pipeline(self.drop_strat)
@@ -1927,6 +2014,24 @@ class Model_Pipeline():
         X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
 
         feat_names = list(X_test)
+
+        # Handle transformers, just all to all case for now
+        for i in range(len(transformers)):
+            transformer = transformers[i]
+
+            X_test_trans = transformer.transform(f_array(X_test))
+
+            to_remove = [feat_names[i] for i in transformer.inds]
+            feat_names = [name for name in feat_names if name not in to_remove]
+            X_test = X_test.drop(to_remove, axis=1)
+
+            n_trans = transformer._n_trans
+            base_name = self.transformers[i][0]
+            new_names = [base_name + '_' + str(i) for i in range(n_trans)]
+            feat_names = new_names + feat_names
+
+            for i in range(len(feat_names)):
+                X_test[feat_names[i]] = X_test_trans[:, i]
 
         # Apply pipeline operations in place
         for scaler in scalers:
@@ -1953,6 +2058,7 @@ class Model_Pipeline():
 
     def _proc_X_train(self, train_data):
 
+        transformers = self._get_objs_from_pipeline(self.transformers)
         scalers = self._get_objs_from_pipeline(self.col_scalers)
         imputers = self._get_objs_from_pipeline(self.col_imputers)
         samplers = self._get_objs_from_pipeline(self.samplers)
@@ -1961,6 +2067,8 @@ class Model_Pipeline():
 
         X_train, y_train = self._get_X_y(train_data)
 
+        for transformer in transformers:
+            X_train = transformer.transform(X_train)
         for scaler in scalers:
             X_train = scaler.transform(X_train)
         for imputer in imputers:

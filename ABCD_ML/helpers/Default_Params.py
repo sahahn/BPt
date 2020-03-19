@@ -280,6 +280,12 @@ PARAMS['sgd classifier'] =\
          'n_iter_no_change': ng.var.Scalar(int).bounded(2, 20),
          'class_weight': cls_weight}
 
+
+# Transformers
+PARAMS['pca var search'] = {'n_components' : ng.var.Scalar().bounded(.1, .99),
+                            'svd_solver' : 'full'}
+
+
 # Scalers
 PARAMS['base standard'] = {'with_mean': True,
                            'with_std': True}

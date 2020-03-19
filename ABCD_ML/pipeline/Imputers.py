@@ -5,7 +5,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 
-from ..helpers.ML_Helpers import get_obj_and_params, show_objects
+from ..helpers.ML_Helpers import get_obj_and_params, show_objects, proc_mapping
 
 
 class Regular_Imputer():
@@ -18,7 +18,23 @@ class Regular_Imputer():
         self.valid_mask = None
         self.copy = copy
 
-    def fit(self, X, y=None):
+    def _proc_mapping(self, mapping):
+        
+        try:
+            self._mapping
+            return
+        
+        except AttributeError:
+            self._mapping = mapping
+
+        if len(mapping) > 0:
+            self.inds = proc_mapping(self.inds, mapping)
+
+        return
+
+    def fit(self, X, y=None, mapping={}):
+
+        self._proc_mapping(mapping)
 
         if self.copy:
             X_copy = X.copy()
@@ -67,9 +83,9 @@ class Regular_Imputer():
 
         return X_copy
 
-    def fit_transform(self, X, y=None):
+    def fit_transform(self, X, y=None, mapping={}):
 
-        self.fit(X, y)
+        self.fit(X, y, mapping=mapping)
         return self.transform(X)
 
     def set_params(self, **params):
@@ -105,7 +121,23 @@ class Categorical_Imputer():
 
         return ohe
 
-    def fit(self, X, y=None):
+    def _proc_mapping(self, mapping):
+        
+        try:
+            self._mapping
+            return
+        
+        except AttributeError:
+            self._mapping = mapping
+
+        if len(mapping) > 0:
+            self.encoder_inds = proc_mapping(self.encoder_inds, mapping)
+            self.ordinal_inds = proc_mapping(self.ordinal_inds, mapping)
+        return
+
+    def fit(self, X, y=None, mapping={}):
+
+        self._proc_mapping(mapping)
 
         if self.copy:
             X_copy = X.copy()
@@ -218,9 +250,9 @@ class Categorical_Imputer():
 
         return reverse_dummy_code
 
-    def fit_transform(self, X, y=None):
+    def fit_transform(self, X, y=None, mapping={}):
 
-        self.fit(X, y)
+        self.fit(X, y, mapping=mapping)
         return self.transform(X)
 
     def set_params(self, **params):

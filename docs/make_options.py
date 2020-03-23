@@ -4,8 +4,9 @@ from ABCD_ML.pipeline.Metrics import get_metrics_by_type
 from ABCD_ML.pipeline.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.pipeline.Models import MODELS
 
-from ABCD_ML.pipeline.Imputers import IMPUTERS
+from ABCD_ML.pipeline.Transformers import TRANSFORMERS
 from ABCD_ML.pipeline.Scalers import SCALERS
+from ABCD_ML.pipeline.Imputers import IMPUTERS
 from ABCD_ML.pipeline.Samplers import SAMPLERS
 
 from ABCD_ML.pipeline.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
@@ -208,6 +209,7 @@ lines.append('')
 
 lines = add_block(lines, problem_types)
 
+
 lines = main_category(lines, 'Imputers')
 lines.append('Different availible choices for the `imputer` parameter' +
              ' are shown below.')
@@ -232,6 +234,7 @@ lines.append('Also, if a model is passed, then the `imputer_params`' +
 lines.append('')
 lines = add_no_type_block(lines, IMPUTERS)
 
+
 lines = main_category(lines, 'Scalers')
 lines.append('Different availible choices for the `scaler` parameter' +
              ' are shown below.')
@@ -244,6 +247,21 @@ lines.append('Additionally, a link to the original scalers documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
 lines = add_no_type_block(lines, SCALERS)
+
+
+lines = main_category(lines, 'Transformers')
+lines.append('Different availible choices for the `transformer` parameter' +
+             ' are shown below.')
+lines.append('transformer is accepted by ' +
+             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
+             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
+lines.append('The exact str indicator for each `transformer` is represented' +
+             ' by the sub-heading (within "")')
+lines.append('Additionally, a link to the original transformers documentation ' +
+             'as well as the implemented parameter distributions are shown.')
+lines.append('')
+lines = add_no_type_block(lines, TRANSFORMERS)
+
 
 lines = main_category(lines, 'Samplers')
 lines.append('Different availible choices for the `sampler` parameter' +

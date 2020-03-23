@@ -226,8 +226,10 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
     random_state : int None or 'default', optional
         If using test_size, then can optionally provide a random state, in
         order to be able to recreate an exact test set.
-        If set to default, will use the value saved in self.random_state
 
+        If set to default, will use the value saved in self.random_state,
+        (as set in :class:`ABCD_ML.ABCD_ML` upon class init).
+        
         (default = 'default')
     '''
 

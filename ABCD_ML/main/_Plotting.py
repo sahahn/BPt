@@ -169,6 +169,8 @@ def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
         (default = 'default')
     '''
 
+    valid_data = self.data.drop(self.data_file_keys, axis=1)
+
     if random_state == 'default':
         random_state = self.random_state
 
@@ -180,22 +182,22 @@ def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
                                  ' == "both"')
             plot_type = 'dist'
 
-        data, test_data = self._proc_subjects(self.data, subjects)
+        data, test_data = self._proc_subjects(valid_data, subjects)
 
         self._print('Viewing train data with shape:', data.shape)
         self._print('Viewing test data with shape:', test_data.shape)
 
     else:
         if subjects is None:
-            data = self._set_overlap(self.data, show_only_overlap)
+            data = self._set_overlap(valid_data, show_only_overlap)
         else:
-            data = self._proc_subjects(self.data, subjects)
+            data = self._proc_subjects(valid_data, subjects)
 
         self._print('Viewing data with shape:', data.shape)
         self._print()
 
         self._print('Loaded data top columns by skew:')
-        self._print(self.data.skew().sort_values())
+        self._print(valid_data.skew().sort_values())
         self._print()
 
     fig, ax = plt.subplots()
@@ -235,7 +237,12 @@ def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
         frames = np.random.randint(0, data.shape[1], size=num_feats)
 
     anim = FuncAnimation(fig, update, frames=frames, interval=500)
-    html = HTML(anim.to_html5_video())
+
+    try:
+        html = HTML(anim.to_html5_video())
+    except RuntimeError:
+        print('To see a gif of the data distribution, make sure you have ffmpeg installed!')
+        return None
 
     if self.log_dr is not None:
 
@@ -796,7 +803,6 @@ def Plot_Global_Feat_Importances(
     if feat_importances.global_df is None:
         raise AttributeError('You must pass a feature importances object with',
                              'global_df, try plot local feat importance.')
-        return
 
     # If multiclass
     if isinstance(feat_importances.global_df, list):

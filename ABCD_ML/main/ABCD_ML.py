@@ -238,6 +238,9 @@ class ABCD_ML():
         self.last_run_name = None
         self.last_subjects_to_use_names = None
 
+        self.file_mapping = {}
+        self.data_file_keys = []
+
         # if self.notebook:
         #    shap.initjs()
 
@@ -352,7 +355,9 @@ class ABCD_ML():
     # Data loader functionality
     from ._Data import (Set_Default_Load_Params,
                         _make_load_params,
+                        _get_data_file_cnt,
                         Load_Name_Map,
+                        Load_Data_Files,
                         Load_Data,
                         Load_Targets,
                         _proc_target,
@@ -456,8 +461,9 @@ class ABCD_ML():
 
     from ..pipeline.Models import Show_Models
     from ..pipeline.Metrics import Show_Metrics
-    from ..pipeline.Imputers import Show_Imputers
+    from ..pipeline.Transformers import Show_Transformers
     from ..pipeline.Scalers import Show_Scalers
+    from ..pipeline.Imputers import Show_Imputers
     from ..pipeline.Samplers import Show_Samplers
     from ..pipeline.Feature_Selectors import Show_Feat_Selectors
     from ..pipeline.Ensembles import Show_Ensembles

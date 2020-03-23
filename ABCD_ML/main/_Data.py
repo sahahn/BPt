@@ -7,6 +7,7 @@ the ABCD_ML class.
 import pandas as pd
 import numpy as np
 
+from ..helpers.Data_File import Data_File
 from ..helpers.Data_Helpers import (process_binary_input,
                                     process_ordinal_input,
                                     process_categorical_input,
@@ -240,6 +241,61 @@ def _make_load_params(self, args):
                 load_params[key] = args[key]
 
     return load_params
+
+
+def _get_data_file_cnt(self):
+
+    if len(self.file_mapping) > 0:
+        return max(self.file_mapping.keys())
+    else:
+        return 0
+
+
+def Load_Data_Files(self, loc=None, df=None, load_func=np.load, dataset_type='default', drop_keys=None,
+                    inclusion_keys=None, subject_id='default', eventname='default',
+                    eventname_col='default', overlap_subjects='default',
+                    clear_existing=False):
+
+    # Clear existing if requested, otherwise append to
+    if clear_existing:
+        self.Clear_Data()
+
+    # Get the common load params as a mix of user-passed + default values
+    load_params = self._make_load_params(args=locals())
+
+    # Load in the raw dataframe - based on dataset type and/or passed user df
+    data = self._load_datasets(loc, df, load_params)
+
+    # Set to only overlap subjects if passed
+    data = self._set_overlap(data, load_params['overlap_subjects'])
+
+    # Drop or include
+    data = self._drop_data_cols(data, drop_keys, inclusion_keys)
+
+    # Convert loaded paths into ints within data, as
+    # mapped to Data_Files in the file_mapping dicts
+    file_mapping = {}
+    data_file_keys = list(data)
+    cnt = self._get_data_file_cnt()
+
+    for col in data:
+        for subject in data.index:
+
+            data_file = Data_File(data.loc[subject, col], load_func)
+            file_mapping[cnt] = data_file
+
+            data.loc[subject, col] = cnt
+            cnt += 1
+
+    # Merge self.data with new loaded data
+    self.data = self._merge_existing(self.data, data)
+
+    # Process new loaded subjects
+    self._process_new(self.low_memory_mode)
+
+    # Only once the merge w/ existing has been confirmed, merge with class globals
+    self.file_mapping.update(file_mapping)
+    self.data_file_keys += data_file_keys
 
 
 def Load_Name_Map(self, name_map=None, loc=None, dataset_type='default',
@@ -1477,13 +1533,18 @@ def Filter_Data_Cols(self, filter_outlier_percent=None,
     load_params = self._make_load_params(args=locals())
     data = self._set_overlap(self.data, load_params['overlap_subjects'])
 
-    self.data = self._filter_data_cols(self.data, filter_outlier_percent,
+    self.data = self._filter_data_cols(data, filter_outlier_percent,
                                        filter_outlier_std,
                                        load_params['drop_or_na'])
 
 
 def _filter_data_cols(self, data, filter_outlier_percent, filter_outlier_std,
                       drop_or_na):
+
+    # Seperate data from data files if applicable
+    file_keys = [key for key in list(data) if key in self.data_file_keys]
+    data_files = data[file_keys]
+    data = data.drop(file_keys, axis=1)
 
     if filter_outlier_percent is None and filter_outlier_std is None:
         return data
@@ -1509,6 +1570,9 @@ def _filter_data_cols(self, data, filter_outlier_percent, filter_outlier_std,
     if drop_val is not np.nan:
         data = self._drop_from_filter(data, drop_val)
 
+    # Re-merge
+    data = pd.merge(data, data_files, on=self.subject_id)
+    
     return data
 
 
@@ -1554,6 +1618,11 @@ def Proc_Data_Unique_Cols(self, unique_val_drop=None, unique_val_warn=.05,
 
 def _proc_data_unique_cols(self, data, unique_val_drop, unique_val_warn):
 
+    # Seperate data from data files if applicable
+    file_keys = [key for key in list(data) if key in self.data_file_keys]
+    data_files = data[file_keys]
+    data = data.drop(file_keys, axis=1)
+
     if unique_val_drop is None:
         unique_val_drop = 0
     if unique_val_warn is None:
@@ -1593,6 +1662,9 @@ def _proc_data_unique_cols(self, data, unique_val_drop, unique_val_warn):
 
         self._print()
 
+    # Re-merge
+    data = pd.merge(data, data_files, on=self.subject_id)
+
     return data
 
 
@@ -1617,7 +1689,16 @@ def Drop_Data_Duplicates(self, corr_thresh, overlap_subjects='default'):
     load_params = self._make_load_params(args=locals())
     data = self._set_overlap(self.data, load_params['overlap_subjects'])
 
-    self.data = drop_duplicate_cols(data, corr_thresh)
+    # Seperate data from data files if applicable
+    file_keys = [key for key in list(data) if key in self.data_file_keys]
+    data_files = data[file_keys]
+    data = data.drop(file_keys, axis=1)
+
+    # Drop the duplicates
+    data = drop_duplicate_cols(data, corr_thresh)
+    
+    # Re-merge
+    self.data = pd.merge(data, data_files, on=self.subject_id)
 
 
 def Binarize_Target(self, threshold=None, lower=None, upper=None, target=0,
@@ -2293,6 +2374,11 @@ def _drop_na(self, data, drop_na=True):
         Input df, with dropped rows for NaN values
     '''
 
+    # Seperate data from data files if applicable
+    file_keys = [key for key in list(data) if key in self.data_file_keys]
+    data_files = data[file_keys]
+    data = data.drop(file_keys, axis=1)
+
     # First drop any columns with all NaN
     missing_values = data.isna().all(axis=0)
     data = data.dropna(axis=1, how='all')
@@ -2315,6 +2401,9 @@ def _drop_na(self, data, drop_na=True):
 
     remaining_na_rows = data.isna().any(axis=1).sum()
     self._print('Loaded rows with NaN remaining:', remaining_na_rows)
+
+    # Re-merge
+    data = pd.merge(data, data_files, on=self.subject_id)
 
     return data
 
@@ -2632,6 +2721,7 @@ def _get_cat_keys(self):
 def _set_all_data_keys(self):
 
     self.all_data_keys['data_keys'] = list(self.data)
+    self.all_data_keys['data_file_keys'] = self.data_file_keys
     self.all_data_keys['covars_keys'] = list(self.covars)
     self.all_data_keys['strat_keys'] = list(self.strat)
     self.all_data_keys['cat_keys'] = self._get_cat_keys()

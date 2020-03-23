@@ -535,3 +535,43 @@ def update_mapping(mapping, new_mapping):
 
             if val in new_mapping:
                 mapping[key] = new_mapping[val]
+
+
+def wrap_pipeline_objs(wrapper, objs, inds,
+                       search_type, random_state,
+                       n_jobs, **params):
+
+
+
+    if search_type is not None:
+        n_jobs = 1
+
+        # Dont pass wrap_n_jobs in params if in a search
+        if 'wrapper_n_jobs' in params:
+            params.pop('wrapper_n_jobs')
+    
+    elif 'wrapper_n_jobs' in params:
+        if params['wrapper_n_jobs'] != 1:
+            n_jobs = 1
+
+    wrapped_objs = []
+    for chunk, ind in zip(objs, inds):
+
+        name, obj = chunk
+
+        # Try to set attributes
+        try:
+            obj.n_jobs = n_jobs
+        except AttributeError:
+            pass
+
+        try:
+            obj.random_state = random_state
+        except AttributeError:
+            pass
+
+        wrapped_obj = wrapper(obj, ind, **params)
+        wrapped_objs.append((name, wrapped_obj))
+
+    return wrapped_objs
+

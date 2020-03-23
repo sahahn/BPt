@@ -20,11 +20,16 @@ from ..pipeline.Model_Pipeline import (Regression_Model_Pipeline,
 
 def Set_Default_ML_Params(self, problem_type='default', target='default',
                           model='default', model_params='default',
-                          metric='default', weight_metric='default', imputer='default',
+                          metric='default', weight_metric='default',
+                          loader='default',
+                          loader_scope='default', loader_params='default',
+                          imputer='default',
                           imputer_scope='default', imputer_params='default',
                           scaler='default', scaler_scope='default',
-                          scaler_params='default', transformer='default',
-                          transformer_scope='default', transformer_params='default',
+                          scaler_params='default', 
+                          transformer='default',
+                          transformer_scope='default',
+                          transformer_params='default',
                           sampler='default',
                           sample_on='default', sampler_params='default',
                           feat_selector='default',
@@ -128,7 +133,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
         (default = 'default')
 
-    weight_metric : bool, list of bool or 'default', optional
+    weight_metric : bool, list of, optional
         If True, then the metric of interest will be weighted within
         each repeated fold by the number of subjects in that validation set.
         This parameter only makes sense for custom split behavior where 
@@ -146,6 +151,14 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
         If 'default', and not already defined, set to False
         (default = 'default')
+
+    loader : str, list or None, optional
+        Placeholder
+
+    loader_scope : str, list or None, optional
+        Placeholder
+
+    loader_params : int, str or list of, optional
 
     imputer : str, list or None, optional
         If there is any missing data (NaN's) that have been kept
@@ -178,22 +191,21 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         (in data / covars), for each `imputer` passed.
         Options are,
 
-        - 'float' or 'f'
-            To select just float data
+        - 'float'
+            To apply to all non-categorical columns, in both
+            loaded data and covars.
 
-        - 'categorical' or 'c'
-            To select any categorical type
-            (including binary) data
-            regardless of encoding (e.g. one hot)
+        - 'cat' or 'categorical'
+            To apply to just loaded categorical data.
 
         - array-like of strs
             Can pass specific col names in as array-like
             to select only those cols.
 
-        If 'default', and not already defined, set to ['float', 'categorical']
+        If 'default', and not already defined, set to ['float', 'cat']
         (default = 'default')
 
-    imputer_params : int, str or list of
+    imputer_params : int, str or list of, optional
         Each `imputer` has atleast one param distribution,
         which can be selected with an int index, or a corresponding
         str name. Likewise, a user can pass in a dictionary with their
@@ -239,20 +251,30 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
         Each scaler scope can be either,
 
-        - 'all' or 'a'
-            To apply to all non-categorical columns.
+        - 'float'
+            To apply to all non-categorical columns, in both
+            loaded data and covars.
 
-        - 'data' or 'd'
+        - 'data'
             To apply to all loaded data columns only.
 
-        - 'covars' or 'c'
-            To apply to all non-categorical covars columns only.
+        - 'float covars' or 'fc'
+            To apply to all non-categorical, float covars columns only.
+
+        - 'all'
+            To apply to everything, regardless of float/cat or data/covar.
+
+        - 'cat' or 'categorical'
+            To apply to just loaded categorical data.
+
+        - 'covars'
+            To apply to all loaded covar columns only.
 
         - array-like of strs
             Can pass specific col names in as array-like
             to select only those cols.
 
-        If 'default', and not already defined, set to 'all'
+        If 'default', and not already defined, set to 'float'
         (default = 'default')
 
     scaler_params : int, str, or list of, optional
@@ -277,13 +299,74 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         (default = 'default')
 
     transformer : str, list or None, optional
-        Placeholder
+        Transformers are any type of transformation to
+        the data that changes the number of features in non-deterministic
+        or not simply removal (i.e., as in feat_selectors), for example
+        applying a PCA, where both the number of features change, but
+        also the new features do not 1:1 correspond to the original
+        features. 
+
+        For a full list of supported options call:
+        :func:`Show_Transformers` or view the docs at :ref:`Transformers`
     
     transformer_scope : str, list or None, optional
-        Placeholder
+        `transformer_scope` refers to the "scope" or rather columns in
+        which each passed scaler (if multiple), should be applied.
+        If a list of transformers is passed, then scopes should also be a
+        list with index corresponding to each transformer.
+        If less then the number of transformers are passed, then the
+        first passed transformer_scope will be used for all of the
+        remaining transformers. Likewise, if no transformer is passed, this
+        parameter will be ignored!
+
+        Each transformer scope can be either,
+
+        - 'float'
+            To apply to all non-categorical columns, in both
+            loaded data and covars.
+
+        - 'data'
+            To apply to all loaded data columns only.
+
+        - 'float covars' or 'fc'
+            To apply to all non-categorical, float covars columns only.
+
+        - 'all'
+            To apply to everything, regardless of float/cat or data/covar.
+
+        - 'cat' or 'categorical'
+            To apply to just loaded categorical data.
+
+        - 'covars'
+            To apply to all loaded covar columns only.
+
+        - array-like of strs
+            Can pass specific col names in as array-like
+            to select only those cols.
+
+        If 'default', and not already defined, set to 'float'
+        (default = 'default')
 
     transformer_params : int, str, or list of, optional
-        Placeholder
+        Each `transformer` has atleast one default parameter distribution
+        saved with it.
+
+        This parameter is used to select between different
+        distributions to be used with different search types,
+        when `search_type` == None, `model_params` is automatically
+        set to default 0.
+
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `transformer`.
+        Likewise with `transformer`, if passed list input, this means
+        a list was passed to `transformer` and the indices should correspond.
+
+        The different parameter distributions avaliable for each
+        `transformer`, can be shown by calling :func:`Show_Transformers`
+        or on the docs at :ref:`Transformers`
+
+        If 'default', and not already defined, set to 0
+        (default = 'default')
 
     sampler : str, list or None, optional
         `sampler` refers optional to the type of resampling
@@ -635,7 +718,8 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         the random seed is set by np.random.
 
         If 'default', use the saved value within self
-        ( Defined in :func:`__init__` )
+        ( Defined in :class:`ABCD_ML.ABCD_ML`)
+        
         Or the user can define a different random state for use in ML.
         (default = 'default')
 
@@ -673,6 +757,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         If 'default', and not already defined, set to empty dict.
 
         (default = 'default')
+
     '''
 
     default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
@@ -703,6 +788,17 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self.default_ML_params['metric'] = \
             default_metrics[self.default_ML_params['problem_type']]
 
+    if loader != 'default':
+        self.default_ML_params['loader'] = loader
+    elif 'loader' not in self.default_ML_params:
+        self.default_ML_params['loader'] = None
+
+    if loader_scope != 'default':
+        self.default_ML_params['loader_scope'] = loader_scope
+    elif 'loader_scope' not in self.default_ML_params:
+        self.default_ML_params['loader_scope'] =\
+            'data files'
+
     if imputer != 'default':
         self.default_ML_params['imputer'] = imputer
     elif 'imputer' not in self.default_ML_params:
@@ -712,7 +808,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self.default_ML_params['imputer_scope'] = imputer_scope
     elif 'imputer_scope' not in self.default_ML_params:
         self.default_ML_params['imputer_scope'] =\
-            ['float', 'categorical']
+            ['float', 'cat']
 
     if scaler != 'default':
         self.default_ML_params['scaler'] = scaler
@@ -722,7 +818,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     if scaler_scope != 'default':
         self.default_ML_params['scaler_scope'] = scaler_scope
     elif 'scaler_scope' not in self.default_ML_params:
-        self.default_ML_params['scaler_scope'] = 'all'
+        self.default_ML_params['scaler_scope'] = 'float'
 
     if transformer != 'default':
         self.default_ML_params['transformer'] = transformer
@@ -732,7 +828,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     if transformer_scope != 'default':
         self.default_ML_params['transformer_scope'] = transformer_scope
     elif 'transformer_scope' not in self.default_ML_params:
-        self.default_ML_params['transformer_scope'] = 'all'
+        self.default_ML_params['transformer_scope'] = 'float'
 
     if sampler != 'default':
         self.default_ML_params['sampler'] = sampler
@@ -790,6 +886,11 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         self.default_ML_params['model_params'] = model_params
     elif 'model_params' not in self.default_ML_params:
         self.default_ML_params['model_params'] = 0
+
+    if loader_params != 'default':
+        self.default_ML_params['loader_params'] = loader_params
+    elif 'loader_params' not in self.default_ML_params:
+        self.default_ML_params['loader_params'] = 0
 
     if imputer_params != 'default':
         self.default_ML_params['imputer_params'] = imputer_params
@@ -1077,8 +1178,11 @@ def _ML_print(self, *args, **kwargs):
 def Evaluate(self, run_name=None, problem_type='default', target='default',
              model='default', model_params='default', metric='default',
              weight_metric='default',
+             loader='default',
+             loader_scope='default', loader_params='default',
              imputer='default', imputer_scope='default',
-             imputer_params='default', scaler='default',
+             imputer_params='default',
+             scaler='default',
              scaler_scope='default', scaler_params='default',
              transformer='default',
              transformer_scope='default', transformer_params='default',
@@ -1116,6 +1220,9 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     model_params :
     metric :
     weight_metric :
+    loader :
+    loader_scope :
+    loader_params :
     imputer :
     imputer_scope :
     imputer_params :
@@ -1263,6 +1370,7 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
          test_subjects=None,
          problem_type='default', target='default', model='default',
          model_params='default', metric='default', weight_metric='default',
+         loader='default', loader_scope='default', loader_params='default',
          imputer='default', imputer_scope='default', imputer_params='default',
          scaler='default', scaler_scope='default', scaler_params='default',
          transformer='default', transformer_scope='default', transformer_params='default',
@@ -1323,6 +1431,9 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
     model_params :
     metric :
     weight_metric :
+    loader :
+    loader_scope :
+    loader_params :
     imputer :
     imputer_scope :
     imputer_params :
@@ -1361,6 +1472,7 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
         'raw_preds', A pandas dataframe containing the raw predictions
         for each subject, in the test set, and 'FIs' a list where
         each element corresponds to a passed feature importance.
+
     '''
 
     # Perform pre-modeling check
@@ -1570,6 +1682,12 @@ def _print_model_params(self, ML_params, test=False, kwargs={}):
         self._print('scaler_params =',
                     ML_params['scaler_params'])
 
+    self._print('transformer =', ML_params['transformer'])
+    if ML_params['transformer'] is not None:
+        self._print('transformer_scope =', ML_params['transformer_scope'])
+        self._print('transformer_params =',
+                    ML_params['transformer_params'])
+
     self._print('sampler =', ML_params['sampler'])
     if ML_params['sampler'] is not None:
         self._print('sample_on =', ML_params['sample_on'])
@@ -1619,6 +1737,7 @@ def _print_model_params(self, ML_params, test=False, kwargs={}):
         for k in kwargs:
             self._print(k, '=', kwargs[k])
     self._print()
+
 
 def _get_split_vals(self, splits):
 
@@ -1747,6 +1866,7 @@ def _init_model(self, ML_params):
     self.Model_Pipeline =\
         Model_Pipeline(ML_params, self.CV, search_split_vals,
                        self.all_data_keys, targets_key,
+                       self.file_mapping,
                        covar_scopes, cat_encoders,
                        self.ML_verbosity['progress_bar'],
                        self._ML_print)

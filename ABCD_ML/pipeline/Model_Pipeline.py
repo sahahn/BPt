@@ -18,7 +18,7 @@ from ..helpers.ML_Helpers import (conv_to_list, proc_input,
                                   get_obj_and_params,
                                   user_passed_param_check,
                                   f_array, replace_with_in_params,
-                                  type_check)
+                                  type_check, wrap_pipeline_objs)
 
 from .Models import AVALIABLE as AVALIABLE_MODELS
 from .Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
@@ -30,8 +30,9 @@ from .Samplers import get_sampler_and_params
 from .Feature_Selectors import get_feat_selector_and_params
 from .Metrics import get_metric
 from .Scalers import get_scaler_and_params
-from .Transformers import get_transformer_and_params
+from .Transformers import get_transformer_and_params, Transformer_Wrapper
 from .Imputers import get_imputer_and_params
+from .Loaders import get_loader_and_params, Loader_Wrapper
 from .Ensembles import (get_ensemble_and_params, Basic_Ensemble,
                         DES_Ensemble)
 from .Feat_Importances import get_feat_importances_and_params
@@ -46,7 +47,7 @@ class Model_Pipeline():
     '''
 
     def __init__(self, ML_params, CV, search_split_vals,
-                 all_data_keys, targets_key, covar_scopes,
+                 all_data_keys, targets_key, file_mapping, covar_scopes,
                  cat_encoders, progress_bar, _print=print):
         ''' Init function for Model
 
@@ -170,10 +171,12 @@ class Model_Pipeline():
         self.CV = CV
         self.search_split_vals = search_split_vals
         self.data_keys = all_data_keys['data_keys']
+        self.data_file_keys = all_data_keys['data_file_keys']
         self.covars_keys = all_data_keys['covars_keys']
         self.strat_keys = all_data_keys['strat_keys']
         self.cat_keys = all_data_keys['cat_keys']
         self.targets_key = targets_key
+        self.file_mapping = file_mapping
         self.covar_scopes = covar_scopes
         self.cat_encoders = cat_encoders
         self.progress_bar = progress_bar
@@ -183,6 +186,8 @@ class Model_Pipeline():
         self.model_strs = conv_to_list(ML_params['model'])
         self.metric_strs = conv_to_list(ML_params['metric'])
         self.weight_metric = conv_to_list(ML_params['weight_metric'])[0]
+        self.loader_strs = conv_to_list(ML_params['loader'])
+        self.loader_scopes = conv_to_list(ML_params['loader_scope'])
         self.imputer_strs = conv_to_list(ML_params['imputer'])
         self.imputer_scopes = conv_to_list(ML_params['imputer_scope'])
         self.scaler_strs = conv_to_list(ML_params['scaler'])
@@ -211,6 +216,8 @@ class Model_Pipeline():
 
         self.model_params =\
             conv_to_list(ML_params['model_params'])
+        self.loader_params =\
+            conv_to_list(ML_params['loader_params'])
         self.imputer_params =\
             conv_to_list(ML_params['imputer_params'])
         self.scaler_params =\
@@ -239,6 +246,7 @@ class Model_Pipeline():
 
         self._process_model()
         self._process_feat_selectors()
+        self._process_loaders()
         self._process_imputers()
         self._process_scalers()
         self._process_transformers()
@@ -321,6 +329,9 @@ class Model_Pipeline():
         self.feat_selector_strs, cnt =\
             self._check_for_user_passed(self.feat_selector_strs, cnt)
 
+        self.loader_strs, cnt =\
+            self._check_for_user_passed(self.loader_strs, cnt)
+
         self.imputer_strs, cnt =\
             self._check_for_user_passed(self.imputer_strs, cnt)
 
@@ -363,6 +374,13 @@ class Model_Pipeline():
                 # params = [0 for i in range(len(params))]
 
         return params
+
+    def _get_user_passed(self, name, param):
+
+            user_obj = self.user_passed_objs[name]
+            user_obj_params = user_passed_param_check(param, name)
+
+            return user_obj, user_obj_params
 
     def _process_model(self):
         '''Class function to convert input model to final
@@ -413,6 +431,67 @@ class Model_Pipeline():
         # Define the metric to be used in model selection
         self.metric = self.metrics[0]
 
+    def _process_loaders(self):
+        '''Proc loaders'''
+
+        self.loaders, self.loader_params, self.loader_scopes =\
+            self._get_objs_params_scopes(self.loader_strs,
+                                         self.loader_params,
+                                         get_loader_and_params,
+                                         self.loader_scopes,
+                                         'loaders')
+
+        params = {'file_mapping': self.file_mapping,
+                  'wrapper_n_jobs': self.n_jobs}
+
+        self.loaders =\
+            self._wrap_pipeline_objs(Loader_Wrapper,
+                                     self.loaders,
+                                     self.loader_scopes,
+                                     **params)
+
+    def _process_transformers(self):
+        '''Proc transformers'''
+
+        self.transformers, self.transformer_params, self.transformer_scopes =\
+            self._get_objs_params_scopes(self.transformer_strs,
+                                         self.transformer_params,
+                                         get_transformer_and_params,
+                                         self.transformer_scopes,
+                                         'transformers')
+
+        self.transformers =\
+            self._wrap_pipeline_objs(Transformer_Wrapper,
+                                     self.transformers,
+                                     self.transformer_scopes)
+
+    def _get_objs_params_scopes(self, strs, params, get_func, scopes, name):
+
+        if strs is not None:
+
+            conv_strs = proc_input(strs)
+            self._update_extra_params(strs, conv_strs)
+
+            objs, params =\
+                self._get_objs_and_params(get_func, conv_strs, params)
+
+            scopes = self._scope_len_check(objs, scopes, name)
+            return objs, params, scopes
+
+        else:
+            return [], {}, []
+
+    def _wrap_pipeline_objs(self, wrapper, objs, scopes, **params):
+
+        inds = [self._get_inds_from_scope(scope) for scope in scopes]
+
+        objs = wrap_pipeline_objs(wrapper, objs, inds,
+                                  search_type=self.search_type,
+                                  random_state=self.random_state,
+                                  n_jobs=self.n_jobs, **params)
+
+        return objs
+
     def _process_imputers(self):
 
         if self.imputer_strs is not None:
@@ -457,7 +536,7 @@ class Model_Pipeline():
     def _get_imputer(self, imputer_str, imputer_param, scope):
 
         # First grab the correct params based on scope
-        if scope == 'c' or scope == 'categorical':
+        if scope == 'cat' or scope == 'categorical':
             scope = 'categorical'
 
             cat_inds, ordinal_inds =\
@@ -477,9 +556,9 @@ class Model_Pipeline():
 
         else:
 
-            if scope == 'f' or scope == 'float':
+            if scope == 'float':
                 scope = 'float'
-                keys = 'a'
+                keys = 'float'
             else:
                 scope = 'custom'
                 keys = scope
@@ -577,56 +656,6 @@ class Model_Pipeline():
             self.col_scalers = []
             self.col_scaler_params = {}
 
-    def _process_transformers(self):
-        '''Processed self.transformer_strs'''
-
-        if self.transformer_strs is not None:
-
-            conv_transformer_strs = proc_input(self.transformer_strs)
-            self._update_extra_params(self.transformer_strs,
-                                      conv_transformer_strs)
-
-            # Performing proc on input lengths
-            self.transformer_params =\
-                self._param_len_check(conv_transformer_strs,
-                                      self.transformer_params)
-
-            self.transformer_params =\
-                self._check_params_by_search(self.transformer_params)
-
-            self.transformer_scopes =\
-                self._scope_len_check(conv_transformer_strs,
-                                      self.transformer_scopes,
-                                      'transformers')
-
-            # Get the transformers and params
-            transformers_and_params =\
-                [self._get_transformer(transformer_str, transformer_param,
-                 scope) for
-                 transformer_str, transformer_param, scope in
-                 zip(conv_transformer_strs, self.transformer_params,
-                 self.transformer_scopes)]
-
-            self.transformers, self.transformer_params =\
-                self._proc_objs_and_params(transformers_and_params)
-
-        else:
-            self.transformers = []
-            self.transformer_params = {}
-
-    def _get_transformer(self, transformer_str, transformer_param, scope):
-
-        inds = self._get_inds_from_scope(scope)
-
-        transformer, transformer_params =\
-            get_transformer_and_params(transformer_str, self.extra_params,
-                                       transformer_param, self.search_type,
-                                       inds=inds,
-                                       random_state=self.random_state,
-                                       n_jobs=self.n_jobs)
-
-        return transformer_str, (transformer, transformer_params)
-
     def _make_col_version(self, objs, params, scopes):
 
         # Make objects first
@@ -659,30 +688,32 @@ class Model_Pipeline():
 
         if isinstance(scope, str):
 
-            # Lower-case first char only
-            scope = scope.lower()[0]
-
-            # All non categorical
-            if scope == 'a':
+            if scope == 'float':
                 keys = [k for k in self.all_keys if k not in self.cat_keys]
 
-            # Just data_keys
-            elif scope == 'd':
+            elif scope == 'data':
                 keys = self.data_keys.copy()
 
-            # Just non-categorical covars
-            elif scope == 'c':
+            elif scope == 'data files':
+                keys = self.data_file_keys.copy()
+
+            elif scope == 'float covars' or scope == 'fc':
                 keys = [k for k in self.all_keys if
                         k not in self.cat_keys and
                         k not in self.data_keys]
 
-            # Everything (but strat and targets!)
-            elif scope == 'n':
+            elif scope == 'all' or scope == 'n':
                 keys = self.all_keys.copy()
+
+            elif scope == 'cat' or scope == 'categorical':
+                keys = self.cat_keys.copy()
+
+            elif scope == 'covars':
+                keys = self.covars_keys.copy()
 
             # Wrong str case
             else:
-                self._print('Warning! Passed scaler scope of:', scope,
+                self._print('Warning! Passed scope of:', scope,
                             'is invalid!')
                 self._print('Setting scope to data only by default.')
                 keys = self.data_keys.copy()
@@ -748,6 +779,8 @@ class Model_Pipeline():
             if self.search_type is None:
                 self._check_and_replace_samplers('n_jobs',
                                                  self.n_jobs)
+            else:
+                self._check_and_replace_samplers('n_jobs', 1)
 
         else:
             self.samplers = []
@@ -877,7 +910,7 @@ class Model_Pipeline():
         '''This creates a columntransformer in order to drop
         the strat cols from X!'''
 
-        non_strat_inds = self._get_inds_from_scope('n')
+        non_strat_inds = self._get_inds_from_scope('all')
         identity = FunctionTransformer(validate=False)
 
         # Make base col_transformer, just for dropping strat cols
@@ -1486,8 +1519,9 @@ class Model_Pipeline():
             scalers, and then the passed in model.
         '''
 
-        steps = self.transformers + self.col_scalers + self.col_imputers \
-            + self.samplers + self.drop_strat + self.feat_selectors + models
+        steps = self.loaders + self.col_imputers + self.col_scalers \
+            + self.transformers + self.samplers + self.drop_strat \
+            + self.feat_selectors + models
 
         if self.cache is not None:
             os.makedirs(self.cache, exist_ok=True)
@@ -1496,9 +1530,9 @@ class Model_Pipeline():
         if len(self.transformers) > 0:
             mapping = True
 
-            for valid in [self.transformers, self.col_scalers, 
-                          self.col_imputers, self.samplers,
-                          self.drop_strat]:
+            for valid in [self.loaders, self.col_imputers, 
+                          self.col_scalers, self.transformers, 
+                          self.samplers, self.drop_strat]:
 
                 for step in valid:
                     to_map.append(step[0])
@@ -2004,9 +2038,9 @@ class Model_Pipeline():
 
     def _proc_X_test(self, test_data):
 
-        transformers = self._get_objs_from_pipeline(self.transformers)
-        scalers = self._get_objs_from_pipeline(self.col_scalers)
         imputers = self._get_objs_from_pipeline(self.col_imputers)
+        scalers = self._get_objs_from_pipeline(self.col_scalers)
+        transformers = self._get_objs_from_pipeline(self.transformers)
         drop_strat = self._get_objs_from_pipeline(self.drop_strat)
         feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 
@@ -2015,13 +2049,19 @@ class Model_Pipeline():
 
         feat_names = list(X_test)
 
+        # Apply pipeline operations in place
+        for imputer in imputers:
+            X_test[feat_names] = imputer.transform(f_array(X_test))
+        for scaler in scalers:
+            X_test[feat_names] = scaler.transform(f_array(X_test))
+
         # Handle transformers, just all to all case for now
         for i in range(len(transformers)):
             transformer = transformers[i]
 
             X_test_trans = transformer.transform(f_array(X_test))
 
-            to_remove = [feat_names[i] for i in transformer.inds]
+            to_remove = [feat_names[i] for i in transformer.wrapper_inds]
             feat_names = [name for name in feat_names if name not in to_remove]
             X_test = X_test.drop(to_remove, axis=1)
 
@@ -2032,12 +2072,6 @@ class Model_Pipeline():
 
             for i in range(len(feat_names)):
                 X_test[feat_names[i]] = X_test_trans[:, i]
-
-        # Apply pipeline operations in place
-        for scaler in scalers:
-            X_test[feat_names] = scaler.transform(f_array(X_test))
-        for imputer in imputers:
-            X_test[feat_names] = imputer.transform(f_array(X_test))
 
         # Make sure to keep track of col changes w/ drop + feat_selector
         for drop in drop_strat:
@@ -2058,21 +2092,21 @@ class Model_Pipeline():
 
     def _proc_X_train(self, train_data):
 
-        transformers = self._get_objs_from_pipeline(self.transformers)
-        scalers = self._get_objs_from_pipeline(self.col_scalers)
         imputers = self._get_objs_from_pipeline(self.col_imputers)
+        scalers = self._get_objs_from_pipeline(self.col_scalers)
+        transformers = self._get_objs_from_pipeline(self.transformers)
         samplers = self._get_objs_from_pipeline(self.samplers)
         drop_strat = self._get_objs_from_pipeline(self.drop_strat)
         feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 
         X_train, y_train = self._get_X_y(train_data)
 
-        for transformer in transformers:
-            X_train = transformer.transform(X_train)
-        for scaler in scalers:
-            X_train = scaler.transform(X_train)
         for imputer in imputers:
             X_train = imputer.transform(np.array(X_train))
+        for scaler in scalers:
+            X_train = scaler.transform(X_train)
+        for transformer in transformers:
+            X_train = transformer.transform(X_train)
         for sampler in samplers:
             X_train, y_train = sampler.fit_resample(X_train, y_train)
         for drop in drop_strat:

@@ -1,5 +1,6 @@
 from ..helpers.ML_Helpers import get_obj_and_params, proc_mapping, update_mapping, show_objects
 import numpy as np
+from sklearn.base import BaseEstimator
 
 from sklearn.decomposition import (PCA, FactorAnalysis,
                                    MiniBatchDictionaryLearning,
@@ -7,9 +8,6 @@ from sklearn.decomposition import (PCA, FactorAnalysis,
                                    IncrementalPCA, KernelPCA,
                                    MiniBatchSparsePCA, NMF, SparsePCA,
                                    TruncatedSVD)
-
-from sklearn.base import BaseEstimator
-
 
 class Transformer_Wrapper(BaseEstimator):
 
@@ -109,37 +107,13 @@ TRANSFORMERS = {
                             
 
 def get_transformer_and_params(transformer_str, extra_params, params, search_type,
-                               inds, random_state=None, n_jobs=1):
+                               random_state=None, num_feat_keys=None):
 
-    base_trans_obj, extra_trans_params, transformer_params =\
+    transformer, extra_transformer_params, transformer_params =\
         get_obj_and_params(transformer_str, TRANSFORMERS, extra_params, params,
                            search_type)
 
-    base_trans = base_trans_obj(**extra_trans_params)
-
-    return wrap_transformer(base_trans, transformer_params, inds, search_type,
-                            random_state, n_jobs)
-
-
-def wrap_transformer(base_trans, transformer_params, inds, search_type,
-                     random_state, n_jobs):
-
-    if search_type is not None:
-        n_jobs = 1
-
-    # Try to set attributes
-    try:
-        base_trans.n_jobs = n_jobs
-    except AttributeError:
-        pass
-
-    try:
-        base_trans.random_state = random_state
-    except AttributeError:
-        pass
-
-    transformer = Transformer_Wrapper(base_trans, inds)
-    return transformer, transformer_params
+    return transformer(**extra_transformer_params), transformer_params
 
 
 def Show_Transformers(self, transformer=None, show_params_options=False,

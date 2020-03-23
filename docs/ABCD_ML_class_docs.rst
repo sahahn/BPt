@@ -196,6 +196,10 @@ Show_Scalers
 =================
 .. automethod:: ABCD_ML.Show_Scalers
 
+Show_Transformers
+=================
+.. automethod:: ABCD_ML.Show_Transformers
+
 Show_Samplers
 =============
 .. automethod:: ABCD_ML.Show_Samplers

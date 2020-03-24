@@ -251,53 +251,6 @@ def _get_data_file_cnt(self):
         return 0
 
 
-def Load_Data_Files(self, loc=None, df=None, load_func=np.load, dataset_type='default', drop_keys=None,
-                    inclusion_keys=None, subject_id='default', eventname='default',
-                    eventname_col='default', overlap_subjects='default',
-                    clear_existing=False):
-
-    # Clear existing if requested, otherwise append to
-    if clear_existing:
-        self.Clear_Data()
-
-    # Get the common load params as a mix of user-passed + default values
-    load_params = self._make_load_params(args=locals())
-
-    # Load in the raw dataframe - based on dataset type and/or passed user df
-    data = self._load_datasets(loc, df, load_params)
-
-    # Set to only overlap subjects if passed
-    data = self._set_overlap(data, load_params['overlap_subjects'])
-
-    # Drop or include
-    data = self._drop_data_cols(data, drop_keys, inclusion_keys)
-
-    # Convert loaded paths into ints within data, as
-    # mapped to Data_Files in the file_mapping dicts
-    file_mapping = {}
-    data_file_keys = list(data)
-    cnt = self._get_data_file_cnt()
-
-    for col in data:
-        for subject in data.index:
-
-            data_file = Data_File(data.loc[subject, col], load_func)
-            file_mapping[cnt] = data_file
-
-            data.loc[subject, col] = cnt
-            cnt += 1
-
-    # Merge self.data with new loaded data
-    self.data = self._merge_existing(self.data, data)
-
-    # Process new loaded subjects
-    self._process_new(self.low_memory_mode)
-
-    # Only once the merge w/ existing has been confirmed, merge with class globals
-    self.file_mapping.update(file_mapping)
-    self.data_file_keys += data_file_keys
-
-
 def Load_Name_Map(self, name_map=None, loc=None, dataset_type='default',
                   source_name_col="NDAR name",
                   target_name_col="REDCap name/NDA alias",
@@ -400,6 +353,8 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
         other dataset loading behavior won't occur until after the merge,
         e.g., dropping cols by key, filtering for outlier, ect...
 
+        (default = None)
+
     df : pandas DataFrame or None, optional
         This parameter represents the option for the user to pass in
         a raw custom dataframe. A loc and/or a df must be passed.
@@ -410,6 +365,8 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
         if loading from a file, which means, there should be a column within
         the passed dataframe with subject_id, and e.g. if eventname params are
         passed, they will be applied along with any other proc. specified.
+
+        (default = None)
 
     dataset_type :
     drop_keys : str, list or None, optional
@@ -565,6 +522,104 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
 
     # Process new loaded subjects
     self._process_new(self.low_memory_mode)
+
+
+def Load_Data_Files(self, loc=None, df=None, load_func=np.load, dataset_type='default',
+                    drop_keys=None, inclusion_keys=None,
+                    subject_id='default', eventname='default',
+                    eventname_col='default', overlap_subjects='default',
+                    clear_existing=False):
+    """Class method for loading in data as file paths, where file paths correspond
+    to some sort of raw data which should only be actually loaded / proc'ed within
+    the actual modelling. The further assumption made is that these files represent
+    'Data' in the same sense that :func:`Load_Data` represents data, where once loaded / proc'ed
+    (See :ref:`Loaders`), the outputted features should be continuous / float datatype.
+
+    Parameters
+    ----------
+    loc :
+    df :
+
+    load_func : python function, optional
+        Data_Files represent a path to a saved file, which means you must
+        also provide some information on how to load the saved file.
+        This parameter is where that loading function should be passed.
+        The passed `load_func` will be used on each Data_File individually
+        and whatever the output of the function is will be passed to
+        `loaders` directly in modelling.
+
+        You might need to pass a user defined custom function in some cases,
+        e.g., you want to use np.load, but then also np.stack. Just wrap those
+        two functions in one, and pass the new function.
+
+        (default = np.load)
+
+    dataset_type :
+    drop_keys :
+    inclusion_keys : 
+    subject_id :
+    eventname :
+    eventname_col :
+    overlap_subjects :
+
+    clear_existing : bool, optional
+        If this parameter is set to True, then any existing
+        loaded data will first be cleared before loading new data!
+
+        Note: Data_Files and Data are both loaded as data, and will
+        both therefore be cleared if this argument is set to True!
+
+        .. WARNING::
+            If any subjects have been dropped from a different place,
+            e.g. targets, then simply reloading / clearing existing data
+            might result in computing a misleading overlap of final
+            valid subjects. Reloading should therefore be best used
+            right after loading the original data, or if not possible,
+            then reloading the notebook or re-running the script.
+
+        (default = False)
+    """
+
+    # Clear existing if requested, otherwise append to
+    if clear_existing:
+        self.Clear_Data()
+
+    # Get the common load params as a mix of user-passed + default values
+    load_params = self._make_load_params(args=locals())
+
+    # Load in the raw dataframe - based on dataset type and/or passed user df
+    data = self._load_datasets(loc, df, load_params)
+
+    # Set to only overlap subjects if passed
+    data = self._set_overlap(data, load_params['overlap_subjects'])
+
+    # Drop or include
+    data = self._drop_data_cols(data, drop_keys, inclusion_keys)
+
+    # Convert loaded paths into ints within data, as
+    # mapped to Data_Files in the file_mapping dicts
+    file_mapping = {}
+    data_file_keys = list(data)
+    cnt = self._get_data_file_cnt()
+
+    for col in data:
+        for subject in data.index:
+
+            data_file = Data_File(data.loc[subject, col], load_func)
+            file_mapping[cnt] = data_file
+
+            data.loc[subject, col] = cnt
+            cnt += 1
+
+    # Merge self.data with new loaded data
+    self.data = self._merge_existing(self.data, data)
+
+    # Process new loaded subjects
+    self._process_new(self.low_memory_mode)
+
+    # Only once the merge w/ existing has been confirmed, merge with class globals
+    self.file_mapping.update(file_mapping)
+    self.data_file_keys += data_file_keys
 
 
 def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,

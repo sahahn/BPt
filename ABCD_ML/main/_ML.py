@@ -153,12 +153,76 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         (default = 'default')
 
     loader : str, list or None, optional
-        Placeholder
+        'loader' refers to transformations which operate on loaded Data_Files.
+        (See :func:`Load_Data_Files`).
+        They in essence take in saved file locations, and after some series
+        of transformations pass on compatible features. Notably loaders right
+        now define operations which are computed on single files indepedently.
+
+        'loader' can be passed as a single str, or a list of, and should correspond
+        with `loader_scope` and `loader_params`. If a list, then the loaders will be
+        applied in that order.
+
+        For example, the 'identity' loader will load in saved data at the stored file
+        location, lets say they are 2d numpy arrays, and will return a flattened version
+        of the saved arrays, with each data point as a feature. A more practical example
+        might constitute loading in say 3D neuroimaging data, and passing on features as
+        extracted by ROI.
+
+        There are some loaders pre-defined for usage, but users can likewise
+        pass in custom objects (they just need to have a defined fit_transform function
+        which when passed the already loaded file, will return that subjects features).
+
+        For a full list of supported options call:
+        :func:`Show_Loaders` or view the docs at :ref:`Loaders`
+
+        If 'default', and not already defined, set to None
+        (default = 'default')
 
     loader_scope : str, list or None, optional
-        Placeholder
+        `loader_scope` refers to the "scope" or rather columns in
+        which each passed loader (if multiple), should be applied.
+        If a list of loaders is passed, then scopes should also be a
+        list with index corresponding to each loader.
+
+        Each loader scope can be
+
+        - 'data files'
+            To apply to just columns which were originally loaded as data files.
+
+        - array-like of strs
+            Can pass specific col names in as array-like
+            to select only those cols.
+
+        You can likewise pass any of the other scope keys,
+        (as seen in scaler_scopes or transformer_scopes), but in most
+        cases these won't make sense...
+
+        If 'default', and not already defined, set to 'data files'
+        (default = 'default')
 
     loader_params : int, str or list of, optional
+
+        Each `loader` has atleast one default param distribution,
+        which can be selected with an int index, or a corresponding
+        str name. Likewise, a user can pass in a dictionary with their
+        own custom values.
+
+        This parameter is used to select between different
+        distributions to be used with different search types,
+        when `search_type` == None, `model_params` is automatically
+        set to default 0.
+
+        The different parameter distributions avaliable for each
+        `imputer`, can be shown by calling :func:`Show_Imputers`
+        or on the docs at :ref:`Imputers`
+
+        Note: If a model was passed to the imputer, then
+        `imputer_params` will refer to the parameters for that
+        base model!
+
+        If 'default', and not already defined, set to 0
+        (default = 'default')
 
     imputer : str, list or None, optional
         If there is any missing data (NaN's) that have been kept
@@ -172,7 +236,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         This model str refers to the base_estimator to be used in
         an IterativeImputer, see :class:`sklearn.impute.IterativeImputer`
 
-        If a model str is passed, then it must be a valid model
+        If an imputer str is passed, then it must be a valid imputer
         for whatever scope is passed additional. If the `imputer_scope`
         passed is 'float' or specific set of column names, then a regression
         model type will be selected. If the scope is 'binary' or 'categorical',
@@ -258,6 +322,9 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         - 'data'
             To apply to all loaded data columns only.
 
+        - 'data files'
+            To apply to just columns which were originally loaded as data files.
+
         - 'float covars' or 'fc'
             To apply to all non-categorical, float covars columns only.
 
@@ -327,6 +394,9 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
         - 'data'
             To apply to all loaded data columns only.
+
+        - 'data files'
+            To apply to just columns which were originally loaded as data files.
 
         - 'float covars' or 'fc'
             To apply to all non-categorical, float covars columns only.
@@ -1068,71 +1138,71 @@ def Set_Default_ML_Verbosity(
     '''
 
     if save_results != 'default':
-        self.ML_verbosity['save_results'] = save_results
-    elif 'save_results' not in self.ML_verbosity:
-        self.ML_verbosity['save_results'] = False
+        self.default_ML_verbosity['save_results'] = save_results
+    elif 'save_results' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['save_results'] = False
 
     if progress_bar != 'default':
         if progress_bar is True:
             if self.notebook:
-                self.ML_verbosity['progress_bar'] = tqdm_notebook
+                self.default_ML_verbosity['progress_bar'] = tqdm_notebook
             else:
-                self.ML_verbosity['progress_bar'] = tqdm
+                self.default_ML_verbosity['progress_bar'] = tqdm
         else:
-            self.ML_verbosity['progress_bar'] = None
-    elif 'progress_bar' not in self.ML_verbosity:
+            self.default_ML_verbosity['progress_bar'] = None
+    elif 'progress_bar' not in self.default_ML_verbosity:
         if self.notebook:
-            self.ML_verbosity['progress_bar'] = tqdm_notebook
+            self.default_ML_verbosity['progress_bar'] = tqdm_notebook
         else:
-            self.ML_verbosity['progress_bar'] = tqdm
+            self.default_ML_verbosity['progress_bar'] = tqdm
 
     if show_init_params != 'default':
-        self.ML_verbosity['show_init_params'] = show_init_params
-    elif 'show_init_params' not in self.ML_verbosity:
-        self.ML_verbosity['show_init_params'] = True
+        self.default_ML_verbosity['show_init_params'] = show_init_params
+    elif 'show_init_params' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['show_init_params'] = True
 
     if fold_name != 'default':
-        self.ML_verbosity['fold_name'] = fold_name
-    elif 'fold_name' not in self.ML_verbosity:
-        self.ML_verbosity['fold_name'] = False
+        self.default_ML_verbosity['fold_name'] = fold_name
+    elif 'fold_name' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['fold_name'] = False
 
     if time_per_fold != 'default':
-        self.ML_verbosity['time_per_fold'] = time_per_fold
-    elif 'time_per_fold' not in self.ML_verbosity:
-        self.ML_verbosity['time_per_fold'] = False
+        self.default_ML_verbosity['time_per_fold'] = time_per_fold
+    elif 'time_per_fold' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['time_per_fold'] = False
 
     if score_per_fold != 'default':
-        self.ML_verbosity['score_per_fold'] = score_per_fold
-    elif 'score_per_fold' not in self.ML_verbosity:
-        self.ML_verbosity['score_per_fold'] = False
+        self.default_ML_verbosity['score_per_fold'] = score_per_fold
+    elif 'score_per_fold' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['score_per_fold'] = False
 
     if fold_sizes != 'default':
-        self.ML_verbosity['fold_sizes'] = fold_sizes
-    elif 'fold_sizes' not in self.ML_verbosity:
-        self.ML_verbosity['fold_sizes'] = False
+        self.default_ML_verbosity['fold_sizes'] = fold_sizes
+    elif 'fold_sizes' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['fold_sizes'] = False
 
     if best_params != 'default':
-        self.ML_verbosity['best_params'] = best_params
-    elif 'best_params' not in self.ML_verbosity:
-        self.ML_verbosity['best_params'] = False
+        self.default_ML_verbosity['best_params'] = best_params
+    elif 'best_params' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['best_params'] = False
 
     if save_to_logs != 'default':
-        self.ML_verbosity['save_to_logs'] = save_to_logs
-    elif 'save_to_logs' not in self.ML_verbosity:
-        self.ML_verbosity['save_to_logs'] = False
+        self.default_ML_verbosity['save_to_logs'] = save_to_logs
+    elif 'save_to_logs' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['save_to_logs'] = False
 
-    self._print('Default ML verbosity set within self.ML_verbosity.')
+    self._print('Default ML verbosity set within self.default_ML_verbosity.')
     self._print('----------------------')
-    for param in self.ML_verbosity:
+    for param in self.default_ML_verbosity:
 
         if param == 'progress_bar':
-            if self.ML_verbosity[param] is None:
+            if self.default_ML_verbosity[param] is None:
                 self._print(param + ':', False)
             else:
                 self._print(param + ':', True)
 
         else:
-            self._print(param + ':', self.ML_verbosity[param])
+            self._print(param + ':', self.default_ML_verbosity[param])
 
     self._print()
 
@@ -1148,7 +1218,7 @@ def _ML_print(self, *args, **kwargs):
         Anything that would be passed to default python print
     '''
 
-    if self.ML_verbosity['save_to_logs']:
+    if self.default_ML_verbosity['save_to_logs']:
         _print = self._print
     else:
         _print = print
@@ -1159,19 +1229,19 @@ def _ML_print(self, *args, **kwargs):
     if level is None:
         _print(*args, **kwargs)
 
-    elif level == 'name' and self.ML_verbosity['fold_name']:
+    elif level == 'name' and self.default_ML_verbosity['fold_name']:
         _print(*args, **kwargs)
 
-    elif level == 'time' and self.ML_verbosity['time_per_fold']:
+    elif level == 'time' and self.default_ML_verbosity['time_per_fold']:
         _print(*args, **kwargs)
 
-    elif level == 'score' and self.ML_verbosity['score_per_fold']:
+    elif level == 'score' and self.default_ML_verbosity['score_per_fold']:
         _print(*args, **kwargs)
 
-    elif level == 'size' and self.ML_verbosity['fold_sizes']:
+    elif level == 'size' and self.default_ML_verbosity['fold_sizes']:
         _print(*args, **kwargs)
 
-    elif level == 'params' and self.ML_verbosity['best_params']:
+    elif level == 'params' and self.default_ML_verbosity['best_params']:
         _print(*args, **kwargs)
 
 
@@ -1306,7 +1376,7 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
         ML_params['imputer'] = None
 
     # Print the params being used
-    if self.ML_verbosity['show_init_params']:
+    if self.default_ML_verbosity['show_init_params']:
         self._print_model_params(ML_params, test=False)
 
     # Get a free run name
@@ -1494,7 +1564,7 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
         ML_params['imputer'] = None
 
     # Print the params being used
-    if self.ML_verbosity['show_init_params']:
+    if self.default_ML_verbosity['show_init_params']:
         self._print_model_params(ML_params, test=True, kwargs=kwargs)
 
     # Get a free run name
@@ -1603,7 +1673,7 @@ def _premodel_check(self):
 
         self.Set_Default_ML_Params()
 
-    if self.ML_verbosity == {}:
+    if self.default_ML_verbosity == {}:
 
         self._print('Setting default ML verbosity settings!')
         self._print('Note, if the following values are not desired,',
@@ -1868,7 +1938,7 @@ def _init_model(self, ML_params):
                        self.all_data_keys, targets_key,
                        self.file_mapping,
                        covar_scopes, cat_encoders,
-                       self.ML_verbosity['progress_bar'],
+                       self.default_ML_verbosity['progress_bar'],
                        self._ML_print)
 
 
@@ -2016,7 +2086,7 @@ def _add_to_scores(self, run_name, name, metric_name, val_type, val, scores,
 
 def _save_results(self, results, save_name):
 
-    if self.ML_verbosity['save_results'] and self.log_dr is not None:
+    if self.default_ML_verbosity['save_results'] and self.log_dr is not None:
 
         save_dr = os.path.join(self.exp_log_dr, 'results')
         os.makedirs(save_dr, exist_ok=True)

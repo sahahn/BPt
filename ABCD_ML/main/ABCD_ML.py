@@ -28,7 +28,7 @@ def Load(loc, exp_name='default', log_dr='default', existing_log='default',
     loc : str or Path
 
         A path/str to a saved ABCD_ML object,
-        (One saved with :func:`Save`), then that object will be
+        (One saved with :func:`Save <ABCD_ML.ABCD_ML.Save>`), then that object will be
         loaded. Notably, if any additional params are passed along
         with it, e.g., exp_name, notebook, ect... they will override
         the saved values with the newly passed values.
@@ -76,7 +76,8 @@ class ABCD_ML():
     '''The main class used in ABCD_ML project'''
 
     def __init__(self, exp_name='Exp', log_dr='', existing_log='append',
-                 verbose=True, notebook=True, use_default_subject_ids=False,
+                 verbose=True, notebook=True,
+                 use_default_subject_ids=False,
                  low_memory_mode=False, strat_u_name='_Strat', dpi=100,
                  random_state=None):
         '''Main class init
@@ -225,11 +226,14 @@ class ABCD_ML():
         # Stores the gloabl train/test split
         self.train_subjects, self.test_subjects = None, None
 
+        # CV by default is just random splits
         self.CV = CV()
-        self.default_load_params = {}
-        self.default_ML_params = {}
-        self.ML_verbosity = {}
 
+        # Store default dicts as init empty
+        self.default_load_params, self.default_ML_params, \
+            self.default_ML_verbosity = {}, {}, {}
+
+        # Scores and settings are saved after each eval or test run
         self.eval_scores, self.eval_settings = {}, {}
         self.test_scores, self.test_settings = {}, {}
 
@@ -240,9 +244,6 @@ class ABCD_ML():
 
         self.file_mapping = {}
         self.data_file_keys = []
-
-        # if self.notebook:
-        #    shap.initjs()
 
         self._print('ABCD_ML object initialized')
 
@@ -357,8 +358,8 @@ class ABCD_ML():
                         _make_load_params,
                         _get_data_file_cnt,
                         Load_Name_Map,
-                        Load_Data_Files,
                         Load_Data,
+                        Load_Data_Files,
                         Load_Targets,
                         _proc_target,
                         _print_loaded_targets,
@@ -417,6 +418,8 @@ class ABCD_ML():
         get_new_docstring(Set_Default_Load_Params, Load_Name_Map)
     Load_Data.__doc__ =\
         get_new_docstring(Set_Default_Load_Params, Load_Data)
+    Load_Data_Files.__doc__ =\
+        get_new_docstring(Load_Data, Load_Data_Files)
     Load_Targets.__doc__ =\
         get_new_docstring(Set_Default_Load_Params, Load_Targets)
     Load_Covars.__doc__ =\
@@ -461,6 +464,7 @@ class ABCD_ML():
 
     from ..pipeline.Models import Show_Models
     from ..pipeline.Metrics import Show_Metrics
+    from ..pipeline.Loaders import Show_Loaders
     from ..pipeline.Transformers import Show_Transformers
     from ..pipeline.Scalers import Show_Scalers
     from ..pipeline.Imputers import Show_Imputers

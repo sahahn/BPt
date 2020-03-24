@@ -1527,7 +1527,7 @@ class Model_Pipeline():
             os.makedirs(self.cache, exist_ok=True)
 
         mapping, to_map = False, []
-        if len(self.transformers) > 0:
+        if len(self.transformers) > 0 or len(self.loaders) > 0:
             mapping = True
 
             for valid in [self.loaders, self.col_imputers, 
@@ -2036,18 +2036,38 @@ class Model_Pipeline():
 
         return objs
 
-    def _proc_X_test(self, test_data):
+    def _get_all_objs_from_pipeline(self):
+        '''Retrieves all of the nec. base pipeline objects for _proc_X_test
+        or train.'''
 
+        loaders = self._get_objs_from_pipeline(self.loaders)
         imputers = self._get_objs_from_pipeline(self.col_imputers)
         scalers = self._get_objs_from_pipeline(self.col_scalers)
         transformers = self._get_objs_from_pipeline(self.transformers)
+        samplers = self._get_objs_from_pipeline(self.samplers)
         drop_strat = self._get_objs_from_pipeline(self.drop_strat)
         feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
 
+        return (loaders, imputers, scalers, transformers,
+                samplers, drop_strat, feat_selectors)
+        
+    def _proc_X_test(self, test_data):
+
+        # Load all base objects seperately from pipeline
+        loaders, imputers, scalers, transformers, \
+            _, drop_strat, feat_selectors = self._get_all_objs_from_pipeline()
+            
         # Grab the test data, X as df + copy
         X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
 
         feat_names = list(X_test)
+
+        # Process the loaders, while keeping track of feature names
+        for loader in loaders:
+
+            # Use special transform in place df func
+            X_test = loader.transform_df(X_test, base_name=feat_names)
+            feat_names = list(X_test)
 
         # Apply pipeline operations in place
         for imputer in imputers:
@@ -2055,23 +2075,16 @@ class Model_Pipeline():
         for scaler in scalers:
             X_test[feat_names] = scaler.transform(f_array(X_test))
 
-        # Handle transformers, just all to all case for now
+        # Handle transformers, w/ simmilar func to loaders
         for i in range(len(transformers)):
+
+            # Grab transformer and base name
             transformer = transformers[i]
-
-            X_test_trans = transformer.transform(f_array(X_test))
-
-            to_remove = [feat_names[i] for i in transformer.wrapper_inds]
-            feat_names = [name for name in feat_names if name not in to_remove]
-            X_test = X_test.drop(to_remove, axis=1)
-
-            n_trans = transformer._n_trans
             base_name = self.transformers[i][0]
-            new_names = [base_name + '_' + str(i) for i in range(n_trans)]
-            feat_names = new_names + feat_names
 
-            for i in range(len(feat_names)):
-                X_test[feat_names[i]] = X_test_trans[:, i]
+            # Use special transform in place df func
+            X_test = transformer.transform_df(X_test, base_name=base_name)
+            feat_names = list(X_test)
 
         # Make sure to keep track of col changes w/ drop + feat_selector
         for drop in drop_strat:
@@ -2080,6 +2093,7 @@ class Model_Pipeline():
             feat_names = np.array(feat_names)[valid_inds]
             X_test = X_test[feat_names]
 
+        # Drop features according to feat_selectors, keeping track of changes
         for feat_selector in feat_selectors:
 
             feat_mask = feat_selector.get_support()
@@ -2092,15 +2106,15 @@ class Model_Pipeline():
 
     def _proc_X_train(self, train_data):
 
-        imputers = self._get_objs_from_pipeline(self.col_imputers)
-        scalers = self._get_objs_from_pipeline(self.col_scalers)
-        transformers = self._get_objs_from_pipeline(self.transformers)
-        samplers = self._get_objs_from_pipeline(self.samplers)
-        drop_strat = self._get_objs_from_pipeline(self.drop_strat)
-        feat_selectors = self._get_objs_from_pipeline(self.feat_selectors)
+        # Load all base objects seperately from pipeline
+        loaders, imputers, scalers, transformers, \
+            samplers, drop_strat, feat_selectors = self._get_all_objs_from_pipeline()
 
         X_train, y_train = self._get_X_y(train_data)
 
+        # No need to proc in place, so the transformations are pretty easy
+        for loader in loaders:
+            X_train = loader.transform(np.array(X_train))
         for imputer in imputers:
             X_train = imputer.transform(np.array(X_train))
         for scaler in scalers:

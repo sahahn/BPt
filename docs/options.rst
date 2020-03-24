@@ -53,7 +53,7 @@ binary
 		penalty: elasticnet
 		class_weight: UnorderedDiscrete([None, 'balanced'])
 		solver: saga
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
 		C: Log({a_min},{a_max},{width})
 
 	2. "elastic classifier extra" ::
@@ -63,7 +63,7 @@ binary
 		penalty: elasticnet
 		class_weight: UnorderedDiscrete([None, 'balanced'])
 		solver: saga
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
 		C: Log({a_min},{a_max},{width})
 		tol: Log({a_min},{a_max},{width})
 
@@ -192,14 +192,10 @@ binary
 
 	0. "base linear svc" ::
 
-		penalty: l2
-		loss: squared hinge
 		max_iter: 5000
 
 	1. "linear svc dist" ::
 
-		penalty: l2
-		loss: squared hinge
 		max_iter: 5000
 		C: Log({a_min},{a_max},{width})
 		class_weight: UnorderedDiscrete([None, 'balanced'])
@@ -218,7 +214,7 @@ binary
 		multi_class: auto
 		penalty: none
 		class_weight: None
-		solver: liblinear
+		solver: lbfgs
 
 
 "mlp classifier"
@@ -283,29 +279,57 @@ binary
 "ridge logistic"
 ****************
 
-  Base Class Documenation: :class:`sklearn.linear_model.RidgeClassifier`
+  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
   Param Distributions
 
 	0. "base ridge" ::
 
 		max_iter: 5000
-		solver: lsqr
+		penalty: l2
+		solver: saga
 
 	1. "ridge C" ::
 
 		max_iter: 5000
-		solver: lsqr
-		alpha: Log({a_min},{a_max},{width})
+		solver: saga
+		C: Log({a_min},{a_max},{width})
 		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 	2. "ridge C extra" ::
 
 		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
-		solver: lsqr
-		alpha: Log({a_min},{a_max},{width})
+		solver: saga
+		C: Log({a_min},{a_max},{width})
 		class_weight: UnorderedDiscrete([None, 'balanced'])
 		tol: Log({a_min},{a_max},{width})
+
+
+"sgd classifier"
+****************
+
+  Base Class Documenation: :class:`sklearn.linear_model.SGDClassifier`
+
+  Param Distributions
+
+	0. "base sgd" ::
+
+		loss: hinge
+
+	1. "sgd classifier" ::
+
+		loss: UnorderedDiscrete(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'])
+		penalty: UnorderedDiscrete(['l2', 'l1', 'elasticnet'])
+		alpha: Log({a_min},{a_max},{width})
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		max_iter: 5000
+		learning_rate: UnorderedDiscrete(['optimal', 'invscaling', 'adaptive', 'constant'])
+		eta0: Log({a_min},{a_max},{width})
+		power_t: Array((1,), [ArctanBound(a_max=[0.9], a_min=[0.1], name=At(0.1,0.9), shape=(1,))])
+		early_stopping: UnorderedDiscrete([False, True])
+		validation_fraction: Array((1,), [ArctanBound(a_max=[0.5], a_min=[0.05], name=At(0.05,0.5), shape=(1,))])
+		n_iter_no_change: Array((1,), [ArctanBound(a_max=[20], a_min=[2], name=At(2,20), shape=(1,))])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "svm classifier"
@@ -337,13 +361,15 @@ binary
 
   Param Distributions
 
-	0. "base xgb" ::
+	0. "base xgb classifier" ::
 
 		verbosity: 0
+		objective: binary:logistic
 
-	1. "xgb dist1" ::
+	1. "xgb classifier dist1" ::
 
 		verbosity: 0
+		objective: binary:logistic
 		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
 		min_child_weight: Log({a_min},{a_max},{width})
 		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
@@ -351,9 +377,10 @@ binary
 		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
 		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
 
-	2. "xgb dist2" ::
+	2. "xgb classifier dist2" ::
 
 		verbosity: 0
+		objective: binary:logistic
 		max_depth: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
 		learning_rate: Array((1,), [ArctanBound(a_max=[0.5], a_min=[0.01], name=At(0.01,0.5), shape=(1,))])
 		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
@@ -361,9 +388,10 @@ binary
 		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
 		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.4], name=At(0.4,0.95), shape=(1,))])
 
-	3. "xgb dist3" ::
+	3. "xgb classifier dist3" ::
 
 		verbosity: 0
+		objective: binary:logistic
 		learning_rare: Array((1,), [ArctanBound(a_max=[0.3], a_min=[0.005], name=At(0.005,0.3), shape=(1,))])
 		min_child_weight: Array((1,), [ArctanBound(a_max=[10], a_min=[0.5], name=At(0.5,10), shape=(1,))])
 		max_depth: Array((1,), [ArctanBound(a_max=[10], a_min=[3], name=At(3,10), shape=(1,))])
@@ -407,13 +435,13 @@ regression
 
 		max_iter: 5000
 		alpha: Log({a_min},{a_max},{width})
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
 
 	2. "elastic regression extra" ::
 
 		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
 		alpha: Log({a_min},{a_max},{width})
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
 		tol: Log({a_min},{a_max},{width})
 
 
@@ -597,7 +625,7 @@ regression
 
   Param Distributions
 
-	0. "base ridge" ::
+	0. "base ridge regressor" ::
 
 		max_iter: 5000
 		solver: lsqr
@@ -638,10 +666,12 @@ regression
 	0. "base xgb" ::
 
 		verbosity: 0
+		objective: reg:squarederror
 
 	1. "xgb dist1" ::
 
 		verbosity: 0
+		objective: reg:squarederror
 		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
 		min_child_weight: Log({a_min},{a_max},{width})
 		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
@@ -652,6 +682,7 @@ regression
 	2. "xgb dist2" ::
 
 		verbosity: 0
+		objective: reg:squarederror
 		max_depth: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
 		learning_rate: Array((1,), [ArctanBound(a_max=[0.5], a_min=[0.01], name=At(0.01,0.5), shape=(1,))])
 		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
@@ -662,6 +693,7 @@ regression
 	3. "xgb dist3" ::
 
 		verbosity: 0
+		objective: reg:squarederror
 		learning_rare: Array((1,), [ArctanBound(a_max=[0.3], a_min=[0.005], name=At(0.005,0.3), shape=(1,))])
 		min_child_weight: Array((1,), [ArctanBound(a_max=[10], a_min=[0.5], name=At(0.5,10), shape=(1,))])
 		max_depth: Array((1,), [ArctanBound(a_max=[10], a_min=[3], name=At(3,10), shape=(1,))])
@@ -714,7 +746,7 @@ categorical
 		penalty: elasticnet
 		class_weight: UnorderedDiscrete([None, 'balanced'])
 		solver: saga
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
 		C: Log({a_min},{a_max},{width})
 
 	2. "elastic classifier extra" ::
@@ -724,7 +756,7 @@ categorical
 		penalty: elasticnet
 		class_weight: UnorderedDiscrete([None, 'balanced'])
 		solver: saga
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
 		C: Log({a_min},{a_max},{width})
 		tol: Log({a_min},{a_max},{width})
 
@@ -853,14 +885,10 @@ categorical
 
 	0. "base linear svc" ::
 
-		penalty: l2
-		loss: squared hinge
 		max_iter: 5000
 
 	1. "linear svc dist" ::
 
-		penalty: l2
-		loss: squared hinge
 		max_iter: 5000
 		C: Log({a_min},{a_max},{width})
 		class_weight: UnorderedDiscrete([None, 'balanced'])
@@ -879,7 +907,7 @@ categorical
 		multi_class: auto
 		penalty: none
 		class_weight: None
-		solver: liblinear
+		solver: lbfgs
 
 
 "mlp classifier"
@@ -944,29 +972,57 @@ categorical
 "ridge logistic"
 ****************
 
-  Base Class Documenation: :class:`sklearn.linear_model.RidgeClassifier`
+  Base Class Documenation: :class:`sklearn.linear_model.LogisticRegression`
 
   Param Distributions
 
 	0. "base ridge" ::
 
 		max_iter: 5000
-		solver: lsqr
+		penalty: l2
+		solver: saga
 
 	1. "ridge C" ::
 
 		max_iter: 5000
-		solver: lsqr
-		alpha: Log({a_min},{a_max},{width})
+		solver: saga
+		C: Log({a_min},{a_max},{width})
 		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 	2. "ridge C extra" ::
 
 		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
-		solver: lsqr
-		alpha: Log({a_min},{a_max},{width})
+		solver: saga
+		C: Log({a_min},{a_max},{width})
 		class_weight: UnorderedDiscrete([None, 'balanced'])
 		tol: Log({a_min},{a_max},{width})
+
+
+"sgd classifier"
+****************
+
+  Base Class Documenation: :class:`sklearn.linear_model.SGDClassifier`
+
+  Param Distributions
+
+	0. "base sgd" ::
+
+		loss: hinge
+
+	1. "sgd classifier" ::
+
+		loss: UnorderedDiscrete(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'])
+		penalty: UnorderedDiscrete(['l2', 'l1', 'elasticnet'])
+		alpha: Log({a_min},{a_max},{width})
+		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		max_iter: 5000
+		learning_rate: UnorderedDiscrete(['optimal', 'invscaling', 'adaptive', 'constant'])
+		eta0: Log({a_min},{a_max},{width})
+		power_t: Array((1,), [ArctanBound(a_max=[0.9], a_min=[0.1], name=At(0.1,0.9), shape=(1,))])
+		early_stopping: UnorderedDiscrete([False, True])
+		validation_fraction: Array((1,), [ArctanBound(a_max=[0.5], a_min=[0.05], name=At(0.05,0.5), shape=(1,))])
+		n_iter_no_change: Array((1,), [ArctanBound(a_max=[20], a_min=[2], name=At(2,20), shape=(1,))])
+		class_weight: UnorderedDiscrete([None, 'balanced'])
 
 
 "svm classifier"
@@ -1529,6 +1585,32 @@ multilabel
   Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
 
+.. _Loaders:
+ 
+*******
+Loaders
+*******
+
+Different availible choices for the `loader` parameter are shown below.
+loader is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `loader` is represented by the sub-heading (within "")
+Additionally, a link to the original loaders documentation as well as the implemented parameter distributions are shown.
+
+All Problem Types
+=================
+"identity"
+**********
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Loaders.Identity`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+
 .. _Imputers:
  
 ********
@@ -1743,6 +1825,145 @@ All Problem Types
 ***********
 
   Base Class Documenation: :class:`sklearn.preprocessing.Normalizer`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+
+.. _Transformers:
+ 
+************
+Transformers
+************
+
+Different availible choices for the `transformer` parameter are shown below.
+transformer is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
+The exact str indicator for each `transformer` is represented by the sub-heading (within "")
+Additionally, a link to the original transformers documentation as well as the implemented parameter distributions are shown.
+
+All Problem Types
+=================
+"pca"
+*****
+
+  Base Class Documenation: :class:`sklearn.decomposition.PCA`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+	1. "pca var search" ::
+
+		n_components: Array((1,), [ArctanBound(a_max=[0.99], a_min=[0.1], name=At(0.1,0.99), shape=(1,))])
+		svd_solver: full
+
+
+"sparse pca"
+************
+
+  Base Class Documenation: :class:`sklearn.decomposition.SparsePCA`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"mini batch sparse pca"
+***********************
+
+  Base Class Documenation: :class:`sklearn.decomposition.MiniBatchSparsePCA`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"factor analysis"
+*****************
+
+  Base Class Documenation: :class:`sklearn.decomposition.FactorAnalysis`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"dictionary learning"
+*********************
+
+  Base Class Documenation: :class:`sklearn.decomposition.DictionaryLearning`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"mini batch dictionary learning"
+********************************
+
+  Base Class Documenation: :class:`sklearn.decomposition.MiniBatchDictionaryLearning`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"fast ica"
+**********
+
+  Base Class Documenation: :class:`sklearn.decomposition.FastICA`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"incremental pca"
+*****************
+
+  Base Class Documenation: :class:`sklearn.decomposition.IncrementalPCA`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"kernel pca"
+************
+
+  Base Class Documenation: :class:`sklearn.decomposition.KernelPCA`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"nmf"
+*****
+
+  Base Class Documenation: :class:`sklearn.decomposition.NMF`
 
   Param Distributions
 
@@ -2094,12 +2315,12 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f700d9a2950>
+		score_func: <function f_classif at 0x7f5170988a70>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f700d9a2950>
+		score_func: <function f_classif at 0x7f5170988a70>
 		percentile: Array((1,), [ArctanBound(a_max=[99], a_min=[1], name=At(1,99), shape=(1,))])
 
 
@@ -2159,12 +2380,12 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f700d9a2cb0>
+		score_func: <function f_regression at 0x7f5170988dd0>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f700d9a2cb0>
+		score_func: <function f_regression at 0x7f5170988dd0>
 		percentile: Array((1,), [ArctanBound(a_max=[99], a_min=[1], name=At(1,99), shape=(1,))])
 
 
@@ -2224,12 +2445,12 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f700d9a2950>
+		score_func: <function f_classif at 0x7f5170988a70>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f700d9a2950>
+		score_func: <function f_classif at 0x7f5170988a70>
 		percentile: Array((1,), [ArctanBound(a_max=[99], a_min=[1], name=At(1,99), shape=(1,))])
 
 
@@ -2291,6 +2512,19 @@ Additionally, a link to the original ensemble types  documentation as well as th
 
 binary
 ======
+"adaboost classifier"
+*********************
+
+  Base Class Documenation: :class:`sklearn.ensemble.AdaBoostClassifier`
+
+  Param Distributions
+
+	0. "single default" ::
+
+		needs_split: False
+		single_estimator: True
+
+
 "aposteriori"
 *************
 
@@ -2603,9 +2837,36 @@ binary
 		single_estimator: False
 
 
+"stacking classifier"
+*********************
+
+  Base Class Documenation: :class:`sklearn.ensemble.StackingClassifier`
+
+  Param Distributions
+
+	0. "stacking default" ::
+
+		needs_split: False
+		single_estimator: False
+		cv: 3
+
+
 
 regression
 ==========
+"adaboost regressor"
+********************
+
+  Base Class Documenation: :class:`sklearn.ensemble.AdaBoostRegressor`
+
+  Param Distributions
+
+	0. "single default" ::
+
+		needs_split: False
+		single_estimator: True
+
+
 "bagging regressor"
 *******************
 
@@ -2619,9 +2880,36 @@ regression
 		single_estimator: True
 
 
+"stacking regressor"
+********************
+
+  Base Class Documenation: :class:`sklearn.ensemble.StackingRegressor`
+
+  Param Distributions
+
+	0. "stacking default" ::
+
+		needs_split: False
+		single_estimator: False
+		cv: 3
+
+
 
 categorical
 ===========
+"adaboost classifier"
+*********************
+
+  Base Class Documenation: :class:`sklearn.ensemble.AdaBoostClassifier`
+
+  Param Distributions
+
+	0. "single default" ::
+
+		needs_split: False
+		single_estimator: True
+
+
 "aposteriori"
 *************
 
@@ -2932,6 +3220,20 @@ categorical
 
 		needs_split: True
 		single_estimator: False
+
+
+"stacking classifier"
+*********************
+
+  Base Class Documenation: :class:`sklearn.ensemble.StackingClassifier`
+
+  Param Distributions
+
+	0. "stacking default" ::
+
+		needs_split: False
+		single_estimator: False
+		cv: 3
 
 
 

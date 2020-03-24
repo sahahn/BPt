@@ -34,7 +34,7 @@ class Loader_Wrapper(Transformer_Wrapper):
         self._fit(X, y)
         
         # Transform X
-        X_trans, X_trans_inds = self._get_X_trans(X)
+        X_trans, self._X_trans_inds = self._get_X_trans(X)
         
         # Then create new mapping
         new_mapping = {}
@@ -42,7 +42,7 @@ class Loader_Wrapper(Transformer_Wrapper):
         # Add changed X_trans by col
         for c in range(len(self.wrapper_inds)):
             ind = self.wrapper_inds[c]
-            new_mapping[ind] = X_trans_inds[c]
+            new_mapping[ind] = self._X_trans_inds[c]
             
         # Update rest of inds, as just shifted over
         rest_inds = [i for i in range(X.shape[1])
@@ -138,6 +138,21 @@ class Loader_Wrapper(Transformer_Wrapper):
         
         return np.hstack([X_trans, X[:, rest_inds]])
 
+    def _get_new_df_names(self, feat_names):
+        '''Create new feature names for the transformed features,
+        in loaders this is done per feature/column'''
+
+        new_names = []
+        for c in range(len(self.wrapper_inds)):
+
+            ind = self.wrapper_inds[c]
+            base_name = feat_names[ind]
+
+            new_inds = self._X_trans_inds[c]
+            new_names += [base_name + '_' + str(i) for i in range(len(new_inds))]
+
+        return new_names
+
     def set_params(self, **params):
 
         if 'file_mapping' in params:
@@ -170,3 +185,43 @@ def get_loader_and_params(loader_str, extra_params, params, search_type,
                            search_type)
 
     return loader(**extra_loader_params), loader_params
+
+
+def Show_Loaders(self, loader=None, show_params_options=False,
+                 show_object=False,
+                 show_all_possible_params=False):
+    '''Print out the avaliable data loaders.
+
+    Parameters
+    ----------
+    loader : str or list, optional
+        Provide a str or list of strs, where
+        each str is the exact loader str indicator
+        in order to show information for only that (or those)
+        data loaders
+
+    show_params_options : bool, optional
+        Flag, if set to True, then will display the ABCD_ML
+        param ind options for each data loader.
+
+        (default = False)
+
+    show_object : bool, optional
+        Flag, if set to True, then will print the raw data loader
+        object.
+
+        (default = False)
+
+    show_all_possible_params: bool, optional
+        Flag, if set to True, then will print all
+        possible arguments to the classes __init__
+
+        (default = False)
+    '''
+
+
+    show_objects(problem_type=None, obj=loader,
+                 show_params_options=show_params_options,
+                 show_object=show_object,
+                 show_all_possible_params=show_all_possible_params,
+                 AVALIABLE=None, OBJS=LOADERS)

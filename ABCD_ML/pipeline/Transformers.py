@@ -48,17 +48,16 @@ class Transformer_Wrapper(BaseEstimator):
 
         # Fit transform just inds of X
         X_trans = self.wrapper_transformer.fit_transform(X[:, inds])
-        X_trans_inds = [i for i in range(X_trans.shape[1])]
-        self._n_trans = len(X_trans_inds)
+        self._X_trans_inds = [i for i in range(X_trans.shape[1])]
 
         new_mapping = {}
 
         # Many to Many case
         for i in inds:
-            new_mapping[i] = X_trans_inds
+            new_mapping[i] = self._X_trans_inds
 
         for cnt in range(len(rest_inds)):
-            new_mapping[rest_inds[cnt]] = len(X_trans_inds) + cnt
+            new_mapping[rest_inds[cnt]] = len(self._X_trans_inds) + cnt
 
         # Update mapping
         update_mapping(mapping, new_mapping)
@@ -72,6 +71,46 @@ class Transformer_Wrapper(BaseEstimator):
         X_trans = self.wrapper_transformer.transform(X[:, self.wrapper_inds])
 
         return np.hstack([X_trans, X[:, rest_inds]])
+
+    def transform_df(self, df, base_name='transformer'):
+
+        feat_names = list(df)
+
+        # Transform data as np array
+        X = np.array(df).astype(float)
+        X_trans = self.transform(X)
+
+        # Get new names
+        new_names = self._get_new_df_names(base_name)
+
+        # Remove old names
+        df, feat_names = self._remove_old_df_names(df, feat_names)
+
+        # New names come first, then rest of names
+        feat_names = new_names + feat_names
+
+        # Replace vals in df with transformed vals and new names
+        for i in range(len(feat_names)):
+            df[feat_names[i]] = X_trans[:, i]
+
+        return df
+
+    def _get_new_df_names(self, base_name):
+        '''Create new feature names for the transformed features'''
+
+        n_trans = len(self._X_trans_inds)
+        new_names = [base_name + '_' + str(i) for i in range(n_trans)]
+
+        return new_names
+
+    def _remove_old_df_names(self, df, feat_names):
+        '''Create new feature names for the transformed features'''
+
+        to_remove = [feat_names[i] for i in self.wrapper_inds]
+        feat_names = [name for name in feat_names if name not in to_remove]
+        df = df.drop(to_remove, axis=1)
+
+        return df, feat_names
 
     def set_params(self, **params):
 

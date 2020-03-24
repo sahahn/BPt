@@ -4,6 +4,7 @@ from ABCD_ML.pipeline.Metrics import get_metrics_by_type
 from ABCD_ML.pipeline.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.pipeline.Models import MODELS
 
+from ABCD_ML.pipeline.Loaders import LOADERS
 from ABCD_ML.pipeline.Transformers import TRANSFORMERS
 from ABCD_ML.pipeline.Scalers import SCALERS
 from ABCD_ML.pipeline.Imputers import IMPUTERS
@@ -210,6 +211,20 @@ lines.append('')
 lines = add_block(lines, problem_types)
 
 
+lines = main_category(lines, 'Loaders')
+lines.append('Different availible choices for the `loader` parameter' +
+             ' are shown below.')
+lines.append('loader is accepted by ' +
+             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
+             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
+lines.append('The exact str indicator for each `loader` is represented' +
+             ' by the sub-heading (within "")')
+lines.append('Additionally, a link to the original loaders documentation ' +
+             'as well as the implemented parameter distributions are shown.')
+lines.append('')
+lines = add_no_type_block(lines, LOADERS)
+
+
 lines = main_category(lines, 'Imputers')
 lines.append('Different availible choices for the `imputer` parameter' +
              ' are shown below.')
@@ -276,6 +291,7 @@ lines.append('Additionally, a link to the original samplers documentation ' +
 lines.append('')
 lines = add_no_type_block(lines, SAMPLERS)
 
+
 lines = main_category(lines, 'Feat Selectors')
 lines.append('Different availible choices for the `feat_selector` parameter' +
              ' are shown below.')
@@ -291,6 +307,7 @@ lines.append('Additionally, a link to the original feat selectors ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
 lines = add_block(lines, problem_types, AVALIABLE_SELECTORS, SELECTORS)
+
 
 lines = main_category(lines, 'Ensemble Types')
 lines.append('Different availible choices for the `ensemble` parameter' +

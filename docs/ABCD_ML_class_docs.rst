@@ -62,6 +62,10 @@ Load_Data
 =========
 .. automethod:: ABCD_ML.Load_Data
 
+Load_Data_Files
+================
+.. automethod:: ABCD_ML.Load_Data_Files
+
 Drop_Data_Cols
 ==============
 .. automethod:: ABCD_ML.Drop_Data_Cols

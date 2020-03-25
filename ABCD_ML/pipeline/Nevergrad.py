@@ -47,20 +47,27 @@ class NevergradSearchCV():
     def fit(self, X, y=None):
 
         # Fit the nevergrad optimizer
-        instrumentation = ng.Instrumentation(X, y, **self.param_distributions)
+        instrumentation = ng.p.Instrumentation(X, y, **self.param_distributions)
 
-        optimizer = ng.optimizers.registry[self.optimizer_name](
-            instrumentation=instrumentation,
-            budget=self.n_iter,
-            num_workers=self.n_jobs)
+        try:
+            opt = ng.optimizers.registry[self.optimizer_name]
+        
+        # If not found, look for in expirimental variants
+        except KeyError:
+            import nevergrad.optimization.experimentalvariants
+            opt = ng.optimizers.registry[self.optimizer_name]
+
+        optimizer = opt(parametrization=instrumentation,
+                        budget=self.n_iter,
+                        num_workers=self.n_jobs)
 
         # Set random state is defined
         if isinstance(self.random_state, int):
-            optimizer.instrumentation.random_state =\
+            optimizer.parametrization.random_state =\
                 RandomState(self.random_state)
 
         elif self.random_state is not None:
-            optimizer.instrumentation.random_state = self.random_state
+            optimizer.parametrization.random_state = self.random_state
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -74,6 +81,7 @@ class NevergradSearchCV():
 
         # Save best search search score
         self.best_search_score = optimizer.current_bests["pessimistic"].mean
+        #"optimistic", "pessimistic", "average"
 
         # Fit best estimator
         self.best_estimator_ = clone(self.estimator)

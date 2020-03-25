@@ -112,9 +112,13 @@ MODELS = {
     'svm regressor': (SVR, ['base svm', 'svm dist']),
     'svm classifier': (SVC, ['base svm classifier', 'svm classifier dist']),
 
-    'mlp regressor': (MLPRegressor, ['base mlp', 'mlp dist 1 layer',
+    'mlp regressor': (MLPRegressor, ['base mlp', 'mlp dist 3 layer',
+                                     'mlp dist es 3 layer', 'mlp dist 2 layer',
+                                     'mlp dist es 2 layer', 'mlp dist 1 layer',
                                      'mlp dist es 1 layer']),
-    'mlp classifier': (MLPClassifier, ['base mlp', 'mlp dist 1 layer',
+    'mlp classifier': (MLPClassifier, ['base mlp', 'mlp dist 3 layer',
+                                       'mlp dist es 3 layer', 'mlp dist 2 layer',
+                                       'mlp dist es 2 layer', 'mlp dist 1 layer',
                                        'mlp dist es 1 layer']),
 
     'linear svm classifier': (LinearSVC, ['base linear svc',

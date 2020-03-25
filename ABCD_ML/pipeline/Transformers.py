@@ -9,6 +9,24 @@ from sklearn.decomposition import (PCA, FactorAnalysis,
                                    MiniBatchSparsePCA, NMF, SparsePCA,
                                    TruncatedSVD)
 
+from category_encoders import OneHotEncoder
+
+
+def ce_conv(parent):
+    '''Wrapper function to make classes from category encoders compatible with ABCD_ML transformer'''
+    
+    class child(parent):
+        
+        def fit(self, X, y=None, **kwargs):
+        
+            self.return_df = False
+            self.cols = [i for i in range(X.shape[1])]
+        
+            super().fit(X, y, **kwargs)
+            return self
+        
+    return child
+
 class Transformer_Wrapper(BaseEstimator):
 
     def __init__(self, wrapper_transformer, wrapper_inds, **params):
@@ -142,6 +160,7 @@ TRANSFORMERS = {
     'incremental pca': (IncrementalPCA, ['default']),
     'kernel pca': (KernelPCA, ['default']),
     'nmf': (NMF, ['default']),
+    'one hot encoder': (ce_conv(OneHotEncoder), ['default']),
 }
                             
 

@@ -18,7 +18,8 @@ from ..helpers.ML_Helpers import (conv_to_list, proc_input,
                                   get_obj_and_params,
                                   user_passed_param_check,
                                   f_array, replace_with_in_params,
-                                  type_check, wrap_pipeline_objs)
+                                  type_check, wrap_pipeline_objs,
+                                  is_array_like)
 
 from .Models import AVALIABLE as AVALIABLE_MODELS
 from .Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
@@ -40,6 +41,9 @@ from .Feat_Importances import get_feat_importances_and_params
 from .Nevergrad import NevergradSearchCV
 import os
 
+SCOPES = set(['float', 'data', 'data files',
+              'float covars', 'fc', 'all',
+              'n', 'cat', 'categorical', 'covars'])
 
 class Model_Pipeline():
     '''Helper class for handling all of the different parameters involved in
@@ -438,8 +442,7 @@ class Model_Pipeline():
             self._get_objs_params_scopes(self.loader_strs,
                                          self.loader_params,
                                          get_loader_and_params,
-                                         self.loader_scopes,
-                                         'loaders')
+                                         self.loader_scopes)
 
         params = {'file_mapping': self.file_mapping,
                   'wrapper_n_jobs': self.n_jobs}
@@ -457,25 +460,24 @@ class Model_Pipeline():
             self._get_objs_params_scopes(self.transformer_strs,
                                          self.transformer_params,
                                          get_transformer_and_params,
-                                         self.transformer_scopes,
-                                         'transformers')
+                                         self.transformer_scopes)
 
         self.transformers =\
             self._wrap_pipeline_objs(Transformer_Wrapper,
                                      self.transformers,
                                      self.transformer_scopes)
 
-    def _get_objs_params_scopes(self, strs, params, get_func, scopes, name):
+    def _get_objs_params_scopes(self, strs, params, get_func, scopes):
 
         if strs is not None:
 
             conv_strs = proc_input(strs)
             self._update_extra_params(strs, conv_strs)
 
-            objs, params =\
-                self._get_objs_and_params(get_func, conv_strs, params)
+            objs, params, scopes =\
+                self._get_objs_and_params(get_func, conv_strs,
+                                          params, scopes=scopes)
 
-            scopes = self._scope_len_check(objs, scopes, name)
             return objs, params, scopes
 
         else:
@@ -505,9 +507,8 @@ class Model_Pipeline():
             self.imputer_params =\
                 self._check_params_by_search(self.imputer_params)
 
-            self.imputer_scopes = self._scope_len_check(conv_imputer_strs,
-                                                        self.imputer_scopes,
-                                                        "imputers")
+            conv_imputer_strs, self.imputer_scopes, self.imputer_params =\
+                self._scope_check(conv_imputer_strs, self.imputer_scopes, self.imputer_params)
 
             imputers_and_params =\
                 [self._get_imputer(imputer_str, imputer_param, scope)
@@ -634,19 +635,11 @@ class Model_Pipeline():
 
         if self.scaler_strs is not None:
 
-            # Get converted scaler str and update extra params
-            conv_scaler_strs = proc_input(self.scaler_strs)
-            self._update_extra_params(self.scaler_strs, conv_scaler_strs)
-
-            # Get the scalers tuple, and scaler_params grid / distr
-            scalers, scaler_params =\
-                self._get_objs_and_params(get_scaler_and_params,
-                                          conv_scaler_strs,
-                                          self.scaler_params)
-
-            self.scaler_scopes = self._scope_len_check(scalers,
-                                                       self.scaler_scopes,
-                                                       "scalers")
+            scalers, scaler_params, self.scaler_scopes =\
+                self._get_objs_params_scopes(self.scaler_strs,
+                                             self.scaler_params,
+                                             get_scaler_and_params,
+                                             self.scaler_scopes)
 
             self.col_scalers, self.col_scaler_params =\
                 self._make_col_version(scalers, scaler_params,
@@ -688,35 +681,40 @@ class Model_Pipeline():
 
         if isinstance(scope, str):
 
-            if scope == 'float':
-                keys = [k for k in self.all_keys if k not in self.cat_keys]
+            if scope in SCOPES:
 
-            elif scope == 'data':
-                keys = self.data_keys.copy()
+                if scope == 'float':
+                    keys = [k for k in self.all_keys if k not in self.cat_keys]
 
-            elif scope == 'data files':
-                keys = self.data_file_keys.copy()
+                elif scope == 'data':
+                    keys = self.data_keys.copy()
 
-            elif scope == 'float covars' or scope == 'fc':
-                keys = [k for k in self.all_keys if
-                        k not in self.cat_keys and
-                        k not in self.data_keys]
+                elif scope == 'data files':
+                    keys = self.data_file_keys.copy()
 
-            elif scope == 'all' or scope == 'n':
-                keys = self.all_keys.copy()
+                elif scope == 'float covars' or scope == 'fc':
+                    keys = [k for k in self.all_keys if
+                            k not in self.cat_keys and
+                            k not in self.data_keys]
 
-            elif scope == 'cat' or scope == 'categorical':
-                keys = self.cat_keys.copy()
+                elif scope == 'all' or scope == 'n':
+                    keys = self.all_keys.copy()
 
-            elif scope == 'covars':
-                keys = self.covars_keys.copy()
+                elif scope == 'cat' or scope == 'categorical':
+                    keys = self.cat_keys.copy()
 
-            # Wrong str case
+                elif scope == 'covars':
+                    keys = self.covars_keys.copy()
+
+                # Wrong str case
+                else:
+                    self._print('Warning! Passed scope of:', scope,
+                                'is invalid!')
+                    self._print('Setting scope to data only by default.')
+                    keys = self.data_keys.copy()
+            
             else:
-                self._print('Warning! Passed scope of:', scope,
-                            'is invalid!')
-                self._print('Setting scope to data only by default.')
-                keys = self.data_keys.copy()
+                keys = [scope]
 
         # If not str then assume list / array like containing col names / keys
         else:
@@ -755,9 +753,11 @@ class Model_Pipeline():
             self.sampler_params =\
                 self._check_params_by_search(self.sampler_params)
 
-            self.sample_on = self._scope_len_check(conv_sampler_strs,
-                                                   self.sample_on,
-                                                   'samplers')
+
+            # Proc scopes
+            conv_sampler_strs, self.sample_on, self.sampler_params =\
+                self._scope_check(conv_sampler_strs, self.sample_on,
+                                  self.sampler_params)
 
             recover_strats = self._get_recover_strats(len(conv_sampler_strs))
 
@@ -981,7 +981,7 @@ class Model_Pipeline():
                 self.extra_params[conv_strs[i]] =\
                     self.extra_params[orig_strs[i]]
 
-    def _get_objs_and_params(self, get_func, names, params):
+    def _get_objs_and_params(self, get_func, names, params, scopes=None):
         '''Helper function to grab scaler / feat_selectors and
         their relevant parameter grids'''
 
@@ -990,6 +990,13 @@ class Model_Pipeline():
 
         # Check search type
         params = self._check_params_by_search(params)
+
+        # Try proc scopes
+        if scopes is not None:
+
+            # Proc scopes
+            names, scopes, params = self._scope_check(names, scopes, params)
+
 
         # Make the object + params based on passed settings
         objs_and_params = []
@@ -1010,6 +1017,10 @@ class Model_Pipeline():
                                         ))
 
         objs, params = self._proc_objs_and_params(objs_and_params)
+
+        if scopes is not None:
+            return objs, params, scopes
+
         return objs, params
 
     def _param_len_check(self, names, params):
@@ -1027,33 +1038,35 @@ class Model_Pipeline():
 
         return params
 
-    def _scope_len_check(self, objs, scopes, error_name):
+    def _scope_check(self, names, scopes, params):
 
-        scope_name = 'scopes'
-        if error_name == 'imputers':
-            scope_name = 'sample_on'
-
-        # If more scopes then objs passed, assume passed inds
-        if len(scopes) > len(objs):
+        # First just case where one obj passed
+        if len(names) == 1 and len(scopes) > 1:
             scopes = [scopes]
 
-        if len(objs) != len(scopes):
+        # Now the lengths should be equal or else bad input
+        if len(names) != len(scopes):
 
-            if error_name == 'imputers':
+            raise RuntimeError('Warning: non equal number of',
+                               names, 'passed as', scopes)
 
-                self._print('Warning: non equal number of', error_name,
-                            'passed as scopes! imputers without scope will be',
-                            'ignored.')
+        new_names, new_scopes, new_params = [], [], []
+        for name, scope, param in zip(names, scopes, params):
+
+            if isinstance(scope, tuple):
+                for s in scope:
+
+                    new_names.append(name)
+                    new_scopes.append(s)
+                    new_params.append(param)
 
             else:
-                self._print('Warning: non equal number of', error_name,
-                            'passed as', scope_name, '! Filling remaining',
-                            scope_name, 'with', scopes[0])
 
-                while len(objs) != len(scopes):
-                    scopes.append(scopes[0])
+                new_names.append(name)
+                new_scopes.append(scope)
+                new_params.append(param)
 
-        return scopes
+        return new_names, new_scopes, new_params
 
     def _proc_objs_and_params(self, objs_and_params):
 
@@ -1082,7 +1095,7 @@ class Model_Pipeline():
 
                 if name in names:
 
-                    cnt = 1
+                    cnt = 0
                     used = [c[0] for c in new_objs_and_params]
                     while name + str(cnt) in used:
                         cnt += 1

@@ -210,8 +210,7 @@ class Model_Pipeline():
 
             # Restrict all keys by the stub strs passed that arn't scopes or valid column names
             if len(restrict_keys) > 0:
-                keys += list(self.all_keys[[all([r in a for r in restrict_keys])
-                                            for a in self.all_keys]])
+                keys += [a for a in self.all_keys if all([r in a for r in restrict_keys])]
             
             # Get rid of repeats if any
             keys = list(set(keys))

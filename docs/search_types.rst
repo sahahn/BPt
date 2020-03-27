@@ -21,14 +21,14 @@ middle_point
 
     (default = False)
 
-cauchy
-    To use cauchy random distribution or not.
-    Either,
+opposition_mode
+    symmetrizes exploration wrt the center: (e.g. https://ieeexplore.ieee.org/document/4424748)
+    - "opposite" : full symmetry 
+    - "quasi" : Random * symmetric
+    - None
 
-    - True : Use the cauchy ditribution 
-    - False : Use a gaussian distribution
+    (default = None)
 
-    (default = False)
 
 'RandomSearch'
 **************
@@ -44,12 +44,21 @@ cauchy
 
     middle_point: True
 
-'CauchyRandomSearch'
+'QORandomSearch'
 ********************
 
 ::
 
-    cauchy: True
+    opposition_mode: 'quasi'
+
+
+ORandomSearch
+******************
+
+::
+
+    opposition_mode: 'opposite'
+
 
 
 One Shot Optimization
@@ -102,6 +111,15 @@ rescaled
 
     (default = False)
 
+autorescale
+    Perform auto-rescaling
+
+    - True : Auto rescale
+    - False : don't auto rescale
+
+    (default = False)
+
+
 recommendation_rule
     Method for selecting best point.
     Either,
@@ -110,6 +128,14 @@ recommendation_rule
     - 'pessimistic' : selecting pessimistic best
     
     (default = 'pessimistic')
+
+opposition_mode
+    symmetrizes exploration wrt the center: (e.g. https://ieeexplore.ieee.org/document/4424748)
+    - "opposite" : full symmetry 
+    - "quasi" : Random * symmetric
+    - None
+
+    (default = None)
 
 
 'HaltonSearch'
@@ -178,6 +204,26 @@ recommendation_rule
     scrambled: True
 
 
+'OScrHammersleySearch'
+************************
+
+::
+
+    sampler: 'Hammersley'
+    scrambled: True
+    opposition_mode: 'opposite'
+
+
+'QOScrHammersleySearch'
+*************************
+
+::
+
+    sampler: 'Hammersley'
+    scrambled: True
+    opposition_mode: 'quasi'
+
+
 'CauchyScrHammersleySearch'
 ***************************
 
@@ -200,6 +246,15 @@ recommendation_rule
 ::
 
     sampler: 'LHS', cauchy: True
+
+'MetaRecentering'
+*****************
+
+::
+
+    cauchy: False
+    autorescale: True
+    sampler: 'Hammersley'
 
 
 
@@ -416,8 +471,153 @@ diagonal
 ::
 
     diagonal: True
- 
 
+
+Further variants of CMA include CMA with test based population size adaption.
+It sets Population-size equal to lambda = 4 x dimension.
+It further introduces the parameters:
+
+popsize_adaption
+    To use CMA with popsize adaptation
+
+    - True : Use popsize adaptation
+    - False : Don't...
+
+covariance_memory
+    Use covariance_memory
+
+    - True : Use covariance
+    - False : Don't...
+
+
+
+'EDA'
+*************
+
+::
+
+    popsize_adaption: False
+    covariance_memory: False
+
+
+'PCEDA'
+*************
+
+::
+
+    popsize_adaption: True
+    covariance_memory: False
+
+'MPCEDA'
+*************
+
+::
+
+    popsize_adaption: True
+    covariance_memory: True
+
+'MEDA'
+*************
+
+::
+
+    popsize_adaption: False
+    covariance_memory: True
+
+
+Evolution Strategies
+=====================
+
+Experimental evolution-strategy-like algorithms. Seems to use mutations and cross-over.
+The following parameters can be changed
+
+recombination_ratio
+    If 1 then will recombine all of the population, if 0 then won't use any combinations
+    just mutations
+
+    (default = 0)
+
+popsize
+    The number of individuals in the population
+
+    (default = 40)
+
+offsprings
+    The number of offspring from every generation
+
+    (default = None)
+
+only_offsprings
+    If true then only keep offspring, none of the original population.
+
+    (default = False)
+
+
+'ES'
+************
+
+::
+
+    recombination_ratio: 0
+    popsize: 40
+    offsprings: 60
+    only_offsprings: True
+
+
+'RecES'
+************
+
+::
+
+    recombination_ratio:1
+    popsize: 40
+    offsprings: 60
+    only_offsprings: True
+
+
+'RecMixES'
+************
+
+::
+
+    recombination_ratio: 1
+    popsize: 40
+    offsprings: 20
+    only_offsprings: False
+
+
+'RecMutDE'
+************
+
+::
+
+    recombination_ratio: 1
+    popsize: 40
+    offsprings: None
+    only_offsprings: False
+
+
+'MixES'
+************
+
+::
+
+    recombination_ratio: 0
+    popsize: 40
+    offsprings: 20
+    only_offsprings: False
+
+
+'MutDE'
+************
+
+::
+
+    recombination_ratio: 0
+    popsize: 40
+    offsprings: None
+    only_offsprings: False
+ 
 
 Differential Evolution
 ======================
@@ -583,3 +783,236 @@ recommendation
 
     crossover: 1
     popsize: 'large'
+
+
+
+Algorithm Selection
+=====================
+
+Algorithm selection works by first splitting the search budget up between trying different 
+search algorithms, and the 'budget_before_choosing' is up, it uses the rest of the search
+budget on the strategy that did the best.
+
+In the case that budget_before_choosing is 1, then the algorithm is a passive portfolio of
+the different options, and will split the full budget between all of them.
+
+The parameter options refers to the algorithms it tries before choosing.
+
+
+'ASCMA2PDEthird'
+******************
+
+::
+
+    options: ['CMA', 'TwoPointsDE']
+    budget_before_choosing: 1/3
+
+
+'ASCMADEQRthird'
+*****************
+
+::
+
+    options: ['CMA', 'LhsDE', 'ScrHaltonSearch']
+    budget_before_choosing: 1/3
+
+
+
+'ASCMADEthird'
+*****************
+
+::
+
+    options: ['CMA', 'LhsDE']
+    budget_before_choosing: 1/3
+
+
+
+'TripleCMA'
+*****************
+
+::
+
+    options: ['CMA', 'CMA', 'CMA']
+    budget_before_choosing: 1/3
+
+
+'MultiCMA'
+*****************
+
+::
+
+    options: ['CMA', 'CMA', 'CMA']
+    budget_before_choosing: 1/10
+
+
+'MultiScaleCMA'
+*****************
+
+::
+
+    options: ['CMA', 'ParametrizedCMA(scale=1e-3)', 'ParametrizedCMA(scale=1e-6)']
+    budget_before_choosing: 1/3
+
+
+
+'Portfolio'
+****************
+
+::
+
+    options: ['CMA', 'TwoPointsDE', 'ScrHammersleySearch']
+    budget_before_choosing: 1
+
+
+'ParaPortfolio'
+****************
+
+::
+
+    options: ['CMA', 'TwoPointsDE', 'PSO', 'SQP', 'ScrHammersleySearch']
+    budget_before_choosing: 1
+
+
+'SQPCMA'
+************
+
+::
+
+    options: ['CMA', n_jobs - n_jobs // 2 'SQP']
+    budget_before_choosing: 1
+
+
+
+
+Competence Maps
+=====================
+
+Competence Maps essentially just automatically select an algorithm based on the parameters
+passed, the number of workers, the budget, ect...
+
+
+
+'NGO'
+*****************
+Nevergrad optimizer by competence map., Based on One-Shot options
+
+
+'CM'
+*****
+Competence map, simplest
+
+
+'CMandAS'
+**********
+Competence map, with algorithm selection in one of the cases 
+
+
+'CMandAS2'
+***********
+Competence map, with algorithm selection in one of the cases (3 CMAs).
+
+
+'CMandAS3'
+***********
+Competence map, with algorithm selection in one of the cases (3 CMAs).
+
+
+'Shiva'
+*********
+"Shiva" choices - "Nevergrad optimizer by competence map"
+
+
+
+
+
+Misc.
+=====================
+These optimizers did not seem to naturally fall into a category. Brief descriptions are listed below.
+
+
+'NaiveIsoEMNA'
+***************
+Estimation of Multivariate Normal Algorithm
+This algorithm is quite efficient in a parallel context, i.e. when
+the population size is large.
+
+
+'TBPSA'
+***************
+Test-based population-size adaptation, for noisy problems where the best points will be an
+average of the final population.
+
+
+'NaiveTBPSA'
+***************
+Test-based population-size adaptation
+Where the best point is the best point, no average across final population.
+
+
+
+'NoisyBandit'
+**************
+Noisy bandit simple optimization
+
+
+
+'PBIL'
+*********
+Population based incremental learning 
+"Implementation of the discrete algorithm PBIL"
+https://www.ri.cmu.edu/pub_files/pub1/baluja_shumeet_1994_2/baluja_shumeet_1994_2.pdf
+
+
+
+'PSO'
+********
+Standard Particle Swarm Optimisation, but no randomization of the population order.
+
+
+
+'SQP'
+*******
+Scipy Minimize Base
+See: https://docs.scipy.org/doc/scipy-1.1.0/reference/generated/scipy.optimize.minimize.html
+Note: does not support multiple jobs at once.
+
+
+
+'SPSA'
+********
+The First order SPSA algorithm, See: https://en.wikipedia.org/wiki/Simultaneous_perturbation_stochastic_approximation
+Note: does not support multiple jobs at once.
+
+
+'SplitOptimizer'
+*****************
+Combines optimizers, each of them working on their own variables.
+By default uses CMA and RandomSearch's
+
+
+'cGA'
+*******
+Implementation of the discrete Compact Genetic Algorithm (cGA)
+https://pdfs.semanticscholar.org/4b0b/5733894ffc0b2968ddaab15d61751b87847a.pdf
+
+
+
+'chainCMAPowell'
+*****************
+A chaining consists in running algorithm 1 during T1, then algorithm 2 during T2, then algorithm 3 during T3, etc.
+Each algorithm is fed with what happened before it. This 'chainCMAPowell' chains first 'CMA' then the 'Powell' optimizers.
+Note: does not support multiple jobs at once.
+
+
+
+Experimental Variants
+=====================
+
+Nevergrad also comes with a number of Experimental variants, to see all of the different options run:
+
+::
+
+    import nevergrad as ng
+    import nevergrad.optimization.experimentalvariants
+    print(sorted(ng.optimizers.registry.keys()))

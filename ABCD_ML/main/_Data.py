@@ -524,8 +524,8 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
     self._process_new(self.low_memory_mode)
 
 
-def Load_Data_Files(self, loc=None, df=None, load_func=np.load, dataset_type='default',
-                    drop_keys=None, inclusion_keys=None,
+def Load_Data_Files(self, loc=None, df=None, load_func=np.load, in_memory=False,
+                    dataset_type='default', drop_keys=None, inclusion_keys=None,
                     subject_id='default', eventname='default',
                     eventname_col='default', overlap_subjects='default',
                     clear_existing=False):
@@ -553,6 +553,13 @@ def Load_Data_Files(self, loc=None, df=None, load_func=np.load, dataset_type='de
         two functions in one, and pass the new function.
 
         (default = np.load)
+
+    in_memory : bool, optional
+        This parameter dictates if the data files should be loaded and stored in memory,
+        vs. loaded from a saved location everytime they are accessed. By default we assume
+        that enough memory is not avaliable, so we set this to False.
+
+        (default = False)
 
     dataset_type :
     drop_keys :
@@ -605,7 +612,7 @@ def Load_Data_Files(self, loc=None, df=None, load_func=np.load, dataset_type='de
     for col in data:
         for subject in data.index:
 
-            data_file = Data_File(data.loc[subject, col], load_func)
+            data_file = Data_File(data.loc[subject, col], load_func, in_memory)
             file_mapping[cnt] = data_file
 
             data.loc[subject, col] = cnt

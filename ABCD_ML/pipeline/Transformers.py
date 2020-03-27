@@ -1,6 +1,6 @@
 from ..helpers.ML_Helpers import get_obj_and_params, proc_mapping, update_mapping, show_objects
 import numpy as np
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, TransformerMixin
 
 from sklearn.decomposition import (PCA, FactorAnalysis,
                                    MiniBatchDictionaryLearning,
@@ -9,7 +9,10 @@ from sklearn.decomposition import (PCA, FactorAnalysis,
                                    MiniBatchSparsePCA, NMF, SparsePCA,
                                    TruncatedSVD)
 
-from category_encoders import OneHotEncoder
+from category_encoders import (OneHotEncoder, BackwardDifferenceEncoder,
+                               BinaryEncoder, CatBoostEncoder, HelmertEncoder,
+                               JamesSteinEncoder, LeaveOneOutEncoder, MEstimateEncoder,
+                               PolynomialEncoder, SumEncoder, TargetEncoder, WOEEncoder)
 
 
 def ce_conv(parent):
@@ -27,7 +30,7 @@ def ce_conv(parent):
         
     return child
 
-class Transformer_Wrapper(BaseEstimator):
+class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
     def __init__(self, wrapper_transformer, wrapper_inds, **params):
 
@@ -161,6 +164,17 @@ TRANSFORMERS = {
     'kernel pca': (KernelPCA, ['default']),
     'nmf': (NMF, ['default']),
     'one hot encoder': (ce_conv(OneHotEncoder), ['default']),
+    'backward difference encoder': (ce_conv(BackwardDifferenceEncoder), ['default']),
+    'binary encoder': (ce_conv(BinaryEncoder), ['default']),
+    'cat boost encoder': (ce_conv(CatBoostEncoder), ['default']),
+    'helmert encoder': (ce_conv(HelmertEncoder), ['default']),
+    'james stein encoder': (ce_conv(JamesSteinEncoder), ['default']),
+    'leave one out encoder': (ce_conv(LeaveOneOutEncoder), ['default']),
+    'm estimate encoder': (ce_conv(MEstimateEncoder), ['default']),
+    'polynomial encoder': (ce_conv(PolynomialEncoder), ['default']),
+    'sum encoder': (ce_conv(SumEncoder), ['default']),
+    'target encoder': (ce_conv(TargetEncoder), ['default']),
+    'woe encoder': (ce_conv(WOEEncoder), ['default']), 
 }
                             
 

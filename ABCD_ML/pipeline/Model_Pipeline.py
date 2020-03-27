@@ -53,123 +53,8 @@ class Model_Pipeline():
     def __init__(self, ML_params, CV, search_split_vals,
                  all_data_keys, targets_key, file_mapping, covar_scopes,
                  cat_encoders, progress_bar, _print=print):
-        ''' Init function for Model
+        ''' Init function for Model, Use Evaluate and Test calls from main._ML.py'''
 
-        Parameters
-        ----------
-        ML_params : dict
-            Dictionary of different ML params, the following must be included,
-            (See the docstring for ABCD_ML.Set_Default_ML_Params for a more
-            detailed description of all parameters contained within ML_params)
-
-            - model_types : str or list of str,
-                Each string refers to a type of model to train.
-                If a list of strings is passed then an ensemble model
-                will be created over all individual models.
-            - metrics : str or list
-                Metric / scorer str indicator, or list of. If list, the
-                metric in the first index will be used during model selection.
-            - imputers : str, list or None
-                filler.
-            - imputer_scopes : str, list or None
-                filler.
-            - scalers : str, list or None
-                str indicator (or list of) for what type of data scaling
-                to use if any. If list, data will scaled in list order.
-            - scaler_scopes : str, list or None
-                The scope of each scaler passed, determining which columns
-                that scaler should act on.
-            - samplers : str, list or None
-                Re-sampler objects
-            - sample_on : str or list or None
-                params for samplers.
-            - feat_selectors : str, list or None
-                str indicator (or list of) for what type of feat selector(s)
-                to use if any. If list, selectors will be applied in that
-                order.
-            - n_splits : int
-                The number of folds to use during the Evaluate repeated
-                k-fold.
-            - n_repeats : int
-                The number of repeats to do during the Evaluate repeated
-                k-fold.
-            - search_splits : int, str or list
-                The number of internal folds to use during modeling training
-                / parameter selection
-            - ensemble_type : str or list of str
-                Each string refers to a type of ensemble to train,
-                or 'basic ensemble' for base behavior.
-            - ensemble_split : float, int or None
-                If a an ensemble_type that requires fitting is passed,
-                i.e., not "basic ensemble", then this param is
-                the porportion of the train_data within each fold to
-                use towards fitting the ensemble.
-            - search_type : {str, None}
-                The type of parameter search to conduct if any.
-            - model_type_params : int, str or list of
-                The index or str name of the param index for `model_type`
-            - imputer_params : int, str or list of
-                The index or str name of the param index for `imputer`
-            - scaler_params : int, str or list of
-                The index or str name of the param index for `scaler`
-            - feat_selector_params : int, str or list of
-                The index or str name of the param index for `feat_selector`
-            - ensemble_type_params : int, str or list of
-                The index or str name of the param index for `ensemble_type`
-            - n_jobs : int
-                The number of jobs to use during model training.
-            - search_n_iter : int
-                The number of random searches to conduct in random search
-                models.
-            - feats_to_use : {'all', 'data', 'covars'}
-                The subset of data to use, either all avaliable, just
-                the data, or just the covars.
-            - compute_train_score : bool
-                If True, computes the training score of the model pipeline,
-                if false only computes the testing score.
-            - random_state : int or None
-                The random state to use for CV splits / within modeling.
-            - cache : str or None
-                Cache dr
-            - extra_params : dict
-                The dictionary of any extra params to be passed to models or
-                data scalers.
-
-        CV : ABCD_ML CV
-            The class defined ABCD_ML CV object for defining
-            custom validation splits.
-
-        search_split_vals : pandas Series or None
-            Use if search_splits not int.
-
-        all_data_keys : dict
-            Contains data_keys, covars_keys, strat_keys and cat_keys,
-            as the column names within all_data.
-
-        targets_key : str or list
-            The str or list corresponding to the column keys for the targets
-            within the data passed to Evaluate_Model or Test Model.
-
-        target_encoder : sklearn encoder or list of
-            The encoder or list of encoders, used in the case of targets
-            needing to be transformed in some way.
-
-        covar_scopes : dict
-            Contains the different cols / scopes for each type
-            of covar.
-
-        cat_encoders : list of tuples
-            The encoders for conv'ing categorical.
-
-        progress_bar : None or tqdm obj
-            Either None, to not use progress bar or a tqdm object, to
-            display progress.
-
-        _print : func, optional
-            The print function to use, by default the python print,
-            but designed to be passed ABCD_ML._ML_print
-
-        '''
 
         # Set class parameters
         self.CV = CV
@@ -240,10 +125,10 @@ class Model_Pipeline():
         # Default params just sets (sub)problem type for now
         self._set_default_params()
 
-        self.subjects_to_use = ML_params['subjects_to_use']
+        self.subjects = ML_params['subjects']
 
-        # Set all_keys based on feats_to_use
-        self._set_all_keys(ML_params['feats_to_use'])
+        # Set all_keys based on passed scope
+        self._set_all_keys(ML_params['scope'])
 
         # Process inputs
         self._check_all_for_user_passed()
@@ -271,36 +156,87 @@ class Model_Pipeline():
         self.flags = {'linear': False,
                       'tree': False}
 
-    def _set_all_keys(self, feats_to_use):
-        '''Strat keys then target keys should always be last,
-           as to no effect earlier indexing.'''
+    def _get_keys_from_scope(self, scope):
+        
+        if isinstance(scope, str) and scope in SCOPES:
 
-        # Always add self.strat_keys + targets_key at end
-        if isinstance(self.targets_key, str):
-            t_key = [self.targets_key]
-        else:
-            t_key = self.targets_key
+            if scope == 'float':
+                keys = [k for k in self.all_keys if k not in self.cat_keys]
 
-        keys_at_end = self.strat_keys + t_key
+            elif scope == 'data':
+                keys = self.data_keys.copy()
 
-        if isinstance(feats_to_use, str):
+            elif scope == 'data files':
+                keys = self.data_file_keys.copy()
 
-            if feats_to_use == 'data' or feats_to_use == 'd':
-                self.all_keys = self.data_keys + keys_at_end
-            elif feats_to_use == 'covars' or feats_to_use == 'c':
-                self.all_keys = self.covars_keys + keys_at_end
-            elif feats_to_use == 'all' or feats_to_use == 'a':
-                self.all_keys =\
-                    self.data_keys + self.covars_keys + keys_at_end
+            elif scope == 'float covars' or scope == 'fc':
+                keys = [k for k in self.all_keys if
+                        k not in self.cat_keys and
+                        k not in self.data_keys]
+
+            elif scope == 'all' or scope == 'n':
+                keys = self.all_keys.copy()
+
+            elif scope == 'cat' or scope == 'categorical':
+                keys = self.cat_keys.copy()
+
+            elif scope == 'covars':
+                keys = self.covars_keys.copy()
+
             else:
-                self._print('Invalid param:', feats_to_use, 'passed for feats',
-                            'to use! Make sure you pass "data", "covars",',
-                            '"all"',
-                            'or a custom array!')
+                print('Should never reach here.')
+                pass
 
-        # Assume user passed list, if not str
+        # If not a valid passed scope
         else:
-            self.all_keys = list(feats_to_use) + keys_at_end
+
+            # Treat scope as list
+            scope = conv_to_list(scope)
+            
+            keys, restrict_keys = [], []
+            for key in scope:
+
+                # If a valid scope, add to keys
+                if key in SCOPES:
+                    keys += self._get_keys_from_scope(key)
+                
+                # If a passed column name, add to keys
+                elif key in self.all_keys:
+                    keys.append(key)
+                
+                # Otherwise append to restrict keys
+                else:
+                    restrict_keys.append(key)
+
+            # Restrict all keys by the stub strs passed that arn't scopes or valid column names
+            if len(restrict_keys) > 0:
+                keys += list(self.all_keys[[all([r in a for r in restrict_keys])
+                                            for a in self.all_keys]])
+            
+            # Get rid of repeats if any
+            keys = list(set(keys))
+        
+        # Need to remove all strat keys + target_keys, if there regardless
+        for key in self.strat_keys + conv_to_list(self.targets_key):
+            
+            try:
+                keys.remove(key)
+            except ValueError:
+                pass
+
+        return keys
+
+    def _set_all_keys(self, scope):
+    
+        # To start set all_keys with everything
+        keys_at_end = self.strat_keys + conv_to_list(self.targets_key)
+
+        self.all_keys =\
+            self.data_keys + self.covars_keys + keys_at_end
+
+        # Filter all_keys by scope, and set new all keys
+        scoped_keys = self._get_keys_from_scope(scope)
+        self.all_keys = scoped_keys + keys_at_end
 
         # Hacky way to store this info, change in future
         self.num_feat_keys = len(self.all_keys) - len(keys_at_end)
@@ -311,7 +247,7 @@ class Model_Pipeline():
         '''Computer overlapping subjects with subjects
         to use.'''
 
-        overlap = self.subjects_to_use.intersection(set(subjects))
+        overlap = self.subjects.intersection(set(subjects))
         return np.array(list(overlap))
 
     def _get_train_inds_from_keys(self, keys):
@@ -676,63 +612,14 @@ class Model_Pipeline():
         return col_objs, col_params
 
     def _get_inds_from_scope(self, scope):
-        '''Return inds from scope, with a check to remove strat
-        and target keys always.'''
+        '''Return inds from scope'''
 
-        if isinstance(scope, str):
+        # First get keys from scope
+        keys = self._get_keys_from_scope(scope)
 
-            if scope in SCOPES:
-
-                if scope == 'float':
-                    keys = [k for k in self.all_keys if k not in self.cat_keys]
-
-                elif scope == 'data':
-                    keys = self.data_keys.copy()
-
-                elif scope == 'data files':
-                    keys = self.data_file_keys.copy()
-
-                elif scope == 'float covars' or scope == 'fc':
-                    keys = [k for k in self.all_keys if
-                            k not in self.cat_keys and
-                            k not in self.data_keys]
-
-                elif scope == 'all' or scope == 'n':
-                    keys = self.all_keys.copy()
-
-                elif scope == 'cat' or scope == 'categorical':
-                    keys = self.cat_keys.copy()
-
-                elif scope == 'covars':
-                    keys = self.covars_keys.copy()
-
-                # Wrong str case
-                else:
-                    self._print('Warning! Passed scope of:', scope,
-                                'is invalid!')
-                    self._print('Setting scope to data only by default.')
-                    keys = self.data_keys.copy()
-            
-            else:
-                keys = [scope]
-
-        # If not str then assume list / array like containing col names / keys
-        else:
-            keys = scope
-
-        # Need to remove all strat keys + target_keys, if there regardless
-        if isinstance(self.targets_key, list):
-            t_keys = self.targets_key
-        else:
-            t_keys = [self.targets_key]
-
-        for key in self.strat_keys + t_keys:
-            try:
-                keys.remove(key)
-            except ValueError:
-                pass
-
+        # Then change to inds
         inds = self._get_train_inds_from_keys(keys)
+
         return inds
 
     def _process_samplers(self):
@@ -1197,7 +1084,7 @@ class Model_Pipeline():
             as the number of metrics.
         '''
 
-        # Set train_subjects according to self.subjects_to_use
+        # Set train_subjects according to self.subjects
         train_subjects = self._get_subjects_overlap(train_subjects)
 
         # Init raw_preds_df
@@ -1539,8 +1426,18 @@ class Model_Pipeline():
         if self.cache is not None:
             os.makedirs(self.cache, exist_ok=True)
 
+        mapping, to_map = self._get_mapping_to_map()
+
+        model_pipeline = ABCD_Pipeline(steps, memory=self.cache,
+                                       mapping=mapping, to_map=to_map)
+
+        return model_pipeline
+
+    def _get_mapping_to_map(self):
+
         mapping, to_map = False, []
         if len(self.transformers) > 0 or len(self.loaders) > 0:
+            
             mapping = True
 
             for valid in [self.loaders, self.col_imputers, 
@@ -1550,10 +1447,16 @@ class Model_Pipeline():
                 for step in valid:
                     to_map.append(step[0])
 
-        model_pipeline = ABCD_Pipeline(steps, memory=self.cache,
-                                       mapping=mapping, to_map=to_map)
+            # Special case for feat_selectors, add if selector
+            for step in self.feat_selectors:
 
-        return model_pipeline
+                try:
+                    if step[1].name == 'selector':
+                        to_map.append(step[0])
+                except AttributeError:
+                    pass
+
+        return mapping, to_map
 
     def _set_model_pipeline(self, train_data):
 
@@ -1849,9 +1752,10 @@ class Model_Pipeline():
 
         # Merge the different params / grids of params
         all_params = {}
-        all_params.update(self.transformer_params)
-        all_params.update(self.col_scaler_params)
+        all_params.update(self.loader_params)
         all_params.update(self.col_imputer_params)
+        all_params.update(self.col_scaler_params)
+        all_params.update(self.transformer_params)
         all_params.update(self.sampler_params)
         all_params.update(self.feat_selector_params)
         all_params.update(self.model_params)

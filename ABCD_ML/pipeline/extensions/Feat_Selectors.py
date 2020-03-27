@@ -2,6 +2,7 @@ from sklearn.feature_selection import RFE
 from sklearn.base import BaseEstimator
 from sklearn.feature_selection._base import SelectorMixin
 import numpy as np
+from ...helpers.ML_Helpers import proc_mapping
 
 
 class RFE(RFE):
@@ -25,9 +26,42 @@ class RFE(RFE):
 class FeatureSelector(SelectorMixin, BaseEstimator):
 
     def __init__(self, mask):
-        self.mask=mask
+        self.mask = mask
+        self.name = 'selector'
 
-    def fit(self, X, y=None):
+    def _proc_mapping(self, mapping):
+        
+        try:
+            self._mapping
+            return
+        
+        except AttributeError:
+            self._mapping = mapping
+
+        if len(mapping) > 0:
+
+            mask_0 = np.where(self.mask == False)[0]
+            mask_1 = np.where(self.mask == True)[0]
+
+            mask_0 = proc_mapping(mask_0, mapping)
+            mask_1 = proc_mapping(mask_1, mapping)
+
+            if len(mask_0) > 0:
+                mx_0 = np.max(mask_0)
+            else:
+                mx_0 = 0
+
+            if len(mask_1) > 0:
+                mx_1 = np.max(mask_1)
+            else:
+                mx_1 = 0
+
+            max_ind = np.max([mx_0, mx_1])
+            self.mask = np.zeros(max_ind+1, dtype='bool')
+            self.mask[mask_1] = True
+        return
+
+    def fit(self, X, y=None, mapping={}):
 
         self.mask = np.array(self.mask)
 
@@ -36,6 +70,7 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
             threshold -= .001
 
         self.mask = self.mask >= threshold
+        self._proc_mapping(mapping)
 
         return self
     

@@ -25,9 +25,9 @@ binary
 
 	1. "dt classifier dist" ::
 
-		max_depth: Array((1,), [ArctanBound(a_max=[30], a_min=[1], name=At(1,30), shape=(1,))])
-		min_samples_split: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		max_depth: Scalar{int,Cl(1,30)}[sigma=Log{exp=1.2}]:16
+		min_samples_split: Scalar{int,Cl(2,50)}[sigma=Log{exp=1.2}]:26
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "elastic net logistic"
@@ -51,21 +51,21 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 		solver: saga
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
-		C: Log({a_min},{a_max},{width})
+		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
+		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
 
 	2. "elastic classifier extra" ::
 
-		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
+		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 		solver: saga
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
-		C: Log({a_min},{a_max},{width})
-		tol: Log({a_min},{a_max},{width})
+		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
+		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
+		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
 
 
 "gaussian nb"
@@ -105,8 +105,8 @@ binary
 
 	1. "knn dist" ::
 
-		weights: UnorderedDiscrete(['uniform', 'distance'])
-		n_neighbors: Array((1,), [ArctanBound(a_max=[25], a_min=[2], name=At(2,25), shape=(1,))])
+		weights: TransitionChoice(choices=Tuple(uniform,distance),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):uniform
+		n_neighbors: Scalar{int,Cl(2,25)}[sigma=Log{exp=1.2}]:14
 
 
 "lasso logistic"
@@ -129,19 +129,19 @@ binary
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 		solver: liblinear
-		C: Log({a_min},{a_max},{width})
+		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
 
 	2. "lasso C extra" ::
 
-		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
+		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
 		multi_class: auto
 		penalty: l1
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 		solver: liblinear
-		C: Log({a_min},{a_max},{width})
-		tol: Log({a_min},{a_max},{width})
+		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
+		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
 
 
 "light gbm classifier"
@@ -158,29 +158,29 @@ binary
 	1. "lgbm classifier dist1" ::
 
 		silent: True
-		boosting_type: UnorderedDiscrete(['gbdt', 'dart', 'goss'])
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		num_leaves: Array((1,), [ArctanBound(a_max=[80], a_min=[6], name=At(6,80), shape=(1,))])
-		min_child_samples: Array((1,), [ArctanBound(a_max=[500], a_min=[10], name=At(10,500), shape=(1,))])
-		min_child_weight: Log({a_min},{a_max},{width})
-		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
-		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
-		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
-		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart,goss),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):dart
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
+		num_leaves: Scalar{int,Cl(6,80)}[sigma=Log{exp=1.2}]:20
+		min_child_samples: Scalar{int,Cl(10,500)}[sigma=Log{exp=1.2}]:255
+		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
+		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 	2. "lgbm classifier dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: UnorderedDiscrete(['gbdt', 'dart'])
-		min_child_samples: OrderedDiscrete([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
-		num_leaves: OrderedDiscrete([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
-		colsample_bytree: OrderedDiscrete([0.7, 0.9, 1.0])
-		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.3], name=At(0.3,1), shape=(1,))])
-		learning_rate: OrderedDiscrete([0.01, 0.05, 0.1])
-		n_estimators: OrderedDiscrete([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):gbdt
+		min_child_samples: TransitionChoice(choices=Tuple(1,5,7,10,15,20,35,50,100,200,500,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):35
+		num_leaves: TransitionChoice(choices=Tuple(2,4,7,10,15,20,25,30,35,40,50,65,80,100,125,150,200,250),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):40
+		colsample_bytree: TransitionChoice(choices=Tuple(0.7,0.9,1.0),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.9
+		subsample: Scalar{Cl(0.3,1)}[sigma=Log{exp=1.2}]:0.65
+		learning_rate: TransitionChoice(choices=Tuple(0.01,0.05,0.1),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.05
+		n_estimators: TransitionChoice(choices=Tuple(5,20,35,50,75,100,150,200,350,500,750,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):150
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "linear svm classifier"
@@ -197,8 +197,8 @@ binary
 	1. "linear svc dist" ::
 
 		max_iter: 5000
-		C: Log({a_min},{a_max},{width})
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "logistic"
@@ -228,31 +228,83 @@ binary
 
 		defaults only
 
-	1. "mlp dist 1 layer" ::
+	1. "mlp dist 3 layer" ::
 
-		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log({a_min},{a_max},{width})
-		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log({a_min},{a_max},{width})
-		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
-		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
-		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100 100]
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
-	2. "mlp dist es 1 layer" ::
+	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log({a_min},{a_max},{width})
-		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log({a_min},{a_max},{width})
-		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
-		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
-		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
-		n_iter_no_change: Array((1,), [ArctanBound(a_max=[50], a_min=[5], name=At(5,50), shape=(1,))])
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+
+	3. "mlp dist 2 layer" ::
+
+		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100]
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+
+	4. "mlp dist es 2 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		early_stopping: True
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+
+	5. "mlp dist 1 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+
+	6. "mlp dist es 1 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		early_stopping: True
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
 
 
 "random forest classifier"
@@ -268,12 +320,12 @@ binary
 
 	1. "rf classifier dist" ::
 
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		max_depth: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		max_features: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
-		min_samples_split: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
+		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		max_features: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
+		min_samples_split: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
 		bootstrap: True
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "ridge logistic"
@@ -293,16 +345,16 @@ binary
 
 		max_iter: 5000
 		solver: saga
-		C: Log({a_min},{a_max},{width})
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 	2. "ridge C extra" ::
 
-		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
+		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
 		solver: saga
-		C: Log({a_min},{a_max},{width})
-		class_weight: UnorderedDiscrete([None, 'balanced'])
-		tol: Log({a_min},{a_max},{width})
+		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
 
 
 "sgd classifier"
@@ -318,18 +370,18 @@ binary
 
 	1. "sgd classifier" ::
 
-		loss: UnorderedDiscrete(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'])
-		penalty: UnorderedDiscrete(['l2', 'l1', 'elasticnet'])
-		alpha: Log({a_min},{a_max},{width})
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		loss: TransitionChoice(choices=Tuple(hinge,log,modified_huber,squared_hinge,perceptron),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):modified_huber
+		penalty: TransitionChoice(choices=Tuple(l2,l1,elasticnet),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):l1
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		l1_ratio: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
 		max_iter: 5000
-		learning_rate: UnorderedDiscrete(['optimal', 'invscaling', 'adaptive', 'constant'])
-		eta0: Log({a_min},{a_max},{width})
-		power_t: Array((1,), [ArctanBound(a_max=[0.9], a_min=[0.1], name=At(0.1,0.9), shape=(1,))])
-		early_stopping: UnorderedDiscrete([False, True])
-		validation_fraction: Array((1,), [ArctanBound(a_max=[0.5], a_min=[0.05], name=At(0.05,0.5), shape=(1,))])
-		n_iter_no_change: Array((1,), [ArctanBound(a_max=[20], a_min=[2], name=At(2,20), shape=(1,))])
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		learning_rate: TransitionChoice(choices=Tuple(optimal,invscaling,adaptive,constant),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):adaptive
+		eta0: Log{exp=31.62277660168379,Cl(1e-06,1000)}:0.03162277660168379
+		power_t: Scalar{Cl(0.1,0.9)}[sigma=Log{exp=1.2}]:0.5
+		early_stopping: TransitionChoice(choices=Tuple(False,True),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):False
+		validation_fraction: Scalar{Cl(0.05,0.5)}[sigma=Log{exp=1.2}]:0.275
+		n_iter_no_change: TransitionChoice(choices=Tuple([ 2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):[ 2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "svm classifier"
@@ -348,10 +400,10 @@ binary
 	1. "svm classifier dist" ::
 
 		kernel: rbf
-		gamma: Log({a_min},{a_max},{width})
-		C: Log({a_min},{a_max},{width})
+		gamma: Log{exp=9.999999999999998,Cl(1e-06,1)}:0.001
+		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
 		probability: True
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "xgb classifier"
@@ -370,34 +422,34 @@ binary
 
 		verbosity: 0
 		objective: binary:logistic
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		min_child_weight: Log({a_min},{a_max},{width})
-		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
-		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
-		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
-		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
+		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
+		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
 
 	2. "xgb classifier dist2" ::
 
 		verbosity: 0
 		objective: binary:logistic
-		max_depth: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
-		learning_rate: Array((1,), [ArctanBound(a_max=[0.5], a_min=[0.01], name=At(0.01,0.5), shape=(1,))])
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		min_child_weight: OrderedDiscrete([1, 5, 10, 50])
-		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
-		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.4], name=At(0.4,0.95), shape=(1,))])
+		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		learning_rate: Scalar{Cl(0.01,0.5)}[sigma=Log{exp=1.2}]:0.255
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:252
+		min_child_weight: TransitionChoice(choices=Tuple(1,5,10,50),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):10
+		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
+		colsample_bytree: Scalar{Cl(0.4,0.95)}[sigma=Log{exp=1.2}]:0.675
 
 	3. "xgb classifier dist3" ::
 
 		verbosity: 0
 		objective: binary:logistic
-		learning_rare: Array((1,), [ArctanBound(a_max=[0.3], a_min=[0.005], name=At(0.005,0.3), shape=(1,))])
-		min_child_weight: Array((1,), [ArctanBound(a_max=[10], a_min=[0.5], name=At(0.5,10), shape=(1,))])
-		max_depth: Array((1,), [ArctanBound(a_max=[10], a_min=[3], name=At(3,10), shape=(1,))])
-		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
-		colsample_bytree: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
-		reg_alpha: Log({a_min},{a_max},{width})
+		learning_rare: Scalar{Cl(0.005,0.3)}[sigma=Log{exp=1.2}]:0.1525
+		min_child_weight: Scalar{Cl(0.5,10)}[sigma=Log{exp=1.2}]:5.25
+		max_depth: TransitionChoice(choices=Tuple([3 4 5 6 7 8 9]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):[3 4 5 6 7 8 9]
+		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
+		colsample_bytree: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
+		reg_alpha: Log{exp=6.812920690579612,Cl(1e-05,1)}:0.0031622776601683794
 
 
 
@@ -416,8 +468,8 @@ regression
 
 	1. "dt dist" ::
 
-		max_depth: Array((1,), [ArctanBound(a_max=[30], a_min=[1], name=At(1,30), shape=(1,))])
-		min_samples_split: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
+		max_depth: Scalar{int,Cl(1,30)}[sigma=Log{exp=1.2}]:16
+		min_samples_split: Scalar{int,Cl(2,50)}[sigma=Log{exp=1.2}]:26
 
 
 "elastic net regressor"
@@ -434,15 +486,15 @@ regression
 	1. "elastic regression" ::
 
 		max_iter: 5000
-		alpha: Log({a_min},{a_max},{width})
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
+		alpha: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
+		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
 
 	2. "elastic regression extra" ::
 
-		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
-		alpha: Log({a_min},{a_max},{width})
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
-		tol: Log({a_min},{a_max},{width})
+		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
+		alpha: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
+		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
+		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
 
 
 "gp regressor"
@@ -471,8 +523,8 @@ regression
 
 	1. "knn dist" ::
 
-		weights: UnorderedDiscrete(['uniform', 'distance'])
-		n_neighbors: Array((1,), [ArctanBound(a_max=[25], a_min=[2], name=At(2,25), shape=(1,))])
+		weights: TransitionChoice(choices=Tuple(uniform,distance),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):uniform
+		n_neighbors: Scalar{int,Cl(2,25)}[sigma=Log{exp=1.2}]:14
 
 
 "lasso regressor"
@@ -489,7 +541,7 @@ regression
 	1. "lasso regressor dist" ::
 
 		max_iter: 5000
-		alpha: Log({a_min},{a_max},{width})
+		alpha: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
 
 
 "light gbm regressor"
@@ -506,27 +558,27 @@ regression
 	1. "lgbm dist1" ::
 
 		silent: True
-		boosting_type: UnorderedDiscrete(['gbdt', 'dart', 'goss'])
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		num_leaves: Array((1,), [ArctanBound(a_max=[80], a_min=[6], name=At(6,80), shape=(1,))])
-		min_child_samples: Array((1,), [ArctanBound(a_max=[500], a_min=[10], name=At(10,500), shape=(1,))])
-		min_child_weight: Log({a_min},{a_max},{width})
-		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
-		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
-		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
-		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart,goss),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):dart
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
+		num_leaves: Scalar{int,Cl(6,80)}[sigma=Log{exp=1.2}]:20
+		min_child_samples: Scalar{int,Cl(10,500)}[sigma=Log{exp=1.2}]:255
+		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
+		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
 
 	2. "lgbm dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: UnorderedDiscrete(['gbdt', 'dart'])
-		min_child_samples: OrderedDiscrete([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
-		num_leaves: OrderedDiscrete([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
-		colsample_bytree: OrderedDiscrete([0.7, 0.9, 1.0])
-		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.3], name=At(0.3,1), shape=(1,))])
-		learning_rate: OrderedDiscrete([0.01, 0.05, 0.1])
-		n_estimators: OrderedDiscrete([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
+		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):gbdt
+		min_child_samples: TransitionChoice(choices=Tuple(1,5,7,10,15,20,35,50,100,200,500,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):35
+		num_leaves: TransitionChoice(choices=Tuple(2,4,7,10,15,20,25,30,35,40,50,65,80,100,125,150,200,250),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):40
+		colsample_bytree: TransitionChoice(choices=Tuple(0.7,0.9,1.0),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.9
+		subsample: Scalar{Cl(0.3,1)}[sigma=Log{exp=1.2}]:0.65
+		learning_rate: TransitionChoice(choices=Tuple(0.01,0.05,0.1),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.05
+		n_estimators: TransitionChoice(choices=Tuple(5,20,35,50,75,100,150,200,350,500,750,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):150
 
 
 "linear regressor"
@@ -557,7 +609,7 @@ regression
 
 		loss: epsilon_insensitive
 		max_iter: 5000
-		C: Log({a_min},{a_max},{width})
+		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
 
 
 "mlp regressor"
@@ -571,31 +623,83 @@ regression
 
 		defaults only
 
-	1. "mlp dist 1 layer" ::
+	1. "mlp dist 3 layer" ::
 
-		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log({a_min},{a_max},{width})
-		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log({a_min},{a_max},{width})
-		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
-		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
-		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100 100]
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
-	2. "mlp dist es 1 layer" ::
+	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log({a_min},{a_max},{width})
-		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log({a_min},{a_max},{width})
-		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
-		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
-		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
-		n_iter_no_change: Array((1,), [ArctanBound(a_max=[50], a_min=[5], name=At(5,50), shape=(1,))])
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+
+	3. "mlp dist 2 layer" ::
+
+		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100]
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+
+	4. "mlp dist es 2 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		early_stopping: True
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+
+	5. "mlp dist 1 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+
+	6. "mlp dist es 1 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		early_stopping: True
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
 
 
 "random forest regressor"
@@ -611,10 +715,10 @@ regression
 
 	1. "rf dist" ::
 
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		max_depth: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		max_features: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
-		min_samples_split: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
+		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		max_features: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
+		min_samples_split: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
 		bootstrap: True
 
 
@@ -634,7 +738,7 @@ regression
 
 		max_iter: 5000
 		solver: lsqr
-		alpha: Log({a_min},{a_max},{width})
+		alpha: Log{exp=21.544346900318843,Cl(0.001,100000)}:10.0
 
 
 "svm regressor"
@@ -652,8 +756,8 @@ regression
 	1. "svm dist" ::
 
 		kernel: rbf
-		gamma: Log({a_min},{a_max},{width})
-		C: Log({a_min},{a_max},{width})
+		gamma: Log{exp=9.999999999999998,Cl(1e-06,1)}:0.001
+		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
 
 
 "xgb regressor"
@@ -672,34 +776,34 @@ regression
 
 		verbosity: 0
 		objective: reg:squarederror
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		min_child_weight: Log({a_min},{a_max},{width})
-		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
-		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
-		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
-		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
+		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
+		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
 
 	2. "xgb dist2" ::
 
 		verbosity: 0
 		objective: reg:squarederror
-		max_depth: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
-		learning_rate: Array((1,), [ArctanBound(a_max=[0.5], a_min=[0.01], name=At(0.01,0.5), shape=(1,))])
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		min_child_weight: OrderedDiscrete([1, 5, 10, 50])
-		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
-		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.4], name=At(0.4,0.95), shape=(1,))])
+		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		learning_rate: Scalar{Cl(0.01,0.5)}[sigma=Log{exp=1.2}]:0.255
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:252
+		min_child_weight: TransitionChoice(choices=Tuple(1,5,10,50),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):10
+		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
+		colsample_bytree: Scalar{Cl(0.4,0.95)}[sigma=Log{exp=1.2}]:0.675
 
 	3. "xgb dist3" ::
 
 		verbosity: 0
 		objective: reg:squarederror
-		learning_rare: Array((1,), [ArctanBound(a_max=[0.3], a_min=[0.005], name=At(0.005,0.3), shape=(1,))])
-		min_child_weight: Array((1,), [ArctanBound(a_max=[10], a_min=[0.5], name=At(0.5,10), shape=(1,))])
-		max_depth: Array((1,), [ArctanBound(a_max=[10], a_min=[3], name=At(3,10), shape=(1,))])
-		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
-		colsample_bytree: Array((1,), [ArctanBound(a_max=[1], a_min=[0.5], name=At(0.5,1), shape=(1,))])
-		reg_alpha: Log({a_min},{a_max},{width})
+		learning_rare: Scalar{Cl(0.005,0.3)}[sigma=Log{exp=1.2}]:0.1525
+		min_child_weight: Scalar{Cl(0.5,10)}[sigma=Log{exp=1.2}]:5.25
+		max_depth: TransitionChoice(choices=Tuple([3 4 5 6 7 8 9]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):[3 4 5 6 7 8 9]
+		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
+		colsample_bytree: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
+		reg_alpha: Log{exp=6.812920690579612,Cl(1e-05,1)}:0.0031622776601683794
 
 
 
@@ -718,9 +822,9 @@ categorical
 
 	1. "dt classifier dist" ::
 
-		max_depth: Array((1,), [ArctanBound(a_max=[30], a_min=[1], name=At(1,30), shape=(1,))])
-		min_samples_split: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		max_depth: Scalar{int,Cl(1,30)}[sigma=Log{exp=1.2}]:16
+		min_samples_split: Scalar{int,Cl(2,50)}[sigma=Log{exp=1.2}]:26
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "elastic net logistic"
@@ -744,21 +848,21 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 		solver: saga
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
-		C: Log({a_min},{a_max},{width})
+		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
+		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
 
 	2. "elastic classifier extra" ::
 
-		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
+		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
 		multi_class: auto
 		penalty: elasticnet
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 		solver: saga
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0.01], name=At(0.01,1), shape=(1,))])
-		C: Log({a_min},{a_max},{width})
-		tol: Log({a_min},{a_max},{width})
+		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
+		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
+		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
 
 
 "gaussian nb"
@@ -798,8 +902,8 @@ categorical
 
 	1. "knn dist" ::
 
-		weights: UnorderedDiscrete(['uniform', 'distance'])
-		n_neighbors: Array((1,), [ArctanBound(a_max=[25], a_min=[2], name=At(2,25), shape=(1,))])
+		weights: TransitionChoice(choices=Tuple(uniform,distance),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):uniform
+		n_neighbors: Scalar{int,Cl(2,25)}[sigma=Log{exp=1.2}]:14
 
 
 "lasso logistic"
@@ -822,19 +926,19 @@ categorical
 		max_iter: 5000
 		multi_class: auto
 		penalty: l1
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 		solver: liblinear
-		C: Log({a_min},{a_max},{width})
+		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
 
 	2. "lasso C extra" ::
 
-		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
+		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
 		multi_class: auto
 		penalty: l1
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 		solver: liblinear
-		C: Log({a_min},{a_max},{width})
-		tol: Log({a_min},{a_max},{width})
+		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
+		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
 
 
 "light gbm classifier"
@@ -851,29 +955,29 @@ categorical
 	1. "lgbm classifier dist1" ::
 
 		silent: True
-		boosting_type: UnorderedDiscrete(['gbdt', 'dart', 'goss'])
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		num_leaves: Array((1,), [ArctanBound(a_max=[80], a_min=[6], name=At(6,80), shape=(1,))])
-		min_child_samples: Array((1,), [ArctanBound(a_max=[500], a_min=[10], name=At(10,500), shape=(1,))])
-		min_child_weight: Log({a_min},{a_max},{width})
-		subsample: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
-		colsample_bytree: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.3], name=At(0.3,0.95), shape=(1,))])
-		reg_alpha: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
-		reg_lambda: Array((1,), [ArctanBound(a_max=[1], a_min=[-2], name=At(-2,1), shape=(1,)), Exponentiate(base=10, coeff=-1, name=Ex(10,-1))])
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart,goss),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):dart
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
+		num_leaves: Scalar{int,Cl(6,80)}[sigma=Log{exp=1.2}]:20
+		min_child_samples: Scalar{int,Cl(10,500)}[sigma=Log{exp=1.2}]:255
+		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
+		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 	2. "lgbm classifier dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: UnorderedDiscrete(['gbdt', 'dart'])
-		min_child_samples: OrderedDiscrete([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
-		num_leaves: OrderedDiscrete([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
-		colsample_bytree: OrderedDiscrete([0.7, 0.9, 1.0])
-		subsample: Array((1,), [ArctanBound(a_max=[1], a_min=[0.3], name=At(0.3,1), shape=(1,))])
-		learning_rate: OrderedDiscrete([0.01, 0.05, 0.1])
-		n_estimators: OrderedDiscrete([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):gbdt
+		min_child_samples: TransitionChoice(choices=Tuple(1,5,7,10,15,20,35,50,100,200,500,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):35
+		num_leaves: TransitionChoice(choices=Tuple(2,4,7,10,15,20,25,30,35,40,50,65,80,100,125,150,200,250),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):40
+		colsample_bytree: TransitionChoice(choices=Tuple(0.7,0.9,1.0),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.9
+		subsample: Scalar{Cl(0.3,1)}[sigma=Log{exp=1.2}]:0.65
+		learning_rate: TransitionChoice(choices=Tuple(0.01,0.05,0.1),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.05
+		n_estimators: TransitionChoice(choices=Tuple(5,20,35,50,75,100,150,200,350,500,750,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):150
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "linear svm classifier"
@@ -890,8 +994,8 @@ categorical
 	1. "linear svc dist" ::
 
 		max_iter: 5000
-		C: Log({a_min},{a_max},{width})
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "logistic"
@@ -921,31 +1025,83 @@ categorical
 
 		defaults only
 
-	1. "mlp dist 1 layer" ::
+	1. "mlp dist 3 layer" ::
 
-		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log({a_min},{a_max},{width})
-		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log({a_min},{a_max},{width})
-		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
-		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
-		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100 100]
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
-	2. "mlp dist es 1 layer" ::
+	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log({a_min},{a_max},{width})
-		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log({a_min},{a_max},{width})
-		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
-		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
-		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
-		n_iter_no_change: Array((1,), [ArctanBound(a_max=[50], a_min=[5], name=At(5,50), shape=(1,))])
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+
+	3. "mlp dist 2 layer" ::
+
+		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100]
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+
+	4. "mlp dist es 2 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		early_stopping: True
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+
+	5. "mlp dist 1 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+
+	6. "mlp dist es 1 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		early_stopping: True
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
 
 
 "random forest classifier"
@@ -961,12 +1117,12 @@ categorical
 
 	1. "rf classifier dist" ::
 
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		max_depth: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		max_features: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
-		min_samples_split: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
+		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		max_features: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
+		min_samples_split: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
 		bootstrap: True
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "ridge logistic"
@@ -986,16 +1142,16 @@ categorical
 
 		max_iter: 5000
 		solver: saga
-		C: Log({a_min},{a_max},{width})
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 	2. "ridge C extra" ::
 
-		max_iter: Array((1,), [ArctanBound(a_max=[10000], a_min=[1000], name=At(1000,10000), shape=(1,))])
+		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
 		solver: saga
-		C: Log({a_min},{a_max},{width})
-		class_weight: UnorderedDiscrete([None, 'balanced'])
-		tol: Log({a_min},{a_max},{width})
+		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
 
 
 "sgd classifier"
@@ -1011,18 +1167,18 @@ categorical
 
 	1. "sgd classifier" ::
 
-		loss: UnorderedDiscrete(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'])
-		penalty: UnorderedDiscrete(['l2', 'l1', 'elasticnet'])
-		alpha: Log({a_min},{a_max},{width})
-		l1_ratio: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		loss: TransitionChoice(choices=Tuple(hinge,log,modified_huber,squared_hinge,perceptron),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):modified_huber
+		penalty: TransitionChoice(choices=Tuple(l2,l1,elasticnet),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):l1
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		l1_ratio: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
 		max_iter: 5000
-		learning_rate: UnorderedDiscrete(['optimal', 'invscaling', 'adaptive', 'constant'])
-		eta0: Log({a_min},{a_max},{width})
-		power_t: Array((1,), [ArctanBound(a_max=[0.9], a_min=[0.1], name=At(0.1,0.9), shape=(1,))])
-		early_stopping: UnorderedDiscrete([False, True])
-		validation_fraction: Array((1,), [ArctanBound(a_max=[0.5], a_min=[0.05], name=At(0.05,0.5), shape=(1,))])
-		n_iter_no_change: Array((1,), [ArctanBound(a_max=[20], a_min=[2], name=At(2,20), shape=(1,))])
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		learning_rate: TransitionChoice(choices=Tuple(optimal,invscaling,adaptive,constant),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):adaptive
+		eta0: Log{exp=31.62277660168379,Cl(1e-06,1000)}:0.03162277660168379
+		power_t: Scalar{Cl(0.1,0.9)}[sigma=Log{exp=1.2}]:0.5
+		early_stopping: TransitionChoice(choices=Tuple(False,True),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):False
+		validation_fraction: Scalar{Cl(0.05,0.5)}[sigma=Log{exp=1.2}]:0.275
+		n_iter_no_change: TransitionChoice(choices=Tuple([ 2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):[ 2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "svm classifier"
@@ -1041,10 +1197,10 @@ categorical
 	1. "svm classifier dist" ::
 
 		kernel: rbf
-		gamma: Log({a_min},{a_max},{width})
-		C: Log({a_min},{a_max},{width})
+		gamma: Log{exp=9.999999999999998,Cl(1e-06,1)}:0.001
+		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
 		probability: True
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 
@@ -1063,9 +1219,9 @@ multilabel
 
 	1. "dt classifier dist" ::
 
-		max_depth: Array((1,), [ArctanBound(a_max=[30], a_min=[1], name=At(1,30), shape=(1,))])
-		min_samples_split: Array((1,), [ArctanBound(a_max=[50], a_min=[2], name=At(2,50), shape=(1,))])
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		max_depth: Scalar{int,Cl(1,30)}[sigma=Log{exp=1.2}]:16
+		min_samples_split: Scalar{int,Cl(2,50)}[sigma=Log{exp=1.2}]:26
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 "knn classifier"
@@ -1081,8 +1237,8 @@ multilabel
 
 	1. "knn dist" ::
 
-		weights: UnorderedDiscrete(['uniform', 'distance'])
-		n_neighbors: Array((1,), [ArctanBound(a_max=[25], a_min=[2], name=At(2,25), shape=(1,))])
+		weights: TransitionChoice(choices=Tuple(uniform,distance),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):uniform
+		n_neighbors: Scalar{int,Cl(2,25)}[sigma=Log{exp=1.2}]:14
 
 
 "mlp classifier"
@@ -1096,31 +1252,83 @@ multilabel
 
 		defaults only
 
-	1. "mlp dist 1 layer" ::
+	1. "mlp dist 3 layer" ::
 
-		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log({a_min},{a_max},{width})
-		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log({a_min},{a_max},{width})
-		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
-		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
-		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100 100]
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
-	2. "mlp dist es 1 layer" ::
+	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		activation: UnorderedDiscrete(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log({a_min},{a_max},{width})
-		batch_size: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		learning_rate: UnorderedDiscrete(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log({a_min},{a_max},{width})
-		max_iter: Array((1,), [ArctanBound(a_max=[500], a_min=[100], name=At(100,500), shape=(1,))])
-		beta_1: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
-		beta_2: Array((1,), [ArctanBound(a_max=[0.95], a_min=[0.1], name=At(0.1,0.95), shape=(1,))])
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
-		n_iter_no_change: Array((1,), [ArctanBound(a_max=[50], a_min=[5], name=At(5,50), shape=(1,))])
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+
+	3. "mlp dist 2 layer" ::
+
+		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100]
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+
+	4. "mlp dist es 2 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		early_stopping: True
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+
+	5. "mlp dist 1 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+
+	6. "mlp dist es 1 layer" ::
+
+		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
+		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
+		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
+		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
+		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
+		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		early_stopping: True
+		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
 
 
 "random forest classifier"
@@ -1136,12 +1344,12 @@ multilabel
 
 	1. "rf classifier dist" ::
 
-		n_estimators: Array((1,), [ArctanBound(a_max=[500], a_min=[3], name=At(3,500), shape=(1,))])
-		max_depth: Array((1,), [ArctanBound(a_max=[200], a_min=[2], name=At(2,200), shape=(1,))])
-		max_features: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
-		min_samples_split: Array((1,), [ArctanBound(a_max=[1], a_min=[0], name=At(0,1), shape=(1,))])
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
+		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		max_features: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
+		min_samples_split: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
 		bootstrap: True
-		class_weight: UnorderedDiscrete([None, 'balanced'])
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
 
@@ -1752,7 +1960,7 @@ All Problem Types
 
 	1. "robust gs" ::
 
-		quantile_range: UnorderedDiscrete([(1, 99), (3, 97), (5, 95), (10, 90), (15, 85), (20, 80), (25, 75), (30, 70), (35, 65), (40, 60)])
+		quantile_range: TransitionChoice(choices=Tuple((1, 99),(2, 98),(3, 97),(4, 96),(5, 95),(6, 94),(7, 93),(8, 92),(9, 91),(10, 90),(11, 89),(12, 88),(13, 87),(14, 86),(15, 85),(16, 84),(17, 83),(18, 82),(19, 81),(20, 80),(21, 79),(22, 78),(23, 77),(24, 76),(25, 75),(26, 74),(27, 73),(28, 72),(29, 71),(30, 70),(31, 69),(32, 68),(33, 67),(34, 66),(35, 65),(36, 64),(37, 63),(38, 62),(39, 61)),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):(20, 80)
 
 
 "yeo"
@@ -1794,7 +2002,7 @@ All Problem Types
 
 	1. "winsorize gs" ::
 
-		quantile_range: UnorderedDiscrete([(0.1, 99.9), (0.5, 99.5), (1, 99), (1.5, 98.5), (2, 98), (2.5, 97.5), (3, 97), (3.5, 96.5), (4, 96), (4.5, 95.5), (5, 95)])
+		quantile_range: TransitionChoice(choices=Tuple((1, 99),(2, 98),(3, 97),(4, 96),(5, 95),(6, 94),(7, 93),(8, 92),(9, 91),(10, 90),(11, 89),(12, 88),(13, 87),(14, 86),(15, 85),(16, 84),(17, 83),(18, 82),(19, 81),(20, 80),(21, 79),(22, 78),(23, 77),(24, 76),(25, 75),(26, 74),(27, 73),(28, 72),(29, 71),(30, 70),(31, 69),(32, 68),(33, 67),(34, 66),(35, 65),(36, 64),(37, 63),(38, 62),(39, 61)),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):(20, 80)
 
 
 "quantile norm"
@@ -1860,7 +2068,7 @@ All Problem Types
 
 	1. "pca var search" ::
 
-		n_components: Array((1,), [ArctanBound(a_max=[0.99], a_min=[0.1], name=At(0.1,0.99), shape=(1,))])
+		n_components: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.75
 		svd_solver: full
 
 
@@ -1964,6 +2172,150 @@ All Problem Types
 *****
 
   Base Class Documenation: :class:`sklearn.decomposition.NMF`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"one hot encoder"
+*****************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"backward difference encoder"
+*****************************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"binary encoder"
+****************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"cat boost encoder"
+*******************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"helmert encoder"
+*****************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"james stein encoder"
+*********************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"leave one out encoder"
+***********************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"m estimate encoder"
+********************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"polynomial encoder"
+********************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"sum encoder"
+*************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"target encoder"
+****************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"woe encoder"
+*************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
 
   Param Distributions
 
@@ -2116,7 +2468,7 @@ All Problem Types
 		sampler_type: no change
 		regression_bins: 3
 		regression_bin_strategy: uniform
-		sampling_strategy: Array((1,), [ArctanBound(a_max=[1], a_min=[0.1], name=At(0.1,1), shape=(1,))])
+		sampling_strategy: Scalar{Cl(0.1,1.2)}[sigma=Log{exp=1.2}]:0.8
 
 
 "near miss"
@@ -2287,7 +2639,7 @@ binary
 
 	1. "rfe num feats dist" ::
 
-		n_features_to_select: Array((1,), [ArctanBound(a_max=[0.99], a_min=[0.01], name=At(0.01,0.99), shape=(1,))])
+		n_features_to_select: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.5
 
 
 "selector"
@@ -2315,13 +2667,13 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f5170988a70>
+		score_func: <function f_classif at 0x7f85f989e9e0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f5170988a70>
-		percentile: Array((1,), [ArctanBound(a_max=[99], a_min=[1], name=At(1,99), shape=(1,))])
+		score_func: <function f_classif at 0x7f85f989e9e0>
+		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
 "variance threshold"
@@ -2352,7 +2704,7 @@ regression
 
 	1. "rfe num feats dist" ::
 
-		n_features_to_select: Array((1,), [ArctanBound(a_max=[0.99], a_min=[0.01], name=At(0.01,0.99), shape=(1,))])
+		n_features_to_select: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.5
 
 
 "selector"
@@ -2380,13 +2732,13 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f5170988dd0>
+		score_func: <function f_regression at 0x7f85f989ed40>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f5170988dd0>
-		percentile: Array((1,), [ArctanBound(a_max=[99], a_min=[1], name=At(1,99), shape=(1,))])
+		score_func: <function f_regression at 0x7f85f989ed40>
+		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
 "variance threshold"
@@ -2417,7 +2769,7 @@ categorical
 
 	1. "rfe num feats dist" ::
 
-		n_features_to_select: Array((1,), [ArctanBound(a_max=[0.99], a_min=[0.01], name=At(0.01,0.99), shape=(1,))])
+		n_features_to_select: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.5
 
 
 "selector"
@@ -2445,13 +2797,13 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f5170988a70>
+		score_func: <function f_classif at 0x7f85f989e9e0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f5170988a70>
-		percentile: Array((1,), [ArctanBound(a_max=[99], a_min=[1], name=At(1,99), shape=(1,))])
+		score_func: <function f_classif at 0x7f85f989e9e0>
+		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
 "variance threshold"

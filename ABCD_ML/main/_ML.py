@@ -38,8 +38,8 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
                           splits='default', n_repeats='default',
                           search_type='default', search_splits='default',
                           search_n_iter='default',
-                          feats_to_use='default',
-                          subjects_to_use='default',
+                          scope='default',
+                          subjects='default',
                           feat_importances='default',
                           feat_importances_params='default',
                           n_jobs='default', random_state='default',
@@ -376,7 +376,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         For a full list of supported options call:
         :func:`Show_Transformers` or view the docs at :ref:`Transformers`
     
-    transformer_scope : str, list or None, optional
+    transformer_scope : str, list, tuple or None, optional
         `transformer_scope` refers to the "scope" or rather columns in
         which each passed scaler (if multiple), should be applied.
         If a list of transformers is passed, then scopes should also be a
@@ -385,6 +385,11 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         first passed transformer_scope will be used for all of the
         remaining transformers. Likewise, if no transformer is passed, this
         parameter will be ignored!
+
+        Note: Scopes passed as a tuple, in python ()'s, are treated differently
+        then passed as any other array-like type. Specifically, if passed 
+        as a tuple, then the corresponding transformer will be replicated and passed
+        as a scope individually each value of the tuple.
 
         Each transformer scope can be either,
 
@@ -410,9 +415,13 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         - 'covars'
             To apply to all loaded covar columns only.
 
-        - array-like of strs
+        - array-like of strs (not tuple)
             Can pass specific col names in as array-like
             to select only those cols.
+
+        - tuple of str
+            Can pass a tuple of scopes, to replicate the base
+            object, run seperately with each entry of the tuple
 
         If 'default', and not already defined, set to 'float'
         (default = 'default')
@@ -666,7 +675,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         if 'default', and not already defined, set to 10.
         (default = 'default')
 
-    feats_to_use : {'all', 'data', 'covars'} or array, optional
+    scope : {'all', 'data', 'covars'} or array, optional
         This parameter allows the user to optionally
         run an expiriment with a subset of the loaded features
         / columns. Typically either only the loaded
@@ -705,7 +714,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         if 'default', and not already defined, set to 'all'.
         (default = 'default')
 
-    subjects_to_use : 'all', array-like or str, optional
+    subjects : 'all', array-like or str, optional
         This parameter allows the user to optionally run
         an Evaluation run with just a subset of the loaded subjects.
         It is designed to be to be used after a global train test split
@@ -715,19 +724,19 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         If set to 'all' (as is by default), all avaliable subjects will be
         used.
 
-        `subjects_to_use` can accept either a specific array of subjects,
+        `subjects` can accept either a specific array of subjects,
         or even a loc of a text file (formatted one subject per line) in
         which to read from. Note: do not pass a tuple of subjects, as that
         is reserved for specifying special behavior.
 
-        Alternatively, `subjects_to_use` will accept a tuple, (Note:
+        Alternatively, `subjects` will accept a tuple, (Note:
         it must be a tuple!), where the first element is a loaded strat key,
         or a list of, and the second is an int value. In this case,
-        `subjects_to_use`, will be set to the subset of subjects associated
+        `subjects`, will be set to the subset of subjects associated
         with the specified strat values (or combination) that have that value.
 
         For example, if sex was loaded within strat, and ('sex', 0) was
-        passed to `subjects_to_use`, then :func:`Evaluate` would be run
+        passed to `subjects`, then :func:`Evaluate` would be run
         on just those subjects with sex == 0.
 
         if 'default', and not already defined, set to 'all'.
@@ -1007,15 +1016,15 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
     elif 'search_n_iter' not in self.default_ML_params:
         self.default_ML_params['search_n_iter'] = 10
 
-    if feats_to_use != 'default':
-        self.default_ML_params['feats_to_use'] = feats_to_use
-    elif 'feats_to_use' not in self.default_ML_params:
-        self.default_ML_params['feats_to_use'] = 'all'
+    if scope != 'default':
+        self.default_ML_params['scope'] = scope
+    elif 'scope' not in self.default_ML_params:
+        self.default_ML_params['scope'] = 'all'
 
-    if subjects_to_use != 'default':
-        self.default_ML_params['subjects_to_use'] = subjects_to_use
-    elif 'subjects_to_use' not in self.default_ML_params:
-        self.default_ML_params['subjects_to_use'] = 'all'
+    if subjects != 'default':
+        self.default_ML_params['subjects'] = subjects
+    elif 'subjects' not in self.default_ML_params:
+        self.default_ML_params['subjects'] = 'all'
 
     if compute_train_score != 'default':
         self.default_ML_params['compute_train_score'] = compute_train_score
@@ -1262,8 +1271,8 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
              ensemble_params='default', splits='default',
              n_repeats='default', 
              search_type='default', search_splits='default',
-             search_n_iter='default', feats_to_use='default',
-             subjects_to_use='default',
+             search_n_iter='default', scope='default',
+             subjects='default',
              feat_importances='default',
              feat_importances_params='default',
              n_jobs='default', random_state='default',
@@ -1315,8 +1324,8 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     search_type :
     search_splits :
     search_n_iter :
-    feats_to_use :
-    subjects_to_use :
+    scope :
+    subjects :
     feat_importances :
     feat_importances_params :
     n_jobs :
@@ -1449,7 +1458,7 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
          ensemble='default', ensemble_split='default',
          ensemble_params='default', search_type='default',
          search_splits='default', search_n_iter='default',
-         feats_to_use='default', subjects_to_use='default',
+         scope='default', subjects='default',
          feat_importances='default',
          feat_importances_params='default',
          n_jobs='default', random_state='default',
@@ -1524,8 +1533,8 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
     search_type :
     search_splits :
     search_n_iter :
-    feats_to_use :
-    subjects_to_use :
+    scope :
+    subjects :
     feat_importances :
     feat_importances_params :
     n_jobs :
@@ -1779,17 +1788,17 @@ def _print_model_params(self, ML_params, test=False, kwargs={}):
 
     self._print('n_jobs =', ML_params['n_jobs'])
 
-    if len(ML_params['feats_to_use']) > 50:
-        self._print('feats_to_use = custom passed keys with len',
-                    len(ML_params['feats_to_use']))
+    if len(ML_params['scope']) > 50:
+        self._print('scope = custom passed keys with len',
+                    len(ML_params['scope']))
     else:
-        self._print('feats_to_use =', ML_params['feats_to_use'])
+        self._print('scope =', ML_params['scope'])
 
-    if len(ML_params['subjects_to_use']) > 20:
-        self._print('subjects_to_use = custom passed keys with len',
-                    len(ML_params['subjects_to_use']))
+    if len(ML_params['subjects']) > 20:
+        self._print('subjects = custom passed keys with len',
+                    len(ML_params['subjects']))
     else:
-        self._print('subjects_to_use =', ML_params['subjects_to_use'])
+        self._print('subjects =', ML_params['subjects'])
 
     self._print('compute_train_score =', ML_params['compute_train_score'])
     self._print('random_state =', ML_params['random_state'])
@@ -1826,44 +1835,6 @@ def _get_split_vals(self, splits):
     return split_names, split_vals, sv_le
 
 
-def _proc_feats_to_use(self, feats_to_use):
-
-    if isinstance(feats_to_use, str):
-        valid = ['data', 'd', 'covars', 'c', 'all', 'a']
-
-        if feats_to_use in valid:
-            return feats_to_use
-        else:
-            feats_to_use = [feats_to_use]
-
-    final_feats_to_use = []
-    restrict_keys = []
-
-    all_feats =\
-        self.all_data_keys['data_keys'] + self.all_data_keys['covars_keys']
-    all_feats = np.array(all_feats)
-
-    for feat in feats_to_use:
-        if feat == 'data' or feat == 'd':
-            final_feats_to_use += self.all_data_keys['data_keys']
-        elif feat == 'covars' or feat == 'c':
-            final_feats_to_use += self.all_data_keys['covars_keys']
-        elif feat in all_feats:
-            final_feats_to_use.append(feat)
-        else:
-            restrict_keys.append(feat)
-
-    if len(restrict_keys) > 0:
-
-        rest = list(all_feats[[all([r in a for r in restrict_keys]) for
-                               a in all_feats]])
-        final_feats_to_use += rest
-
-    # If any repeats
-    final_feats_to_use = list(set(final_feats_to_use))
-    return final_feats_to_use
-
-
 def _get_final_subjects_to_use(self, subjects_to_use):
 
     # If str passed, either all or loc to load
@@ -1883,15 +1854,15 @@ def _get_final_subjects_to_use(self, subjects_to_use):
 
         rev_values = reverse_unique_combo_df(selected, sv_le)[0]
 
-        self.last_subjects_to_use_names = []
+        self.last_subjects_names = []
         for strat_name, value in zip(split_names, rev_values):
             if self.strat_u_name in strat_name:
                 strat_name = strat_name.replace(self.strat_u_name, '')
 
-            self.last_subjects_to_use_names.append((strat_name, value))
+            self.last_subjects_names.append((strat_name, value))
 
-        self._print('subjects_to_use set to: ',
-                    self.last_subjects_to_use_names)
+        self._print('subjects set to: ',
+                    self.last_subjects_names)
         self._print()
 
     # Lastly, if not the above, assume it is an array-like of subjects
@@ -1921,13 +1892,10 @@ def _init_model(self, ML_params):
     # Conv sample_on params w/ added unique key here, if needed
     ML_params['sample_on'] = self._add_strat_u_name(ML_params['sample_on'])
 
-    # Proc feats_to_use
-    ML_params['feats_to_use'] =\
-        self._proc_feats_to_use(ML_params['feats_to_use'])
 
     # Proc subjects to use
-    ML_params['subjects_to_use'] =\
-        self._get_final_subjects_to_use(ML_params['subjects_to_use'])
+    ML_params['subjects'] =\
+        self._get_final_subjects_to_use(ML_params['subjects'])
 
     # Grab search split_vals_here
     _, search_split_vals, _ = self._get_split_vals(ML_params['search_splits'])

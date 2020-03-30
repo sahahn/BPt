@@ -13,14 +13,14 @@ import nevergrad as ng
 AVALIABLE = {
         'binary': {
                 'univariate selection':
-                'univariate selection classification',
+                'univariate selection c',
                 'rfe': 'rfe',
                 'variance threshold': 'variance threshold',
                 'selector': 'selector',
         },
         'regression': {
                 'univariate selection':
-                'univariate selection regression',
+                'univariate selection r',
                 'rfe': 'rfe',
                 'variance threshold': 'variance threshold',
                 'selector': 'selector',
@@ -34,13 +34,13 @@ AVALIABLE = {
 AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 
 SELECTORS = {
-    'univariate selection regression': (SelectPercentile,
-                                        ['base univar fs regression',
-                                         'univar fs regression dist']),
+    'univariate selection r': (SelectPercentile,
+                                ['base univar fs regression',
+                                 'univar fs regression dist']),
 
-    'univariate selection classification': (SelectPercentile,
-                                            ['base univar fs classifier',
-                                             'univar fs classifier dist']),
+    'univariate selection c': (SelectPercentile,
+                                ['base univar fs classifier',
+                                 'univar fs classifier dist']),
 
     'rfe': (RFE, ['base rfe', 'rfe num feats dist']),
 
@@ -71,8 +71,8 @@ def get_special_selector(feat_selector, feat_selector_params, random_state,
         # If set to searchable, set to searchable...
         if feat_selector_params[p_name] == 'sets as hyperparameters':
             
-            feat_array = ng.p.Array(init=(num_feat_keys))
-            feat_array.set_bounds(lower=0, upper=1).set_mutation(1/6)
+            feat_array = ng.p.Array(init=[.5 for i in range(num_feat_keys)])
+            feat_array.set_mutation(sigma=1/6).set_bounds(lower=0, upper=1)
             feat_selector_params[p_name] = feat_array
                 
 

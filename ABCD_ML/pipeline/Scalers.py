@@ -21,7 +21,7 @@ SCALERS = {
 
     'minmax': (MinMaxScaler, ['base minmax']),
 
-    'maxabs': (MaxAbsScaler, ['base minmax']),
+    'maxabs': (MaxAbsScaler, ['default']),
 
     'robust': (RobustScaler, ['base robust', 'robust gs']),
 

@@ -267,8 +267,8 @@ PARAMS['mlp dist es 1 layer']['early_stopping'] = True
 PARAMS['mlp dist es 1 layer']['n_iter_no_change'] =\
         ng.p.Scalar(lower=5, upper=50)
 
-two_layer = ng.p.Array(init=(100, 100)).set_bounds(lower=1, upper=300)
-two_layer.set_mutation(sigma=50).set_integer_casting()
+two_layer = ng.p.Array(init=(100, 100)).set_mutation(sigma=50)
+two_layer.set_bounds(lower=1, upper=300).set_integer_casting()
 
 PARAMS['mlp dist 2 layer'] = PARAMS['mlp dist 1 layer'].copy()
 PARAMS['mlp dist 2 layer']['hidden_layer_sizes'] = deepcopy(two_layer)
@@ -276,8 +276,8 @@ PARAMS['mlp dist 2 layer']['hidden_layer_sizes'] = deepcopy(two_layer)
 PARAMS['mlp dist es 2 layer'] = PARAMS['mlp dist es 1 layer'].copy()
 PARAMS['mlp dist 2 layer']['hidden_layer_sizes'] = deepcopy(two_layer)
 
-three_layer = ng.p.Array(init=(100, 100, 100)).set_bounds(lower=1, upper=300)
-three_layer.set_mutation(sigma=50).set_integer_casting()
+three_layer = ng.p.Array(init=(100, 100, 100)).set_mutation(sigma=50)
+three_layer.set_bounds(lower=1, upper=300).set_integer_casting()
 
 PARAMS['mlp dist 3 layer'] = PARAMS['mlp dist 1 layer'].copy()
 PARAMS['mlp dist 3 layer']['hidden_layer_sizes'] = deepcopy(three_layer)

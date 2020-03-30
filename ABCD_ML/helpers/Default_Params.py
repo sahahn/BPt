@@ -249,7 +249,7 @@ batch_size =\
 
 PARAMS['mlp dist 1 layer'] =\
         {'hidden_layer_sizes':
-         ng.p.Scalar(init=100, lower=2, upper=300),
+         ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting(),
          'activation':
          ng.p.TransitionChoice(['identity', 'logistic',
                                 'tanh', 'relu']),
@@ -258,7 +258,7 @@ PARAMS['mlp dist 1 layer'] =\
          'learning_rate':
          ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive']),
          'learning_rate_init': ng.p.Log(lower=1e-5, upper=1e2),
-         'max_iter': ng.p.Scalar(init=200, lower=100, upper=500),
+         'max_iter': ng.p.Scalar(init=200, lower=100, upper=500).set_integer_casting(),
          'beta_1': ng.p.Scalar(init = .9, lower=.1, upper=.99),
          'beta_2': ng.p.Scalar(init=.999, lower=.1, upper=.9999)}
 

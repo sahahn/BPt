@@ -20,6 +20,7 @@ from ..helpers.ML_Helpers import (conv_to_list, proc_input,
                                   f_array, replace_with_in_params,
                                   type_check, wrap_pipeline_objs,
                                   is_array_like)
+from ..helpers.VARS import SCOPES
 
 from .Models import AVALIABLE as AVALIABLE_MODELS
 from .Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
@@ -41,14 +42,14 @@ from .Feat_Importances import get_feat_importances_and_params
 from .Nevergrad import NevergradSearchCV
 import os
 
-SCOPES = set(['float', 'data', 'data files',
-              'float covars', 'fc', 'all',
-              'n', 'cat', 'categorical', 'covars'])
+
 
 class Model_Pipeline():
     '''Helper class for handling all of the different parameters involved in
     model training, scaling, handling different datatypes ect...
     '''
+
+
 
     def __init__(self, ML_params, CV, search_split_vals,
                  all_data_keys, targets_key, file_mapping, covar_scopes,
@@ -125,14 +126,16 @@ class Model_Pipeline():
         # Default params just sets (sub)problem type for now
         self._set_default_params()
 
+        # Set subset of subjects if necc.
         self.subjects = ML_params['subjects']
 
         # Set all_keys based on passed scope
         self._set_all_keys(ML_params['scope'])
 
-        # Process inputs
+        # Check for user passed inputs
         self._check_all_for_user_passed()
 
+        # Process all pipeline pieces
         self._process_model()
         self._process_feat_selectors()
         self._process_loaders()
@@ -305,12 +308,11 @@ class Model_Pipeline():
         if self.search_type is None:
 
             if (np.array(params) != 0).any():
-                self._print('Search type is set to None! Therefore no',
+                self._print('Note, Search type is set to None! Therefore no',
                             'hyper-param search will be conducted, even',
-                            'though params were passed.')
+                            'though params were passed.',
+                            'Though, params will be still be set if passing default values.')
                 self._print()
-
-                # params = [0 for i in range(len(params))]
 
         return params
 

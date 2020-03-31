@@ -1,7 +1,7 @@
 from ..helpers.ML_Helpers import get_obj_and_params, proc_mapping, update_mapping, show_objects
 import numpy as np
 from .Transformers import Transformer_Wrapper
-from .extensions.Loaders import Identity
+from .extensions.Loaders import Identity, SurfLabels
 from joblib import Parallel, delayed
 
 class Loader_Wrapper(Transformer_Wrapper):
@@ -174,7 +174,15 @@ class Loader_Wrapper(Transformer_Wrapper):
 
 LOADERS = {
     'identity': (Identity, ['default']),
+    'surface rois': (SurfLabels, ['default']),
 }
+
+try:
+    from nilearn.input_data import NiftiLabelsMasker
+    LOADERS['volume rois'] = (NiftiLabelsMasker, ['default'])
+
+except ImportError:
+    pass
 
 
 def get_loader_and_params(loader_str, extra_params, params, search_type,

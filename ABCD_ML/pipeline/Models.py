@@ -6,7 +6,7 @@ with additional information on which work with which problem types
 and default params.
 """
 
-from sklearn.neural_network import MLPRegressor, MLPClassifier
+from .extensions.MLP import MLPRegressor, MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB

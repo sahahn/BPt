@@ -19,6 +19,8 @@ def ce_conv(parent):
     '''Wrapper function to make classes from category encoders compatible with ABCD_ML transformer'''
     
     class child(parent):
+
+        __parent_name__ = parent.__module__ + '.' + parent.__qualname__
         
         def fit(self, X, y=None, **kwargs):
         

@@ -1337,23 +1337,23 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     Returns
     ----------
     results : dict
-    Dictionary containing:
-    'summary_scores', A list representation of the
-    printed summary scores, where the 0 index is the mean,
-    1 index is the macro std, then second index is the micro std.
-    'train_summary_scores', Same as summary scores, but only exists
-    if train scores are computed.
-    'raw_scores', a numpy array of numpy arrays,
-    where each internal array contains the raw scores as computed for
-    all passed in metrics, computed for each fold within
-    each repeat. e.g., array will have a length of `n_repeats` * number of
-    folds, and each internal array will have the same length as the number of
-    metrics. Optionally, this could instead return a list containing as
-    the first element the raw training score in this same format,
-    and then the raw testing scores.
-    'raw_preds', A pandas dataframe containing the raw predictions
-    for each subject, in the test set, and
-    'FIs' a list where each element corresponds to a passed feature importance.
+        Dictionary containing:
+        'summary_scores', A list representation of the
+        printed summary scores, where the 0 index is the mean,
+        1 index is the macro std, then second index is the micro std.
+        'train_summary_scores', Same as summary scores, but only exists
+        if train scores are computed.
+        'raw_scores', a numpy array of numpy arrays,
+        where each internal array contains the raw scores as computed for
+        all passed in metrics, computed for each fold within
+        each repeat. e.g., array will have a length of `n_repeats` * number of
+        folds, and each internal array will have the same length as the number of
+        metrics. Optionally, this could instead return a list containing as
+        the first element the raw training score in this same format,
+        and then the raw testing scores.
+        'raw_preds', A pandas dataframe containing the raw predictions
+        for each subject, in the test set, and
+        'FIs' a list where each element corresponds to a passed feature importance.
 
 
     Notes

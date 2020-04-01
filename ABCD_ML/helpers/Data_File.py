@@ -1,11 +1,12 @@
 from copy import deepcopy
+from joblib import wrap_non_picklable_objects
 
 class Data_File():
 
     def __init__(self, loc, load_func, in_memory=False):
 
         self.loc = loc
-        self.load_func = load_func
+        self.load_func = wrap_non_picklable_objects(load_func)
         self.in_memory = in_memory
 
         if self.in_memory:

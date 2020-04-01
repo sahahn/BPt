@@ -4,6 +4,19 @@ from .Transformers import Transformer_Wrapper
 from .extensions.Loaders import Identity, SurfLabels
 from joblib import Parallel, delayed
 
+
+def get_trans_chunk(transformer, data_files):
+        
+        X_trans_chunk = []
+        
+        for data_file in data_files:
+            
+            data = data_file.load()
+            trans_data = np.squeeze(transformer.transform(data))
+            X_trans_chunk.append(trans_data)
+        
+        return X_trans_chunk
+
 class Loader_Wrapper(Transformer_Wrapper):
 
     def __init__(self, wrapper_transformer,
@@ -57,18 +70,6 @@ class Loader_Wrapper(Transformer_Wrapper):
         
         return np.hstack([X_trans, X[:, rest_inds]])
     
-    def _get_trans_chunk(self, data_files):
-        
-        X_trans_chunk = []
-        
-        for data_file in data_files:
-            
-            data = data_file.load()
-            trans_data = np.squeeze(self.wrapper_transformer.transform(data))
-            X_trans_chunk.append(trans_data)
-        
-        return X_trans_chunk
-    
     def get_chunks(self, data_files):
 
         per_chunk = len(data_files) // self.wrapper_n_jobs
@@ -84,15 +85,15 @@ class Loader_Wrapper(Transformer_Wrapper):
         data_files = [self.file_mapping[int(fm_key)] for fm_key in fm_keys]
         
         if self.wrapper_n_jobs == 1:
-             X_trans_cols = self._get_trans_chunk(data_files)
+             X_trans_cols = get_trans_chunk(self.wrapper_transformer, data_files)
           
         else:
             chunks = self.get_chunks(data_files)
             
             X_trans_chunks =\
                 Parallel(n_jobs=self.wrapper_n_jobs)(
-                    delayed(self._get_trans_chunk)(
-                        data_files=chunk) for chunk in chunks)
+                    delayed(get_trans_chunk)(
+                        transformer=self.wrapper_transformer, data_files=chunk) for chunk in chunks)
             
             X_trans_cols = []
             for chunk in X_trans_chunks:
@@ -187,6 +188,8 @@ except ImportError:
 
 def get_loader_and_params(loader_str, extra_params, params, search_type,
                           random_state=None, num_feat_keys=None):
+
+    print(loader_str, params)
 
     loader, extra_loader_params, loader_params =\
         get_obj_and_params(loader_str, LOADERS, extra_params, params,

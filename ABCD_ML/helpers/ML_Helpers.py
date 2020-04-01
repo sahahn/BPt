@@ -8,6 +8,7 @@ import numpy as np
 import inspect
 from .Default_Params import get_base_params, proc_params, show
 import subprocess
+from copy import deepcopy
 
 
 def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
@@ -154,11 +155,14 @@ def proc_str_input(in_str):
     return in_str
 
 
-def user_passed_param_check(params, obj_str):
+def user_passed_param_check(params, obj_str, search_type):
 
     if isinstance(params, dict):
-        return proc_params(params, prepend=obj_str)
-    return {}
+        if search_type is None:
+            return deepcopy(params), {}
+        else:
+            return {}, deepcopy(proc_params(params, prepend=obj_str))
+    return {}, {}
 
 
 def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
@@ -540,8 +544,6 @@ def update_mapping(mapping, new_mapping):
 def wrap_pipeline_objs(wrapper, objs, inds,
                        search_type, random_state,
                        n_jobs, **params):
-
-
 
     if search_type is not None:
         n_jobs = 1

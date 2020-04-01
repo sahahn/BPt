@@ -10,6 +10,7 @@ from sklearn.preprocessing import FunctionTransformer
 from collections import Counter
 
 from .extensions.Pipeline import ABCD_Pipeline
+from sklearn.pipeline import Pipeline
 from copy import deepcopy
 
 from .Models import MODELS
@@ -48,8 +49,6 @@ class Model_Pipeline():
     '''Helper class for handling all of the different parameters involved in
     model training, scaling, handling different datatypes ect...
     '''
-
-
 
     def __init__(self, ML_params, CV, search_split_vals,
                  all_data_keys, targets_key, file_mapping, covar_scopes,
@@ -292,6 +291,12 @@ class Model_Pipeline():
     def _check_for_user_passed(self, objs, cnt):
 
         if objs is not None:
+
+            tuple_flag = False
+            if isinstance(objs, tuple):
+                tuple_flag = True
+                objs = list(objs)
+
             for o in range(len(objs)):
                 if not isinstance(objs[o], str):
 
@@ -300,6 +305,9 @@ class Model_Pipeline():
 
                     self.user_passed_objs[save_name] = objs[o]
                     objs[o] = save_name
+
+            if tuple_flag:
+                objs = tuple(objs)
 
         return objs, cnt
 
@@ -311,7 +319,7 @@ class Model_Pipeline():
                 self._print('Note, Search type is set to None! Therefore no',
                             'hyper-param search will be conducted, even',
                             'though params were passed.',
-                            'Though, params will be still be set if passing default values.')
+                            'Params will be still be set if passing default values.')
                 self._print()
 
         return params
@@ -375,20 +383,138 @@ class Model_Pipeline():
     def _process_loaders(self):
         '''Proc loaders'''
 
-        self.loaders, self.loader_params, self.loader_scopes =\
-            self._get_objs_params_scopes(self.loader_strs,
-                                         self.loader_params,
-                                         get_loader_and_params,
-                                         self.loader_scopes)
+        if self.loader_strs is not None:
 
-        params = {'file_mapping': self.file_mapping,
-                  'wrapper_n_jobs': self.n_jobs}
+            # Passed as just () case
+            if isinstance(self.loader_strs, tuple):
+                self.loader_strs = [self.loader_strs]
+                self.loader_params = [self.loader_params]
 
-        self.loaders =\
-            self._wrap_pipeline_objs(Loader_Wrapper,
-                                     self.loaders,
-                                     self.loader_scopes,
-                                     **params)
+            if isinstance(self.loader_scopes, tuple):
+                self.loader_scopes = [self.loader_scopes]
+
+            non_tuple_strs, tuple_strs = [], []
+            non_tuple_params, tuple_params = [], []
+            non_tuple_scopes, tuple_scopes = [], []
+
+            for i in range(len(self.loader_strs)):
+
+                if isinstance(self.loader_strs[i], tuple):
+                    tuple_strs.append(self.loader_strs[i])
+                    tuple_scopes.append(self.loader_scopes[i])
+
+                    try:
+                        tuple_params.append(self.loader_params[i])
+                    except IndexError:
+                        tuple_params.append(0)
+
+                else:
+                    non_tuple_strs.append(self.loader_strs[i])
+                    non_tuple_scopes.append(self.loader_scopes[i])
+
+                    try:
+                        non_tuple_params.append(self.loader_params[i])
+                    except IndexError:
+                        non_tuple_params.append(0)
+
+            self.loaders = []
+            self.loader_params = {}
+            original_scopes = deepcopy(self.loader_scopes)
+            self.loader_scopes = []
+            
+            # Process all of the tuples
+            cnt = 0
+            ordered_tuple_pipelines, ordered_tuple_scopes = [], []
+
+            for strs, params, scopes in zip(tuple_strs, tuple_params, tuple_scopes):
+
+                loader_strs = list(strs)
+                loader_params = list(params)
+    
+                original_len = len(loader_strs)
+                loader_scopes = [scopes for i in range(original_len)]
+
+                loaders, loader_params, loader_scopes =\
+                    self._get_objs_params_scopes(loader_strs,
+                                                 loader_params,
+                                                 get_loader_and_params,
+                                                 loader_scopes)
+
+                ordered_tuple_pipeline = []
+                ordered_tuple_scope = []
+
+                
+                # Handle duplicates if any
+                n_duplicates = int(len(loaders) / original_len)
+                for i in range(n_duplicates):
+
+                    # Create a pipeline of the combined objects
+                    name = 'loader_combo' + str(cnt)
+                    rel_loaders = [loaders[l] for l in range(i, len(loaders), n_duplicates)]
+                    ordered_tuple_pipeline.append((name, Pipeline(steps = rel_loaders)))
+                    
+                    # Keep track of scope order too
+                    ordered_tuple_scope.append(loader_scopes[i])
+                    
+                    # Proc params,
+                    keys = [step[0] for step in rel_loaders]
+                    rel_keys = [key for key in loader_params if key.split('__')[0] in keys]
+                    pipeline_params = {name + '__' + key: loader_params[key] for key in rel_keys}
+
+                    # No order, so just add
+                    self.loader_params.update(pipeline_params)
+                    cnt += 1
+
+                ordered_tuple_pipelines.append(ordered_tuple_pipeline)
+                ordered_tuple_scopes.append(ordered_tuple_scope)
+
+            # Process the non-tuples
+            ordered_non_tuple_loaders, non_tuple_loader_params, ordered_non_tuple_scopes =\
+                    self._get_objs_params_scopes(non_tuple_strs,
+                                                 non_tuple_params,
+                                                 get_loader_and_params,
+                                                 non_tuple_scopes)
+            
+            self.loader_params.update(non_tuple_loader_params)
+
+
+            cnt1, cnt2 = 0, 0
+
+            # Merge back together in the right order
+            for i in range(len(self.loader_strs)):
+
+                if isinstance(self.loader_strs[i], tuple):
+                    self.loaders += ordered_tuple_pipelines[cnt1]
+                    self.loader_scopes += ordered_tuple_scopes[cnt1]
+                    
+                    cnt1 += 1
+            
+                else:
+                   
+                    if isinstance(original_scopes[i], tuple):
+                        for j in range(len(original_scopes[i])):
+                            self.loaders.append(ordered_non_tuple_loaders[cnt2])
+                            self.loader_scopes.append(ordered_non_tuple_scopes[cnt2])
+                            cnt2 += 1
+                    
+                    else:
+                        self.loaders.append(ordered_non_tuple_loaders[cnt2])
+                        self.loader_scopes.append(ordered_non_tuple_scopes[cnt2])
+                        cnt2 += 1
+            
+            # The base objects have been created, but they need to be wrapped in the loader wrapper
+            params = {'file_mapping': self.file_mapping,
+                      'wrapper_n_jobs': self.n_jobs}
+
+            self.loaders =\
+                self._wrap_pipeline_objs(Loader_Wrapper,
+                                        self.loaders,
+                                        self.loader_scopes,
+                                        **params)
+
+        else:
+            self.loaders = []
+            self.loader_params = {}
 
     def _process_transformers(self):
         '''Proc transformers'''
@@ -869,6 +995,24 @@ class Model_Pipeline():
                 self.extra_params[conv_strs[i]] =\
                     self.extra_params[orig_strs[i]]
 
+    def _get_user_passed_obj_params(self, name, param):
+
+        user_obj = self.user_passed_objs[name]
+
+        # proc as necc. user passed params
+        extra_user_obj_params, user_obj_params =\
+            user_passed_param_check(param, name, self.search_type)
+
+        # If passing a user object, kind of stupid to pass default, non search params
+        # via a dict..., but hey...
+        try:
+            user_obj.set_params(**extra_user_obj_params)
+        except AttributeError:
+            pass
+
+        # Return in obj_param format
+        return (name, (user_obj, user_obj_params))
+
     def _get_objs_and_params(self, get_func, names, params, scopes=None):
         '''Helper function to grab scaler / feat_selectors and
         their relevant parameter grids'''
@@ -889,12 +1033,9 @@ class Model_Pipeline():
         # Make the object + params based on passed settings
         objs_and_params = []
         for name, param in zip(names, params):
+            
             if 'user passed' in name:
-
-                user_obj = self.user_passed_objs[name]
-                user_obj_params = user_passed_param_check(param, name)
-
-                objs_and_params.append((name, (user_obj, user_obj_params)))
+                objs_and_params.append(self._get_user_passed_obj_params(name, param))
 
             else:
 
@@ -904,6 +1045,7 @@ class Model_Pipeline():
                                                        self.num_feat_keys)
                                         ))
 
+        # Perform extra proc, to split into objs and merged param dict
         objs, params = self._proc_objs_and_params(objs_and_params)
 
         if scopes is not None:

@@ -1404,7 +1404,7 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     self._init_model(ML_params)
 
     # Proc. splits
-    split_names, split_vals, sv_le = self._get_split_vals(ML_params['splits'])
+    _, split_vals, _ = self._get_split_vals(ML_params['splits'])
 
     # Evaluate the model
     train_scores, scores, raw_preds, FIs =\

@@ -156,8 +156,8 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         'loader' refers to transformations which operate on loaded Data_Files.
         (See :func:`Load_Data_Files`).
         They in essence take in saved file locations, and after some series
-        of transformations pass on compatible features. Notably loaders right
-        now define operations which are computed on single files indepedently.
+        of transformations pass on compatible features. Notably loaders 
+        define operations which are computed on single files indepedently.
 
         'loader' can be passed as a single str, or a list of, and should correspond
         with `loader_scope` and `loader_params`. If a list, then the loaders will be
@@ -168,6 +168,14 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         of the saved arrays, with each data point as a feature. A more practical example
         might constitute loading in say 3D neuroimaging data, and passing on features as
         extracted by ROI.
+
+        Loaders also have a special function built-in, where if you pass a tuple
+        of arguments, it will be interpretted as creating a Pipeline of those passed argument.
+        So, for example, if you want to apply a loader which does not return features, maybe
+        smoothing on a 3D volume, and then pass that to an ROI extracter, you would pass
+        (smoothing_obj, ROI_obj). Tuples can also be passed in a list of other arguments,
+        just make sure the loader_params passed correspond exactly with what you pass for
+        loaders, e.g., 1:1 wrappered in a tuple if a tuple or a list if a list.
 
         There are some loaders pre-defined for usage, but users can likewise
         pass in custom objects (they just need to have a defined fit_transform function

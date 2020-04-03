@@ -298,7 +298,11 @@ class Model_Pipeline():
                 objs = list(objs)
 
             for o in range(len(objs)):
-                if not isinstance(objs[o], str):
+
+                if is_array_like(objs[o]):
+                    objs[o], cnt = self._check_for_user_passed(objs[o], cnt)
+
+                elif not isinstance(objs[o], str):
 
                     save_name = 'user passed' + str(cnt)
                     cnt += 1
@@ -403,10 +407,18 @@ class Model_Pipeline():
                     tuple_strs.append(self.loader_strs[i])
                     tuple_scopes.append(self.loader_scopes[i])
 
+                    # If not within index set to 0
                     try:
-                        tuple_params.append(self.loader_params[i])
+                        loader_param = self.loader_params[i]
                     except IndexError:
-                        tuple_params.append(0)
+                        loader_param = 0
+
+                    # Passed params not tuple, just set to tuple version of same value
+                    if isinstance(loader_param, tuple):
+                        tuple_params.append(loader_param)
+                    else:
+                        as_tuple = (loader_param for j in range(len(self.loader_strs[i])))
+                        tuple_params.append(as_tuple)
 
                 else:
                     non_tuple_strs.append(self.loader_strs[i])
@@ -476,7 +488,6 @@ class Model_Pipeline():
                                                  non_tuple_scopes)
             
             self.loader_params.update(non_tuple_loader_params)
-
 
             cnt1, cnt2 = 0, 0
 
@@ -1058,10 +1069,16 @@ class Model_Pipeline():
         if isinstance(params, dict) and len(names) == 1:
             return params
 
-        if len(params) > len(names):
-            self._print('Warning! More params passed than objs')
-            self._print('Extra params have been truncated.')
-            params = params[:len(names)]
+        try:
+
+            if len(params) > len(names):
+                self._print('Warning! More params passed than objs')
+                self._print('Extra params have been truncated.')
+                return params[:len(names)]
+
+        # If non list params here
+        except TypeError:
+            return [0 for i in range(len(names))]
 
         while len(names) != len(params):
             params.append(0)

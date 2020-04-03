@@ -61,7 +61,8 @@ class SurfLabels(BaseEstimator, TransformerMixin):
     def __init__(self, labels,
                  background_label=0,
                  mask=None,
-                 strategy='mean'):
+                 strategy='mean',
+                 vectorize=True):
         '''This class functions simmilar to NiftiLabelsMasker from nilearn,
         but instead is for surfaces (though it could likely work on a cifti image too).
         
@@ -125,14 +126,21 @@ class SurfLabels(BaseEstimator, TransformerMixin):
             if calculating for say stacked contrasts where [data_dim, n_contrasts], data_dim = 0, and lastly for a 1D
             array, data_dim is also 0.
 
-
             (default = 'mean')
+
+        vectorize : bool, optional
+            If the returned array should be flattened to 1D. E.g., if the
+            last step in a set of loader steps this should be True, if before
+            a different step it may make sense to set to False.
+
+            (default = True)
         '''
         
         self.labels = labels
         self.background_label = background_label
         self.mask = mask
         self.strategy = strategy
+        self.vectorize = vectorize
         
         self.strats = {'mean': np.mean,
                        'median': np.median,
@@ -216,5 +224,41 @@ class SurfLabels(BaseEstimator, TransformerMixin):
 
             X_trans.append(self.strategy(X_i, axis=data_dim))
 
-        # Return a 1D array!
-        return np.array(X_trans).flatten()
+        if data_dim == 1:
+            X_trans = np.stack(X_trans, axis=1)
+        else:
+            X_trans = np.array(X_trans)
+
+        # Return based on vectorize
+        if not self.vectorize:
+            return X_trans
+        return X_trans.flatten()
+
+
+# Create wrapper for nilearn connectivity measure to make it work with 1 subject
+try:
+    from nilearn.connectome import ConnectivityMeasure
+
+    class Connectivity(ConnectivityMeasure):
+    
+        def proc_X(self, X):
+            
+            if not isinstance(X, list):
+                if len(np.shape(X)) == 2:
+                    X = [X]
+            
+            return X
+        
+        def fit(self, X, y=None):
+            return super().fit(self.proc_X(X), y)
+        
+        def fit_transform(self, X, y=None):
+            return super().fit_transform(self.proc_X(X), y)
+                
+        def transform(self, X):
+            return super().transform(self.proc_X(X))
+
+
+except ImportError:
+    pass
+

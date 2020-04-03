@@ -331,7 +331,7 @@ class Model_Pipeline():
     def _get_user_passed(self, name, param):
 
             user_obj = self.user_passed_objs[name]
-            user_obj_params = user_passed_param_check(param, name)
+            user_obj_params = user_passed_param_check(param, name, self.search_type)
 
             return user_obj, user_obj_params
 

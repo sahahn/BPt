@@ -25,6 +25,9 @@ def get_name(obj):
 
     name = obj.__module__ + '.' + obj.__qualname__
 
+    if '.<locals>.child' in name:
+        name = obj.__parent_name__
+
     name = name.replace('.tree.tree', '.tree')
     name = name.replace('.tree.tree', '.tree')
 

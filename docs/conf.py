@@ -69,4 +69,5 @@ intersphinx_mapping =\
      'lightgbm': ('https://lightgbm.readthedocs.io/en/latest', None),
      'xgboost': ('https://xgboost.readthedocs.io/en/latest', None),
      'imblearn': ('https://imbalanced-learn.readthedocs.io/en/stable', None),
+     'category_encoders': ('https://contrib.scikit-learn.org/categorical-encoding/', None)
      }

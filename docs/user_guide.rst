@@ -76,7 +76,8 @@ Scopes
 
 During modelling and testing phases, it is often desirable to specify a subset of the total loaded columns/features.
 Within ABCD_ML the way subsets of columns can be specifed to different functions is through scopes.
-The main :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate> and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>
+The main :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.Test>`
+
 methods contain a `scope` argument that refers to the features used in the Evaluation or Test, but further
 a number of the specific ML pipeline objects within these functions also have relevant scope parameters
 (e.g., loader_scope, scaler_scope, transformer_scope). Likewise, there are a exceptions / scope-like parameters

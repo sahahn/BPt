@@ -236,19 +236,19 @@ binary
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -262,19 +262,19 @@ binary
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	4. "mlp dist es 2 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -282,25 +282,25 @@ binary
 
 	5. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	6. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -615,7 +615,7 @@ regression
 "mlp regressor"
 ***************
 
-  Base Class Documenation: :class:`sklearn.neural_network.MLPRegressor`
+  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.MLP.MLPRegressor`
 
   Param Distributions
 
@@ -631,19 +631,19 @@ regression
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -657,19 +657,19 @@ regression
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	4. "mlp dist es 2 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -677,25 +677,25 @@ regression
 
 	5. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	6. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1033,19 +1033,19 @@ categorical
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1059,19 +1059,19 @@ categorical
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	4. "mlp dist es 2 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1079,25 +1079,25 @@ categorical
 
 	5. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	6. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1260,19 +1260,19 @@ multilabel
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1286,19 +1286,19 @@ multilabel
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	4. "mlp dist es 2 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1306,25 +1306,25 @@ multilabel
 
 	5. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
 	6. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Scalar{Cl(2,300)}[sigma=Log{exp=1.2}]:100.0
+		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
 		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{Cl(100,500)}[sigma=Log{exp=1.2}]:200.0
+		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1942,9 +1942,9 @@ All Problem Types
 
   Param Distributions
 
-	0. "base minmax" ::
+	0. "default" ::
 
-		feature_range: (0, 1)
+		defaults only
 
 
 "robust"
@@ -2183,7 +2183,7 @@ All Problem Types
 "one hot encoder"
 *****************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.one_hot.OneHotEncoder`
 
   Param Distributions
 
@@ -2195,7 +2195,7 @@ All Problem Types
 "backward difference encoder"
 *****************************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.backward_difference.BackwardDifferenceEncoder`
 
   Param Distributions
 
@@ -2207,7 +2207,7 @@ All Problem Types
 "binary encoder"
 ****************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.binary.BinaryEncoder`
 
   Param Distributions
 
@@ -2219,7 +2219,7 @@ All Problem Types
 "cat boost encoder"
 *******************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.cat_boost.CatBoostEncoder`
 
   Param Distributions
 
@@ -2231,7 +2231,7 @@ All Problem Types
 "helmert encoder"
 *****************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.helmert.HelmertEncoder`
 
   Param Distributions
 
@@ -2243,7 +2243,7 @@ All Problem Types
 "james stein encoder"
 *********************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.james_stein.JamesSteinEncoder`
 
   Param Distributions
 
@@ -2255,7 +2255,7 @@ All Problem Types
 "leave one out encoder"
 ***********************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.leave_one_out.LeaveOneOutEncoder`
 
   Param Distributions
 
@@ -2267,7 +2267,7 @@ All Problem Types
 "m estimate encoder"
 ********************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.m_estimate.MEstimateEncoder`
 
   Param Distributions
 
@@ -2279,7 +2279,7 @@ All Problem Types
 "polynomial encoder"
 ********************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.polynomial.PolynomialEncoder`
 
   Param Distributions
 
@@ -2291,7 +2291,7 @@ All Problem Types
 "sum encoder"
 *************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.sum_coding.SumEncoder`
 
   Param Distributions
 
@@ -2303,7 +2303,7 @@ All Problem Types
 "target encoder"
 ****************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.target_encoder.TargetEncoder`
 
   Param Distributions
 
@@ -2315,7 +2315,7 @@ All Problem Types
 "woe encoder"
 *************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.Transformers.ce_conv.<locals>.child`
+  Base Class Documenation: :class:`category_encoders.woe.WOEEncoder`
 
   Param Distributions
 
@@ -2658,8 +2658,8 @@ binary
 		mask: sets as hyperparameters
 
 
-"univariate selection classification"
-*************************************
+"univariate selection c"
+************************
 
   Base Class Documenation: :class:`sklearn.feature_selection.SelectPercentile`
 
@@ -2667,12 +2667,12 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f85f989e9e0>
+		score_func: <function f_classif at 0x7f5a0cb379e0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f85f989e9e0>
+		score_func: <function f_classif at 0x7f5a0cb379e0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2723,8 +2723,8 @@ regression
 		mask: sets as hyperparameters
 
 
-"univariate selection regression"
-*********************************
+"univariate selection r"
+************************
 
   Base Class Documenation: :class:`sklearn.feature_selection.SelectPercentile`
 
@@ -2732,12 +2732,12 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f85f989ed40>
+		score_func: <function f_regression at 0x7f5a0cb37d40>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f85f989ed40>
+		score_func: <function f_regression at 0x7f5a0cb37d40>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2788,8 +2788,8 @@ categorical
 		mask: sets as hyperparameters
 
 
-"univariate selection classification"
-*************************************
+"univariate selection c"
+************************
 
   Base Class Documenation: :class:`sklearn.feature_selection.SelectPercentile`
 
@@ -2797,12 +2797,12 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f85f989e9e0>
+		score_func: <function f_classif at 0x7f5a0cb379e0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f85f989e9e0>
+		score_func: <function f_classif at 0x7f5a0cb379e0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 

@@ -593,7 +593,7 @@ class Model_Pipeline():
         except AttributeError:
             return
 
-        names, all_params = self.base_model_pipeline.get_all_params_with_names()
+        all_params, names = self.base_model_pipeline.get_all_params_with_names()
         self._print('Params Selected by Best Pipeline:', level='params')
 
         for params, name in zip(all_params, names):

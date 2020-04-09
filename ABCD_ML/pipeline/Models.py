@@ -21,7 +21,7 @@ from sklearn.linear_model import (LogisticRegression, ElasticNet,
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from ..helpers.ML_Helpers import show_objects
+from ..helpers.ML_Helpers import show_objects, get_obj_and_params, get_possible_init_params
 
 AVALIABLE = {
         'binary': {
@@ -163,6 +163,19 @@ try:
                                            'lgbm classifier dist2'])
 except ImportError:
         pass
+
+
+def get_base_model_and_params(model_type, extra_params, model_type_params,
+                              search_type, random_state=None, num_feat_keys=None):
+
+        model, extra_model_params, model_type_params =\
+            get_obj_and_params(model_type, MODELS, extra_params,
+                               model_type_params, search_type)
+
+        # Init model, w/ any user passed params + class params
+        model = model(**extra_model_params)
+
+        return model, model_type_params
 
 
 def Show_Models(self, problem_type=None, model=None,

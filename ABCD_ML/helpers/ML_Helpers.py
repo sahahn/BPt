@@ -541,18 +541,11 @@ def update_mapping(mapping, new_mapping):
                 mapping[key] = new_mapping[val]
 
 
-def wrap_pipeline_objs(wrapper, objs, inds,
-                       search_type, random_state,
+def wrap_pipeline_objs(wrapper, objs, inds, random_state,
                        n_jobs, **params):
 
-    if search_type is not None:
-        n_jobs = 1
-
-        # Dont pass wrap_n_jobs in params if in a search
-        if 'wrapper_n_jobs' in params:
-            params.pop('wrapper_n_jobs')
-    
-    elif 'wrapper_n_jobs' in params:
+    # If passed wrapper n_jobs, and != 1, set base obj jobs to 1
+    if 'wrapper_n_jobs' in params:
         if params['wrapper_n_jobs'] != 1:
             n_jobs = 1
 
@@ -576,4 +569,130 @@ def wrap_pipeline_objs(wrapper, objs, inds,
         wrapped_objs.append((name, wrapped_obj))
 
     return wrapped_objs
+
+
+def update_extra_params(extra_params, orig_strs, conv_strs):
+    '''Helper method to update extra params in the case
+    where model_types or scaler str indicators change,
+    and they were refered to in extra params as the original name.
+
+    Parameters
+    ----------
+    orig_strs : list
+        List of original str indicators.
+
+    conv_strs : list
+        List of final-proccesed str indicators, indices should
+        correspond to the order of orig_strs
+    '''
+
+    for i in range(len(orig_strs)):
+        if orig_strs[i] in extra_params:
+            extra_params[conv_strs[i]] =\
+                extra_params[orig_strs[i]]
+
+    return extra_params
+
+
+def check_for_duplicate_names(objs_and_params):
+    '''Checks for duplicate names within an objs_and_params type obj'''
+
+    names = [c[0] for c in objs_and_params]
+
+    # If any repeats
+    if len(names) != len(set(names)):
+        new_objs_and_params = []
+
+        for obj in objs_and_params:
+            name = obj[0]
+
+            if name in names:
+
+                cnt = 0
+                used = [c[0] for c in new_objs_and_params]
+                while name + str(cnt) in used:
+                    cnt += 1
+
+                # Need to change name within params also
+                base_obj = obj[1][0]
+                base_obj_params = obj[1][1]
+
+                new_obj_params = {}
+                for param_name in base_obj_params:
+
+                    p_split = param_name.split('__')
+                    new_param_name = p_split[0] + str(cnt)
+                    new_param_name += '__' + '__'.join(p_split[1:])
+
+                    new_obj_params[new_param_name] =\
+                        base_obj_params[param_name]
+
+                new_objs_and_params.append((name + str(cnt),
+                                           (base_obj, new_obj_params)))
+
+            else:
+                new_objs_and_params.append(obj)
+
+        return new_objs_and_params
+    return objs_and_params
+
+
+def proc_type_dep_str(in_strs, avaliable, extra_params, problem_type):
+    '''Helper function to perform str correction on
+    underlying proble type dependent input, e.g., for
+    metric or ensemble_types, and to update extra params
+    and check to make sure input is valid ect...'''
+
+    conv_strs = proc_input(in_strs)
+
+    if not check_avaliable(conv_strs, avaliable, problem_type):
+        raise RuntimeError(conv_strs, 'are not avaliable for this problem type')
+
+    avaliable_by_type = get_a_by_type(avaliable, conv_strs, problem_type)
+    final_strs = [avaliable_by_type[conv_str] for conv_str in conv_strs]
+
+    extra_params = update_extra_params(extra_params, in_strs, final_strs)
+    
+    return final_strs, extra_params
+
+def check_avaliable(in_strs, avaliable, problem_type):
+
+    avaliable_by_type = get_a_by_type(avaliable, in_strs, problem_type)
+
+    check = np.array([m in avaliable_by_type for
+                      m in in_strs]).all()
+
+    return check
+
+
+def get_a_by_type(avaliable, in_strs, problem_type):
+
+    avaliable_by_type = avaliable[problem_type]
+
+    for s in in_strs:
+        if 'user passed' in s:
+            avaliable_by_type[s] = s
+
+    return avaliable_by_type
+
+def param_len_check(names, params, _print=print):
+
+    if isinstance(params, dict) and len(names) == 1:
+        return params
+
+    try:
+
+        if len(params) > len(names):
+            _print('Warning! More params passed than objs')
+            _print('Extra params have been truncated.')
+            return params[:len(names)]
+
+    # If non list params here
+    except TypeError:
+        return [0 for i in range(len(names))]
+
+    while len(names) != len(params):
+        params.append(0)
+
+    return params
 

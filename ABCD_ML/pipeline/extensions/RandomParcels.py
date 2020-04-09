@@ -7,22 +7,31 @@ class RandomParcels(BaseEstimator):
     def __init__(self, geo, n_parcels, medial_wall_inds=None,
                  medial_wall_mask=None, random_state=1):
         
-        # Proc Geo
+        # Set passed params
         self.geo = geo
-        self._proc_geo()
-
-        # Set starting spots 
         self.n_parcels = n_parcels
-
-        # Proc medial wall
         self.medial_wall_inds = medial_wall_inds
         self.medial_wall_mask = medial_wall_mask
-        self._proc_medial_wall()
-
-        # Proc random state
         self.random_state = random_state
+        self.mask = None
+        
+    def get_parc(self, copy=True):
+
+        if self.mask is None:
+            self._generate_parc_from_params()
+
+        if copy:
+            return self.mask.copy()
+        else:
+            return self.mask
+
+    def _generate_parc_from_params(self):
+
+        # Proc by input args
+        self._proc_geo()
+        self._proc_medial_wall()
         self._proc_random_state()
-       
+
         # Set up mask, done and flags
         self.sz = len(self._geo)
         self.reset()

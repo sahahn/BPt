@@ -12,10 +12,7 @@ from tqdm import tqdm, tqdm_notebook
 
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ..helpers.ML_Helpers import compute_macro_micro, conv_to_list
-from ..pipeline.Model_Pipeline import (Regression_Model_Pipeline,
-                                       Binary_Model_Pipeline,
-                                       Categorical_Model_Pipeline,
-                                       Multilabel_Model_Pipeline)
+from ..pipeline.Model_Pipeline import Model_Pipeline
 
 
 def Set_Default_ML_Params(self, problem_type='default', target='default',
@@ -847,232 +844,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
     '''
 
-    default_metrics = {'binary': 'macro roc auc', 'regression': 'r2',
-                       'categorical': 'macro f1',
-                       'multilabel': 'macro roc auc'}
-
-    if problem_type != 'default':
-        problem_type = problem_type.lower()
-        assert problem_type in default_metrics, 'Invalid problem type passed!'
-        self.default_ML_params['problem_type'] = problem_type
-    elif 'problem_type' not in self.default_ML_params:
-        self.default_ML_params['problem_type'] = 'regression'
-
-    if target != 'default':
-        self.default_ML_params['target'] = target
-    elif 'target' not in self.default_ML_params:
-        self.default_ML_params['target'] = 0
-
-    if model != 'default':
-        self.default_ML_params['model'] = model
-    elif 'model' not in self.default_ML_params:
-        self.default_ML_params['model'] = 'linear'
-
-    if metric != 'default':
-        self.default_ML_params['metric'] = metric
-    elif 'metric' not in self.default_ML_params:
-
-        self.default_ML_params['metric'] = \
-            default_metrics[self.default_ML_params['problem_type']]
-
-    if loader != 'default':
-        self.default_ML_params['loader'] = loader
-    elif 'loader' not in self.default_ML_params:
-        self.default_ML_params['loader'] = None
-
-    if loader_scope != 'default':
-        self.default_ML_params['loader_scope'] = loader_scope
-    elif 'loader_scope' not in self.default_ML_params:
-        self.default_ML_params['loader_scope'] =\
-            'data files'
-
-    if imputer != 'default':
-        self.default_ML_params['imputer'] = imputer
-    elif 'imputer' not in self.default_ML_params:
-        self.default_ML_params['imputer'] = ['mean', 'median']
-
-    if imputer_scope != 'default':
-        self.default_ML_params['imputer_scope'] = imputer_scope
-    elif 'imputer_scope' not in self.default_ML_params:
-        self.default_ML_params['imputer_scope'] =\
-            ['float', 'cat']
-
-    if scaler != 'default':
-        self.default_ML_params['scaler'] = scaler
-    elif 'scaler' not in self.default_ML_params:
-        self.default_ML_params['scaler'] = 'standard'
-
-    if scaler_scope != 'default':
-        self.default_ML_params['scaler_scope'] = scaler_scope
-    elif 'scaler_scope' not in self.default_ML_params:
-        self.default_ML_params['scaler_scope'] = 'float'
-
-    if transformer != 'default':
-        self.default_ML_params['transformer'] = transformer
-    elif 'transformer' not in self.default_ML_params:
-        self.default_ML_params['transformer'] = None
-
-    if transformer_scope != 'default':
-        self.default_ML_params['transformer_scope'] = transformer_scope
-    elif 'transformer_scope' not in self.default_ML_params:
-        self.default_ML_params['transformer_scope'] = 'float'
-
-    if sampler != 'default':
-        self.default_ML_params['sampler'] = sampler
-    elif 'sampler' not in self.default_ML_params:
-        self.default_ML_params['sampler'] = None
-
-    if sample_on != 'default':
-        self.default_ML_params['sample_on'] = sample_on
-    elif 'sample_on' not in self.default_ML_params:
-        self.default_ML_params['sample_on'] = 'targets'
-
-    if feat_selector != 'default':
-        self.default_ML_params['feat_selector'] = feat_selector
-    elif 'feat_selector' not in self.default_ML_params:
-        self.default_ML_params['feat_selector'] = None
-
-    if splits != 'default':
-        self.default_ML_params['splits'] = splits
-    elif 'splits' not in self.default_ML_params:
-        self.default_ML_params['splits'] = 3
-
-    if n_repeats != 'default':
-        assert isinstance(n_repeats, int), 'n_repeats must be int'
-        assert n_repeats > 0, 'n_repeats must be greater than 0'
-        self.default_ML_params['n_repeats'] = n_repeats
-    elif 'n_repeats' not in self.default_ML_params:
-        self.default_ML_params['n_repeats'] = 2
-
-    if weight_metric != 'default':
-        self.default_ML_params['weight_metric'] = weight_metric
-    elif 'weight_metric' not in self.default_ML_params:
-        self.default_ML_params['weight_metric'] = False
-
-    if search_splits != 'default':
-        self.default_ML_params['search_splits'] = search_splits
-    elif 'search_splits' not in self.default_ML_params:
-        self.default_ML_params['search_splits'] = 3
-
-    if ensemble != 'default':
-        self.default_ML_params['ensemble'] = ensemble
-    elif 'ensemble' not in self.default_ML_params:
-        self.default_ML_params['ensemble'] = 'basic ensemble'
-
-    if ensemble_split != 'default':
-        self.default_ML_params['ensemble_split'] = ensemble_split
-    elif 'ensemble_split' not in self.default_ML_params:
-        self.default_ML_params['ensemble_split'] = .2
-
-    if search_type != 'default':
-        self.default_ML_params['search_type'] = search_type
-    elif 'search_type' not in self.default_ML_params:
-        self.default_ML_params['search_type'] = None
-
-    if model_params != 'default':
-        self.default_ML_params['model_params'] = model_params
-    elif 'model_params' not in self.default_ML_params:
-        self.default_ML_params['model_params'] = 0
-
-    if loader_params != 'default':
-        self.default_ML_params['loader_params'] = loader_params
-    elif 'loader_params' not in self.default_ML_params:
-        self.default_ML_params['loader_params'] = 0
-
-    if imputer_params != 'default':
-        self.default_ML_params['imputer_params'] = imputer_params
-    elif 'imputer_params' not in self.default_ML_params:
-        self.default_ML_params['imputer_params'] = 0
-
-    if scaler_params != 'default':
-        self.default_ML_params['scaler_params'] = scaler_params
-    elif 'scaler_params' not in self.default_ML_params:
-        self.default_ML_params['scaler_params'] = 0
-
-    if transformer_params != 'default':
-        self.default_ML_params['transformer_params'] = transformer_params
-    elif 'transformer_params' not in self.default_ML_params:
-        self.default_ML_params['transformer_params'] = 0
-
-    if sampler_params != 'default':
-        self.default_ML_params['sampler_params'] = sampler_params
-    elif 'sampler_params' not in self.default_ML_params:
-        self.default_ML_params['sampler_params'] = 0
-
-    if feat_selector_params != 'default':
-        self.default_ML_params['feat_selector_params'] =\
-            feat_selector_params
-    elif 'feat_selector_params' not in self.default_ML_params:
-        self.default_ML_params['feat_selector_params'] = 0
-
-    if ensemble_params != 'default':
-        self.default_ML_params['ensemble_params'] =\
-            ensemble_params
-    elif 'ensemble_params' not in self.default_ML_params:
-        self.default_ML_params['ensemble_params'] = 0
-
-    if n_jobs != 'default':
-        assert isinstance(n_jobs, int), 'n_jobs must be int'
-        self.default_ML_params['n_jobs'] = n_jobs
-    elif 'n_jobs' not in self.default_ML_params:
-        self.default_ML_params['n_jobs'] = 1
-
-    if search_n_iter != 'default':
-        assert isinstance(search_n_iter, int), 'search_n_iter must be int'
-        assert search_n_iter > 0, 'search_n_iter must be greater than 0'
-        self.default_ML_params['search_n_iter'] = search_n_iter
-    elif 'search_n_iter' not in self.default_ML_params:
-        self.default_ML_params['search_n_iter'] = 10
-
-    if scope != 'default':
-        self.default_ML_params['scope'] = scope
-    elif 'scope' not in self.default_ML_params:
-        self.default_ML_params['scope'] = 'all'
-
-    if subjects != 'default':
-        self.default_ML_params['subjects'] = subjects
-    elif 'subjects' not in self.default_ML_params:
-        self.default_ML_params['subjects'] = 'all'
-
-    if compute_train_score != 'default':
-        self.default_ML_params['compute_train_score'] = compute_train_score
-    elif 'compute_train_score' not in self.default_ML_params:
-        self.default_ML_params['compute_train_score'] = False
-
-    if random_state != 'default':
-        self.default_ML_params['random_state'] = random_state
-    elif 'random_state' not in self.default_ML_params:
-        self.default_ML_params['random_state'] = self.random_state
-
-    if feat_importances != 'default':
-        self.default_ML_params['feat_importances'] =\
-            feat_importances
-    elif 'feat_importances' not in self.default_ML_params:
-        self.default_ML_params['feat_importances'] = 'base'
-
-    if feat_importances_params != 'default':
-        self.default_ML_params['feat_importances_params'] =\
-            feat_importances_params
-    elif 'feat_importances_params' not in self.default_ML_params:
-        self.default_ML_params['feat_importances_params'] = 0
-
-    if cache != 'default':
-        self.default_ML_params['cache'] = cache
-    elif 'cache' not in self.default_ML_params:
-        self.default_ML_params['cache'] = None
-
-    if extra_params != 'default':
-        assert isinstance(extra_params, dict), 'extra params must be dict'
-        self.default_ML_params['extra_params'] = extra_params
-    elif 'extra_params' not in self.default_ML_params:
-        self.default_ML_params['extra_params'] = {}
-
-    self._print('Default ML params set within self.default_ML_params.')
-    self._print('----------------------')
-    for param in self.default_ML_params:
-        self._print(param + ':', self.default_ML_params[param])
-
-    self._print()
+    self.default_ML_params.set_values(locals())
 
 
 def Set_Default_ML_Verbosity(
@@ -1388,46 +1160,42 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     # Create the set of ML_params from passed args + default args
     ML_params = self._make_ML_params(args=locals())
 
-    # If no NaN, no imputer
-    if not pd.isnull(self.all_data).any().any():
-        ML_params['imputer'] = None
+    # If no nan data set imputer off
+    ML_params.check_imputer(self.all_data)
 
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
-        self._print_model_params(ML_params, test=False)
+        ML_params.print_model_params(test=False, _print=self._print)
 
     # Get a free run name
-    run_name = self._get_avaliable_run_name(run_name, ML_params['model'],
-                                            self.eval_scores)
+    run_name =\
+        self._get_avaliable_run_name(run_name, ML_params.model, self.eval_scores)
+    
     self._print('Saving scores and settings with unique name:', run_name)
     self.last_run_name = run_name
     self._print()
 
     # Save this specific set of settings
-    run_settings = ML_params.copy()
-    run_settings.update({'run_name': run_name})
-    self.eval_settings[run_name] = run_settings
+    # run_settings = ML_params.copy()
+    # run_settings.update({'run_name': run_name})
+    # self.eval_settings[run_name] = run_settings
 
     # Init. the Model_Pipeline object with modeling params
     self._init_model(ML_params)
 
-    # Proc. splits
-    _, split_vals, _ = self._get_split_vals(ML_params['splits'])
-
     # Evaluate the model
     train_scores, scores, raw_preds, FIs =\
-        self.Model_Pipeline.Evaluate(self.all_data, self.train_subjects,
-                                     split_vals)
+        self.Model_Pipeline.Evaluate(self.all_data, self.train_subjects)
 
     # Set target and run name
     for fi in FIs:
-        fi.set_target(ML_params['target'])
+        fi.set_target(ML_params.target)
         fi.set_run_name(run_name)
 
     self._print()
 
     # Print out summary stats for all passed metrics
-    if ML_params['compute_train_score']:
+    if ML_params.compute_train_score:
         score_list = [train_scores, scores]
         score_type_list = ['Training', 'Validation']
     else:
@@ -1437,8 +1205,10 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     results = {}
     for scrs, name in zip(score_list, score_type_list):
 
-        summary_scores = self._handle_scores(scrs, name, ML_params, run_name,
-                                             self.Model_Pipeline.n_splits)
+        summary_scores = self._handle_scores(scrs, name,
+                                             ML_params.weight_metric,
+                                             ML_params.n_repeats, run_name,
+                                             self.Model_Pipeline.n_splits_)
 
         if name == 'Validation':
             results['summary_scores'] = summary_scores
@@ -1679,17 +1449,6 @@ def _premodel_check(self):
                            'If this is intentional, call Train_Test_Split',
                            'with test_size = 0')
 
-    if self.default_ML_params == {}:
-
-        self._print('Setting default ML params!')
-        self._print('Note, if the following values are not desired,',
-                    'call self.Set_Default_ML_Params()')
-        self._print('Or just pass values everytime to Evaluate',
-                    'or Test, and these default values will be ignored')
-        self._print('')
-
-        self.Set_Default_ML_Params()
-
     if self.default_ML_verbosity == {}:
 
         self._print('Setting default ML verbosity settings!')
@@ -1701,129 +1460,28 @@ def _premodel_check(self):
 
 def _make_ML_params(self, args):
 
-    ML_params = {}
+    # Merge passed params with defaults
+    ML_params = self.default_ML_params.copy()
+    ML_params.set_values(args)
 
-    # If passed param is default use default value.
-    # Otherwise use passed value.
-    for key in args:
+    # Update target with actual target key
+    target_key = self._get_targets_key(ML_params.target)
+    ML_params.set_params(target=target_key)
 
-        try:
+    # Conv sample_on params w/ added unique key here, if needed
+    sample_on = self._add_strat_u_name(ML_params.sample_on)
+    ML_params.set_params(sample_on=sample_on)
 
-            if isinstance(args[key], str):
-                if args[key] == 'default':
-                    ML_params[key] = self.default_ML_params[key]
-            
-                elif key != 'self':
-                    ML_params[key] = args[key]
-            
-            else:
-                ML_params[key] = args[key]
+    # Proc subjects to use
+    final_subjects = self._get_final_subjects_to_use(ML_params.subjects)
+    ML_params.set_final_subjects(final_subjects)
 
-        # If value error, set to key
-        except ValueError:
-            ML_params[key] = args[key]
-
-    # Fill in any missing params w/ default value.
-    for key in self.default_ML_params:
-        if key not in ML_params:
-            ML_params[key] = self.default_ML_params[key]
+    # Set split vals
+    _, split_vals, _ = self._get_split_vals(ML_params.splits)
+    _, search_split_vals, _ = self._get_split_vals(ML_params.search_splits)
+    ML_params.set_split_vals(split_vals, search_split_vals)
 
     return ML_params
-
-
-def _print_model_params(self, ML_params, test=False, kwargs={}):
-
-    if test:
-        self._print('Running Test with:')
-    else:
-        self._print('Running Evaluate with:')
-
-    self._print('target =', ML_params['target'])
-    self._print('problem_type =', ML_params['problem_type'])
-
-    self._print('model =', ML_params['model'])
-    self._print('model_params =', ML_params['model_params'])
-
-    ensmb_flag = ML_params['ensemble'] != 'basic ensemble'
-    if isinstance(ML_params['model'], list) or ensmb_flag:
-        self._print('ensemble =', ML_params['ensemble'])
-
-        if ensmb_flag:
-            self._print('ensemble_split =', ML_params['ensemble_split'])
-            self._print('ensemble_params =',
-                        ML_params['ensemble_params'])
-
-    self._print('metric =', ML_params['metric'])
-    self._print('weight_metric =', ML_params['weight_metric'])
-
-    if pd.isnull(self.all_data).any().any():
-        self._print('imputer =', ML_params['imputer'])
-
-        if ML_params['imputer'] is not None:
-            self._print('imputer_scope =', ML_params['imputer_scope'])
-            self._print('imputer_params =', ML_params['imputer_params'])
-
-    self._print('scaler =', ML_params['scaler'])
-    if ML_params['scaler'] is not None:
-        self._print('scaler_scope =', ML_params['scaler_scope'])
-        self._print('scaler_params =',
-                    ML_params['scaler_params'])
-
-    self._print('transformer =', ML_params['transformer'])
-    if ML_params['transformer'] is not None:
-        self._print('transformer_scope =', ML_params['transformer_scope'])
-        self._print('transformer_params =',
-                    ML_params['transformer_params'])
-
-    self._print('sampler =', ML_params['sampler'])
-    if ML_params['sampler'] is not None:
-        self._print('sample_on =', ML_params['sample_on'])
-        self._print('sampler_params =', ML_params['sampler_params'])
-
-    self._print('feat_selector =', ML_params['feat_selector'])
-    if ML_params['feat_selector'] is not None:
-        self._print('feat_selector_params =',
-                    ML_params['feat_selector_params'])
-
-    if not test:
-        self._print('splits =', ML_params['splits'])
-        self._print('n_repeats =', ML_params['n_repeats'])
-
-    self._print('search_type =', ML_params['search_type'])
-    if ML_params['search_type'] is not None:
-        self._print('search_splits =', ML_params['search_splits'])
-        self._print('search_n_iter =', ML_params['search_n_iter'])
-
-    self._print('n_jobs =', ML_params['n_jobs'])
-
-    if len(ML_params['scope']) > 50:
-        self._print('scope = custom passed keys with len',
-                    len(ML_params['scope']))
-    else:
-        self._print('scope =', ML_params['scope'])
-
-    if len(ML_params['subjects']) > 20:
-        self._print('subjects = custom passed keys with len',
-                    len(ML_params['subjects']))
-    else:
-        self._print('subjects =', ML_params['subjects'])
-
-    self._print('compute_train_score =', ML_params['compute_train_score'])
-    self._print('random_state =', ML_params['random_state'])
-
-    self._print('feat_importances =',
-                ML_params['feat_importances'])
-    self._print('feat_importances_params =',
-                ML_params['feat_importances_params'])
-
-    self._print('cache =', ML_params['cache'])
-    self._print('extra_params =', ML_params['extra_params'])
-
-    if len(kwargs) > 0:
-        self._print('Ignoring the following invalid passed params:')
-        for k in kwargs:
-            self._print(k, '=', kwargs[k])
-    self._print()
 
 
 def _get_split_vals(self, splits):
@@ -1882,38 +1540,12 @@ def _get_final_subjects_to_use(self, subjects_to_use):
 
 def _init_model(self, ML_params):
 
-    problem_types = {'binary': Binary_Model_Pipeline,
-                     'regression': Regression_Model_Pipeline,
-                     'categorical': Categorical_Model_Pipeline,
-                     'multilabel': Multilabel_Model_Pipeline}
-
-    assert ML_params['problem_type'] in problem_types, \
-        "Invalid problem type!"
-
-    Model_Pipeline = problem_types[ML_params['problem_type']]
-
-    targets_key = self._get_targets_key(ML_params['target'])
-
     # Grab index info
-    covar_scopes, cat_encoders = self._get_covar_scopes()
-
-    # Conv sample_on params w/ added unique key here, if needed
-    ML_params['sample_on'] = self._add_strat_u_name(ML_params['sample_on'])
-
-
-    # Proc subjects to use
-    ML_params['subjects'] =\
-        self._get_final_subjects_to_use(ML_params['subjects'])
-
-    # Grab search split_vals_here
-    _, search_split_vals, _ = self._get_split_vals(ML_params['search_splits'])
+    
 
     # Make model
     self.Model_Pipeline =\
-        Model_Pipeline(ML_params, self.CV, search_split_vals,
-                       self.all_data_keys, targets_key,
-                       self.file_mapping,
-                       covar_scopes, cat_encoders,
+        Model_Pipeline(ML_params, self.CV, self.Data_Scopes,
                        self.default_ML_verbosity['progress_bar'],
                        self._ML_print)
 
@@ -1941,7 +1573,7 @@ def _get_avaliable_run_name(self, name, model, scores):
     return name
 
 
-def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
+def _handle_scores(self, scores, name, weight_metric, n_repeats, run_name, n_splits):
 
     all_summary_scores = []
     metric_strs = self.Model_Pipeline.metric_strs
@@ -1949,7 +1581,7 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
     self._print(name + ' Scores')
     self._print(''.join('_' for i in range(len(name) + 7)))
 
-    weight_metrics = conv_to_list(ML_params['weight_metric'], len(metric_strs))
+    weight_metrics = conv_to_list(weight_metric, len(metric_strs))
 
     for i in range(len(metric_strs)):
 
@@ -1969,7 +1601,7 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
                         range(len(score_by_metric[0]))]
 
             summary_scores_by_class =\
-                [compute_macro_micro(class_scores, ML_params['n_repeats'],
+                [compute_macro_micro(class_scores, n_repeats,
                  n_splits, weights=weights) for class_scores in by_class]
 
             targets_key = self.Model_Pipeline.targets_key
@@ -1984,7 +1616,7 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
 
                 self._print('Target class: ', class_name)
                 self._print_summary_score(name, summary_scores,
-                                          ML_params['n_repeats'], run_name,
+                                          n_repeats, run_name,
                                           metric_name, class_name, weights=weights)
 
             all_summary_scores.append(summary_scores_by_class)
@@ -1993,12 +1625,12 @@ def _handle_scores(self, scores, name, ML_params, run_name, n_splits):
 
             # Compute macro / micro summary of scores
             summary_scores = compute_macro_micro(score_by_metric,
-                                                 ML_params['n_repeats'],
+                                                 n_repeats,
                                                  n_splits,
                                                  weights=weights)
 
             self._print_summary_score(name, summary_scores,
-                                      ML_params['n_repeats'], run_name,
+                                      n_repeats, run_name,
                                       metric_name, weights=weights)
 
             all_summary_scores.append(summary_scores)

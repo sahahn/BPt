@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 dist/*
 
+ABCD_ML/tests/test_data/*
 cover/*
 
 ABCD_ML/Train_Light_GBM.py

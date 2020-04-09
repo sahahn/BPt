@@ -38,7 +38,7 @@ class Loader_Wrapper(Transformer_Wrapper):
 
         return self
         
-    def fit_transform(self, X, y=None, mapping={}):
+    def fit_transform(self, X, y=None, mapping={}, **kwargs):
 
         # If any changes to mapping, update
         self._proc_mapping(mapping)
@@ -178,9 +178,12 @@ LOADERS = {
     'surface rois': (SurfLabels, ['default']),
 }
 
+# If nilearn dependencies
 try:
     from nilearn.input_data import NiftiLabelsMasker
+    from .extensions.Loaders import Connectivity
     LOADERS['volume rois'] = (NiftiLabelsMasker, ['default'])
+    LOADERS['connectivity'] = (Connectivity, ['default'])
 
 except ImportError:
     pass
@@ -188,8 +191,6 @@ except ImportError:
 
 def get_loader_and_params(loader_str, extra_params, params, search_type,
                           random_state=None, num_feat_keys=None):
-
-    print(loader_str, params)
 
     loader, extra_loader_params, loader_params =\
         get_obj_and_params(loader_str, LOADERS, extra_params, params,

@@ -1,7 +1,7 @@
 import numpy as np
 
 from ..helpers.ML_Helpers import get_avaliable_by_type, get_obj_and_params
-from ..helpers.ML_Helpers import show_objects
+from ..helpers.ML_Helpers import show_objects, replace_with_in_params
 
 from deslib.dcs.a_posteriori import APosteriori
 from deslib.dcs.a_priori import APriori
@@ -36,107 +36,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import (BaggingClassifier, BaggingRegressor,
                               AdaBoostRegressor, AdaBoostClassifier)
 from imblearn.ensemble import BalancedBaggingClassifier
-from sklearn.ensemble import StackingRegressor, StackingClassifier
-
-
-class Basic_Ensemble(VotingClassifier):
-
-    def __init__(self, estimators, weights=None, n_jobs=1):
-        self.estimators = estimators
-        self.weights = None
-        self.n_jobs = n_jobs
-
-    def fit(self, X, y, sample_weight=None):
-
-        self.classes_ = np.unique(y)
-        self.n_classes_ = len(self.classes_)
-
-        # Fit estimators
-        try:
-            self.estimators_ = [estimator[1].fit(X, y, sample_weight=sample_weight)
-                                for estimator in self.estimators]
-        
-        # Not best solution, but for regression models w/o sample weight param,
-        # the sample weight arg will break it. Think this solution will results
-        # in a worst case where estimators that don't fail will be fit again...
-        except TypeError:
-            self.estimators_ = [estimator[1].fit(X, y)
-                                for estimator in self.estimators]
-
-        return self
-        # return super().fit(X, y, sample_weight)
-
-    def predict(self, X):
-        '''Calls predict on each model and
-        returns the averaged prediction. Handling
-        different problem types cases.
-
-        Parameters
-        ----------
-        X : array_like
-            The input data to be passed to each model
-            for prediction. Should be the right shape.
-        '''
-
-        preds = np.array([model.predict(X) for model in self.estimators_])
-
-        try:
-            self.estimators_[0].predict_proba([0])
-        except AttributeError:
-            regression = True
-        except ValueError:
-            regression = False
-
-        if len(preds[0].shape) == 1:
-
-            if regression:
-                return np.mean(preds, axis=0)
-
-            else:
-                preds = preds.astype(int)
-
-                class_preds = [np.argmax(np.bincount(preds[:, i]))
-                               for i in range(preds.shape[1])]
-                class_preds = np.array(class_preds)
-                return class_preds
-
-        else:
-            return np.round(np.mean(preds, axis=0))
-
-    def predict_proba(self, X):
-        '''Calls predict_proba on each model and
-        returns the averaged prediction.
-
-        Parameters
-        ----------
-        X : array_like
-            The input data to be passed to each model
-            for prediction. Should be the right shape.
-        '''
-
-        preds = np.array([model.predict_proba(X) for model in
-                         self.estimators_])
-        mean_preds = np.mean(preds, axis=0)
-
-        # Multi-label case
-        if len(mean_preds.shape) > 2:
-            return list(mean_preds)
-
-        return mean_preds
-
-    def get_params(self, deep=True):
-        return self._get_params('estimators', deep=deep)
-
-    def set_params(self, **kwargs):
-        self._set_params('estimators', **kwargs)
-        return self
-
+from sklearn.ensemble import (StackingRegressor, StackingClassifier,
+                              VotingClassifier, VotingRegressor)
 
 class DES_Ensemble(VotingClassifier):
 
     def __init__(self, estimators, ensemble, ensemble_name, ensemble_split,
-                 ensemble_params={}, random_state=None, weights=None,
-                 n_jobs=1):
+                 ensemble_params={}, random_state=None, weights=None):
 
         self.estimators = estimators
         self.ensemble = ensemble
@@ -145,7 +51,6 @@ class DES_Ensemble(VotingClassifier):
         self.ensemble_params = ensemble_params
         self.random_state = random_state
         self.weights = weights
-        self.n_jobs = n_jobs
 
     def fit(self, X, y, sample_weight=None):
         '''Assume y is multi-class'''
@@ -158,10 +63,10 @@ class DES_Ensemble(VotingClassifier):
         # Fit estimators
         # See Base Ensemble for why this implementation is bad
         try:
-            self.estimators_ = [estimator[1].fit(X, y, sample_weight=sample_weight)
+            self.estimators_ = [estimator[1].fit(X_train, y_train, sample_weight=sample_weight)
                                 for estimator in self.estimators]
         except TypeError:
-            self.estimators_ = [estimator[1].fit(X, y)
+            self.estimators_ = [estimator[1].fit(X_train, y_train)
                                 for estimator in self.estimators]
         # super().fit(X_train, y_train, sample_weight)
 
@@ -198,11 +103,229 @@ class DES_Ensemble(VotingClassifier):
         self._set_params('estimators', **kwargs)
         return self
 
+class SelectClassifier(VotingClassifier):
+    
+    def __init__(self, estimators, to_use=0):
+        self.estimators = estimators
+        self.to_use = to_use
+        
+    def fit(self, X, y=None, sample_weight=None):
+        
+        try:
+            self.estimator_ =\
+                self.estimators[self.to_use][1].fit(X, y, sample_weight=sample_weight)
+        except TypeError:
+            self.estimator_ =\
+                self.estimators[self.to_use][1].fit(X, y)
+            
+        return self
+    
+    def predict(self, X):
+        return self.estimator_.predict(X)
+
+    def predict_proba(self, X):
+        return self.estimator_.predict_proba(X)
+
+class Ensemble_Wrapper():
+
+    def __init__(self, model_params, ensemble_params, _get_ensembler, n_jobs):
+
+        self.model_params = model_params
+        self.ensemble_params = ensemble_params
+        self._get_ensembler = _get_ensembler
+        self.n_jobs = n_jobs
+
+    def _update_model_ensemble_params(self, to_add, model=True, ensemble=True):
+
+        if model:
+            new_model_params = {}
+            for key in self.model_params:
+                new_model_params[to_add + '__' + key] =\
+                    self.model_params[key]
+            self.model_params = new_model_params
+
+        if ensemble:
+
+            new_ensemble_params = {}
+            for key in self.ensemble_params:
+                new_ensemble_params[to_add + '__' + key] =\
+                    self.ensemble_params[key]
+            self.ensemble_params = new_ensemble_params
+
+    def _basic_ensemble(self, models, name, ensemble=False):
+
+        if len(models) == 1:
+            return models
+
+        else:
+            basic_ensemble = self._get_ensembler(models)
+            self._update_model_ensemble_params(name, ensemble=ensemble)
+
+            return [(name, basic_ensemble)]
+
+    def get_updated_params(self):
+
+        return self.model_params, self.ensemble_params
+
+    def wrap_ensemble(self, models, ensembles, ensemble_split, random_state):
+
+        # If no ensembling is passed, return either the 1 model, or a voting wrapper
+        if len(ensembles) == 0:
+            return self._basic_ensemble(models = models,
+                                        name = 'default voting wrapper',
+                                        ensemble = True)
+
+        # Otherwise special ensembles
+        else:
+
+            new_ensembles = []
+            for ensemble in ensembles:
+
+                ensemble_name = ensemble[0]
+                ensemble_info = ensemble[1]
+
+                ensemble_obj = ensemble_info[0]
+                ensemble_extra_params = ensemble_info[1]
+                
+                try:
+                    single_estimator =\
+                        ensemble_extra_params.pop('single_estimator')
+                except KeyError:
+                    raise KeyError('You must pass single_estimator, True or False with params!')
+
+                # If needs a single estimator, but multiple models passed,
+                # wrap in ensemble!
+                if single_estimator:
+
+                    se_ensemb_name = 'ensemble for single est'
+                    models = self._basic_ensemble(models,
+                                                  se_ensemb_name,
+                                                  ensemble=False)
+
+                try:
+                    needs_split = ensemble_extra_params.pop('needs_split')
+                except KeyError:
+                    raise KeyError('You must pass needs_split, True or False with params!')
+
+                # Right now needs split essential means DES Ensemble,
+                # maybe change this
+                if needs_split:
+
+                    # Init with default params
+                    ensemble = ensemble_obj()
+                    
+                    try:
+                        ensemble.random_state = random_state
+                    except AttributeError:
+                        pass
+
+                    # For base des object, if n_jobs always have as 1
+                    try:
+                        ensemble.n_jobs = 1
+                    except AttributeError:
+                        pass
+
+                    # For DES ensemble
+                    new_ensembles.append(
+                        (ensemble_name, DES_Ensemble(models,
+                                                     ensemble,
+                                                     ensemble_name,
+                                                     ensemble_split,
+                                                     ensemble_extra_params,
+                                                     random_state)))
+
+                    self._update_model_ensemble_params(ensemble_name)
+
+                # If no split and single estimator, then add the new
+                # ensemble obj
+                # W/ passed params.
+                elif single_estimator:
+
+                    # Models here since single estimator is assumed
+                    # to be just a list with
+                    # of one tuple as
+                    # [(model or ensemble name, model or ensemble)]
+
+                    base_estimator = models[0][1]
+
+                    # Set base estimator n_jobs to 1
+                    try:
+                        base_estimator.n_jobs = 1
+                    except AttributeError:
+                        pass
+
+                    ensemble = ensemble_obj(base_estimator=base_estimator,
+                                            **ensemble_extra_params)
+
+                    try:
+                        ensemble.random_state = random_state
+                    except AttributeError:
+                        pass
+
+                    # Set ensemble n_jobs to n_jobs
+                    try:
+                        ensemble.n_jobs = self.n_jobs
+                    except AttributeError:
+                        pass
+
+                    new_ensembles.append((ensemble_name, ensemble))
+
+                    # Have to change model name to base_estimator
+                    self.model_params =\
+                        replace_with_in_params(self.model_params, models[0][0],
+                                              'base_estimator')
+
+                    # Append ensemble name to all model params
+                    self._update_model_ensemble_params(ensemble_name,
+                                                       ensemble=False)
+
+                # Last case is, no split/DES ensemble and also
+                # not single estimator based
+                # e.g., in case of stacking regressor.
+                else:
+
+                    # Models here just self.models a list of tuple of
+                    # all models.
+                    # So, ensemble_extra_params should contain the
+                    # final estimator + other params
+
+                    # Set base models to n_jobs 1
+                    for model in models:
+                        try:
+                            model[1].n_jobs = 1
+                        except AttributeError:
+                            pass
+
+                    ensemble = ensemble_obj(estimators=models,
+                                            **ensemble_extra_params)
+
+                    try:
+                        ensemble.random_state = random_state
+                    except AttributeError:
+                        pass
+
+                    # Set ensemble n_jobs to n_jobs
+                    try:
+                        ensemble.n_jobs = self.n_jobs
+                    except AttributeError:
+                        pass
+
+                    new_ensembles.append((ensemble_name, ensemble))
+
+                    # Append ensemble name to all model params
+                    self._update_model_ensemble_params(ensemble_name,
+                                                       ensemble=False)
+
+            return self._basic_ensemble(models = new_ensembles,
+                                        name = 'ensemble of ensembles',
+                                        ensemble = True)
+
 
 AVALIABLE = {
         'binary': {
-            'basic ensemble': 'basic ensemble',
-            None: 'basic ensemble',
+            'basic ensemble': 'voting classifier',
+            None: 'voting classifier',
+            'voting': 'voting classifier',
             'aposteriori': 'aposteriori',
             'apriori': 'apriori',
             'lca': 'lca',
@@ -231,15 +354,15 @@ AVALIABLE = {
             'stacking': 'stacking classifier',
         },
         'regression': {
-                'basic ensemble': 'basic ensemble',
-                None: 'basic ensemble',
+                'basic ensemble': 'voting regressor',
+                None: 'voting regressor',
+                'voting': 'voting regressor',
                 'bagging': 'bagging regressor',
                 'stacking': 'stacking regressor',
                 'adaboost': 'adaboost regressor',
         },
+
         'multilabel': {
-                'basic ensemble': 'basic ensemble',
-                None: 'basic ensemble',
         },
 }
 
@@ -279,6 +402,10 @@ ENSEMBLES = {
                            ['stacking default']),
     'stacking classifier': (StackingClassifier,
                            ['stacking default']),
+    'voting classifier': (VotingClassifier, 
+                         ['ensemble default']),
+    'voting regressor': (VotingRegressor, 
+                         ['ensemble default']),
 }
 
 

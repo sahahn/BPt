@@ -400,6 +400,9 @@ PARAMS['rus binary ratio']['sampling_strategy'] =\
 
 
 # Ensemblers
+PARAMS['ensemble default'] = {'needs_split': False,
+                              'single_estimator': False}
+
 PARAMS['des default'] = {'needs_split': True,
                          'single_estimator': False}
 

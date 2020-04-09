@@ -10,6 +10,7 @@ import os
 import pickle as pkl
 
 from ..helpers.Docstring_Helpers import get_new_docstring
+from ..helpers.Params_Classes import ML_Params
 from ..helpers.CV import CV
 
 
@@ -220,7 +221,7 @@ class ABCD_ML():
         self.strat_encoders = {}
 
         # Class values to be set later
-        self.all_data, self.all_data_keys = None, {}
+        self.all_data = None
         self.targets_keys = []
 
         # Stores the gloabl train/test split
@@ -230,8 +231,10 @@ class ABCD_ML():
         self.CV = CV()
 
         # Store default dicts as init empty
-        self.default_load_params, self.default_ML_params, \
-            self.default_ML_verbosity = {}, {}, {}
+        self.default_load_params, self.default_ML_verbosity = {}, {}
+
+        # Init default ML params
+        self.default_ML_params = ML_Params(self.random_state)
 
         # Scores and settings are saved after each eval or test run
         self.eval_scores, self.eval_settings = {}, {}
@@ -409,7 +412,7 @@ class ABCD_ML():
                         _process_new,
                         _prepare_data,
                         _get_cat_keys,
-                        _set_all_data_keys,
+                        _set_data_scopes,
                         _get_base_targets_names,
                         _get_covar_scopes)
 
@@ -447,7 +450,6 @@ class ABCD_ML():
                       Test,
                       _premodel_check,
                       _make_ML_params,
-                      _print_model_params,
                       _get_split_vals,
                       _get_final_subjects_to_use,
                       _init_model,

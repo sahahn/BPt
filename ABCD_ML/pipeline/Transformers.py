@@ -56,13 +56,13 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         return
 
-    def fit(self, X, y=None, mapping={}):
+    def fit(self, X, y=None, mapping={}, **kwargs):
 
         # Need to call fit_transform to figure out change to mapping
-        self.fit_transform(X, y, mapping=mapping)
+        self.fit_transform(X, y, mapping=mapping, **kwargs)
         return self
 
-    def fit_transform(self, X, y=None, mapping={}):
+    def fit_transform(self, X, y=None, mapping={}, **kwargs):
 
         self._proc_mapping(mapping)
 

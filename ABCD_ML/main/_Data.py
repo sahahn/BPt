@@ -7,6 +7,7 @@ the ABCD_ML class.
 import pandas as pd
 import numpy as np
 
+from ..helpers.Scopes import Scopes
 from ..helpers.Data_File import Data_File
 from ..helpers.Data_Helpers import (process_binary_input,
                                     process_ordinal_input,
@@ -2737,7 +2738,7 @@ def _prepare_data(self):
         self.all_data = pd.merge(self.all_data, dfs[i], on=self.subject_id)
 
     # Set data keys, covars, strat, ect...
-    self._set_all_data_keys()
+    self._set_data_scopes()
 
     self._print('Final data (w/ target) for modeling loaded shape:',
                 self.all_data.shape)
@@ -2780,13 +2781,18 @@ def _get_cat_keys(self):
     return cat_keys
 
 
-def _set_all_data_keys(self):
+def _set_data_scopes(self):
 
-    self.all_data_keys['data_keys'] = list(self.data)
-    self.all_data_keys['data_file_keys'] = self.data_file_keys
-    self.all_data_keys['covars_keys'] = list(self.covars)
-    self.all_data_keys['strat_keys'] = list(self.strat)
-    self.all_data_keys['cat_keys'] = self._get_cat_keys()
+    covar_scopes, cat_encoders = self._get_covar_scopes()
+
+    self.Data_Scopes = Scopes(data_keys = list(self.data),
+                              data_file_keys = self.data_file_keys,
+                              cat_keys = self._get_cat_keys(),
+                              strat_keys = list(self.strat),
+                              covars_keys = list(self.covars),
+                              covar_scopes = covar_scopes,
+                              cat_encoders = cat_encoders,
+                              file_mapping = self.file_mapping)
 
 
 def _get_base_targets_names(self):

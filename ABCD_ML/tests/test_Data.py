@@ -1,6 +1,6 @@
 from nose.tools import *
 from unittest import TestCase
-from ABCD_ML.ABCD_ML import ABCD_ML
+from ABCD_ML import ABCD_ML
 
 import os
 import numpy as np
@@ -18,7 +18,7 @@ class Test_Data(TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_Data, self).__init__(*args, **kwargs)
 
-        self.ML = ABCD_ML(log_dr=None)
+        self.ML = ABCD_ML(log_dr=None, use_default_subject_ids=True)
 
     def test_init(self):
 
@@ -61,7 +61,9 @@ class Test_Data(TestCase):
 
             # Should drop second subject for eventname
             self.ML.Load_Data(loc=loc, dataset_type=dataset_type,
-                              drop_col_duplicates=False)
+                              drop_col_duplicates=False, eventname="baseline_year_1_arm_1")
+
+
             self.assertTrue(self.ML.data.shape == (2, 3))
             self.assertTrue('NDAR_1' in self.ML.data.index)
 
@@ -70,16 +72,14 @@ class Test_Data(TestCase):
             self.assertTrue(len(self.ML.data) == 0)
 
             # Should load all 3 subjects
-            self.ML.eventname = None
             self.ML.Load_Data(loc=loc, dataset_type=dataset_type)
             self.assertTrue(self.ML.data.shape == (3, 3))
             self.assertTrue('NDAR_2' in self.ML.data.index)
 
             # Reset
             self.ML.Clear_Data()
-            self.ML.eventname = 'baseline_year_1_arm_1'
 
-        self.ML.Load_Data(loc=locs, dataset_type=dataset_types)
+        self.ML.Load_Data(loc=locs, dataset_type=dataset_types, eventname="baseline_year_1_arm_1")
         self.assertTrue(self.ML.data.shape == (2, 9))
         self.assertTrue('NDAR_1' in self.ML.data.index)
         self.assertTrue('NDAR_3' in self.ML.data.index)
@@ -98,7 +98,6 @@ class Test_Data(TestCase):
         self.ML.Clear_Data()
 
     def test_load_data2(self):
-        # Test filter outlier percent and winsorize
 
         self.ML.eventname = None
         loc = get_file_path('custom_data2.csv')
@@ -124,18 +123,6 @@ class Test_Data(TestCase):
         self.assertTrue(self.ML.data.shape == (6, 3))
         self.ML.Clear_Data()
 
-        self.ML.Load_Data(loc=loc, dataset_type='custom',
-                          winsorize_val=.2)
-        self.assertTrue(self.ML.data.loc['NDAR_1']['oname1'] == 3)
-        self.assertTrue(self.ML.data.loc['NDAR_10']['oname1'] == 8)
-        self.ML.Clear_Data()
-
-        self.ML.Load_Data(loc=loc, dataset_type='custom',
-                          winsorize_val=(.2, 0))
-        self.assertTrue(self.ML.data.loc['NDAR_1']['oname1'] == 3)
-        self.assertTrue(self.ML.data.loc['NDAR_10']['oname1'] == 10)
-        self.ML.Clear_Data()
-
     def test_load_data3(self):
 
         self.ML.eventname = None
@@ -149,18 +136,17 @@ class Test_Data(TestCase):
 
         loc = get_file_path('basic_covars1.txt')
 
-        self.ML.Load_Covars(loc, 'gender', 'b')
-        self.assertTrue(self.ML.covars.shape == (2, 1))
+        self.ML.Load_Covars(loc=loc, col_name='gender', data_type='b')
+        self.assertTrue(self.ML.covars.shape == (3, 1))
         self.assertTrue(len(np.unique(self.ML.covars['gender'])) == 2)
 
         self.ML.Clear_Covars()
         self.assertTrue(len(self.ML.covars) == 0)
 
         loc = get_file_path('custom_covars1.csv')
-        self.ML.Load_Covars(loc, ['sex', 'age', 'education'], ['b', 'f', 'o'],
-                            dataset_type='custom', code_categorical_as='dummy',
-                            standardize=False, normalize=False
-                            )
+        self.ML.Load_Covars(loc=loc, col_name=['sex', 'age', 'education'],
+                            data_type=['b', 'f', 'o'],
+                            dataset_type='custom', code_categorical_as='dummy')
 
         # Check correct binary load
         self.assertTrue(len(np.unique(self.ML.covars['sex']) == 2))
@@ -170,22 +156,11 @@ class Test_Data(TestCase):
         self.assertTrue('NDAR_4' not in self.ML.covars)
         self.ML.Clear_Covars()
 
-        self.ML.Load_Covars(loc, 'education', 'c',
-                            dataset_type='custom', code_categorical_as='dummy',
-                            standardize=False, normalize=False
-                            )
+        self.ML.Load_Covars(loc=loc, col_name='education', data_type='c',
+                            dataset_type='custom', code_categorical_as='dummy')
+
         self.assertTrue(self.ML.covars.shape == (6, 2))
         self.ML.Clear_Covars()
-
-        self.ML.Load_Covars(loc, 'age', 'f',
-                            dataset_type='custom', code_categorical_as='dummy',
-                            filter_float_outlier_percent=.01,
-                            standardize=True, normalize=True
-                            )
-
-        self.assertTrue(self.ML.covars.shape == (4, 1))
-        self.assertTrue(min(self.ML.covars['age']) == 0)
-        self.assertTrue(max(self.ML.covars['age']) == 1)
 
     @raises(AssertionError)
     def test_load_target1(self):
@@ -196,33 +171,31 @@ class Test_Data(TestCase):
     def test_load_target2(self):
 
         loc = get_file_path('custom_covars1.csv')
-        self.ML.Load_Targets(loc, 'sex', 'b', dataset_type='custom')
+        self.ML.Load_Targets(loc=loc, col_name='sex', data_type='b', dataset_type='custom')
         self.assertTrue(self.ML.targets.shape == (5, 1))
-        self.assertTrue(len(np.unique(
-            self.ML.targets[self.ML.targets_key])) == 2)
 
         self.ML.Clear_Targets()
         self.assertTrue(len(self.ML.targets) == 0)
 
-        self.ML.Load_Targets(loc, 'age', 'f', dataset_type='custom',
+        self.ML.Load_Targets(loc=loc, col_name='age', data_type='f', dataset_type='custom',
                              filter_outlier_percent=5)
         self.assertTrue(self.ML.targets.shape == (4, 1))
         self.ML.Clear_Targets()
 
-        self.ML.Load_Targets(loc, 'sex', 'c', dataset_type='custom')
-        self.assertTrue(self.ML.targets.shape == (6, 3))
+        self.ML.Load_Targets(loc=loc, col_name='sex', data_type='c', dataset_type='custom')
+        self.assertTrue(self.ML.targets.shape == (6, 1))
 
     @raises(KeyError)
     def test_load_target3(self):
 
         loc = get_file_path('custom_covars1.csv')
-        self.ML.Load_Targets(loc, 'fake_key', 'b', dataset_type='custom')
+        self.ML.Load_Targets(loc=loc, col_name='fake_key', data_type='b', dataset_type='custom')
 
     def test_validation1(self):
 
         loc = get_file_path('custom_covars1.csv')
 
-        self.ML.Load_Strat(loc, 'education', dataset_type='custom')
+        self.ML.Load_Strat(loc=loc, col_name='education', dataset_type='custom')
         self.assertTrue(self.ML.strat.shape == (6, 1))
         ed_size =\
             len(np.unique(self.ML.strat['education' + self.ML.strat_u_name]))
@@ -231,8 +204,8 @@ class Test_Data(TestCase):
         self.ML.Define_Validation_Strategy(groups='education')
         self.assertTrue(len(self.ML.CV.groups == 6))
 
-        self.ML.Load_Strat(loc, 'sex', dataset_type='custom',
-                           binary_col_inds=0)
+        self.ML.Load_Strat(loc=loc, col_name='sex', dataset_type='custom',
+                           binary_col = True)
         self.assertTrue(self.ML.strat.shape == (5, 2))
 
         self.ML.Define_Validation_Strategy(groups=['education', 'sex'])
@@ -247,15 +220,6 @@ class Test_Data(TestCase):
 
         self.ML.Clear_Strat()
         self.assertTrue(len(self.ML.strat) == 0)
-
-    @raises(AttributeError)
-    def test_validation2(self):
-
-        loc = get_file_path('custom_covars1.csv')
-
-        self.ML.Load_Strat(loc, 'education', dataset_type='custom')
-        self.ML.Define_Validation_Strategy(
-            stratify=self.ML.original_targets_key)
 
     def test_load_exclusions1(self):
 
@@ -283,11 +247,10 @@ class Test_Data(TestCase):
 
         self.ML.eventname = None
         loc = get_file_path('custom_data2.csv')
-
+        
         self.ML.Load_Inclusions(subjects=['1'])
-
         self.ML.Load_Data(loc=loc, dataset_type='custom')
-        self.assertTrue(self.ML.data.shape == (1, 0))
+        self.assertTrue(self.ML.data.shape == (1, 3))
 
     def test_load_all1(self):
 
@@ -296,15 +259,15 @@ class Test_Data(TestCase):
         self.ML.Load_Data(loc=loc, dataset_type='custom')
 
         loc = get_file_path('custom_covars1.csv')
-        self.ML.Load_Targets(loc, 'sex', 'b', dataset_type='custom')
-
-        self.ML.Load_Covars(loc, 'education', 'c', dataset_type='custom')
+        self.ML.Load_Targets(loc=loc, col_name='sex', data_type='b', dataset_type='custom')
+        self.ML.Load_Covars(loc=loc, col_name='education', data_type='c', dataset_type='custom')
 
         # With low memory mode false, data should be same
         self.assertTrue(self.ML.data.shape == (10, 3))
         self.assertTrue(self.ML.targets.shape == (5, 1))
 
-        self.ML.Load_Strat(loc, 'education', dataset_type='custom')
+        self.ML.Load_Strat(loc=loc, col_name='education', dataset_type='custom',
+                           overlap_subjects=True)
         self.assertTrue(self.ML.strat.shape == (5, 1))
 
         self.ML.Define_Validation_Strategy(groups='education')
@@ -323,19 +286,20 @@ class Test_Data(TestCase):
 
         self.assertTrue(self.ML.all_data.shape == (5, 7))
 
-        self.ML.Define_Validation_Strategy(stratify=self.ML.targets_key)
+        self.ML.Define_Validation_Strategy(stratify=self.ML.targets_keys[0])
         self.assertTrue(len(self.ML.CV.stratify) == 5)
         self.assertTrue(len(np.unique(self.ML.CV.stratify)) == 2)
 
-        self.ML.Define_Validation_Strategy(stratify=[self.ML.targets_key,
+        self.ML.Define_Validation_Strategy(stratify=[self.ML.targets_keys[0],
                                                      'education'])
         self.assertTrue(len(self.ML.CV.stratify) == 5)
         self.assertTrue(len(np.unique(self.ML.CV.stratify)) == 5)
 
         # Load target as categorical
-        self.ML.Load_Targets(loc, 'sex', 'c', dataset_type='custom')
+        self.ML.Load_Targets(loc=loc, col_name='sex', data_type='c',
+                             dataset_type='custom', clear_existing=True)
         self.ML.Define_Validation_Strategy(
-            stratify=self.ML.original_targets_key)
+            stratify=self.ML.targets_keys[0])
         self.assertTrue(len(self.ML.CV.stratify) == 5)
 
         self.ML.Train_Test_Split(test_subjects='NDAR_1')
@@ -343,19 +307,19 @@ class Test_Data(TestCase):
 
     def test_low_memory_mode1(self):
 
-        ML = self.ML = ABCD_ML(low_memory_mode=True, eventname=None,
-                               log_dr=None)
+        ML = ABCD_ML(low_memory_mode=True,
+                     log_dr=None)
 
         loc = get_file_path('custom_data2.csv')
         ML.Load_Data(loc=loc, dataset_type='custom')
 
         loc = get_file_path('custom_covars1.csv')
-        ML.Load_Targets(loc, 'sex', 'b', dataset_type='custom')
+        ML.Load_Targets(loc=loc, col_name='sex', data_type='b', dataset_type='custom')
 
         # With low memory mode false, data should be removed in place
-        self.assertTrue(self.ML.data.shape == (5, 3))
-        self.assertTrue(self.ML.targets.shape == (5, 1))
+        self.assertTrue(ML.data.shape == (5, 3))
+        self.assertTrue(ML.targets.shape == (5, 1))
 
-        self.ML._prepare_data()
-        self.assertTrue(len(self.ML.data) == 0)
-        self.assertTrue(len(self.ML.targets) == 0)
+        ML._prepare_data()
+        self.assertTrue(len(ML.data) == 0)
+        self.assertTrue(len(ML.targets) == 0)

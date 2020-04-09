@@ -46,14 +46,13 @@ def load_surf(surf):
     elif surf is None:
         return None
 
-    # Otherwise assume valid array-like passed
+    # Otherwise assume either valid array-like passed or a Parc object
     else:
 
-        # Cast to numpy array
-        surf = np.array(surf)
-        
-        # Return copy to be safe
-        return surf.copy()
+        try:
+            return surf.get_parc(copy=True)
+        except AttributeError:
+            return np.array(surf).copy()
 
 
 class SurfLabels(BaseEstimator, TransformerMixin):

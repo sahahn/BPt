@@ -1346,25 +1346,24 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
 
     ML_params = self._make_ML_params(args=args)
 
-    # If no NaN, no imputer
-    if not pd.isnull(self.all_data).any().any():
-        ML_params['imputer'] = None
+    # If no nan data set imputer off
+    ML_params.check_imputer(self.all_data)
 
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
-        self._print_model_params(ML_params, test=True, kwargs=kwargs)
+        ML_params.print_model_params(test=True, _print=self._print)
 
     # Get a free run name
-    run_name = self._get_avaliable_run_name(run_name, ML_params['model'],
+    run_name = self._get_avaliable_run_name(run_name, ML_params.model,
                                             self.test_scores)
     self._print('Saving scores and settings with unique name:', run_name)
     self.last_run_name = run_name
     self._print()
 
     # Save this specific set of settings, in test settings
-    run_settings = ML_params.copy()
-    run_settings.update({'run_name': run_name})
-    self.test_settings[run_name] = run_settings
+    #run_settings = ML_params.copy()
+    #run_settings.update({'run_name': run_name})
+    #self.test_settings[run_name] = run_settings
 
     # Init the Model_Pipeline object with modeling params
     self._init_model(ML_params)
@@ -1382,14 +1381,14 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
 
     # Set run name
     for fi in FIs:
-        fi.set_target(ML_params['target'])
+        fi.set_target(ML_params.target)
 
     # Print out score for all passed metrics
     metric_strs = self.Model_Pipeline.metric_strs
     self._print()
 
     score_list, score_type_list = [], []
-    if ML_params['compute_train_score']:
+    if ML_params.compute_train_score:
         score_list.append(train_scores)
         score_type_list.append('Training')
 

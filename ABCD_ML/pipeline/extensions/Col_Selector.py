@@ -13,12 +13,8 @@ class ColTransformer(ColumnTransformer):
 
     def _proc_mapping(self, mapping):
 
-        try:
-            self._mapping
+        if hasattr(self, '_mapping'):
             return
-
-        except AttributeError:
-            self._mapping = mapping
 
         if len(mapping) > 0:
             new_indx = proc_mapping(self.transformers[0][2], mapping)

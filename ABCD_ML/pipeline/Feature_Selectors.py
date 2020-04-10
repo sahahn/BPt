@@ -6,8 +6,9 @@ File with different Feature Selectors
 from ..helpers.ML_Helpers import (show_objects, get_possible_init_params,
                                   get_obj_and_params)
 from sklearn.feature_selection import *
-from .extensions.Feat_Selectors import RFE, FeatureSelector
+from .extensions.Feat_Selectors import RFE_Wrapper, FeatureSelector
 import numpy as np
+from numpy.random import RandomState
 import nevergrad as ng
 
 AVALIABLE = {
@@ -42,7 +43,7 @@ SELECTORS = {
                                 ['base univar fs classifier',
                                  'univar fs classifier dist']),
 
-    'rfe': (RFE, ['base rfe', 'rfe num feats dist']),
+    'rfe': (RFE_Wrapper, ['base rfe', 'rfe num feats dist']),
 
     'variance threshold': (VarianceThreshold, ['default']),
 
@@ -55,9 +56,9 @@ def get_special_selector(feat_selector, feat_selector_params, random_state,
 
     # Init feat selector with mask of random feats
     if random_state is None:
-        r_state = np.random.RandomState(np.random.randint(1000))
+        r_state = RandomState(np.random.randint(1000))
     elif isinstance(random_state, int):
-        r_state = np.random.RandomState(random_state)
+        r_state = RandomState(random_state)
     else:
         r_state = random_state
 

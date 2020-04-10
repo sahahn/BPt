@@ -5,7 +5,7 @@ import numpy as np
 from ...helpers.ML_Helpers import proc_mapping
 
 
-class RFE(RFE):
+class RFE_Wrapper(RFE):
     def fit(self, X, y):
         '''Override the fit function from base
            specifically allow passing in float % to keep.
@@ -30,13 +30,9 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
         self.name = 'selector'
 
     def _proc_mapping(self, mapping):
-        
-        try:
-            self._mapping
+
+        if hasattr(self, '_mapping'):
             return
-        
-        except AttributeError:
-            self._mapping = mapping
 
         if len(mapping) > 0:
 

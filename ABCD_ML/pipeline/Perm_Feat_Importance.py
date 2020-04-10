@@ -107,7 +107,7 @@ class Perm_Feat_Importance():
         X_copy = self.X.copy()
 
         importances = []
-        for perm in range(self.n_perm):
+        for _ in range(self.n_perm):
 
             X_copy[:, ind] = np.random.permutation(X_copy[:, ind])
             importances.append(scorer(model, X_copy, self.y))

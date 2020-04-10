@@ -229,7 +229,7 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
 
         If set to default, will use the value saved in self.random_state,
         (as set in :class:`ABCD_ML.ABCD_ML` upon class init).
-        
+
         (default = 'default')
     '''
 

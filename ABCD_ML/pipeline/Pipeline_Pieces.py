@@ -1,5 +1,5 @@
 from sklearn.preprocessing import FunctionTransformer
-from .Input_Tools import is_scope, is_pipe, is_select, is_duplicate
+from ..helpers.Input_Tools import is_scope, is_pipe, is_select, is_duplicate
 
 from ..helpers.ML_Helpers import (proc_input,
                                   user_passed_param_check, update_extra_params,
@@ -157,7 +157,7 @@ class Pieces():
                 cnt += 1
 
         else:
-            self.objs, self.obj_params = self._process(obj_strs, param_strs, scopes)        
+            self.objs, self.obj_params = self._process(obj_strs, param_strs, scopes)
 
     # Overide in children class
     def _process(self, obj_strs, param_strs, scopes):

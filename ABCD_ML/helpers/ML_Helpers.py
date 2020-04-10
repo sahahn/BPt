@@ -7,9 +7,8 @@ These are non-class functions that are used in _ML.py and Scoring.py
 import numpy as np
 import inspect
 from .Default_Params import get_base_params, proc_params, show
-import subprocess
 from copy import deepcopy
-from ..pipeline.Input_Tools import is_special
+from .Input_Tools import is_special
 
 
 def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
@@ -457,28 +456,6 @@ def type_check(ud):
             return False
 
     return True
-
-
-def mem_check():
-
-    process = subprocess.Popen('free', stdout=subprocess.PIPE)
-    output, error = process.communicate()
-    output = output.decode("utf-8")
-
-    output = output.split('\n')
-
-    cats = ['total', 'used', 'free', 'shared', 'buff/cache', 'available']
-
-    mem = [o for o in output[1].split(' ') if len(o) > 0][1:]
-    swap = [o for o in output[2].split(' ') if len(o) > 0][1:]
-
-    print('mem')
-    for m, c in zip(mem, cats):
-        print(c + ':', m)
-    print()
-    print('swap')
-    for m, c in zip(swap, cats):
-        print(c + ':', m)
 
 
 def proc_mapping(indx, mapping):

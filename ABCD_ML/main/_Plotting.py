@@ -200,7 +200,7 @@ def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
         self._print(valid_data.skew().sort_values())
         self._print()
 
-    fig, ax = plt.subplots()
+    fig = plt.figure()
 
     def update(i):
         fig.clear()

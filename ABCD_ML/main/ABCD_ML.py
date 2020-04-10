@@ -5,7 +5,6 @@ The main project class.
 """
 import pandas as pd
 import shutil
-import shap
 import os
 import pickle as pkl
 

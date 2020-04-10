@@ -1654,7 +1654,7 @@ def Proc_Data_Unique_Cols(self, unique_val_drop=None, unique_val_warn=.05,
         This parameter allows you to drops columns within loaded data
         where there are under a certain threshold of unique values.
 
-        The threshold is determined by the passed value as either a float for 
+        The threshold is determined by the passed value as either a float for
         a percentage of the data, e.g., computed as unique_val_drop * len(data), 
         or if passed a number greater then 1, then that number, where a
         ny column with less unique values then this threshold will be dropped.

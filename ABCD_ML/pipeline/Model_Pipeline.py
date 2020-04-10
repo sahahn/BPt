@@ -18,9 +18,9 @@ from ..helpers.ML_Helpers import (conv_to_list, proc_input,
                                   get_possible_init_params,
                                   get_obj_and_params,
                                   user_passed_param_check,
-                                  f_array,
+                                  f_array, param_len_check,
                                   type_check, wrap_pipeline_objs,
-                                  is_array_like, param_len_check)
+                                  is_array_like)
 
 from .extensions.Selector import selector_wrapper
 
@@ -42,8 +42,6 @@ from .Feat_Importances import get_feat_importances_and_params
 from .Metrics import get_metric
 
 from .Base_Model_Pipeline import Base_Model_Pipeline
-
-from .Input_Tools import is_select
 
 from .Nevergrad import NevergradSearchCV
 import os

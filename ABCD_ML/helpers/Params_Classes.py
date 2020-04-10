@@ -2,7 +2,7 @@ from copy import deepcopy
 from sklearn.base import BaseEstimator
 import pandas as pd
 from .ML_Helpers import conv_to_list
-from ..pipeline.Input_Tools import cast_input_to_scopes
+from .Input_Tools import cast_input_to_scopes
 
 class Params(BaseEstimator):
 

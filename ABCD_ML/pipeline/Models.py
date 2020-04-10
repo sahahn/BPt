@@ -21,7 +21,7 @@ from sklearn.linear_model import (LogisticRegression, ElasticNet,
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from ..helpers.ML_Helpers import show_objects, get_obj_and_params, get_possible_init_params
+from ..helpers.ML_Helpers import show_objects, get_obj_and_params
 
 AVALIABLE = {
         'binary': {

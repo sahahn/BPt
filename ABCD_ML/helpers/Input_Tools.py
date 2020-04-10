@@ -1,4 +1,4 @@
-from ..helpers.VARS import SCOPES
+
 
 class Select(list):
     input_type = 'select'
@@ -17,7 +17,6 @@ def is_select(obj):
 
     except AttributeError:
         return False
-
 
 class Duplicate(list):
     input_type = 'duplicate'
@@ -76,7 +75,6 @@ def is_scope(obj):
     except AttributeError:
         return False
 
-
 def cast_input_to_scopes(scopes):
 
     # If input already a scope, don't wrap
@@ -97,9 +95,4 @@ def cast_input_to_scopes(scopes):
 
 
 def is_special(obj):
-
-    try:
-        obj.input_type
-        return True
-    except AttributeError:
-        return False
+    return hasattr(obj, 'input_type')

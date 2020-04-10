@@ -1,5 +1,3 @@
-import numpy as np
-
 from ..helpers.ML_Helpers import get_avaliable_by_type, get_obj_and_params
 from ..helpers.ML_Helpers import show_objects, replace_with_in_params
 
@@ -42,13 +40,17 @@ from sklearn.ensemble import (StackingRegressor, StackingClassifier,
 class DES_Ensemble(VotingClassifier):
 
     def __init__(self, estimators, ensemble, ensemble_name, ensemble_split,
-                 ensemble_params={}, random_state=None, weights=None):
+                 ensemble_params=None, random_state=None, weights=None):
 
         self.estimators = estimators
         self.ensemble = ensemble
         self.ensemble_name = ensemble_name
         self.ensemble_split = ensemble_split
+
+        if ensemble_params is None:
+            ensemble_params = {}
         self.ensemble_params = ensemble_params
+
         self.random_state = random_state
         self.weights = weights
 

@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 from ..helpers.Table_Helpers import (get_split_df, get_base_title, filter_out_nans,
                                      proc_group_by, get_subjects_by_group, save_table)

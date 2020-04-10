@@ -1,5 +1,5 @@
 from .ML_Helpers import conv_to_list
-from ..pipeline.Input_Tools import is_scope
+from .Input_Tools import is_scope
 
 class Scopes():
 

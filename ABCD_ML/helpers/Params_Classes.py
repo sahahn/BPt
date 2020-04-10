@@ -2,6 +2,7 @@ from copy import deepcopy
 from sklearn.base import BaseEstimator
 import pandas as pd
 from .ML_Helpers import conv_to_list
+from ..pipeline.Input_Tools import cast_input_to_scopes
 
 class Params(BaseEstimator):
 
@@ -77,8 +78,18 @@ class ML_Params(Params):
 
     def setup(self):
 
+        self._cast_scopes()
         self._conv_to_lists()
         self._set_base_n_jobs()
+
+    def _cast_scopes(self):
+        
+        to_conv = ['loader_scope', 'imputer_scope', 'scaler_scope',
+                   'transformer_scope', 'sample_on', 'scope']
+
+        for c in to_conv:
+            as_scope = cast_input_to_scopes(getattr(self, c))
+            setattr(self, c, as_scope)
 
     def _conv_to_lists(self):
 

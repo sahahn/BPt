@@ -9,6 +9,7 @@ import inspect
 from .Default_Params import get_base_params, proc_params, show
 import subprocess
 from copy import deepcopy
+from ..pipeline.Input_Tools import is_special
 
 
 def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
@@ -64,7 +65,7 @@ def conv_to_list(in_val, amt=1):
     if in_val is None:
         return None
 
-    if not is_array_like(in_val):
+    if not is_array_like(in_val) or is_special(in_val):
         in_val = [in_val for i in range(amt)]
 
     return in_val

@@ -405,7 +405,10 @@ class Sampler_Wrapper():
 
         return
 
-    def fit_resample(self, X, y, mapping={}):
+    def fit_resample(self, X, y, mapping=None):
+
+        if mapping == None:
+            mapping = {}
 
         self._proc_mapping(mapping)
 

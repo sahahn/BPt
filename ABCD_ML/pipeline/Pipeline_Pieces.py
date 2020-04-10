@@ -1,4 +1,5 @@
 from sklearn.preprocessing import FunctionTransformer
+from .Input_Tools import is_scope, is_pipe, is_select, is_duplicate
 
 from ..helpers.ML_Helpers import (proc_input,
                                   user_passed_param_check, update_extra_params,
@@ -9,10 +10,46 @@ from .extensions.Col_Selector import ColTransformer, InPlaceColTransformer
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 
 from sklearn.pipeline import Pipeline
-from copy import deepcopy
+from copy import deepcopy, copy
+
+from .extensions.Selector import selector_wrapper
 
 import numpy as np
 
+def process_duplicates(obj_strs, param_strs, scopes):
+    '''Duplicates for now just works with scopes'''
+
+    new_obj_strs, new_param_strs, new_scopes = [], [], []
+
+    for name, param, scope in zip(obj_strs, param_strs, scopes):
+        
+        # If is duplicate
+        if is_duplicate(scope):
+            for s in scope:
+
+                new_obj_strs.append(copy(name))
+                new_param_strs.append(copy(param))
+                new_scopes.append(s)
+
+        else:
+
+            new_obj_strs.append(name)
+            new_param_strs.append(param)
+            new_scopes.append(scope)
+
+    return new_obj_strs, new_param_strs, new_scopes
+
+
+def process_input_types(obj_strs, param_strs, scopes):
+
+    # I think want to fill in missing param_strs w/ 0's here
+    param_strs = param_len_check(obj_strs, param_strs)
+
+    if scopes is not None:
+        obj_strs, param_strs, scopes =\
+            process_duplicates(obj_strs, param_strs, scopes)
+
+    return obj_strs, param_strs, scopes
 
 class Pieces():
 
@@ -22,10 +59,6 @@ class Pieces():
                  extra_params=None, _print=print):
         '''Accept all params for sub-classes, but if not relevant just set to None
         and ignore.'''
-
-        self.obj_strs = obj_strs
-        self.param_strs = param_strs
-        self.scopes = scopes
 
         self.user_passed_objs = user_passed_objs
         self.problem_type = problem_type
@@ -44,19 +77,90 @@ class Pieces():
         self._print = _print
 
         # Process according to child class
-        self.process()
+        self.process(obj_strs, param_strs, scopes)
 
-    def process(self):
+    def process(self, obj_strs, param_strs, scopes):
 
-        if self.obj_strs is None:
+        if obj_strs is None:
             self.objs = []
             self.obj_params = {}
 
+            return self
+
+        obj_strs, param_strs, scopes =\
+            process_input_types(obj_strs, param_strs, scopes)
+
+        select_mask = np.array([is_select(obj) for obj in obj_strs])
+        if select_mask.any():
+
+            # Init self.objs as empty list of correct size w/ just place holders
+            self.objs = [None for i in range(len(obj_strs))]
+
+            def n_mask(objs):
+                if objs is None:
+                    return None
+
+                return [i for idx, i in enumerate(objs) if not select_mask[idx]]
+
+            # Process everything but the select groups first
+            non_select_objs, self.obj_params =\
+                self._process(n_mask(obj_strs), n_mask(param_strs),
+                              n_mask(scopes))
+
+            # Update right spot in objs
+            for obj, ind in zip(non_select_objs, np.where(~select_mask)[0]):
+                self.objs[ind] = obj
+
+            # Split up the select groups
+            select_obj_strs, select_param_strs, select_scopes = [], [], []
+            for i in np.where(select_mask)[0]:
+
+                # Add select str
+                select_obj_strs.append(obj_strs[i])
+
+                # If corresponding param strs also select, add as is
+                # Otherwise, copy for each choice of obj
+                if is_select(param_strs[i]):
+                    param_strs_i = param_strs[i]
+                
+                else:
+                    param_strs_i =\
+                        [copy(param_strs[i]) for j in range(len(obj_strs[i]))]
+                
+                select_param_strs.append(param_strs_i)
+
+                # If scopes, duplicate for each
+                if scopes is None:
+                    scopes_i = [None for j in range(len(obj_strs[i]))]
+                else:
+                    scopes_i = [copy(scopes[i]) for j in range(len(obj_strs[i]))]
+
+                select_scopes.append(scopes_i)
+
+            # Next, process each select group seperately
+            cnt = 0
+            for s_obj_strs, s_param_strs, s_scopes, ind in zip(select_obj_strs,
+                                                               select_param_strs,
+                                                               select_scopes,
+                                                               np.where(select_mask)[0]):
+
+                s_objs, s_obj_params =\
+                    self._process(s_obj_strs, s_param_strs, s_scopes)
+
+                # Wrap in selector object
+                name = self.name + '_selector' + str(cnt)
+                s_obj, s_obj_params = selector_wrapper(s_objs, s_obj_params, name)
+
+                # Can update final params
+                self.objs[ind] = s_obj
+                self.obj_params.update(s_obj_params)
+                cnt += 1
+
         else:
-            self.objs, self.obj_params = self._process()
+            self.objs, self.obj_params = self._process(obj_strs, param_strs, scopes)        
 
     # Overide in children class
-    def _process(self):
+    def _process(self, obj_strs, param_strs, scopes):
         return [], {}
 
     def _get_objs_and_params(self, get_func, names, params):
@@ -82,7 +186,7 @@ class Pieces():
 
         return objs, params
 
-    def _checks(self, names, params, scopes=None):
+    def _checks(self, names, params):
 
         conv_names = self._proc_in_str(names)
 
@@ -91,12 +195,6 @@ class Pieces():
 
         # Check search type
         params = self._check_params_by_search(params)
-
-        # Try proc scopes
-        if scopes is not None:
-            conv_names, params, scopes = self._scope_check(conv_names, params, scopes)
-
-            return conv_names, params, scopes
 
         return conv_names, params
 
@@ -121,39 +219,20 @@ class Pieces():
 
     def _scope_check(self, names, params, scopes):
 
-        # First just case where one obj passed
-        if len(names) == 1 and len(scopes) > 1:
-            scopes = [scopes]
-
         # Now the lengths should be equal or else bad input
         if len(names) != len(scopes):
 
             raise RuntimeError('Warning: non equal number of',
                                names, 'passed as', scopes)
 
-        new_names, new_scopes, new_params = [], [], []
-        for name, scope, param in zip(names, scopes, params):
-
-            if isinstance(scope, tuple):
-                for s in scope:
-
-                    new_names.append(name)
-                    new_scopes.append(s)
-                    new_params.append(param)
-
-            else:
-
-                new_names.append(name)
-                new_scopes.append(scope)
-                new_params.append(param)
-
-        return new_names, new_params, new_scopes
+        return names, params, scopes
 
     def _get_user_passed_obj_params(self, name, param):
 
-        user_obj = self.user_passed_objs[name]
+        # get copy of user_obj
+        user_obj = deepcopy(self.user_passed_objs[name])
 
-        # proc as necc. user passed params
+        # proc as necc. user passed params (also creates deep copy of any params!)
         extra_user_obj_params, user_obj_params =\
             user_passed_param_check(param, name, self.search_type)
 
@@ -199,10 +278,10 @@ class Pieces():
 
 class Type_Pieces(Pieces):
 
-    def _base_type_process(self, func):
+    def _base_type_process(self, obj_strs, param_strs, func):
 
         # Perform checks first
-        obj_strs, param_strs = self._checks(self.obj_strs, self.param_strs)
+        obj_strs, param_strs = self._checks(obj_strs, param_strs)
 
         # Then call get objs and params
         objs, obj_params =\
@@ -265,12 +344,12 @@ class Models(Type_Pieces):
 
     name = 'models'
 
-    def _process(self):
+    def _process(self, obj_strs, param_strs, scopes):
 
         from .Models import get_base_model_and_params, AVALIABLE
         self.AVAILABLE = AVALIABLE.copy()
 
-        return self._base_type_process(get_base_model_and_params)
+        return self._base_type_process(obj_strs, param_strs, get_base_model_and_params)
 
     def apply_ensembles(self, ensembles, ensemble_split):
 
@@ -304,7 +383,8 @@ class Loaders(Scope_Pieces):
 
         for i in range(len(passed_obj_strs)):
 
-            if isinstance(passed_obj_strs[i], tuple):
+            if is_pipe(passed_obj_strs[i]):
+
                 tuple_strs.append(passed_obj_strs[i])
                 tuple_scopes.append(passed_scopes[i])
 
@@ -315,10 +395,10 @@ class Loaders(Scope_Pieces):
                     param_str = 0
 
                 # Passed params not tuple, just set to tuple version of same value
-                if isinstance(param_str, tuple):
+                if is_pipe(param_str):
                     tuple_params.append(param_str)
                 else:
-                    as_tuple = tuple([param_str for j in range(len(passed_obj_strs[i]))])
+                    as_tuple = [copy(param_str) for j in range(len(passed_obj_strs[i]))]
                     tuple_params.append(as_tuple)
 
             else:
@@ -349,60 +429,41 @@ class Loaders(Scope_Pieces):
             loader_strs = list(strs)
             loader_params = list(params)
 
-            # Set scopes
-            original_len = len(loader_strs)
-            loader_scopes = [scopes for i in range(original_len)]
-
-            checked = self._checks(loader_strs, loader_params, loader_scopes)
+            checked = self._checks(loader_strs, loader_params)
 
             # If pass scope will return obj, param, scope
             loaders, loader_params =\
                 self._get_objs_and_params(get_func, checked[0], checked[1])
 
-            loader_scopes = checked[2]
-            
-            ordered_tuple_pipeline = []
-            ordered_tuple_scope = []
+            # Create loader pipeline
+            name = 'loader_combo' + str(cnt)
+            loader_pipeline = (name, Pipeline(steps=loaders))
+            ordered_tuple_pipelines.append(loader_pipeline)
 
-            # Handle duplicates if any
-            n_duplicates = int(len(loaders) / original_len)
-            for i in range(n_duplicates):
+            # Add scope
+            ordered_tuple_scopes.append(scopes)
 
-                # Create a pipeline of the combined objects
-                name = 'loader_combo' + str(cnt)
-                rel_loaders = [loaders[l] for l in range(i, len(loaders), n_duplicates)]
-                ordered_tuple_pipeline.append((name, Pipeline(steps = rel_loaders)))
-                
-                # Keep track of scope order too
-                ordered_tuple_scope.append(loader_scopes[i])
-                
-                # Proc params,
-                keys = [step[0] for step in rel_loaders]
-                rel_keys = [key for key in loader_params if key.split('__')[0] in keys]
-                pipeline_params = {name + '__' + key: loader_params[key] for key in rel_keys}
+            # Add params
+            pipeline_params = {name + '__' + key: loader_params[key] for key in loader_params}
+            passed_loader_params.update(pipeline_params)
 
-                # No order, so just add
-                passed_loader_params.update(pipeline_params)
-                cnt += 1
-
-            ordered_tuple_pipelines.append(ordered_tuple_pipeline)
-            ordered_tuple_scopes.append(ordered_tuple_scope)
+            cnt += 1
 
         return passed_loader_params, (ordered_tuple_pipelines, ordered_tuple_scopes)
 
     def _process_non_tuples(self, non_tuples, get_func, passed_loader_params):
 
-        checked = self._checks(non_tuples[0], non_tuples[1], non_tuples[2])
+        checked = self._checks(non_tuples[0], non_tuples[1])
 
         loaders, loader_params =\
             self._get_objs_and_params(get_func, checked[0], checked[1])
-        loader_scopes = checked[2]
+        loader_scopes = non_tuples[2]
 
         passed_loader_params.update(loader_params)
         return passed_loader_params, (loaders, loader_scopes)
 
     def _merge(self, ordered_tuples, ordered_non_tuples,
-               passed_obj_strs, original_scopes, passed_loader_params):
+               passed_obj_strs, passed_loader_params):
 
         # Init and set final loaders, params, scopes
         passed_loaders = []     
@@ -413,48 +474,23 @@ class Loaders(Scope_Pieces):
         # Merge back together in the right order
         for i in range(len(passed_obj_strs)):
 
-            if isinstance(passed_obj_strs[i], tuple):
-                passed_loaders += ordered_tuples[0][cnt1]
-                passed_loader_scopes += ordered_tuples[1][cnt1]
-                
+            if is_pipe(passed_obj_strs[i]):
+                passed_loaders.append(ordered_tuples[0][cnt1])
+                passed_loader_scopes.append(ordered_tuples[1][cnt1])
                 cnt1 += 1
         
             else:
-                
-                if isinstance(original_scopes[i], tuple):
-                    for j in range(len(original_scopes[i])):
-                        passed_loaders.append(ordered_non_tuples[0][cnt2])
-                        passed_loader_scopes.append(ordered_non_tuples[1][cnt2])
-                        cnt2 += 1
-                
-                else:
-                    passed_loaders.append(ordered_non_tuples[0][cnt2])
-                    passed_loader_scopes.append(ordered_non_tuples[1][cnt2])
-                    cnt2 += 1
+                passed_loaders.append(ordered_non_tuples[0][cnt2])
+                passed_loader_scopes.append(ordered_non_tuples[1][cnt2])
+                cnt2 += 1
 
         return passed_loaders, passed_loader_scopes, passed_loader_params
 
-    def _process_base(self):
+    def _process_base(self, passed_obj_strs, passed_param_strs, passed_scopes):
 
         from .Loaders import get_loader_and_params
 
-        # Passed as just () case
-        if isinstance(self.obj_strs, tuple):
-            passed_obj_strs = [self.obj_strs]
-            passed_param_strs = [self.param_strs]
-        else:
-            passed_obj_strs = self.obj_strs
-            passed_param_strs = self.param_strs
-
-        if isinstance(self.scopes, tuple):
-            passed_scopes = [self.scopes]
-        else:
-            passed_scopes = self.scopes
-
-        # Save a copy of original scopes
-        original_scopes = deepcopy(passed_scopes)
-
-        # Split by tuple, non tuple
+        # Split by is pipe or not
         tuples, non_tuples =\
             self._get_split_by_tuple(passed_obj_strs, passed_param_strs, passed_scopes)
 
@@ -469,15 +505,15 @@ class Loaders(Scope_Pieces):
         
         # Merge everything together & return
         return self._merge(ordered_tuples, ordered_non_tuples,
-                           passed_obj_strs, original_scopes, passed_loader_params)
+                           passed_obj_strs, passed_loader_params)
 
-    def _process(self):
+    def _process(self, obj_strs, param_strs, scopes):
 
         from .Loaders import Loader_Wrapper
 
         # Process according to passed tuples or not
         passed_loaders, passed_loader_scopes, passed_loader_params =\
-            self._process_base()
+            self._process_base(obj_strs, param_strs, scopes)
         
         # The base objects have been created, but they need to be wrapped in the loader wrapper
         params = {'file_mapping': self.Data_Scopes.file_mapping,
@@ -496,12 +532,11 @@ class Imputers(Scope_Pieces):
 
     name = 'imputers'
 
-    def _process(self):
+    def _process(self, obj_strs, param_strs, scopes):
 
         # Perform initial checks
-        obj_strs, param_strs, scopes =\
-            self._checks(self.obj_strs, self.param_strs, self.scopes)
-
+        obj_strs, param_strs = self._checks(obj_strs, param_strs)
+            
         # Make the imputers and params combo
         imputers_and_params =\
             [self._get_imputer(imputer_str, imputer_param, scope)
@@ -525,9 +560,14 @@ class Imputers(Scope_Pieces):
 
         return col_imputers, col_imputer_params
 
-    def _get_imputer(self, imputer_str, imputer_param, scope):
+    def _get_imputer(self, imputer_str, imputer_param, scope_obj):
 
         from .Imputers import get_imputer_and_params
+
+        if is_scope(scope_obj):
+            scope = scope_obj.value
+        else:
+            scope = scope_obj
 
         # First grab the correct params based on scope
         if scope == 'cat' or scope == 'categorical':
@@ -626,13 +666,12 @@ class Scalers(Scope_Pieces):
 
     name = 'scalers'
 
-    def _process(self):
+    def _process(self, obj_strs, param_strs, scopes):
 
         from .Scalers import get_scaler_and_params
 
         # Perform checks first
-        obj_strs, param_strs, scopes =\
-            self._checks(self.obj_strs, self.param_strs, self.scopes)
+        obj_strs, param_strs, = self._checks(obj_strs, param_strs)
 
         # Then call get objs and params
         objs, obj_params =\
@@ -651,13 +690,12 @@ class Transformers(Scope_Pieces):
 
     name = 'transformers'
 
-    def _process(self):
+    def _process(self, obj_strs, param_strs, scopes):
 
         from .Transformers import get_transformer_and_params, Transformer_Wrapper
 
         # Perform checks first
-        obj_strs, param_strs, scopes =\
-            self._checks(self.obj_strs, self.param_strs, self.scopes)
+        obj_strs, param_strs = self._checks(obj_strs, param_strs)
 
         # Then call get objs and params
         objs, obj_params =\
@@ -676,11 +714,16 @@ class Samplers(Scope_Pieces):
 
     name = 'samplers'
 
-    def _process(self):
+    def _process(self, obj_strs, param_strs, scopes):
 
         # Perform checks first
-        obj_strs, param_strs, sample_on =\
-            self._checks(self.obj_strs, self.param_strs, self.scopes)
+        obj_strs, param_strs = self._checks(obj_strs, param_strs)
+
+        sample_on = copy(scopes)
+
+        for i in range(len(sample_on)):
+            if is_scope(sample_on[i]):
+                sample_on[i] = sample_on[i].value
 
         recover_strats = self._get_recover_strats(len(obj_strs), sample_on)
 
@@ -791,13 +834,14 @@ class Feat_Selectors(Type_Pieces):
 
     name = 'feat_selectors'
 
-    def _process(self):
+    def _process(self, obj_strs, param_strs, scopes):
 
         from .Feature_Selectors import get_feat_selector_and_params, AVALIABLE
         self.AVAILABLE = AVALIABLE
 
         # Base
-        objs, obj_params = self._base_type_process(get_feat_selector_and_params)
+        objs, obj_params =\
+            self._base_type_process(obj_strs, param_strs, get_feat_selector_and_params)
  
         # If any base estimators, replace with a model
         objs = self._replace_base_rfe_estimator(objs)
@@ -836,12 +880,13 @@ class Ensembles(Type_Pieces):
 
     name = 'ensembles'
 
-    def _process(self):
+    def _process(self, obj_strs, param_strs, scopes):
 
         from .Ensembles import get_ensemble_and_params, AVALIABLE
         self.AVAILABLE = AVALIABLE
         
-        return self._base_type_process(get_ensemble_and_params)
+        return self._base_type_process(obj_strs, param_strs,
+                                       get_ensemble_and_params)
 
     def _get_base_ensembler(self, models):
 
@@ -871,7 +916,7 @@ class Drop_Strat(Pieces):
 
     name = 'drop_strat'
 
-    def _process(self):
+    def _process(self, obj_strs, param_strs, scopes):
 
         non_strat_inds = self.Data_Scopes.get_inds_from_scope('all')
         identity = FunctionTransformer(validate=False)

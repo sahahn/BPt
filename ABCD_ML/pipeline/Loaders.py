@@ -7,15 +7,15 @@ from joblib import Parallel, delayed
 
 def get_trans_chunk(transformer, data_files):
         
-        X_trans_chunk = []
-        
-        for data_file in data_files:
-            
-            data = data_file.load()
-            trans_data = np.squeeze(transformer.transform(data))
-            X_trans_chunk.append(trans_data)
-        
-        return X_trans_chunk
+    X_trans_chunk = []
+    
+    for data_file in data_files:
+
+        data = data_file.load()
+        trans_data = np.squeeze(transformer.transform(data))
+        X_trans_chunk.append(trans_data)
+    
+    return X_trans_chunk
 
 class Loader_Wrapper(Transformer_Wrapper):
 
@@ -38,7 +38,10 @@ class Loader_Wrapper(Transformer_Wrapper):
 
         return self
         
-    def fit_transform(self, X, y=None, mapping={}, **kwargs):
+    def fit_transform(self, X, y=None, mapping=None, **kwargs):
+
+        if mapping is None:
+            mapping = {}
 
         # If any changes to mapping, update
         self._proc_mapping(mapping)
@@ -67,7 +70,7 @@ class Loader_Wrapper(Transformer_Wrapper):
         
         # Update mapping
         update_mapping(mapping, new_mapping)
-        
+
         return np.hstack([X_trans, X[:, rest_inds]])
     
     def get_chunks(self, data_files):

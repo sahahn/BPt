@@ -1,4 +1,5 @@
 from .ML_Helpers import conv_to_list
+from ..pipeline.Input_Tools import is_scope
 
 class Scopes():
 
@@ -37,7 +38,12 @@ class Scopes():
         # Store total number of valid keys
         self.num_feat_keys = len(self.all_keys) - len(self.keys_at_end)
 
-    def get_keys_from_scope(self, scope):
+    def get_keys_from_scope(self, scope_obj):
+
+        if is_scope(scope_obj):
+            scope = scope_obj.value
+        else:
+            scope = scope_obj
 
         from ..helpers.VARS import SCOPES
         
@@ -70,10 +76,9 @@ class Scopes():
                 print('Should never reach here.')
                 pass
 
-        # If not a valid passed scope
+        # If not a valid passed scope, should be list like
         else:
 
-            # Treat scope as list
             scope = conv_to_list(scope)
             
             keys, restrict_keys = [], []

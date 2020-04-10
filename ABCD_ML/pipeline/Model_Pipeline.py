@@ -787,7 +787,7 @@ class Model_Pipeline():
     def _proc_X_train(self, train_data):
 
         # Get X,y train
-        X_train, y_train = self._get_X_y(train_data)
+        X_train, y_train = self._get_X_y(train_data, copy=True)
 
         #Get the base pipeline
         pipeline = self._get_base_fitted_pipeline()

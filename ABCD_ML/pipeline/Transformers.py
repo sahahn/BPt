@@ -56,13 +56,19 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         return
 
-    def fit(self, X, y=None, mapping={}, **kwargs):
+    def fit(self, X, y=None, mapping=None, **kwargs):
+
+        if mapping == None:
+            mapping = {}
 
         # Need to call fit_transform to figure out change to mapping
         self.fit_transform(X, y, mapping=mapping, **kwargs)
         return self
 
-    def fit_transform(self, X, y=None, mapping={}, **kwargs):
+    def fit_transform(self, X, y=None, mapping=None, **kwargs):
+
+        if mapping == None:
+            mapping = {}
 
         self._proc_mapping(mapping)
 
@@ -101,6 +107,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         # Transform data as np array
         X = np.array(df).astype(float)
+
         X_trans = self.transform(X)
 
         # Get new names
@@ -116,7 +123,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         for i in range(len(feat_names)):
             df[feat_names[i]] = X_trans[:, i]
 
-        return df
+        return df[feat_names]
 
     def _get_new_df_names(self, base_name):
         '''Create new feature names for the transformed features'''

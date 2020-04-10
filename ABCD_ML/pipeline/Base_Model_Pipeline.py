@@ -1,7 +1,5 @@
-from .Input_Tools import is_select
-from .extensions.Selector import selector_wrapper
 from .extensions.Pipeline import ABCD_Pipeline
-from ..helpers.ML_Helpers import is_array_like
+from ..helpers.ML_Helpers import is_array_like, param_len_check
 import os
 
 from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
@@ -89,7 +87,7 @@ class Base_Model_Pipeline():
                           Ensembles, Drop_Strat]
 
         for params, pieces_class in zip(all_conv_params, pieces_classes):
-
+    
             piece = pieces_class(obj_strs=params[0], param_strs=params[1], scopes=params[2],
                                  user_passed_objs=self.user_passed_objs,
                                  problem_type=self.p.problem_type,
@@ -101,12 +99,6 @@ class Base_Model_Pipeline():
                                  _print = self._print)
 
             self.pieces[piece.name] = piece
-
-            # Need to check for different select / other params here or above calling piece
-            # could make make multiple of the same pieces if needed?
-
-            #if is_select(obj_strs):
-            #    objs, obj_params = selector_wrapper(objs, obj_params, 'select')
 
         # Need to process Models for passed Ensembles
         self.pieces['models'].apply_ensembles(self.pieces['ensembles'], self.p.ensemble_split)

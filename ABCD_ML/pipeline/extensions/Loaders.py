@@ -228,7 +228,7 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         else:
             X_trans = np.array(X_trans)
 
-        # Return based on vectorize
+        # Return based on vectorizes
         if not self.vectorize:
             return X_trans
         return X_trans.flatten()
@@ -244,8 +244,8 @@ try:
             
             if not isinstance(X, list):
                 if len(np.shape(X)) == 2:
-                    X = [X]
-            
+                    return [X]
+
             return X
         
         def fit(self, X, y=None):

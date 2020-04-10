@@ -1539,9 +1539,6 @@ def _get_final_subjects_to_use(self, subjects_to_use):
 
 def _init_model(self, ML_params):
 
-    # Grab index info
-    
-
     # Make model
     self.Model_Pipeline =\
         Model_Pipeline(ML_params, self.CV, self.Data_Scopes,

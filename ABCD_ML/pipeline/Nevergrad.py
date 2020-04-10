@@ -35,7 +35,7 @@ class NevergradSearchCV():
 
         # All sklearn scorers should return high values as better, so flip sign
         cv_scores = -cross_val_score(estimator, X=X, y=y, scoring=self.scoring,
-                                    cv=self.cv)
+                                     cv=self.cv)
 
         if self.weight_metric:
             weights=[len(self.cv[i][1]) for i in range(len(self.cv))]

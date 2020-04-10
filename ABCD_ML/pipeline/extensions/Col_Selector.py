@@ -26,14 +26,20 @@ class ColTransformer(ColumnTransformer):
 
         return
 
-    def fit(self, X, y=None, mapping={}):
+    def fit(self, X, y=None, mapping=None):
+
+        if mapping == None:
+            mapping = {}
 
         self._proc_mapping(mapping)
         super().fit(X, y)
 
         return self
 
-    def fit_transform(self, X, y=None, mapping={}):
+    def fit_transform(self, X, y=None, mapping=None):
+
+        if mapping == None:
+            mapping = {}
 
         self._proc_mapping(mapping)
         return super().fit_transform(X, y)
@@ -95,7 +101,11 @@ class InPlaceColTransformer(ColTransformer):
 
         return X[:, mb]
 
-    def fit_transform(self, X, y=None, mapping={}):
+    def fit_transform(self, X, y=None, mapping=None):
+
+        if mapping == None:
+            mapping = {}
+
         return self._reverse_X(super().fit_transform(X, y, mapping=mapping))
 
     def transform(self, X):

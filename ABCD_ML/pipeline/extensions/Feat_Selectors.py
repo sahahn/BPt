@@ -61,7 +61,10 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
             self.mask[mask_1] = True
         return
 
-    def fit(self, X, y=None, mapping={}):
+    def fit(self, X, y=None, mapping=None):
+
+        if mapping == None:
+            mapping = {}
 
         self.mask = np.array(self.mask)
 

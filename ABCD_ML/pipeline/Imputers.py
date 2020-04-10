@@ -32,7 +32,10 @@ class Regular_Imputer():
 
         return
 
-    def fit(self, X, y=None, mapping={}):
+    def fit(self, X, y=None, mapping=None):
+
+        if mapping == None:
+            mapping = {}
 
         self._proc_mapping(mapping)
 
@@ -83,7 +86,10 @@ class Regular_Imputer():
 
         return X_copy
 
-    def fit_transform(self, X, y=None, mapping={}):
+    def fit_transform(self, X, y=None, mapping=None):
+
+        if mapping == None:
+            mapping = {}
 
         self.fit(X, y, mapping=mapping)
         return self.transform(X)
@@ -135,7 +141,10 @@ class Categorical_Imputer():
             self.ordinal_inds = proc_mapping(self.ordinal_inds, mapping)
         return
 
-    def fit(self, X, y=None, mapping={}):
+    def fit(self, X, y=None, mapping=None):
+
+        if mapping == None:
+            mapping = {}
 
         self._proc_mapping(mapping)
 
@@ -250,7 +259,10 @@ class Categorical_Imputer():
 
         return reverse_dummy_code
 
-    def fit_transform(self, X, y=None, mapping={}):
+    def fit_transform(self, X, y=None, mapping=None):
+
+        if mapping == None:
+            mapping = {}
 
         self.fit(X, y, mapping=mapping)
         return self.transform(X)

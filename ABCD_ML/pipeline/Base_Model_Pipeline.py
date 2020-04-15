@@ -209,7 +209,8 @@ class Base_Model_Pipeline():
             return False
         return True
 
-    def get_search_wrapped_pipeline(self, search_cv, search_metric=None, random_state=None):
+    def get_search_wrapped_pipeline(self, search_cv, search_metric=None,
+                                    weight_search_metric=None, random_state=None):
 
         # Grab the base pipeline
         base_pipeline = self.get_pipeline()
@@ -223,7 +224,7 @@ class Base_Model_Pipeline():
                                          scoring=search_metric,
                                          cv=search_cv,
                                          param_distributions=self.get_all_params(),
-                                         weight_metric=self.param_search.weight_metric,
+                                         weight_metric=weight_search_metric,
                                          n_iter=self.param_search.n_iter,
                                          n_jobs=self.param_search._n_jobs,
                                          random_state=random_state)

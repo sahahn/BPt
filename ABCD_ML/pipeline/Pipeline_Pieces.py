@@ -1,5 +1,5 @@
 from sklearn.preprocessing import FunctionTransformer
-from ..main.Input_Tools import is_scope, is_pipe, is_select, is_duplicate
+from ..main.Input_Tools import is_pipe, is_select, is_duplicate
 
 from ..helpers.ML_Helpers import (proc_input,
                                   user_passed_param_check, update_extra_params,
@@ -425,11 +425,7 @@ class Imputers(Scope_Pieces):
                                    base_estimator, base_estimator_params,
                                    self.spec)
 
-        try:
-            scope_name = param.scope.value
-        except AttributeError:
-            scope_name = param.scope
-
+        scope_name = param.scope
         if len(scope_name) > 20:
             scope_name = 'custom' + len(scope_name)
 
@@ -502,15 +498,7 @@ class Samplers(Scope_Pieces):
 
     def _process(self, params):
 
-        # Set sample on as copy of scope, and get values instead of scope obj
-        # if wrapped in one
-        scopes = [p.scope for p in params]
-        sample_on = copy(scopes)
-
-        for i in range(len(sample_on)):
-            if is_scope(sample_on[i]):
-                sample_on[i] = sample_on[i].value
-
+        sample_on = [p.sample_on for p in params]
         recover_strats = self._get_recover_strats(sample_on)
 
         # Get the scalers and params

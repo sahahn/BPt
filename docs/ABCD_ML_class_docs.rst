@@ -164,10 +164,6 @@ Train_Test_Split
 Modeling Phase
 ****************
 
-Set_Default_ML_Params
-======================
-.. automethod:: ABCD_ML.Set_Default_ML_Params
-
 Set_Default_ML_Verbosity
 =========================
 .. automethod:: ABCD_ML.Set_Default_ML_Verbosity
@@ -183,39 +179,6 @@ Plot_Global_Feat_Importances
 Plot_Local_Feat_Importances
 =============================
 .. automethod:: ABCD_ML.Plot_Local_Feat_Importances
-
-Show_Models
-================
-.. automethod:: ABCD_ML.Show_Models
-
-Show_Metrics
-==============
-.. automethod:: ABCD_ML.Show_Metrics
-
-Show_Imputers
-===============
-.. automethod:: ABCD_ML.Show_Imputers
-
-Show_Scalers
-=================
-.. automethod:: ABCD_ML.Show_Scalers
-
-Show_Transformers
-=================
-.. automethod:: ABCD_ML.Show_Transformers
-
-Show_Samplers
-=============
-.. automethod:: ABCD_ML.Show_Samplers
-
-Show_Feat_Selectors
-===================
-.. automethod:: ABCD_ML.Show_Feat_Selectors
-
-Show_Ensembles
-===================
-.. automethod:: ABCD_ML.Show_Ensembles
-
 
 *************
 Testing Phase

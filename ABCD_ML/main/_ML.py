@@ -10,6 +10,7 @@ import pickle as pkl
 
 from tqdm import tqdm, tqdm_notebook
 
+from .Input_Tools import is_value_subset
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ..helpers.ML_Helpers import compute_macro_micro, conv_to_list, get_avaliable_run_name
 from ..pipeline.Model_Pipeline import Model_Pipeline
@@ -390,11 +391,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         first passed transformer_scope will be used for all of the
         remaining transformers. Likewise, if no transformer is passed, this
         parameter will be ignored!
-
-        Note: Scopes passed as a tuple, in python ()'s, are treated differently
-        then passed as any other array-like type. Specifically, if passed 
-        as a tuple, then the corresponding transformer will be replicated and passed
-        as a scope individually each value of the tuple.
 
         Each transformer scope can be either,
 
@@ -1052,7 +1048,7 @@ def Evaluate(self,
              problem_spec,
              splits=3,
              n_repeats=2,
-             train_subjects='default',
+             train_subjects='train',
              run_name='default'):
     
     '''
@@ -1107,6 +1103,9 @@ def Evaluate(self,
     problem_spec = self._preproc_problem_spec(problem_spec)
     model_pipeline = self._preproc_model_pipeline(model_pipeline,
                                                   problem_spec.n_jobs)
+
+    # Get the the train subjects to use
+    _train_subjects = self._get_subjects_to_use(train_subjects)
     
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
@@ -1118,7 +1117,9 @@ def Evaluate(self,
         self._print('---------------')
         self._print('splits =', splits)
         self._print('n_repeats =', n_repeats)
-        self._print('train_subjects =', len(train_subjects))
+        self._print('train_subjects =', train_subjects)
+        self._print('len(train_subjects) =', len(_train_subjects),
+                    '(before overlap w/ problem_spec.subjects)')
         self._print('run_name =', run_name)
         self._print()
 
@@ -1128,13 +1129,9 @@ def Evaluate(self,
     # Get the Eval splits
     _, splits_vals, _ = self._get_split_vals(splits)
 
-    # Set train subjects by default to class wide
-    if isinstance(train_subjects, str) and train_subjects == 'default':
-        train_subjects = self.train_subjects
-
     # Evaluate the model
     train_scores, scores, raw_preds, FIs =\
-        self.Model_Pipeline.Evaluate(self.all_data, train_subjects,
+        self.Model_Pipeline.Evaluate(self.all_data, _train_subjects,
                                      splits, n_repeats, splits_vals)
 
     # Set target and run name
@@ -1176,8 +1173,8 @@ def Evaluate(self,
 def Test(self,
          model_pipeline,
          problem_spec,
-         train_subjects='default',
-         test_subjects='default',
+         train_subjects='train',
+         test_subjects='test',
          run_name='default'):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
@@ -1272,12 +1269,9 @@ def Test(self,
     model_pipeline = self._preproc_model_pipeline(model_pipeline,
                                                   problem_spec.n_jobs)
 
-    # If not train subjects or test subjects passed / default, use class
-    if isinstance(train_subjects, str) and train_subjects == 'default':
-        train_subjects = self.train_subjects
-    if isinstance(test_subjects, str) and test_subjects == 'default':
-        test_subjects = self.test_subjects
-
+    # Get the the train subjects + test subjects to use
+    _train_subjects = self._get_subjects_to_use(train_subjects)
+    _test_subjects = self._get_subjects_to_use(test_subjects)
 
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
@@ -1287,14 +1281,17 @@ def Test(self,
 
         self._print('Test Params')
         self._print('---------------')
-        self._print('train_subjects =', len(train_subjects))
-        self._print('test_subjects =', len(test_subjects))
+        self._print('train_subjects =', train_subjects)
+        self._print('len(train_subjects) =', len(_train_subjects),
+                    '(before overlap w/ problem_spec.subjects)')
+        self._print('test_subjects =', test_subjects)
+        self._print('len(test_subjects) =', len(_test_subjects),
+                    '(before overlap w/ problem_spec.subjects)')
         self._print('run_name =', run_name)
         self._print()
 
     # Init the Model_Pipeline object with modeling params
     self._init_model(problem_spec, model_pipeline)
-
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, raw_preds, FIs =\
@@ -1408,7 +1405,7 @@ def _preproc_problem_spec(self, problem_spec):
     problem_spec.set_params(target=target_key)
 
     # Proc subjects to use
-    final_subjects = self._get_final_subjects_to_use(problem_spec.subjects)
+    final_subjects = self._get_subjects_to_use(problem_spec.subjects)
     problem_spec.set_final_subjects(final_subjects)
 
     # Set by class defaults
@@ -1417,6 +1414,9 @@ def _preproc_problem_spec(self, problem_spec):
 
     if problem_spec.random_state == 'default':
         problem_spec.random_state = self.random_state
+
+    # If any input has changed, manually (i.e., not by problem_spec init)
+    problem_spec._proc_checks()
     
     return problem_spec
 
@@ -1438,21 +1438,26 @@ def _get_split_vals(self, splits):
     return split_names, split_vals, sv_le
 
 
-def _get_final_subjects_to_use(self, subjects_to_use):
+def _get_subjects_to_use(self, subjects_to_use):
 
-    # If str passed, either all or loc to load
+    # If str passed, either loc to load, or train, test, all
     if isinstance(subjects_to_use, str):
         if subjects_to_use == 'all':
             subjects = self.all_data.index
+        elif subjects_to_use == 'train':
+            subjects = self.train_subjects
+        elif subjects_to_use == 'test':
+            subjects = self.test_subjects
         else:
             subjects = self._load_set_of_subjects(loc=subjects_to_use)
 
-    # If tuple, determine subjects to use by by value
-    elif isinstance(subjects_to_use, tuple):
-        split_names, split_vals, sv_le =\
-            self._get_split_vals(subjects_to_use[0])
+    # Other case is if passed value subset, determine the values to use
+    elif is_value_subset(subjects_to_use):
 
-        selected = split_vals[split_vals == subjects_to_use[1]]
+        split_names, split_vals, sv_le =\
+            self._get_split_vals(subjects_to_use.name)
+
+        selected = split_vals[split_vals == subjects_to_use.value]
         subjects = set(selected.index)
 
         rev_values = reverse_unique_combo_df(selected, sv_le)[0]

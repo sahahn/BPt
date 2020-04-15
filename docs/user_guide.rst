@@ -76,13 +76,8 @@ Scopes
 
 During modelling and testing phases, it is often desirable to specify a subset of the total loaded columns/features.
 Within ABCD_ML the way subsets of columns can be specifed to different functions is through scopes.
-The main :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.Test>`
 
-methods contain a `scope` argument that refers to the features used in the Evaluation or Test, but further
-a number of the specific ML pipeline objects within these functions also have relevant scope parameters
-(e.g., loader_scope, scaler_scope, transformer_scope). Likewise, there are a exceptions / scope-like parameters
-that will not exactly follow the description outlined below, which are imputer_scope (where options are just restricted),
-and sample_on (which is scope-like, but ultimately serves a different purpose).
+The `scope` argument can be found across different pieces of the Model_Pipeline and Problem_Spec
 
 The base preset str options that can be passed to scope are:
 
@@ -114,10 +109,10 @@ keys to use, wildcard stub strs for selecting which columns to use, or a combina
 We will discuss these options in more detail:
 
 In the case that you would like to select a custom array-like of column names, you
-simply pass in e.g., ['name1', 'name2', 'name3', ect...], where the names correspond
+simply pass in e.g., ('name1', 'name2', 'name3', ect...) - note not a list*, where the names correspond
 to loaded column names. In this case, only those columns/features specifically passed will be used.
 
-The way the wildcard systems works is simmilar to the custom array option above, but instead
+The way the wildcard systems works is similar to the custom array option above, but instead
 of passing an array of specific column names, you can pass one or more wildcard strs where in order
 for a column/feature to be included that column/feature must contain as a sub-string ALL of the passed
 substrings. For example: if the loaded data had columns 'name1', 'name2', 'name3', 'somethingelse3',

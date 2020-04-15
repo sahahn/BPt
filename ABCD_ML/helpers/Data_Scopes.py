@@ -1,7 +1,6 @@
 from .ML_Helpers import conv_to_list
-from ..main.Input_Tools import is_scope
 
-class Scopes():
+class Data_Scopes():
 
     def __init__(self, data_keys, data_file_keys,
                  cat_keys, strat_keys, covars_keys,
@@ -41,12 +40,7 @@ class Scopes():
 
         return self.all_keys
 
-    def get_keys_from_scope(self, scope_obj):
-
-        if is_scope(scope_obj):
-            scope = scope_obj.value
-        else:
-            scope = scope_obj
+    def get_keys_from_scope(self, scope):
 
         from ..helpers.VARS import SCOPES
         
@@ -148,12 +142,7 @@ class Scopes():
 
         return self.get_train_inds_from_keys(self.strat_keys)
 
-    def proc_imputer_scope(self, scope_obj):
- 
-        if is_scope(scope_obj):
-            scope = scope_obj.value
-        else:
-            scope = scope_obj
+    def proc_imputer_scope(self, scope):
 
         # First grab the correct params based on scope
         if scope == 'cat' or scope == 'categorical':

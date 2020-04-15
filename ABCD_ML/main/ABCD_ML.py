@@ -453,7 +453,7 @@ class ABCD_ML():
                       _preproc_model_pipeline,
                       _preproc_problem_spec,
                       _get_split_vals,
-                      _get_final_subjects_to_use,
+                      _get_subjects_to_use,
                       _init_model,
                       _handle_scores,
                       _print_summary_score,
@@ -463,16 +463,6 @@ class ABCD_ML():
     # Fill Evaluate and Test's docstring
     # Evaluate.__doc__ = get_new_docstring(Set_Default_ML_Params, Evaluate)
     # Test.__doc__ = get_new_docstring(Evaluate, Test)
-
-    from ..pipeline.Models import Show_Models
-    from ..pipeline.Metrics import Show_Metrics
-    from ..pipeline.Loaders import Show_Loaders
-    from ..pipeline.Transformers import Show_Transformers
-    from ..pipeline.Scalers import Show_Scalers
-    from ..pipeline.Imputers import Show_Imputers
-    from ..pipeline.Samplers import Show_Samplers
-    from ..pipeline.Feature_Selectors import Show_Feat_Selectors
-    from ..pipeline.Ensembles import Show_Ensembles
 
     from ._Plotting import (_plot,
                             _proc_subjects,

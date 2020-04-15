@@ -73,6 +73,5 @@ def selector_wrapper(objs, params, name):
             
     params = new_params
     params[name + '__to_use'] = ng.p.Choice([i for i in range(len(objs))])
-    params['to_use'] = ng.p.Choice([i for i in range(len(objs))])
     
     return selector, params

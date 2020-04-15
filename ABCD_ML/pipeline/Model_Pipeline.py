@@ -72,12 +72,13 @@ class Model_Pipeline():
         self._set_default_params()
 
         # Set / proc metrics
-        self.metric_strs, self.metrics, self.metric =\
+        self.metric_strs, self.metrics, _ =\
             self._process_metrics(self.ps.metric)
 
         # Set / proc feat importance info
+        self.feat_importances_params =  pipeline_params.feat_importances
         self.feat_importances =\
-            self._process_feat_importances()
+            self._process_feat_importances(self.feat_importances_params.obj)
 
         # Get the model specs from problem_spec
         model_spec = self.ps.get_model_spec()
@@ -112,12 +113,12 @@ class Model_Pipeline():
 
         return metric_strs, metrics, metric
 
-    def _process_feat_importances(self):
+    def _process_feat_importances(self, feat_importances):
 
         from .Feat_Importances import AVALIABLE as AVALIABLE_IMPORTANCES
 
         # Grab feat_importance from spec as a list
-        feat_importances = conv_to_list(self.ps.feat_importance)
+        feat_importances = conv_to_list(feat_importances)
 
         if feat_importances is not None:
 
@@ -368,8 +369,9 @@ class Model_Pipeline():
             search_cv = self._get_search_cv(train_data.index)
 
             # Get search metric
-            search_metric =\
-                self._get_score_metric(self.base_model_pipeline.param_search.metric)
+            search_metric, weight_search_metric =\
+                self._get_score_metric(self.base_model_pipeline.param_search.metric,
+                                       self.base_model_pipeline.param_search.weight_metric)
 
         else:
             search_cv, search_metric = None, None
@@ -377,7 +379,8 @@ class Model_Pipeline():
         # Get wrapped final model
         return self.base_model_pipeline.get_search_wrapped_pipeline(search_cv,
                                                                     search_metric,
-                                                                     self.ps.random_state)
+                                                                    weight_search_metric,
+                                                                    self.ps.random_state)
 
     def _get_search_cv(self, train_data_index):
 
@@ -396,13 +399,15 @@ class Model_Pipeline():
 
         return search_cv
 
-    def _get_score_metric(self, base_metric):
+    def _get_score_metric(self, base_metric, weight_metric):
 
+        # If passed metric is default, set to class defaults
         if base_metric == 'default':
-            return self.metric
+            base_metric = self.ps.metric
+            weight_metric = self.ps.weight_metric
 
         _, _, metric = self._process_metrics(base_metric)
-        return metric
+        return metric, weight_metric
 
     def _get_base_fitted_pipeline(self):
 
@@ -597,17 +602,14 @@ class Model_Pipeline():
             if len(params) > 0:
 
                 to_show = []
-
-                base = list(params)[0].split('__')[0]
-                all_ps = self.Model.best_estimator_[base].get_params()
+                all_ps = self.Model.best_estimator_.get_params()
 
                 for p in params:
 
                     ud = params[p]
 
                     if type_check(ud):
-                        nm = p.replace(base + '__', '')
-                        to_show.append(nm + ': ' + str(all_ps[nm]))
+                        to_show.append(p + ': ' + str(all_ps[p]))
 
                 if len(to_show) > 0:
                     self._print(name, level='params')

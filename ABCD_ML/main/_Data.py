@@ -7,7 +7,7 @@ the ABCD_ML class.
 import pandas as pd
 import numpy as np
 
-from ..helpers.Scopes import Scopes
+from ..helpers.Data_Scopes import Data_Scopes
 from ..helpers.Data_File import Data_File
 from ..helpers.Data_Helpers import (process_binary_input,
                                     process_ordinal_input,
@@ -2778,14 +2778,14 @@ def _set_data_scopes(self):
 
     covar_scopes, cat_encoders = self._get_covar_scopes()
 
-    self.Data_Scopes = Scopes(data_keys = list(self.data),
-                              data_file_keys = self.data_file_keys,
-                              cat_keys = self._get_cat_keys(),
-                              strat_keys = list(self.strat),
-                              covars_keys = list(self.covars),
-                              covar_scopes = covar_scopes,
-                              cat_encoders = cat_encoders,
-                              file_mapping = self.file_mapping)
+    self.Data_Scopes = Data_Scopes(data_keys = list(self.data),
+                                   data_file_keys = self.data_file_keys,
+                                   cat_keys = self._get_cat_keys(),
+                                   strat_keys = list(self.strat),
+                                   covars_keys = list(self.covars),
+                                   covar_scopes = covar_scopes,
+                                   cat_encoders = cat_encoders,
+                                   file_mapping = self.file_mapping)
 
 
 def _get_base_targets_names(self):

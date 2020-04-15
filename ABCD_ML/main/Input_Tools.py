@@ -6,7 +6,7 @@ class Select(list):
     def __repr__(self):
         return 'Select(' + super().__repr__() + ')'
     def __str__(self):
-        return 'Select(' + super().__repr__() + ')'
+        return self.__repr__()
 
 def is_select(obj):
 
@@ -19,12 +19,39 @@ def is_select(obj):
         return False
 
 class Duplicate(list):
+    '''The Duplicate object is an ABCD_ML specific Input wrapper.
+    It is designed to be cast on a list of valid scope parameters, e.g., 
+    
+    ::
+
+        scope=Duplicate(['float', 'cat'])
+
+    Such that the corresponding pipeline piece will be duplicated for every
+    entry within Duplicate. In this case, two copies of the base object will be
+    made, where both have the same remaining non-scope params (i.e., obj, params, extra_params),
+    but one will have a scope of 'float' and the other 'cat'. 
+    
+    Consider the following exentended example, where loaders is being specified within Model_Pipeline:
+
+    ::
+        
+        loaders = Loader(obj='identity', scope=Duplicate(['float', 'cat']))
+
+    Is transformed in post processing / equivalent to
+
+    ::
+
+        loaders = [Loader(obj='identity', scope='float'),
+                   Loader(obj='identity', scope='cat')]
+
+    '''
+
     input_type = 'duplicate'
 
     def __repr__(self):
         return 'Duplicate(' + super().__repr__() + ')'
     def __str__(self):
-        return 'Duplicate(' + super().__repr__() + ')'
+        return self.__repr__()
 
 def is_duplicate(obj):
 
@@ -42,7 +69,7 @@ class Pipe(list):
     def __repr__(self):
         return 'Pipe(' + super().__repr__() + ')'
     def __str__(self):
-        return 'Pipe(' + super().__repr__() + ')'
+        return self.__repr__()
 
 def is_pipe(obj):
 
@@ -54,45 +81,28 @@ def is_pipe(obj):
     except AttributeError:
         return False
 
-class Scope():
+class Value_Subset():
+    input_type = 'value_subset'
 
-    input_type = 'scope'
-
-    def __init__(self, value):
+    def __init__(self, name, value):
+        self.name = name
         self.value = value
-    def __repr__(self):
-        return 'Scope(' + self.value.__repr__() + ')'
-    def __str__(self):
-        return 'Scope(' + self.value.__repr__() + ')'
 
-def is_scope(obj):
+    def __repr__(self):
+        return 'Value_Subset(name=' + str(self.name) + ', value=' + str(self.value) + ')'
+    def __str__(self):
+        return self.__repr__()
+
+def is_value_subset(obj):
 
     try:
-        if obj.input_type == 'scope':
+        if obj.input_type == 'value_subset':
             return True
         return False
 
     except AttributeError:
         return False
 
-def cast_input_to_scopes(scopes):
-
-    # If input already a scope, don't wrap
-    if is_scope(scopes):
-        return scopes
-
-    # If input is native list - or special input list like,
-    # cast each member of the list to be a scope
-    elif isinstance(scopes, list):
-        for i in range(len(scopes)):
-            scopes[i] = cast_input_to_scopes(scopes[i])
-
-        return scopes
-
-    # Otherwise, just wrap in Scope class
-    else:
-        return Scope(scopes)
-
-
 def is_special(obj):
     return hasattr(obj, 'input_type')
+

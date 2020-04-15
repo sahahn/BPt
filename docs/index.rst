@@ -16,6 +16,12 @@ This is a project.
    user_guide
 
 .. toctree::
+   :maxdepth: 1
+   :caption: Modeling Params
+
+   param_objects
+
+.. toctree::
    :maxdepth: 2
    :caption: ABCD_ML Class Docs
 

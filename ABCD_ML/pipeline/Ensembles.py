@@ -167,12 +167,14 @@ class Ensemble_Wrapper():
 
     def get_updated_params(self):
 
-        return self.model_params, self.ensemble_params
+        self.model_params.update(self.ensemble_params)
+        return self.model_params
 
-    def wrap_ensemble(self, models, ensembles, ensemble_split, random_state):
+    def wrap_ensemble(self, models, ensemble, ensemble_split, random_state,
+                      single_estimator=False, needs_split=False):
 
         # If no ensembling is passed, return either the 1 model, or a voting wrapper
-        if len(ensembles) == 0:
+        if ensemble is None or len(ensemble) == 0:
             return self._basic_ensemble(models = models,
                                         name = 'default voting wrapper',
                                         ensemble = True)
@@ -180,147 +182,127 @@ class Ensemble_Wrapper():
         # Otherwise special ensembles
         else:
 
-            new_ensembles = []
-            for ensemble in ensembles:
+            ensemble_name = ensemble[0]
+            ensemble_obj = ensemble[1][0]
+            ensemble_extra_params = ensemble[1][1]
 
-                ensemble_name = ensemble[0]
-                ensemble_info = ensemble[1]
+            # If needs a single estimator, but multiple models passed,
+            # wrap in ensemble!
+            if single_estimator:
+                se_ensemb_name = 'ensemble for single est'
+                models = self._basic_ensemble(models,
+                                              se_ensemb_name,
+                                              ensemble=False)
 
-                ensemble_obj = ensemble_info[0]
-                ensemble_extra_params = ensemble_info[1]
+            # Right now needs split essential means DES Ensemble,
+            if needs_split:
+
+                # Init with default params
+                ensemble = ensemble_obj()
                 
                 try:
-                    single_estimator =\
-                        ensemble_extra_params.pop('single_estimator')
-                except KeyError:
-                    raise KeyError('You must pass single_estimator, True or False with params!')
+                    ensemble.random_state = random_state
+                except AttributeError:
+                    pass
 
-                # If needs a single estimator, but multiple models passed,
-                # wrap in ensemble!
-                if single_estimator:
+                # For base des object, if n_jobs always have as 1
+                try:
+                    ensemble.n_jobs = 1
+                except AttributeError:
+                    pass
 
-                    se_ensemb_name = 'ensemble for single est'
-                    models = self._basic_ensemble(models,
-                                                  se_ensemb_name,
-                                                  ensemble=False)
+                new_ensemble =\
+                    [(ensemble_name, DES_Ensemble(models,
+                                                 ensemble,
+                                                 ensemble_name,
+                                                 ensemble_split,
+                                                 ensemble_extra_params,
+                                                 random_state))]
+                self._update_model_ensemble_params(ensemble_name)
+                return new_ensemble
+
+            # If no split and single estimator, then add the new
+            # ensemble obj W/ passed params.
+            elif single_estimator:
+
+                # Models here since single estimator is assumed
+                # to be just a list with
+                # of one tuple as
+                # [(model or ensemble name, model or ensemble)]
+
+                base_estimator = models[0][1]
+
+                # Set base estimator n_jobs to 1
+                try:
+                    base_estimator.n_jobs = 1
+                except AttributeError:
+                    pass
+
+                ensemble = ensemble_obj(base_estimator=base_estimator,
+                                        **ensemble_extra_params)
 
                 try:
-                    needs_split = ensemble_extra_params.pop('needs_split')
-                except KeyError:
-                    raise KeyError('You must pass needs_split, True or False with params!')
+                    ensemble.random_state = random_state
+                except AttributeError:
+                    pass
 
-                # Right now needs split essential means DES Ensemble,
-                # maybe change this
-                if needs_split:
+                # Set ensemble n_jobs to n_jobs
+                try:
+                    ensemble.n_jobs = self.n_jobs
+                except AttributeError:
+                    pass
 
-                    # Init with default params
-                    ensemble = ensemble_obj()
-                    
+                new_ensemble = [(ensemble_name, ensemble)]
+
+                # Have to change model name to base_estimator
+                self.model_params =\
+                    replace_with_in_params(self.model_params, models[0][0],
+                                            'base_estimator')
+
+                # Append ensemble name to all model params
+                self._update_model_ensemble_params(ensemble_name,
+                                                   ensemble=False)
+
+                return new_ensemble
+
+            # Last case is, no split/DES ensemble and also
+            # not single estimator based
+            # e.g., in case of stacking regressor.
+            else:
+
+                # Models here just self.models a list of tuple of
+                # all models.
+                # So, ensemble_extra_params should contain the
+                # final estimator + other params
+
+                # Set base models to n_jobs 1
+                for model in models:
                     try:
-                        ensemble.random_state = random_state
+                        model[1].n_jobs = 1
                     except AttributeError:
                         pass
 
-                    # For base des object, if n_jobs always have as 1
-                    try:
-                        ensemble.n_jobs = 1
-                    except AttributeError:
-                        pass
+                ensemble = ensemble_obj(estimators=models,
+                                        **ensemble_extra_params)
 
-                    # For DES ensemble
-                    new_ensembles.append(
-                        (ensemble_name, DES_Ensemble(models,
-                                                     ensemble,
-                                                     ensemble_name,
-                                                     ensemble_split,
-                                                     ensemble_extra_params,
-                                                     random_state)))
+                try:
+                    ensemble.random_state = random_state
+                except AttributeError:
+                    pass
 
-                    self._update_model_ensemble_params(ensemble_name)
+                # Set ensemble n_jobs to n_jobs
+                try:
+                    ensemble.n_jobs = self.n_jobs
+                except AttributeError:
+                    pass
 
-                # If no split and single estimator, then add the new
-                # ensemble obj
-                # W/ passed params.
-                elif single_estimator:
+                new_ensemble = [(ensemble_name, ensemble)]
 
-                    # Models here since single estimator is assumed
-                    # to be just a list with
-                    # of one tuple as
-                    # [(model or ensemble name, model or ensemble)]
+                # Append ensemble name to all model params
+                self._update_model_ensemble_params(ensemble_name,
+                                                   ensemble=False)
 
-                    base_estimator = models[0][1]
-
-                    # Set base estimator n_jobs to 1
-                    try:
-                        base_estimator.n_jobs = 1
-                    except AttributeError:
-                        pass
-
-                    ensemble = ensemble_obj(base_estimator=base_estimator,
-                                            **ensemble_extra_params)
-
-                    try:
-                        ensemble.random_state = random_state
-                    except AttributeError:
-                        pass
-
-                    # Set ensemble n_jobs to n_jobs
-                    try:
-                        ensemble.n_jobs = self.n_jobs
-                    except AttributeError:
-                        pass
-
-                    new_ensembles.append((ensemble_name, ensemble))
-
-                    # Have to change model name to base_estimator
-                    self.model_params =\
-                        replace_with_in_params(self.model_params, models[0][0],
-                                              'base_estimator')
-
-                    # Append ensemble name to all model params
-                    self._update_model_ensemble_params(ensemble_name,
-                                                       ensemble=False)
-
-                # Last case is, no split/DES ensemble and also
-                # not single estimator based
-                # e.g., in case of stacking regressor.
-                else:
-
-                    # Models here just self.models a list of tuple of
-                    # all models.
-                    # So, ensemble_extra_params should contain the
-                    # final estimator + other params
-
-                    # Set base models to n_jobs 1
-                    for model in models:
-                        try:
-                            model[1].n_jobs = 1
-                        except AttributeError:
-                            pass
-
-                    ensemble = ensemble_obj(estimators=models,
-                                            **ensemble_extra_params)
-
-                    try:
-                        ensemble.random_state = random_state
-                    except AttributeError:
-                        pass
-
-                    # Set ensemble n_jobs to n_jobs
-                    try:
-                        ensemble.n_jobs = self.n_jobs
-                    except AttributeError:
-                        pass
-
-                    new_ensembles.append((ensemble_name, ensemble))
-
-                    # Append ensemble name to all model params
-                    self._update_model_ensemble_params(ensemble_name,
-                                                       ensemble=False)
-
-            return self._basic_ensemble(models = new_ensembles,
-                                        name = 'ensemble of ensembles',
-                                        ensemble = True)
+                return new_ensemble
 
 
 AVALIABLE = {
@@ -410,21 +392,6 @@ ENSEMBLES = {
                          ['ensemble default']),
 }
 
-
-def move_keys(ensemble_params, extra_ensemble_params):
-
-    to_move = ['needs_split', 'single_estimator']
-
-    keys = list(ensemble_params.keys())
-    for key in keys:
-        for move_key in to_move:
-            if move_key in key:
-                extra_ensemble_params[move_key] = ensemble_params[key]
-                ensemble_params.pop(key)
-
-    return ensemble_params, extra_ensemble_params
-
-
 def get_ensemble_and_params(ensemble_str, extra_params, params, search_type,
                             random_state=None, num_feat_keys=None):
 
@@ -434,9 +401,6 @@ def get_ensemble_and_params(ensemble_str, extra_params, params, search_type,
     ensemble, extra_ensemble_params, ensemble_params =\
         get_obj_and_params(ensemble_str, ENSEMBLES, extra_params,
                            params, search_type)
-
-    ensemble_params, extra_ensemble_params =\
-        move_keys(ensemble_params, extra_ensemble_params)
 
     # Slight tweak here, return tuple ensemble, extra_params
     return (ensemble, extra_ensemble_params), ensemble_params

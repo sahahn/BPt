@@ -33,6 +33,8 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
 
         if hasattr(self, '_mapping'):
             return
+        else:
+            self._mapping = mapping
 
         if len(mapping) > 0:
 

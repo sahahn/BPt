@@ -9,7 +9,7 @@ import os
 import pickle as pkl
 
 from ..helpers.Docstring_Helpers import get_new_docstring
-from ..helpers.Params_Classes import ML_Params
+# from ..helpers.Params_Classes import ML_Params
 from ..helpers.CV import CV
 
 
@@ -78,8 +78,8 @@ class ABCD_ML():
     def __init__(self, exp_name='Exp', log_dr='', existing_log='append',
                  verbose=True, notebook=True,
                  use_default_subject_ids=False,
-                 low_memory_mode=False, strat_u_name='_Strat', dpi=100,
-                 random_state=None):
+                 low_memory_mode=False, strat_u_name='_Strat',
+                 random_state=534, n_jobs=1, dpi=100):
         '''Main class init
 
         Parameters
@@ -163,12 +163,6 @@ class ABCD_ML():
 
             (default = '_Strat')
 
-        dpi : int, optional
-            The default dpi in which to save any distribution or feature
-            importance plots.
-
-            (default = 100)
-
         random_state : int, RandomState instance or None, optional
             The default random state, either as int for a specific seed,
             or if None then the random seed is set by np.random.
@@ -177,7 +171,19 @@ class ABCD_ML():
             default is set (e.g. default load value or default ML value) this
             random state will be used.
 
-            (default = None)
+            (default = 534)
+
+        n_jobs : int, optional
+            The number of jobs to use (if avaliable) during training ML models,
+            and also anywhere else when supported.
+
+            (default = 1)
+
+        dpi : int, optional
+            The default dpi in which to save any distribution or feature
+            importance plots.
+
+            (default = 100)
         '''
 
         # Load logging class params
@@ -202,6 +208,7 @@ class ABCD_ML():
         self.strat_u_name = strat_u_name
         self.dpi = dpi
         self.random_state = random_state
+        self.n_jobs = n_jobs
 
         self._print('notebook =', self.notebook)
         self._print('use_default_subject_ids =', self.use_default_subject_ids)
@@ -232,12 +239,8 @@ class ABCD_ML():
         # Store default dicts as init empty
         self.default_load_params, self.default_ML_verbosity = {}, {}
 
-        # Init default ML params
-        self.default_ML_params = ML_Params(self.random_state)
-
-        # Scores and settings are saved after each eval or test run
-        self.eval_scores, self.eval_settings = {}, {}
-        self.test_scores, self.test_settings = {}, {}
+        # Scores are saved after each eval or test run
+        self.eval_scores, self.test_scores =  {}, {}
 
         self.subject_id = 'src_subject_id'
 
@@ -442,25 +445,24 @@ class ABCD_ML():
                               _get_info_on)
 
     # Machine Learning functionality
-    from ._ML import (Set_Default_ML_Params,
-                      Set_Default_ML_Verbosity,
+    from ._ML import (Set_Default_ML_Verbosity,
                       _ML_print,
                       Evaluate,
                       Test,
                       _premodel_check,
-                      _make_ML_params,
+                      _preproc_model_pipeline,
+                      _preproc_problem_spec,
                       _get_split_vals,
                       _get_final_subjects_to_use,
                       _init_model,
-                      _get_avaliable_run_name,
                       _handle_scores,
                       _print_summary_score,
                       _add_to_scores,
                       _save_results)
 
     # Fill Evaluate and Test's docstring
-    Evaluate.__doc__ = get_new_docstring(Set_Default_ML_Params, Evaluate)
-    Test.__doc__ = get_new_docstring(Evaluate, Test)
+    # Evaluate.__doc__ = get_new_docstring(Set_Default_ML_Params, Evaluate)
+    # Test.__doc__ = get_new_docstring(Evaluate, Test)
 
     from ..pipeline.Models import Show_Models
     from ..pipeline.Metrics import Show_Metrics

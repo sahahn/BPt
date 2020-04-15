@@ -27,7 +27,7 @@ from .extensions.Selector import selector_wrapper
 from .Models import AVALIABLE as AVALIABLE_MODELS
 from .Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
 from .Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
-from .Feat_Importances import AVALIABLE as AVALIABLE_IMPORTANCES
+
 
 from .Samplers import get_sampler_and_params
 from .Feature_Selectors import get_feat_selector_and_params
@@ -43,7 +43,6 @@ from .Metrics import get_metric
 
 from .Base_Model_Pipeline import Base_Model_Pipeline
 
-from .Nevergrad import NevergradSearchCV
 import os
 
 from ..helpers.ML_Helpers import proc_type_dep_str
@@ -53,28 +52,19 @@ class Model_Pipeline():
     model training, scaling, handling different datatypes ect...
     '''
 
-    def __init__(self, ML_params, CV, Data_Scopes, progress_bar, _print=print):
-        ''' Init function for Model, Use Evaluate and Test calls from main._ML.py'''
+    def __init__(self, pipeline_params, problem_spec, CV, Data_Scopes,
+                 progress_bar, compute_train_score, _print=print):
 
-        # Set class parameters
-        self.p = ML_params
-        self.p.setup()
+        # Save problem spec as sp
+        self.ps = problem_spec
+        self.progress_bar = progress_bar
+        self.compute_train_score = compute_train_score
 
-        # Extract from p some objs to set as class objs
-        self.targets_key = self.p.target
-        self.extra_params = self.p.extra_params.copy()
-
-        # This is the base CV object
+        # Init scopes all keys, based on scope + target key
+        self.all_keys = Data_Scopes.set_all_keys(spec=self.ps)
+        
+        # Set passed values
         self.CV = CV
-
-        # Init scopes all keys, based on passed scope + targets_key
-        Data_Scopes.set_all_keys(scope=self.p.scope,
-                                 targets_key=self.targets_key)
-
-        # Get self.all_keys value from Data_Scopes
-        self.all_keys = Data_Scopes.all_keys
-
-        # Set passed progress bar and class print
         self.progress_bar = progress_bar
         self._print = _print
 
@@ -82,15 +72,22 @@ class Model_Pipeline():
         self._set_default_params()
 
         # Set / proc metrics
-        self.metric_strs, self.metrics, self.metric = self._process_metrics()
+        self.metric_strs, self.metrics, self.metric =\
+            self._process_metrics(self.ps.metric)
 
         # Set / proc feat importance info
-        self.feat_importances = self._process_feat_importances()
+        self.feat_importances =\
+            self._process_feat_importances()
 
+        # Get the model specs from problem_spec
+        model_spec = self.ps.get_model_spec()
+        
         # Init the Base_Model_Pipeline, which creates the pipeline pieces
-        self.base_model_pipeline = Base_Model_Pipeline(p=self.p,
-                                                       Data_Scopes=Data_Scopes,
-                                                       _print=self._print)
+        self.base_model_pipeline =\
+            Base_Model_Pipeline(pipeline_params=pipeline_params,
+                                model_spec=model_spec,
+                                Data_Scopes=Data_Scopes,
+                                _print=self._print)
 
     def _set_default_params(self):
         
@@ -99,13 +96,14 @@ class Model_Pipeline():
         self.flags = {'linear': False,
                       'tree': False}
 
-    def _process_metrics(self):
+    def _process_metrics(self, in_metrics):
 
         from .Metrics import AVALIABLE as AVALIABLE_METRICS
 
-        metric_strs, self.extra_params =\
-            proc_type_dep_str(self.p.metric, AVALIABLE_METRICS,
-                              self.extra_params, self.p.problem_type)
+        # get metric_strs as initially list
+        metric_strs = conv_to_list(in_metrics)
+
+        metric_strs = proc_type_dep_str(metric_strs, AVALIABLE_METRICS, self.ps.problem_type)
 
         metrics = [get_metric(metric_str)
                    for metric_str in metric_strs]
@@ -116,9 +114,19 @@ class Model_Pipeline():
 
     def _process_feat_importances(self):
 
-        if self.p.feat_importances is not None:
+        from .Feat_Importances import AVALIABLE as AVALIABLE_IMPORTANCES
 
-            names, self.extra_params =\
+        # Grab feat_importance from spec as a list
+        feat_importances = conv_to_list(self.ps.feat_importance)
+
+        if feat_importances is not None:
+
+            # Need to update this w/ exposed feat_importances, aka
+            # not getting this values via extra params / params
+            # not 100% sure what it will look like yet
+
+            '''
+            names, _ =\
                 proc_type_dep_str(self.p.feat_importances, AVALIABLE_IMPORTANCES,
                                   self.extra_params, self.p.problem_type)
 
@@ -132,20 +140,22 @@ class Model_Pipeline():
                 for name, param in zip(names, params)]
 
             return feat_importances
+            ''' 
 
+            return []
         return []
 
     def _get_subjects_overlap(self, subjects):
-        '''Computer overlapping subjects with self.p._final_subjects'''
+        '''Computer overlapping subjects with self.ps._final_subjects'''
 
-        if self.p._final_subjects is None:
+        if self.ps._final_subjects is None:
             overlap = set(subjects)
         else:
-            overlap = self.p._final_subjects.intersection(set(subjects))
+            overlap = self.ps._final_subjects.intersection(set(subjects))
 
         return np.array(list(overlap))
 
-    def Evaluate(self, data, train_subjects):
+    def Evaluate(self, data, train_subjects, splits, n_repeats, splits_vals):
         '''Method to perform a full evaluation
         on a provided model type and training subjects, according to
         class set parameters.
@@ -170,7 +180,7 @@ class Model_Pipeline():
             as the number of metrics.
         '''
 
-        # Set train_subjects according to self.p._final_subjects
+        # Set train_subjects according to self.ps._final_subjects
         train_subjects = self._get_subjects_overlap(train_subjects)
 
         # Init raw_preds_df
@@ -178,13 +188,14 @@ class Model_Pipeline():
 
         # Setup the desired eval splits
         subject_splits =\
-            self._get_eval_splits(train_subjects, self.p._split_vals)
+            self._get_eval_splits(train_subjects, splits,
+                                  n_repeats, splits_vals)
 
         all_train_scores, all_scores = [], []
         fold_ind = 0
 
         if self.progress_bar is not None:
-            repeats_bar = self.progress_bar(total=self.p.n_repeats,
+            repeats_bar = self.progress_bar(total=n_repeats,
                                             desc='Repeats')
 
             folds_bar = self.progress_bar(total=self.n_splits_,
@@ -201,7 +212,7 @@ class Model_Pipeline():
             repeat = str((fold_ind // self.n_splits_) + 1)
             fold = str((fold_ind % self.n_splits_) + 1)
             self._print(level='name')
-            self._print('Repeat: ', repeat, '/', self.p.n_repeats, ' Fold: ',
+            self._print('Repeat: ', repeat, '/', n_repeats, ' Fold: ',
                         fold, '/', self.n_splits_, sep='', level='name')
 
             if self.progress_bar is not None:
@@ -222,7 +233,7 @@ class Model_Pipeline():
             self._print('Time Elapsed:', time_str, level='time')
 
             # Score by fold verbosity
-            if self.p.compute_train_score:
+            if self.compute_train_score:
                 for i in range(len(self.metric_strs)):
                     self._print('train ', self.metric_strs[i], ': ',
                                 train_scores[i], sep='', level='score')
@@ -236,7 +247,7 @@ class Model_Pipeline():
             fold_ind += 1
 
         if self.progress_bar is not None:
-            repeats_bar.n = self.p.n_repeats
+            repeats_bar.n = n_repeats
             repeats_bar.refresh()
             repeats_bar.close()
 
@@ -253,6 +264,32 @@ class Model_Pipeline():
         # Return all scores
         return (np.array(all_train_scores), np.array(all_scores),
                 self.raw_preds_df, self.feat_importances)
+
+    def _get_eval_splits(self, train_subjects, splits, n_repeats, splits_vals):
+
+        if splits_vals is None:
+
+            self.n_splits_ = splits
+
+            subject_splits =\
+                self.CV.repeated_k_fold(train_subjects, n_repeats,
+                                        self.n_splits_, self.ps.random_state,
+                                        return_index=False)
+
+        else:
+
+            # Set num splits
+            self.n_splits_ =\
+                self.CV.get_num_groups(train_subjects, splits_vals)
+
+            # Generate the leave-out CV
+            subject_splits =\
+                self.CV.repeated_leave_one_group_out(train_subjects,
+                                                     n_repeats,
+                                                     splits_vals,
+                                                     return_index=False)
+
+        return subject_splits
 
     def Test(self, data, train_subjects, test_subjects, fold_ind='test'):
         '''Method to test given input data, training a model on train_subjects
@@ -281,12 +318,12 @@ class Model_Pipeline():
         test_subjects = self._get_subjects_overlap(test_subjects)
 
         # Ensure data being used is just the selected col / feats
-        data = data[self.all_keys]
+        data = data[self.all_keys] 
 
         # Init raw_preds_df
         if fold_ind == 'test':
 
-            if self.p.compute_train_score:
+            if self.compute_train_score:
                 self._init_raw_preds_df(np.concatenate([train_subjects,
                                                         test_subjects]))
             else:
@@ -309,7 +346,7 @@ class Model_Pipeline():
         self._proc_feat_importance(train_data, test_data, fold_ind)
 
         # Get the scores
-        if self.p.compute_train_score:
+        if self.compute_train_score:
             train_scores = self._get_scores(train_data, 'train_', fold_ind)
         else:
             train_scores = 0
@@ -323,95 +360,56 @@ class Model_Pipeline():
 
         return train_scores, scores
 
-    def _get_eval_splits(self, train_subjects, splits_vals):
-
-        if splits_vals is None:
-
-            self.n_splits_ = self.p.splits
-
-            subject_splits =\
-                self.CV.repeated_k_fold(train_subjects, self.p.n_repeats,
-                                        self.n_splits_, self.p.random_state,
-                                        return_index=False)
-
-        else:
-
-            # Set num splits
-            self.n_splits_ =\
-                self.CV.get_num_groups(train_subjects, splits_vals)
-
-            # Generate the leave-out CV
-            subject_splits =\
-                self.CV.repeated_leave_one_group_out(train_subjects,
-                                                     self.p.n_repeats,
-                                                     splits_vals,
-                                                     return_index=False)
-
-        return subject_splits
-
     def _get_final_model(self, train_data):
 
-        # Grab the base pipeline
-        base_pipeline = self.base_model_pipeline.get_pipeline()
+        if self.base_model_pipeline.is_search():
 
-        # If no search, the final model is just the base pipeline
-        if self.p.search_type is None:
-            final_model = base_pipeline
-
-        # Otherwise, wrap in nevergrad search cv object
-        else:
+            # get search cv, None if no search
             search_cv = self._get_search_cv(train_data.index)
-            final_model = self._get_search_model(base_pipeline, search_cv)
 
-        # Set it as a deepcopy, as each time the model gets trained,
-        # It should not be effected by changes from previous fits
-        return deepcopy(final_model)
+            # Get search metric
+            search_metric =\
+                self._get_score_metric(self.base_model_pipeline.param_search.metric)
+
+        else:
+            search_cv, search_metric = None, None
+            
+        # Get wrapped final model
+        return self.base_model_pipeline.get_search_wrapped_pipeline(search_cv,
+                                                                    search_metric,
+                                                                     self.ps.random_state)
 
     def _get_search_cv(self, train_data_index):
 
-        if self.p._search_split_vals is None:
-            search_cv = self.CV.k_fold(train_data_index, self.p.search_splits,
-                                       random_state=self.p.random_state,
+        search_split_vals, search_splits =\
+            self.base_model_pipeline.get_search_split_vals()
+
+        if search_split_vals is None:
+            search_cv = self.CV.k_fold(train_data_index, search_splits,
+                                       random_state=self.ps.random_state,
                                        return_index=True)
 
         else:
             search_cv = self.CV.leave_one_group_out(train_data_index,
-                                                    self.p._search_split_vals,
+                                                    search_split_vals,
                                                     return_index=True)
 
         return search_cv
 
-    def _get_search_model(self, base_pipeline, search_cv):
-        '''Wrap base pipeline in search CV object'''
+    def _get_score_metric(self, base_metric):
 
-        # Set the search params
-        search_params = {}
-        search_params['optimizer_name'] = self.p.search_type
-        search_params['estimator'] = base_pipeline
-        search_params['scoring'] = self.metric
-        search_params['cv'] = search_cv
-        search_params['weight_metric'] = self.p.weight_metric
-        search_params['n_jobs'] = self.p.n_jobs
-        search_params['n_iter'] = self.p.search_n_iter
-        search_params['random_state'] = self.p.random_state
-        
-        # Grab the params from the base_model_pipeline obj
-        search_params['param_distributions'] =\
-            self.base_model_pipeline.get_all_params()
+        if base_metric == 'default':
+            return self.metric
 
-        # Create the search object
-        search_model = NevergradSearchCV(**search_params)
-
-        return search_model
+        _, _, metric = self._process_metrics(base_metric)
+        return metric
 
     def _get_base_fitted_pipeline(self):
 
-        if self.p.search_type is None:
-            base_pipeline = self.Model
-        else:
-            base_pipeline = self.Model.best_estimator_
+        if hasattr(self.Model, 'name') and self.Model.name == 'nevergrad':
+            return self.Model.best_estimator_
 
-        return base_pipeline
+        return self.Model
 
     def _get_base_fitted_model(self):
 
@@ -512,7 +510,7 @@ class Model_Pipeline():
             feat_imp.proc_importances(base_model, X_test, y_test=y_test,
                                       X_train=X_train, scorer=self.metric,
                                       fold=fold,
-                                      random_state=self.p.random_state)
+                                      random_state=self.ps.random_state)
 
             # For local, need an intermediate average, move df to dfs
             if isinstance(fold_ind, int):
@@ -547,11 +545,11 @@ class Model_Pipeline():
         '''
 
         if copy:
-            X = data.drop(self.targets_key, axis=1).copy()
-            y = data[self.targets_key].copy()
+            X = data.drop(self.ps.target, axis=1).copy()
+            y = data[self.ps.target].copy()
         else:
-            X = data.drop(self.targets_key, axis=1)
-            y = data[self.targets_key]
+            X = data.drop(self.ps.target, axis=1)
+            y = data[self.ps.target]
 
         if not X_as_df:
             X = np.array(X).astype(float)
@@ -708,65 +706,17 @@ class Model_Pipeline():
 
         # Make copy of true values
         if len(np.shape(y_test)) > 1:
-            for i in range(len(self.targets_key)):
-                self.raw_preds_df.loc[subjects, self.targets_key[i]] =\
+            for i in range(len(self.ps.target)):
+                self.raw_preds_df.loc[subjects, self.ps.target[i]] =\
                     y_test[:, i]
 
-        elif isinstance(self.targets_key, list):
-            t_base_key = '_'.join(self.targets_key[0].split('_')[:-1])
+        elif isinstance(self.ps.target, list):
+            t_base_key = '_'.join(self.ps.target[0].split('_')[:-1])
             self.raw_preds_df.loc[subjects, 'multiclass_' + t_base_key] =\
                 y_test
 
         else:
-            self.raw_preds_df.loc[subjects, self.targets_key] = y_test
-
-    def _compute_micro_scores(self):
-
-        micro_scores = []
-
-        # For each metric
-        for metric in self.metrics:
-            score_func = metric._score_func
-            sign = metric._sign
-
-            if 'needs_proba=True' in metric._factory_args():
-                prob = '_prob'
-            elif 'needs_threshold=True' in metric._factory_args():
-                prob = '_threshold'
-            else:
-                prob = ''
-
-            eval_type = ''
-
-            by_repeat = []
-            for repeat in range(1, self.p.n_repeats+1):
-
-                p_col = eval_type + str(repeat) + prob
-
-                try:
-                    pred_col = self.raw_preds_df[p_col]
-                    valid_subjects = pred_col[~pred_col.isnull()].index
-
-                except KeyError:
-
-                    if len(self.classes) == 2:
-                        pred_col = self.raw_preds_df[p_col + '_class_' +
-                                                     str(self.classes[1])]
-                        valid_subjects = pred_col[~pred_col.isnull()].index
-                    else:
-                        pred_col = self.raw_preds_df[[p_col + '_class_' +
-                                                      str(i) for
-                                                      i in self.classes]]
-                        valid_subjects =\
-                            pred_col[~pred_col.isnull().any(axis=1)].index
-
-                # Only for the target is one col case
-                truth = self.raw_preds_df.loc[valid_subjects, self.targets_key]
-                predicted = pred_col.loc[valid_subjects]
-
-                by_repeat.append(sign * score_func(truth, predicted))
-            micro_scores.append(by_repeat)
-        return micro_scores
+            self.raw_preds_df.loc[subjects, self.ps.target] = y_test
 
     def _init_raw_preds_df(self, subjects):
 

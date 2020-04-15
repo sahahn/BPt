@@ -400,20 +400,7 @@ PARAMS['rus binary ratio']['sampling_strategy'] =\
 
 
 # Ensemblers
-PARAMS['ensemble default'] = {'needs_split': False,
-                              'single_estimator': False}
-
-PARAMS['des default'] = {'needs_split': True,
-                         'single_estimator': False}
-
-PARAMS['single default'] = {'needs_split': False,
-                            'single_estimator': True}
-
-PARAMS['bb default'] = PARAMS['single default'].copy()
-
-PARAMS['stacking default'] = {'needs_split': False,
-                              'single_estimator': False,
-                              'cv': 3}
+PARAMS['stacking default'] = {'cv': 3}
 
 
 # Feat Importances

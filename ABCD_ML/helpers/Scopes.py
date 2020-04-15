@@ -1,5 +1,5 @@
 from .ML_Helpers import conv_to_list
-from .Input_Tools import is_scope
+from ..main.Input_Tools import is_scope
 
 class Scopes():
 
@@ -21,22 +21,25 @@ class Scopes():
             file_mapping = {}
         self.file_mapping = file_mapping
 
-    def set_all_keys(self, scope, targets_key):
+    def set_all_keys(self, spec):
+        '''Also returns all keys at end'''
     
         # To start set all_keys with everything
-        self.keys_at_end = self.strat_keys + conv_to_list(targets_key)
+        self.keys_at_end = self.strat_keys + conv_to_list(spec.target)
 
         self.all_keys =\
             self.data_keys + self.covars_keys + self.keys_at_end
 
         # Filter all_keys by scope, and set new all keys
-        scoped_keys = self.get_keys_from_scope(scope)
+        scoped_keys = self.get_keys_from_scope(spec.scope)
         self.all_keys = scoped_keys + self.keys_at_end
 
         # Target key(s) should always be last in all_keys!
 
         # Store total number of valid keys
         self.num_feat_keys = len(self.all_keys) - len(self.keys_at_end)
+
+        return self.all_keys
 
     def get_keys_from_scope(self, scope_obj):
 
@@ -144,3 +147,47 @@ class Scopes():
     def get_strat_inds(self):
 
         return self.get_train_inds_from_keys(self.strat_keys)
+
+    def proc_imputer_scope(self, scope_obj):
+ 
+        if is_scope(scope_obj):
+            scope = scope_obj.value
+        else:
+            scope = scope_obj
+
+        # First grab the correct params based on scope
+        if scope == 'cat' or scope == 'categorical':
+            scope = 'categorical'
+
+            cat_inds, ordinal_inds =\
+                self.get_cat_ordinal_inds()
+
+            valid_cat_inds = []
+            for c in cat_inds:
+                if len(c) > 0:
+                    valid_cat_inds.append(c)
+            cat_inds = valid_cat_inds
+
+            inds = []
+
+            # If scope doesn't match any actual data, skip
+            if len(ordinal_inds) == 0 and len(cat_inds) == 0:
+                return None
+
+        else:
+
+            if scope == 'float':
+                scope = 'float'
+                keys = 'float'
+            else:
+                scope = 'custom'
+                keys = scope
+
+            inds = self.get_inds_from_scope(keys)
+            cat_inds, ordinal_inds = [], []
+
+            # If scope doesn't match any actual data, skip
+            if len(inds) == 0:
+                return None
+
+        return inds, cat_inds, ordinal_inds

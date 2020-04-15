@@ -11,7 +11,7 @@ import pickle as pkl
 from tqdm import tqdm, tqdm_notebook
 
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
-from ..helpers.ML_Helpers import compute_macro_micro, conv_to_list
+from ..helpers.ML_Helpers import compute_macro_micro, conv_to_list, get_avaliable_run_name
 from ..pipeline.Model_Pipeline import Model_Pipeline
 
 
@@ -848,7 +848,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
 
 
 def Set_Default_ML_Verbosity(
- self, save_results='default', progress_bar='default',
+ self, save_results='default', progress_bar='default', compute_train_score='default',
  show_init_params='default', fold_name='default',
  time_per_fold='default', score_per_fold='default', fold_sizes='default',
  best_params='default', save_to_logs='default'):
@@ -874,6 +874,14 @@ def Set_Default_ML_Verbosity(
         assuming self.notebook has been set correctly.
 
         if 'default', and not already defined, set to True.
+        (default = 'default')
+
+    compute_train_score : bool, optional
+        If True, then metrics and raw preds will also be
+        computed on the training set in addition to just the 
+        eval or testing set.
+
+        if 'default', and not already defined, set to False.
         (default = 'default')
 
     show_init_params : bool, optional
@@ -944,6 +952,11 @@ def Set_Default_ML_Verbosity(
             self.default_ML_verbosity['progress_bar'] = tqdm_notebook
         else:
             self.default_ML_verbosity['progress_bar'] = tqdm
+
+    if compute_train_score != 'default':
+        self.default_ML_verbosity['compute_train_score'] = compute_train_score
+    elif 'compute_train_score' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['compute_train_score'] = False
 
     if show_init_params != 'default':
         self.default_ML_verbosity['show_init_params'] = show_init_params
@@ -1034,86 +1047,15 @@ def _ML_print(self, *args, **kwargs):
         _print(*args, **kwargs)
 
 
-def Evaluate(self, run_name=None, problem_type='default', target='default',
-             model='default', model_params='default', metric='default',
-             weight_metric='default',
-             loader='default',
-             loader_scope='default', loader_params='default',
-             imputer='default', imputer_scope='default',
-             imputer_params='default',
-             scaler='default',
-             scaler_scope='default', scaler_params='default',
-             transformer='default',
-             transformer_scope='default', transformer_params='default',
-             sampler='default', sample_on='default', sampler_params='default',
-             feat_selector='default', feat_selector_params='default',
-             ensemble='default', ensemble_split='default',
-             ensemble_params='default', splits='default',
-             n_repeats='default', 
-             search_type='default', search_splits='default',
-             search_n_iter='default', scope='default',
-             subjects='default',
-             feat_importances='default',
-             feat_importances_params='default',
-             n_jobs='default', random_state='default',
-             compute_train_score='default', cache='default',
-             extra_params='default'):
-    '''Class method to be called during the model selection phase.
-    Used to evaluated different combination of models and scaling, ect...
-
-    Parameters
-    ----------
-    run_name : str or None, optional
-        All results from `Evaluate`, or rather the metrics are
-        saved within self.eval_scores by default. This name is also used to
-        store the exact params used in self.eval_settings.
-        `run_name` refers to the specific name under which to
-        store this Evaluate's run on results. If left as None, then will just
-        use a default name.
-
-        (default = None)
-
-    problem_type :
-    target :
-    model :
-    model_params :
-    metric :
-    weight_metric :
-    loader :
-    loader_scope :
-    loader_params :
-    imputer :
-    imputer_scope :
-    imputer_params :
-    scaler :
-    scaler_scope :
-    scaler_params :
-    transformer : 
-    transformer_scope :
-    transformer_params :
-    sampler :
-    sample_on :
-    sampler_params :
-    feat_selector :
-    feat_selector_params :
-    ensemble :
-    ensemble_split :
-    ensemble_params :
-    splits :
-    n_repeats :
-    search_type :
-    search_splits :
-    search_n_iter :
-    scope :
-    subjects :
-    feat_importances :
-    feat_importances_params :
-    n_jobs :
-    random_state :
-    compute_train_score :
-    cache :
-    extra_params :
-
+def Evaluate(self,
+             model_pipeline,
+             problem_spec,
+             splits=3,
+             n_repeats=2,
+             train_subjects='default',
+             run_name='default'):
+    
+    '''
     Returns
     ----------
     results : dict
@@ -1134,7 +1076,6 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
         'raw_preds', A pandas dataframe containing the raw predictions
         for each subject, in the test set, and
         'FIs' a list where each element corresponds to a passed feature importance.
-
 
     Notes
     ----------
@@ -1157,45 +1098,54 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     # Perform pre-modeling check
     self._premodel_check()
 
-    # Create the set of ML_params from passed args + default args
-    ML_params = self._make_ML_params(args=locals())
+    # Should save the params used here*** before any preproc done
+    run_name =\
+        get_avaliable_run_name(run_name, model_pipeline.model, self.eval_scores)
+    self.last_run_name = run_name
 
-    # If no nan data set imputer off
-    ML_params.check_imputer(self.all_data)
-
+    # Preproc model pipeline & specs
+    problem_spec = self._preproc_problem_spec(problem_spec)
+    model_pipeline = self._preproc_model_pipeline(model_pipeline,
+                                                  problem_spec.n_jobs)
+    
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
-        ML_params.print_model_params(test=False, _print=self._print)
 
-    # Get a free run name
-    run_name =\
-        self._get_avaliable_run_name(run_name, ML_params.model, self.eval_scores)
-    
-    self._print('Saving scores and settings with unique name:', run_name)
-    self.last_run_name = run_name
-    self._print()
+        model_pipeline.print_all(self._print)
+        problem_spec.print_all(self._print)
 
-    # Save this specific set of settings
-    # run_settings = ML_params.copy()
-    # run_settings.update({'run_name': run_name})
-    # self.eval_settings[run_name] = run_settings
+        self._print('Evaluate Params')
+        self._print('---------------')
+        self._print('splits =', splits)
+        self._print('n_repeats =', n_repeats)
+        self._print('train_subjects =', len(train_subjects))
+        self._print('run_name =', run_name)
+        self._print()
 
     # Init. the Model_Pipeline object with modeling params
-    self._init_model(ML_params)
+    self._init_model(model_pipeline, problem_spec)
+
+    # Get the Eval splits
+    _, splits_vals, _ = self._get_split_vals(splits)
+
+    # Set train subjects by default to class wide
+    if isinstance(train_subjects, str) and train_subjects == 'default':
+        train_subjects = self.train_subjects
 
     # Evaluate the model
     train_scores, scores, raw_preds, FIs =\
-        self.Model_Pipeline.Evaluate(self.all_data, self.train_subjects)
+        self.Model_Pipeline.Evaluate(self.all_data, train_subjects,
+                                     splits, n_repeats, splits_vals)
 
     # Set target and run name
     for fi in FIs:
-        fi.set_target(ML_params.target)
+        fi.set_target(problem_spec.target)
         fi.set_run_name(run_name)
 
     self._print()
 
     # Print out summary stats for all passed metrics
-    if ML_params.compute_train_score:
+    if self.default_ML_verbosity['compute_train_score']:
         score_list = [train_scores, scores]
         score_type_list = ['Training', 'Validation']
     else:
@@ -1206,8 +1156,8 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     for scrs, name in zip(score_list, score_type_list):
 
         summary_scores = self._handle_scores(scrs, name,
-                                             ML_params.weight_metric,
-                                             ML_params.n_repeats, run_name,
+                                             problem_spec.weight_metric,
+                                             n_repeats, run_name,
                                              self.Model_Pipeline.n_splits_)
 
         if name == 'Validation':
@@ -1223,25 +1173,12 @@ def Evaluate(self, run_name=None, problem_type='default', target='default',
     return results
 
 
-def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
-         test_subjects=None,
-         problem_type='default', target='default', model='default',
-         model_params='default', metric='default', weight_metric='default',
-         loader='default', loader_scope='default', loader_params='default',
-         imputer='default', imputer_scope='default', imputer_params='default',
-         scaler='default', scaler_scope='default', scaler_params='default',
-         transformer='default', transformer_scope='default', transformer_params='default',
-         sampler='default', sample_on='default', sampler_params='default',
-         feat_selector='default', feat_selector_params='default',
-         ensemble='default', ensemble_split='default',
-         ensemble_params='default', search_type='default',
-         search_splits='default', search_n_iter='default',
-         scope='default', subjects='default',
-         feat_importances='default',
-         feat_importances_params='default',
-         n_jobs='default', random_state='default',
-         compute_train_score='default', cache='default',
-         extra_params='default', **kwargs):
+def Test(self,
+         model_pipeline,
+         problem_spec,
+         train_subjects='default',
+         test_subjects='default',
+         run_name='default'):
     '''Class method used to evaluate a specific model / data scaling
     setup on an explicitly defined train and test set.
 
@@ -1255,16 +1192,6 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
         and the exact parameters used in self.test_settings.
         If left as None, then will just
         use a default name.
-
-        (default = None)
-
-    eval_run_name : str or None, optional
-        eval_run_name within Test if set to a previous Evaluate run name
-        will load the settings used from that Evaluate call instead of
-        additional params passed! This is useful when testing a best
-        model on the test set, but be wary that it will ignore any
-        new params passed. If left as None, will act as a normal, and
-        used the passed params.
 
         (default = None)
 
@@ -1335,44 +1262,39 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
     # Perform pre-modeling check
     self._premodel_check()
 
-    # Create the set of ML_params from passed args + default args
-    # or from a passed run name.
-    if eval_run_name is None:
-        args = locals()
-    else:
-        self._print('Loading existing settings from eval run:', eval_run_name)
-        self._print()
-        args = self.eval_settings[eval_run_name]
+    # Get a free run name
+    run_name =\
+        get_avaliable_run_name(run_name, model_pipeline.model, self.test_scores)
+    self.last_run_name = run_name
 
-    ML_params = self._make_ML_params(args=args)
+    # Preproc model pipeline & specs
+    problem_spec = self._preproc_problem_spec(problem_spec)
+    model_pipeline = self._preproc_model_pipeline(model_pipeline,
+                                                  problem_spec.n_jobs)
 
-    # If no nan data set imputer off
-    ML_params.check_imputer(self.all_data)
+    # If not train subjects or test subjects passed / default, use class
+    if isinstance(train_subjects, str) and train_subjects == 'default':
+        train_subjects = self.train_subjects
+    if isinstance(test_subjects, str) and test_subjects == 'default':
+        test_subjects = self.test_subjects
+
 
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
-        ML_params.print_model_params(test=True, _print=self._print)
 
-    # Get a free run name
-    run_name = self._get_avaliable_run_name(run_name, ML_params.model,
-                                            self.test_scores)
-    self._print('Saving scores and settings with unique name:', run_name)
-    self.last_run_name = run_name
-    self._print()
+        model_pipeline.print_all(self._print)
+        problem_spec.print_all(self._print)
 
-    # Save this specific set of settings, in test settings
-    #run_settings = ML_params.copy()
-    #run_settings.update({'run_name': run_name})
-    #self.test_settings[run_name] = run_settings
+        self._print('Test Params')
+        self._print('---------------')
+        self._print('train_subjects =', len(train_subjects))
+        self._print('test_subjects =', len(test_subjects))
+        self._print('run_name =', run_name)
+        self._print()
 
     # Init the Model_Pipeline object with modeling params
-    self._init_model(ML_params)
+    self._init_model(problem_spec, model_pipeline)
 
-    # If not train subjects or test subjects passed, use class
-    if train_subjects is None:
-        train_subjects = self.train_subjects
-    if test_subjects is None:
-        test_subjects = self.test_subjects
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, raw_preds, FIs =\
@@ -1381,14 +1303,15 @@ def Test(self, run_name=None, eval_run_name=None, train_subjects=None,
 
     # Set run name
     for fi in FIs:
-        fi.set_target(ML_params.target)
+        fi.set_target(problem_spec.target)
+        fi.set_run_name(run_name)
 
     # Print out score for all passed metrics
     metric_strs = self.Model_Pipeline.metric_strs
     self._print()
 
     score_list, score_type_list = [], []
-    if ML_params.compute_train_score:
+    if self.default_ML_verbosity['compute_train_score']:
         score_list.append(train_scores)
         score_type_list.append('Training')
 
@@ -1457,30 +1380,45 @@ def _premodel_check(self):
         self.Set_Default_ML_Verbosity()
 
 
-def _make_ML_params(self, args):
+def _preproc_model_pipeline(self, model_pipeline, n_jobs):
 
-    # Merge passed params with defaults
-    ML_params = self.default_ML_params.copy()
-    ML_params.set_values(args)
+    # Set values across each pipeline pieces params
+    model_pipeline.preproc(n_jobs)
+    
+    # Proc sample_on if needed (by adding strat name)
+    model_pipeline.check_samplers(self._add_strat_u_name)
+
+    # Set split vals if search
+    if model_pipeline.param_search is not None:
+
+        _, split_vals, _ =\
+            self._get_split_vals(model_pipeline.param_search.splits)
+        model_pipeline.param_search.set_split_vals(split_vals)
+
+    # Early check to see if imputer could even be needed
+    model_pipeline.check_imputer(self.all_data)
+
+    return model_pipeline
+
+
+def _preproc_problem_spec(self, problem_spec):
 
     # Update target with actual target key
-    target_key = self._get_targets_key(ML_params.target)
-    ML_params.set_params(target=target_key)
-
-    # Conv sample_on params w/ added unique key here, if needed
-    sample_on = self._add_strat_u_name(ML_params.sample_on)
-    ML_params.set_params(sample_on=sample_on)
+    target_key = self._get_targets_key(problem_spec.target)
+    problem_spec.set_params(target=target_key)
 
     # Proc subjects to use
-    final_subjects = self._get_final_subjects_to_use(ML_params.subjects)
-    ML_params.set_final_subjects(final_subjects)
+    final_subjects = self._get_final_subjects_to_use(problem_spec.subjects)
+    problem_spec.set_final_subjects(final_subjects)
 
-    # Set split vals
-    _, split_vals, _ = self._get_split_vals(ML_params.splits)
-    _, search_split_vals, _ = self._get_split_vals(ML_params.search_splits)
-    ML_params.set_split_vals(split_vals, search_split_vals)
+    # Set by class defaults
+    if problem_spec.n_jobs == 'default':
+        problem_spec.n_jobs = self.n_jobs
 
-    return ML_params
+    if problem_spec.random_state == 'default':
+        problem_spec.random_state = self.random_state
+    
+    return problem_spec
 
 
 def _get_split_vals(self, splits):
@@ -1537,37 +1475,14 @@ def _get_final_subjects_to_use(self, subjects_to_use):
     return subjects
 
 
-def _init_model(self, ML_params):
+def _init_model(self, model_pipeline, problem_specs):
 
-    # Make model
+    # Set Model_Pipeline
     self.Model_Pipeline =\
-        Model_Pipeline(ML_params, self.CV, self.Data_Scopes,
+        Model_Pipeline(model_pipeline, problem_specs, self.CV, self.Data_Scopes,
                        self.default_ML_verbosity['progress_bar'],
+                       self.default_ML_verbosity['compute_train_score'],
                        self._ML_print)
-
-
-def _get_avaliable_run_name(self, name, model, scores):
-
-    if name is None:
-        if isinstance(model, list):
-            name = 'ensemble'
-
-        elif not isinstance(model, str):
-            name = 'user passed'
-
-        else:
-            name = model
-
-    if name in scores:
-
-        n = 0
-        while name + str(n) in scores:
-            n += 1
-
-        name = name + str(n)
-
-    return name
-
 
 def _handle_scores(self, scores, name, weight_metric, n_repeats, run_name, n_splits):
 

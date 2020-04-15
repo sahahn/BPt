@@ -127,11 +127,10 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
 
     else:
         # Need to check for estimator, as RFE needs a default param for est.
-        # Though, only replaced if not passed in user extra params already.
+        # Set as placeholder None if passed
         possible_params = get_possible_init_params(feat_selector)
         if 'estimator' in possible_params:
-                if 'estimator' not in extra_feat_selector_params:
-                    extra_feat_selector_params['estimator'] = None
+            extra_feat_selector_params['estimator'] = None
 
         return (feat_selector(**extra_feat_selector_params),
                 feat_selector_params)

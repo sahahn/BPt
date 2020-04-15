@@ -42,6 +42,8 @@ class ABCD_Pipeline(Pipeline):
             
         super().fit(X, y, **fit_params)
 
+        return self
+
     def _get_objs_by_name(self):
 
         fitted_objs = [[self.__getitem__(name) for name in obj] for obj in self.names]

@@ -8,7 +8,7 @@ import numpy as np
 import inspect
 from .Default_Params import get_base_params, proc_params, show
 from copy import deepcopy
-from .Input_Tools import is_special
+from ..main.Input_Tools import is_special
 
 
 def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
@@ -53,7 +53,8 @@ def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
 def is_array_like(in_val):
 
     if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
-     (not isinstance(in_val, dict)) and (not hasattr(in_val, 'fit')):
+     (not isinstance(in_val, dict)) and (not hasattr(in_val, 'fit')) and \
+     (not hasattr(in_val, 'transform')):
         return True
     else:
         return False
@@ -75,7 +76,8 @@ def proc_input(in_vals):
     a single str.'''
 
     if isinstance(in_vals, list):
-        in_vals = [proc_str_input(x) for x in in_vals]
+        for i in range(len(in_vals)):
+            in_vals[i] = proc_str_input(in_vals[i])
     else:
         in_vals = proc_str_input(in_vals)
 
@@ -205,11 +207,23 @@ def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
     if search_type is None:
 
         params = base_params.copy()
+        non_search_params = {}
+
+        for p in params:
+
+            try:
+                module = params[p].__module__
+                if 'nevergrad' not in module:
+                    non_search_params[p] = params[p]
+
+            except AttributeError:
+                non_search_params[p] = params[p]
+
 
         if obj_str in extra_params:
-            params.update(extra_params[obj_str])
+            non_search_params.update(extra_params[obj_str])
 
-        return obj, params, {}
+        return obj, non_search_params, {}
 
     # Otherwise, prepend obj_str to all keys in base params
     params = proc_params(base_params, prepend=obj_str)
@@ -615,23 +629,26 @@ def check_for_duplicate_names(objs_and_params):
     return objs_and_params
 
 
-def proc_type_dep_str(in_strs, avaliable, extra_params, problem_type):
+def proc_type_dep_str(in_strs, avaliable, problem_type):
     '''Helper function to perform str correction on
     underlying proble type dependent input, e.g., for
     metric or ensemble_types, and to update extra params
     and check to make sure input is valid ect...'''
 
-    conv_strs = proc_input(in_strs)
+    as_arr = True
+    if not is_array_like(in_strs):
+        as_arr = False
+        in_strs = [in_strs]
 
-    if not check_avaliable(conv_strs, avaliable, problem_type):
-        raise RuntimeError(conv_strs, 'are not avaliable for this problem type')
+    if not check_avaliable(in_strs, avaliable, problem_type):
+        raise RuntimeError(in_strs, 'are not avaliable for this problem type')
 
-    avaliable_by_type = get_a_by_type(avaliable, conv_strs, problem_type)
-    final_strs = [avaliable_by_type[conv_str] for conv_str in conv_strs]
+    avaliable_by_type = get_a_by_type(avaliable, in_strs, problem_type)
+    final_strs = [avaliable_by_type[in_str] for in_str in in_strs]
 
-    extra_params = update_extra_params(extra_params, in_strs, final_strs)
-    
-    return final_strs, extra_params
+    if as_arr:
+        return final_strs
+    return final_strs[0]
 
 def check_avaliable(in_strs, avaliable, problem_type):
 
@@ -673,4 +690,39 @@ def param_len_check(names, params, _print=print):
         params.append(0)
 
     return params
+
+
+def replace_model_name(base_estimator_params):
+
+    new = {}
+
+    for key in base_estimator_params:
+        value = base_estimator_params[key]
+
+        split_key = key.split('__')
+        split_key[0] = 'estimator'
+
+        new_key = '__'.join(split_key)
+        new[new_key] = value
+
+    return new
+
+def get_avaliable_run_name(name, model, scores):
+
+    if name is None or name == 'default':
+
+        if isinstance(model.obj, str):
+            name = model.obj
+        else:
+            name = 'user passed'
+
+    if name in scores:
+
+        n = 0
+        while name + str(n) in scores:
+            n += 1
+
+        name = name + str(n)
+
+    return name
 

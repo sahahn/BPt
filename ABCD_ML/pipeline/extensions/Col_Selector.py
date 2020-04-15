@@ -15,6 +15,8 @@ class ColTransformer(ColumnTransformer):
 
         if hasattr(self, '_mapping'):
             return
+        else:
+            self._mapping = mapping
 
         if len(mapping) > 0:
             new_indx = proc_mapping(self.transformers[0][2], mapping)

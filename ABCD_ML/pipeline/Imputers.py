@@ -5,7 +5,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 
-from ..helpers.ML_Helpers import get_obj_and_params, show_objects, proc_mapping
+from ..helpers.ML_Helpers import get_obj_and_params, show_objects, proc_mapping, replace_model_name
 
 
 class Regular_Imputer():
@@ -290,32 +290,21 @@ IMPUTERS = {
 }
 
 
-def replace_model_name(base_estimator_params):
+def get_imputer_and_params(imputer_param, scopes, encoders,
+                           base_estimator, base_estimator_params,
+                           specs):
 
-    new = {}
-
-    for key in base_estimator_params:
-        value = base_estimator_params[key]
-
-        split_key = key.split('__')
-        split_key[0] = 'estimator'
-
-        new_key = '__'.join(split_key)
-        new[new_key] = value
-
-    return new
-
-
-def get_imputer_and_params(imputer_str, extra_params, params, search_type,
-                           inds=[], encoder_inds=[], ordinal_inds=[],
-                           encoders=[], base_estimator=None,
-                           base_estimator_params={}):
+    # Unpack params
+    imputer_str = imputer_param.obj
+    extra_params = imputer_param.extra_params
+    params = imputer_param.params
+    inds, encoder_inds, ordinal_inds = scopes
 
     if base_estimator is None:
 
         base_imputer_obj, extra_imputer_params, imputer_params =\
             get_obj_and_params(imputer_str, IMPUTERS, extra_params, params,
-                               search_type)
+                               specs['search_type'])
 
         imputer_params = replace_model_name(base_estimator_params)
 
@@ -357,6 +346,12 @@ def get_imputer_and_params(imputer_str, extra_params, params, search_type,
     # Float or Binary
     else:
         imputer = Regular_Imputer(base_imputer, inds)
+
+    # Try to add random state to base imputer if possible
+    try:
+        imputer.imputer.random_state = specs['random_state']
+    except AttributeError:
+        pass
 
     return imputer, imputer_params
 

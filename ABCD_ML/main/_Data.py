@@ -670,17 +670,8 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         - 'categorical' or 'c'
             Categorical input
 
-        - 'multilabel' or 'm'
-            Multilabel categorical input
-
         - 'float' or 'f'
             Float numerical input
-
-        .. WARNING::
-            If 'multilabel' datatype is specified, then the associated col name
-            should be a list of columns, and will be assumed to be.
-            For example, if loading multiple targets and one is multilabel,
-            a nested list should be passed to col_name.
 
         Datatypes are explained further in Notes.
 
@@ -758,7 +749,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
 
     Notes
     ----------
-    Targets can be either 'binary', 'categorical', 'multilabel',
+    Targets can be either 'binary', 'categorical',
     or 'float',
 
     - binary
@@ -769,10 +760,6 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     - categorical
         Targets are treated as taking on one fixed value from a
         limited set of possible values.
-
-    - multilabel
-        Simmilar to categorical, but targets can take on multiple
-        values, and therefore cannot be reduced to an ordinal representation.
 
     - float
         Targets are read in as a floating point number,
@@ -865,14 +852,6 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, drop_val):
             targets = filter_float_by_std(targets, targets_key,
                                           fos, drop_val=drop_val,
                                           _print=self._print)
-
-    # Multilabel type must be read in from multiple columns
-    elif d_type == 'multilabel' or d_type == 'm':
-        common_name = process_multilabel_input(targets_key)
-
-        self.targets_encoders[common_name] = targets_key
-        self._print('Base str indicator/name for loaded multilabel =',
-                    common_name)
 
     else:
         raise RuntimeError('Invalid data type passed:', d_type)

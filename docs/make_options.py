@@ -172,26 +172,19 @@ def add_param(lines, params):
     return lines
 
 
-problem_types = ['binary', 'regression', 'categorical',
-                 'multilabel']
+problem_types = ['binary', 'regression', 'categorical']
 
 lines = []
 
 lines = main_category(lines, 'Models')
-
-lines.append('Different availible choices for the `model` parameter' +
-             ' are shown below.')
-lines.append('`model` is accepted by ' +
-             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
-             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `model` is represented' +
+lines.append('Different base obj choices for the :class:`Model<ABCD_ML.Model>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
 lines.append('The avaliable models are further broken down by which can work' +
              'with different problem_types.')
 lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
-
 lines = add_block(lines, problem_types, AVALIABLE_MODELS, MODELS)
 
 lines = main_category(lines, 'Metrics')
@@ -199,9 +192,9 @@ lines = main_category(lines, 'Metrics')
 lines.append('Different availible choices for the `metric` parameter' +
              ' are shown below.')
 lines.append('`metric` is accepted by ' +
-             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
-             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `metric` is represented by' +
+             ':class:`Problem_Spec<ABCD_ML.Problem_Spec>`, :class:`Param_Search<ABCD_ML.Param_Search>`' +
+             ' and :class:`Feat_Importance<ABCD_ML.Feat_Importance>`)
+lines.append('The str indicator for each `metric` is represented by' +
              'the sub-heading (within "")')
 lines.append('The avaliable metrics are further broken down by which can' +
              ' work with different problem_types.')
@@ -215,116 +208,77 @@ lines = add_block(lines, problem_types)
 
 
 lines = main_category(lines, 'Loaders')
-lines.append('Different availible choices for the `loader` parameter' +
-             ' are shown below.')
-lines.append('loader is accepted by ' +
-             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
-             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `loader` is represented' +
+lines.append('Different base obj choices for the :class:`Loader<ABCD_ML.Loader>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
-lines.append('Additionally, a link to the original loaders documentation ' +
+lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
 lines = add_no_type_block(lines, LOADERS)
 
 
 lines = main_category(lines, 'Imputers')
-lines.append('Different availible choices for the `imputer` parameter' +
-             ' are shown below.')
-lines.append('imputer is accepted by ' +
-             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
-             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `imputer` is represented' +
+lines.append('Different base obj choices for the :class:`Imputer<ABCD_ML.Imputer>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
-lines.append('Additionally, a link to the original imputers documentation ' +
+lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
-lines.append('Imputers are also special, in that a model can be passed ' +
-             'instead of the imputer str. In that case, the model will' +
-             ' be used to fill any NaN by column.')
-lines.append('For `imputer_scope` of float, or custom column names, only ' +
-             'regression type models are valid, and for scope of categorical' +
-             ', only binary / multiclass model are valid!')
-lines.append('The sklearn iterative imputer is used when a model is' +
-             ' passed.')
-lines.append('Also, if a model is passed, then the `imputer_params`' +
-             ' argument will then be considered as applied to the base ' +
-             ' estimator / model!')
+lines.append('Note that if the iterative imputer is requested, base_model must also be passed.')
 lines.append('')
 lines = add_no_type_block(lines, IMPUTERS)
 
 
 lines = main_category(lines, 'Scalers')
-lines.append('Different availible choices for the `scaler` parameter' +
-             ' are shown below.')
-lines.append('scaler is accepted by ' +
-             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
-             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `scaler` is represented' +
+lines.append('Different base obj choices for the :class:`Scaler<ABCD_ML.Scaler>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
-lines.append('Additionally, a link to the original scalers documentation ' +
+lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
 lines = add_no_type_block(lines, SCALERS)
 
 
 lines = main_category(lines, 'Transformers')
-lines.append('Different availible choices for the `transformer` parameter' +
-             ' are shown below.')
-lines.append('transformer is accepted by ' +
-             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
-             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `transformer` is represented' +
+lines.append('Different base obj choices for the :class:`Transformer<ABCD_ML.Transformer>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
-lines.append('Additionally, a link to the original transformers documentation ' +
+lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
 lines = add_no_type_block(lines, TRANSFORMERS)
 
 
 lines = main_category(lines, 'Samplers')
-lines.append('Different availible choices for the `sampler` parameter' +
-             ' are shown below.')
-lines.append('`sampler` is accepted by ' +
-             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
-             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `sampler` is represented' +
+lines.append('Different base obj choices for the :class:`Sampler<ABCD_ML.Sampler>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
-lines.append('Additionally, a link to the original samplers documentation ' +
+lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
 lines = add_no_type_block(lines, SAMPLERS)
 
 
 lines = main_category(lines, 'Feat Selectors')
-lines.append('Different availible choices for the `feat_selector` parameter' +
-             ' are shown below.')
-lines.append('`feat_selector` is accepted by ' +
-             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
-             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `feat_selector` is' +
-             ' represented by the sub-heading (within "")')
-lines.append('The avaliable feat selectors are further broken down by which ' +
-             'can work with different problem_types.')
-lines.append('Additionally, a link to the original feat selectors ' +
-             ' documentation ' +
+lines.append('Different base obj choices for the :class:`Feat_Selector<ABCD_ML.Feat_Selector>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param is represented' +
+             ' by the sub-heading (within "")')
+lines.append('The avaliable feat selectors are further broken down by which can work' +
+             'with different problem_types.')
+lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
 lines = add_block(lines, problem_types, AVALIABLE_SELECTORS, SELECTORS)
 
 
 lines = main_category(lines, 'Ensemble Types')
-lines.append('Different availible choices for the `ensemble` parameter' +
-             ' are shown below.')
-lines.append('`ensemble` is accepted by ' +
-             ':func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and ' +
-             ':func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.')
-lines.append('The exact str indicator for each `ensemble` is' +
-             ' represented by the sub-heading (within "")')
-lines.append('The avaliable ensemble types are further broken down by which ' +
-             'can work with different problem_types.')
-lines.append('Additionally, a link to the original ensemble types ' +
-             ' documentation ' +
+lines.append('Different base obj choices for the :class:`Ensemble<ABCD_ML.Ensemble>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param is represented' +
+             ' by the sub-heading (within "")')
+lines.append('The avaliable ensembles are further broken down by which can work' +
+             'with different problem_types.')
+lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
+lines.append('Also note that ensemble require a few extra params! I.e., in general, all DESlib based ensemble need needs_split = True')
 lines.append('')
 lines = add_block(lines, problem_types, AVALIABLE_ENSEMBLES, ENSEMBLES)
 

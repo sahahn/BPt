@@ -345,9 +345,6 @@ AVALIABLE = {
                 'stacking': 'stacking regressor',
                 'adaboost': 'adaboost regressor',
         },
-
-        'multilabel': {
-        },
 }
 
 # Should be the same

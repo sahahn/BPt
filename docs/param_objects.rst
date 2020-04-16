@@ -54,6 +54,18 @@ Feat_Importance
 Input Types
 ============
 
+Select
+******
+.. autoclass:: Select
+
 Duplicate
 *********
 .. autoclass:: Duplicate
+
+Pipe
+****
+.. autoclass:: Pipe
+
+Value_Subset
+*************
+.. autoclass:: Value_Subset

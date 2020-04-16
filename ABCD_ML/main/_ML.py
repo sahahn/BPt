@@ -62,9 +62,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         - 'categorical'
             For ML on categorical target data, as multiclass.
 
-        - 'multilabel'
-            On categorical multilabel data.
-
         - 'default'
             Use 'regression', if nothing else already defined.
 
@@ -127,7 +124,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         - 'regression'  : 'r2'
         - 'binary'      : 'macro roc auc'
         - 'categorical' : 'macro f1'
-        - 'multilabel' : 'macro roc auc'
 
         (default = 'default')
 
@@ -150,85 +146,6 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         If 'default', and not already defined, set to False
         (default = 'default')
 
-    loader : str, list or None, optional
-        'loader' refers to transformations which operate on loaded Data_Files.
-        (See :func:`Load_Data_Files`).
-        They in essence take in saved file locations, and after some series
-        of transformations pass on compatible features. Notably loaders 
-        define operations which are computed on single files indepedently.
-
-        'loader' can be passed as a single str, or a list of, and should correspond
-        with `loader_scope` and `loader_params`. If a list, then the loaders will be
-        applied in that order.
-
-        For example, the 'identity' loader will load in saved data at the stored file
-        location, lets say they are 2d numpy arrays, and will return a flattened version
-        of the saved arrays, with each data point as a feature. A more practical example
-        might constitute loading in say 3D neuroimaging data, and passing on features as
-        extracted by ROI.
-
-        Loaders also have a special function built-in, where if you pass a tuple
-        of arguments, it will be interpretted as creating a Pipeline of those passed argument.
-        So, for example, if you want to apply a loader which does not return features, maybe
-        smoothing on a 3D volume, and then pass that to an ROI extracter, you would pass
-        (smoothing_obj, ROI_obj). Tuples can also be passed in a list of other arguments,
-        just make sure the loader_params passed correspond exactly with what you pass for
-        loaders, e.g., 1:1 wrappered in a tuple if a tuple or a list if a list.
-
-        There are some loaders pre-defined for usage, but users can likewise
-        pass in custom objects (they just need to have a defined fit_transform function
-        which when passed the already loaded file, will return that subjects features).
-
-        For a full list of supported options call:
-        :func:`Show_Loaders` or view the docs at :ref:`Loaders`
-
-        If 'default', and not already defined, set to None
-        (default = 'default')
-
-    loader_scope : str, list or None, optional
-        `loader_scope` refers to the "scope" or rather columns in
-        which each passed loader (if multiple), should be applied.
-        If a list of loaders is passed, then scopes should also be a
-        list with index corresponding to each loader.
-
-        Each loader scope can be
-
-        - 'data files'
-            To apply to just columns which were originally loaded as data files.
-
-        - array-like of strs
-            Can pass specific col names in as array-like
-            to select only those cols.
-
-        You can likewise pass any of the other scope keys,
-        (as seen in scaler_scopes or transformer_scopes), but in most
-        cases these won't make sense...
-
-        If 'default', and not already defined, set to 'data files'
-        (default = 'default')
-
-    loader_params : int, str or list of, optional
-
-        Each `loader` has atleast one default param distribution,
-        which can be selected with an int index, or a corresponding
-        str name. Likewise, a user can pass in a dictionary with their
-        own custom values.
-
-        This parameter is used to select between different
-        distributions to be used with different search types,
-        when `search_type` == None, `model_params` is automatically
-        set to default 0.
-
-        The different parameter distributions avaliable for each
-        `imputer`, can be shown by calling :func:`Show_Imputers`
-        or on the docs at :ref:`Imputers`
-
-        Note: If a model was passed to the imputer, then
-        `imputer_params` will refer to the parameters for that
-        base model!
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
 
     imputer : str, list or None, optional
         If there is any missing data (NaN's) that have been kept

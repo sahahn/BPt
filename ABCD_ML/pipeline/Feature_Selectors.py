@@ -26,10 +26,6 @@ AVALIABLE = {
                 'variance threshold': 'variance threshold',
                 'selector': 'selector',
         },
-        'multilabel': {
-                'variance threshold': 'variance threshold',
-                'selector': 'selector',
-        }
 }
 
 AVALIABLE['categorical'] = AVALIABLE['binary'].copy()

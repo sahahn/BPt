@@ -722,7 +722,7 @@ def Plot_Global_Feat_Importances(
 
     multiclass : bool, optional
         If multiclass is set to True, and the underlying feature importances
-        were derived from a categorical or multilabel problem type, then
+        were derived from a categorical problem type, then
         a seperate feature importance plot will be made for each class.
         Alternatively, if multiclass is set to False, then feature importances
         will be averaged over all classes.

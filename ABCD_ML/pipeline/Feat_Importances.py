@@ -547,15 +547,6 @@ AVALIABLE = {
             'sklearn perm train': 'sklearn perm train',
             'sklearn perm all': 'sklearn perm all',
         },
-        'multilabel': {
-            'base': 'base',
-            'perm': 'perm',
-            'perm train': 'perm train',
-            'perm all': 'perm all',
-            'sklearn perm': 'sklearn perm',
-            'sklearn perm train': 'sklearn perm train',
-            'sklearn perm all': 'sklearn perm all',
-        }
 }
 
 IMPORTANCES = {
@@ -611,8 +602,7 @@ def get_feat_importances_and_params(feat_imp_str, extra_params, params,
 
     problem_types = {'binary': Binary_Feat_Importances,
                      'regression': Regression_Feat_Importances,
-                     'categorical': Cat_Feat_Importances,
-                     'multilabel': Cat_Feat_Importances}
+                     'categorical': Cat_Feat_Importances}
 
     # Get right base object by problem type
     FI = problem_types[problem_type]

@@ -41,7 +41,8 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         the elements of the list.
 
         Any target_cols passed must be categorical or binary, and cannot be
-        float/multilabel.
+        float. Though you can consider loading in a float target as a strat,
+        which will apply a specific k_bins, and then be valid here.
 
         (default = None)
 

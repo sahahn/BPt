@@ -610,7 +610,7 @@ def proc_args(args, data_types):
 def process_multilabel_input(keys):
 
     if not isinstance(keys, list):
-        raise RuntimeError(key, 'must be a list for',
+        raise RuntimeError(keys, 'must be a list for',
                            'multilabel type')
 
     if len(keys) < 2:

@@ -55,13 +55,6 @@ AVALIABLE = {
                         'ridge':              'ridge regressor',
                         'lasso':              'lasso regressor',
         },
-
-        'multilabel': {
-                        'knn':                'knn classifier',
-                        'dt':                 'dt classifier',
-                        'random forest':      'random forest classifier',
-                        'mlp':                'mlp classifier',
-        }
 }
 
 # Should be the same
@@ -176,63 +169,3 @@ def get_base_model_and_params(model_type, extra_params, model_type_params,
         model = model(**extra_model_params)
 
         return model, model_type_params
-
-
-def Show_Models(self, problem_type=None, model=None,
-                params_options=False, show_object=False,
-                possible_params=False):
-        '''Print out the avaliable machine learning models,
-        optionally restricted by problem type and other diagnostic args.
-
-        Parameters
-        ----------
-        problem_type : str, optional
-                Where `problem_type` is the underlying ML problem or
-                rather type of problem...
-                Note enter either 'binary', 'regression',
-                'categorical', 'multilabel'
-                or None.
-
-                (default = None)
-
-        model : str or list, optional
-                If model is passed, will just show the specific
-                model, according to the rest of the params passed.
-                Note : You must pass the specific model indicator str
-                limited preproc will be done on this input!
-                If list, will show all models within list
-
-                (default = None)
-
-        params_options : bool, optional
-            Flag, if set to True, then will display the ABCD_ML
-            param ind options for each model.
-
-                (default = False)
-
-        show_object : bool, optional
-                Flag, if set to True, then will print the
-                raw model object.
-
-                (default = False)
-
-        possible_params: bool, optional
-                Flag, if set to True, then will print all
-                possible arguments to the classes __init__
-
-                (default = False)
-        '''
-
-        print('Visit the sklearn documentation for more info on most of',
-              'the dif. models')
-        print('Note: Param distributions with a Rand Distribution')
-        print('cannot be used in search_type = "grid"')
-        print('More information through this function is avaliable')
-        print('By passing optional extra optional params! Please view',
-              'the help function for more info!')
-        print('Note: the str indicator actually passed during Evaluate / Test')
-        print('is listed as ("str indicator")')
-        print()
-
-        show_objects(problem_type, model, params_options,
-                     show_object, possible_params, AVALIABLE, MODELS)

@@ -167,7 +167,29 @@ def user_passed_param_check(params, obj_str, search_type):
     return {}, {}
 
 
+def proc_extra_params(obj, extra_params, non_search_params, params=None):
+
+    init_params = get_possible_init_params(obj)
+
+    # If any of the passed keys in extra_params are valid params to 
+    # the base classes init, add them to non_search_params
+   
+    for key in extra_params:
+        if key in init_params:
+            non_search_params[key] = deepcopy(extra_params[key])
+
+            # Also, if params, and overlapping key from extra_params and init
+            # Remove that param distribution as extra_params takes precendence.
+            if params is not None and key in params:
+                del params[key]
+
+    return non_search_params, params
+
+
 def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
+
+
+    # First get the object, and process the base params!
 
     try:
         obj, param_names = OBJS[obj_str]
@@ -202,13 +224,22 @@ def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
 
         base_params = get_base_params(param_name)
 
-    # Special case if search type None, convert param grid to
-    # be one set of params
+    # Process rest of params by search type, and w.r.t to extra params
+    non_search_params, params =\
+        process_params_by_type(obj, obj_str, base_params, extra_params, search_type)
+
+    return obj, non_search_params, params
+
+def process_params_by_type(obj, obj_str, base_params, extra_params, search_type):
+
+    # Special case if search type None
     if search_type is None:
 
         params = base_params.copy()
         non_search_params = {}
 
+        # First, grab any params from the params passed which are not Nevergrad distributions
+        # These, regardless of search_type of None, should still be passed to class init.
         for p in params:
 
             try:
@@ -219,28 +250,20 @@ def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
             except AttributeError:
                 non_search_params[p] = params[p]
 
+        # process extra params
+        non_search_params, _ =\
+            proc_extra_params(obj, extra_params, non_search_params, params=None)
 
-        if obj_str in extra_params:
-            non_search_params.update(extra_params[obj_str])
-
-        return obj, non_search_params, {}
+        return non_search_params, {}
 
     # Otherwise, prepend obj_str to all keys in base params
     params = proc_params(base_params, prepend=obj_str)
 
-    # Update with extra params if applicable
-    extra_obj_params = {}
-    if obj_str in extra_params:
-        extra_obj_params = extra_params[obj_str]
+    # process extra params
+    non_search_params, params =\
+            proc_extra_params(obj, extra_params, {}, params=params)
 
-        # If any user passed args, and also in param grid, remove.
-        for ex_param in extra_obj_params:
-            key = obj_str + '__' + ex_param
-
-            if key in params:
-                del params[key]
-
-    return obj, extra_obj_params, params
+    return non_search_params, params
 
 
 def get_possible_init_params(model):
@@ -561,29 +584,6 @@ def wrap_pipeline_objs(wrapper, objs, inds, random_state,
         wrapped_objs.append((name, wrapped_obj))
 
     return wrapped_objs
-
-
-def update_extra_params(extra_params, orig_strs, conv_strs):
-    '''Helper method to update extra params in the case
-    where model_types or scaler str indicators change,
-    and they were refered to in extra params as the original name.
-
-    Parameters
-    ----------
-    orig_strs : list
-        List of original str indicators.
-
-    conv_strs : list
-        List of final-proccesed str indicators, indices should
-        correspond to the order of orig_strs
-    '''
-
-    for i in range(len(orig_strs)):
-        if orig_strs[i] in extra_params:
-            extra_params[conv_strs[i]] =\
-                extra_params[orig_strs[i]]
-
-    return extra_params
 
 
 def check_for_duplicate_names(objs_and_params):

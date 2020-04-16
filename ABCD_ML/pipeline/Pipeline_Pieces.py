@@ -2,9 +2,10 @@ from sklearn.preprocessing import FunctionTransformer
 from ..main.Input_Tools import is_pipe, is_select, is_duplicate
 
 from ..helpers.ML_Helpers import (proc_input,
-                                  user_passed_param_check, update_extra_params,
+                                  user_passed_param_check,
                                   check_for_duplicate_names, wrap_pipeline_objs,
-                                  proc_type_dep_str, param_len_check, conv_to_list)
+                                  proc_type_dep_str, param_len_check, conv_to_list,
+                                  process_params_by_type)
 
 from .extensions.Col_Selector import ColTransformer, InPlaceColTransformer
 from sklearn.ensemble import VotingClassifier, VotingRegressor
@@ -68,8 +69,12 @@ class Pieces():
         objs = [None for i in range(len(params))]
 
         # Process everything but the select groups first
+        # Putting the recursive call to process here... even though I think call to
+        # just _process could work too. The logic is, I don't think it will hurt,
+        # and if more options beyond Select are added to process later... this 
+        # will hopefully cover those cases.
         non_select_objs, obj_params =\
-            self._process([i for idx, i in enumerate(params) if not select_mask[idx]])
+            self.process([i for idx, i in enumerate(params) if not select_mask[idx]])
 
         # Update right spot in objs
         for obj, ind in zip(non_select_objs, np.where(~select_mask)[0]):
@@ -82,7 +87,8 @@ class Pieces():
         cnt = 0
         for s_params, ind in zip(select_params, np.where(select_mask)[0]):
 
-            s_objs, s_obj_params = self._process(s_params)
+            # Recursive call to process... s.t., can handle nested Select... oh god
+            s_objs, s_obj_params = self.process(s_params)
 
             # Wrap in selector object
             name = self.name + '_selector' + str(cnt)
@@ -111,7 +117,7 @@ class Pieces():
             extra_params = param.extra_params
 
             if 'user passed' in name:
-                objs_and_params.append(self._get_user_passed_obj_params(name, param_str))
+                objs_and_params.append(self._get_user_passed_obj_params(name, param_str, extra_params))
 
             else:
                 objs_and_params.append((name, get_func(name, extra_params,
@@ -125,17 +131,21 @@ class Pieces():
 
         return objs, params
 
-    def _get_user_passed_obj_params(self, name, param):
+    def _get_user_passed_obj_params(self, name, param, extra_params):
 
-        # get copy of user_obj
+        # Get copy of user_obj
         user_obj = deepcopy(self.user_passed_objs[name])
 
-        # proc as necc. user passed params (also creates deep copy of any params!)
+        # Proc as necc. user passed params
         extra_user_obj_params, user_obj_params =\
-            user_passed_param_check(param, name, self.spec['search_type'])
+            process_params_by_type(obj=user_obj,
+                                   obj_str=name,
+                                   base_params=deepcopy(param),
+                                   extra_params=extra_params,
+                                   search_type=self.spec['search_type'])
 
         # If passing a user object, kind of stupid to pass default, non search params
-        # via a dict..., but hey...
+        # via a dict..., but hey give it a try
         try:
             user_obj.set_params(**extra_user_obj_params)
         except AttributeError:

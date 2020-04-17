@@ -76,9 +76,8 @@ class Model_Pipeline():
             self._process_metrics(self.ps.metric)
 
         # Set / proc feat importance info
-        self.feat_importances_params =  pipeline_params.feat_importances
         self.feat_importances =\
-            self._process_feat_importances(self.feat_importances_params.obj)
+            self._process_feat_importances(pipeline_params.feat_importances)
 
         # Get the model specs from problem_spec
         model_spec = self.ps.get_model_spec()
@@ -115,35 +114,20 @@ class Model_Pipeline():
 
     def _process_feat_importances(self, feat_importances):
 
-        from .Feat_Importances import AVALIABLE as AVALIABLE_IMPORTANCES
-
         # Grab feat_importance from spec as a list
         feat_importances = conv_to_list(feat_importances)
 
         if feat_importances is not None:
 
-            # Need to update this w/ exposed feat_importances, aka
-            # not getting this values via extra params / params
-            # not 100% sure what it will look like yet
-
-            '''
-            names, _ =\
-                proc_type_dep_str(self.p.feat_importances, AVALIABLE_IMPORTANCES,
-                                  self.extra_params, self.p.problem_type)
-
-            params = param_len_check(names, self.p.feat_importances_params,
-                                     _print=self._print)
+            metrics = [fi.metric for fi in feat_importances]
+            metrics = [self._get_score_metric(m, False)[0] for m in metrics]
 
             feat_importances =\
-                [get_feat_importances_and_params(name, self.extra_params,
-                                                 param, self.p.problem_type,
-                                                 self.p.n_jobs)
-                for name, param in zip(names, params)]
+                [get_feat_importances_and_params(fi, self.ps.problem_type,
+                                                 self.ps.n_jobs, metric)
+                                                 for fi, metric in zip(feat_importances, metrics)]
 
             return feat_importances
-            ''' 
-
-            return []
         return []
 
     def _get_subjects_overlap(self, subjects):
@@ -513,7 +497,7 @@ class Model_Pipeline():
 
             # Process the feature importance, provide all needed
             feat_imp.proc_importances(base_model, X_test, y_test=y_test,
-                                      X_train=X_train, scorer=self.metric,
+                                      X_train=X_train,
                                       fold=fold,
                                       random_state=self.ps.random_state)
 
@@ -604,8 +588,9 @@ class Model_Pipeline():
                 to_show = []
                 all_ps = self.Model.best_estimator_.get_params()
 
-                for p in params:
+                params, to_show = self._get_all_params(params, all_ps, to_show)
 
+                for p in params:
                     ud = params[p]
 
                     if type_check(ud):
@@ -618,6 +603,30 @@ class Model_Pipeline():
                         self._print(show, level='params')
 
                     self._print('', level='params')
+
+    def _get_all_params(self, params, all_ps, to_show):
+
+        if any(['__select' in p for p in params]):
+
+            all_params = {}
+            for p in params:
+                ud = params[p]
+
+                if '__select' in p:
+                    base_name = '__'.join(p.split('__')[:-1])
+                    to_use = all_ps[base_name + '__to_use']
+                    to_show.append(base_name + '__selected: ' + str(to_use))
+                    extra_ps = ud.choices[to_use]._content
+                    extra_ps = {base_name + '__' + e: extra_ps[e] for e in extra_ps}
+
+                    all_params.update(extra_ps)
+                else:
+                    all_params[p] = params[p]
+
+            # Recursively call
+            return self._get_all_params(all_params, all_ps, to_show)
+
+        return params, to_show
 
     def _get_scores(self, test_data, eval_type, fold_ind):
         '''Helper method to get the scores of

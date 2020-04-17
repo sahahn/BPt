@@ -2,7 +2,7 @@ from .main.ABCD_ML import ABCD_ML, Load
 from .main.Params_Classes import (Loader, Imputer, Scaler, Transformer,
                                   Sampler, Feat_Selector, Model, Ensemble,
                                   Param_Search, Feat_Importance, Model_Pipeline,
-                                  Problem_Spec)
+                                  Problem_Spec, Shap_Params)
 
 from .main.Input_Tools import (Select, Duplicate, Pipe, Value_Subset)
 
@@ -13,4 +13,4 @@ __all__ = ["ABCD_ML", "Load", "Loader",
            "Sampler", "Feat_Selector", "Model",
            "Ensemble", "Param_Search", "Feat_Importance",
            "Model_Pipeline", "Problem_Spec", "Select",
-           "Duplicate", "Pipe", "Value_Subset"]
+           "Duplicate", "Pipe", "Value_Subset", "Shap_Params"]

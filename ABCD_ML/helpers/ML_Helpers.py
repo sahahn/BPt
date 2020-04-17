@@ -8,8 +8,9 @@ import numpy as np
 import inspect
 from .Default_Params import get_base_params, proc_params, show
 from copy import deepcopy
-from ..main.Input_Tools import is_special
-
+import nevergrad as ng
+from ..main.Input_Tools import is_special, Select
+from nevergrad.parametrization.core import Constant
 
 def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
     '''Compute and return scores, as computed froma repeated k-fold.
@@ -169,7 +170,13 @@ def user_passed_param_check(params, obj_str, search_type):
 
 def proc_extra_params(obj, extra_params, non_search_params, params=None):
 
-    init_params = get_possible_init_params(obj)
+    if extra_params is None or len(extra_params) == 0:
+        return non_search_params, params
+
+    try:
+        init_params = get_possible_init_params(obj)
+    except AttributeError:
+        return non_search_params, params
 
     # If any of the passed keys in extra_params are valid params to 
     # the base classes init, add them to non_search_params
@@ -486,7 +493,12 @@ def replace_with_in_params(params, original, replace):
 def type_check(ud):
     '''Check if a nevergrad dist'''
 
-    types_to_check = [int, float, list, tuple, str, bool, dict, set]
+    def_dist = [ng.p.Log, ng.p.Scalar, ng.p.Choice, ng.p.TransitionChoice]
+    for dd in def_dist:
+        if isinstance(ud, dd):
+            return True 
+
+    types_to_check = [int, float, list, tuple, str, bool, dict, set, Constant]
 
     for ttc in types_to_check:
         if isinstance(ud, ttc):
@@ -641,7 +653,10 @@ def proc_type_dep_str(in_strs, avaliable, problem_type):
         in_strs = [in_strs]
 
     if not check_avaliable(in_strs, avaliable, problem_type):
-        raise RuntimeError(in_strs, 'are not avaliable for this problem type')
+        in_strs = proc_input(in_strs)
+
+        if not check_avaliable(in_strs, avaliable, problem_type):
+            raise RuntimeError(in_strs, 'are not avaliable for this problem type')
 
     avaliable_by_type = get_a_by_type(avaliable, in_strs, problem_type)
     final_strs = [avaliable_by_type[in_str] for in_str in in_strs]
@@ -711,7 +726,11 @@ def get_avaliable_run_name(name, model, scores):
 
     if name is None or name == 'default':
 
-        if isinstance(model.obj, str):
+        if isinstance(model, Select):
+            name = 'select'
+        elif isinstance(model, list):
+            name = 'special'
+        elif isinstance(model.obj, str):
             name = model.obj
         else:
             name = 'user passed'

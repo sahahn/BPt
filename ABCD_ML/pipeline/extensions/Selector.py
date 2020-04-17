@@ -7,14 +7,21 @@ class Selector(_BaseComposition):
     def __init__(self, estimators, to_use=0):
         self.estimators = estimators
         self.to_use = to_use
-
         self.example_estimator_ = self.estimators[0][1]
         
     def get_params(self, deep=True):
         return self._get_params('estimators', deep=deep)
 
     def set_params(self, **kwargs):
-        self._set_params('estimators', **kwargs)
+
+        # Pass params as dict with key select
+        select = kwargs['select']
+
+        # Get to use from select
+        self.to_use = select['to_use']
+
+        # Set rest of select params
+        self._set_params('estimators', **select)
         return self
     
     @if_delegate_has_method(delegate='example_estimator_')
@@ -66,12 +73,17 @@ class Selector(_BaseComposition):
 def selector_wrapper(objs, params, name):
     
     selector = (name, Selector(objs))
-    
-    new_params = {}
-    for key in params:
-        new_params[name + '__' + key] = params[key]
-            
-    params = new_params
-    params[name + '__to_use'] = ng.p.Choice([i for i in range(len(objs))])
-    
-    return selector, params
+
+    p_dicts = []
+    for i in range(len(objs)):
+        obj_name = objs[i][0]
+        rel_params = {p: params[p] for p in params if p.split('__')[0] == obj_name}
+        rel_params['to_use'] = i
+
+        p_dict = ng.p.Dict(**rel_params)
+        p_dicts.append(p_dict)
+
+    select = ng.p.Choice(p_dicts)
+    select_params = {name + '__select': select}
+
+    return selector, select_params

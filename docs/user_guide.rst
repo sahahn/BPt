@@ -229,7 +229,7 @@ By passing different scopes, you can see the corresponding selected columns:
     # Single wild card
     scope = '3'
 
-    selected_columns = ['name3' and 'somethingelse3']
+    selected_columns = ['name3', 'somethingelse3']
 
     # Array-like of wild cards
     scope =  ['3', 'name']
@@ -255,7 +255,7 @@ For example, assuming we have the same loaded columns as above, and that 'name2'
     # Likewise, if you pass multiple wildcard sub-strs, only the overlap will be taken as before
     scope = ['float', '3', 'name']
 
-    selected_columns = ['name2', name3']
+    selected_columns = ['name2', 'name3']
 
 Scopes more generally are associated 1:1 with their corresponding base Model_Pipeline objects (except for the Problem_Spec scope).
 One useful function designed specifically for objects with Scope is the :class:`Duplicate<ABCD_ML.Duplicate>` Inute Wrapper, which
@@ -273,4 +273,18 @@ See :class:`Duplicate<ABCD_ML.Duplicate>` for more information on how to use thi
 Extra Params
 =============
 
-All base :class:`Model_Pipeline <ABCD_ML.Model_Pipeline>` have the input argument extra params.... fill me in.
+All base :class:`Model_Pipeline <ABCD_ML.Model_Pipeline>` have the input argument `extra params`. This parameter is designed
+to allow passing additional values to the base objects, seperate from :ref:`Params`. Take the case where you
+are using a preset model, with a preset parameter distribution, but you only want to change 1 parameter in the model while still keeping
+the rest of the parameters associated with the param distribution. In this case, you could pass that value in extra params.
+
+`extra params` are passed as a dictionary, where the keys are the names of parameters (only those accessible to the base classes init), for example
+if we were selecting the 'dt' ('decision tree') :class:`Model<ABCD_ML.Model>`, and we wanted to use the first built in
+preset distribution for :ref:`Params`, but then fix the number of `max_features`, we could do it is as:
+
+::
+
+    model = Model(obj = 'dt',
+                  params = 1,
+                  extra_params = {'max_features': 10}) 
+                  

@@ -21,7 +21,7 @@ class NevergradSearchCV():
         self.param_distributions = param_distributions
         self.scoring = scoring
         self.cv = cv
-        self.weight_metric = weight_metric,
+        self.weight_metric = weight_metric
         self.n_iter = n_iter
         self.n_jobs = n_jobs
         self.random_state = random_state
@@ -69,9 +69,14 @@ class NevergradSearchCV():
         elif self.random_state is not None:
             optimizer.parametrization.random_state = self.random_state
 
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
+        #with warnings.catch_warnings():
+        #    warnings.simplefilter("ignore")
 
+        if self.n_jobs == 1:
+            recommendation = optimizer.minimize(self.ng_cv_score,
+                                                batch_mode=False)
+
+        else:
             with futures.ProcessPoolExecutor(max_workers=self.n_jobs,
                                              mp_context=mp.get_context('spawn')) as ex:
 

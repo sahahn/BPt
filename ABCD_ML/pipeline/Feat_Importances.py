@@ -10,17 +10,21 @@ from ..helpers.ML_Helpers import get_obj_and_params
 
 class Feat_Importances():
 
-    def __init__(self, importance_info, params, n_jobs):
+    def __init__(self, importance_info, params, n_jobs, metric):
 
         self.name = importance_info['name']
         self.scopes = importance_info['scopes']
         self.split = importance_info['split']
 
-        self.proc_params(params)
+        # Unpack params
+        self.shap_params = params.shap_params
+        self.n_perm = params.n_perm
+
         self.valid = True
         self.test = False
 
         self.n_jobs = n_jobs
+        self.metric = metric
 
         self.global_df = None
         self.local_df = None
@@ -30,31 +34,6 @@ class Feat_Importances():
 
         name = self.name[0].upper() + self.name[1:]
         return name
-
-    def proc_params(self, params):
-
-        if 'shap__linear__nsamples' not in params:
-            params['shap__linear__nsamples'] = 1000
-        if 'shap__linear__feature_dependence' not in params:
-            params['shap__linear__feature_dependence'] = 'independent'
-        if 'shap__tree__feature_perturbation' not in params:
-            params['shap__tree__feature_perturbation'] = 'tree_path_dependent'
-        if 'shap__tree__model_output' not in params:
-            params['shap__tree__model_output'] = 'margin'
-        if 'shap__tree__tree_limit' not in params:
-            params['shap__tree__tree_limit'] = None
-        if 'shap__kernel__nkmean' not in params:
-            params['shap__kernel__nkmean'] = 10
-        if 'shap__kernel__nsamples' not in params:
-            params['shap__kernel__nsamples'] = 'auto'
-        if 'shap__kernel__l1_reg' not in params:
-            params['shap__kernel__l1_reg'] = 'aic'
-        if 'shap__global__avg_abs' not in params:
-            params['shap__global__avg_abs'] = False
-        if 'perm__n_perm' not in params:
-            params['perm__n_perm'] = 10
-
-        self.params = params
 
     def get_data_needed_flags(self, flags):
 
@@ -70,19 +49,16 @@ class Feat_Importances():
                 self.valid = False
                 return False
 
+        # If shap, return True
         elif self.name == 'shap':
 
-            # Proc test only
-            if flags['tree']:
+            if flags['tree'] and self.shap_params.tree_feature_perturbation == 'interventional':
                 return False
 
-            # Proc train and test
-            elif flags['linear']:
-                return True
 
-            # Otherwise, kernel
-            else:
-                return True
+
+            return True
+
 
     def init_global(self, X, y):
 
@@ -184,7 +160,7 @@ class Feat_Importances():
             self.local_df = None
 
     def proc_importances(self, base_model, X_test, y_test=None,
-                         X_train=None, scorer=None, fold=0, random_state=None):
+                         X_train=None, fold=0, random_state=None):
         '''X_test should be a df, and X_train either None or as np array.'''
 
         if not self.valid:
@@ -197,13 +173,13 @@ class Feat_Importances():
         elif self.name == 'perm':
             feat_imps = self.get_perm_feat_importances(base_model,
                                                        np.array(X_test),
-                                                       y_test, scorer)
+                                                       y_test)
             self.add_to_global(list(X_test), feat_imps)
 
         elif self.name == 'sklearn perm':
             feat_imps = self.get_perm_feat_importances2(base_model,
                                                         np.array(X_test),
-                                                        y_test, scorer,
+                                                        y_test,
                                                         random_state)
             self.add_to_global(list(X_test), feat_imps)
 
@@ -223,8 +199,9 @@ class Feat_Importances():
 
     def col_abs_mean(self, vals):
 
-        if self.params['shap__global__avg_abs']:
+        if self.shap_params.avg_abs:
             col_means = np.mean(np.abs(vals), axis=0)
+
         else:
             col_means = np.mean(vals, axis=0)
 
@@ -240,19 +217,19 @@ class Feat_Importances():
         return feat_imps
 
     def get_perm_feat_importances(self, base_model, X_test,
-                                  y_test, scorer):
+                                  y_test):
 
-        perm_import = Perm_Feat_Importance(n_perm=self.params['perm__n_perm'],
+        perm_import = Perm_Feat_Importance(n_perm=self.n_perm,
                                            n_jobs=self.n_jobs)
-        feat_imps = perm_import.compute(base_model, scorer, X_test, y_test)
+        feat_imps = perm_import.compute(base_model, self.metric, X_test, y_test)
         return feat_imps
 
-    def get_perm_feat_importances2(self, base_model, X_test, y_test, scorer,
+    def get_perm_feat_importances2(self, base_model, X_test, y_test,
                                    random_state):
 
         results = permutation_importance(base_model, X_test, y_test,
-                                         scoring=scorer,
-                                         n_repeats=self.params['perm__n_perm'],
+                                         scoring=self.metric,
+                                         n_repeats=self.n_perm,
                                          n_jobs=self.n_jobs,
                                          random_state=random_state)
         return results.importances_mean
@@ -263,55 +240,59 @@ class Feat_Importances():
 
             if self.flags['linear']:
 
-                fd = self.params['shap__linear__feature_dependence']
-                nsamp = self.params['shap__linear__nsamples']
+                fp = self.shap_params.linear_feature_perturbation
+                n = self.shap_params.linear_nsamples
                 explainer = shap.LinearExplainer(base_model, X_train,
-                                                 nsamples=nsamp,
-                                                 feature_dependence=fd)
+                                                 nsamples=n,
+                                                 feature_perturbation=fp)
 
                 shap_values = explainer.shap_values(X_test)
 
             elif self.flags['tree']:
 
-                # Damn shap giving so many warnings...
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
+                #with warnings.catch_warnings():
+                #    warnings.simplefilter("ignore")
 
-                    fp = self.params['shap__tree__feature_perturbation']
-                    mo = self.params['shap__tree__model_output']
-                    explainer = shap.TreeExplainer(base_model,
-                                                   feature_perturbation=fp,
-                                                   model_output=mo)
+                explainer =\
+                    shap.TreeExplainer(base_model, X_train,
+                                       model_output=self.shap_params.tree_model_output,
+                                       feature_perturbation=self.shap_params.tree_feature_perturbation)
 
-                    tl = self.params['shap__tree__tree_limit']
-                    shap_values = explainer.shap_values(X_test, tree_limit=tl)
+                shap_values =\
+                    explainer.shap_values(X_test,
+                                          tree_limit=self.shap_params.tree_tree_limit)
 
         # Kernel
         else:
 
-            nkmean = self.params['shap__kernel__nkmean']
+            nkmean = self.shap_params.kernel_nkmean
 
             if nkmean is not None:
                 X_train_summary = shap.kmeans(X_train, nkmean)
             else:
                 X_train_summary = X_train
 
-            explainer = self.get_kernel_explainer(base_model, X_train_summary)
+            explainer =\
+                self.get_kernel_explainer(base_model, X_train_summary,
+                                          self.shap_params.kernel_link)
 
-            ns = self.params['shap__kernel__nsamples']
-            reg = self.params['shap__kernel__l1_reg']
-            shap_values = explainer.shap_values(np.array(X_test), l1_reg=reg,
-                                                n_samples=ns)
+            shap_values =\
+                explainer.shap_values(np.array(X_test),
+                                      l1_reg=self.shap_params.kernel_l1_reg,
+                                      n_samples=self.shap_params.kernel_nsamples)
 
         return self.proc_shap_vals(shap_values)
 
     def proc_shap_vals(self, shap_values):
         return shap_values
 
-    def get_kernel_explainer(self, model, X_train_summary):
+    def get_kernel_explainer(self, model, X_train_summary, link):
+
+        if link == 'default':
+            link = 'logic'
 
         explainer = shap.KernelExplainer(model.predict_proba, X_train_summary,
-                                         link='logic')
+                                         link=link)
 
         return explainer
 
@@ -376,10 +357,13 @@ class Binary_Feat_Importances(Feat_Importances):
 
 class Regression_Feat_Importances(Feat_Importances):
 
-    def get_kernel_explainer(self, model, X_train_summary):
+    def get_kernel_explainer(self, model, X_train_summary, link):
+
+        if link == 'default':
+            link = 'identity'
 
         explainer = shap.KernelExplainer(model.predict, X_train_summary,
-                                         link='identity')
+                                         link=link)
 
         return explainer
 
@@ -510,45 +494,6 @@ class Cat_Feat_Importances(Feat_Importances):
         self.local_dfs = None  # Save memory
 
 
-AVALIABLE = {
-        'binary': {
-            'base': 'base',
-            'shap': 'shap',
-            'shap train': 'shap train',
-            'shap all': 'shap all',
-            'perm': 'perm',
-            'perm train': 'perm train',
-            'perm all': 'perm all',
-            'sklearn perm': 'sklearn perm',
-            'sklearn perm train': 'sklearn perm train',
-            'sklearn perm all': 'sklearn perm all',
-        },
-        'regression': {
-            'base': 'base',
-            'shap': 'shap',
-            'shap train': 'shap train',
-            'shap all': 'shap all',
-            'perm': 'perm',
-            'perm train': 'perm train',
-            'perm all': 'perm all',
-            'sklearn perm': 'sklearn perm',
-            'sklearn perm train': 'sklearn perm train',
-            'sklearn perm all': 'sklearn perm all',
-        },
-        'categorical': {
-            'base': 'base',
-            'shap': 'shap',
-            'shap train': 'shap train',
-            'shap all': 'shap all',
-            'perm': 'perm',
-            'perm train': 'perm train',
-            'perm all': 'perm all',
-            'sklearn perm': 'sklearn perm',
-            'sklearn perm train': 'sklearn perm train',
-            'sklearn perm all': 'sklearn perm all',
-        },
-}
-
 IMPORTANCES = {
     'base': ({'name': 'base',
               'scopes': ('global'),
@@ -579,7 +524,7 @@ IMPORTANCES = {
                   'split': 'all'}, ['base perm']),
 
     'sklearn perm': ({'name': 'sklearn perm',
-                     'scopes': ('global'),
+                      'scopes': ('global'),
                       'split': 'test'}, ['base perm']),
 
     'sklearn perm train': ({'name': 'sklearn perm',
@@ -592,13 +537,12 @@ IMPORTANCES = {
 }
 
 
-def get_feat_importances_and_params(feat_imp_str, extra_params, params,
-                                    problem_type, n_jobs):
+def get_feat_importances_and_params(params, problem_type, n_jobs, metric):
 
     # Search type should always be None
     imp_info, imp_params, _ =\
-        get_obj_and_params(feat_imp_str, IMPORTANCES, extra_params, params,
-                           search_type=None)
+        get_obj_and_params(params.obj, IMPORTANCES,
+                           {}, params.params, search_type=None)
 
     problem_types = {'binary': Binary_Feat_Importances,
                      'regression': Regression_Feat_Importances,
@@ -608,4 +552,4 @@ def get_feat_importances_and_params(feat_imp_str, extra_params, params,
     FI = problem_types[problem_type]
 
     # Return the instance of the feat_importance obj
-    return FI(imp_info, imp_params, n_jobs)
+    return FI(imp_info, params, n_jobs, metric)

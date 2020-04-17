@@ -112,7 +112,7 @@ class ABCD_Pipeline(Pipeline):
 
         return X_test, y_test
 
-    def _proc_X_train(self, X_train, y_train):
+    def proc_X_train(self, X_train, y_train):
 
         # Load all base objects
         fitted_objs = self._get_objs_by_name()

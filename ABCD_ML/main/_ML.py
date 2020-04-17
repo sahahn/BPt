@@ -44,260 +44,13 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
                           compute_train_score='default', cache='default',
                           extra_params='default'):
     '''Sets self.default_ML_params dictionary with user passed or default
-    values. In general, if any argument is left as 'default' and it has
-    not been previously defined, it will be set to a default value,
-    sometimes passed on other values. See notes for rationale behind
-    default ML params.
-
-    Parameters
-    ----------
-    problem_type : str, optional
-
-        - 'regression'
-            For ML on float target data.
-
-        - 'binary'
-            For ML on binary target data.
-
-        - 'categorical'
-            For ML on categorical target data, as multiclass.
-
-        - 'default'
-            Use 'regression', if nothing else already defined.
-
-        If 'default', and not already defined, set to 'regression'
-        (default = 'default')
-
-    target : int or str, optional
-        The loaded target in which to use during modelling.
-        This can be the int index, or the name of the target column.
-        If only one target is loaded, just leave as default.
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    model : str or list of str
-        Each string refers to a type of model to train.
-        If a list of strings is passed then an ensemble model
-        will be created over all individual models.
-
-        For a full list of supported options call:
-        :func:`Show_Models` or view the docs at :ref:`Models`
-
-        If 'default', and not already defined, set to 'linear'
-        (default = 'default')
-
-    model_params : int, str, or list of
-        Each `model` has atleast one default parameter distribution
-        saved with it.
-
-        This parameter is used to select between different
-        distributions to be used with different search types,
-        when `search_type` == None, `model_params` is automatically
-        set to default 0.
-
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `model`.
-        Likewise with `model`, if passed list input, this means
-        a list was passed to `model` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `model`, can be shown by calling :func:`Show_Models`
-        or on the docs at :ref:`Models`
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    metric : str or list, optional
-        Indicator for which metric(s) to use for calculating
-        score and during model parameter selection.
-        If `metric` left as 'default', then the default metric
-        for that problem types will be used.
-        Note, some metrics are only avaliable for certain problem types.
-
-        For a full list of supported metrics call:
-        :func:`Show_Metrics` or view the docs at :ref:`Metrics`
-
-        If 'default', and not already defined, set to default
-        metric for the problem type.
-
-        - 'regression'  : 'r2'
-        - 'binary'      : 'macro roc auc'
-        - 'categorical' : 'macro f1'
-
-        (default = 'default')
-
-    weight_metric : bool, list of, optional
-        If True, then the metric of interest will be weighted within
-        each repeated fold by the number of subjects in that validation set.
-        This parameter only makes sense for custom split behavior where 
-        validation folds end up with different sizes. When default CV schemes are
-        used there is no point weighting by very simmilar numbers.
-
-        If you are passing mutiple metrics, then you can also pass a 
-        list of values for weight_metric, with each value as True or False
-        as to if the corresponding metric by index should be weighted.
-
-        As a reminder, the first metric specified will be used as the
-        parameter to optimize if a hyperparameter search is conducted.
-        Likewise, if it is specified that the first metric be weighted,
-        then the weighted metric will be used in the hyper-param search!
-
-        If 'default', and not already defined, set to False
-        (default = 'default')
 
 
-    imputer : str, list or None, optional
-        If there is any missing data (NaN's) that have been kept
-        within data or covars, then an imputation strategy must be
-        defined! This param controls the imputer to use, along with
-        `imputer_scope` to determine what each imputer should cover.
-        A single str can be passed, or a list of strs.
 
-        There are a number of pre-defined imputers to select from,
-        but the user can also pass a valid model str indicator here.
-        This model str refers to the base_estimator to be used in
-        an IterativeImputer, see :class:`sklearn.impute.IterativeImputer`
 
-        If an imputer str is passed, then it must be a valid imputer
-        for whatever scope is passed additional. If the `imputer_scope`
-        passed is 'float' or specific set of column names, then a regression
-        model type will be selected. If the scope is 'binary' or 'categorical',
-        then a binary / multiclass model type will be selected.
-        (Note: categorical cols are converted to multiclass first if nec.)
-
-        For a full list of supported options call:
-        :func:`Show_Imputers` or view the docs at :ref:`Imputers`
-
-        If 'default', and not already defined, set to ['mean', 'median']
-        (default = 'default')
-
-    imputer_scope : str, list or None, optional
-        The `imputer_scope` param determines the scope,
-        or rather which columns the imputer should fill
-        (in data / covars), for each `imputer` passed.
-        Options are,
-
-        - 'float'
-            To apply to all non-categorical columns, in both
-            loaded data and covars.
-
-        - 'cat' or 'categorical'
-            To apply to just loaded categorical data.
-
-        - array-like of strs
-            Can pass specific col names in as array-like
-            to select only those cols.
-
-        If 'default', and not already defined, set to ['float', 'cat']
-        (default = 'default')
-
-    imputer_params : int, str or list of, optional
-        Each `imputer` has atleast one param distribution,
-        which can be selected with an int index, or a corresponding
-        str name. Likewise, a user can pass in a dictionary with their
-        own custom values.
-
-        This parameter is used to select between different
-        distributions to be used with different search types,
-        when `search_type` == None, `model_params` is automatically
-        set to default 0.
-
-        The different parameter distributions avaliable for each
-        `imputer`, can be shown by calling :func:`Show_Imputers`
-        or on the docs at :ref:`Imputers`
-
-        Note: If a model was passed to the imputer, then
-        `imputer_params` will refer to the parameters for that
-        base model!
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    scaler : str, list or None, optional
-        `scaler` refers to the type of scaling to apply
-        to the saved data (just data, not covars) during model evaluation.
-        If a list is passed, then scalers will be applied in that order.
-        If None, then no scaling will be applied.
-
-        For a full list of supported options call:
-        :func:`Show_Scalers` or view the docs at :ref:`Scalers`
-
-        If 'default', and not already defined, set to 'standard'
-        (default = 'default')
-
-    scaler_scope : str, list or None, optional
-        `scaler_scope` refers to the "scope" or rather columns in
-        which each passed scaler (if multiple), should be applied.
-        If a list of scalers is passed, then scopes should also be a
-        list with index corresponding to each scaler.
-        If less then the number of scalers are passed, then the
-        first passed scaler scope will be used for all of the
-        remaining scalers. Likewise, if no scaler is passed, this
-        parameter will be ignored!
-
-        Each scaler scope can be either,
-
-        - 'float'
-            To apply to all non-categorical columns, in both
-            loaded data and covars.
-
-        - 'data'
-            To apply to all loaded data columns only.
-
-        - 'data files'
-            To apply to just columns which were originally loaded as data files.
-
-        - 'float covars' or 'fc'
-            To apply to all non-categorical, float covars columns only.
-
-        - 'all'
-            To apply to everything, regardless of float/cat or data/covar.
-
-        - 'cat' or 'categorical'
-            To apply to just loaded categorical data.
-
-        - 'covars'
-            To apply to all loaded covar columns only.
-
-        - array-like of strs
-            Can pass specific col names in as array-like
-            to select only those cols.
-
-        If 'default', and not already defined, set to 'float'
-        (default = 'default')
-
-    scaler_params : int, str, or list of, optional
-        Each `scaler` has atleast one default parameter distribution
-        saved with it.
-
-        This parameter is used to select between different
-        distributions to be used with different search types,
-        when `search_type` == None, `model_params` is automatically
-        set to default 0.
-
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `scaler`.
-        Likewise with `scaler`, if passed list input, this means
-        a list was passed to `scaler` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `scaler`, can be shown by calling :func:`Show_Scalers`
-        or on the docs at :ref:`Scalers`
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
 
     transformer : str, list or None, optional
-        Transformers are any type of transformation to
-        the data that changes the number of features in non-deterministic
-        or not simply removal (i.e., as in feat_selectors), for example
-        applying a PCA, where both the number of features change, but
-        also the new features do not 1:1 correspond to the original
-        features. 
-
-        For a full list of supported options call:
-        :func:`Show_Transformers` or view the docs at :ref:`Transformers`
+        
     
     transformer_scope : str, list, tuple or None, optional
         `transformer_scope` refers to the "scope" or rather columns in
@@ -366,48 +119,12 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         (default = 'default')
 
     sampler : str, list or None, optional
-        `sampler` refers optional to the type of resampling
-        to apply within the model pipeline - to correct for
-        imbalanced class distributions. These are different
-        techniques for over sampling under distributed classed
-        and under sampling over distributed ones.
-        If a list is passed, then samplers will be fit and applied
-        in that order.
-
-        For a full list of supported options call:
-        :func:`Show_Samplers` or view the docs at :ref:`Samplers`
+        
 
         If 'default', and not already defined, set to None
         (default = 'default')
 
-    sample_on : str, list or None, optional
-        If `sampler` is set, then for each sampler used,
-        this `sample_on` parameter must be set. This parameter
-        dictates what the sampler should use as its class to
-        re-sample. For example, the most typical case is passing
-        in 't' which will then resample according to the
-        distribution of the target variable.
-        (If multipled loaded, then whichever is is selected in target param),
-        The user can also pass in
-        the names of any loaded strat columns (See: :func:`Load_Strat`),
-        or a combination as list of both,
-        similar to input accepted by the `stratify` param
-        in :func:`Define_Validation_Strategy`.
-
-        Note: The way sample_on is coded, any passed col name which is not
-        loaded in Strat, will be interpreted as sample the target variable!
-        That is why the default value is just t, but you can pass anything that
-        isnt a loaded strat col, to have it sample on strat.
-
-        When a list is passed to one sampler, then the unique combination
-        of values fis created, and sampled on.
-
-        In the case where a list of a samplers is passed, then a
-        list of `sample_on` params should be passed, where the index
-        correspond. `sample_on` would look like a list of lists in the case
-        where you want to pass a combination of options, or differing combos
-        to different samplers.
-
+    
         If 'default', and not already defined, set to 'targets'
         (default = 'default')
 
@@ -432,14 +149,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         If 'default', and not already defined, set to 0
         (default = 'default')
 
-    feat_selector : str, list or None, optional
-        `feat_selector` should be a str indicator or list of,
-        for which feature selection to use, if a list, they will
-        be applied in order.
-        If None, then no feature selection will be used.
-
-        For a full list of supported options call:
-        :func:`Show_Feat_Selectors` or view the docs at :ref:`Feat Selectors`
+    
 
         If 'default', and not already defined, set to None
         (default = 'default')
@@ -466,87 +176,9 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         (default = 'default')
 
     ensemble :  str or list of str,
-        Each string refers to a type of ensemble to train,
-        or 'basic ensemble' (default) for base behavior.
-        Base ensemble behavior is either to not ensemble,
-        if only one model type is passed,
-        or when multiple models are passed,
-        to simply train each one independently and
-        average the predictions at test time (or max vote).
+        
 
-        The user can optionally pass other ensemble types,
-        though with other types of ensembles there are two
-        different types to consider. One additional set of
-        ensemble types will require a parameter to be set for
-        `ensemble_split`, as these ensembles need to be fit
-        on a left out portion of the data. This ensemble split
-        will importantly always do a stratified split for now,
-        and not uphold any defined CV behavior.
-
-        The other possible ensemble type is one based on a single
-        estimator, for example Bagging. In this case, if a list of models
-        is passed, a Basic Ensemble will be fit over the models, and
-        the Bagging Classifier or Regressor built on that ensemble of
-        models.
-
-        If a list is passed to ensemble, then every
-        item in the list must be a valid str indicator for
-        a non 'basic ensemble' ensemble type, and each ensemble
-        object passed will be fitted independly and then averaged
-        using the 'basic ensemble' behvaior... so an ensemble of ensembles.
-
-        For a full list of supported options call:
-        :func:`Show_Ensembles` or view the docs at :ref:`Ensemble Types`
-
-        If 'default', and not already defined, set to 'basic ensemble'
-        (default = 'default')
-
-    ensemble_split : float, int or None, optional
-        If an ensemble(s) that requires fitting is passed,
-        i.e., not "basic ensemble", then this param is
-        the porportion of the train_data within each fold to
-        use towards fitting the ensemble objects.
-        If multiple ensembles are passed, they are all
-        fit with the same fold of data.
-
-        If 'default', and not already defined, set to .2
-        (default = 'default')
-
-    ensemble_params : int, str, or list of, optional
-         Each `ensemble` has atleast one default parameter distribution
-        saved with it.
-
-        This parameter is used to select between different
-        distributions to be used with different search types,
-        when `search_type` == None, `model_params` is automatically
-        set to default 0.
-
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `ensemble` param option.
-        Likewise with `ensemble`, if passed list input, this means
-        a list was passed to `ensemble` and the indices should correspond.
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    splits : int, str or list, optional
-        If `splits` is an int, then :func:`Evaluate` performs a repeated
-        k-fold model evaluation, where `splits` refers to the k, and
-        `n_repeats` refers to the number of repeats.
-        E.g., if set to 3, then a 3-fold CV will be performed at each repeat.
-
-        Note: the splits will be determined according to the validation
-        strategy defined in :func:`Define_Validation_Strategy` if any!
-
-        Alternatively, `splits` can be set to a str or list of
-        strings, where each str refers to a column name loaded
-        within strat! In this case, a leave-one-out CV will be
-        performed on that strat value, or combination of values.
-        The number of folds will therefore be equal to the number of unique
-        values, and can optionally be repeated with `n_repeats` set to > 1.
-
-        If 'default', and not already defined, set to 3
-        (default = 'default')
+    
 
     n_repeats : int or 'default', optional
         :func:`Evaluate` performs a repeated k-fold model evaluation,
@@ -703,57 +335,7 @@ def Set_Default_ML_Params(self, problem_type='default', target='default',
         If 'default', and not already defined, set to 0
         (default = 'default')
 
-    n_jobs : int or 'default', optional
-        The number of jobs to use (if avaliable) during training ML models.
-        This should be the number of procesors avaliable for fastest run times.
 
-        if 'default', and not already defined, set to 1.
-        (default = 'default')
-
-    random_state : int, RandomState instance, None or 'default', optional
-        Random state, either as int for a specific seed, or if None then
-        the random seed is set by np.random.
-
-        If 'default', use the saved value within self
-        ( Defined in :class:`ABCD_ML.ABCD_ML`)
-        
-        Or the user can define a different random state for use in ML.
-        (default = 'default')
-
-    compute_train_score : bool, optional
-        If set to True, then :func:`Evaluate` and :func:`Test`
-        will compute, and print, training scores along with
-        validation / test scores.
-
-        if 'default', and not already defined, set to False.
-        (default = 'default')
-
-    cache : None or str, optional
-        sklearn pipeline's allow the caching of fitted transformers.
-        If this behavior is desired (in the cases where a non-model step take
-        a long time to fit), then a str indicating the directory where
-        the cache should be stored should be passed.
-
-        Note: cache dr's are not automatically removed, as different Evaluate
-        calls may benefit from overlapping cached steps. That said, throughout
-        a longer expiriment, the size of the cache will grow fairly quickly!
-        Therefore be careful to delete the cache when you are done, and to
-        only use this option if you have the free storage.
-
-    extra_params : dict or 'default', optional
-        Any extra params being passed. Typically, extra params are
-        added when the user wants to provide a specific model/classifier,
-        or data scaler, with updated (or new) parameters.
-        These can be supplied by creating another dict within extra_params.
-        E.g., ::
-
-            extra_params[model_name] = {'model_param' : new_value}
-
-        Where model param is a valid argument for that model, and model_name in
-        this case is the str indicator passed to model.
-        If 'default', and not already defined, set to empty dict.
-
-        (default = 'default')
 
     '''
 
@@ -969,6 +551,30 @@ def Evaluate(self,
              run_name='default'):
     
     '''
+
+    Parameters
+    ------------
+
+    splits : int, str or list, optional
+        If `splits` is an int, then :func:`Evaluate` performs a repeated
+        k-fold model evaluation, where `splits` refers to the k, and
+        `n_repeats` refers to the number of repeats.
+        E.g., if set to 3, then a 3-fold CV will be performed at each repeat.
+
+        Note: the splits will be determined according to the validation
+        strategy defined in :func:`Define_Validation_Strategy` if any!
+
+        Alternatively, `splits` can be set to a str or list of
+        strings, where each str refers to a column name loaded
+        within strat! In this case, a leave-one-out CV will be
+        performed on that strat value, or combination of values.
+        The number of folds will therefore be equal to the number of unique
+        values, and can optionally be repeated with `n_repeats` set to > 1.
+
+        If 'default', and not already defined, set to 3
+        (default = 'default')
+
+
     Returns
     ----------
     results : dict

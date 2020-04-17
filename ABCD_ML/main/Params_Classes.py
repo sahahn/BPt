@@ -174,7 +174,7 @@ class Loader(Piece):
             which when passed the already loaded file, will return a 1D representation of that subjects
             features.
 
-            obj can also be passed as a :class:`Pipe`. See :class:`Pipe`'s documentation to
+            `obj` can also be passed as a :class:`Pipe`. See :class:`Pipe`'s documentation to
             learn more on how this works, and why you might want to use it.
 
             See :ref:`Pipeline Objects` to read more about pipeline objects in general.
@@ -234,6 +234,27 @@ class Imputer(Piece):
         ''' 
         Parameters
         ----------
+
+        If there is any missing data (NaN's) that have been kept
+        within data or covars, then an imputation strategy must be
+        defined! This param controls the imputer to use, along with
+        `imputer_scope` to determine what each imputer should cover.
+        A single str can be passed, or a list of strs.
+
+        There are a number of pre-defined imputers to select from,
+        but the user can also pass a valid model str indicator here.
+        This model str refers to the base_estimator to be used in
+        an IterativeImputer, see :class:`sklearn.impute.IterativeImputer`
+
+        If an imputer str is passed, then it must be a valid imputer
+        for whatever scope is passed additional. If the `imputer_scope`
+        passed is 'float' or specific set of column names, then a regression
+        model type will be selected. If the scope is 'binary' or 'categorical',
+        then a binary / multiclass model type will be selected.
+        (Note: categorical cols are converted to multiclass first if nec.)
+
+        View the docs at :ref:`Imputers`
+
         '''
 
         self.obj = obj
@@ -250,6 +271,10 @@ class Scaler(Piece):
         ''' 
         Parameters
         ----------
+         `scaler` refers to the type of scaling to apply
+        to the saved data (just data, not covars) during model evaluation.
+        If a list is passed, then scalers will be applied in that order.
+        If None, then no scaling will be applied.
         '''
 
         self.obj = obj
@@ -265,6 +290,16 @@ class Transformer(Piece):
         ''' 
         Parameters
         ----------
+
+        Transformers are any type of transformation to
+        the data that changes the number of features in non-deterministic
+        or not simply removal (i.e., as in feat_selectors), for example
+        applying a PCA, where both the number of features change, but
+        also the new features do not 1:1 correspond to the original
+        features. 
+
+        For a full list of supported options call:
+        :func:`Show_Transformers` or view the docs at :ref:`Transformers`
         '''
 
         self.obj = obj
@@ -280,6 +315,45 @@ class Sampler(Piece):
         ''' 
         Parameters
         ----------
+        `sampler` refers optional to the type of resampling
+        to apply within the model pipeline - to correct for
+        imbalanced class distributions. These are different
+        techniques for over sampling under distributed classed
+        and under sampling over distributed ones.
+        If a list is passed, then samplers will be fit and applied
+        in that order.
+
+        For a full list of supported options call:
+        :func:`Show_Samplers` or view the docs at :ref:`Samplers`
+
+        sample_on : str, list or None, optional
+            If `sampler` is set, then for each sampler used,
+            this `sample_on` parameter must be set. This parameter
+            dictates what the sampler should use as its class to
+            re-sample. For example, the most typical case is passing
+            in 't' which will then resample according to the
+            distribution of the target variable.
+            (If multipled loaded, then whichever is is selected in target param),
+            The user can also pass in
+            the names of any loaded strat columns (See: :func:`Load_Strat`),
+            or a combination as list of both,
+            similar to input accepted by the `stratify` param
+            in :func:`Define_Validation_Strategy`.
+
+            Note: The way sample_on is coded, any passed col name which is not
+            loaded in Strat, will be interpreted as sample the target variable!
+            That is why the default value is just t, but you can pass anything that
+            isnt a loaded strat col, to have it sample on strat.
+
+            When a list is passed to one sampler, then the unique combination
+            of values fis created, and sampled on.
+
+            In the case where a list of a samplers is passed, then a
+            list of `sample_on` params should be passed, where the index
+            correspond. `sample_on` would look like a list of lists in the case
+            where you want to pass a combination of options, or differing combos
+            to different samplers.
+
         '''
 
         self.obj = obj
@@ -298,6 +372,14 @@ class Feat_Selector(Piece):
         ''' 
         Parameters
         ----------
+        feat_selector : str, list or None, optional
+        `feat_selector` should be a str indicator or list of,
+        for which feature selection to use, if a list, they will
+        be applied in order.
+        If None, then no feature selection will be used.
+
+        For a full list of supported options call:
+        :func:`Show_Feat_Selectors` or view the docs at :ref:`Feat Selectors`
         '''
 
         self.obj = obj
@@ -369,6 +451,69 @@ class Ensemble(Piece):
         Parameters
         ----------
 
+        Each string refers to a type of ensemble to train,
+        or 'basic ensemble' (default) for base behavior.
+        Base ensemble behavior is either to not ensemble,
+        if only one model type is passed,
+        or when multiple models are passed,
+        to simply train each one independently and
+        average the predictions at test time (or max vote).
+
+        The user can optionally pass other ensemble types,
+        though with other types of ensembles there are two
+        different types to consider. One additional set of
+        ensemble types will require a parameter to be set for
+        `ensemble_split`, as these ensembles need to be fit
+        on a left out portion of the data. This ensemble split
+        will importantly always do a stratified split for now,
+        and not uphold any defined CV behavior.
+
+        The other possible ensemble type is one based on a single
+        estimator, for example Bagging. In this case, if a list of models
+        is passed, a Basic Ensemble will be fit over the models, and
+        the Bagging Classifier or Regressor built on that ensemble of
+        models.
+
+        If a list is passed to ensemble, then every
+        item in the list must be a valid str indicator for
+        a non 'basic ensemble' ensemble type, and each ensemble
+        object passed will be fitted independly and then averaged
+        using the 'basic ensemble' behvaior... so an ensemble of ensembles.
+
+        For a full list of supported options call:
+        :func:`Show_Ensembles` or view the docs at :ref:`Ensemble Types`
+
+        If 'default', and not already defined, set to 'basic ensemble'
+        (default = 'default')
+
+    ensemble_split : float, int or None, optional
+        If an ensemble(s) that requires fitting is passed,
+        i.e., not "basic ensemble", then this param is
+        the porportion of the train_data within each fold to
+        use towards fitting the ensemble objects.
+        If multiple ensembles are passed, they are all
+        fit with the same fold of data.
+
+        If 'default', and not already defined, set to .2
+        (default = 'default')
+
+    ensemble_params : int, str, or list of, optional
+         Each `ensemble` has atleast one default parameter distribution
+        saved with it.
+
+        This parameter is used to select between different
+        distributions to be used with different search types,
+        when `search_type` == None, `model_params` is automatically
+        set to default 0.
+
+        This parameter can be selected with either an integer index
+        (zero based), or the str name for a given `ensemble` param option.
+        Likewise with `ensemble`, if passed list input, this means
+        a list was passed to `ensemble` and the indices should correspond.
+
+        If 'default', and not already defined, set to 0
+        (default = 'default')
+
 
         '''
 
@@ -420,13 +565,246 @@ class Param_Search(Params):
         if isinstance(self.weight_metric, list):
             raise IOError('weight_metric within Param Search cannot be list-like')
 
+class Shap_Params(Params):
+
+    def __init__(self,
+                 avg_abs=False,
+                 linear_feature_perturbation="interventional",
+                 linear_nsamples=1000,
+                 tree_feature_perturbation='tree_path_dependent',
+                 tree_model_output='raw',
+                 tree_tree_limit=None,
+                 kernel_nkmean=20,
+                 kernel_link='default',
+                 kernel_nsamples='auto',
+                 kernel_l1_reg='auto'):
+        '''
+        There are a number of parameters associated with using shap to determine
+        feature importance. The best way to understand Shap is almost certainly through
+        their documentation directly, `Shap Docs <https://shap.readthedocs.io/en/latest/>`_
+        Just note when using Shap within ABCD_ML to pay attention to the version on the shap
+        documentation vs. what is currently supported within ABCD_ML.
+
+        Broadly, shap feature importance params are split up into if they are used
+        to explain linear models, tree based models or an abitrary model (kernel).
+        Be warned, kernel shap generally takes a long time to run.
+
+        The type of shap to use will be automatically computed based on the Model to
+        explain, but the parameter below are still split up by type, i.e., with the 
+        type prended before the parameter name.
+
+        (A number of the params below are copy-pasting from the relevant Shap description)
+
+        Parameters
+        ----------
+        avg_abs : bool, optional 
+            This parameter is considered regardless of the underlying shap model. If
+            set to True, then when computing global feature importance from the
+            initially computed local shap feature importance the average of the absolute value 
+            will be taken! When set to False, the average value will be taken. One might want to
+            set this to True if only concerned with the magnitude of feature importance, rather
+            than the sign.
+
+            ::
+
+                default = False
+
+        linear_feature_perturbation : {"interventional", "correlation_dependent"}, optional
+            Only used with linear base models.
+            There are two ways we might want to compute SHAP values, either the full conditional SHAP
+            values or the interventional SHAP values. For interventional SHAP values we break any
+            dependence structure between features in the model and so uncover how the model would behave if we
+            intervened and changed some of the inputs. For the full conditional SHAP values we respect
+            the correlations among the input features, so if the model depends on one input but that
+            input is correlated with another input, then both get some credit for the model's behavior. The
+            interventional option stays "true to the model" meaning it will only give credit to features that are
+            actually used by the model, while the correlation option stays "true to the data" in the sense that
+            it only considers how the model would behave when respecting the correlations in the input data.
+            For sparse case only interventional option is supported.
+
+            ::
+
+                default = "interventional"
+
+        linear_nsamples : int, optional
+            Only used with linear base models.
+            Number of samples to use when estimating the transformation matrix used to account for
+            feature correlations.
+
+            ::
+
+                default = 1000
+
+        tree_feature_perturbation : {"interventional", "tree_path_dependent"}, optional
+            Only used with tree based models.
+            Since SHAP values rely on conditional expectations we need to decide how to handle correlated
+            (or otherwise dependent) input features. The "interventional" approach breaks the dependencies between
+            features according to the rules dictated by casual inference (Janzing et al. 2019). Note that the
+            "interventional" option requires a background dataset and its runtime scales linearly with the size
+            of the background dataset you use. Anywhere from 100 to 1000 random background samples are good
+            sizes to use. The "tree_path_dependent" approach is to just follow the trees and use the number
+            of training examples that went down each leaf to represent the background distribution. This approach
+            does not require a background dataset and so is used by default when no background dataset is provided.
+
+            ::
+
+                default = "tree_path_dependent"
+
+        tree_model_output : {"raw", "probability", "log_loss"} optional
+            Only used with tree based models.
+            What output of the model should be explained. If "raw" then we explain the raw output of the
+            trees, which varies by model. For regression models "raw" is the standard output, for binary
+            classification in XGBoost this is the log odds ratio. If model_output is the name of a supported
+            prediction method on the model object then we explain the output of that model method name.
+            For example model_output="predict_proba" explains the result of calling model.predict_proba.
+            If "probability" then we explain the output of the model transformed into probability space
+            (note that this means the SHAP values now sum to the probability output of the model). If "logloss"
+            then we explain the log base e of the model loss function, so that the SHAP values sum up to the
+            log loss of the model for each sample. This is helpful for breaking down model performance by feature.
+            Currently the probability and logloss options are only supported when feature_dependence="independent".
+
+            ::
+
+                default = 'raw'
+
+        tree_tree_limit : None or int, optional
+            Only used with tree based models.
+            Limit the number of trees used by the model. By default None means no use the limit of the
+            original model, and -1 means no limit.
+
+            ::
+
+                default = None
+
+        kernel_n_kmeans : int or None, optional
+            Used when the underlying model is not linear or tree based.
+            This setting offers a speed up to the kernel estimator by replacing
+            the background dataset with a kmeans representation of the data.
+            Set this option to None in order to use the full dataset directly,
+            otherwise the int passed will the determine 'k' in the kmeans algorithm.
+
+            ::
+
+                default = 20
+
+        kernel_link : {"identity", "logit", "default"}
+            Used when the underlying model is not linear or tree based.
+
+            A generalized linear model link to connect the feature importance values to the model
+            output. Since the feature importance values, phi, sum up to the model output, it often makes
+            sense to connect them to the ouput with a link function where link(outout) = sum(phi).
+            If the model output is a probability then the LogitLink link function makes the feature
+            importance values have log-odds units.
+
+            If 'default', set to using 'logic' for binary + categorical problems, along
+            with explaining predict_proba from the model, and 'identity' and explaining
+            predict for regression.
+
+            ::
+
+                default = 'default'
+
+        kernel_nsamples : "auto" or int, optional
+            Used when the underlying model is not linear or tree based.
+            Number of times to re-evaluate the model when explaining each prediction. More samples
+            lead to lower variance estimates of the SHAP values. The "auto" setting uses
+            `nsamples = 2 * X.shape[1] + 2048`.
+
+            ::
+
+                default = 'auto'
+
+        kernel_l1_reg : "num_features(int)", "auto", "aic", "bic", or float, optional
+            Used when the underlying model is not linear or tree based.
+            The l1 regularization to use for feature selection (the estimation procedure is based on
+            a debiased lasso). The auto option currently uses "aic" when less that 20% of the possible sample
+            space is enumerated, otherwise it uses no regularization. THE BEHAVIOR OF "auto" WILL CHANGE
+            in a future version to be based on num_features instead of AIC.
+            The "aic" and "bic" options use the AIC and BIC rules for regularization.
+            Using "num_features(int)" selects a fix number of top features. Passing a float directly sets the
+            "alpha" parameter of the sklearn.linear_model.Lasso model used for feature selection.
+
+            ::
+
+                default = 'auto'
+
+        '''
+
+        self.avg_abs = avg_abs
+        self.linear_feature_perturbation = linear_feature_perturbation
+        self.linear_nsamples = linear_nsamples
+        self.tree_feature_perturbation = tree_feature_perturbation
+        self.tree_model_output = tree_model_output
+        self.tree_tree_limit = tree_tree_limit
+        self.kernel_nkmean = kernel_nkmean
+        self.kernel_link=kernel_link
+        self.kernel_nsamples = kernel_nsamples
+        self.kernel_l1_reg = kernel_l1_reg
+
 class Feat_Importance(Params):
 
-    def __init__(self, obj, metric='default'):
-        # Likely want other params here!
+    def __init__(self, obj, metric='default',
+                 shap_params='default', n_perm=10):
+        '''
+        There are a number of options for creating Feature Importances in ABCD_ML.
+        See :ref:`Feat Importances` to learn more about feature importances generally.
+        The way this object works, is that you can a type of feature importance, and then
+        its relevant parameters. This object is designed to passed directly to
+        :class:`Model_Pipeline`.
+
+        Parameters
+        ----------
+        obj : str
+            `obj` is the str indiciator for which feature importance to use. See
+            :ref:`Feat Importances` for what options are avaliable.
+
+        metric : str or 'default', optional
+            If a permutation based feature importance is being used, then a metric is
+            required. By default (if left as 'default') this metric will be the first
+            metric (if passed a list) of metrics passed to :class:`Problem_Spec`.
+          
+            For a full list of supported metrics please view the docs at :ref:`Metrics`
+            ::
+
+                default = 'default'
+
+        shap_params : :class:`Shap_Params` or 'default', optional
+            If a shap based feature importance is used, it is neccicary to define
+            a number of relevant parameters for how the importances should be calculated.
+            See :class:`Shap_Params` for what these parameters are.
+
+            If 'default' is passed, then shap_params will be set to either the default values of
+            :class:`Shap_Params` if shap feature importances are being used, or None if not.
+
+            ::
+
+                default = 'default'
+
+        n_perm : int, optional
+            If a permutation based feature importance method is selected, then
+            it is neccicary to indicate how many random permutations each feature 
+            should be permuted.
+
+            ::
+
+                default = 10
+        '''
 
         self.obj = obj
         self.metric = metric
+
+        if shap_params == 'default':
+
+            if 'shap' in self.obj:
+                shap_params = Shap_Params()
+            else:
+                shap_params = None
+
+        self.shap_params = shap_params
+        self.n_perm = n_perm
+
+        # For compatibility
+        self.params = 0
 
 class Drop_Strat():
 
@@ -610,6 +988,8 @@ class Model_Pipeline(Params):
             See the base :class:`Feat_Importance` object for more information on how to specify
             these objects. 
 
+            See :ref:`Feat Importances` to learn more about feature importances generally.
+
             In this case of a passed list, all passed Feat_Importances will attempt to be
             computed.
 
@@ -752,7 +1132,7 @@ class Model_Pipeline(Params):
 
         # If no NaN, no imputer
         if not pd.isnull(data).any().any():
-            self.imputer = None
+            self.imputers = None
 
     def check_samplers(self, func):
         if self.samplers is not None:
@@ -806,37 +1186,50 @@ class Model_Pipeline(Params):
         return deepcopy([conv_to_list(getattr(self, piece_name))
                          for piece_name in ORDERED_NAMES])
 
+    def get_indent(self, indent):
+
+        if indent is None:
+            return ''
+        else:
+            ind = 0
+            for s in self._p_stack:
+                if s == ']':
+                    ind += 1
+                elif s == '])':
+                    ind += 8
+
+            return ' ' * ind
+
+
     def params_print(self, params, indent, _print=print, end='\n'):
 
         if not isinstance(params, list):
-            _print(' ' * indent, params, sep='', end=end)
+            _print(self.get_indent(indent), params, sep='', end=end)
             return
 
         elif len(params) == 1:
-            self.params_print(params[0], indent, _print=print)
+            self.params_print(params[0], 0, _print=_print)
             return
 
         elif not is_special(params):
             
-            _print('[', sep='', end='')
+            _print(self.get_indent(indent), '[', sep='', end='')
             self._p_stack.append(']')
-            self.params_print(params[0], indent, _print=_print, end='')
+            self.params_print(params[0], None, _print=_print, end='')
             _print(',', sep='')
-            indent += 1
+            
 
         elif is_select(params):
-
-            _print('Select([', sep='', end='')
+            _print(self.get_indent(indent), 'Select([', sep='', end='')
             self._p_stack.append('])')
-            self.params_print(params[0], indent, _print=_print, end='')
+            self.params_print(params[0], None, _print=_print, end='')
             _print(',', sep='')
-            indent += 9
 
         for param in params[1:-1]:
-            self.params_print(param, indent, _print=_print, end='')
+            self.params_print(param, 0, _print=_print, end='')
             _print(',', sep='')
     
-        self.params_print(params[-1], indent, _print=_print, end='')
+        self.params_print(params[-1], 0, _print=_print, end='')
         _print(self._p_stack.pop(), end=end)
 
         return
@@ -995,6 +1388,12 @@ class Problem_Spec(Params):
         random_state : int, RandomState instance, None or 'default', optional
             Random state, either as int for a specific seed, or if None then
             the random seed is set by np.random.
+
+            This parameter is used to ensure replicability of expiriments (wherever possible!).
+            In some cases even with a random seed, depending on the pipeline pieces being used,
+            if any have a component that occassionally yields different results, even with the same
+            random seed, e.g., some model optimizations, then you might still not get
+            exact replicicability.
 
             If 'default', use the saved class value.
             ( Defined in :class:`ABCD_ML <ABCD_ML.ABCD_ML>`)

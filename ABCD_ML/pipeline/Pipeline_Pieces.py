@@ -88,7 +88,7 @@ class Pieces():
         for s_params, ind in zip(select_params, np.where(select_mask)[0]):
 
             # Recursive call to process... s.t., can handle nested Select... oh god
-            s_objs, s_obj_params = self.process(s_params)
+            s_objs, s_obj_params = self.process(list(s_params))
 
             # Wrap in selector object
             name = self.name + '_selector' + str(cnt)

@@ -231,29 +231,58 @@ class Imputer(Piece):
 
     def __init__(self, obj, params=0, scope='float',
                  base_model=None, extra_params=None):
-        ''' 
+        ''' If there is any missing data (NaN's) that have been kept
+        within data or covars, then an imputation strategy must be
+        defined! This object allows you to define an imputation strategy.
+        In general, you should need at most two Imputers, one for all
+        `float` type data and one for all categorical data, assuming you
+        have been present, and they both have missing values.
+
         Parameters
         ----------
+        obj : str
+            `obj` selects the base imputation strategy to use. See :ref:`Imputers`
+            for all avaliable options. Notably, if 'iterative' is passed, then a
+            base model must also be passed!
 
-        If there is any missing data (NaN's) that have been kept
-        within data or covars, then an imputation strategy must be
-        defined! This param controls the imputer to use, along with
-        `imputer_scope` to determine what each imputer should cover.
-        A single str can be passed, or a list of strs.
+            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
 
-        There are a number of pre-defined imputers to select from,
-        but the user can also pass a valid model str indicator here.
-        This model str refers to the base_estimator to be used in
-        an IterativeImputer, see :class:`sklearn.impute.IterativeImputer`
+        params : int, str or dict of :ref:`params<Params>`, optional
+            `params` set an associated distribution of hyper-parameters to
+            potentially search over with the Inputer. Preset param distributions are
+            listed for each choice of params with the corresponding obj at :ref:`Imputers`,
+            and you can read more on how params work more generally at :ref:`Params`.
 
-        If an imputer str is passed, then it must be a valid imputer
-        for whatever scope is passed additional. If the `imputer_scope`
-        passed is 'float' or specific set of column names, then a regression
-        model type will be selected. If the scope is 'binary' or 'categorical',
-        then a binary / multiclass model type will be selected.
-        (Note: categorical cols are converted to multiclass first if nec.)
+            ::
 
-        View the docs at :ref:`Imputers`
+                default = 0
+
+        scope : {'float', 'cat', custom}, optional
+            `scope` determines on which subset of features the imputer should act on.
+            The main options that make sense for imputer are one for `float` data and one
+            for `categorical` / 'cat' datatypes. You can also pass a custom set of keys, see 
+            :ref:`Scopes`. 
+
+            ::
+
+                default = 'float'
+
+        base_model : :class:`Model`, :class:`Ensemble` or None, optional
+            If 'iterative' is passed to obj, then a base_model is required in
+            order to perform iterative imputation! The base model can be
+            any valid Model_Pipeline Model.
+
+            ::
+
+                default = None
+
+        extra_params : :ref`extra params dict<Extra Params>`, optional
+
+            See :ref:`Extra Params`
+
+            ::
+
+                default = None
 
         '''
 
@@ -438,8 +467,8 @@ class Model(Piece):
 
 class Ensemble(Piece):
 
-    def __init__(self, obj, models, params=0, needs_split=False,
-                 des_split=.2, single_estimator=False, cv=3,
+    def __init__(self, obj, models, params=0, is_des=False,
+                 single_estimator=False, des_split=.2, cv=3,
                  extra_params=None):
         ''' The Ensemble object is valid base :class:`Model_Pipeline` piece, designed
         to be passed as input to the `model` parameter of :class:`Model_Pipeline`, or
@@ -450,77 +479,103 @@ class Ensemble(Piece):
 
         Parameters
         ----------
+        obj : str
+            Each str passed to ensemble refers to a type of ensemble to train,
+            based on also the passed input to the `models` parameter, and also the
+            additional parameters passed when init'ing Ensemble.
 
-        Each string refers to a type of ensemble to train,
-        or 'basic ensemble' (default) for base behavior.
-        Base ensemble behavior is either to not ensemble,
-        if only one model type is passed,
-        or when multiple models are passed,
-        to simply train each one independently and
-        average the predictions at test time (or max vote).
+            See :ref:`Ensemble Types` to see all avaliable options for ensembles.
 
-        The user can optionally pass other ensemble types,
-        though with other types of ensembles there are two
-        different types to consider. One additional set of
-        ensemble types will require a parameter to be set for
-        `ensemble_split`, as these ensembles need to be fit
-        on a left out portion of the data. This ensemble split
-        will importantly always do a stratified split for now,
-        and not uphold any defined CV behavior.
-
-        The other possible ensemble type is one based on a single
-        estimator, for example Bagging. In this case, if a list of models
-        is passed, a Basic Ensemble will be fit over the models, and
-        the Bagging Classifier or Regressor built on that ensemble of
-        models.
-
-        If a list is passed to ensemble, then every
-        item in the list must be a valid str indicator for
-        a non 'basic ensemble' ensemble type, and each ensemble
-        object passed will be fitted independly and then averaged
-        using the 'basic ensemble' behvaior... so an ensemble of ensembles.
-
-        For a full list of supported options call:
-        :func:`Show_Ensembles` or view the docs at :ref:`Ensemble Types`
-
-        If 'default', and not already defined, set to 'basic ensemble'
-        (default = 'default')
-
-    ensemble_split : float, int or None, optional
-        If an ensemble(s) that requires fitting is passed,
-        i.e., not "basic ensemble", then this param is
-        the porportion of the train_data within each fold to
-        use towards fitting the ensemble objects.
-        If multiple ensembles are passed, they are all
-        fit with the same fold of data.
-
-        If 'default', and not already defined, set to .2
-        (default = 'default')
-
-    ensemble_params : int, str, or list of, optional
-         Each `ensemble` has atleast one default parameter distribution
-        saved with it.
-
-        This parameter is used to select between different
-        distributions to be used with different search types,
-        when `search_type` == None, `model_params` is automatically
-        set to default 0.
-
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `ensemble` param option.
-        Likewise with `ensemble`, if passed list input, this means
-        a list was passed to `ensemble` and the indices should correspond.
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
+            Passing custom objects here, while technically possible, is not currently 
+            full supported. That said, there are just certain assumptions that the custom object must
+            meet in order to work, specifially, they should have simmilar input params to other
+            simmilar existing ensembles, e.g., in the case the `single_estimator` is False
+            and `needs_split` is also False, then the passed object needs to be able to accept
+            an input parameter `estimators`, which accepts a list of (str, estimator) tuples. Whereas
+            if needs_split is still False, but single_estimator is True, then the passed object needs
+            to support an init param of `base_estimator`, which accepts a single estimator.
 
 
+        models : :class:`Model`, :class:`Ensemble` or list of
+            The `models` parameter is designed to accept any single model-like
+            pipeline parameter object, i.e., :class:`Model` or even another :class:`Ensemble`.
+            The passed pieces here will be used along with the requested ensemble object to
+            create the requested ensemble.
+
+            See :class:`Model` for how to create a valid base model(s) to pass as input here.
+
+        params : int, str or dict of :ref:`params<Params>`, optional
+            `params` sets as associated distribution of hyper-parameters
+            for this ensemble object. These parameters will be used only in the context of a hyper-parameter search.
+            Notably, these `params` refer to the ensemble obj itself, params for base `models` should be passed
+            accordingly when creating the base models. Preset param distributions are listed at :ref:`Ensemble Types`,
+            under each of the options for ensemble obj's.
+
+            You can read more about generally about hyper-parameter distributions as associated with
+            objects at :ref:`Params`.
+
+            ::
+
+                default = 0
+
+        is_des : bool, optional
+            `is_des` refers to if the requested ensemble obj requires a further
+            training test split in order to train the base ensemble. As of right now,
+            If this parameter is True, it means that the base ensemble is from the
+            `DESlib library <https://deslib.readthedocs.io/en/latest/>`_ . Which means
+            the base ensemble obj must have a `pool_classifiers` init parameter.
+
+            The following `des_split` parameter determines the size of the split if
+            is_des is True.
+
+            ::
+
+                default = False
+
+        single_estimator : bool, optional
+            The parameter `single_estimator` is used to let the Ensemble object know
+            if the `models` must be a single estimator. This is used for ensemble types
+            that requires an init param `base_estimator`. In the case that multiple models
+            are passed to `models`, but `single_estimator` is True, then the models will automatically
+            be wrapped in a voting ensemble, thus creating one single estimator.
+
+            ::
+
+                default = False
+
+        des_split : float, optional
+            If `is_des` is True, then the passed ensemble must be
+            fit on a seperate validation set. This parameter determines the size
+            of the further train/val split on initial training set passed to
+            the ensemble. Where the size is comptued as the a percentage of the total size.
+
+            ::
+
+                default = .2
+
+        cv : int, optional
+            In the case that an ensemble strategy like 'stacking' is requested, where is_des should be
+            False, and single_estimator also False, there is a parameter called cv, which controls the
+            internal k-fold cv used by the base ensemble type. This parameter will only be used in the case
+            that the base estimator requires it.
+
+            ::
+
+                default = 3
+
+        extra_params : :ref`extra params dict<Extra Params>`, optional
+
+            See :ref:`Extra Params`
+
+            ::
+
+                default = None
         '''
 
         self.obj = obj
         self.models = models
         self.params = params
-        self.needs_split = needs_split
+        self.is_des = is_des
         self.des_split = des_split
         self.single_estimator = single_estimator
         self.cv = cv
@@ -1200,7 +1255,6 @@ class Model_Pipeline(Params):
 
             return ' ' * ind
 
-
     def params_print(self, params, indent, _print=print, end='\n'):
 
         if not isinstance(params, list):
@@ -1217,7 +1271,6 @@ class Model_Pipeline(Params):
             self._p_stack.append(']')
             self.params_print(params[0], None, _print=_print, end='')
             _print(',', sep='')
-            
 
         elif is_select(params):
             _print(self.get_indent(indent), 'Select([', sep='', end='')

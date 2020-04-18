@@ -171,7 +171,7 @@ class Ensemble_Wrapper():
         return self.model_params
 
     def wrap_ensemble(self, models, ensemble, ensemble_split, random_state,
-                      single_estimator=False, needs_split=False):
+                      single_estimator=False, is_des=False):
 
         # If no ensembling is passed, return either the 1 model, or a voting wrapper
         if ensemble is None or len(ensemble) == 0:
@@ -194,8 +194,8 @@ class Ensemble_Wrapper():
                                               se_ensemb_name,
                                               ensemble=False)
 
-            # Right now needs split essential means DES Ensemble,
-            if needs_split:
+            # If DES Ensemble,
+            if is_des:
 
                 # Init with default params
                 ensemble = ensemble_obj()

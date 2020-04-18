@@ -293,10 +293,10 @@ class Models(Type_Pieces):
 
             ensembled_objs +=\
                 wrapper.wrap_ensemble(model_objs, ensemble_objs[i],
-                                      ensemble_params[i].ensemble_split,
+                                      ensemble_params[i].des_split,
                                       params._random_state,
                                       ensemble_params[i].single_estimator,
-                                      ensemble_params[i].needs_split)
+                                      ensemble_params[i].is_des)
 
             ensembled_obj_params.update(wrapper.get_updated_params())
 

@@ -598,11 +598,12 @@ class Ensemble(Piece):
 class Param_Search(Params):
 
     def __init__(self, search_type='RandomSearch',
-                 splits=3, n_iter=10, metric='default',
+                 splits=3, n_repeats=1, n_iter=10, metric='default',
                  weight_metric=False):
         
         self.search_type = search_type
         self.splits = splits
+        self.n_repeats = 1
         self.n_iter = n_iter
         self.metric = metric
         self.weight_metric = weight_metric

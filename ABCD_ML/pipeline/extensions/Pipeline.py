@@ -29,10 +29,12 @@ class ABCD_Pipeline(Pipeline):
         super()._set_params('steps', **kwargs)
         return self
 
-    def fit(self, X, y=None, **fit_params):
-
-        # If yes to mapping, then create mapping as initially 1:1
-        if self.mapping:
+    def fit(self, X, y=None, mapping=None, train_data_index=None, **fit_params):
+  
+        # Add mapping to fit params, as either passed or new
+        if mapping is not None:
+            self._mapping = mapping
+        elif self.mapping:
             self._mapping = {i:i for i in range(X.shape[1])}
         else:
             self._mapping = {}

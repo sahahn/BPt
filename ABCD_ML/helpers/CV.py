@@ -13,7 +13,6 @@ def inds_from_names(original_subjects, subject_splits):
                     for s in split] for split in subject_splits]
     return subject_inds
 
-
 class CV():
     '''Class for performing various cross validation functions'''
 
@@ -64,7 +63,25 @@ class CV():
             if len(self.train_only) == 0:
                 self.train_only = None
 
-    def train_test_split(self, subjects, test_size=.2, random_state=None):
+    def repeated_train_test_split(self, subjects, n_repeats, test_size=.2, 
+                                  random_state=None, return_index=False):
+
+        subject_splits = []
+        for n in range(n_repeats):
+
+            # If a specific random state is passed
+            # Make sure each repeat is provided a different random_state
+            if random_state is not None:
+                random_state += 1
+
+            subject_splits.append(self.train_test_split(subjects, 
+                                                        test_size=test_size,
+                                                        random_state=random_state,
+                                                        return_index=return_index))
+
+        return subject_splits
+
+    def train_test_split(self, subjects, test_size=.2, random_state=None, return_index=False):
         '''Define a train test split on input subjects, with a given target
         test size.
 
@@ -119,6 +136,10 @@ class CV():
 
         train_subjects, test_subjects = subjects[inds[0]], subjects[inds[1]]
         train_subjects = np.concatenate([train_subjects, train_only])
+
+        if return_index:
+            return ([original_subjects.get_loc(name) for name in train_subjects],
+                    [original_subjects.get_loc(name) for name in test_subjects])
 
         return train_subjects, test_subjects
 
@@ -321,8 +342,44 @@ class CV():
     def get_num_groups(self, subjects, groups_series):
         '''Func to get number of leave one out groups'''
 
-        original_subjects, subjects, train_only =\
+        _, subjects, _ =\
             self.get_train_only(subjects, ignore_by_group=True)
         groups = groups_series.loc[subjects]
 
         return len(np.unique(groups))
+
+    def get_cv(self, train_data_index, splits, n_repeats,
+               splits_vals=None, random_state=None, return_index=False):
+        '''Always return as list of tuples'''
+               
+        if return_index == 'both':
+            no_index = self.get_cv(train_data_index, splits, n_repeats,
+                                   splits_vals=splits_vals, random_state=random_state,
+                                   return_index=False)
+
+            index = self.get_cv(train_data_index, splits, n_repeats,
+                                splits_vals=splits_vals, random_state=random_state,
+                                return_index=True)
+
+            return no_index, index
+
+        # If split_vals passed, then by group
+        if splits_vals is not None:
+
+            return self.repeated_leave_one_group_out(train_data_index,
+                                                     n_repeats=n_repeats,
+                                                     groups_series=splits_vals,
+                                                     return_index=return_index)
+
+        # K-fold is splits is an int
+        elif isinstance(splits, int):
+
+            return self.repeated_k_fold(train_data_index, n_repeats, n_splits=splits,
+                                        random_state=random_state, return_index=return_index)
+
+        # Otherwise, as train test splits
+        else:
+
+            return self.repeated_train_test_split(train_data_index, n_repeats, test_size=splits,
+                                                  random_state=random_state, return_index=return_index)
+

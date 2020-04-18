@@ -199,17 +199,13 @@ class Base_Model_Pipeline():
 
         return mapping, to_map
 
-    def get_search_split_vals(self):
-
-        return self.param_search._splits_vals, self.param_search.splits
-
     def is_search(self):
 
         if self.param_search is None:
             return False
         return True
 
-    def get_search_wrapped_pipeline(self, search_cv, search_metric=None,
+    def get_search_wrapped_pipeline(self, CV, search_metric=None,
                                     weight_search_metric=None, random_state=None):
 
         # Grab the base pipeline
@@ -219,14 +215,13 @@ class Base_Model_Pipeline():
         if self.param_search is None:
             return deepcopy(base_pipeline)
 
-        search_model = NevergradSearchCV(optimizer_name=self.param_search.search_type,
+        # Create the search object
+        search_model = NevergradSearchCV(params=self.param_search,
                                          estimator=base_pipeline,
-                                         scoring=search_metric,
-                                         cv=search_cv,
                                          param_distributions=self.get_all_params(),
+                                         CV=CV,
+                                         scoring=search_metric,
                                          weight_metric=weight_search_metric,
-                                         n_iter=self.param_search.n_iter,
-                                         n_jobs=self.param_search._n_jobs,
                                          random_state=random_state)
 
         return deepcopy(search_model)

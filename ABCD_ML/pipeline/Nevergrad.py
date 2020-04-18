@@ -7,59 +7,85 @@ from concurrent import futures
 import multiprocessing as mp
 
 from sklearn.base import clone
+from copy import deepcopy
 from sklearn.model_selection import cross_val_score
 
+from ..helpers.CV import CV as Base_CV
+from ..helpers.ML_Helpers import get_possible_fit_params
 
 class NevergradSearchCV():
 
-    def __init__(self, optimizer_name, estimator, param_distributions,
-                 scoring=None, cv=3, weight_metric=False,
-                 n_iter=10, n_jobs=1, random_state=None):
+    def __init__(self, params, estimator, param_distributions, CV=None,
+                 scoring=None, weight_metric=False, random_state=None):
 
-        self.optimizer_name = optimizer_name
+        self.params = params
         self.estimator = estimator
         self.param_distributions = param_distributions
+
+        # If no CV, use random
+        if CV is None:
+            CV = Base_CV()
+        self.CV = CV
+
         self.scoring = scoring
-        self.cv = cv
         self.weight_metric = weight_metric
-        self.n_iter = n_iter
-        self.n_jobs = n_jobs
         self.random_state = random_state
 
         self.name = 'nevergrad'
 
-    def ng_cv_score(self, X, y, **kwargs):
+    def _set_cv(self, train_data_index):
 
-        estimator = clone(self.estimator)
-        estimator.set_params(**kwargs)
+        self.cv_subjects, self.cv_inds =\
+            self.CV.get_cv(train_data_index, self.params.splits, self.params.n_repeats,
+                           self.params._splits_vals, self.random_state, return_index='both')
 
-        # All sklearn scorers should return high values as better, so flip sign
-        cv_scores = -cross_val_score(estimator, X=X, y=y, scoring=self.scoring,
-                                     cv=self.cv)
+    def ng_cv_score(self, X, y, fit_params, **kwargs):
+
+        cv_scores = []
+        for i in range(len(self.cv_inds)):
+            tr_inds, test_inds = self.cv_inds[i]
+
+            # Clone estimator & set search params
+            estimator = clone(self.estimator)
+            estimator.set_params(**kwargs)
+
+            # Add this folds train_data_index to fit_params, if valid
+            if 'train_data_index' in get_possible_fit_params(estimator):
+                fit_params['train_data_index'] = self.cv_subjects[i][0]
+
+            # Fit estimator on train
+            estimator.fit(X[tr_inds], y[tr_inds], **deepcopy(fit_params))
+
+            # Get the score, but scoring return high values as better, so flip sign
+            score = -self.scoring(estimator, X[test_inds], y[test_inds])
+            cv_scores.append(score)
 
         if self.weight_metric:
-            weights=[len(self.cv[i][1]) for i in range(len(self.cv))]
+            weights=[len(self.cv_inds[i][1]) for i in range(len(self.cv_inds))]
             return np.average(cv_scores, weights=weights)
         else:
             return np.mean(cv_scores)
             
 
-    def fit(self, X, y=None):
+    def fit(self, X, y=None, train_data_index=None, **fit_params):
+
+        # Set the search cv passed on passed train_data_index
+        self._set_cv(train_data_index)
 
         # Fit the nevergrad optimizer
-        instrumentation = ng.p.Instrumentation(X, y, **self.param_distributions)
+        instrumentation = ng.p.Instrumentation(X, y, fit_params, **self.param_distributions)
 
         try:
-            opt = ng.optimizers.registry[self.optimizer_name]
+            opt = ng.optimizers.registry[self.params.search_type]
         
         # If not found, look for in expirimental variants
         except KeyError:
             import nevergrad.optimization.experimentalvariants
-            opt = ng.optimizers.registry[self.optimizer_name]
+            opt = ng.optimizers.registry[self.params.search_type]
 
         optimizer = opt(parametrization=instrumentation,
-                        budget=self.n_iter,
-                        num_workers=self.n_jobs)
+                        budget=self.params.n_iter,
+                        num_workers=self.params._n_jobs)
 
         # Set random state is defined
         if isinstance(self.random_state, int):
@@ -72,12 +98,12 @@ class NevergradSearchCV():
         #with warnings.catch_warnings():
         #    warnings.simplefilter("ignore")
 
-        if self.n_jobs == 1:
+        if self.params._n_jobs == 1:
             recommendation = optimizer.minimize(self.ng_cv_score,
                                                 batch_mode=False)
 
         else:
-            with futures.ProcessPoolExecutor(max_workers=self.n_jobs,
+            with futures.ProcessPoolExecutor(max_workers=self.params._n_jobs,
                                              mp_context=mp.get_context('spawn')) as ex:
 
                 recommendation = optimizer.minimize(self.ng_cv_score,
@@ -88,11 +114,15 @@ class NevergradSearchCV():
         self.best_search_score = optimizer.current_bests["pessimistic"].mean
         #"optimistic", "pessimistic", "average"
 
-        # Fit best estimator
+        # Fit best estimator, w/ found best params
         self.best_estimator_ = clone(self.estimator)
         self.best_estimator_.set_params(**recommendation.kwargs)
 
-        self.best_estimator_.fit(X, y)
+        # Full train index here
+        if 'train_data_index' in get_possible_fit_params(self.best_estimator_):
+            fit_params['train_data_index'] = train_data_index
+        
+        self.best_estimator_.fit(X, y, **fit_params)
 
     def predict(self, X):
         return self.best_estimator_.predict(X)

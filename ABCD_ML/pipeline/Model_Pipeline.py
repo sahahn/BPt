@@ -252,27 +252,18 @@ class Model_Pipeline():
 
     def _get_eval_splits(self, train_subjects, splits, n_repeats, splits_vals):
 
-        if splits_vals is None:
+        subject_splits = self.CV.get_cv(train_subjects, splits, n_repeats, splits_vals,
+                                        self.ps.random_state, return_index=False)
 
+        # Want to save n_splits by type
+        if splits_vals is not None:
+            self.n_splits_ = self.CV.get_num_groups(train_subjects, splits_vals)
+
+        elif isinstance(splits, int):
             self.n_splits_ = splits
 
-            subject_splits =\
-                self.CV.repeated_k_fold(train_subjects, n_repeats,
-                                        self.n_splits_, self.ps.random_state,
-                                        return_index=False)
-
         else:
-
-            # Set num splits
-            self.n_splits_ =\
-                self.CV.get_num_groups(train_subjects, splits_vals)
-
-            # Generate the leave-out CV
-            subject_splits =\
-                self.CV.repeated_leave_one_group_out(train_subjects,
-                                                     n_repeats,
-                                                     splits_vals,
-                                                     return_index=False)
+            self.n_splits_ =  1
 
         return subject_splits
 
@@ -349,39 +340,19 @@ class Model_Pipeline():
 
         if self.base_model_pipeline.is_search():
 
-            # get search cv, None if no search
-            search_cv = self._get_search_cv(train_data.index)
-
             # Get search metric
             search_metric, weight_search_metric =\
                 self._get_score_metric(self.base_model_pipeline.param_search.metric,
                                        self.base_model_pipeline.param_search.weight_metric)
 
         else:
-            search_cv, search_metric = None, None
+            search_metric, weight_search_metric = None, None
             
         # Get wrapped final model
-        return self.base_model_pipeline.get_search_wrapped_pipeline(search_cv,
+        return self.base_model_pipeline.get_search_wrapped_pipeline(self.CV,
                                                                     search_metric,
                                                                     weight_search_metric,
                                                                     self.ps.random_state)
-
-    def _get_search_cv(self, train_data_index):
-
-        search_split_vals, search_splits =\
-            self.base_model_pipeline.get_search_split_vals()
-
-        if search_split_vals is None:
-            search_cv = self.CV.k_fold(train_data_index, search_splits,
-                                       random_state=self.ps.random_state,
-                                       return_index=True)
-
-        else:
-            search_cv = self.CV.leave_one_group_out(train_data_index,
-                                                    search_split_vals,
-                                                    return_index=True)
-
-        return search_cv
 
     def _get_score_metric(self, base_metric, weight_metric):
 
@@ -566,8 +537,8 @@ class Model_Pipeline():
         X, y = self._get_X_y(train_data)
 
         # Fit the model
-        self.Model.fit(X, y)
-
+        self.Model.fit(X, y, train_data_index=train_data.index)
+        
         # If a search object, show the best params
         self._show_best_params()
 

@@ -263,7 +263,7 @@ class Model_Pipeline():
             self.n_splits_ = splits
 
         else:
-            self.n_splits_ =  1
+            self.n_splits_ = 1
 
         return subject_splits
 

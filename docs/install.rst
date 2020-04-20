@@ -46,10 +46,11 @@ In the future, to grab the latest updated versions, navigate into the folder whe
 
 Extra Libraries
 =========================
-Lightgbm and Xgboost are both popular libraries for performing fast extreme gradient boosting.
-Some support for both of these libraries is built into ABCD_ML, but they are not listed as explicit
-requiriments as they tend to not install correctly via pip all of the time (i.e., on macs). If you wish to use
-either of these libraries, please download them yourself!
+There are some extra dependecies listed on thye github at optional_requirements.txt. You can consider
+downloading these libraries as well, as they add extra functions to ABCD_ML. Notably though, these include 
+Lightgbm and Xgboost which are both popular libraries for performing fast extreme gradient boosting.
+These tend to not install correctly via pip on some machines so if you recieve errors with these libraries, check their
+relevant documentations:
 
 Lightgbm python install instructions: https://github.com/microsoft/LightGBM/tree/master/python-package
 Xgboost install instructions: https://xgboost.readthedocs.io/en/latest/build.html

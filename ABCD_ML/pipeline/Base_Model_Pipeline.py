@@ -183,7 +183,7 @@ class Base_Model_Pipeline():
             # Add every step that needs a mapping
             for valid in self._get_sep_objs(['loaders', 'imputers',
                                              'scalers', 'transformers',
-                                             'samplers', 'drop_strat']):
+                                             'samplers', '_drop_strat']):
 
                 for step in valid:
                     to_map.append(step[0])

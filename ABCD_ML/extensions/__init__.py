@@ -9,8 +9,8 @@ except ImportError:
         pass
 
 from .MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
-from RandomParcels import RandomParcels
-from Scalers import Winsorizer
+from .RandomParcels import RandomParcels
+from .Scalers import Winsorizer
 
 __all__ = ['ColTransformer', 'InPlaceColTransformer', 'RFE_Wrapper', 'FeatureSelector',
            'Identity', 'SurfLabels', 'Connectivity', 'MLPRegressor_Wrapper', 'MLPClassifier_Wrapper',

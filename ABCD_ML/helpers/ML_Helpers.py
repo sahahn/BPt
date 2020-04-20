@@ -242,6 +242,12 @@ def process_params_by_type(obj, obj_str, base_params, extra_params, search_type)
     # Special case if search type None
     if search_type is None:
 
+        if base_params == 0:
+            return {}, {}
+
+        elif not isinstance(base_params, dict):
+            raise RuntimeError('params passed with custom obj must be either 0, for None, or a dict')
+
         params = base_params.copy()
         non_search_params = {}
 

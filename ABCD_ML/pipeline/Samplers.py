@@ -515,10 +515,14 @@ SAMPLERS = {
 }
 
 
-def get_sampler_and_params(sampler_str, extra_params, params, search_type,
+def get_sampler_and_params(param, search_type,
                            strat_inds=[], sample_target=False, sample_strat=[],
                            categorical=True, recover_strat=False,
                            covars_inds=[]):
+
+    sampler_str = param.obj,
+    extra_params = param.extra_params
+    params = param.params
 
     # Grab base object, params, and param distributions
     base_sampler_obj, sampler_wrapper_params, sampler_params =\
@@ -533,64 +537,12 @@ def get_sampler_and_params(sampler_str, extra_params, params, search_type,
     sampler_wrapper_params['categorical'] = categorical
     sampler_wrapper_params['recover_strat'] = recover_strat
     sampler_wrapper_params['covars_inds'] = covars_inds
+    
+    sampler_wrapper_params['regression_bins'] = param.target_bins
+    sampler_wrapper_params['regression_bin_strategy'] = param.target_bin_strategy
 
     # Make object
     sampler = Sampler_Wrapper(**sampler_wrapper_params)
 
     return sampler, sampler_params
 
-
-def Show_Samplers(self, sampler=None,
-                  show_params_options=False,
-                  show_object=False, show_all_possible_params=False):
-
-    '''Print out the avaliable samplers,
-    optionally restricted by  diagnostic args.
-
-    Parameters
-    ----------
-
-    sampler : str or list, optional
-        If `sampler` is passed, will just show the specific
-        sampler, according to the rest of the params passed.
-        Note : You must pass the specific sampler indicator str
-        as limited preproc will be done on this input!
-        If list, will show all samplers within list
-
-        (default = None)
-
-    show_params_options : bool, optional
-        Flag, if set to True, then will display the ABCD_ML
-        param ind options for each sampler.
-
-        (default = False)
-
-    show_object : bool, optional
-        Flag, if set to True, then will print the
-        raw sampler object.
-
-        (default = False)
-
-    show_all_possible_params: bool, optional
-        Flag, if set to True, then will print all
-        possible arguments to the classes __init__
-
-        (default = False)
-    '''
-
-    print('These are the different implemented options for re-sampling',
-          ' imbalanced data.')
-    print('Please check out:')
-    print('https://imbalanced-learn.readthedocs.io/en/stable/user_guide.html')
-    print('For detailed use on the different samplers.')
-    print('More information through this function is avaliable')
-    print('By passing optional extra optional params! Please view',
-          'the help function for more info!')
-    print('Note: the str indicator actually passed during Evaluate / Test')
-    print('is listed as ("str indicator")')
-
-    show_objects(problem_type=None, obj=sampler,
-                 show_params_options=show_params_options,
-                 show_object=show_object,
-                 show_all_possible_params=show_all_possible_params,
-                 AVALIABLE=None, OBJS=SAMPLERS)

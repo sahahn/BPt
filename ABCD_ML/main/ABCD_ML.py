@@ -73,71 +73,95 @@ def Load(loc, exp_name='default', log_dr='default', existing_log='default',
 
 
 class ABCD_ML():
-    '''The main class used in ABCD_ML project'''
 
-    def __init__(self, exp_name='Exp', log_dr='', existing_log='append',
+    def __init__(self, exp_name='My_ML_Exp', log_dr='', existing_log='append',
                  verbose=True, notebook=True,
                  use_default_subject_ids=False,
                  low_memory_mode=False, strat_u_name='_Strat',
                  random_state=534, n_jobs=1, dpi=100):
-        '''Main class init
+        '''Main class used within ABCD_ML for interfacing with Data Loading
+        and Modeling / Other funcationality. 
 
         Parameters
         ----------
         exp_name : str, optional
             The name of this experimental run,
-            used explicitly in saving logs, and figures.
+            used explicitly in saving logs, and figures, where the passed
+            `exp_name` is used as the name of the log folder.
             If log_dr is not set to None-
             (if not None then saves logs and figures)
             then a folder is created within the log dr
             with the exp_name.
 
-            (default = 'Exp')
+            ::
+
+                default = 'My_ML_Exp'
 
         log_dr : str, Path or None, optional
             The directory in which to store logs...
             If set to None, then will not save any logs!
             If set to '', will save in the current dr.
 
-            (default = '')
+            ::
+
+                default = ''
 
         existing_log : {'new', 'append', 'overwrite'}, optional
-            By default, if an exp_name folder already
-            exists within the log_dr, then the exp_name will
-            be incremented until a free name is avaliable.
-            This behavior is existing_log is 'new',
-            If existing_log is 'append' then log entries
-            and new figures will be added to the existing folder.
-            If existing_log is 'overwrite', then the existing
-            log folder with the same exp_name will be cleared
-            upon __init__.
+            This parameter dictates different choices for when
+            an a folder with `exp_name` already exists in the specified
+            `log_dr'.
 
-            (default = 'append')
+            These choices are:
+
+            - 'new'
+                If the log folder already exists, then
+                just increment `exp_name` until a free name is found,
+                and use that as the log folder / `exp_name`.
+
+            - 'append'
+                If existing_log is 'append' then log entries
+                and new figures will be added to the existing folder.
+
+            - 'overwrite'
+                If existing_log is 'overwrite', then the existing
+                log folder with the same exp_name will be cleared
+                upon __init__.
+
+            ::
+
+                default = 'append'
 
         verbose: bool, optional
-            If set to true will print diagnostic and other output during
-            dataloading and model training ect... if set to False this output
-            will not print. If log_dr is not None, then will still
-            record as log output.
+            If `verbose` is set to True, the ABCD_ML object
+            will print output, diagnostic and more general, directly
+            to std out. If set to False, no output will be printed, though
+            output will still be recorded within the logs assuming log_dr is not None.
 
-            (default = True)
+            ::
+
+                default = True
 
         notebook : bool, optional
             If True, then assumes the user is running
-            the code in an interactive notebook. In this case,
-            any plots will be showed interactively
-            (as well as saved as long as log_dr != None)
+            the code in an interactive jupyter notebook. 
+            In this case, certain features will either be enabled or disabled,
+            e.g., type of progress bar.
 
-            (default = True)
+            ::
+
+                default = Trues
 
         use_default_subject_ids : bool, optional
-            Flag to determine the usage of 'default' subject id behavior.
+            Flag to determine the usage of ABCD speficic 'default'
+            subject id behavior.
             If set to True, this will convert input NDAR subject ids
             into upper case, with prepended NDAR - type format.
             If set to False, then all input subject names must be entered
             explicitly the same, no preprocessing will be done on them.
 
-            (default = False)
+            ::
+
+                default = False
 
         low_memory_mode : bool, optional
             This parameter dictates behavior around loading in data,
@@ -155,13 +179,21 @@ class ABCD_ML():
             This parameter also controls the pandas read_csv behavior,
             which also has a low_memory flag.
 
-            (default = False)
+            ::
+
+                default = False
 
         strat_u_name : str, optional
             A unique str identifier to be appended to every loaded
-            strat value (to keep it seperate from covars and data).
+            strat value (to keep them seperate from covars and data).
 
-            (default = '_Strat')
+            You should only need to change or ever worry about this in
+            the case that one of your input variables happens to have the
+            default value of '_Strat' in it...
+
+            ::
+
+                default = '_Strat'
 
         random_state : int, RandomState instance or None, optional
             The default random state, either as int for a specific seed,
@@ -171,19 +203,26 @@ class ABCD_ML():
             default is set (e.g. default load value or default ML value) this
             random state will be used.
 
-            (default = 534)
+            ::
+
+                default = 534
 
         n_jobs : int, optional
-            The number of jobs to use (if avaliable) during training ML models,
-            and also anywhere else when supported.
+            The default number of jobs / processors to use (if avaliable) where
+            ever avaliable class-wide across ABCD_ML.
 
-            (default = 1)
+            ::
 
+                default = 1
+    
         dpi : int, optional
-            The default dpi in which to save any distribution or feature
-            importance plots.
+            The default dpi in which to save any automatically saved fiugres with.
+            Where this parameter can also be set to specific values for specific plots.
 
-            (default = 100)
+            ::
+
+                default = 1
+
         '''
 
         # Load logging class params

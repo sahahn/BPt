@@ -243,13 +243,14 @@ class Imputer(Piece):
         obj : str
             `obj` selects the base imputation strategy to use. See :ref:`Imputers`
             for all avaliable options. Notably, if 'iterative' is passed, then a
-            base model must also be passed!
+            base model must also be passed! Also note that the `sample_posterior`
+            argument within `iterative` imputer is not currently supported.
 
             See :ref:`Pipeline Objects` to read more about pipeline objects in general.
 
         params : int, str or dict of :ref:`params<Params>`, optional
             `params` set an associated distribution of hyper-parameters to
-            potentially search over with the Inputer. Preset param distributions are
+            potentially search over with the Imputer. Preset param distributions are
             listed for each choice of params with the corresponding obj at :ref:`Imputers`,
             and you can read more on how params work more generally at :ref:`Params`.
 
@@ -297,13 +298,47 @@ class Imputer(Piece):
 class Scaler(Piece):
 
     def __init__(self, obj, params=0, scope='float', extra_params=None):
-        ''' 
+        ''' Scaler refers to a piece in the :class:`Model_Pipeline`, which is responsible
+        for performing any sort of scaling or transformation on the data which doesn't require the
+        target variable, and doesn't change the number of data points or features.
+
         Parameters
         ----------
-         `scaler` refers to the type of scaling to apply
-        to the saved data (just data, not covars) during model evaluation.
-        If a list is passed, then scalers will be applied in that order.
-        If None, then no scaling will be applied.
+        obj : str or custom obj
+            `obj` if passed a str selects a scaler from the preset defined scalers, See :ref:`Scalers`
+            for all avaliable options. If passing a custom object, it must be a sklearn compatible
+            transformer, and further must not require the target variable, not change the number of data
+            points or features.
+
+            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
+
+        params : int, str or dict of :ref:`params<Params>`, optional
+            `params` set an associated distribution of hyper-parameters to
+            potentially search over with this Scaler. Preset param distributions are
+            listed for each choice of params with the corresponding obj at :ref:`Scalers`,
+            and you can read more on how params work more generally at :ref:`Params`.
+
+            ::
+
+                default = 0
+
+        scope : :ref:`valid scope<Scopes>`, optional
+            `scope` determines on which subset of features the specified scaler
+            should transform. See :ref:`Scopes` for more information on how scopes can
+            be specified.
+
+            ::
+
+                default = 'float'
+
+        extra_params : :ref`extra params dict<Extra Params>`, optional
+
+            See :ref:`Extra Params`
+
+            ::
+
+                default = None
+
         '''
 
         self.obj = obj
@@ -316,19 +351,53 @@ class Scaler(Piece):
 class Transformer(Piece):
 
     def __init__(self, obj, params=0, scope='float', extra_params=None):
-        ''' 
+        ''' The Transformer is base optional component of the :class:`Model_Pipeline` class.
+        Transformers define any type of transformation to the loaded data which may change the number
+        of features in a non-simple way (i.e., conceptually distinct from :class:`Feat_Selector`, where you
+        know in advance the transformation is just selecting a subset of existing features). These are
+        transformations like applying Principle Component Analysis, or on the fly One Hot Encoding.
+
         Parameters
         ----------
+        obj : str or custom_obj
+            `obj` if passed a str selects from the avaliable class defined options for
+            transformer as found at :ref:`Transformers`.
 
-        Transformers are any type of transformation to
-        the data that changes the number of features in non-deterministic
-        or not simply removal (i.e., as in feat_selectors), for example
-        applying a PCA, where both the number of features change, but
-        also the new features do not 1:1 correspond to the original
-        features. 
+            If a custom object is passed as `obj`, it must be a sklearn api compatible
+            transformer (i.e., have fit, transform, get_params and set_params methods, and further be
+            cloneable via sklearn's clone function). See :ref:`Custom Input Objects` for more info.
 
-        For a full list of supported options call:
-        :func:`Show_Transformers` or view the docs at :ref:`Transformers`
+            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
+
+        params : int, str or dict of :ref:`params<Params>`, optional
+            `params` determines optionally if the distribution of hyper-parameters to
+            potentially search over for this transformer. Preset param distributions are
+            listed for each choice of obj at :ref:`Transformers`, and you can read more on
+            how params work more generally at :ref:`Params`.
+
+            ::
+
+                default = 0
+
+        scope : :ref:`valid scope<Scopes>`, optional
+            `scope` determines on which subset of features the specified transformer
+            should transform. See :ref:`Scopes` for more information on how scopes can
+            be specified.
+
+            Specifically, it may be useful to consider the use of :class:`Duplicate` here.
+
+            ::
+
+                default = 'float'
+
+        extra_params : :ref`extra params dict<Extra Params>`, optional
+
+            See :ref:`Extra Params`
+
+            ::
+
+                default = None
+
         '''
 
         self.obj = obj
@@ -340,54 +409,105 @@ class Transformer(Piece):
 
 class Sampler(Piece):
 
-    def __init__(self, obj, params=0, sample_on='targets', extra_params=None):
-        ''' 
+    def __init__(self, obj, params=0, sample_on='targets', target_bins=3,
+                 target_bin_strategy='uniform', extra_params=None):
+        '''Sampler is a special base :class:`Model_Pipeline` pieces designed
+        to perform resampling on the data points / subjects themselves. This
+        is typically used in cases where there are extreme class imbalances, but can
+        also be used to resample based on a loaded Strat value.
+
+        Note: As of right now, the use of samplers, along with nested
+        parameter searches may cause problems! Samplers as a whole might
+        likely get fully re-designed at some point in the future, for now
+        if you use this Object, just be careful.
+
         Parameters
         ----------
-        `sampler` refers optional to the type of resampling
-        to apply within the model pipeline - to correct for
-        imbalanced class distributions. These are different
-        techniques for over sampling under distributed classed
-        and under sampling over distributed ones.
-        If a list is passed, then samplers will be fit and applied
-        in that order.
+        obj : str
+            `obj` refers to one of the pre-defining sampling strategies,
+            and is selected by indicated one of the pre-set str indicators
+            found at :ref:`Samplers`.
 
-        For a full list of supported options call:
-        :func:`Show_Samplers` or view the docs at :ref:`Samplers`
+        params : int, str or dict of :ref:`params<Params>`, optional
+            `params` determines optionally if the distribution of hyper-parameters to
+            potentially search over for this sampler. Preset param distributions are
+            listed for each choice of obj at :ref:`Samplers`, and you can read more on
+            how params work more generally at :ref:`Params`.
 
-        sample_on : str, list or None, optional
-            If `sampler` is set, then for each sampler used,
-            this `sample_on` parameter must be set. This parameter
-            dictates what the sampler should use as its class to
-            re-sample. For example, the most typical case is passing
-            in 't' which will then resample according to the
-            distribution of the target variable.
-            (If multipled loaded, then whichever is is selected in target param),
-            The user can also pass in
-            the names of any loaded strat columns (See: :func:`Load_Strat`),
-            or a combination as list of both,
-            similar to input accepted by the `stratify` param
-            in :func:`Define_Validation_Strategy`.
+            ::
 
-            Note: The way sample_on is coded, any passed col name which is not
-            loaded in Strat, will be interpreted as sample the target variable!
-            That is why the default value is just t, but you can pass anything that
-            isnt a loaded strat col, to have it sample on strat.
+                default = 0
 
-            When a list is passed to one sampler, then the unique combination
-            of values fis created, and sampled on.
+        sample_on : str, or list of, optional
+            This parameter dictates what the underlying sampler should use as its
+            variable to re-sample on. While the most typical case is to re-sample
+            based on the target variable, i.e., to potentially help correct a class imbalance,
+            you may also choose to re-sample based on a loaded Strat value
+            (see :func:`Load_Strat<ABCD_ML.Load_Strat>`).
 
-            In the case where a list of a samplers is passed, then a
-            list of `sample_on` params should be passed, where the index
-            correspond. `sample_on` would look like a list of lists in the case
-            where you want to pass a combination of options, or differing combos
-            to different samplers.
+            If a list of values is passed to sample_on, then that will be interpretted as
+            sampling based on the unique overlap of values from all of those columns.
+            E.g., if passed `sex` and a k_binned `age` variable, then it would internally
+            create a new categorical variable as the unique intersection of all elements on the
+            passed list.
+
+            Note: if any single value, or value within the list of values passed is
+            not a valid loaded column within Strat values, then it will be converted
+            to the name of the currently selected target variable. In this way, to just
+            by default sample based on the target variable, you may keep sample_on at its
+            default value of 'target'
+
+            ::
+
+                default = 'target'
+
+        target_bins : int, optional
+            If the target variable is set to or included in `sample_on`, and further if you
+            are in the context of a regression problem, where the target variable is of float type,
+            then the variable will be binned before use as in sample_on, this parameter dictates
+            the number of bins to create.
+
+            ::
+
+                default = 3
+
+        target_bin_strategy : {'uniform', 'quantile', 'kmeans'}, optional
+            If the target variable is set to or included in `sample_on`, and further if you
+            are in the context of a regression problem, where the target variable is of float type,
+            then the variable will be binned according the the number of `target_bins` and also
+            this param, which controls what strategy is used to define the bins. Options are:
+
+            - 'uniform'
+                All bins in each feature have identical widths.
+
+            - 'quantile'
+                All bins in each feature have the same number of points.
+
+            - 'kmeans'
+                Values in each bin have the same nearest center of a 1D
+                k-means cluster.
+
+            You likely do not want to use `quantile` here...
+
+            ::
+
+                default = 'uniform'
+
+        extra_params : :ref`extra params dict<Extra Params>`, optional
+
+            See :ref:`Extra Params`
+
+            ::
+
+                default = None
 
         '''
 
         self.obj = obj
         self.params = params
         self.sample_on = sample_on
+        self.target_bins = target_bins
+        self.target_bin_strategy = target_bin_strategy
         self.extra_params = extra_params
 
         self.check_args()
@@ -398,17 +518,45 @@ class Sampler(Piece):
 class Feat_Selector(Piece):
 
     def __init__(self, obj, params=0, base_model=None, extra_params=None):
-        ''' 
+        ''' Feat_Selector is a base piece of :class:`Model_Pipeline`, which is designed
+        to preform feature selection.
+
         Parameters
         ----------
-        feat_selector : str, list or None, optional
-        `feat_selector` should be a str indicator or list of,
-        for which feature selection to use, if a list, they will
-        be applied in order.
-        If None, then no feature selection will be used.
+        obj : str
+            `obj` selects the feature selection strategy to use. See :ref:`Feat Selectors`
+            for all avaliable options. Notably, if 'rfe' is passed, then a
+            base model must also be passed!
 
-        For a full list of supported options call:
-        :func:`Show_Feat_Selectors` or view the docs at :ref:`Feat Selectors`
+            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
+
+        params : int, str or dict of :ref:`params<Params>`, optional
+            `params` set an associated distribution of hyper-parameters to
+            potentially search over with this Feat_Selector. Preset param distributions are
+            listed for each choice of params with the corresponding obj at :ref:`Feat Selectors`,
+            and you can read more on how params work more generally at :ref:`Params`.
+
+            ::
+
+                default = 0
+
+        base_model : :class:`Model`, :class:`Ensemble` or None, optional
+            If 'rfe' is passed to obj, then a base_model is required in
+            order to perform recursive feature elimination. The base model can be
+            any valid argument accepts by param `model` in :class:`Model_Pipeline`.
+
+            ::
+
+                default = None
+
+        extra_params : :ref`extra params dict<Extra Params>`, optional
+
+            See :ref:`Extra Params`
+
+            ::
+
+                default = None
+
         '''
 
         self.obj = obj
@@ -421,41 +569,41 @@ class Feat_Selector(Piece):
 class Model(Piece):
 
     def __init__(self, obj, params=0, extra_params=None):
-        ''' 
+        ''' Model represents a base components of the :class:`Model_Pipeline`,
+        specifically a single Model / estimator. Model can also be used as a component
+        in building other pieces of the model pipeline, e.g., :class:`Ensemble`.
 
         Parameters
         ----------
 
-        model : str or list of str
-        Each string refers to a type of model to train.
-        If a list of strings is passed then an ensemble model
-        will be created over all individual models.
+        obj : str, or custom obj
+            `obj` selects the base model object to use from either a preset str indicator
+            found at :ref:`Models`, or from a custom passed user model (compatible w/ sklearn api).
 
-          view the docs at :ref:`Models`
+            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
 
-        If 'default', and not already defined, set to 'linear'
-        (default = 'default')
+            `obj` should be wither a single str indicator or a single custom model object, and
+            not passed a list-like of either. If an ensemble of models is requested, then see
+            :class:`Ensemble`.
 
-        model_params : int, str, or list of
-        Each `model` has atleast one default parameter distribution
-        saved with it.
+        params : int, str or dict of :ref:`params<Params>`, optional
+            `params` optionally set an associated distribution of hyper-parameters to
+            this model object. Preset param distributions are
+            listed for each choice of obj at :ref:`Models`, and you can read more on
+            how params work more generally at :ref:`Params`.
 
-        This parameter is used to select between different
-        distributions to be used with different search types,
-        when `search_type` == None, `model_params` is automatically
-        set to default 0.
+            ::
 
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `model`.
-        Likewise with `model`, if passed list input, this means
-        a list was passed to `model` and the indices should correspond.
+                default = 0
 
-        The different parameter distributions avaliable for each
-        `model`, can be shown by calling :func:`Show_Models`
-        or on the docs at :ref:`Models`
+        extra_params : :ref`extra params dict<Extra Params>`, optional
 
-        If 'default', and not already defined, set to 0
-        (default = 'default')
+            See :ref:`Extra Params`
+
+            ::
+
+                default = None
+
         '''
 
         self.obj = obj
@@ -494,7 +642,6 @@ class Ensemble(Piece):
             an input parameter `estimators`, which accepts a list of (str, estimator) tuples. Whereas
             if needs_split is still False, but single_estimator is True, then the passed object needs
             to support an init param of `base_estimator`, which accepts a single estimator.
-
 
         models : :class:`Model`, :class:`Ensemble` or list of
             The `models` parameter is designed to accept any single model-like
@@ -600,6 +747,137 @@ class Param_Search(Params):
     def __init__(self, search_type='RandomSearch',
                  splits=3, n_repeats=1, n_iter=10, metric='default',
                  weight_metric=False):
+        ''' Param_Search is special input object designed to be used with :class:`Model_Pipeline`.
+        Param_Search defines a hyperparameter search strategy. When passed to :class:`Model_Pipeline`,
+        its search strategy is applied in the context of any set :ref:`Params` within the base pieces.
+        Specifically, there must be atleast one parameter search somewhere in the object Param_Search is passed!
+
+        All backend hyper-parameter searches make use of the 
+        <https://github.com/facebookresearch/nevergrad>`_ library.
+
+        Parameters
+        ----------
+        search_type : str, optional
+            The type of nevergrad hyper-parameter search to conduct. See
+            :ref:`Search Types<Search Types>` for all avaliable options. Also you may further look into
+            nevergrad's experimental varients if you so choose, this parameter can accept
+            those as well.
+
+            ::
+
+                default = 'RandomSearch'
+
+        splits : int, float, str or list of str, optional
+            In order to optimize hyper-parameters, some sort of internal cross validation must be specified,
+            such that combinations of hyper-parameters can be evaluated on different data then they were trained on.
+            `splits` allows you to specify the base of what CV strategy should be used to evaluate every `n_iter` combination
+            of hyper-parameters.
+
+            Notably, the splits defined will respect any special split behavior as defined in
+            :func:`Define_Validation_Strategy<ABCD_ML.Define_Validation_Strategy>`.
+
+            Specifically, options for split are:
+
+            - int
+                The number of k-fold splits to conduct. (E.g., 3 for
+                3-fold CV split to be conducted at every hyper-param evaluation).
+
+            - float
+                Must be 0 < `splits` < 1, and defines a single train-test like split,
+                with `splits` % of the current training data size used as a validation set.
+
+            - str
+                If a str is passed, then it must correspond to a loaded Strat variable. In
+                this case, a leave-out-group CV will be used according to the value of the
+                indicated Strat variable (E.g., a leave-out-site CV scheme).
+
+            - list of str
+                If multiple str passed, first determine the overlapping unique values from
+                their corresponing loaded Strat variables, and then use this overlapped
+                value to define the leave-out-group CV as described above.
+
+            Also note that `n_repeats` will work with any of these options, but say in the case of
+            a leave out group CV, would be awfully redundant, versus, with a passed float value, very reasonable.
+
+            ::
+
+                default = 3
+
+        n_repeats : int, optional
+            Given the base hyper-param search CV defined / described in the `splits` param, this
+            parameter further controls if the defined train/val splits should be repeated (w/ different random
+            splits in all cases but the leave-out-group passed str option).
+
+            For example, if `n_repeats` is set to 2, and `splits` is 3, then a twice repeated 3-fold CV
+            will be performed to evaluate every choice of `n_iter` hyper-params (respecting any special split behavior
+            as defined in :func:`Define_Validation_Strategy<ABCD_ML.Define_Validation_Strategy>`.)
+
+            ::
+
+                default = 1
+
+        n_iter : int, optional
+            The number of hyper-parameters to try / budget of the underlying search algorithm.
+            How well a hyper-parameter search works and how long it takes will be very dependent on this parameter
+            and the defined internal CV strategy (via `splits` and `n_repeats`). In general, if too few choices are provided
+            the algorithm will likely not select high performing hyper-paramers, and alternatively if too high a value/budget is
+            set, then you may find overfit/non-generalize hyper-parameter choices. Other factors which will influence the 'right'
+            number of `n_iter` to specify are:
+
+            - `search_type`
+                Depending on the underlying search type, it may take a bigger or smaller budget
+                on average to find a good set of hyper-parameters
+
+            - The dimension of the underlying search space
+                If you are only optimizing a few, say 2, underlying parameter distributions,
+                this will require a far smaller budget then say a really high dimensional search space.
+
+            - The CV strategy
+                The CV strategy defined via `splits` and `n_repeats` may make it easier
+                or harder to overfit when searching for hyper-parameters, thus conceptually
+                a good choice of CV strategy can serve to increase the number `n_iter` you can use
+                before overfitting, or conversely a bad choice may limit it.
+
+            - Number of data points / subjects
+                Along with CV strategy, the number of data points/subjects will greatly influence
+                how quickly you overfit, and therefore a good choice of `n_iter`.
+
+            Notably, one can always if they have the resources simply expiriment with this parameter.
+
+            ::
+
+                default = 10
+
+        metric : str or 'default', optional
+            In order for a set of hyper-parameters to be evaluated, a single metric must
+            be defined. By default (if left as 'default') this metric will be the first
+            metric (if passed a list) of metrics passed to :class:`Problem_Spec`. Alternatively,
+            you may pass a specific `metric` to use for just hyper-parameter evaluation.
+
+            See :ref:`Metrics` for a full list of options as limited by problem_type.
+
+            Only one value of `metric` may be passed here.
+
+            ::
+
+                default = 'default'
+
+        weight_metric : bool or 'default', optional
+            `weight_metric` describes if the metric of interest should be weighted by
+            the number of subjects within each validation fold. So, for example, if
+            a leave-out-group CV scheme is specified to `splits`, and the groups have
+            drastically different numbers of subjects, then you may want to consider
+            weighting the final average validation metric (as computed across in this case
+            all groups used by themselves) by the number of subjects in each fold.
+
+            Likewise with `metric`, if `weight_metric` is left as 'default', then
+            the value of `weight_metric` will be set to the first value of
+            `weight_metric` (if passed a list) as passed to :class:`Problem_Spec`.
+
+            ::
+
+                default = 'default'
+        '''
         
         self.search_type = search_type
         self.splits = splits
@@ -610,6 +888,8 @@ class Param_Search(Params):
 
         self._splits_vals = None
         self._n_jobs = 1
+
+        self.check_args()
 
     def set_split_vals(self, vals):
         self._splits_vals = vals
@@ -925,7 +1205,7 @@ class Model_Pipeline(Params):
 
             .. code-block::
 
-                (default = None)
+                default = None
 
         imputers : :class:`Imputer`, list of or None, optional
             If there is any missing data (NaN's) that have been kept
@@ -947,8 +1227,8 @@ class Model_Pipeline(Params):
 
             ::
 
-                (default = [Imputer('mean', scope='float'),
-                            Imputer('median', scope='cat')])
+                default = [Imputer('mean', scope='float'),
+                           Imputer('median', scope='cat')]
 
         scalers : :class:`Scaler`, list of or None, optional
             Each :class:`Scaler` refers to any potential data scaling where a
@@ -967,7 +1247,7 @@ class Model_Pipeline(Params):
 
             ::
 
-                (default = Scaler('standard'))
+                default = Scaler('standard')
 
         transformers : :class:`Transformer`, list of or None, optional
             Each :class:`Transformer` defines a type of transformation to
@@ -982,7 +1262,7 @@ class Model_Pipeline(Params):
 
             ::
 
-                (default = None)
+                default = None
 
         samplers : :class:`Sampler`, list of or None, optional
             Each :class:`Sampler` refers to an optional type
@@ -995,7 +1275,7 @@ class Model_Pipeline(Params):
 
             ::
 
-                (default = None)
+                default = None
 
         feat_selectors : :class:`Feat_Selector`, list of or None, optional
             Each :class:`Feat_Selector` refers to an optional feature selection stage
@@ -1003,6 +1283,10 @@ class Model_Pipeline(Params):
 
             Input can be composed in a list, to apply feature selection sequentially,
             or with special Input Type wrapper, e.g., :class:`Select`.
+
+            ::
+
+                default = None
 
         model : :class:`Model`, :class:`Ensemble`, optional
             model accepts one input of type
@@ -1021,7 +1305,7 @@ class Model_Pipeline(Params):
             
             ::
 
-                (default = Model('linear'))
+                default = Model('linear')
 
         param_search : :class:`Param_Search` or None, optional
             :class:`Param_Search` can be provided in order to speficy a corresponding
@@ -1036,7 +1320,7 @@ class Model_Pipeline(Params):
 
             ::
 
-                (default = None)
+                default = None
 
         feat_importances : :class:`Feat_Importance` list of or None, optional
             Provide here either a single, or list of :class:`Feat_Importance` param objects
@@ -1051,7 +1335,7 @@ class Model_Pipeline(Params):
 
             ::
 
-                (default = Feat_Importance('base'))
+                default = Feat_Importance('base')
 
         cache : str or None, optional
             The base scikit-learn Pipeline, upon which the ABCD_ML Pipeline extends,
@@ -1070,7 +1354,7 @@ class Model_Pipeline(Params):
 
             ::
 
-                (default = None)
+                default = None
 
         '''
 
@@ -1344,7 +1628,9 @@ class Problem_Spec(Params):
             - 'categorical'
                 For ML on categorical target data, as multiclass.
 
-            (default = 'regression')
+            ::
+
+                default = 'regression'
 
         target : int or str, optional
             The loaded target in which to use during modelling.
@@ -1353,7 +1639,9 @@ class Problem_Spec(Params):
             or the name of the target column.
             If only one target is loaded, just leave as default of 0.
 
-            (default = 0)
+            ::
+            
+                default = 0
 
         metric : str or list, optional
             Indicator str for which metric(s) to use when calculating
@@ -1376,7 +1664,9 @@ class Problem_Spec(Params):
             - 'binary'      : 'macro roc auc'
             - 'categorical' : 'matthews'
 
-            (default = 'default')
+            ::
+            
+                default = 'default'
 
         weight_metric : bool, list of, optional
             If True, then the metric of interest will be weighted within
@@ -1390,7 +1680,9 @@ class Problem_Spec(Params):
             list of values for weight_metric, with each value set as boolean True or False,
             specifying if the corresponding metric by index should be weighted or not.
 
-            (default = False)
+            ::
+            
+                default = False
 
         scope : key str or Scope obj, optional
             This parameter allows the user to optionally
@@ -1399,6 +1691,10 @@ class Problem_Spec(Params):
 
             See :ref:`Scopes` for a more detailed explained / guide on how scopes
             are defined and used within ABCD_ML.
+
+            ::
+
+                default = 'all'
 
         subjects : str, array-like or Value_Subset, optional
             This parameter allows the user to optionally run Evaluate or Test
@@ -1423,8 +1719,10 @@ class Problem_Spec(Params):
             A special wrapper, Value_Subset, can also be used to specify more specific,
             specifically value specific, subsets of subjects to use.
             See :class:`Value_Subset` for how this input wrapper can be used.
-            
-            (default = 'all')
+
+            ::
+
+                default = 'all'
 
         n_jobs : int, or 'default'
             n_jobs are employed witin the context of a call to Evaluate or Test. 
@@ -1437,7 +1735,9 @@ class Problem_Spec(Params):
             param search, n_jobs will be used for each piece individually, though some
             might not support it.
 
-            (default = 'default')
+            ::
+
+                default = 'default'
 
         random_state : int, RandomState instance, None or 'default', optional
             Random state, either as int for a specific seed, or if None then
@@ -1450,9 +1750,12 @@ class Problem_Spec(Params):
             exact replicicability.
 
             If 'default', use the saved class value.
-            ( Defined in :class:`ABCD_ML <ABCD_ML.ABCD_ML>`)
-            
-            (default = 'default')
+            (Defined in :class:`ABCD_ML <ABCD_ML.ABCD_ML>`)
+
+            ::
+
+                default = 'default'
+
         '''
 
         self.problem_type = problem_type
@@ -1479,7 +1782,6 @@ class Problem_Spec(Params):
     def _proc_checks(self):
         proc_all(self)
         
-
     def set_final_subjects(self, final_subjects):
         self._final_subjects = final_subjects
 

@@ -381,17 +381,11 @@ PARAMS['constant imp'] = {'strategy': 'constant'}
 PARAMS['iterative imp'] = {'initial_strategy': 'mean'}
 
 # Samplers
-PARAMS['base no change sampler'] = {'sampler_type': 'no change',
-                                    'regression_bins': 3,
-                                    'regression_bin_strategy': 'uniform'}
+PARAMS['base no change sampler'] = {'sampler_type': 'no change'}
 
-PARAMS['base special sampler'] = {'sampler_type': 'special',
-                                  'regression_bins': 3,
-                                  'regression_bin_strategy': 'uniform'}
+PARAMS['base special sampler'] = {'sampler_type': 'special'}
 
-PARAMS['base change sampler'] = {'sampler_type': 'change',
-                                 'regression_bins': 3,
-                                 'regression_bin_strategy': 'uniform'}
+PARAMS['base change sampler'] = {'sampler_type': 'change'}
 
 
 PARAMS['rus binary ratio'] = PARAMS['base no change sampler'].copy()

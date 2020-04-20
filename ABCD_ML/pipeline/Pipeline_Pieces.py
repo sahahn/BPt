@@ -587,8 +587,7 @@ class Samplers(Scope_Pieces):
 
         # Get the sampler
         sampler, sampler_params =\
-            get_sampler_and_params(param.obj, param.extra_params,
-                                   param.params, self.spec['search_type'],
+            get_sampler_and_params(param, self.spec['search_type'],
                                    strat_inds=strat_inds,
                                    sample_target=sample_target,
                                    sample_strat=sample_strat,

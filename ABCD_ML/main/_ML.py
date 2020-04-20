@@ -16,332 +16,6 @@ from ..helpers.ML_Helpers import compute_macro_micro, conv_to_list, get_avaliabl
 from ..pipeline.Model_Pipeline import Model_Pipeline
 
 
-def Set_Default_ML_Params(self, problem_type='default', target='default',
-                          model='default', model_params='default',
-                          metric='default', weight_metric='default',
-                          loader='default',
-                          loader_scope='default', loader_params='default',
-                          imputer='default',
-                          imputer_scope='default', imputer_params='default',
-                          scaler='default', scaler_scope='default',
-                          scaler_params='default', 
-                          transformer='default',
-                          transformer_scope='default',
-                          transformer_params='default',
-                          sampler='default',
-                          sample_on='default', sampler_params='default',
-                          feat_selector='default',
-                          feat_selector_params='default', ensemble='default',
-                          ensemble_split='default', ensemble_params='default',
-                          splits='default', n_repeats='default',
-                          search_type='default', search_splits='default',
-                          search_n_iter='default',
-                          scope='default',
-                          subjects='default',
-                          feat_importances='default',
-                          feat_importances_params='default',
-                          n_jobs='default', random_state='default',
-                          compute_train_score='default', cache='default',
-                          extra_params='default'):
-    '''Sets self.default_ML_params dictionary with user passed or default
-
-
-
-
-
-    transformer : str, list or None, optional
-        
-    
-    transformer_scope : str, list, tuple or None, optional
-        `transformer_scope` refers to the "scope" or rather columns in
-        which each passed scaler (if multiple), should be applied.
-        If a list of transformers is passed, then scopes should also be a
-        list with index corresponding to each transformer.
-        If less then the number of transformers are passed, then the
-        first passed transformer_scope will be used for all of the
-        remaining transformers. Likewise, if no transformer is passed, this
-        parameter will be ignored!
-
-        Each transformer scope can be either,
-
-        - 'float'
-            To apply to all non-categorical columns, in both
-            loaded data and covars.
-
-        - 'data'
-            To apply to all loaded data columns only.
-
-        - 'data files'
-            To apply to just columns which were originally loaded as data files.
-
-        - 'float covars' or 'fc'
-            To apply to all non-categorical, float covars columns only.
-
-        - 'all'
-            To apply to everything, regardless of float/cat or data/covar.
-
-        - 'cat' or 'categorical'
-            To apply to just loaded categorical data.
-
-        - 'covars'
-            To apply to all loaded covar columns only.
-
-        - array-like of strs (not tuple)
-            Can pass specific col names in as array-like
-            to select only those cols.
-
-        - tuple of str
-            Can pass a tuple of scopes, to replicate the base
-            object, run seperately with each entry of the tuple
-
-        If 'default', and not already defined, set to 'float'
-        (default = 'default')
-
-    transformer_params : int, str, or list of, optional
-        Each `transformer` has atleast one default parameter distribution
-        saved with it.
-
-        This parameter is used to select between different
-        distributions to be used with different search types,
-        when `search_type` == None, `model_params` is automatically
-        set to default 0.
-
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `transformer`.
-        Likewise with `transformer`, if passed list input, this means
-        a list was passed to `transformer` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `transformer`, can be shown by calling :func:`Show_Transformers`
-        or on the docs at :ref:`Transformers`
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    sampler : str, list or None, optional
-        
-
-        If 'default', and not already defined, set to None
-        (default = 'default')
-
-    
-        If 'default', and not already defined, set to 'targets'
-        (default = 'default')
-
-    sampler_params :  int, str, or list of
-        Each `sampler` has atleast one default parameter distribution
-        saved with it.
-
-        This parameter is used to select between different
-        distributions to be used with different search types,
-        when `search_type` == None, `model_params` is automatically
-        set to default 0.
-
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `sampler`.
-        Likewise with `sampler`, if passed list input, this means
-        a list was passed to `sampler` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `sampler`, can be shown by calling :func:`Show_Samplers`
-        or on the docs at :ref:`Samplers`
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    
-
-        If 'default', and not already defined, set to None
-        (default = 'default')
-
-    feat_selector_params : int, str, or list of
-         Each `feat_selector` has atleast one default parameter distribution
-        saved with it.
-
-        This parameter is used to select between different
-        distributions to be used with different search types,
-        when `search_type` == None, `model_params` is automatically
-        set to default 0.
-
-        This parameter can be selected with either an integer index
-        (zero based), or the str name for a given `feat_selector` param option.
-        Likewise with `feat_selector`, if passed list input, this means
-        a list was passed to `feat_selector` and the indices should correspond.
-
-        The different parameter distributions avaliable for each
-        `feat_selector`, can be shown by calling :func:`Show_Feat_Selectors`
-        or on the docs at :ref:`Feat Selectors`
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-    ensemble :  str or list of str,
-        
-
-    
-
-    n_repeats : int or 'default', optional
-        :func:`Evaluate` performs a repeated k-fold model evaluation,
-        or a left out CV, based on input. `n_repeats` refers to the number of
-        times to repeat this.
-
-        Note: In the case where `splits` is set to a strat col and therefore
-        a leave-one-out CV, setting `n_repeats` > 1, with a fixed random seed
-        will be redundant.
-
-        If 'default', and not already defined, set to 2
-        (default = 'default')
-
-    search_type : {None, str}
-        The type of parameter search to conduct if any. If set to None,
-        no hyperparameter search will be conducted.
-
-        The option is to pass the name of a nevergrad optimizer.
-
-        If 'default', and not already defined, set to None
-        (default = 'default')
-
-    search_splits : int, str or list, optional
-        The number of internal folds to use during
-        model k-fold parameter selection if `search_splits` is an int.
-
-        Note: the splits will be determined according to the validation
-        strategy defined in :func:`Define_Validation_Strategy` if any!
-
-        Alternatively, `search_splits` can be set to a str or list of
-        strings, where each str refers to a column name loaded
-        within strat! In this case, a leave-one-out CV will be
-        performed on that strat value, or combination of values.
-        The number of search CV folds will therefore be equal to the
-        number of unique values.
-
-        If 'default', and not already defined, set to 3
-        (default = 'default')
-
-    search_n_iter : int or 'default', optional
-        The number of random search parameters to try, used
-        only if using random search.
-
-        if 'default', and not already defined, set to 10.
-        (default = 'default')
-
-    scope : {'all', 'data', 'covars'} or array, optional
-        This parameter allows the user to optionally
-        run an expiriment with a subset of the loaded features
-        / columns. Typically either only the loaded
-        data and/or only the loaded covars. Specific key words
-        exist for selecting these, or alternatively, an array-like
-        of column keys can be passed in explicitly.
-
-        - 'all'
-            Uses all data + covars loaded
-
-        - 'data'
-            Uses only the loaded data, and drops covars if any.
-
-        - 'covars'
-            Uses only the loaded covars, and drops data if any
-
-        - array-like of strs
-            Can pass specific col names in as array-like
-            to select only those cols.
-
-        - wild card str or array-like
-            If user passed str doesn't match with
-            valid col name, will use as wildcard.
-
-        The way the wild card system works is that if for all user
-        passed strs that do not match a column name, they will be treated
-        as wildcards. For example, if '._desikan' and '._lh' were passed
-        as wildcards, any column name with both '._desikan' and '._lh', will
-        be added to feats to use.
-
-        You can also pass a list combination of any of the above,
-        for example you could pass ['covars', specific_column_name, wildcard]
-        to select all of the covariate columns, the specific column name(s)
-        and any extra columns which match the wildcard(s).
-
-        if 'default', and not already defined, set to 'all'.
-        (default = 'default')
-
-    subjects : 'all', array-like or str, optional
-        This parameter allows the user to optionally run
-        an Evaluation run with just a subset of the loaded subjects.
-        It is designed to be to be used after a global train test split
-        has been defined (see :func:`Train_Test_Split`), for cases such
-        as, creating and testing models on just Males, or just Females.
-
-        If set to 'all' (as is by default), all avaliable subjects will be
-        used.
-
-        `subjects` can accept either a specific array of subjects,
-        or even a loc of a text file (formatted one subject per line) in
-        which to read from. Note: do not pass a tuple of subjects, as that
-        is reserved for specifying special behavior.
-
-        Alternatively, `subjects` will accept a tuple, (Note:
-        it must be a tuple!), where the first element is a loaded strat key,
-        or a list of, and the second is an int value. In this case,
-        `subjects`, will be set to the subset of subjects associated
-        with the specified strat values (or combination) that have that value.
-
-        For example, if sex was loaded within strat, and ('sex', 0) was
-        passed to `subjects`, then :func:`Evaluate` would be run
-        on just those subjects with sex == 0.
-
-        if 'default', and not already defined, set to 'all'.
-        (default = 'default')
-
-    feat_importances : None, str or list, optional
-        This parameter controls which feature importances should
-        be calculated, and can be set to None, a single feature
-        importance, or a list of different types.
-
-        Different feature importances are restricted by problem_type
-        in some cases, as well as will vary based on specific type of
-        model used. For example, only linear models and tree based models
-        are supported for calculating 'base' feature importances. With
-        'shap' feature importance, any underlying model is supported, but
-        only tree based and linear models can be computed quickly, with
-        other models requiring a great deal of computation.
-
-        Please view :ref:`Feat Importances` to learn more about the different
-        options for calculating feature importance, as well as the
-        distinction between 'local' and 'global' measures of
-        feature importance, and also the tradeoffs and differences
-        between computing
-        feature importance based of only train data, only test or all
-        of the data.
-
-        If 'default', and not already defined, set to 'base'
-        (default = 'default')
-
-    feat_importances_params : int, str, dict or list of, optional
-        Different feature importances may vary on different
-        hyperparameters. If the selected feature importance has
-        hyperparameters, this parameter either selects from default
-        choices (using either int input, or str for selecting the name
-        of the preset). If a list of feat_importances is passed, a
-        corresponding list of feat_importances_params should be passed.
-
-        A user-defined dictionary can passed as well, containing user
-        specified values. When only changing one
-        or two parameters from the default, any non-specified params
-        will be replaced with the default value.
-
-        See the docs for which parameters are required by which
-        feature importance types, and for what the default values are.
-
-        If 'default', and not already defined, set to 0
-        (default = 'default')
-
-
-
-    '''
-
-    self.default_ML_params.set_values(locals())
-
-
 def Set_Default_ML_Verbosity(
  self, save_results='default', progress_bar='default', compute_train_score='default',
  show_init_params='default', fold_name='default',
@@ -549,31 +223,128 @@ def Evaluate(self,
              n_repeats=2,
              train_subjects='train',
              run_name='default'):
+    ''' The Evaluate function is one of the main interfaces for building and evaluating
+    :class:`Model_Pipeline` on the loaded data. Specifically, Evaluate is designed to
+    try and estimate the out of sample performance of a passed :class:`Model_Pipeline` on a specific
+    ML task (as specified by :class:`Problem_Spec`). This estimate is done through a defined CV strategy
+    (`splits` and `n_repeats`). While Evaluate's ideal usage is an expirimental context for exploring
+    different choices of :class:`Model_Pipeline` and then ultimately with :func:`Test<ABCD_ML.Test>` -
+    if used carefully (i.e., dont try 50 Pipelines's and only report the one that does best), it can be used 
+    on a full dataset.
     
-    '''
-
     Parameters
     ------------
+    model_pipeline : :class:`Model_Pipeline`
 
-    splits : int, str or list, optional
-        If `splits` is an int, then :func:`Evaluate` performs a repeated
-        k-fold model evaluation, where `splits` refers to the k, and
-        `n_repeats` refers to the number of repeats.
-        E.g., if set to 3, then a 3-fold CV will be performed at each repeat.
+        The passed `model_pipeline` should be an instance of the ABCD_ML params class :class:`Model_Pipeline`.
+        This object defines the underlying model pipeline to be evaluated.
 
-        Note: the splits will be determined according to the validation
-        strategy defined in :func:`Define_Validation_Strategy` if any!
+        See :class:`Model_Pipeline` for more information / how to create a the model pipeline.
 
-        Alternatively, `splits` can be set to a str or list of
-        strings, where each str refers to a column name loaded
-        within strat! In this case, a leave-one-out CV will be
-        performed on that strat value, or combination of values.
-        The number of folds will therefore be equal to the number of unique
-        values, and can optionally be repeated with `n_repeats` set to > 1.
+    problem_spec : :class:`Problem_Spec`
 
-        If 'default', and not already defined, set to 3
-        (default = 'default')
+        `problem_spec` accepts an instance of the ABCD_ML params class :class:`Problem_Spec`.
+        This object is essentially a wrapper around commonly used parameters needs to define the context
+        the model pipeline should be evaluated in. It includes parameters like problem_type, metric, n_jobs, random_state, etc...
+        See :class:`Problem_Spec` explicitly for more information and for how to create an instance of this object.
 
+    splits : int, float, str or list of str, optional
+        In every fold of the defined CV strategy, the passed `model_pipeline` will be fitted on
+        a train fold, and evaluated on a validation fold. This parameter
+        controls the type of CV, i.e., specifies what the train and validation
+        folds should be. These splits are further determined by the subjects passed to `train_subjects`.
+        Notably, the splits defined will respect any special split behavior as defined in
+        :func:`Define_Validation_Strategy<ABCD_ML.Define_Validation_Strategy>`.
+
+        Specifically, options for split are:
+
+        - int
+            The number of k-fold splits to conduct. (E.g., 3 for a
+            3-fold CV).
+
+        - float
+            Must be 0 < `splits` < 1, and defines a single train-test like split,
+            with `splits` as the % of the current training data size used as a validation/test set.
+
+        - str
+            If a str is passed, then it must correspond to a loaded Strat variable. In
+            this case, a leave-out-group CV will be used according to the value of the
+            indicated Strat variable (E.g., a leave-out-site CV scheme).
+
+        - list of str
+            If multiple str passed, first determine the overlapping unique values from
+            their corresponing loaded Strat variables, and then use this overlapped
+            value to define the leave-out-group CV as described above.
+
+        Note that this defines only the base CV strategy, and that the following param `n_repeats`
+        is optionally used to replicate this base strategy, e.g., for a twice repeated train-test split evaluation.
+        Note further that `n_repeats` will work with any of these options, but say in the case of
+        a leave out group CV, it would be awfully redundant, versus, with a passed float value, very reasonable.
+
+        ::
+
+            default = 3
+
+    n_repeats : int, optional
+        Given the base CV defined / described in the `splits` param, this
+        parameter further controls if the defined train/val splits should be repeated
+        (w/ different random splits in all cases but the leave-out-group passed str option).
+
+        For example, if `n_repeats` is set to 2, and `splits` is 3, then a twice repeated 3-fold CV
+        will be performed, and results returned with respect to this strategy.
+
+        It can be a good idea to set multiple `n_repeats` (assuming enough computation power), as it can
+        help you spot cases where you may not have enough training subjects to get stable behavior, e.g.,
+        say you run a three times repeated 3 fold CV, if the mean validation scores from each 3-fold are
+        all very close to each other, then you know that 1 repeat is likely enough. If instead the macro std in
+        score (the std from in this case those 3 scores) is high, then it indicates you may not have enough subjects
+        to get stable results from just one 3-fold CV, and that you might want to consider changing some settings.
+    
+        ::
+
+            default = 2
+
+    train_subjects : str, array-like or Value_Subset, optional
+        This parameter determines the set of training subjects which are
+        used in this call to `Evaluate`. Note, this parameter is distinct to
+        the `subjects` parameter within :class:`Problem_Spec`, which is applied after
+        selecting the subset of `train_subjects` specified here. These subjects are
+        used as the input to `Evaluate`, i.e., so typically any subjects data you want
+        to remain untouched (say your global test subjects) are considered within `Evaluate`,
+        and only those explicitly passed here are.
+
+        By default, this value will be set to the special str indiciator 'train', which
+        specifies that the full set of globally defined training subjects
+        (See: :func:`Define_Train_Test_Split`), should be used. Other special str indicators
+        include 'all' to select all subjects, and 'test' to select the test set subjects.
+
+        If `subjects` is passed a str, and that str is not one of the str indicators listed above,
+        then it will be interpretted as the location of file in which to read subjects from (assuming one subjects per line).
+
+        `subjects` may also be a custom array-like of subjects to use.
+
+        Lastly, a special wrapper, Value_Subset, can also be used to specify more specific,
+        specifically value specific, subsets of subjects to use.
+        See :class:`Value_Subset` for how this input wrapper can be used.
+
+        ::
+
+            default = 'train'
+       
+    run_name : str or 'default', optional
+        Each run of Evaluate can be optionally associated with a specific `run_name`. This name
+        is used to save scores in self.eval_scores, and also if `save_results` in
+        :func:`Set_Default_ML_Verbosity<ABCD_ML.Set_Default_ML_Verbosity>` is set to True,
+        then will be used as the name output from Evaluate as saved as in the specific log_dr
+        (if any, and as set when Init'ing the :class:`ABCD_ML <ABCD_ML.ABCD_ML>` class object),
+        with '.eval' appended to the name.
+
+        If left as 'default', will come up with a kind of terrible name passed on the underlying
+        model used in the passed `model_pipeline`.
+
+        ::
+
+            default = 'default'
 
     Returns
     ----------
@@ -699,75 +470,101 @@ def Test(self,
          train_subjects='train',
          test_subjects='test',
          run_name='default'):
-    '''Class method used to evaluate a specific model / data scaling
-    setup on an explicitly defined train and test set.
-
+    ''' The test function is one of the main interfaces for testing a specific 
+    :class:`Model_Pipeline`. Test is conceptually different from :func:`Evaluate<ABCD_ML.Evaluate>`
+    in that it is designed to contrust / train a :class:`Model_Pipeline` on one discrete set of `train_subjects`
+    and evaluate it on a further discrete set of `test_subjects`. Otherwise, these functions are very simmilar as
+    they both evaluate a :class:`Model_Pipeline` as defined in the context of a :class:`Problem_Spec`, and return
+    simmilar output.
+    
     Parameters
-    ----------
-    run_name : str or None, optional
-        Note: This param is seperate from eval_run_name, where
-        eval_run_name refers to an optional name to load from,
-        run_name refers to the name under which these results
-        from Test should be stored. They are stored in self.test_scores,
-        and the exact parameters used in self.test_settings.
-        If left as None, then will just
-        use a default name.
+    ------------
+    model_pipeline : :class:`Model_Pipeline`
+        The passed `model_pipeline` should be an instance of the ABCD_ML params class :class:`Model_Pipeline`.
+        This object defines the underlying model pipeline to be evaluated.
 
-        (default = None)
+        See :class:`Model_Pipeline` for more information / how to create a the model pipeline.
 
-    train_subjects : array-like or None, optional
-        If passed None, (default), then the class defined train subjects will
-        be used. Otherwise, an array or pandas Index of
-        valid subjects should be passed.
+    problem_spec : :class:`Problem_Spec`
+        `problem_spec` accepts an instance of the ABCD_ML params class :class:`Problem_Spec`.
+        This object is essentially a wrapper around commonly used parameters needs to define the context
+        the model pipeline should be evaluated in. It includes parameters like problem_type, metric, n_jobs, random_state, etc...
+        See :class:`Problem_Spec` explicitly for more information and for how to create an instance of this object.
 
-        (default = None)
+    train_subjects : str, array-like or Value_Subset, optional
+        This parameter determines the set of training subjects which are
+        used to train the passed instance of :class:`Model_Pipeline`. 
+        
+        Note, this parameter and `test_subjects` are distinct, but complementary to
+        the `subjects` parameter within :class:`Problem_Spec`, which is applied after
+        selecting the subset of `train_subjects` specified here.
 
-    test_subjects : array-like or None, optional
-        If passed None, (default), then the class defined test subjects will
-        be used. Otherwise, an array or pandas Index of
-        valid subjects should be passed.
+        By default, this value will be set to the special str indiciator 'train', which
+        specifies that the full set of globally defined training subjects
+        (See: :func:`Define_Train_Test_Split`), should be used. Other special str indicators
+        include 'all' to select all subjects, and 'test' to select the test set subjects.
 
-        (default = None)
+        If `subjects` is passed a str, and that str is not one of the str indicators listed above,
+        then it will be interpretted as the location of file in which to read subjects from (assuming one subjects per line).
 
-    problem_type :
-    target :
-    model :
-    model_params :
-    metric :
-    weight_metric :
-    loader :
-    loader_scope :
-    loader_params :
-    imputer :
-    imputer_scope :
-    imputer_params :
-    scaler :
-    scaler_scope :
-    scaler_params :
-    transformer : 
-    transformer_scope :
-    transformer_params :
-    sampler :
-    sample_on :
-    sampler_params :
-    feat_selector :
-    feat_selector_params :
-    ensemble :
-    ensemble_split :
-    ensemble_params :
-    search_type :
-    search_splits :
-    search_n_iter :
-    scope :
-    subjects :
-    feat_importances :
-    feat_importances_params :
-    n_jobs :
-    random_state :
-    compute_train_score :
-    cache :
-    extra_params :
+        `subjects` may also be a custom array-like of subjects to use.
 
+        Lastly, a special wrapper, Value_Subset, can also be used to specify more specific,
+        specifically value specific, subsets of subjects to use.
+        See :class:`Value_Subset` for how this input wrapper can be used.
+
+        If passing custom input here, be warned that you NEVER want to pass an overlap of
+        subjects between `train_subjects` and `test_subjects`
+
+        ::
+
+            default = 'train'
+
+    test_subjects : str, array-like or Value_Subset, optional
+        This parameter determines the set of testing subjects which are
+        used to evaluate the passed instance of :class:`Model_Pipeline`, after it
+        has been trained on the passed `train_subjects`.
+        
+        Note, this parameter and `train_subjects` are distinct, but complementary to
+        the `subjects` parameter within :class:`Problem_Spec`, which is applied after
+        selecting the subset of `test_subjects` specified here.
+
+        By default, this value will be set to the special str indiciator 'test', which
+        specifies that the full set of globally defined test subjects
+        (See: :func:`Define_Train_Test_Split`), should be used. Other special str indicators
+        include 'all' to select all subjects, and 'train' to select the train set subjects.
+
+        If `subjects` is passed a str, and that str is not one of the str indicators listed above,
+        then it will be interpretted as the location of file in which to read subjects from (assuming one subjects per line).
+
+        `subjects` may also be a custom array-like of subjects to use.
+
+        Lastly, a special wrapper, Value_Subset, can also be used to specify more specific,
+        specifically value specific, subsets of subjects to use.
+        See :class:`Value_Subset` for how this input wrapper can be used.
+
+        If passing custom input here, be warned that you NEVER want to pass an overlap of
+        subjects between `train_subjects` and `test_subjects`
+
+        ::
+
+            default = 'test'
+       
+    run_name : str or 'default', optional
+        Each run of test can be optionally associated with a specific `run_name`. This name
+        is used to save scores in self.test_scores, and also if `save_results` in
+        :func:`Set_Default_ML_Verbosity<ABCD_ML.Set_Default_ML_Verbosity>` is set to True,
+        then will be used as the name output from Test as saved as in the specific log_dr
+        (if any, and as set when Init'ing the :class:`ABCD_ML <ABCD_ML.ABCD_ML>` class object),
+        with .test appended to the name.
+
+        If left as 'default', will come up with a kind of terrible name passed on the underlying
+        model used in the passed `model_pipeline`.
+
+        ::
+
+            default = 'default'
+  
     Returns
     ----------
     results : dict
@@ -814,12 +611,12 @@ def Test(self,
         self._print()
 
     # Init the Model_Pipeline object with modeling params
-    self._init_model(problem_spec, model_pipeline)
+    self._init_model(model_pipeline, problem_spec)
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, raw_preds, FIs =\
-        self.Model_Pipeline.Test(self.all_data, train_subjects,
-                                 test_subjects)
+        self.Model_Pipeline.Test(self.all_data, _train_subjects,
+                                 _test_subjects)
 
     # Set run name
     for fi in FIs:

@@ -1,7 +1,7 @@
 from sklearn.compose import ColumnTransformer
 from sklearn.base import clone
 from sklearn.utils import _safe_indexing
-from ...helpers.ML_Helpers import proc_mapping
+from ..helpers.ML_Helpers import proc_mapping
 
 
 class ColTransformer(ColumnTransformer):

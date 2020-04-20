@@ -1,7 +1,7 @@
 from ..helpers.ML_Helpers import get_obj_and_params, proc_mapping, update_mapping, show_objects
 import numpy as np
 from .Transformers import Transformer_Wrapper
-from .extensions.Loaders import Identity, SurfLabels
+from ..extensions.Loaders import Identity, SurfLabels
 from joblib import Parallel, delayed
 
 
@@ -184,7 +184,7 @@ LOADERS = {
 # If nilearn dependencies
 try:
     from nilearn.input_data import NiftiLabelsMasker
-    from .extensions.Loaders import Connectivity
+    from ..extensions.Loaders import Connectivity
     LOADERS['volume rois'] = (NiftiLabelsMasker, ['default'])
     LOADERS['connectivity'] = (Connectivity, ['default'])
 

@@ -5,8 +5,8 @@ File with different Feature Selectors
 """
 from ..helpers.ML_Helpers import (show_objects, get_possible_init_params,
                                   get_obj_and_params)
-from sklearn.feature_selection import *
-from .extensions.Feat_Selectors import RFE_Wrapper, FeatureSelector
+from sklearn.feature_selection import SelectPercentile, VarianceThreshold
+from ..extensions.Feat_Selectors import RFE_Wrapper, FeatureSelector
 import numpy as np
 from numpy.random import RandomState
 import nevergrad as ng

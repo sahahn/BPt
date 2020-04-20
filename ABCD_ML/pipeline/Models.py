@@ -6,7 +6,7 @@ with additional information on which work with which problem types
 and default params.
 """
 
-from .extensions.MLP import MLPRegressor, MLPClassifier
+from ..extensions.MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB
@@ -106,14 +106,14 @@ MODELS = {
     'svm regressor': (SVR, ['base svm', 'svm dist']),
     'svm classifier': (SVC, ['base svm classifier', 'svm classifier dist']),
 
-    'mlp regressor': (MLPRegressor, ['base mlp', 'mlp dist 3 layer',
-                                     'mlp dist es 3 layer', 'mlp dist 2 layer',
-                                     'mlp dist es 2 layer', 'mlp dist 1 layer',
-                                     'mlp dist es 1 layer']),
-    'mlp classifier': (MLPClassifier, ['base mlp', 'mlp dist 3 layer',
-                                       'mlp dist es 3 layer', 'mlp dist 2 layer',
-                                       'mlp dist es 2 layer', 'mlp dist 1 layer',
-                                       'mlp dist es 1 layer']),
+    'mlp regressor': (MLPRegressor_Wrapper, ['base mlp', 'mlp dist 3 layer',
+                                             'mlp dist es 3 layer', 'mlp dist 2 layer',
+                                             'mlp dist es 2 layer', 'mlp dist 1 layer',
+                                             'mlp dist es 1 layer']),
+    'mlp classifier': (MLPClassifier_Wrapper, ['base mlp', 'mlp dist 3 layer',
+                                               'mlp dist es 3 layer', 'mlp dist 2 layer',
+                                               'mlp dist es 2 layer', 'mlp dist 1 layer',
+                                               'mlp dist es 1 layer']),
 
     'linear svm classifier': (LinearSVC, ['base linear svc',
                                           'linear svc dist']),

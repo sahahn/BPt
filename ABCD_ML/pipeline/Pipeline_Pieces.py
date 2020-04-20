@@ -7,13 +7,13 @@ from ..helpers.ML_Helpers import (proc_input,
                                   proc_type_dep_str, param_len_check, conv_to_list,
                                   process_params_by_type)
 
-from .extensions.Col_Selector import ColTransformer, InPlaceColTransformer
+from ..extensions.Col_Selector import ColTransformer, InPlaceColTransformer
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 
 from sklearn.pipeline import Pipeline
 from copy import deepcopy, copy
 
-from .extensions.Selector import selector_wrapper
+from .Selector import selector_wrapper
 
 import numpy as np
 

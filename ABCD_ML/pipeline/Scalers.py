@@ -8,7 +8,7 @@ from ..helpers.ML_Helpers import (show_param_options, get_possible_init_params,
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer, MaxAbsScaler,
                                    QuantileTransformer, Normalizer)
-from .extensions.Scalers import Winsorizer
+from ..extensions.Scalers import Winsorizer
 
 
 # Scalers differs from metrics and models in that the types are not restricted
@@ -16,8 +16,6 @@ from .extensions.Scalers import Winsorizer
 # all avaliable scalers are as indexed by SCALERS.
 SCALERS = {
     'standard': (StandardScaler, ['base standard']),
-
-    'minmax': (MinMaxScaler, ['base minmax']),
 
     'minmax': (MinMaxScaler, ['base minmax']),
 

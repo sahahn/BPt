@@ -5,7 +5,8 @@ import time
 
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
-from .extensions.Col_Selector import ColTransformer, InPlaceColTransformer
+from ..extensions.Col_Selector import ColTransformer, InPlaceColTransformer
+
 from sklearn.preprocessing import FunctionTransformer
 from collections import Counter
 
@@ -22,7 +23,7 @@ from ..helpers.ML_Helpers import (conv_to_list, proc_input,
                                   type_check, wrap_pipeline_objs,
                                   is_array_like)
 
-from .extensions.Selector import selector_wrapper
+from .Selector import selector_wrapper
 
 from .Models import AVALIABLE as AVALIABLE_MODELS
 from .Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS

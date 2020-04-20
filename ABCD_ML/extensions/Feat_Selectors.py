@@ -2,7 +2,7 @@ from sklearn.feature_selection import RFE
 from sklearn.base import BaseEstimator
 from sklearn.feature_selection._base import SelectorMixin
 import numpy as np
-from ...helpers.ML_Helpers import proc_mapping
+from ..helpers.ML_Helpers import proc_mapping
 
 
 class RFE_Wrapper(RFE):

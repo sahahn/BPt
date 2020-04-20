@@ -1,4 +1,4 @@
-from .extensions.Pipeline import ABCD_Pipeline
+from .ABCD_Pipeline import ABCD_Pipeline
 from ..helpers.ML_Helpers import is_array_like
 import os
 

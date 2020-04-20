@@ -9,11 +9,6 @@ from sklearn.decomposition import (PCA, FactorAnalysis,
                                    MiniBatchSparsePCA, NMF, SparsePCA,
                                    TruncatedSVD)
 
-from category_encoders import (OneHotEncoder, BackwardDifferenceEncoder,
-                               BinaryEncoder, CatBoostEncoder, HelmertEncoder,
-                               JamesSteinEncoder, LeaveOneOutEncoder, MEstimateEncoder,
-                               PolynomialEncoder, SumEncoder, TargetEncoder, WOEEncoder)
-
 
 def ce_conv(parent):
     '''Wrapper function to make classes from category encoders compatible with ABCD_ML transformer'''
@@ -171,7 +166,15 @@ TRANSFORMERS = {
     'fast ica': (FastICA, ['default']),
     'incremental pca': (IncrementalPCA, ['default']),
     'kernel pca': (KernelPCA, ['default']),
-    'nmf': (NMF, ['default']),
+    'nmf': (NMF, ['default'])}
+
+try:
+    from category_encoders import (OneHotEncoder, BackwardDifferenceEncoder,
+                                   BinaryEncoder, CatBoostEncoder, HelmertEncoder,
+                                   JamesSteinEncoder, LeaveOneOutEncoder, MEstimateEncoder,
+                                   PolynomialEncoder, SumEncoder, TargetEncoder, WOEEncoder)
+
+    extra = {
     'one hot encoder': (ce_conv(OneHotEncoder), ['default']),
     'backward difference encoder': (ce_conv(BackwardDifferenceEncoder), ['default']),
     'binary encoder': (ce_conv(BinaryEncoder), ['default']),
@@ -183,8 +186,12 @@ TRANSFORMERS = {
     'polynomial encoder': (ce_conv(PolynomialEncoder), ['default']),
     'sum encoder': (ce_conv(SumEncoder), ['default']),
     'target encoder': (ce_conv(TargetEncoder), ['default']),
-    'woe encoder': (ce_conv(WOEEncoder), ['default']), 
-}
+    'woe encoder': (ce_conv(WOEEncoder), ['default'])}
+
+    TRANSFORMERS.update(extra)
+
+except ImportError:
+    pass
                             
 
 def get_transformer_and_params(transformer_str, extra_params, params, search_type,

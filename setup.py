@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='ABCD_ML',
-      version='1.1',
+      version='1.2',
       description='Python based Machine Learning library, for tabular ' +
                   'Neuroimaging data, specifically geared towards the' +
                   ' ABCD dataset.',
@@ -19,14 +19,12 @@ setup(name='ABCD_ML',
           'seaborn>=0.9',
           'deslib',
           'imbalanced-learn>=0.6',
-          'shap>=0.34',
+          'shap==0.35',
           'scikit-image>=0.16',
           'tqdm>=4',
           'nevergrad==0.4.0',
           'Ipython',
           'joblib>=0.14',
-          'python-docx',
-          'category_encoders',
       ],
       test_suite='nose.collector',
       tests_require=['nose', 'coverage'],

@@ -46,7 +46,7 @@ def get_name(obj):
         if split.startswith('_'):
             name = name.replace('.' + split + '.', '.')
 
-    name = name.replace('ABCD_ML.pipeline.extensions.Feat_Selectors.RFE_Wrapper',
+    name = name.replace('ABCD_ML.extensions.Feat_Selectors.RFE_Wrapper',
                         'sklearn.feature_selection.RFE')
 
     return name

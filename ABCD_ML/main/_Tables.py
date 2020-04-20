@@ -17,6 +17,8 @@ def Save_Table(self, save_loc, targets='SHOW_ALL',
     subject's data will not be outputted to the table! Likewise, only overlapped subjects
     present in any loaded data, covars, strat, targets, ect... will be outputted to the table!.
 
+    Note: you must have the optional library python-docx installed to use this function.
+
     Parameters
     ----------
     save_loc : str 
@@ -167,6 +169,11 @@ def Save_Table(self, save_loc, targets='SHOW_ALL',
 
         (default = None)
     '''
+
+    try:
+        import docx
+    except ImportError:
+        raise ImportError('Install python-docx to use this function!')
 
     if subjects == 'train' or subjects == 'test':
         split = False

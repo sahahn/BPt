@@ -288,3 +288,13 @@ preset distribution for :ref:`Params`, but then fix the number of `max_features`
                   params = 1,
                   extra_params = {'max_features': 10}) 
                   
+
+.. _Custom Input Objects:
+
+Custom Input Objects
+=====================
+
+Custom input objects can be passed to the `obj` parameter for a number of base :class:`Model_Pipeline <ABCD_ML.Model_Pipeline>` pieces.
+
+There are though, depending on which base piece is being passed, different considerations you may have to make. More information will be
+provided here soon.

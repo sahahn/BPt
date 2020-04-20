@@ -193,7 +193,7 @@ lines.append('Different availible choices for the `metric` parameter' +
              ' are shown below.')
 lines.append('`metric` is accepted by ' +
              ':class:`Problem_Spec<ABCD_ML.Problem_Spec>`, :class:`Param_Search<ABCD_ML.Param_Search>`' +
-             ' and :class:`Feat_Importance<ABCD_ML.Feat_Importance>`)
+             ' and :class:`Feat_Importance<ABCD_ML.Feat_Importance>`')
 lines.append('The str indicator for each `metric` is represented by' +
              'the sub-heading (within "")')
 lines.append('The avaliable metrics are further broken down by which can' +

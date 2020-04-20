@@ -1,5 +1,4 @@
-.. _SearchTypes:
-
+.. _Search Types:
 
 The backend library for conducting hyper-parameter searches within ABCD_ML is facebook's nevergrad.
 They implement a whole bunch of methods, and have limited documentation explaining them.

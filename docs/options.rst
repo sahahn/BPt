@@ -4,9 +4,8 @@
 Models
 ******
 
-Different availible choices for the `model` parameter are shown below.
-`model` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `model` is represented by the sub-heading (within "")
+Different base obj choices for the :class:`Model<ABCD_ML.Model>` are shown below
+The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
 The avaliable models are further broken down by which can workwith different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
@@ -236,7 +235,7 @@ binary
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
@@ -248,7 +247,7 @@ binary
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -262,7 +261,7 @@ binary
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
@@ -274,7 +273,7 @@ binary
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -288,7 +287,7 @@ binary
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
@@ -300,7 +299,7 @@ binary
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -631,7 +630,7 @@ regression
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
@@ -643,7 +642,7 @@ regression
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -657,7 +656,7 @@ regression
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
@@ -669,7 +668,7 @@ regression
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -683,7 +682,7 @@ regression
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
@@ -695,7 +694,7 @@ regression
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1033,7 +1032,7 @@ categorical
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
@@ -1045,7 +1044,7 @@ categorical
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1059,7 +1058,7 @@ categorical
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
@@ -1071,7 +1070,7 @@ categorical
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1085,7 +1084,7 @@ categorical
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 
@@ -1097,7 +1096,7 @@ categorical
 		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
 		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
 		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
+		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
 		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
 		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
 		early_stopping: True
@@ -1204,155 +1203,6 @@ categorical
 
 
 
-multilabel
-==========
-"dt classifier"
-***************
-
-  Base Class Documenation: :class:`sklearn.tree.DecisionTreeClassifier`
-
-  Param Distributions
-
-	0. "base dt" ::
-
-		defaults only
-
-	1. "dt classifier dist" ::
-
-		max_depth: Scalar{int,Cl(1,30)}[sigma=Log{exp=1.2}]:16
-		min_samples_split: Scalar{int,Cl(2,50)}[sigma=Log{exp=1.2}]:26
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-
-
-"knn classifier"
-****************
-
-  Base Class Documenation: :class:`sklearn.neighbors.KNeighborsClassifier`
-
-  Param Distributions
-
-	0. "base knn" ::
-
-		n_neighbors: 5
-
-	1. "knn dist" ::
-
-		weights: TransitionChoice(choices=Tuple(uniform,distance),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):uniform
-		n_neighbors: Scalar{int,Cl(2,25)}[sigma=Log{exp=1.2}]:14
-
-
-"mlp classifier"
-****************
-
-  Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
-
-  Param Distributions
-
-	0. "base mlp" ::
-
-		defaults only
-
-	1. "mlp dist 3 layer" ::
-
-		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100 100]
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
-
-	2. "mlp dist es 3 layer" ::
-
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
-		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
-
-	3. "mlp dist 2 layer" ::
-
-		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100]
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
-
-	4. "mlp dist es 2 layer" ::
-
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
-		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
-
-	5. "mlp dist 1 layer" ::
-
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
-
-	6. "mlp dist es 1 layer" ::
-
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,500)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
-		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
-
-
-"random forest classifier"
-**************************
-
-  Base Class Documenation: :class:`sklearn.ensemble.RandomForestClassifier`
-
-  Param Distributions
-
-	0. "base rf" ::
-
-		n_estimators: 100
-
-	1. "rf classifier dist" ::
-
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
-		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		max_features: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
-		min_samples_split: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
-		bootstrap: True
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-
-
-
 .. _Metrics:
  
 *******
@@ -1360,8 +1210,8 @@ Metrics
 *******
 
 Different availible choices for the `metric` parameter are shown below.
-`metric` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `metric` is represented bythe sub-heading (within "")
+`metric` is accepted by :class:`Problem_Spec<ABCD_ML.Problem_Spec>`, :class:`Param_Search<ABCD_ML.Param_Search>` and :class:`Feat_Importance<ABCD_ML.Feat_Importance>`
+The str indicator for each `metric` is represented bythe sub-heading (within "")
 The avaliable metrics are further broken down by which can work with different problem_types.
 Additionally, a link to the original models documentation is shown.
 Note: When supplying the metric as a str indicator you donot need to include the prepended "multiclass"
@@ -1625,184 +1475,15 @@ categorical
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
 
 
-multilabel
-==========
-"accuracy"
-**********
-
-  Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
-
-"by class average precision"
-****************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"by class f1"
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"by class jaccard"
-******************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"by class precision"
-********************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"by class recall"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-"by class roc auc"
-******************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"log"
-*****
-
-  Base Func Documenation: :func:`sklearn.metrics.log_loss`
-
-"macro average precision"
-*************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"macro f1"
-**********
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"macro jaccard"
-***************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"macro precision"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"macro recall"
-**************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-"macro roc auc"
-***************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"micro average precision"
-*************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"micro f1"
-**********
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"micro jaccard"
-***************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"micro precision"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"micro recall"
-**************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-"micro roc auc"
-***************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"neg hamming"
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
-
-"samples average precision"
-***************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"samples f1"
-************
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"samples jaccard"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"samples precision"
-*******************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"samples recall"
-****************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-"samples roc auc"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"weighted average precision"
-****************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"weighted f1"
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"weighted jaccard"
-******************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"weighted precision"
-********************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"weighted recall"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-"weighted roc auc"
-******************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-
 .. _Loaders:
  
 *******
 Loaders
 *******
 
-Different availible choices for the `loader` parameter are shown below.
-loader is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `loader` is represented by the sub-heading (within "")
-Additionally, a link to the original loaders documentation as well as the implemented parameter distributions are shown.
+Different base obj choices for the :class:`Loader<ABCD_ML.Loader>` are shown below
+The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
+Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
 All Problem Types
 =================
@@ -1818,6 +1499,42 @@ All Problem Types
 		defaults only
 
 
+"surface rois"
+**************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Loaders.SurfLabels`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"volume rois"
+*************
+
+  Base Class Documenation: :class:`nilearn.input_data.nifti_labels_masker.NiftiLabelsMasker`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"connectivity"
+**************
+
+  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Loaders.Connectivity`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 
 .. _Imputers:
  
@@ -1825,14 +1542,10 @@ All Problem Types
 Imputers
 ********
 
-Different availible choices for the `imputer` parameter are shown below.
-imputer is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `imputer` is represented by the sub-heading (within "")
-Additionally, a link to the original imputers documentation as well as the implemented parameter distributions are shown.
-Imputers are also special, in that a model can be passed instead of the imputer str. In that case, the model will be used to fill any NaN by column.
-For `imputer_scope` of float, or custom column names, only regression type models are valid, and for scope of categorical, only binary / multiclass model are valid!
-The sklearn iterative imputer is used when a model is passed.
-Also, if a model is passed, then the `imputer_params` argument will then be considered as applied to the base  estimator / model!
+Different base obj choices for the :class:`Imputer<ABCD_ML.Imputer>` are shown below
+The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
+Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
+Note that if the iterative imputer is requested, base_model must also be passed.
 
 All Problem Types
 =================
@@ -1903,10 +1616,9 @@ All Problem Types
 Scalers
 *******
 
-Different availible choices for the `scaler` parameter are shown below.
-scaler is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `scaler` is represented by the sub-heading (within "")
-Additionally, a link to the original scalers documentation as well as the implemented parameter distributions are shown.
+Different base obj choices for the :class:`Scaler<ABCD_ML.Scaler>` are shown below
+The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
+Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
 All Problem Types
 =================
@@ -2048,10 +1760,9 @@ All Problem Types
 Transformers
 ************
 
-Different availible choices for the `transformer` parameter are shown below.
-transformer is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `transformer` is represented by the sub-heading (within "")
-Additionally, a link to the original transformers documentation as well as the implemented parameter distributions are shown.
+Different base obj choices for the :class:`Transformer<ABCD_ML.Transformer>` are shown below
+The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
+Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
 All Problem Types
 =================
@@ -2331,10 +2042,9 @@ All Problem Types
 Samplers
 ********
 
-Different availible choices for the `sampler` parameter are shown below.
-`sampler` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `sampler` is represented by the sub-heading (within "")
-Additionally, a link to the original samplers documentation as well as the implemented parameter distributions are shown.
+Different base obj choices for the :class:`Sampler<ABCD_ML.Sampler>` are shown below
+The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
+Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
 All Problem Types
 =================
@@ -2348,8 +2058,6 @@ All Problem Types
 	0. "base no change sampler" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "smote"
@@ -2362,8 +2070,6 @@ All Problem Types
 	0. "base change sampler" ::
 
 		sampler_type: change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "adasyn"
@@ -2376,8 +2082,6 @@ All Problem Types
 	0. "base change sampler" ::
 
 		sampler_type: change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "borderline smote"
@@ -2390,8 +2094,6 @@ All Problem Types
 	0. "base change sampler" ::
 
 		sampler_type: change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "svm smote"
@@ -2404,8 +2106,6 @@ All Problem Types
 	0. "base change sampler" ::
 
 		sampler_type: change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "kmeans smote"
@@ -2418,8 +2118,6 @@ All Problem Types
 	0. "base change sampler" ::
 
 		sampler_type: change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "smote nc"
@@ -2432,8 +2130,6 @@ All Problem Types
 	0. "base special sampler" ::
 
 		sampler_type: special
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "cluster centroids"
@@ -2446,8 +2142,6 @@ All Problem Types
 	0. "base change sampler" ::
 
 		sampler_type: change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "random under sampler"
@@ -2460,14 +2154,10 @@ All Problem Types
 	0. "base no change sampler" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 	1. "rus binary ratio" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 		sampling_strategy: Scalar{Cl(0.1,1.2)}[sigma=Log{exp=1.2}]:0.8
 
 
@@ -2481,8 +2171,6 @@ All Problem Types
 	0. "base no change sampler" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "tomek links"
@@ -2495,8 +2183,6 @@ All Problem Types
 	0. "base no change sampler" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "enn"
@@ -2509,8 +2195,6 @@ All Problem Types
 	0. "base no change sampler" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "renn"
@@ -2523,8 +2207,6 @@ All Problem Types
 	0. "base no change sampler" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "all knn"
@@ -2537,8 +2219,6 @@ All Problem Types
 	0. "base no change sampler" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "condensed nn"
@@ -2551,8 +2231,6 @@ All Problem Types
 	0. "base no change sampler" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "one sided selection"
@@ -2565,8 +2243,6 @@ All Problem Types
 	0. "base no change sampler" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "neighbourhood cleaning rule"
@@ -2579,8 +2255,6 @@ All Problem Types
 	0. "base no change sampler" ::
 
 		sampler_type: no change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "smote enn"
@@ -2593,8 +2267,6 @@ All Problem Types
 	0. "base change sampler" ::
 
 		sampler_type: change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 "smote tomek"
@@ -2607,8 +2279,6 @@ All Problem Types
 	0. "base change sampler" ::
 
 		sampler_type: change
-		regression_bins: 3
-		regression_bin_strategy: uniform
 
 
 
@@ -2618,11 +2288,10 @@ All Problem Types
 Feat Selectors
 **************
 
-Different availible choices for the `feat_selector` parameter are shown below.
-`feat_selector` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `feat_selector` is represented by the sub-heading (within "")
-The avaliable feat selectors are further broken down by which can work with different problem_types.
-Additionally, a link to the original feat selectors  documentation as well as the implemented parameter distributions are shown.
+Different base obj choices for the :class:`Feat_Selector<ABCD_ML.Feat_Selector>` are shown below
+The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
+The avaliable feat selectors are further broken down by which can workwith different problem_types.
+Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
 binary
 ======
@@ -2667,12 +2336,12 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f5a0cb379e0>
+		score_func: <function f_classif at 0x7fa8533174d0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f5a0cb379e0>
+		score_func: <function f_classif at 0x7fa8533174d0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2732,12 +2401,12 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f5a0cb37d40>
+		score_func: <function f_regression at 0x7fa8533177a0>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f5a0cb37d40>
+		score_func: <function f_regression at 0x7fa8533177a0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2797,44 +2466,13 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f5a0cb379e0>
+		score_func: <function f_classif at 0x7fa8533174d0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f5a0cb379e0>
+		score_func: <function f_classif at 0x7fa8533174d0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
-
-
-"variance threshold"
-********************
-
-  Base Class Documenation: :class:`sklearn.feature_selection.VarianceThreshold`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
-
-multilabel
-==========
-"selector"
-**********
-
-  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Feat_Selectors.FeatureSelector`
-
-  Param Distributions
-
-	0. "random" ::
-
-		mask: sets as random features
-
-	1. "searchable" ::
-
-		mask: sets as hyperparameters
 
 
 "variance threshold"
@@ -2856,11 +2494,11 @@ multilabel
 Ensemble Types
 **************
 
-Different availible choices for the `ensemble` parameter are shown below.
-`ensemble` is accepted by :func:`Evaluate <ABCD_ML.ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.ABCD_ML.Test>`.
-The exact str indicator for each `ensemble` is represented by the sub-heading (within "")
-The avaliable ensemble types are further broken down by which can work with different problem_types.
-Additionally, a link to the original ensemble types  documentation as well as the implemented parameter distributions are shown.
+Different base obj choices for the :class:`Ensemble<ABCD_ML.Ensemble>` are shown below
+The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
+The avaliable ensembles are further broken down by which can workwith different problem_types.
+Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
+Also note that ensemble require a few extra params! I.e., in general, all DESlib based ensemble need needs_split = True
 
 binary
 ======
@@ -2871,10 +2509,9 @@ binary
 
   Param Distributions
 
-	0. "single default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: True
+		defaults only
 
 
 "aposteriori"
@@ -2884,10 +2521,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "apriori"
@@ -2897,10 +2533,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "bagging classifier"
@@ -2910,10 +2545,9 @@ binary
 
   Param Distributions
 
-	0. "single default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: True
+		defaults only
 
 
 "balanced bagging classifier"
@@ -2923,10 +2557,9 @@ binary
 
   Param Distributions
 
-	0. "bb default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: True
+		defaults only
 
 
 "des clustering"
@@ -2936,10 +2569,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "des knn"
@@ -2949,10 +2581,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "deskl"
@@ -2962,10 +2593,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "desmi"
@@ -2975,10 +2605,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "desp"
@@ -2988,10 +2617,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "exponential"
@@ -3001,10 +2629,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "knop"
@@ -3014,10 +2641,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "knorae"
@@ -3027,10 +2653,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "knrau"
@@ -3040,10 +2665,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "lca"
@@ -3053,10 +2677,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "logarithmic"
@@ -3066,10 +2689,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "mcb"
@@ -3079,10 +2701,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "metades"
@@ -3092,10 +2713,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "min dif"
@@ -3105,10 +2725,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "mla"
@@ -3118,10 +2737,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "ola"
@@ -3131,10 +2749,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "rank"
@@ -3144,10 +2761,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "rrc"
@@ -3157,10 +2773,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "single best"
@@ -3170,10 +2785,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "stacked"
@@ -3183,10 +2797,9 @@ binary
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "stacking classifier"
@@ -3196,11 +2809,21 @@ binary
 
   Param Distributions
 
-	0. "stacking default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: False
-		cv: 3
+		defaults only
+
+
+"voting classifier"
+*******************
+
+  Base Class Documenation: :class:`sklearn.ensemble.VotingClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 
@@ -3213,10 +2836,9 @@ regression
 
   Param Distributions
 
-	0. "single default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: True
+		defaults only
 
 
 "bagging regressor"
@@ -3226,10 +2848,9 @@ regression
 
   Param Distributions
 
-	0. "single default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: True
+		defaults only
 
 
 "stacking regressor"
@@ -3239,11 +2860,21 @@ regression
 
   Param Distributions
 
-	0. "stacking default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: False
-		cv: 3
+		defaults only
+
+
+"voting regressor"
+******************
+
+  Base Class Documenation: :class:`sklearn.ensemble.VotingRegressor`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 
@@ -3256,10 +2887,9 @@ categorical
 
   Param Distributions
 
-	0. "single default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: True
+		defaults only
 
 
 "aposteriori"
@@ -3269,10 +2899,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "apriori"
@@ -3282,10 +2911,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "bagging classifier"
@@ -3295,10 +2923,9 @@ categorical
 
   Param Distributions
 
-	0. "single default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: True
+		defaults only
 
 
 "balanced bagging classifier"
@@ -3308,10 +2935,9 @@ categorical
 
   Param Distributions
 
-	0. "bb default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: True
+		defaults only
 
 
 "des clustering"
@@ -3321,10 +2947,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "des knn"
@@ -3334,10 +2959,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "deskl"
@@ -3347,10 +2971,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "desmi"
@@ -3360,10 +2983,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "desp"
@@ -3373,10 +2995,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "exponential"
@@ -3386,10 +3007,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "knop"
@@ -3399,10 +3019,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "knorae"
@@ -3412,10 +3031,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "knrau"
@@ -3425,10 +3043,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "lca"
@@ -3438,10 +3055,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "logarithmic"
@@ -3451,10 +3067,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "mcb"
@@ -3464,10 +3079,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "metades"
@@ -3477,10 +3091,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "min dif"
@@ -3490,10 +3103,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "mla"
@@ -3503,10 +3115,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "ola"
@@ -3516,10 +3127,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "rank"
@@ -3529,10 +3139,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "rrc"
@@ -3542,10 +3151,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "single best"
@@ -3555,10 +3163,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "stacked"
@@ -3568,10 +3175,9 @@ categorical
 
   Param Distributions
 
-	0. "des default" ::
+	0. "default" ::
 
-		needs_split: True
-		single_estimator: False
+		defaults only
 
 
 "stacking classifier"
@@ -3581,14 +3187,21 @@ categorical
 
   Param Distributions
 
-	0. "stacking default" ::
+	0. "default" ::
 
-		needs_split: False
-		single_estimator: False
-		cv: 3
+		defaults only
 
 
+"voting classifier"
+*******************
 
-multilabel
-==========
+  Base Class Documenation: :class:`sklearn.ensemble.VotingClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 

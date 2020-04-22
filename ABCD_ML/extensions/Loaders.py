@@ -1,5 +1,6 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 import numpy as np
+import warnings
 
 class Identity(BaseEstimator, TransformerMixin):
     
@@ -53,7 +54,6 @@ def load_surf(surf):
             return surf.get_parc(copy=True)
         except AttributeError:
             return np.array(surf).copy()
-
 
 class SurfLabels(BaseEstimator, TransformerMixin):
     
@@ -208,22 +208,28 @@ class SurfLabels(BaseEstimator, TransformerMixin):
                              'You must call fit() before calling transform()')
             
     def transform(self, X):
+        ''' If X has the both the same dimensions, raise warning'''
+        
+        if len(X.shape) == 2 and (X.shape[0] == X.shape[1]):
+            warnings.warn('X was passed with the same length in each dimension, '
+                          'Assuming that axis=0 is that data dimension w/ vertex values')
         
         # The data dimension is just the dimension with the same len as the label
-        data_dim = X.shape.index(len(self.labels_))
+        self.data_dim_ = X.shape.index(len(self.labels_))
+        self.X_shape_ = X.shape
         
         # Get the ROI value for each label
         X_trans = []
         for i in self._non_bkg_unique:
 
-            if data_dim == 0:
+            if self.data_dim_ == 0:
                 X_i = X[self.labels_ == i]
             else:
                 X_i = X[:, self.labels_ == i]
 
-            X_trans.append(self.strategy(X_i, axis=data_dim))
+            X_trans.append(self.strategy(X_i, axis=self.data_dim_))
 
-        if data_dim == 1:
+        if self.data_dim_ == 1:
             X_trans = np.stack(X_trans, axis=1)
         else:
             X_trans = np.array(X_trans)
@@ -231,7 +237,30 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         # Return based on vectorizes
         if not self.vectorize:
             return X_trans
+        
+        self.o_shape_ = X_trans.shape
         return X_trans.flatten()
+
+    def reverse_transform(self, X_trans):
+        
+        # Reverse the vectorize
+        if self.vectorize:
+            X_trans = X_trans.reshape(self.o_shape_)
+            
+        X = np.zeros(self.X_shape_,
+                     dtype=X_trans.dtype, order='C')
+        
+        if self.data_dim_ == 1:
+            X = np.rollaxis(X, -1)
+            X_trans = np.rollaxis(X_trans, -1)
+
+        for i, label in enumerate(self._non_bkg_unique):
+            X[self.labels_ == label] = X_trans[i]
+            
+        if self.data_dim_ == 1:
+            X = np.rollaxis(X, -1)
+                
+        return X
 
 
 # Create wrapper for nilearn connectivity measure to make it work with 1 subject

@@ -1,4 +1,3 @@
-python-docx
 xgboost
 lightgbm
 nilearn
@@ -18,3 +17,4 @@ tqdm>=4
 nevergrad==0.4.0
 Ipython
 joblib>=0.14
+python-docx

@@ -219,7 +219,7 @@ binary
 "mlp classifier"
 ****************
 
-  Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
+  Base Class Documenation: :class:`ABCD_ML.extensions.MLP.MLPClassifier_Wrapper`
 
   Param Distributions
 
@@ -614,7 +614,7 @@ regression
 "mlp regressor"
 ***************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.MLP.MLPRegressor`
+  Base Class Documenation: :class:`ABCD_ML.extensions.MLP.MLPRegressor_Wrapper`
 
   Param Distributions
 
@@ -1016,7 +1016,7 @@ categorical
 "mlp classifier"
 ****************
 
-  Base Class Documenation: :class:`sklearn.neural_network.MLPClassifier`
+  Base Class Documenation: :class:`ABCD_ML.extensions.MLP.MLPClassifier_Wrapper`
 
   Param Distributions
 
@@ -1490,7 +1490,7 @@ All Problem Types
 "identity"
 **********
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Loaders.Identity`
+  Base Class Documenation: :class:`ABCD_ML.extensions.Loaders.Identity`
 
   Param Distributions
 
@@ -1502,7 +1502,7 @@ All Problem Types
 "surface rois"
 **************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Loaders.SurfLabels`
+  Base Class Documenation: :class:`ABCD_ML.extensions.Loaders.SurfLabels`
 
   Param Distributions
 
@@ -1526,7 +1526,7 @@ All Problem Types
 "connectivity"
 **************
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Loaders.Connectivity`
+  Base Class Documenation: :class:`ABCD_ML.extensions.Loaders.Connectivity`
 
   Param Distributions
 
@@ -1704,7 +1704,7 @@ All Problem Types
 "winsorize"
 ***********
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Scalers.Winsorizer`
+  Base Class Documenation: :class:`ABCD_ML.extensions.Scalers.Winsorizer`
 
   Param Distributions
 
@@ -1883,6 +1883,18 @@ All Problem Types
 *****
 
   Base Class Documenation: :class:`sklearn.decomposition.NMF`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"truncated svd"
+***************
+
+  Base Class Documenation: :class:`sklearn.decomposition.TruncatedSVD`
 
   Param Distributions
 
@@ -2314,7 +2326,7 @@ binary
 "selector"
 **********
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Feat_Selectors.FeatureSelector`
+  Base Class Documenation: :class:`ABCD_ML.extensions.Feat_Selectors.FeatureSelector`
 
   Param Distributions
 
@@ -2336,12 +2348,12 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7fa8533174d0>
+		score_func: <function f_classif at 0x7fc27ed944d0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7fa8533174d0>
+		score_func: <function f_classif at 0x7fc27ed944d0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2379,7 +2391,7 @@ regression
 "selector"
 **********
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Feat_Selectors.FeatureSelector`
+  Base Class Documenation: :class:`ABCD_ML.extensions.Feat_Selectors.FeatureSelector`
 
   Param Distributions
 
@@ -2401,12 +2413,12 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7fa8533177a0>
+		score_func: <function f_regression at 0x7fc27ed947a0>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7fa8533177a0>
+		score_func: <function f_regression at 0x7fc27ed947a0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2444,7 +2456,7 @@ categorical
 "selector"
 **********
 
-  Base Class Documenation: :class:`ABCD_ML.pipeline.extensions.Feat_Selectors.FeatureSelector`
+  Base Class Documenation: :class:`ABCD_ML.extensions.Feat_Selectors.FeatureSelector`
 
   Param Distributions
 
@@ -2466,12 +2478,12 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7fa8533174d0>
+		score_func: <function f_classif at 0x7fc27ed944d0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7fa8533174d0>
+		score_func: <function f_classif at 0x7fc27ed944d0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 

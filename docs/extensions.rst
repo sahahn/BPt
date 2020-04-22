@@ -6,4 +6,4 @@ Extensions
 
 Winsorizer
 ==========
-.. autoclass:: ABCD_ML.pipeline.extensions.Scalers.Winsorizer
+.. autoclass:: ABCD_ML.extensions.Scalers.Winsorizer

@@ -2,11 +2,11 @@
 
 Model_Pipeline
 ==============
-.. autoclass:: Model_Pipeline
+.. autoclass:: ABCD_ML.Model_Pipeline
 
 Problem_Spec
 ============
-.. autoclass:: Problem_Spec
+.. autoclass:: ABCD_ML.Problem_Spec
 
 Pieces
 =======

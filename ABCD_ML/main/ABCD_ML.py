@@ -80,7 +80,7 @@ class ABCD_ML():
                  low_memory_mode=False, strat_u_name='_Strat',
                  random_state=534, n_jobs=1, dpi=100):
         '''Main class used within ABCD_ML for interfacing with Data Loading
-        and Modeling / Other funcationality. 
+        and Modeling / Other funcationality.
 
         Parameters
         ----------
@@ -88,7 +88,7 @@ class ABCD_ML():
             The name of this experimental run,
             used explicitly in saving logs, and figures, where the passed
             `exp_name` is used as the name of the log folder.
-            If log_dr is not set to None-
+            If log_dr is not set to None,
             (if not None then saves logs and figures)
             then a folder is created within the log dr
             with the exp_name.
@@ -100,7 +100,7 @@ class ABCD_ML():
         log_dr : str, Path or None, optional
             The directory in which to store logs...
             If set to None, then will not save any logs!
-            If set to '', will save in the current dr.
+            If set to empty str, will save in the current dr.
 
             ::
 
@@ -108,8 +108,8 @@ class ABCD_ML():
 
         existing_log : {'new', 'append', 'overwrite'}, optional
             This parameter dictates different choices for when
-            an a folder with `exp_name` already exists in the specified
-            `log_dr'.
+            an a folder with exp_name already exists in the specified
+            log_dr.
 
             These choices are:
 
@@ -214,17 +214,18 @@ class ABCD_ML():
             ::
 
                 default = 1
-    
+
         dpi : int, optional
-            The default dpi in which to save any automatically saved fiugres with.
-            Where this parameter can also be set to specific values for specific plots.
+            The default dpi in which to save any automatically saved fiugres
+            with.
+            Where this parameter can also be set to specific values
+            for specific plots.
 
             ::
 
                 default = 1
 
         '''
-
         # Load logging class params
         self.exp_name = exp_name
         self.log_dr = log_dr

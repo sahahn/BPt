@@ -67,7 +67,7 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         '''This class functions simmilar to NiftiLabelsMasker from nilearn,
         but instead is for surfaces (though it could work on a cifti
         image too).
-        
+
         Parameters
         ----------
         labels : str or array-like
@@ -125,11 +125,15 @@ class SurfLabels(BaseEstimator, TransformerMixin):
                 Calculate the variance with np.var
 
             If a custom function is passed, it must accept two arguments,
-            custom_func(X_i, axis=data_dim), X_i, where X_i is a subjects data array
-            where that subjects data corresponds to labels == some class i, and can potentially
-            be either a 1D array or 2D array, and an axis argument to specify which axis is
-            the data dimension (e.g., if calculating for a time-series [n_timepoints, data_dim], then data_dim = 1,
-            if calculating for say stacked contrasts where [data_dim, n_contrasts], data_dim = 0, and lastly for a 1D
+            custom_func(X_i, axis=data_dim), X_i, where X_i is a subjects data
+            array where that subjects data corresponds to
+            labels == some class i, and can potentially
+            be either a 1D array or 2D array, and an axis argument
+            to specify which axis is
+            the data dimension (e.g., if calculating for a time-series
+            [n_timepoints, data_dim], then data_dim = 1,
+            if calculating for say stacked contrasts where
+            [data_dim, n_contrasts], data_dim = 0, and lastly for a 1D
             array, data_dim is also 0.
 
             (default = 'mean')
@@ -172,16 +176,17 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         if self.mask_ is not None:
             self.mask_ = self.mask_.astype(bool)
             self.labels_[self.mask_] = self.background_label
-        
-        # X can either be a 1D surface, or a 2D surface (e.g. - for timeseries or stacked contrasts)
+
+        # X can either be a 1D surface, or a 2D surface
+        # (e.g. - for timeseries or stacked contrasts)
         if len(X.shape) > 2:
             raise RuntimeError('X can be at most 2D.')
-        
+
         if len(self.labels_) not in X.shape:
-            raise RuntimeError('Size of labels not found in X. '+ \
-                               'Make sure your data is in the same standard space ' + \
-                               'as the labels you are using!')
-            
+            raise RuntimeError('Size of labels not found in X. '
+                               'Make sure your data is in the same '
+                               'space as the labels you are using!')
+
         # Proc self.background_label, if int turn to np array
         if isinstance(self.background_label, int):
             self._background_label = np.array([self.background_label])
@@ -244,46 +249,46 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         # Return based on vectorizes
         if not self.vectorize:
             return X_trans
-        
+
         self.o_shape_ = X_trans.shape
         return X_trans.flatten()
 
-    def reverse_transform(self, X_trans):
-        
+    def inverse_transform(self, X):
+
         # Reverse the vectorize
         if self.vectorize:
-            X_trans = X_trans.reshape(self.o_shape_)
-            
-        X = np.zeros(self.X_shape_,
-                     dtype=X_trans.dtype, order='C')
-        
+            X = X.reshape(self.o_shape_)
+
+        X_trans = np.zeros(self.X_shape_, dtype=X.dtype, order='C')
+
         if self.data_dim_ == 1:
-            X = np.rollaxis(X, -1)
             X_trans = np.rollaxis(X_trans, -1)
+            X = np.rollaxis(X, -1)
 
         for i, label in enumerate(self._non_bkg_unique):
-            X[self.labels_ == label] = X_trans[i]
-            
+            X_trans[self.labels_ == label] = X[i]
+
         if self.data_dim_ == 1:
-            X = np.rollaxis(X, -1)
-                
-        return X
+            X_trans = np.rollaxis(X_trans, -1)
+
+        return X_trans
 
 
-# Create wrapper for nilearn connectivity measure to make it work with 1 subject
+# Create wrapper for nilearn connectivity measure to make it
+# work with 1 subject
 try:
     from nilearn.connectome import ConnectivityMeasure
 
     class Connectivity(ConnectivityMeasure):
-    
+
         def proc_X(self, X):
-            
+
             if not isinstance(X, list):
                 if len(np.shape(X)) == 2:
                     return [X]
 
             return X
-        
+
         def fit(self, X, y=None):
             return super().fit(self.proc_X(X), y)
         

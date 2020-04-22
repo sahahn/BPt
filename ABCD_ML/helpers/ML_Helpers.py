@@ -514,16 +514,16 @@ def type_check(ud):
 
 
 def proc_mapping(indx, mapping):
-    
+
     if len(mapping) > 0 and len(indx) > 0:
 
-        # If should proc list... 
+        # If should proc list...
         if is_array_like(indx[0]):
             return [proc_mapping(i, mapping) for i in indx]
 
         else:
             new_indx = set()
-            
+
             for i in indx:
                 new = mapping[i]
 
@@ -537,13 +537,13 @@ def proc_mapping(indx, mapping):
             # Sort, then return
             new_indx = sorted(list(new_indx))
             return new_indx
-        
+
     else:
         return indx
 
 
 def update_mapping(mapping, new_mapping):
-    
+
     # Go through the mapping and update each key with the new mapping
     for key in mapping:
 
@@ -564,7 +564,7 @@ def update_mapping(mapping, new_mapping):
 
                 else:
                     new_vals.append(v)
-                    
+
             mapping[key] = sorted(list(set(new_vals)))
 
         # Assume int if not list
@@ -671,6 +671,7 @@ def proc_type_dep_str(in_strs, avaliable, problem_type):
         return final_strs
     return final_strs[0]
 
+
 def check_avaliable(in_strs, avaliable, problem_type):
 
     avaliable_by_type = get_a_by_type(avaliable, in_strs, problem_type)
@@ -690,6 +691,7 @@ def get_a_by_type(avaliable, in_strs, problem_type):
             avaliable_by_type[s] = s
 
     return avaliable_by_type
+
 
 def param_len_check(names, params, _print=print):
 
@@ -728,6 +730,7 @@ def replace_model_name(base_estimator_params):
 
     return new
 
+
 def get_avaliable_run_name(name, model, scores):
 
     if name is None or name == 'default':
@@ -750,4 +753,3 @@ def get_avaliable_run_name(name, model, scores):
         name = name + str(n)
 
     return name
-

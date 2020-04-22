@@ -1,4 +1,5 @@
-from ..helpers.ML_Helpers import get_obj_and_params, proc_mapping, update_mapping, show_objects
+from ..helpers.ML_Helpers import (get_obj_and_params, proc_mapping,
+                                  update_mapping)
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -11,21 +12,23 @@ from sklearn.decomposition import (PCA, FactorAnalysis,
 
 
 def ce_conv(parent):
-    '''Wrapper function to make classes from category encoders compatible with ABCD_ML transformer'''
-    
+    '''Wrapper function to make classes from category encoders
+    compatible with ABCD_ML transformer'''
+
     class child(parent):
 
         __parent_name__ = parent.__module__ + '.' + parent.__qualname__
-        
+
         def fit(self, X, y=None, **kwargs):
-        
+
             self.return_df = False
             self.cols = [i for i in range(X.shape[1])]
-        
+
             super().fit(X, y, **kwargs)
             return self
-        
+
     return child
+
 
 class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
@@ -62,7 +65,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
     def fit_transform(self, X, y=None, mapping=None, **kwargs):
 
-        if mapping == None:
+        if mapping is None:
             mapping = {}
 
         self._proc_mapping(mapping)
@@ -85,6 +88,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         # Update mapping
         update_mapping(mapping, new_mapping)
+        self._out_mapping = mapping.copy()
 
         return np.hstack([X_trans, X[:, rest_inds]])
 
@@ -166,78 +170,45 @@ TRANSFORMERS = {
     'fast ica': (FastICA, ['default']),
     'incremental pca': (IncrementalPCA, ['default']),
     'kernel pca': (KernelPCA, ['default']),
-    'nmf': (NMF, ['default'])}
+    'nmf': (NMF, ['default']),
+    'truncated svd': (TruncatedSVD, ['default'])}
 
 try:
     from category_encoders import (OneHotEncoder, BackwardDifferenceEncoder,
-                                   BinaryEncoder, CatBoostEncoder, HelmertEncoder,
-                                   JamesSteinEncoder, LeaveOneOutEncoder, MEstimateEncoder,
-                                   PolynomialEncoder, SumEncoder, TargetEncoder, WOEEncoder)
+                                   BinaryEncoder, CatBoostEncoder,
+                                   HelmertEncoder,
+                                   JamesSteinEncoder, LeaveOneOutEncoder,
+                                   MEstimateEncoder,
+                                   PolynomialEncoder, SumEncoder,
+                                   TargetEncoder, WOEEncoder)
 
     extra = {
-    'one hot encoder': (ce_conv(OneHotEncoder), ['default']),
-    'backward difference encoder': (ce_conv(BackwardDifferenceEncoder), ['default']),
-    'binary encoder': (ce_conv(BinaryEncoder), ['default']),
-    'cat boost encoder': (ce_conv(CatBoostEncoder), ['default']),
-    'helmert encoder': (ce_conv(HelmertEncoder), ['default']),
-    'james stein encoder': (ce_conv(JamesSteinEncoder), ['default']),
-    'leave one out encoder': (ce_conv(LeaveOneOutEncoder), ['default']),
-    'm estimate encoder': (ce_conv(MEstimateEncoder), ['default']),
-    'polynomial encoder': (ce_conv(PolynomialEncoder), ['default']),
-    'sum encoder': (ce_conv(SumEncoder), ['default']),
-    'target encoder': (ce_conv(TargetEncoder), ['default']),
-    'woe encoder': (ce_conv(WOEEncoder), ['default'])}
+     'one hot encoder': (ce_conv(OneHotEncoder), ['default']),
+     'backward difference encoder': (ce_conv(BackwardDifferenceEncoder),
+                                     ['default']),
+     'binary encoder': (ce_conv(BinaryEncoder), ['default']),
+     'cat boost encoder': (ce_conv(CatBoostEncoder), ['default']),
+     'helmert encoder': (ce_conv(HelmertEncoder), ['default']),
+     'james stein encoder': (ce_conv(JamesSteinEncoder), ['default']),
+     'leave one out encoder': (ce_conv(LeaveOneOutEncoder), ['default']),
+     'm estimate encoder': (ce_conv(MEstimateEncoder), ['default']),
+     'polynomial encoder': (ce_conv(PolynomialEncoder), ['default']),
+     'sum encoder': (ce_conv(SumEncoder), ['default']),
+     'target encoder': (ce_conv(TargetEncoder), ['default']),
+     'woe encoder': (ce_conv(WOEEncoder), ['default'])}
 
     TRANSFORMERS.update(extra)
 
 except ImportError:
     pass
-                            
 
-def get_transformer_and_params(transformer_str, extra_params, params, search_type,
-                               random_state=None, num_feat_keys=None):
+
+def get_transformer_and_params(transformer_str, extra_params, params,
+                               search_type, random_state=None,
+                               num_feat_keys=None):
 
     transformer, extra_transformer_params, transformer_params =\
         get_obj_and_params(transformer_str, TRANSFORMERS, extra_params, params,
                            search_type)
 
     return transformer(**extra_transformer_params), transformer_params
-
-
-def Show_Transformers(self, transformer=None, show_params_options=False,
-                      show_object=False,
-                      show_all_possible_params=False):
-    '''Print out the avaliable data transformers.
-
-    Parameters
-    ----------
-    transformer : str or list, optional
-        Provide a str or list of strs, where
-        each str is the exact transformer str indicator
-        in order to show information for only that (or those)
-        transformers
-
-    show_params_options : bool, optional
-        Flag, if set to True, then will display the ABCD_ML
-        param ind options for each transformer.
-
-        (default = False)
-
-    show_object : bool, optional
-        Flag, if set to True, then will print the raw transformer
-        object.
-
-        (default = False)
-
-    show_all_possible_params: bool, optional
-        Flag, if set to True, then will print all
-        possible arguments to the classes __init__
-
-        (default = False)
-    '''
-
-    show_objects(problem_type=None, obj=transformer,
-                 show_params_options=show_params_options,
-                 show_object=show_object,
-                 show_all_possible_params=show_all_possible_params,
-                 AVALIABLE=None, OBJS=TRANSFORMERS)

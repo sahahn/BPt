@@ -26,7 +26,7 @@ class ColTransformer(ColumnTransformer):
 
     def fit(self, X, y=None, mapping=None):
 
-        if mapping == None:
+        if mapping is None:
             mapping = {}
 
         self._proc_mapping(mapping)
@@ -36,7 +36,7 @@ class ColTransformer(ColumnTransformer):
 
     def fit_transform(self, X, y=None, mapping=None):
 
-        if mapping == None:
+        if mapping is None:
             mapping = {}
 
         self._proc_mapping(mapping)

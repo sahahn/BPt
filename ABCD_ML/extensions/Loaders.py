@@ -2,19 +2,20 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import numpy as np
 import warnings
 
+
 class Identity(BaseEstimator, TransformerMixin):
-    
+
     def __init__(self):
         '''This loader simply flatten the input array and passed it along'''
         pass
-    
+
     def fit(self, X, y=None):
         pass
-    
+
     def fit_transform(self, X, y=None):
         
         return self.transform(X)
-    
+
     def transform(self, X):
         
         return X.flatten()
@@ -23,7 +24,7 @@ class Identity(BaseEstimator, TransformerMixin):
 def load_surf(surf):
     '''Helper function to load a surface within ABCD_ML, w/ appropriate
     checks for important'''
-        
+
     # If str, assume file path
     if isinstance(surf, str):
 
@@ -36,10 +37,10 @@ def load_surf(surf):
         try:
             from nilearn.surface import load_surf_data
         except ImportError:
-            raise ImportError('nilearn does not appear to be installed!' + \
-                                'Install with "pip install nilearn", to load ' + \
-                                'surfaces from a file path.')
-        
+            raise ImportError('nilearn does not appear to be installed! ' +
+                              'Install with "pip install nilearn", to load ' +
+                              'surfaces from a file path.')
+
         surf = load_surf_data(surf)
         return surf
 
@@ -55,23 +56,29 @@ def load_surf(surf):
         except AttributeError:
             return np.array(surf).copy()
 
+
 class SurfLabels(BaseEstimator, TransformerMixin):
-    
+
     def __init__(self, labels,
                  background_label=0,
                  mask=None,
                  strategy='mean',
                  vectorize=True):
         '''This class functions simmilar to NiftiLabelsMasker from nilearn,
-        but instead is for surfaces (though it could likely work on a cifti image too).
+        but instead is for surfaces (though it could work on a cifti
+        image too).
         
         Parameters
         ----------
         labels : str or array-like
-            This should represent an array, of the same size as the data dimension, as a mask
-            with unique integer values for each ROI. You can also pass a str location in which
-            to load in this array (though the saved file must be loadable by either numpy.load, or
-            if not a numpy array, will try and load with nilearn.surface.load_surf_data, which you
+            This should represent an array, of the same size as the data
+            dimension, as a mask
+            with unique integer values for each ROI. You can also pass a str
+            location in which
+            to load in this array (though the saved file must be loadable by
+            either numpy.load, or
+            if not a numpy array, will try and load with
+            nilearn.surface.load_surf_data(), which you
             will need nilearn installed to use.)
 
         background_labels : int, array-like of int or None, optional

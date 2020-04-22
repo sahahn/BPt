@@ -6,7 +6,7 @@ from ..helpers.VARS import ORDERED_NAMES
 
 from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
                               Transformers, Samplers, Feat_Selectors,
-                              Ensembles, Drop_Strat)
+                              Drop_Strat)
 
 from copy import deepcopy
 from .Nevergrad import NevergradSearchCV
@@ -32,14 +32,16 @@ class Base_Model_Pipeline():
         self._print = _print
 
         # Extract ordered
-        ordered_pipeline_params=pipeline_params.get_ordered_pipeline_params()
+        ordered_pipeline_params = pipeline_params.get_ordered_pipeline_params()
 
         # Create the pipeline pieces
-        self._create_pipeline_pieces(ordered_pipeline_params=ordered_pipeline_params,
-                                     Data_Scopes=Data_Scopes,
-                                     spec=model_spec)
+        self._create_pipeline_pieces(
+            ordered_pipeline_params=ordered_pipeline_params,
+            Data_Scopes=Data_Scopes,
+            spec=model_spec)
 
-    def _create_pipeline_pieces(self, ordered_pipeline_params, Data_Scopes, spec):
+    def _create_pipeline_pieces(self, ordered_pipeline_params, Data_Scopes,
+                                spec):
 
         # Order is:
         # ['loaders', 'imputers', 'scalers',
@@ -57,19 +59,20 @@ class Base_Model_Pipeline():
 
         self.named_objs = {}
         self.named_params = {}
- 
+
         # These are the corresponding pieces classes
         pieces_classes = [Loaders, Imputers, Scalers,
                           Transformers, Samplers, Drop_Strat,
                           Feat_Selectors, Models]
 
         # Generate / process all of the pipeline pieces in order
-        for params, piece_class, name in zip(conv_pipeline_params, pieces_classes, ORDERED_NAMES):
+        for params, piece_class, name in zip(conv_pipeline_params,
+                                             pieces_classes, ORDERED_NAMES):
 
             piece = piece_class(user_passed_objs=self.user_passed_objs,
-                                Data_Scopes = Data_Scopes,
+                                Data_Scopes=Data_Scopes,
                                 spec=spec,
-                                _print = self._print)
+                                _print=self._print)
             objs, params = piece.process(params)
 
             self.named_objs[name] = objs
@@ -78,7 +81,7 @@ class Base_Model_Pipeline():
     def _check_for_user_passed(self, objs, cnt):
 
         if objs is not None:
-            
+
             # If list / array like passed
             if is_array_like(objs):
 
@@ -89,11 +92,13 @@ class Base_Model_Pipeline():
             # If a single obj
             else:
 
-                # If a Param obj - call recursively to set the value of the base obj
+                # If a Param obj - call recursively to set the value of the
+                # base obj
                 if hasattr(objs, 'obj'):
                     objs.obj, cnt = self._check_for_user_passed(objs.obj, cnt)
 
-                # Now, we assume any single obj that gets here, if not a str is user passed obj
+                # Now, we assume any single obj that gets here, if not
+                # a str is user passed obj
                 elif not isinstance(objs, str):
                     save_name = 'user passed' + str(cnt)
                     cnt += 1
@@ -119,7 +124,7 @@ class Base_Model_Pipeline():
             all_params.append(self.named_params[name])
 
         return all_params, ORDERED_NAMES
-    
+
     def _get_objs(self, names):
 
         objs = []
@@ -176,8 +181,8 @@ class Base_Model_Pipeline():
         # If any loaders or transformers passed, need mapping
         # otherwise, just don't use it
         if len(self.named_objs['transformers']) > 0 or \
-         len(self.named_objs['loaders']) > 0:
-            
+           len(self.named_objs['loaders']) > 0:
+
             mapping = True
 
             # Add every step that needs a mapping
@@ -206,7 +211,8 @@ class Base_Model_Pipeline():
         return True
 
     def get_search_wrapped_pipeline(self, CV, search_metric=None,
-                                    weight_search_metric=None, random_state=None):
+                                    weight_search_metric=None,
+                                    random_state=None):
 
         # Grab the base pipeline
         base_pipeline = self.get_pipeline()
@@ -216,15 +222,13 @@ class Base_Model_Pipeline():
             return deepcopy(base_pipeline)
 
         # Create the search object
-        search_model = NevergradSearchCV(params=self.param_search,
-                                         estimator=base_pipeline,
-                                         param_distributions=self.get_all_params(),
-                                         CV=CV,
-                                         scoring=search_metric,
-                                         weight_metric=weight_search_metric,
-                                         random_state=random_state)
+        search_model =\
+            NevergradSearchCV(params=self.param_search,
+                              estimator=base_pipeline,
+                              param_distributions=self.get_all_params(),
+                              CV=CV,
+                              scoring=search_metric,
+                              weight_metric=weight_search_metric,
+                              random_state=random_state)
 
         return deepcopy(search_model)
-
-
-

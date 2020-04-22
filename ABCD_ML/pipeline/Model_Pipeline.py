@@ -3,50 +3,12 @@ import pandas as pd
 import numpy as np
 import time
 
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-
-from ..extensions.Col_Selector import ColTransformer, InPlaceColTransformer
-
-from sklearn.preprocessing import FunctionTransformer
-from collections import Counter
-
-
-from sklearn.pipeline import Pipeline
-from copy import deepcopy
-
-from .Models import MODELS
-from ..helpers.ML_Helpers import (conv_to_list, proc_input,
-                                  get_possible_init_params,
-                                  get_obj_and_params,
-                                  user_passed_param_check,
-                                  f_array, param_len_check,
-                                  type_check, wrap_pipeline_objs,
-                                  is_array_like)
-
-from .Selector import selector_wrapper
-
-from .Models import AVALIABLE as AVALIABLE_MODELS
-from .Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
-from .Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
-
-
-from .Samplers import get_sampler_and_params
-from .Feature_Selectors import get_feat_selector_and_params
+from ..helpers.ML_Helpers import conv_to_list, type_check
 from .Metrics import get_metric
-from .Scalers import get_scaler_and_params
-from .Transformers import get_transformer_and_params, Transformer_Wrapper
-from .Imputers import get_imputer_and_params
-from .Loaders import get_loader_and_params, Loader_Wrapper
-from .Ensembles import get_ensemble_and_params, Ensemble_Wrapper
-from sklearn.ensemble import VotingClassifier, VotingRegressor
 from .Feat_Importances import get_feat_importances_and_params
-from .Metrics import get_metric
-
 from .Base_Model_Pipeline import Base_Model_Pipeline
-
-import os
-
 from ..helpers.ML_Helpers import proc_type_dep_str
+
 
 class Model_Pipeline():
     '''Helper class for handling all of the different parameters involved in
@@ -63,7 +25,7 @@ class Model_Pipeline():
 
         # Init scopes all keys, based on scope + target key
         self.all_keys = Data_Scopes.set_all_keys(spec=self.ps)
-        
+
         # Set passed values
         self.CV = CV
         self.progress_bar = progress_bar
@@ -82,7 +44,7 @@ class Model_Pipeline():
 
         # Get the model specs from problem_spec
         model_spec = self.ps.get_model_spec()
-        
+
         # Init the Base_Model_Pipeline, which creates the pipeline pieces
         self.base_model_pipeline =\
             Base_Model_Pipeline(pipeline_params=pipeline_params,
@@ -91,7 +53,7 @@ class Model_Pipeline():
                                 _print=self._print)
 
     def _set_default_params(self):
-        
+
         self.n_splits_ = None
 
         self.flags = {'linear': False,
@@ -104,7 +66,8 @@ class Model_Pipeline():
         # get metric_strs as initially list
         metric_strs = conv_to_list(in_metrics)
 
-        metric_strs = proc_type_dep_str(metric_strs, AVALIABLE_METRICS, self.ps.problem_type)
+        metric_strs = proc_type_dep_str(metric_strs, AVALIABLE_METRICS,
+                                        self.ps.problem_type)
 
         metrics = [get_metric(metric_str)
                    for metric_str in metric_strs]
@@ -126,7 +89,7 @@ class Model_Pipeline():
             feat_importances =\
                 [get_feat_importances_and_params(fi, self.ps.problem_type,
                                                  self.ps.n_jobs, metric)
-                                                 for fi, metric in zip(feat_importances, metrics)]
+                    for fi, metric in zip(feat_importances, metrics)]
 
             return feat_importances
         return []
@@ -253,12 +216,14 @@ class Model_Pipeline():
 
     def _get_eval_splits(self, train_subjects, splits, n_repeats, splits_vals):
 
-        subject_splits = self.CV.get_cv(train_subjects, splits, n_repeats, splits_vals,
-                                        self.ps.random_state, return_index=False)
+        subject_splits = self.CV.get_cv(train_subjects, splits, n_repeats,
+                                        splits_vals, self.ps.random_state,
+                                        return_index=False)
 
         # Want to save n_splits by type
         if splits_vals is not None:
-            self.n_splits_ = self.CV.get_num_groups(train_subjects, splits_vals)
+            self.n_splits_ = self.CV.get_num_groups(train_subjects,
+                                                    splits_vals)
 
         elif isinstance(splits, int):
             self.n_splits_ = splits
@@ -295,7 +260,7 @@ class Model_Pipeline():
         test_subjects = self._get_subjects_overlap(test_subjects)
 
         # Ensure data being used is just the selected col / feats
-        data = data[self.all_keys] 
+        data = data[self.all_keys]
 
         # Init raw_preds_df
         if fold_ind == 'test':
@@ -343,17 +308,16 @@ class Model_Pipeline():
 
             # Get search metric
             search_metric, weight_search_metric =\
-                self._get_score_metric(self.base_model_pipeline.param_search.metric,
-                                       self.base_model_pipeline.param_search.weight_metric)
+                self._get_score_metric(
+                    self.base_model_pipeline.param_search.metric,
+                    self.base_model_pipeline.param_search.weight_metric)
 
         else:
             search_metric, weight_search_metric = None, None
-            
+
         # Get wrapped final model
-        return self.base_model_pipeline.get_search_wrapped_pipeline(self.CV,
-                                                                    search_metric,
-                                                                    weight_search_metric,
-                                                                    self.ps.random_state)
+        return self.base_model_pipeline.get_search_wrapped_pipeline(
+            self.CV, search_metric, weight_search_metric, self.ps.random_state)
 
     def _get_score_metric(self, base_metric, weight_metric):
 
@@ -461,6 +425,7 @@ class Model_Pipeline():
 
             # Always proc test.
             X_test, y_test = self._proc_X_test(test)
+            self.feat_names = list(X_test)
 
             try:
                 fold = fold_ind % self.n_splits_
@@ -539,7 +504,7 @@ class Model_Pipeline():
 
         # Fit the model
         self.Model.fit(X, y, train_data_index=train_data.index)
-        
+
         # If a search object, show the best params
         self._show_best_params()
 
@@ -550,7 +515,8 @@ class Model_Pipeline():
         except AttributeError:
             return
 
-        all_params, names = self.base_model_pipeline.get_all_params_with_names()
+        all_params, names =\
+            self.base_model_pipeline.get_all_params_with_names()
         self._print('Params Selected by Best Pipeline:', level='params')
 
         for params, name in zip(all_params, names):
@@ -589,7 +555,8 @@ class Model_Pipeline():
                     to_use = all_ps[base_name + '__to_use']
                     to_show.append(base_name + '__selected: ' + str(to_use))
                     extra_ps = ud.choices[to_use]._content
-                    extra_ps = {base_name + '__' + e: extra_ps[e] for e in extra_ps}
+                    extra_ps =\
+                        {base_name + '__' + e: extra_ps[e] for e in extra_ps}
 
                     all_params.update(extra_ps)
                 else:
@@ -706,11 +673,11 @@ class Model_Pipeline():
         self.raw_preds_df = pd.DataFrame(index=subjects)
 
     def _proc_X_test(self, test_data):
-        
+
         # Grab the test data, X as df + copy
         X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
 
-        #Get the base pipeline
+        # Get the base pipeline
         pipeline = self._get_base_fitted_pipeline()
 
         return pipeline.proc_X_test(X_test, y_test)
@@ -720,7 +687,7 @@ class Model_Pipeline():
         # Get X,y train
         X_train, y_train = self._get_X_y(train_data, copy=True)
 
-        #Get the base pipeline
+        # Get the base pipeline
         pipeline = self._get_base_fitted_pipeline()
 
         return pipeline.proc_X_train(X_train, y_train)

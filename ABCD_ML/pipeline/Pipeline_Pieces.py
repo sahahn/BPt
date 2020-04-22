@@ -1,17 +1,17 @@
 from sklearn.preprocessing import FunctionTransformer
-from ..main.Input_Tools import is_pipe, is_select, is_duplicate
+from ..main.Input_Tools import is_pipe, is_select
 
-from ..helpers.ML_Helpers import (proc_input,
-                                  user_passed_param_check,
-                                  check_for_duplicate_names, wrap_pipeline_objs,
-                                  proc_type_dep_str, param_len_check, conv_to_list,
+from ..helpers.ML_Helpers import (check_for_duplicate_names,
+                                  wrap_pipeline_objs,
+                                  proc_type_dep_str, param_len_check,
+                                  conv_to_list,
                                   process_params_by_type)
 
 from ..extensions.Col_Selector import ColTransformer, InPlaceColTransformer
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 
 from sklearn.pipeline import Pipeline
-from copy import deepcopy, copy
+from copy import deepcopy
 
 from .Selector import selector_wrapper
 
@@ -25,13 +25,11 @@ def process_input_types(obj_strs, param_strs, scopes):
     return obj_strs, param_strs, scopes
 
 
-
 class Pieces():
 
     def __init__(self, user_passed_objs, Data_Scopes, spec, _print=print):
-                 
         # problem_type, random_state, n_jobs, search_type are stored in spec
-      
+
         # Class values
         self.user_passed_objs = user_passed_objs
         self.Data_Scopes = Data_Scopes
@@ -42,8 +40,10 @@ class Pieces():
         self.AVAILABLE = None
 
     def process(self, params):
-        '''params is a list of Param piece classes, or potentially a list like custom object,
-        e.g., Select. Each actual param object might vary a bit on what it includes'''
+        '''params is a list of Param piece classes, or potentially a list
+        like custom object,
+        e.g., Select. Each actual param object might vary a bit on
+        what it includes'''
 
         if params is None or (isinstance(params, list) and len(params) == 0):
             return [], {}
@@ -69,12 +69,15 @@ class Pieces():
         objs = [None for i in range(len(params))]
 
         # Process everything but the select groups first
-        # Putting the recursive call to process here... even though I think call to
-        # just _process could work too. The logic is, I don't think it will hurt,
-        # and if more options beyond Select are added to process later... this 
+        # Putting the recursive call to process here... even though I
+        # think call to
+        # just _process could work too. The logic is, I don't think it will
+        # hurt,
+        # and if more options beyond Select are added to process later... this
         # will hopefully cover those cases.
         non_select_objs, obj_params =\
-            self.process([i for idx, i in enumerate(params) if not select_mask[idx]])
+            self.process([i for idx, i in enumerate(params) if
+                         not select_mask[idx]])
 
         # Update right spot in objs
         for obj, ind in zip(non_select_objs, np.where(~select_mask)[0]):
@@ -87,7 +90,8 @@ class Pieces():
         cnt = 0
         for s_params, ind in zip(select_params, np.where(select_mask)[0]):
 
-            # Recursive call to process... s.t., can handle nested Select... oh god
+            # Recursive call to process... s.t., can handle nested Select...
+            # oh god
             s_objs, s_obj_params = self.process(list(s_params))
 
             # Wrap in selector object
@@ -117,14 +121,17 @@ class Pieces():
             extra_params = param.extra_params
 
             if 'user passed' in name:
-                objs_and_params.append(self._get_user_passed_obj_params(name, param_str, extra_params))
+                objs_and_params.append(
+                    self._get_user_passed_obj_params(name, param_str,
+                                                     extra_params))
 
             else:
-                objs_and_params.append((name, get_func(name, extra_params,
-                                                       param_str, self.spec['search_type'],
-                                                       self.spec['random_state'],
-                                                       self.Data_Scopes.num_feat_keys)
-                                       ))
+                objs_and_params.append(
+                    (name, get_func(name, extra_params,
+                                    param_str, self.spec['search_type'],
+                                    self.spec['random_state'],
+                                    self.Data_Scopes.num_feat_keys)
+                     ))
 
         # Perform extra proc, to split into objs and merged param dict
         objs, params = self._proc_objs_and_params(objs_and_params)
@@ -144,7 +151,8 @@ class Pieces():
                                    extra_params=extra_params,
                                    search_type=self.spec['search_type'])
 
-        # If passing a user object, kind of stupid to pass default, non search params
+        # If passing a user object, kind of stupid to pass default, non search
+        # params
         # via a dict..., but hey give it a try
         try:
             user_obj.set_params(**extra_user_obj_params)
@@ -180,7 +188,7 @@ class Pieces():
             obj.n_jobs = self.spec['n_jobs']
         except AttributeError:
             pass
-        
+
         return obj
 
 
@@ -210,7 +218,8 @@ class Scope_Pieces(Pieces):
 
     def _wrap_pipeline_objs(self, wrapper, objs, scopes, **params):
 
-        inds = [self.Data_Scopes.get_inds_from_scope(scope) for scope in scopes]
+        inds = [self.Data_Scopes.get_inds_from_scope(scope)
+                for scope in scopes]
 
         objs = wrap_pipeline_objs(wrapper, objs, inds,
                                   random_state=self.spec['random_state'],
@@ -243,7 +252,7 @@ class Scope_Pieces(Pieces):
             col_params[new_name] = params[key]
 
         return col_objs, col_params
-    
+
 
 class Models(Type_Pieces):
 
@@ -255,13 +264,16 @@ class Models(Type_Pieces):
         self.AVAILABLE = AVALIABLE.copy()
 
         # If any ensembles
-        ensemble_mask = np.array([hasattr(params[i], 'models') for i in range(len(params))])
+        ensemble_mask = np.array([hasattr(params[i], 'models')
+                                  for i in range(len(params))])
 
         # Seperate non-ensemble objs and obj_params
-        non_ensemble_params = [i for idx, i in enumerate(params) if not ensemble_mask[idx]]
+        non_ensemble_params = [i for idx, i in enumerate(params)
+                               if not ensemble_mask[idx]]
         non_ensemble_objs, non_ensemble_obj_params =\
-            self._base_type_process(non_ensemble_params, get_base_model_and_params)
-        
+            self._base_type_process(non_ensemble_params,
+                                    get_base_model_and_params)
+
         # If not any ensembles, return the non_ensembles
         if not ensemble_mask.any():
             return non_ensemble_objs, non_ensemble_obj_params
@@ -270,15 +282,17 @@ class Models(Type_Pieces):
         from .Ensembles import Ensemble_Wrapper
 
         # Seperate the ensemble params
-        ensemble_params = [i for idx, i in enumerate(params) if ensemble_mask[idx]]
-        
+        ensemble_params = [i for idx, i in enumerate(params) 
+                           if ensemble_mask[idx]]
+
         # Get base ensemble objs. by proc all at once
         ensembles = Ensembles(self.user_passed_objs, self.Data_Scopes,
                               self.spec, _print=self._print)
         ensemble_objs, ensemble_obj_params = ensembles.process(ensemble_params)
 
         # Get the base models + model_params for each ensemble
-        model_objs_and_params = [self.process(e.models) for e in ensemble_params]
+        model_objs_and_params = [self.process(e.models)
+                                 for e in ensemble_params]
 
         # For each ensemble, wrap the corr. base models
         ensembled_objs, ensembled_obj_params = [], {}
@@ -321,7 +335,8 @@ class Loaders(Scope_Pieces):
         objs = [None for i in range(len(params))]
 
         # Process everything but the select groups first
-        non_pipe_params = [i for idx, i in enumerate(params) if not pipe_mask[idx]]
+        non_pipe_params = [i for idx, i in enumerate(params)
+                           if not pipe_mask[idx]]
 
         # obj_params has no order, so init with non pipe params
         non_pipe_objs, obj_params =\
@@ -334,7 +349,7 @@ class Loaders(Scope_Pieces):
         # Split up pipe params
         pipe_params = [i for idx, i in enumerate(params) if pipe_mask[idx]]
 
-        # Next, process each group of pipe params seperately 
+        # Next, process each group of pipe params seperately
         cnt = 0
         for p_params, ind in zip(pipe_params, np.where(pipe_mask)[0]):
 
@@ -371,7 +386,8 @@ class Loaders(Scope_Pieces):
         passed_loaders, passed_loader_params =\
             self._process_base(params)
 
-        # The base objects have been created, but they need to be wrapped in the loader wrapper
+        # The base objects have been created, but they need to be wrapped
+        # in the loader wrapper.
         params = {'file_mapping': self.Data_Scopes.file_mapping,
                   'wrapper_n_jobs': self.spec['n_jobs']}
 
@@ -406,7 +422,7 @@ class Imputers(Scope_Pieces):
 
         col_imputers, col_imputer_params =\
             self._make_col_version(imputers, imputer_params,
-                                    skip_strat_scopes)
+                                   skip_strat_scopes)
 
         return col_imputers, col_imputer_params
 
@@ -475,8 +491,8 @@ class Scalers(Scope_Pieces):
 
         # Wrap in col_transformer for scope
         col_scalers, col_scaler_params =\
-                self._make_col_version(objs, obj_params,
-                                       [p.scope for p in params])
+            self._make_col_version(objs, obj_params,
+                                   [p.scope for p in params])
 
         return col_scalers, col_scaler_params
 
@@ -487,7 +503,8 @@ class Transformers(Scope_Pieces):
 
     def _process(self, params):
 
-        from .Transformers import get_transformer_and_params, Transformer_Wrapper
+        from .Transformers import (get_transformer_and_params,
+                                   Transformer_Wrapper)
 
         # Then call get objs and params
         objs, obj_params =\
@@ -514,7 +531,8 @@ class Samplers(Scope_Pieces):
         # Get the scalers and params
         scalers_and_params =\
             [self._get_sampler(param, on, recover_strat)
-             for param, on, recover_strat in zip(params, sample_on, recover_strats)]
+             for param, on, recover_strat in zip(params, sample_on,
+                                                 recover_strats)]
 
         samplers, sampler_params =\
             self._proc_objs_and_params(scalers_and_params)
@@ -574,7 +592,8 @@ class Samplers(Scope_Pieces):
 
         # Set strat inds and sample_strat
         strat_inds = self.Data_Scopes.get_strat_inds()
-        sample_strat = self.Data_Scopes.get_train_inds_from_keys(sample_strat_keys)
+        sample_strat =\
+            self.Data_Scopes.get_train_inds_from_keys(sample_strat_keys)
 
         # Set categorical flag
         categorical = True
@@ -625,7 +644,8 @@ class Feat_Selectors(Type_Pieces):
             self._base_type_process(params, get_feat_selector_and_params)
  
         # If any base estimators, replace with a model
-        objs, obj_params = self._replace_base_rfe_estimator(objs, obj_params, params)
+        objs, obj_params =\
+            self._replace_base_rfe_estimator(objs, obj_params, params)
 
         return objs, obj_params
 
@@ -640,7 +660,8 @@ class Feat_Selectors(Type_Pieces):
                 base_model_params = params[i].base_model
 
                 # Grab the base estimator
-                base_model_obj = Models(self.user_passed_objs, self.Data_Scopes,
+                base_model_obj = Models(self.user_passed_objs,
+                                        self.Data_Scopes,
                                         self.spec, self._print)
                 objs, params = base_model_obj.process(base_model_params)
 
@@ -648,7 +669,7 @@ class Feat_Selectors(Type_Pieces):
                 feat_selectors[i][1].estimator = objs[0][1]
 
                 # Replace the model name in the params with estimator
-                params = replace_model_name(params) 
+                params = replace_model_name(params)
                 obj_params.update(params)
 
         return feat_selectors, obj_params
@@ -662,7 +683,7 @@ class Ensembles(Type_Pieces):
 
         from .Ensembles import get_ensemble_and_params, AVALIABLE
         self.AVAILABLE = AVALIABLE
-        
+
         return self._base_type_process(params,
                                        get_ensemble_and_params)
 
@@ -687,7 +708,8 @@ class Ensembles(Type_Pieces):
         if self.spec['problem_type'] == 'regression':
             return VotingRegressor(models, n_jobs=self.spec['n_jobs'])
 
-        return VotingClassifier(models, voting='soft', n_jobs=self.spec['n_jobs'])
+        return VotingClassifier(models, voting='soft',
+                                n_jobs=self.spec['n_jobs'])
 
 
 class Drop_Strat(Pieces):
@@ -708,5 +730,3 @@ class Drop_Strat(Pieces):
         # Put in list, to easily add to pipeline
         drop_strat = [('drop_strat', col_transformer)]
         return drop_strat, {}
-
-        

@@ -12,6 +12,7 @@ import nevergrad as ng
 from ..main.Input_Tools import is_special, Select
 from nevergrad.parametrization.core import Constant
 
+
 def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
     '''Compute and return scores, as computed froma repeated k-fold.
 
@@ -753,3 +754,5 @@ def get_avaliable_run_name(name, model, scores):
         name = name + str(n)
 
     return name
+
+

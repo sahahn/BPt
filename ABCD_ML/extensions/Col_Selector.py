@@ -2,6 +2,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.base import clone
 from sklearn.utils import _safe_indexing
 from ..helpers.ML_Helpers import proc_mapping
+import numpy as np
 
 
 class ColTransformer(ColumnTransformer):
@@ -79,6 +80,24 @@ class ColTransformer(ColumnTransformer):
         return res
 
 
+class ColDropStrat(ColTransformer):
+
+    def fit(self, X, y=None, mapping=None):
+        self.n_X_feats_ = X.shape[1]
+        return super().fit(X, y, mapping)
+
+    def fit_transform(self, X, y=None, mapping=None):
+        self.n_X_feats_ = X.shape[1]
+        return super().fit_transform(X, y, mapping)
+
+    def inverse_transform(self, X):
+
+        keep_inds = self.transformers[0][2]
+        Xt = np.zeros((X.shape[0], self.n_X_feats_), dtype=X.dtype)
+        Xt[:, keep_inds] = X
+        return Xt
+
+
 class InPlaceColTransformer(ColTransformer):
 
     def _reverse_X(self, X):
@@ -101,7 +120,7 @@ class InPlaceColTransformer(ColTransformer):
 
     def fit_transform(self, X, y=None, mapping=None):
 
-        if mapping == None:
+        if mapping is None:
             mapping = {}
 
         return self._reverse_X(super().fit_transform(X, y, mapping=mapping))

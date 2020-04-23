@@ -6,6 +6,7 @@ from ..helpers.ML_Helpers import conv_to_list, proc_input
 from ..helpers.VARS import ORDERED_NAMES
 from ..main.Input_Tools import is_duplicate, is_pipe, is_select, is_special
 
+
 def proc_all(base_obj):
 
     if base_obj is None:
@@ -15,6 +16,7 @@ def proc_all(base_obj):
     proc_name(base_obj, 'base_model')
     proc_name(base_obj, 'models')
     proc_name(base_obj, 'metric')
+
 
 def proc_name(base_obj, name):
 
@@ -30,6 +32,7 @@ def proc_name(base_obj, name):
 
         elif isinstance(obj, str):
             setattr(base_obj, name, proc_input(obj))
+
 
 class Params(BaseEstimator):
 
@@ -51,6 +54,7 @@ class Params(BaseEstimator):
 
     def copy(self):
         return deepcopy(self)
+
 
 class Check():
 
@@ -130,7 +134,7 @@ class Check():
         pass
         # Nothing to check as of right now
         # scope = getattr(self, 'scope')
-        
+
     def _check_extra_params(self):
 
         extra_params = getattr(self, 'extra_params')
@@ -152,8 +156,10 @@ class Check():
             raise IOError('base_model must be either None or a valid Model / Ensemble',
                           'set of wrapeper params!')
 
+
 class Piece(Params, Check):
     pass
+
 
 class Loader(Piece):
 
@@ -161,29 +167,38 @@ class Loader(Piece):
         ''' Loader refers to transformations which operate on loaded Data_Files.
         (See :func:`Load_Data_Files`).
         They in essence take in saved file locations, and after some series
-        of transformations pass on compatible features. Notably loaders 
+        of transformations pass on compatible features.
+        Notably loaders
         define operations which are computed on single files indepedently.
 
         Parameters
         ----------
         obj : str, custom obj or :class:`Pipe`
-            `obj` selects the base loader object to use, this can be either a str corresponding to
-            one of the preset loaders found at :ref:`Loaders`. 
-            Beyond pre-defined loaders, users can 
-            pass in custom objects (they just need to have a defined fit_transform function
-            which when passed the already loaded file, will return a 1D representation of that subjects
+            `obj` selects the base loader object to use, this can be either
+            a str corresponding to
+            one of the preset loaders found at :ref:`Loaders`.
+            Beyond pre-defined loaders, users can
+            pass in custom objects
+            (they just need to have a defined fit_transform function
+            which when passed the already loaded file, will return
+            a 1D representation of that subjects
             features.
 
-            `obj` can also be passed as a :class:`Pipe`. See :class:`Pipe`'s documentation to
+            `obj` can also be passed as a :class:`Pipe`.
+            See :class:`Pipe`'s documentation to
             learn more on how this works, and why you might want to use it.
 
-            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
+            See :ref:`Pipeline Objects` to read more
+            about pipeline objects in general.
 
-            For example, the 'identity' loader will load in saved data at the stored file
-            location, lets say they are 2d numpy arrays, and will return a flattened version
-            of the saved arrays, with each data point as a feature. A more practical example
-            might constitute loading in say 3D neuroimaging data, and passing on features as
-            extracted by ROI.
+            For example, the 'identity' loader will load in saved data at
+            the stored file
+            location, lets say they are 2d numpy arrays,
+            and will return a flattened version
+            of the saved arrays, with each data point as a feature.
+            A more practical example
+            might constitute loading in say 3D neuroimaging data,
+            and passing on features as extracted by ROI.
 
         params : int, str or dict of :ref:`params<Params>`, optional
             `params` determines optionally if the distribution of hyper-parameters to
@@ -1080,7 +1095,8 @@ class Shap_Params(Params):
 class Feat_Importance(Params):
 
     def __init__(self, obj, metric='default',
-                 shap_params='default', n_perm=10):
+                 shap_params='default', n_perm=10,
+                 inverse_global=True, inverse_local=False):
         '''
         There are a number of options for creating Feature Importances in ABCD_ML.
         See :ref:`Feat Importances` to learn more about feature importances generally.
@@ -1124,6 +1140,32 @@ class Feat_Importance(Params):
             ::
 
                 default = 10
+
+        inverse_global : bool
+            If there are any loaders, or transformers specified in the Model_Pipeline,
+            then feature importance becomes slightly trickier. For example, if you have
+            a PCA transformer, and what to calculate averaged feature importance
+            across 3-folds, there is no gaurentee 'pca feature 1' is the same from one
+            fold to the next. In this case, if set to True, global feature
+            importances will be inverse_transformed back into their original feature
+            space - per fold. Note: this will only work if all transformers / loaders
+            have an implemented reverse_transform function, if one does not for transformer, then
+            it will just return 0 for that feature. For a loader w/o, then it will return 
+            'No inverse_transform'.
+
+            ::
+
+                default = True
+
+        inverse_local : bool
+            Same as inverse_global, but for local feature importances. By default
+            this is set to False, as it is more memory and computationally expensive to
+            inverse_transform this case.
+
+            ::
+
+                default = False
+
         '''
 
         self.obj = obj
@@ -1138,6 +1180,8 @@ class Feat_Importance(Params):
 
         self.shap_params = shap_params
         self.n_perm = n_perm
+        self.inverse_global = inverse_global
+        self.inverse_local = inverse_local
 
         # For compatibility
         self.params = 0
@@ -1358,8 +1402,6 @@ class Model_Pipeline(Params):
 
         '''
 
-        
-
         self.loaders = loaders
         
         if imputers == 'default':
@@ -1386,7 +1428,7 @@ class Model_Pipeline(Params):
         self.param_search = param_search
 
         if feat_importances == 'default':
-            feat_importances = Feat_Importance('base')
+            feat_importances = Feat_Importance(obj='base')
         self.feat_importances = feat_importances
 
         self.cache = cache
@@ -1743,7 +1785,7 @@ class Problem_Spec(Params):
             Random state, either as int for a specific seed, or if None then
             the random seed is set by np.random.
 
-            This parameter is used to ensure replicability of expiriments (wherever possible!).
+            This parameter is used to ensure replicability of expirements (wherever possible!).
             In some cases even with a random seed, depending on the pipeline pieces being used,
             if any have a component that occassionally yields different results, even with the same
             random seed, e.g., some model optimizations, then you might still not get

@@ -34,7 +34,7 @@ class Regular_Imputer():
 
     def fit(self, X, y=None, mapping=None):
 
-        if mapping == None:
+        if mapping is None:
             mapping = {}
 
         self._proc_mapping(mapping)
@@ -143,7 +143,7 @@ class Categorical_Imputer():
 
     def fit(self, X, y=None, mapping=None):
 
-        if mapping == None:
+        if mapping is None:
             mapping = {}
 
         self._proc_mapping(mapping)

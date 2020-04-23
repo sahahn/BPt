@@ -7,7 +7,7 @@ from ..helpers.ML_Helpers import (check_for_duplicate_names,
                                   conv_to_list,
                                   process_params_by_type)
 
-from ..extensions.Col_Selector import ColTransformer, InPlaceColTransformer
+from ..extensions.Col_Selector import ColDropStrat, InPlaceColTransformer
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 
 from sklearn.pipeline import Pipeline
@@ -723,9 +723,9 @@ class Drop_Strat(Pieces):
 
         # Make base col_transformer, just for dropping strat cols
         col_transformer =\
-            ColTransformer(transformers=[('keep_all_but_strat_inds',
-                                          identity, non_strat_inds)],
-                           remainder='drop', sparse_threshold=0)
+            ColDropStrat(transformers=[('keep_all_but_strat_inds',
+                                        identity, non_strat_inds)],
+                         remainder='drop', sparse_threshold=0)
 
         # Put in list, to easily add to pipeline
         drop_strat = [('drop_strat', col_transformer)]

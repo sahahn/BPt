@@ -296,7 +296,6 @@ class Model_Pipeline():
         scores = self._get_scores(test_data, '', fold_ind)
 
         if fold_ind == 'test':
-
             return (train_scores, scores, self.raw_preds_df,
                     self.feat_importances)
 
@@ -376,31 +375,30 @@ class Model_Pipeline():
             # Init global feature df
             if fold_ind == 0 or fold_ind == 'test':
 
-                X, y = self._get_X_y(train_data, X_as_df=True)
+                X, y = self._proc_X_test(train_data, fs=False)
                 feat_imp.init_global(X, y)
 
             # Local init - Test
             if fold_ind == 'test':
 
                 if split == 'test':
-                    X, y = self._get_X_y(test_data, X_as_df=True)
+                    X, y = self._proc_X_test(test_data, fs=False)
 
                 elif split == 'train':
-                    X, y = self._get_X_y(train_data, X_as_df=True)
+                    X, y = self._proc_X_test(train_data, fs=False)
 
                 elif split == 'all':
                     X, y =\
-                        self._get_X_y(pd.concat([train_data, test_data]),
-                                      X_as_df=True)
+                        self._proc_X_test(pd.concat([train_data, test_data]),
+                                          fs=False)
 
                 feat_imp.init_local(X, y, test=True, n_splits=None)
 
             # Local init - Evaluate
             elif fold_ind % self.n_splits_ == 0:
 
-                X, y = self._get_X_y(pd.concat([train_data, test_data]),
-                                     X_as_df=True)
-
+                X, y = self._proc_X_test(pd.concat([train_data, test_data]),
+                                         fs=False)
                 feat_imp.init_local(X, y, n_splits=self.n_splits_)
 
             self._print('Calculate', feat_imp.name, 'feat importances',
@@ -425,7 +423,6 @@ class Model_Pipeline():
 
             # Always proc test.
             X_test, y_test = self._proc_X_test(test)
-            self.feat_names = list(X_test)
 
             try:
                 fold = fold_ind % self.n_splits_
@@ -433,15 +430,44 @@ class Model_Pipeline():
                 fold = 'test'
 
             # Process the feature importance, provide all needed
-            feat_imp.proc_importances(base_model, X_test, y_test=y_test,
-                                      X_train=X_train,
-                                      fold=fold,
-                                      random_state=self.ps.random_state)
+            fis =\
+                feat_imp.proc_importances(base_model, X_test, y_test=y_test,
+                                          X_train=X_train, fold=fold,
+                                          random_state=self.ps.random_state)
+
+            # Grab the names of all input features
+            feat_names = list(train_data)
+            feat_names.remove(self.ps.target)
+
+            # Inverse transform FIs back to original feat_space is requested
+            self._inverse_transform_FIs(feat_imp, fis, feat_names)
 
             # For local, need an intermediate average, move df to dfs
             if isinstance(fold_ind, int):
                 if fold_ind % self.n_splits_ == self.n_splits_-1:
                     feat_imp.proc_local()
+
+    def _inverse_transform_FIs(self, feat_imp, fis, feat_names):
+
+        global_fi, local_fi = fis
+        pipeline = self._get_base_fitted_pipeline()
+
+        # Only compute the inverse transform FI's if there
+        # are either transformers or loaders in the base pipeline
+        if not pipeline.has_transforms():
+            feat_imp.warning = False
+            return
+
+        if feat_imp.inverse_global and global_fi is not None:
+            feat_imp.inverse_global_fis.append(
+                pipeline.inverse_transform_FIs(global_fi, feat_names))
+
+        if feat_imp.inverse_local and local_fi is not None:
+            feat_imp.inverse_local_fis.append(
+                pipeline.inverse_transform_FIs(local_fi, feat_names))
+
+        feat_imp.warning = False
+        return
 
     def _get_X_y(self, data, X_as_df=False, copy=False):
         '''Helper method to get X,y data from ABCD ML formatted df.
@@ -672,7 +698,7 @@ class Model_Pipeline():
 
         self.raw_preds_df = pd.DataFrame(index=subjects)
 
-    def _proc_X_test(self, test_data):
+    def _proc_X_test(self, test_data, fs=True):
 
         # Grab the test data, X as df + copy
         X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
@@ -680,7 +706,7 @@ class Model_Pipeline():
         # Get the base pipeline
         pipeline = self._get_base_fitted_pipeline()
 
-        return pipeline.proc_X_test(X_test, y_test)
+        return pipeline.proc_X_test(X_test, y_test, fs=fs)
 
     def _proc_X_train(self, train_data):
 

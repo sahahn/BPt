@@ -1,8 +1,10 @@
-from ..helpers.ML_Helpers import (get_obj_and_params, update_mapping)
+from ..helpers.ML_Helpers import (get_obj_and_params, update_mapping,
+                                  proc_mapping)
 import numpy as np
 from .Transformers import Transformer_Wrapper
 from ..extensions.Loaders import Identity, SurfLabels
 from joblib import Parallel, delayed
+import warnings
 
 
 def get_trans_chunk(transformer, data_files):
@@ -62,18 +64,18 @@ class Loader_Wrapper(Transformer_Wrapper):
             new_mapping[ind] = self._X_trans_inds[c]
 
         # Update rest of inds, as just shifted over
-        rest_inds = [i for i in range(X.shape[1])
-                     if i not in self.wrapper_inds]
+        self.rest_inds_ = [i for i in range(X.shape[1])
+                           if i not in self.wrapper_inds]
 
-        for c in range(len(rest_inds)):
-            ind = rest_inds[c]
+        for c in range(len(self.rest_inds_)):
+            ind = self.rest_inds_[c]
             new_mapping[ind] = X_trans.shape[1] + c
+
+        self._out_mapping = new_mapping.copy()
 
         # Update mapping
         update_mapping(mapping, new_mapping)
-        self._out_mapping = mapping.copy()
-
-        return np.hstack([X_trans, X[:, rest_inds]])
+        return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def get_chunks(self, data_files):
 
@@ -142,10 +144,7 @@ class Loader_Wrapper(Transformer_Wrapper):
 
         # Transform X
         X_trans, _ = self._get_X_trans(X)
-        rest_inds = [i for i in range(X.shape[1])
-                     if i not in self.wrapper_inds]
-
-        return np.hstack([X_trans, X[:, rest_inds]])
+        return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def _get_new_df_names(self, feat_names):
         '''Create new feature names for the transformed features,
@@ -162,6 +161,45 @@ class Loader_Wrapper(Transformer_Wrapper):
                           for i in range(len(new_inds))]
 
         return new_names
+
+    def inverse_transform(self, X, name='base loader'):
+
+        # For each column, compute the inverse transform of what's loaded
+        inverse_X = {}
+
+        for col_ind in self.wrapper_inds:
+            reverse_inds = proc_mapping([col_ind], self._out_mapping)
+
+            # for each subject
+            X_trans = []
+            for subject_X in X[:, reverse_inds]:
+                try:
+                    X_trans.append(
+                        self.wrapper_transformer.inverse_transform(subject_X))
+                except AttributeError:
+                    X_trans.append('No inverse_transform')
+                    warnings.warn('Passed loader: "' + name + '" has no '
+                                  'inverse_transform! '
+                                  'Setting relevant inverse '
+                                  'feat importances to "No inverse_transform".')
+
+            # Store the list of inverse_transformed X's by subject
+            # In a dictionary with the original col_ind as the key
+            inverse_X[col_ind] = X_trans
+
+        # Now need to do two things, it is assumed the output from loader
+        # cannot be put in a standard X array, but also
+        # in the case with multiple loaders, we still need to return
+        # An otherwise inversed X, we will just set values to 0 in this version
+        reverse_rest_inds = proc_mapping(self.rest_inds_, self._out_mapping)
+
+        all_inds_len = len(self.wrapper_inds) + len(self.rest_inds_)
+        Xt = np.zeros((X.shape[0], all_inds_len), dtype=X.dtype)
+
+        Xt[:, self.wrapper_inds] = 0
+        Xt[:, self.rest_inds_] = X[:, reverse_rest_inds]
+
+        return Xt, inverse_X
 
     def set_params(self, **params):
 

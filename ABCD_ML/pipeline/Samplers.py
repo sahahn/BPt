@@ -14,7 +14,7 @@ import numpy as np
 from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.preprocessing import OneHotEncoder
 
-from ..helpers.ML_Helpers import get_obj_and_params, show_objects, find_ind, proc_mapping
+from ..helpers.ML_Helpers import get_obj_and_params, find_ind, proc_mapping
 from ..helpers.Data_Helpers import get_unique_combo, reverse_unique_combo
 
 
@@ -388,11 +388,11 @@ class Sampler_Wrapper():
             return X_resamp, y_resamp
 
     def _proc_mapping(self, mapping):
-        
+
         try:
             self._mapping
             return
-        
+
         except AttributeError:
             self._mapping = mapping
 
@@ -407,7 +407,7 @@ class Sampler_Wrapper():
 
     def fit_resample(self, X, y, mapping=None):
 
-        if mapping == None:
+        if mapping is None:
             mapping = {}
 
         self._proc_mapping(mapping)
@@ -432,11 +432,13 @@ class Sampler_Wrapper():
         base_X = X_copy[:, self.base_X_mask]
 
         if self.categorical:
-            X_resamp, y_resamp = self.categorical_fit_resample(X_copy, base_X, y_copy)
+            X_resamp, y_resamp =\
+                self.categorical_fit_resample(X_copy, base_X, y_copy)
 
         # Regression type problem
         else:
-            X_resamp, y_resamp = self.regression_fit_resample(X_copy, base_X, y_copy)
+            X_resamp, y_resamp =\
+                self.regression_fit_resample(X_copy, base_X, y_copy)
 
         return X_resamp, y_resamp
 

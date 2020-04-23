@@ -67,11 +67,10 @@ def get_special_selector(feat_selector, feat_selector_params, random_state,
 
         # If set to searchable, set to searchable...
         if feat_selector_params[p_name] == 'sets as hyperparameters':
-            
+
             feat_array = ng.p.Array(init=[.5 for i in range(num_feat_keys)])
             feat_array.set_mutation(sigma=1/6).set_bounds(lower=0, upper=1)
             feat_selector_params[p_name] = feat_array
-                
 
         elif feat_selector_params[p_name] == 'sets as random features':
             del feat_selector_params[p_name]

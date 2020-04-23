@@ -20,6 +20,9 @@ class Feat_Importances():
         self.shap_params = params.shap_params
         self.n_perm = params.n_perm
 
+        self.inverse_global = params.inverse_global
+        self.inverse_local = params.inverse_local
+
         self.valid = True
         self.test = False
 
@@ -29,6 +32,10 @@ class Feat_Importances():
         self.global_df = None
         self.local_df = None
         self.local_dfs = []
+
+        self.inverse_global_fis = []
+        self.inverse_local_fis = []
+        self.warning = False
 
     def get_name(self):
 
@@ -54,11 +61,7 @@ class Feat_Importances():
 
             if flags['tree'] and self.shap_params.tree_feature_perturbation == 'interventional':
                 return False
-
-
-
             return True
-
 
     def init_global(self, X, y):
 
@@ -164,17 +167,19 @@ class Feat_Importances():
         '''X_test should be a df, and X_train either None or as np array.'''
 
         if not self.valid:
-            return
+            return None, None
 
         if self.name == 'base':
             feat_imps = self.get_base_feat_importances(base_model)
             self.add_to_global(list(X_test), feat_imps)
+            return feat_imps, None
 
         elif self.name == 'perm':
             feat_imps = self.get_perm_feat_importances(base_model,
                                                        np.array(X_test),
                                                        y_test)
             self.add_to_global(list(X_test), feat_imps)
+            return feat_imps, None
 
         elif self.name == 'sklearn perm':
             feat_imps = self.get_perm_feat_importances2(base_model,
@@ -182,6 +187,7 @@ class Feat_Importances():
                                                         y_test,
                                                         random_state)
             self.add_to_global(list(X_test), feat_imps)
+            return feat_imps, None
 
         elif self.name == 'shap':
             shap_vals = self.get_shap_feature_importance(base_model, X_test,
@@ -193,6 +199,7 @@ class Feat_Importances():
 
             # Add to global
             self.add_to_global(list(X_test), global_shap_vals)
+            return global_shap_vals, shap_vals
 
     def global_from_local(self, vals):
         return self.col_abs_mean(vals)
@@ -221,7 +228,8 @@ class Feat_Importances():
 
         perm_import = Perm_Feat_Importance(n_perm=self.n_perm,
                                            n_jobs=self.n_jobs)
-        feat_imps = perm_import.compute(base_model, self.metric, X_test, y_test)
+        feat_imps = perm_import.compute(base_model, self.metric,
+                                        X_test, y_test)
         return feat_imps
 
     def get_perm_feat_importances2(self, base_model, X_test, y_test,
@@ -250,17 +258,18 @@ class Feat_Importances():
 
             elif self.flags['tree']:
 
-                #with warnings.catch_warnings():
-                #    warnings.simplefilter("ignore")
-
+                tmo = self.shap_params.tree_model_output
+                tfp = self.shap_params.tree_feature_perturbation
                 explainer =\
-                    shap.TreeExplainer(base_model, X_train,
-                                       model_output=self.shap_params.tree_model_output,
-                                       feature_perturbation=self.shap_params.tree_feature_perturbation)
+                    shap.TreeExplainer(
+                        base_model, X_train,
+                        model_output=tmo,
+                        feature_perturbation=tfp)
 
+                ttl = self.shap_params.tree_tree_limit
                 shap_values =\
                     explainer.shap_values(X_test,
-                                          tree_limit=self.shap_params.tree_tree_limit)
+                                          tree_limit=ttl)
 
         # Kernel
         else:
@@ -276,10 +285,13 @@ class Feat_Importances():
                 self.get_kernel_explainer(base_model, X_train_summary,
                                           self.shap_params.kernel_link)
 
+            klr = self.shap_params.kernel_l1_reg
+            kns = self.shap_params.kernel_nsamples
+
             shap_values =\
                 explainer.shap_values(np.array(X_test),
-                                      l1_reg=self.shap_params.kernel_l1_reg,
-                                      n_samples=self.shap_params.kernel_nsamples)
+                                      l1_reg=klr,
+                                      n_samples=kns)
 
         return self.proc_shap_vals(shap_values)
 
@@ -316,6 +328,20 @@ class Feat_Importances():
         elif self.name == 'shap':
             return 'Mean Shap Value'
 
+    def _get_warning_str(self, as_html=False):
+
+        lb = '\n'
+        if as_html:
+            lb = '<br>'
+
+        content = 'Warning! Base pipeline contains either loaders '
+        content += 'or transformers. Any self.global_df or self.local_df '
+        content += 'might therefore be incorrect, or atleast hard to '
+        content += 'make sense of. In this case you should likely use the '
+        content += 'the inverse feat importances!' + lb
+
+        return content
+
     def _repr_html_(self):
 
         content = 'Feature_Importances Object<br>'
@@ -333,13 +359,26 @@ class Feat_Importances():
             elif self.flags['tree']:
                 content += 'tree based <br>'
 
-        if 'global' in self.scopes:
-            content += 'contains global feat importances: self.global_df <br>'
-        if 'local' in self.scopes:
-            content += 'contains local feat importances: self.local_df <br>'
+        if self.warning:
+
+            content += self._get_warning_str(as_html=True)
+
+            if len(self.inverse_global_fis) > 0:
+                content += 'contains inverse global feat importances: '
+                content += 'self.inverse_global_fis <br>'
+            if len(self.inverse_local_fis) > 0:
+                content += 'contains inverse local feat importances: '
+                content += 'self.inverse_local_fis <br>'
+
+        else:
+            if 'global' in self.scopes:
+                content += 'contains global feat importances: '
+                content += 'self.global_df <br>'
+            if 'local' in self.scopes:
+                content += 'contains local feat importances: '
+                content += 'self.local_df <br>'
 
         content += 'importance computed on: ' + self.split + '<br>'
-
         return content
 
     def set_target(self, target):
@@ -347,12 +386,6 @@ class Feat_Importances():
 
     def set_run_name(self, run_name):
         self.run_name = run_name
-
-
-class Binary_Feat_Importances(Feat_Importances):
-
-    def proc_shap_vals(self, shap_values):
-        return shap_values[1]
 
 
 class Regression_Feat_Importances(Feat_Importances):
@@ -544,7 +577,7 @@ def get_feat_importances_and_params(params, problem_type, n_jobs, metric):
         get_obj_and_params(params.obj, IMPORTANCES,
                            {}, params.params, search_type=None)
 
-    problem_types = {'binary': Binary_Feat_Importances,
+    problem_types = {'binary': Feat_Importances,
                      'regression': Regression_Feat_Importances,
                      'categorical': Cat_Feat_Importances}
 

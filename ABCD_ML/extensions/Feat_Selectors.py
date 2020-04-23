@@ -38,8 +38,8 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
 
         if len(mapping) > 0:
 
-            mask_0 = np.where(self.mask == False)[0]
-            mask_1 = np.where(self.mask == True)[0]
+            mask_0 = np.where(self.mask is False)[0]
+            mask_1 = np.where(self.mask is True)[0]
 
             mask_0 = proc_mapping(mask_0, mapping)
             mask_1 = proc_mapping(mask_1, mapping)
@@ -61,7 +61,7 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
 
     def fit(self, X, y=None, mapping=None):
 
-        if mapping == None:
+        if mapping is None:
             mapping = {}
 
         self.mask = np.array(self.mask)
@@ -74,6 +74,6 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
         self._proc_mapping(mapping)
 
         return self
-    
+
     def _get_support_mask(self):
         return self.mask

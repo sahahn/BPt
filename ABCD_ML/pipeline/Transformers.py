@@ -9,6 +9,7 @@ from sklearn.decomposition import (PCA, FactorAnalysis,
                                    IncrementalPCA, KernelPCA,
                                    MiniBatchSparsePCA, NMF, SparsePCA,
                                    TruncatedSVD)
+import warnings
 
 
 def ce_conv(parent):
@@ -56,7 +57,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y=None, mapping=None, **kwargs):
 
-        if mapping == None:
+        if mapping is None:
             mapping = {}
 
         # Need to call fit_transform to figure out change to mapping
@@ -71,7 +72,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         self._proc_mapping(mapping)
 
         inds = self.wrapper_inds
-        rest_inds = [i for i in range(X.shape[1]) if i not in inds]
+        self.rest_inds_ = [i for i in range(X.shape[1]) if i not in inds]
 
         # Fit transform just inds of X
         X_trans = self.wrapper_transformer.fit_transform(X[:, inds])
@@ -83,22 +84,20 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         for i in inds:
             new_mapping[i] = self._X_trans_inds
 
-        for cnt in range(len(rest_inds)):
-            new_mapping[rest_inds[cnt]] = len(self._X_trans_inds) + cnt
+        for cnt in range(len(self.rest_inds_)):
+            new_mapping[self.rest_inds_[cnt]] = len(self._X_trans_inds) + cnt
+
+        self._out_mapping = new_mapping.copy()
 
         # Update mapping
         update_mapping(mapping, new_mapping)
-        self._out_mapping = mapping.copy()
-
-        return np.hstack([X_trans, X[:, rest_inds]])
+        return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def transform(self, X):
 
-        # Fit transform just inds of X
-        rest_inds = [i for i in range(X.shape[1]) if i not in self.wrapper_inds]
+        # Transform just wrapper inds
         X_trans = self.wrapper_transformer.transform(X[:, self.wrapper_inds])
-
-        return np.hstack([X_trans, X[:, rest_inds]])
+        return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def transform_df(self, df, base_name='transformer'):
 
@@ -123,6 +122,32 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
             df[feat_names[i]] = X_trans[:, i]
 
         return df[feat_names]
+
+    def inverse_transform(self, X, name='base transformer'):
+
+        reverse_inds = proc_mapping(self.wrapper_inds, self._out_mapping)
+
+        # If no inver_transformer in base transformer, set to 0
+        try:
+            X_trans =\
+                self.wrapper_transformer.inverse_transform(X[:, reverse_inds])
+        except AttributeError:
+            X_trans = np.zeros((X.shape[0], len(self.wrapper_inds)))
+            warnings.warn('Passed transformer: "' + name + '" has no '
+                          'inverse_transform! '
+                          'Setting relevant inverse '
+                          'feat importances to 0.')
+
+        reverse_rest_inds = proc_mapping(self.rest_inds_, self._out_mapping)
+
+        all_inds_len = len(self.wrapper_inds) + len(self.rest_inds_)
+        Xt = np.zeros((X.shape[0], all_inds_len), dtype=X.dtype)
+
+        # Fill in Xt
+        Xt[:, self.wrapper_inds] = X_trans
+        Xt[:, self.rest_inds_] = X[:, reverse_rest_inds]
+
+        return Xt
 
     def _get_new_df_names(self, base_name):
         '''Create new feature names for the transformed features'''
@@ -166,7 +191,8 @@ TRANSFORMERS = {
     'mini batch sparse pca': (MiniBatchSparsePCA, ['default']),
     'factor analysis': (FactorAnalysis, ['default']),
     'dictionary learning': (DictionaryLearning, ['default']),
-    'mini batch dictionary learning': (MiniBatchDictionaryLearning, ['default']),
+    'mini batch dictionary learning': (MiniBatchDictionaryLearning,
+                                       ['default']),
     'fast ica': (FastICA, ['default']),
     'incremental pca': (IncrementalPCA, ['default']),
     'kernel pca': (KernelPCA, ['default']),

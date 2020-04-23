@@ -466,7 +466,7 @@ class Model_Pipeline():
             feat_imp.inverse_local_fis.append(
                 pipeline.inverse_transform_FIs(local_fi, feat_names))
 
-        feat_imp.warning = False
+        feat_imp.warning = True
         return
 
     def _get_X_y(self, data, X_as_df=False, copy=False):

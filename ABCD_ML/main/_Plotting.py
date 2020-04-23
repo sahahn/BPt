@@ -241,7 +241,8 @@ def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
     try:
         html = HTML(anim.to_html5_video())
     except RuntimeError:
-        print('To see a gif of the data distribution, make sure you have ffmpeg installed!')
+        print('To see a gif of the data distribution, make sure you '
+              'have ffmpeg installed!')
         return None
 
     if self.log_dr is not None:
@@ -544,7 +545,8 @@ def _get_single_df(self, name, df, all_encoders):
 def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
                       show=True):
 
-    single_df, encoder, dropped_name = self._get_single_df(name, df, all_encoders)
+    single_df, encoder, dropped_name =\
+        self._get_single_df(name, df, all_encoders)
 
     self._show_dist(single_df, plot_key=name,
                     cat_show_original_name=cat_show_original_name,
@@ -554,7 +556,7 @@ def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
 
 def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
 
-     # One-hot
+    # One-hot
     if isinstance(encoder, tuple):
         encoder = encoder[0]
         sums = df.sum()
@@ -617,8 +619,9 @@ def _show_dist(
     else:
 
         display_df, sums, original_names =\
-            self._get_cat_display_df(no_nan_data, encoder, original_key, cat_show_original_name)
-        
+            self._get_cat_display_df(no_nan_data, encoder, original_key,
+                                     cat_show_original_name)
+
         self._display_df(display_df)
 
         if dropped_name is not None:

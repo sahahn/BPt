@@ -1,7 +1,6 @@
 import pandas as pd
 import shap
 import numpy as np
-import warnings
 
 from .Perm_Feat_Importance import Perm_Feat_Importance
 from sklearn.inspection import permutation_importance
@@ -59,7 +58,9 @@ class Feat_Importances():
         # If shap, return True
         elif self.name == 'shap':
 
-            if flags['tree'] and self.shap_params.tree_feature_perturbation == 'interventional':
+            tfp =\
+                self.shap_params.tree_feature_perturbation == 'interventional'
+            if flags['tree'] and tfp:
                 return False
             return True
 

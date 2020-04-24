@@ -756,3 +756,16 @@ def get_avaliable_run_name(name, model, scores):
     return name
 
 
+def get_reverse_mapping(mapping):
+
+    reverse_mapping = {}
+    for m in mapping:
+        key = mapping[m]
+
+        if isinstance(key, list):
+            for k in key:
+                reverse_mapping[k] = m
+        else:
+            reverse_mapping[key] = m
+
+    return reverse_mapping

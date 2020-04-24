@@ -1,5 +1,5 @@
 from ..helpers.ML_Helpers import (get_obj_and_params, update_mapping,
-                                  proc_mapping)
+                                  proc_mapping, get_reverse_mapping)
 import numpy as np
 from .Transformers import Transformer_Wrapper
 from ..extensions.Loaders import Identity, SurfLabels
@@ -166,6 +166,10 @@ class Loader_Wrapper(Transformer_Wrapper):
 
         # For each column, compute the inverse transform of what's loaded
         inverse_X = {}
+        reverse_mapping = get_reverse_mapping(self._mapping)
+
+        no_it_warns = set()
+        other_warns = set()
 
         for col_ind in self.wrapper_inds:
             reverse_inds = proc_mapping([col_ind], self._out_mapping)
@@ -173,19 +177,50 @@ class Loader_Wrapper(Transformer_Wrapper):
             # for each subject
             X_trans = []
             for subject_X in X[:, reverse_inds]:
-                try:
-                    X_trans.append(
-                        self.wrapper_transformer.inverse_transform(subject_X))
-                except AttributeError:
-                    X_trans.append('No inverse_transform')
-                    warnings.warn('Passed loader: "' + name + '" has no '
-                                  'inverse_transform! '
-                                  'Setting relevant inverse '
-                                  'feat importances to "No inverse_transform".')
+
+                # If pipeline
+                if hasattr(self.wrapper_transformer, 'steps'):
+                    for step in self.wrapper_transformer.steps[::-1]:
+                        s_name = step[0]
+                        pipe_piece = self.wrapper_transformer[s_name]
+
+                        try:
+                            subject_X = pipe_piece.inverse_transform(subject_X)
+                        except AttributeError:
+                            no_it_warns.add(name + '__' + s_name)
+                        except:
+                            other_warns.add(name + '__' + s_name)
+
+                else:
+                    try:
+                        subject_X =\
+                            self.wrapper_transformer.inverse_transform(
+                                subject_X)
+                    except AttributeError:
+                        no_it_warns.add(name)
+                    except:
+                        other_warns.add(name)
+
+                # Regardless of outcome, add to X_trans
+                X_trans.append(subject_X)
+
+            # If X_trans only has len 1, get rid of internal list
+            if len(X_trans) == 1:
+                X_trans = X_trans[0]
 
             # Store the list of inverse_transformed X's by subject
             # In a dictionary with the original col_ind as the key
-            inverse_X[col_ind] = X_trans
+            inverse_X[reverse_mapping[col_ind]] = X_trans
+
+        # Send out warn messages
+        if len(no_it_warns) > 0:
+            warnings.warn(repr(list(no_it_warns)) + ' skipped '
+                          'in calculating inverse FIs due to no '
+                          'inverse_transform')
+        if len(other_warns) > 0:
+            warnings.warn(repr(list(other_warns)) + ' skipped '
+                          'in calculating inverse FIs due to '
+                          'an error in inverse_transform')
 
         # Now need to do two things, it is assumed the output from loader
         # cannot be put in a standard X array, but also

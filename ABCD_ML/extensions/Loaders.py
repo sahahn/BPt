@@ -210,26 +210,26 @@ class SurfLabels(BaseEstimator, TransformerMixin):
             self.strategy = self.strats[self.strategy]
 
         return self
-            
+
     def fit_transform(self, X, y=None):
         return self.fit(X, y).transform(X)
-        
+
     def _check_fitted(self):
         if not hasattr(self, "labels_"):
             raise ValueError('It seems that SurfLabels has not been fitted. '
                              'You must call fit() before calling transform()')
-            
+
     def transform(self, X):
         ''' If X has the both the same dimensions, raise warning'''
-        
+
         if len(X.shape) == 2 and (X.shape[0] == X.shape[1]):
             warnings.warn('X was passed with the same length in each dimension, '
                           'Assuming that axis=0 is that data dimension w/ vertex values')
-        
+
         # The data dimension is just the dimension with the same len as the label
         self.data_dim_ = X.shape.index(len(self.labels_))
         self.X_shape_ = X.shape
-        
+
         # Get the ROI value for each label
         X_trans = []
         for i in self._non_bkg_unique:
@@ -291,14 +291,12 @@ try:
 
         def fit(self, X, y=None):
             return super().fit(self.proc_X(X), y)
-        
+
         def fit_transform(self, X, y=None):
             return super().fit_transform(self.proc_X(X), y)
-                
+
         def transform(self, X):
             return super().transform(self.proc_X(X))
 
-
 except ImportError:
     pass
-

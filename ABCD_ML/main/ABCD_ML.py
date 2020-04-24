@@ -76,7 +76,7 @@ class ABCD_ML():
 
     def __init__(self, exp_name='My_ML_Exp', log_dr='', existing_log='append',
                  verbose=True, notebook=True,
-                 use_default_subject_ids=False,
+                 use_abcd_subject_ids=False,
                  low_memory_mode=False, strat_u_name='_Strat',
                  random_state=534, n_jobs=1, dpi=100):
         '''Main class used within ABCD_ML for interfacing with Data Loading
@@ -151,7 +151,7 @@ class ABCD_ML():
 
                 default = Trues
 
-        use_default_subject_ids : bool, optional
+        use_abcd_subject_ids : bool, optional
             Flag to determine the usage of ABCD speficic 'default'
             subject id behavior.
             If set to True, this will convert input NDAR subject ids
@@ -243,7 +243,7 @@ class ABCD_ML():
 
         # Set rest of class params
         self.notebook = notebook
-        self.use_default_subject_ids = use_default_subject_ids
+        self.use_abcd_subject_ids = use_abcd_subject_ids
         self.low_memory_mode = low_memory_mode
         self.strat_u_name = strat_u_name
         self.random_state = random_state
@@ -252,7 +252,7 @@ class ABCD_ML():
 
         self._print('Default params set:')
         self._print('notebook =', self.notebook)
-        self._print('use_default_subject_ids =', self.use_default_subject_ids)
+        self._print('use_abcd_subject_ids =', self.use_abcd_subject_ids)
         self._print('low memory mode =', self.low_memory_mode)
         self._print('strat_u_name =', self.strat_u_name)
         self._print('random state =', self.random_state)

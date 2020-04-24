@@ -24,7 +24,8 @@ from ..helpers.Data_Helpers import (process_binary_input,
                                     get_common_name,
                                     filter_data_cols,
                                     filter_data_file_cols,
-                                    drop_from_filter)
+                                    drop_from_filter,
+                                    proc_file_input)
 
 
 def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
@@ -72,7 +73,7 @@ def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
         but if a user wanted to load and work with a different dataset,
         they just need to change this accordingly
         (in addition to setting eventname most likely to None and
-        use_default_subject_ids to False)
+        use_abcd_subject_ids to False)
 
         if 'default', and not already defined, set to 'src_subject_id'.
         (default = 'default')
@@ -530,7 +531,8 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
     self._process_new(self.low_memory_mode)
 
 
-def Load_Data_Files(self, loc=None, df=None, load_func=np.load,
+def Load_Data_Files(self, loc=None, df=None, files=None,
+                    file_to_subject=None, load_func=np.load,
                     dataset_type='default', drop_keys=None,
                     inclusion_keys=None,
                     subject_id='default', eventname='default',
@@ -549,6 +551,57 @@ def Load_Data_Files(self, loc=None, df=None, load_func=np.load,
     ----------
     loc :
     df :
+
+    files : dict, optional
+        Another alternative for specifying files to load can be done
+        by passing a dict to this param.
+
+        Specifically, a python dictionary should be passed where
+        each key refers to the name of that feature / column of data files
+        to load, and the value is a python list, or array-like of
+        str file paths.
+
+        You must also pass a python function to the
+        file_to_subject param, which specifies how to convert from passed
+        file path, to a subject name.
+
+        E.g., consider the example below, where 2 subjects files are
+        loaded for 'feat1' and feat2':
+
+        ::
+
+            files = {'feat1': ['f1/subj_0.npy', 'f1/subj_1.npy'],
+                     'feat2': ['f2/subj_0.npy', 'f2/subj_1.npy']}
+
+            def file_to_subject_func(file):
+                subject = file.split('/')[1].replace('.npy', '')
+                return subject
+
+            file_to_subject = file_to_subject_func
+            # or
+            file_to_subject = {'feat1': file_to_subject_func,
+                               'feat2': file_to_subject_func}
+
+        In this example, subjects are loaded as 'subj_0' and 'subj_1',
+        and they have associated loaded data files 'feat1' and 'feat2'.
+
+        ::
+
+            default = None
+
+    file_to_subject : python function, or dict of optional
+        If files is passed, then you also need to specify a function
+        which takes in a file path, and returns the relevant subject for
+        that file path. If just one function is passed, it will be used
+        for to load all dictionary entries, alternatively you can pass
+        a matching dictionary of funcs, allowing for different funcs
+        for each feature to load.
+
+        See the example in param `files`.
+
+        ::
+
+            default = None
 
     load_func : python function, optional
         Data_Files represent a path to a saved file, which means you must
@@ -646,6 +699,10 @@ def Load_Data_Files(self, loc=None, df=None, load_func=np.load,
     # Get the common load params as a mix of user-passed + default values
     load_params = self._make_load_params(args=locals())
 
+    # If files passed, add files as df to df
+    df = proc_file_input(files, file_to_subject, df,
+                         load_params['subject_id'])
+
     # Load in the raw dataframe - based on dataset type and/or passed user df
     data = self._load_datasets(loc, df, load_params)
 
@@ -664,10 +721,10 @@ def Load_Data_Files(self, loc=None, df=None, load_func=np.load,
     for col in data:
         for subject in data.index:
 
-            data_file = Data_File(data.loc[subject, col], load_func)
+            data_file = Data_File(data.at[subject, col], load_func)
             file_mapping[cnt] = data_file
 
-            data.loc[subject, col] = cnt
+            data.at[subject, col] = cnt
             cnt += 1
 
     # Process for outliers - if requested
@@ -679,6 +736,7 @@ def Load_Data_Files(self, loc=None, df=None, load_func=np.load,
                                   data_file_keys=data_file_keys,
                                   file_mapping=file_mapping,
                                   subject_id=self.subject_id,
+                                  n_jobs=self.n_jobs,
                                   _print=self._print)
 
     # Merge self.data with new loaded data
@@ -1720,6 +1778,7 @@ def Filter_Data_Files_Cols(self, reduce_func=np.mean,
                               data_file_keys=self.data_file_keys,
                               file_mapping=self.file_mapping,
                               subject_id=self.subject_id,
+                              n_jobs=self.n_jobs,
                               _print=self._print)
 
 
@@ -2133,7 +2192,7 @@ def _load_datasets(self, locs, df, load_params):
     locs : list of str, Path
         The location of the  files to load data load from.
 
-    df : pandas df
+    df : pandas df, or list of
         User passed
 
     load_params : dict
@@ -2167,9 +2226,14 @@ def _load_datasets(self, locs, df, load_params):
     # Load from user-passed df
     if df is not None:
 
-        df = self._load_user_passed(df, load_params['na_values'])
-        df = self._proc_df(df, load_params)
-        dfs.append(df)
+        if not isinstance(df, list):
+            df = [df]
+
+        for single_df in df:
+            single_df = self._load_user_passed(single_df,
+                                               load_params['na_values'])
+            single_df = self._proc_df(single_df, load_params)
+            dfs.append(single_df)
 
     # Set first df
     data = dfs[0]
@@ -2191,7 +2255,7 @@ def _load_datasets(self, locs, df, load_params):
 
 def _load_user_passed(self, df, na_values):
 
-    self._print('Loading user passed df')
+    self._print('Loading from df or files')
 
     if df.index.name is not None:
         df = df.reset_index()
@@ -2494,7 +2558,7 @@ def _process_subject_name(self, subject):
         Formatted subject name, or input
     '''
 
-    if self.use_default_subject_ids:
+    if self.use_abcd_subject_ids:
         subject = subject.strip().upper()
 
         if 'NDAR_' not in subject:
@@ -2859,14 +2923,14 @@ def _set_data_scopes(self):
 
     covar_scopes, cat_encoders = self._get_covar_scopes()
 
-    self.Data_Scopes = Data_Scopes(data_keys = list(self.data),
-                                   data_file_keys = self.data_file_keys,
-                                   cat_keys = self._get_cat_keys(),
-                                   strat_keys = list(self.strat),
-                                   covars_keys = list(self.covars),
-                                   covar_scopes = covar_scopes,
-                                   cat_encoders = cat_encoders,
-                                   file_mapping = self.file_mapping)
+    self.Data_Scopes = Data_Scopes(data_keys=list(self.data),
+                                   data_file_keys=self.data_file_keys,
+                                   cat_keys=self._get_cat_keys(),
+                                   strat_keys=list(self.strat),
+                                   covars_keys=list(self.covars),
+                                   covar_scopes=covar_scopes,
+                                   cat_encoders=cat_encoders,
+                                   file_mapping=self.file_mapping)
 
 
 def _get_base_targets_names(self):

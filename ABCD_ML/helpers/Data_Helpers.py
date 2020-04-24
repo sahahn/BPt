@@ -639,9 +639,8 @@ def filter_data_cols(data, filter_outlier_percent, filter_outlier_std,
 
     # Seperate data from data files if applicable
     if seperate_keys is not None:
-        file_keys = [key for key in list(data) if key in seperate_keys]
-        data_files = data[file_keys]
-        data = data.drop(file_keys, axis=1)
+        sep_data = data[seperate_keys]
+        data = data.drop(seperate_keys, axis=1)
 
     if filter_outlier_percent is None and filter_outlier_std is None:
         return data
@@ -669,7 +668,7 @@ def filter_data_cols(data, filter_outlier_percent, filter_outlier_std,
 
     # Re-merge, if seperated data files
     if seperate_keys is not None:
-        data = pd.merge(data, data_files, on=subject_id)
+        data = pd.merge(data, sep_data, on=subject_id)
 
     return data
 
@@ -677,14 +676,14 @@ def filter_data_cols(data, filter_outlier_percent, filter_outlier_std,
 def filter_data_file_cols(data, reduce_funcs, filter_outlier_percent,
                           filter_outlier_std, data_file_keys,
                           file_mapping, subject_id='subject_id',
-                          _print=print):
+                          n_jobs=1, _print=print):
 
     if not isinstance(reduce_funcs, list):
         reduce_funcs = [reduce_funcs]
 
     data_file_proxies = load_data_file_proxies(data, reduce_funcs,
                                                data_file_keys,
-                                               file_mapping)
+                                               file_mapping, n_jobs)
     valid_subjects = set(data.index)
     for proxy in data_file_proxies:
 
@@ -715,3 +714,54 @@ def drop_from_filter(data, drop_val=999, _print=print):
         _print('Dropped', len(to_drop), 'rows based on filter input',
                'params, e.g. filter outlier percent, drop cat, ect...')
     return data
+
+
+def proc_file_input(files, file_to_subject, df, subject_id):
+
+    if files is None:
+        return df
+
+    if not isinstance(files, dict):
+        raise ValueError('files must be passed as a python dict')
+
+    if file_to_subject is None:
+        raise RuntimeError('file_to_subject must be specified!')
+
+    if not isinstance(file_to_subject, dict):
+        file_to_subject = {key: file_to_subject for key in files}
+
+    for key in files:
+        if key not in file_to_subject:
+            raise ValueError('If passing file_to_subject as a dict '
+                             'then a value must be passed for all '
+                             'keys in files. ' + repr(key) + 'was '
+                             'not passed in this case.')
+
+    # Compute pd series for each passed
+    files_series, all_subjects = dict(), []
+    for key in files:
+
+        file_paths = files[key]
+        subjects = [file_to_subject[key](fp) for fp in file_paths]
+        files_series[key] = pd.Series(file_paths, index=subjects)
+        all_subjects += subjects
+
+    # Compute the overlap of subjects
+    subjects = sorted(list(set(all_subjects)))
+
+    # Make a dataframe + fill
+    files_df = pd.DataFrame(index=subjects)
+    files_df.index.name = subject_id
+    for key in files_series:
+        files_df[key] = files_series[key]
+
+    # If no df, then return
+    if df is None:
+        return files_df
+
+    # Merge with passed df, and return
+    if not isinstance(df, list):
+        df = [df]
+    df.append(files_df)
+
+    return df

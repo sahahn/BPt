@@ -12,6 +12,7 @@ import shap
 import os
 from IPython.display import display, HTML
 from matplotlib.animation import FuncAnimation
+from ..helpers.Data_File import load_data_file_proxies
 
 from ..helpers.Data_Helpers import get_original_cat_names
 
@@ -83,13 +84,17 @@ def _plot_seaborn_dist(data, plot_type, label=None):
         sns.distplot(data, label=label)
 
 
-def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
+def Show_Data_Dist(self, num_feats=20, feats='random', reduce_func=None,
+                   frame_interval=500,
                    plot_type='hist', show_only_overlap=True,
                    subjects=None, save=True, dpi='default',
                    save_name='data distribution', random_state='default'):
 
     '''This method displays some summary statistics about
     the loaded targets, as well as plots the distibution if possible.
+
+    Note: to display loaded data files, pass a fun to reduce_func, otherwise
+    they will not be displayed.
 
     Parameters
     ----------
@@ -98,7 +103,9 @@ def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
         Note: If too many are selected it may take a long time to render
         and/or consume a lot of memory!
 
-        (default = 20)
+        ::
+
+            default = 20
 
     feats : {'random', 'skew'}, optional
         The features in which to display, if 'random' then
@@ -110,19 +117,39 @@ def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
         compute the top skewed features based on
         the training set.
 
-        (default = 'random')
+        ::
+
+            default = 'random'
+
+    reduce_func : python function or list of, optional
+        If a function is passed here, then data files will be loaded
+        and reduced to 1 number according to the passed function.
+        For example, the default function is just to take the
+        mean of each loaded file, and to compute outlier detection
+        on the mean.
+
+        To not display data files, if any, then just keep
+        reduce func as None
+
+        ::
+
+            default = None
 
     frame_interval: int, optional
         The number of milliseconds between each frame.
 
-        (default = 500)
+        ::
+
+            default = 500
 
     plot_type : {'bar', 'hist', 'kde'}
         The type of base seaborn plot to generate for each datapoint.
         Either 'bar' for barplot, or 'hist' for seaborns dist plot, or
         'kde' for just a kernel density estimate plot.
 
-        (default = 'hist')
+        ::
+
+            default = 'hist'
 
     show_only_overlap : bool, optional
         If True, then displays only the distributions for valid overlapping
@@ -131,7 +158,9 @@ def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
 
         If subjects is set (anything but None), this param will be ignored.
 
-        (default = True)
+        ::
+
+            default = True
 
     subjects : None, 'train', 'test', 'both' or array-like, optional
         If not None, then plot only the subjects loaded as train_subjects,
@@ -143,33 +172,52 @@ def Show_Data_Dist(self, num_feats=20, feats='random', frame_interval=500,
         Also take into account, specifying 'both' will show some
         different information, then the default settings.
 
-        (default = None)
+        ::
+
+            default = None
 
     save : bool, optional
         If the animation should be saved as a gif, True or False.
 
-        (default = True)
+        ::
+
+            default = True
 
     dpi : int, 'default', optional
         The dpi in which to save the distribution gif.
         If 'default' use the class default value.
 
-        (default = 'default')
+        ::
+
+            default = 'default'
 
     save_name : str, optional
         The name in which the gif should be saved under.
 
-        (default = 'data distribution')
+        ::
+
+            default = 'data distribution'
 
     random_state : 'default', int or None
         The random state in which to choose random features from.
         If 'default' use the class define value, otherwise set to the value
         passed. None for random.
 
-        (default = 'default')
+        ::
+
+            default = 'default'
+
     '''
 
     valid_data = self.data.drop(self.data_file_keys, axis=1)
+
+    if reduce_func is not None:
+        data_file_data =\
+            load_data_file_proxies(self.data, [reduce_func],
+                                   self.data_file_keys,
+                                   self.file_mapping,
+                                   n_jobs=self.n_jobs)[0]
+        valid_data = pd.merge(valid_data, data_file_data, on=self.subject_id)
 
     if random_state == 'default':
         random_state = self.random_state

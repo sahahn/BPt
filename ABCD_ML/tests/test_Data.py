@@ -18,7 +18,7 @@ class Test_Data(TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_Data, self).__init__(*args, **kwargs)
 
-        self.ML = ABCD_ML(log_dr=None, use_default_subject_ids=True)
+        self.ML = ABCD_ML(log_dr=None, use_abcd_subject_ids=True)
 
     def test_init(self):
 

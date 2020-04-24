@@ -246,15 +246,18 @@ class ABCD_ML():
         self.use_default_subject_ids = use_default_subject_ids
         self.low_memory_mode = low_memory_mode
         self.strat_u_name = strat_u_name
-        self.dpi = dpi
         self.random_state = random_state
         self.n_jobs = n_jobs
+        self.dpi = dpi
 
+        self._print('Default params set:')
         self._print('notebook =', self.notebook)
         self._print('use_default_subject_ids =', self.use_default_subject_ids)
         self._print('low memory mode =', self.low_memory_mode)
         self._print('strat_u_name =', self.strat_u_name)
         self._print('random state =', self.random_state)
+        self._print('n_jobs =', self.n_jobs)
+        self._print('dpi =', self.dpi)
 
         # Initialze various variables
         self.name_map, self.exclusions, self.inclusions = {}, set(), set()
@@ -316,6 +319,10 @@ class ABCD_ML():
             In addition, self.Model_Pipeline (which contains
             information about the last run Evaluate or Test call) will be
             deleted.
+
+            ::
+
+                default = False
         '''
 
         if low_memory:
@@ -417,7 +424,7 @@ class ABCD_ML():
                         Drop_Data_Cols,
                         _drop_data_cols,
                         Filter_Data_Cols,
-                        _filter_data_cols,
+                        Filter_Data_Files_Cols,
                         Proc_Data_Unique_Cols,
                         _proc_data_unique_cols,
                         Drop_Data_Duplicates,
@@ -443,7 +450,6 @@ class ABCD_ML():
                         _load_set_of_subjects,
                         _process_subject_name,
                         _drop_na,
-                        _drop_from_filter,
                         _filter_by_eventname,
                         _show_na_info,
                         _drop_excluded,

@@ -17,13 +17,14 @@ from ..helpers.Data_Helpers import (process_binary_input,
                                     get_unused_drop_val,
                                     filter_float_by_outlier,
                                     filter_float_by_std,
-                                    filter_float_df_by_outlier,
-                                    filter_float_df_by_std,
                                     drop_duplicate_cols,
                                     get_top_substrs,
                                     proc_datatypes,
                                     proc_args,
-                                    get_common_name)
+                                    get_common_name,
+                                    filter_data_cols,
+                                    filter_data_file_cols,
+                                    drop_from_filter)
 
 
 def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
@@ -436,8 +437,9 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
         This parameter allows you to drops columns within loaded data
         where there are under a certain threshold of unique values.
 
-        The threshold is determined by the passed value as either a float for 
-        a percentage of the data, e.g., computed as unique_val_drop * len(data), 
+        The threshold is determined by the passed value as either a float for
+        a percentage of the data,
+        e.g., computed as unique_val_drop * len(data),
         or if passed a number greater then 1, then that number, where a
         ny column with less unique values then this threshold will be dropped.
 
@@ -502,9 +504,12 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
     data = self._drop_na(data, load_params['drop_na'])
 
     # Filter based on passed filter_outlier_percent
-    data = self._filter_data_cols(data, filter_outlier_percent,
-                                  filter_outlier_std,
-                                  load_params['drop_or_na'])
+    data = filter_data_cols(data, filter_outlier_percent,
+                            filter_outlier_std,
+                            load_params['drop_or_na'],
+                            seperate_keys=self.data_file_keys,
+                            subject_id=self.subject_id,
+                            _print=self._print)
 
     # Drop/warn about number of unique cols
     data = self._proc_data_unique_cols(data, unique_val_drop, unique_val_warn)
@@ -526,15 +531,19 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
 
 
 def Load_Data_Files(self, loc=None, df=None, load_func=np.load,
-                    dataset_type='default', drop_keys=None, inclusion_keys=None,
+                    dataset_type='default', drop_keys=None,
+                    inclusion_keys=None,
                     subject_id='default', eventname='default',
                     eventname_col='default', overlap_subjects='default',
-                    clear_existing=False):
+                    reduce_func=np.mean, filter_outlier_percent=None,
+                    filter_outlier_std=None, clear_existing=False):
     """Class method for loading in data as file paths, where file paths correspond
-    to some sort of raw data which should only be actually loaded / proc'ed within
-    the actual modelling. The further assumption made is that these files represent
-    'Data' in the same sense that :func:`Load_Data` represents data, where once loaded / proc'ed
-    (See :ref:`Loaders`), the outputted features should be continuous / float datatype.
+    to some sort of raw data which should only be actually loaded / proc'ed
+    within the actual modelling. The further assumption made is
+    that these files represent 'Data' in the same sense that :func:`Load_Data`
+    represents data, where once loaded / proc'ed
+    (See :ref:`Loaders`), the outputted features should be
+    continuous / float datatype.
 
     Parameters
     ----------
@@ -557,11 +566,60 @@ def Load_Data_Files(self, loc=None, df=None, load_func=np.load,
 
     dataset_type :
     drop_keys :
-    inclusion_keys : 
+    inclusion_keys :
     subject_id :
     eventname :
     eventname_col :
     overlap_subjects :
+
+    reduce_func : python function or list of, optional
+        This function is used if either filter_outlier_percent or
+        filter_outlier_std is requested.
+
+        The passed python function should reduce the file, once loaded,
+        to one number, making it comptabile with the different
+        filtering strategies.
+        For example, the default function is just to take the
+        mean of each loaded file, and to compute outlier detection
+        on the mean.
+
+        You may also pass a list to reduce func, where each
+        entry of the list is a single reduce func. In this case
+        outlier filtering will be computed on each reduce_fun seperately,
+        and the union of all subjects marked as outlier will be dropped
+        at the end.
+
+        ::
+
+            default = np.mean
+
+    filter_outlier_percent : int, float, tuple or None
+        A percent of values to exclude from either end of the
+        data files distribution, provided as either 1 number,
+        or a tuple (% from lower, % from higher).
+        set `filter_outlier_percent` to None for no filtering.
+        If over 1 then treated as a percent, if under 1, then
+        used directly.
+
+        ::
+
+            default = None
+
+    filter_outlier_std : int, float, tuple or None, optional
+        Determines outliers as data points within each column where their
+        value is less than the mean of the column
+        (where column values are determine by the reduce func)
+        - `filter_outlier_std[0]` * the standard deviation of the column,
+        and greater than the mean of the column + `filter_outlier_std[1]`
+        * the standard deviation of the column.
+
+        If a single number is passed, that number is applied to both the lower
+        and upper range.  If a tuple with None on one side is passed, e.g.
+        (None, 3), then nothing will be taken off that lower or upper bound.
+
+        ::
+
+            default = None
 
     clear_existing : bool, optional
         If this parameter is set to True, then any existing
@@ -612,13 +670,25 @@ def Load_Data_Files(self, loc=None, df=None, load_func=np.load,
             data.loc[subject, col] = cnt
             cnt += 1
 
+    # Process for outliers - if requested
+    if filter_outlier_percent is not None or filter_outlier_std is not None:
+        data, file_mapping =\
+            filter_data_file_cols(data, reduce_func,
+                                  filter_outlier_percent,
+                                  filter_outlier_std,
+                                  data_file_keys=data_file_keys,
+                                  file_mapping=file_mapping,
+                                  subject_id=self.subject_id,
+                                  _print=self._print)
+
     # Merge self.data with new loaded data
     self.data = self._merge_existing(self.data, data)
 
     # Process new loaded subjects
     self._process_new(self.low_memory_mode)
 
-    # Only once the merge w/ existing has been confirmed, merge with class globals
+    # Only once the merge w/ existing has been confirmed,
+    # merge with class globals
     self.file_mapping.update(file_mapping)
     self.data_file_keys += data_file_keys
 
@@ -803,7 +873,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     self._print()
 
     # Drop rows set to drop
-    targets = self._drop_from_filter(targets, drop_val)
+    targets = drop_from_filter(targets, drop_val, _print=self._print)
 
     self._print('Final shape: ', targets.shape)
 
@@ -1058,7 +1128,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
     # Have to remove rows with drop_val if drop_val not NaN
     if drop_val is not np.nan:
-        covars = self._drop_from_filter(covars, drop_val)
+        covars = drop_from_filter(covars, drop_val, _print=self._print)
 
     self._print('loaded shape: ', covars.shape)
 
@@ -1328,7 +1398,7 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
         strat = self._proc_strat(strat, key, bc, fc, fb, fbs, cdp, drop_val)
 
     # Drop rows set to drop
-    strat = self._drop_from_filter(strat, drop_val)
+    strat = drop_from_filter(strat, drop_val, _print=print)
 
     # Merge with existing if any, and process new overlap of global subjects
     self.strat = self._merge_existing(self.strat, strat)
@@ -1568,47 +1638,89 @@ def Filter_Data_Cols(self, filter_outlier_percent=None,
     load_params = self._make_load_params(args=locals())
     data = self._set_overlap(self.data, load_params['overlap_subjects'])
 
-    self.data = self._filter_data_cols(data, filter_outlier_percent,
-                                       filter_outlier_std,
-                                       load_params['drop_or_na'])
+    self.data = filter_data_cols(data, filter_outlier_percent,
+                                 filter_outlier_std,
+                                 load_params['drop_or_na'],
+                                 seperate_keys=self.data_file_keys,
+                                 subject_id=self.subject_id,
+                                 _print=self._print)
 
 
-def _filter_data_cols(self, data, filter_outlier_percent, filter_outlier_std,
-                      drop_or_na):
+def Filter_Data_Files_Cols(self, reduce_func=np.mean,
+                           filter_outlier_percent=None,
+                           filter_outlier_std=None,
+                           overlap_subjects='default'):
 
-    # Seperate data from data files if applicable
-    file_keys = [key for key in list(data) if key in self.data_file_keys]
-    data_files = data[file_keys]
-    data = data.drop(file_keys, axis=1)
+    '''Perform filtering on all loaded data-files based on an outlier percent,
+    or filtering by std.
 
-    if filter_outlier_percent is None and filter_outlier_std is None:
-        return data
+    Note, if overlap_subject is set to True here, only the overlap will
+    be saved after proc within self.data.
 
-    if drop_or_na == 'na':
-        drop_val = np.nan
-    else:
-        drop_val = get_unused_drop_val(data)
+    Further note: you can only drop data with this function right now,
+    keeping files as NaN is not implemented.
 
-    # Filter based on outlier percent
-    if filter_outlier_percent is not None:
+    Parameters
+    ----------
+    reduce_func : python function or list of, optional
+        This function should reduce the loaded file to one number,
+        making it comptabile with the different filtering strategies.
+        For example, the default function is just to take the
+        mean of each loaded file, and to compute outlier detection
+        on the mean.
 
-        data = filter_float_df_by_outlier(data, filter_outlier_percent,
-                                          drop_val=drop_val)
+        You may also pass a list to reduce func, where each
+        entry of the list is a single reduce func. In this case
+        outlier filtering will be computed on each reduce_fun seperately,
+        and the union of all subjects marked as outlier will be dropped
+        at the end.
 
-    # Filter by std
-    if filter_outlier_std is not None:
+        ::
 
-        data = filter_float_df_by_std(data, filter_outlier_std,
-                                      drop_val=drop_val)
+            default = np.mean
 
-    # Only remove if not NaN
-    if drop_val is not np.nan:
-        data = self._drop_from_filter(data, drop_val)
+    filter_outlier_percent : int, float, tuple or None
+        A percent of values to exclude from either end of the
+        data files distribution, provided as either 1 number,
+        or a tuple (% from lower, % from higher).
+        set `filter_outlier_percent` to None for no filtering.
+        If over 1 then treated as a percent, if under 1, then
+        used directly.
 
-    # Re-merge
-    data = pd.merge(data, data_files, on=self.subject_id)
-    
-    return data
+        ::
+
+            default = None
+
+    filter_outlier_std : int, float, tuple or None, optional
+        Determines outliers as data points within each column where their
+        value is less than the mean of the column
+        (where column values are determine by the reduce func)
+        - `filter_outlier_std[0]` * the standard deviation of the column,
+        and greater than the mean of the column + `filter_outlier_std[1]`
+        * the standard deviation of the column.
+
+        If a single number is passed, that number is applied to both the lower
+        and upper range.  If a tuple with None on one side is passed, e.g.
+        (None, 3), then nothing will be taken off that lower or upper bound.
+
+        ::
+
+            default = None
+
+    overlap_subjects :
+
+    '''
+
+    load_params = self._make_load_params(args=locals())
+    data = self._set_overlap(self.data, load_params['overlap_subjects'])
+
+    self.data, self.file_mapping =\
+        filter_data_file_cols(data, reduce_func, filter_outlier_percent,
+                              filter_outlier_std,
+                              data_file_keys=self.data_file_keys,
+                              file_mapping=self.file_mapping,
+                              subject_id=self.subject_id,
+                              _print=self._print)
 
 
 def Proc_Data_Unique_Cols(self, unique_val_drop=None, unique_val_warn=.05,
@@ -1627,7 +1739,8 @@ def Proc_Data_Unique_Cols(self, unique_val_drop=None, unique_val_warn=.05,
         where there are under a certain threshold of unique values.
 
         The threshold is determined by the passed value as either a float for
-        a percentage of the data, e.g., computed as unique_val_drop * len(data), 
+        a percentage of the data, e.g.,
+        computed as unique_val_drop * len(data), 
         or if passed a number greater then 1, then that number, where a
         ny column with less unique values then this threshold will be dropped.
 
@@ -1731,7 +1844,7 @@ def Drop_Data_Duplicates(self, corr_thresh, overlap_subjects='default'):
 
     # Drop the duplicates
     data = drop_duplicate_cols(data, corr_thresh)
-    
+
     # Re-merge
     self.data = pd.merge(data, data_files, on=self.subject_id)
 
@@ -2440,17 +2553,6 @@ def _drop_na(self, data, drop_na=True):
     # Re-merge
     data = pd.merge(data, data_files, on=self.subject_id)
 
-    return data
-
-
-def _drop_from_filter(self, data, drop_val=999):
-
-    to_drop = data[(data == drop_val).any(axis=1)].index
-
-    if len(to_drop) > 0:
-        data = data.drop(to_drop)
-        self._print('Dropped', len(to_drop), 'rows based on filter input',
-                    'params, e.g. filter outlier percent, drop cat, ect...')
     return data
 
 

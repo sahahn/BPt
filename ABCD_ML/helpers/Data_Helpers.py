@@ -4,15 +4,16 @@ Data_Helpers.py
 Various helper functions for loading and processing data for ABCD_ML.
 Specifically, these are non-class functions used in _Data.py and ABCD_ML.py.
 """
-import pandas as pd
 import numpy as np
 import numpy.ma as ma
 import random
 from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from operator import add
 from functools import reduce
+import warnings
+import pandas as pd
+from ..helpers.Data_File import load_data_file_proxies
 
 
 def get_non_drop(data, key, drop_val):
@@ -75,12 +76,13 @@ def process_binary_input(data, key, drop_val=np.nan,
 
     unique_vals, counts = np.unique(data[key], return_counts=True)
 
-    assert len(unique_vals) != 1, \
-        "Binary input passed with only 1 unique value!"
+    if len(unique_vals) == 1:
+        warnings.warn('Binary input ' + repr(key) + ' was '
+                      'passed with only 1 unique value')
 
     # Preform check for mistaken values
     # Assuming should be binary, so 2 unique values
-    if len(unique_vals) != 2:
+    if len(unique_vals) > 2:
 
         # Select top two scores by count
         keep_inds = np.argpartition(counts, -2)[-2:]
@@ -102,8 +104,9 @@ def process_binary_input(data, key, drop_val=np.nan,
     non_drop_data[key] = encoder.fit_transform(np.array(non_drop_data[key]))
     non_drop_data[key] = non_drop_data[key].astype('category')
 
-    assert len(np.unique(non_drop_data[key])) == 2, \
-        "Error: Binary type, but more than two unique values"
+    if len(np.unique(non_drop_data[key])) > 2:
+        raise ValueError('Binary type, but more than two unique values found '
+                         'for input' + repr(key))
 
     data = put_non_drop_back(data, non_drop_subjects, non_drop_data)
 
@@ -531,7 +534,8 @@ def get_original_cat_names(names, encoder, original_key):
             float(names[0])
             base = names
         except ValueError:
-            base = [int(name.replace(original_key + '_', '')) for name in names]
+            base = [int(name.replace(original_key + '_', ''))
+                    for name in names]
 
         try:
             original = encoder.inverse_transform(base)
@@ -627,3 +631,87 @@ def get_common_name(keys):
         return keys[0]
     else:
         return top_strs[0]
+
+
+def filter_data_cols(data, filter_outlier_percent, filter_outlier_std,
+                     drop_or_na='drop', seperate_keys=None,
+                     subject_id='subject_id', _print=print):
+
+    # Seperate data from data files if applicable
+    if seperate_keys is not None:
+        file_keys = [key for key in list(data) if key in seperate_keys]
+        data_files = data[file_keys]
+        data = data.drop(file_keys, axis=1)
+
+    if filter_outlier_percent is None and filter_outlier_std is None:
+        return data
+
+    if drop_or_na == 'na':
+        drop_val = np.nan
+    else:
+        drop_val = get_unused_drop_val(data)
+
+    # Filter based on outlier percent
+    if filter_outlier_percent is not None:
+
+        data = filter_float_df_by_outlier(data, filter_outlier_percent,
+                                          drop_val=drop_val)
+
+    # Filter by std
+    if filter_outlier_std is not None:
+
+        data = filter_float_df_by_std(data, filter_outlier_std,
+                                      drop_val=drop_val)
+
+    # Only remove if not NaN
+    if drop_val is not np.nan:
+        data = drop_from_filter(data, drop_val, _print=_print)
+
+    # Re-merge, if seperated data files
+    if seperate_keys is not None:
+        data = pd.merge(data, data_files, on=subject_id)
+
+    return data
+
+
+def filter_data_file_cols(data, reduce_funcs, filter_outlier_percent,
+                          filter_outlier_std, data_file_keys,
+                          file_mapping, subject_id='subject_id',
+                          _print=print):
+
+    if not isinstance(reduce_funcs, list):
+        reduce_funcs = [reduce_funcs]
+
+    data_file_proxies = load_data_file_proxies(data, reduce_funcs,
+                                               data_file_keys,
+                                               file_mapping)
+    valid_subjects = set(data.index)
+    for proxy in data_file_proxies:
+
+        proxy = filter_data_cols(proxy, filter_outlier_percent,
+                                 filter_outlier_std, drop_or_na='drop',
+                                 seperate_keys=None, subject_id=subject_id,
+                                 _print=_print)
+        valid_subjects = valid_subjects.intersection(proxy.index)
+
+    filtered_data = data.loc[list(valid_subjects)]
+
+    # Remove any unused file mapping entries
+    all_keys = list(file_mapping)
+    remaining_keys = np.unique(filtered_data)
+    for key in all_keys:
+        if key not in remaining_keys:
+            file_mapping.pop(key)
+
+    return filtered_data, file_mapping
+
+
+def drop_from_filter(data, drop_val=999, _print=print):
+
+    to_drop = data[(data == drop_val).any(axis=1)].index
+
+    if len(to_drop) > 0:
+        data = data.drop(to_drop)
+        _print('Dropped', len(to_drop), 'rows based on filter input',
+               'params, e.g. filter outlier percent, drop cat, ect...')
+    return data

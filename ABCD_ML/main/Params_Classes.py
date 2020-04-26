@@ -585,26 +585,32 @@ class Model(Piece):
 
     def __init__(self, obj, params=0, extra_params=None):
         ''' Model represents a base components of the :class:`Model_Pipeline`,
-        specifically a single Model / estimator. Model can also be used as a component
-        in building other pieces of the model pipeline, e.g., :class:`Ensemble`.
+        specifically a single Model / estimator.
+        Model can also be used as a component
+        in building other pieces of the model pipeline,
+        e.g., :class:`Ensemble`.
 
         Parameters
         ----------
 
         obj : str, or custom obj
-            `obj` selects the base model object to use from either a preset str indicator
-            found at :ref:`Models`, or from a custom passed user model (compatible w/ sklearn api).
+            `obj` selects the base model object to use from either
+            a preset str indicator found at :ref:`Models`,
+            or from a custom passed user model (compatible w/ sklearn api).
 
-            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
+            See :ref:`Pipeline Objects` to
+            read more about pipeline objects in general.
 
-            `obj` should be wither a single str indicator or a single custom model object, and
-            not passed a list-like of either. If an ensemble of models is requested, then see
-            :class:`Ensemble`.
+            `obj` should be wither a single str indicator or a
+            single custom model object, and not passed a list-like of either.
+            If an ensemble of models is requested, then see :class:`Ensemble`.
 
         params : int, str or dict of :ref:`params<Params>`, optional
-            `params` optionally set an associated distribution of hyper-parameters to
+            `params` optionally set an
+            associated distribution of hyper-parameters to
             this model object. Preset param distributions are
-            listed for each choice of obj at :ref:`Models`, and you can read more on
+            listed for each choice of obj at :ref:`Models`,
+            and you can read more on
             how params work more generally at :ref:`Params`.
 
             ::
@@ -628,52 +634,69 @@ class Model(Piece):
 
         self.check_args()
 
+
 class Ensemble(Piece):
 
     def __init__(self, obj, models, params=0, is_des=False,
-                 single_estimator=False, des_split=.2, cv=3,
+                 single_estimator=False, des_split=.2,
                  extra_params=None):
-        ''' The Ensemble object is valid base :class:`Model_Pipeline` piece, designed
-        to be passed as input to the `model` parameter of :class:`Model_Pipeline`, or
+        ''' The Ensemble object is valid base
+        :class:`Model_Pipeline` piece, designed
+        to be passed as input to the `model` parameter
+        of :class:`Model_Pipeline`, or
         to its own models parameters.
 
-        This class is used to create a variety ensembled models, typically based on
+        This class is used to create a variety ensembled models,
+        typically based on
         :class:`Model` pieces.
 
         Parameters
         ----------
         obj : str
             Each str passed to ensemble refers to a type of ensemble to train,
-            based on also the passed input to the `models` parameter, and also the
+            based on also the passed input to the `models` parameter,
+            and also the
             additional parameters passed when init'ing Ensemble.
 
-            See :ref:`Ensemble Types` to see all avaliable options for ensembles.
+            See :ref:`Ensemble Types` to see all
+            avaliable options for ensembles.
 
-            Passing custom objects here, while technically possible, is not currently 
-            full supported. That said, there are just certain assumptions that the custom object must
-            meet in order to work, specifially, they should have simmilar input params to other
-            simmilar existing ensembles, e.g., in the case the `single_estimator` is False
-            and `needs_split` is also False, then the passed object needs to be able to accept
-            an input parameter `estimators`, which accepts a list of (str, estimator) tuples. Whereas
-            if needs_split is still False, but single_estimator is True, then the passed object needs
-            to support an init param of `base_estimator`, which accepts a single estimator.
+            Passing custom objects here, while technically possible,
+            is not currently full supported.
+            That said, there are just certain assumptions that
+            the custom object must meet in order to work, specifially,
+            they should have simmilar input params to other simmilar existing
+            ensembles, e.g., in the case the `single_estimator` is False
+            and `needs_split` is also False, then the passed object needs
+            to be able to accept an input parameter `estimators`,
+            which accepts a list of (str, estimator) tuples.
+            Whereas if needs_split is still False,
+            but single_estimator is True, then the passed object needs
+            to support an init param of `base_estimator`,
+            which accepts a single estimator.
 
         models : :class:`Model`, :class:`Ensemble` or list of
             The `models` parameter is designed to accept any single model-like
-            pipeline parameter object, i.e., :class:`Model` or even another :class:`Ensemble`.
-            The passed pieces here will be used along with the requested ensemble object to
+            pipeline parameter object, i.e.,
+            :class:`Model` or even another :class:`Ensemble`.
+            The passed pieces here will be used along with the
+            requested ensemble object to
             create the requested ensemble.
 
             See :class:`Model` for how to create a valid base model(s) to pass as input here.
 
         params : int, str or dict of :ref:`params<Params>`, optional
             `params` sets as associated distribution of hyper-parameters
-            for this ensemble object. These parameters will be used only in the context of a hyper-parameter search.
-            Notably, these `params` refer to the ensemble obj itself, params for base `models` should be passed
-            accordingly when creating the base models. Preset param distributions are listed at :ref:`Ensemble Types`,
+            for this ensemble object. These parameters will be used only
+            in the context of a hyper-parameter search.
+            Notably, these `params` refer to the ensemble obj itself,
+            params for base `models` should be passed
+            accordingly when creating the base models.
+            Preset param distributions are listed at :ref:`Ensemble Types`,
             under each of the options for ensemble obj's.
 
-            You can read more about generally about hyper-parameter distributions as associated with
+            You can read more about generally about
+            hyper-parameter distributions as associated with
             objects at :ref:`Params`.
 
             ::
@@ -715,16 +738,6 @@ class Ensemble(Piece):
 
                 default = .2
 
-        cv : int, optional
-            In the case that an ensemble strategy like 'stacking' is requested, where is_des should be
-            False, and single_estimator also False, there is a parameter called cv, which controls the
-            internal k-fold cv used by the base ensemble type. This parameter will only be used in the case
-            that the base estimator requires it.
-
-            ::
-
-                default = 3
-
         extra_params : :ref`extra params dict<Extra Params>`, optional
 
             See :ref:`Extra Params`
@@ -740,7 +753,6 @@ class Ensemble(Piece):
         self.is_des = is_des
         self.des_split = des_split
         self.single_estimator = single_estimator
-        self.cv = cv
         self.extra_params = extra_params
         self._is_model = True
 

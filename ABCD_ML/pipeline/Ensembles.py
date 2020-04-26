@@ -1,5 +1,5 @@
-from ..helpers.ML_Helpers import get_avaliable_by_type, get_obj_and_params
-from ..helpers.ML_Helpers import show_objects, replace_with_in_params
+from ..helpers.ML_Helpers import (show_objects, replace_with_in_params,
+                                  get_obj_and_params)
 
 from deslib.dcs.a_posteriori import APosteriori
 from deslib.dcs.a_priori import APriori
@@ -27,8 +27,6 @@ from deslib.des.probabilistic import Logarithmic
 from deslib.static.single_best import SingleBest
 from deslib.static.stacked import StackedClassifier
 
-from sklearn.ensemble import VotingClassifier
-
 from copy import deepcopy
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import (BaggingClassifier, BaggingRegressor,
@@ -36,6 +34,7 @@ from sklearn.ensemble import (BaggingClassifier, BaggingRegressor,
 from imblearn.ensemble import BalancedBaggingClassifier
 from sklearn.ensemble import (StackingRegressor, StackingClassifier,
                               VotingClassifier, VotingRegressor)
+
 
 class DES_Ensemble(VotingClassifier):
 
@@ -65,7 +64,8 @@ class DES_Ensemble(VotingClassifier):
         # Fit estimators
         # See Base Ensemble for why this implementation is bad
         try:
-            self.estimators_ = [estimator[1].fit(X_train, y_train, sample_weight=sample_weight)
+            self.estimators_ = [estimator[1].fit(X_train, y_train,
+                                sample_weight=sample_weight)
                                 for estimator in self.estimators]
         except TypeError:
             self.estimators_ = [estimator[1].fit(X_train, y_train)
@@ -105,28 +105,6 @@ class DES_Ensemble(VotingClassifier):
         self._set_params('estimators', **kwargs)
         return self
 
-class SelectClassifier(VotingClassifier):
-    
-    def __init__(self, estimators, to_use=0):
-        self.estimators = estimators
-        self.to_use = to_use
-        
-    def fit(self, X, y=None, sample_weight=None):
-        
-        try:
-            self.estimator_ =\
-                self.estimators[self.to_use][1].fit(X, y, sample_weight=sample_weight)
-        except TypeError:
-            self.estimator_ =\
-                self.estimators[self.to_use][1].fit(X, y)
-            
-        return self
-    
-    def predict(self, X):
-        return self.estimator_.predict(X)
-
-    def predict_proba(self, X):
-        return self.estimator_.predict_proba(X)
 
 class Ensemble_Wrapper():
 
@@ -173,11 +151,12 @@ class Ensemble_Wrapper():
     def wrap_ensemble(self, models, ensemble, ensemble_split, random_state,
                       single_estimator=False, is_des=False):
 
-        # If no ensembling is passed, return either the 1 model, or a voting wrapper
+        # If no ensembling is passed, return either the 1 model,
+        # or a voting wrapper
         if ensemble is None or len(ensemble) == 0:
-            return self._basic_ensemble(models = models,
-                                        name = 'default voting wrapper',
-                                        ensemble = True)
+            return self._basic_ensemble(models=models,
+                                        name='default voting wrapper',
+                                        ensemble=True)
 
         # Otherwise special ensembles
         else:
@@ -199,7 +178,7 @@ class Ensemble_Wrapper():
 
                 # Init with default params
                 ensemble = ensemble_obj()
-                
+
                 try:
                     ensemble.random_state = random_state
                 except AttributeError:
@@ -213,11 +192,11 @@ class Ensemble_Wrapper():
 
                 new_ensemble =\
                     [(ensemble_name, DES_Ensemble(models,
-                                                 ensemble,
-                                                 ensemble_name,
-                                                 ensemble_split,
-                                                 ensemble_extra_params,
-                                                 random_state))]
+                                                  ensemble,
+                                                  ensemble_name,
+                                                  ensemble_split,
+                                                  ensemble_extra_params,
+                                                  random_state))]
                 self._update_model_ensemble_params(ensemble_name)
                 return new_ensemble
 
@@ -257,7 +236,7 @@ class Ensemble_Wrapper():
                 # Have to change model name to base_estimator
                 self.model_params =\
                     replace_with_in_params(self.model_params, models[0][0],
-                                            'base_estimator')
+                                           'base_estimator')
 
                 # Append ensemble name to all model params
                 self._update_model_ensemble_params(ensemble_name,
@@ -382,12 +361,13 @@ ENSEMBLES = {
     'stacking regressor': (StackingRegressor,
                            ['default']),
     'stacking classifier': (StackingClassifier,
-                           ['default']),
-    'voting classifier': (VotingClassifier, 
-                         ['default']),
-    'voting regressor': (VotingRegressor, 
+                            ['default']),
+    'voting classifier': (VotingClassifier,
+                          ['default']),
+    'voting regressor': (VotingRegressor,
                          ['default']),
 }
+
 
 def get_ensemble_and_params(ensemble_str, extra_params, params, search_type,
                             random_state=None, num_feat_keys=None):

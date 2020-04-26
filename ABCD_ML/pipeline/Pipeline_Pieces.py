@@ -282,7 +282,7 @@ class Models(Type_Pieces):
         from .Ensembles import Ensemble_Wrapper
 
         # Seperate the ensemble params
-        ensemble_params = [i for idx, i in enumerate(params) 
+        ensemble_params = [i for idx, i in enumerate(params)
                            if ensemble_mask[idx]]
 
         # Get base ensemble objs. by proc all at once
@@ -300,24 +300,35 @@ class Models(Type_Pieces):
 
             model_objs, model_obj_params = model_objs_and_params[i]
 
-            wrapper = Ensemble_Wrapper(model_obj_params,
-                                       ensemble_obj_params[i],
-                                       ensembles._get_base_ensembler,
-                                       params._n_jobs)
+            # If any passed ensemble params, then need to select just the
+            # params associated with this ensemble
+            this_ensemble_name = ensemble_objs[i][0]
+            this_ensemble_params =\
+                {key: ensemble_obj_params[key] for key
+                 in ensemble_obj_params
+                 if this_ensemble_name == key.split('__')[0]}
 
+            # Create wrapper object for building the ensemble
+            wrapper = Ensemble_Wrapper(model_obj_params,
+                                       this_ensemble_params,
+                                       ensembles._get_base_ensembler,
+                                       self.spec['n_jobs'])
+
+            # Get the now ensembled_objs
             ensembled_objs +=\
                 wrapper.wrap_ensemble(model_objs, ensemble_objs[i],
                                       ensemble_params[i].des_split,
-                                      params._random_state,
+                                      self.spec['random_state'],
                                       ensemble_params[i].single_estimator,
                                       ensemble_params[i].is_des)
 
+            # And add the params
             ensembled_obj_params.update(wrapper.get_updated_params())
 
         # In mixed case, merge with non_ensemble
-        ensemble_objs += non_ensemble_objs
+        ensembled_objs += non_ensemble_objs
         ensembled_obj_params.update(non_ensemble_obj_params)
-        return ensemble_objs, ensembled_obj_params
+        return ensembled_objs, ensembled_obj_params
 
 
 class Loaders(Scope_Pieces):

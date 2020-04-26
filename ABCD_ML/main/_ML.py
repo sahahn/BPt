@@ -3,8 +3,6 @@ _ML.py
 ====================================
 Main class extension file for the Machine Learning functionality
 """
-import pandas as pd
-import numpy as np
 import os
 import pickle as pkl
 
@@ -12,7 +10,8 @@ from tqdm import tqdm, tqdm_notebook
 
 from .Input_Tools import is_value_subset
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
-from ..helpers.ML_Helpers import compute_macro_micro, conv_to_list, get_avaliable_run_name
+from ..helpers.ML_Helpers import (compute_macro_micro, conv_to_list,
+                                  get_avaliable_run_name)
 from ..pipeline.Model_Pipeline import Model_Pipeline
 
 
@@ -223,13 +222,18 @@ def Evaluate(self,
              n_repeats=2,
              train_subjects='train',
              run_name='default'):
-    ''' The Evaluate function is one of the main interfaces for building and evaluating
-    :class:`Model_Pipeline` on the loaded data. Specifically, Evaluate is designed to
-    try and estimate the out of sample performance of a passed :class:`Model_Pipeline` on a specific
-    ML task (as specified by :class:`Problem_Spec`). This estimate is done through a defined CV strategy
-    (`splits` and `n_repeats`). While Evaluate's ideal usage is an expirimental context for exploring
-    different choices of :class:`Model_Pipeline` and then ultimately with :func:`Test<ABCD_ML.Test>` -
-    if used carefully (i.e., dont try 50 Pipelines's and only report the one that does best), it can be used 
+    ''' The Evaluate function is one of the main interfaces
+    for building and evaluating :class:`Model_Pipeline` on the loaded data.
+    Specifically, Evaluate is designed to try and estimate the out of sample
+    performance of a passed :class:`Model_Pipeline` on a specific
+    ML task (as specified by :class:`Problem_Spec`).
+    This estimate is done through a defined CV strategy
+    (`splits` and `n_repeats`). While Evaluate's ideal usage is
+    an expirimental context for exploring
+    different choices of :class:`Model_Pipeline` and then ultimately
+    with :func:`Test<ABCD_ML.Test>` -
+    if used carefully (i.e., dont try 50 Pipelines's and only report
+    the one that does best), it can be used
     on a full dataset.
     
     Parameters
@@ -287,18 +291,27 @@ def Evaluate(self,
 
     n_repeats : int, optional
         Given the base CV defined / described in the `splits` param, this
-        parameter further controls if the defined train/val splits should be repeated
-        (w/ different random splits in all cases but the leave-out-group passed str option).
+        parameter further controls if the defined train/val splits should
+        be repeated
+        (w/ different random splits in all cases but the
+        leave-out-group passed str option).
 
-        For example, if `n_repeats` is set to 2, and `splits` is 3, then a twice repeated 3-fold CV
+        For example, if `n_repeats` is set to 2, and `splits` is 3,
+        then a twice repeated 3-fold CV
         will be performed, and results returned with respect to this strategy.
 
-        It can be a good idea to set multiple `n_repeats` (assuming enough computation power), as it can
-        help you spot cases where you may not have enough training subjects to get stable behavior, e.g.,
-        say you run a three times repeated 3 fold CV, if the mean validation scores from each 3-fold are
-        all very close to each other, then you know that 1 repeat is likely enough. If instead the macro std in
-        score (the std from in this case those 3 scores) is high, then it indicates you may not have enough subjects
-        to get stable results from just one 3-fold CV, and that you might want to consider changing some settings.
+        It can be a good idea to set multiple `n_repeats`
+        (assuming enough computation power), as it can
+        help you spot cases where you may not have enough training subjects
+        to get stable behavior, e.g.,
+        say you run a three times repeated 3 fold CV,
+        if the mean validation scores from each 3-fold are
+        all very close to each other, then you know that
+        1 repeat is likely enough. If instead the macro std in
+        score (the std from in this case those 3 scores) is high,
+        then it indicates you may not have enough subjects
+        to get stable results from just one 3-fold CV, and 
+        that you might want to consider changing some settings.
     
         ::
 
@@ -307,24 +320,33 @@ def Evaluate(self,
     train_subjects : str, array-like or Value_Subset, optional
         This parameter determines the set of training subjects which are
         used in this call to `Evaluate`. Note, this parameter is distinct to
-        the `subjects` parameter within :class:`Problem_Spec`, which is applied after
-        selecting the subset of `train_subjects` specified here. These subjects are
-        used as the input to `Evaluate`, i.e., so typically any subjects data you want
-        to remain untouched (say your global test subjects) are considered within `Evaluate`,
+        the `subjects` parameter within :class:`Problem_Spec`, which is
+        applied after
+        selecting the subset of `train_subjects` specified here.
+        These subjects are
+        used as the input to `Evaluate`, i.e., 
+        so typically any subjects data you want
+        to remain untouched (say your global test subjects) 
+        are considered within `Evaluate`,
         and only those explicitly passed here are.
 
-        By default, this value will be set to the special str indiciator 'train', which
-        specifies that the full set of globally defined training subjects
-        (See: :func:`Define_Train_Test_Split`), should be used. Other special str indicators
-        include 'all' to select all subjects, and 'test' to select the test set subjects.
+        By default, this value will be set to the special str indiciator
+        'train', which specifies that the full set of globally defined
+        training subjects
+        (See: :func:`Define_Train_Test_Split`),
+        should be used. Other special str indicators
+        include 'all' to select all subjects, and 'test'
+        to select the test set subjects.
 
-        If `subjects` is passed a str, and that str is not one of the str indicators listed above,
-        then it will be interpretted as the location of file in which to read subjects from (assuming one subjects per line).
+        If `subjects` is passed a str, and that str is not one of the str
+        indicators listed above, then it will be interpretted as the location
+        of file in which to read subjects from (assuming one subjects per line).
 
         `subjects` may also be a custom array-like of subjects to use.
 
-        Lastly, a special wrapper, Value_Subset, can also be used to specify more specific,
-        specifically value specific, subsets of subjects to use.
+        Lastly, a special wrapper, Value_Subset, can also be used to
+        specify more specific, specifically value specific, subsets of
+        subjects to use.
         See :class:`Value_Subset` for how this input wrapper can be used.
 
         ::

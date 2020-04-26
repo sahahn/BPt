@@ -756,7 +756,8 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
                  eventname='default', eventname_col='default',
                  overlap_subjects='default', filter_outlier_percent=None,
                  filter_outlier_std=None, categorical_drop_percent=None,
-                 na_values='default', clear_existing=False):
+                 na_values='default', drop_na='default', drop_or_na='default',
+                 clear_existing=False):
     '''Loads in targets, the outcome / variable(s) to predict.
 
     Parameters
@@ -860,6 +861,8 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         (default = None)
 
     na_values :
+    drop_na :
+    drop_or_na :
 
     clear_existing : bool, optional
         If this parameter is set to True, then any existing
@@ -900,9 +903,9 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     # Get the common load params as a mix of user-passed + default values
     load_params = self._make_load_params(args=locals())
 
-    # For targets, set these regardless
-    load_params['drop_na'] = True
-    load_params['drop_or_na'] = 'drop'
+    if not load_params['drop_na']:
+        self._print('Warning, you are choosing to keep NaNs loaded',
+                    'in the target variable.')
 
     # Load in the targets w/ basic pre-processing
     targets, col_names = self._common_load(loc, df, dataset_type,
@@ -949,44 +952,56 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, drop_val):
 
     self._print('loading:', key)
 
-    targets_key = key
     d_type = d_type[0]
+
+    # Set to only the non-Nan subjects for this column
+    non_nan_subjects = targets[~targets[key].isna()].index
+    non_nan_targets = targets.loc[non_nan_subjects]
 
     # Processing for binary, with some tolerance to funky input
     if d_type == 'b':
 
-        targets, self.targets_encoders[key] =\
-            process_binary_input(targets, targets_key, drop_val, self._print)
+        non_nan_targets, self.targets_encoders[key] =\
+            process_binary_input(non_nan_targets, key, drop_val, self._print)
 
     # Proc. Categoirical as ordinal
     elif d_type == 'c':
 
-        targets, self.targets_encoders[key] =\
-            process_ordinal_input(targets, targets_key, cdp, drop_val,
+        non_nan_targets, self.targets_encoders[key] =\
+            process_ordinal_input(non_nan_targets, key, cdp, drop_val,
                                   _print=self._print)
 
     # For float, just optionally apply outlier percent filter
     elif d_type == 'f':
 
-        # Encoder set to None for targets
+        # Encoder set to None for non_nan_targets
         self.targets_encoders[key] = None
 
         if fop is not None:
-            targets = filter_float_by_outlier(targets, targets_key,
-                                              fop, drop_val=drop_val,
-                                              _print=self._print)
+            non_nan_targets =\
+                filter_float_by_outlier(non_nan_targets, key,
+                                        fop, drop_val=drop_val,
+                                        _print=self._print)
 
         if fos is not None:
-            targets = filter_float_by_std(targets, targets_key,
-                                          fos, drop_val=drop_val,
-                                          _print=self._print)
+            non_nan_targets =\
+                filter_float_by_std(non_nan_targets, key,
+                                    fos, drop_val=drop_val,
+                                    _print=self._print)
 
     else:
         raise RuntimeError('Invalid data type passed:', d_type)
 
+    # Now update the changed values within covars
+    targets.loc[non_nan_subjects] = non_nan_targets
+
+    # Update all col's datatypes
+    for dtype, k in zip(non_nan_targets.dtypes, list(targets)):
+        targets[k] = targets[k].astype(dtype.name)
+
     # Keep track of each loaded target in targets_keys
-    if targets_key not in self.targets_keys:
-        self.targets_keys.append(targets_key)
+    if key not in self.targets_keys:
+        self.targets_keys.append(key)
 
     return targets
 
@@ -1262,8 +1277,8 @@ def _proc_covar(self, covars, key, d_type, cca, cdp, fop, fos, drop_val):
     covars.loc[non_nan_subjects] = non_nan_covars
 
     # Update col datatype
-    for dtype, key in zip(non_nan_covars.dtypes, list(covars)):
-        covars[key] = covars[key].astype(dtype.name)
+    for dtype, k in zip(non_nan_covars.dtypes, list(covars)):
+        covars[k] = covars[k].astype(dtype.name)
 
     return covars
 

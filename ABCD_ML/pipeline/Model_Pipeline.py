@@ -257,7 +257,23 @@ class Model_Pipeline():
 
         # Ensure train and test subjects are just the requested overlap
         train_subjects = self._get_subjects_overlap(train_subjects)
-        test_subjects = self._get_subjects_overlap(test_subjects)
+
+        # Remove any train subjects with NaN targets
+        train_targets = data.loc[train_subjects, self.ps.target]
+        if pd.isna(train_targets).any():
+            valid = train_targets[~pd.isna(train_targets)].index
+            train_subjects = self._get_subjects_overlap(valid)
+
+        # For test subjects set to overlap
+        all_test_subjects = self._get_subjects_overlap(test_subjects)
+
+        # Get another version of the test_subjects w/o NaN
+        test_targets = data.loc[all_test_subjects, self.ps.target]
+        if pd.isna(test_targets).any():
+            valid = test_targets[~pd.isna(test_targets)].index
+            test_subjects = self._get_subjects_overlap(valid)
+        else:
+            test_subjects = all_test_subjects
 
         # Ensure data being used is just the selected col / feats
         data = data[self.all_keys]
@@ -265,18 +281,24 @@ class Model_Pipeline():
         # Init raw_preds_df
         if fold_ind == 'test':
 
+            # For raw preds df, keep NaNs, so use all_test_subjects
             if self.compute_train_score:
                 self._init_raw_preds_df(np.concatenate([train_subjects,
-                                                        test_subjects]))
+                                                        all_test_subjects]))
             else:
-                self._init_raw_preds_df(test_subjects)
+                self._init_raw_preds_df(all_test_subjects)
 
-        # Assume the train_subjects and test_subjects passed here are final.
+        # Assume the train_subjects here are final
         train_data = data.loc[train_subjects]
-        test_data = data.loc[test_subjects]
 
         self._print('Train shape:', train_data.shape, level='size')
-        self._print('Val/Test shape:', test_data.shape, level='size')
+        self._print('Val/Test shape:', data.loc[test_subjects].shape,
+                    level='size')
+        if len(test_subjects) != len(all_test_subjects):
+            self._print('Making predictions for additional target NaN '
+                        'subjects:',
+                        len(all_test_subjects) - len(test_subjects),
+                        level='size')
 
         # Wrap in search CV if needed / set to self.Model
         self.Model = self._get_final_model(train_data)
@@ -284,8 +306,10 @@ class Model_Pipeline():
         # Train the model(s)
         self._train_model(train_data)
 
-        # Proc the different feat importances
-        self._proc_feat_importance(train_data, test_data, fold_ind)
+        # Proc the different feat importances,
+        # Pass only test subjects w/o missing targets here
+        self._proc_feat_importance(train_data, data.loc[test_subjects],
+                                   fold_ind)
 
         # Get the scores
         if self.compute_train_score:
@@ -293,7 +317,10 @@ class Model_Pipeline():
         else:
             train_scores = 0
 
-        scores = self._get_scores(test_data, '', fold_ind)
+        # Pass test_data w/ Nans to get_scores, in order to
+        # still record predictions for targets w/ a missing
+        # ground truth.
+        scores = self._get_scores(data.loc[all_test_subjects], '', fold_ind)
 
         if fold_ind == 'test':
             return (train_scores, scores, self.raw_preds_df,
@@ -620,8 +647,13 @@ class Model_Pipeline():
         self._add_raw_preds(X_test, y_test, test_data.index, eval_type,
                             fold_ind)
 
+        # Only compute scores on Non-Nan y
+        non_nan_mask = ~np.isnan(y_test)
+
         # Get the scores
-        scores = [metric(self.Model, X_test, y_test)
+        scores = [metric(self.Model,
+                         X_test[non_nan_mask],
+                         y_test[non_nan_mask])
                   for metric in self.metrics]
 
         return np.array(scores)
@@ -635,7 +667,8 @@ class Model_Pipeline():
             fold = str((fold_ind % self.n_splits_) + 1)
             repeat = str((fold_ind // self.n_splits_) + 1)
 
-        self.classes = np.unique(y_test)
+        # Get non-nan classes
+        self.classes = np.unique(y_test[~np.isnan(y_test)])
 
         # Catch case where there is only one class present in y_test
         # Assume in this case that it should be binary, 0 and 1

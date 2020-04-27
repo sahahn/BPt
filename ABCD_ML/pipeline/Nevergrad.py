@@ -112,7 +112,7 @@ class NevergradSearchCV():
             try:
                 with futures.ProcessPoolExecutor(
                   max_workers=self.params._n_jobs,
-                  mp_context=mp.get_context(self.params['mp_context'])) as ex:
+                  mp_context=mp.get_context(self.params.mp_context])) as ex:
 
                     recommendation = optimizer.minimize(self.ng_cv_score,
                                                         executor=ex,

@@ -16,7 +16,8 @@ from ..pipeline.Model_Pipeline import Model_Pipeline
 
 
 def Set_Default_ML_Verbosity(
- self, save_results='default', progress_bar='default', compute_train_score='default',
+ self, save_results='default', progress_bar='default',
+ compute_train_score='default',
  show_init_params='default', fold_name='default',
  time_per_fold='default', score_per_fold='default', fold_sizes='default',
  best_params='default', save_to_logs='default'):
@@ -46,7 +47,7 @@ def Set_Default_ML_Verbosity(
 
     compute_train_score : bool, optional
         If True, then metrics and raw preds will also be
-        computed on the training set in addition to just the 
+        computed on the training set in addition to just the
         eval or testing set.
 
         if 'default', and not already defined, set to False.

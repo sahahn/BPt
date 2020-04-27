@@ -107,12 +107,22 @@ class NevergradSearchCV():
                                                 batch_mode=False)
 
         else:
-            with futures.ProcessPoolExecutor(max_workers=self.params._n_jobs,
-                                             mp_context=mp.get_context('spawn')) as ex:
 
-                recommendation = optimizer.minimize(self.ng_cv_score,
-                                                    executor=ex,
-                                                    batch_mode=False)
+            try:
+                with futures.ProcessPoolExecutor(
+                  max_workers=self.params._n_jobs,
+                  mp_context=mp.get_context('spawn')) as ex:
+
+                    recommendation = optimizer.minimize(self.ng_cv_score,
+                                                        executor=ex,
+                                                        batch_mode=False)
+            except RuntimeError:
+                with futures.ProcessPoolExecutor(
+                  max_workers=self.params._n_jobs) as ex:
+
+                    recommendation = optimizer.minimize(self.ng_cv_score,
+                                                        executor=ex,
+                                                        batch_mode=False)
 
         # Save best search search score
         self.best_search_score = optimizer.current_bests["pessimistic"].mean

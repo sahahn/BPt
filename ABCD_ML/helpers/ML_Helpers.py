@@ -663,7 +663,8 @@ def proc_type_dep_str(in_strs, avaliable, problem_type):
         in_strs = proc_input(in_strs)
 
         if not check_avaliable(in_strs, avaliable, problem_type):
-            raise RuntimeError(in_strs, 'are not avaliable for this problem type')
+            raise RuntimeError(in_strs, 'are not avaliable for '
+                               'this problem type')
 
     avaliable_by_type = get_a_by_type(avaliable, in_strs, problem_type)
     final_strs = [avaliable_by_type[in_str] for in_str in in_strs]

@@ -8,6 +8,7 @@ from .Metrics import get_metric
 from .Feat_Importances import get_feat_importances_and_params
 from .Base_Model_Pipeline import Base_Model_Pipeline
 from ..helpers.ML_Helpers import proc_type_dep_str
+from joblib import wrap_non_picklable_objects
 
 
 class Model_Pipeline():
@@ -65,12 +66,22 @@ class Model_Pipeline():
 
         # get metric_strs as initially list
         metric_strs = conv_to_list(in_metrics)
+        metrics = []
+        cnt = 0
 
-        metric_strs = proc_type_dep_str(metric_strs, AVALIABLE_METRICS,
-                                        self.ps.problem_type)
+        for m in range(len(metric_strs)):
 
-        metrics = [get_metric(metric_str)
-                   for metric_str in metric_strs]
+            if isinstance(m, str):
+                metric_strs[m] =\
+                    proc_type_dep_str(metric_strs[m], AVALIABLE_METRICS,
+                                      self.ps.problem_type)
+
+                metrics.append(get_metric(metric_strs[m]))
+
+            else:
+                metrics.append(wrap_non_picklable_objects(metric_strs[m]))
+                metric_strs[m] = 'user passed metric' + str(cnt)
+                cnt += 1
 
         metric = metrics[0]
 

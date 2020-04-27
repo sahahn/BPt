@@ -78,7 +78,7 @@ class ABCD_ML():
                  verbose=True, notebook=True,
                  use_abcd_subject_ids=False,
                  low_memory_mode=False, strat_u_name='_Strat',
-                 random_state=534, n_jobs=1, dpi=100):
+                 random_state=534, n_jobs=1, dpi=100, mp_context='spawn'):
         '''Main class used within ABCD_ML for interfacing with Data Loading
         and Modeling / Other funcationality.
 
@@ -217,6 +217,15 @@ class ABCD_ML():
 
                 default = 1
 
+        mp_context : {None, 'fork', 'spawn'}, optional
+            When a hyper-parameter search is launched, there are different
+            ways through python that the multi-processing can be launched
+            (assuming n_jobs > 1). Occassionally some choices can lead to
+            odd errors.
+
+            ::
+
+                default = 'spawn'
         '''
         # Load logging class params
         self.exp_name = exp_name
@@ -241,6 +250,7 @@ class ABCD_ML():
         self.random_state = random_state
         self.n_jobs = n_jobs
         self.dpi = dpi
+        self.mp_context = mp_context
 
         self._print('Default params set:')
         self._print('notebook =', self.notebook)
@@ -250,6 +260,7 @@ class ABCD_ML():
         self._print('random state =', self.random_state)
         self._print('n_jobs =', self.n_jobs)
         self._print('dpi =', self.dpi)
+        self._print('mp_context =', self.mp_context)
 
         # Initialze various variables
         self.name_map, self.exclusions, self.inclusions = {}, set(), set()

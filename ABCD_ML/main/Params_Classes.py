@@ -773,7 +773,7 @@ class Param_Search(Params):
 
     def __init__(self, search_type='RandomSearch',
                  splits=3, n_repeats=1, n_iter=10, metric='default',
-                 weight_metric=False):
+                 weight_metric=False, mp_context='default'):
         ''' Param_Search is special input object designed to be used with :class:`Model_Pipeline`.
         Param_Search defines a hyperparameter search strategy. When passed to :class:`Model_Pipeline`,
         its search strategy is applied in the context of any set :ref:`Params` within the base pieces.
@@ -904,6 +904,20 @@ class Param_Search(Params):
             ::
 
                 default = 'default'
+
+        mp_context : {None, 'fork', 'spawn' or 'default'}, optional
+            When a hyper-parameter search is launched, there are different
+            ways through python that the multi-processing can be launched
+            (assuming n_jobs > 1). Occassionally some choices can lead to
+            odd errors.
+
+            If 'default' use the mp_context defined upon init of ABCD_ML
+            object.
+
+            ::
+
+                default = 'default'
+
         '''
         
         self.search_type = search_type
@@ -912,6 +926,7 @@ class Param_Search(Params):
         self.n_iter = n_iter
         self.metric = metric
         self.weight_metric = weight_metric
+        self.mp_context = mp_context
 
         self._splits_vals = None
         self._n_jobs = 1

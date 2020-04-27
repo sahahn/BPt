@@ -727,16 +727,20 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs):
 
     # Set values across each pipeline pieces params
     model_pipeline.preproc(n_jobs)
-    
+
     # Proc sample_on if needed (by adding strat name)
     model_pipeline.check_samplers(self._add_strat_u_name)
 
-    # Set split vals if search
     if model_pipeline.param_search is not None:
 
+        # Set split vals
         _, split_vals, _ =\
             self._get_split_vals(model_pipeline.param_search.splits)
         model_pipeline.param_search.set_split_vals(split_vals)
+
+        # Check mp_context for default
+        if model_pipeline.param_search.mp_context == 'default':
+            model_pipeline.param_search.mp_context = self.mp_context
 
     # Early check to see if imputer could even be needed
     model_pipeline.check_imputer(self.all_data)
@@ -830,10 +834,12 @@ def _init_model(self, model_pipeline, problem_specs):
 
     # Set Model_Pipeline
     self.Model_Pipeline =\
-        Model_Pipeline(model_pipeline, problem_specs, self.CV, self.Data_Scopes,
+        Model_Pipeline(model_pipeline, problem_specs, self.CV,
+                       self.Data_Scopes,
                        self.default_ML_verbosity['progress_bar'],
                        self.default_ML_verbosity['compute_train_score'],
                        self._ML_print)
+
 
 def _handle_scores(self, scores, name, weight_metric, n_repeats, run_name, n_splits):
 

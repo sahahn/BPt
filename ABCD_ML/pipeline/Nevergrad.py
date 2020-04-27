@@ -108,25 +108,21 @@ class NevergradSearchCV():
 
         else:
 
+            # Try to launch with spawn first, but if error use os default
             try:
                 with futures.ProcessPoolExecutor(
                   max_workers=self.params._n_jobs,
-                  mp_context=mp.get_context('spawn')) as ex:
+                  mp_context=mp.get_context(self.params['mp_context'])) as ex:
 
                     recommendation = optimizer.minimize(self.ng_cv_score,
                                                         executor=ex,
                                                         batch_mode=False)
             except RuntimeError:
-                with futures.ProcessPoolExecutor(
-                  max_workers=self.params._n_jobs) as ex:
-
-                    recommendation = optimizer.minimize(self.ng_cv_score,
-                                                        executor=ex,
-                                                        batch_mode=False)
+                raise(RuntimeError('Try changing the mp_context'))
 
         # Save best search search score
         self.best_search_score = optimizer.current_bests["pessimistic"].mean
-        #"optimistic", "pessimistic", "average"
+        # "optimistic", "pessimistic", "average"
 
         # Fit best estimator, w/ found best params
         self.best_estimator_ = clone(self.estimator)

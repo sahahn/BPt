@@ -8,10 +8,10 @@ import multiprocessing as mp
 
 from sklearn.base import clone
 from copy import deepcopy
-from sklearn.model_selection import cross_val_score
 
 from ..helpers.CV import CV as Base_CV
 from ..helpers.ML_Helpers import get_possible_fit_params
+
 
 class NevergradSearchCV():
 
@@ -36,8 +36,10 @@ class NevergradSearchCV():
     def _set_cv(self, train_data_index):
 
         self.cv_subjects, self.cv_inds =\
-            self.CV.get_cv(train_data_index, self.params.splits, self.params.n_repeats,
-                           self.params._splits_vals, self.random_state, return_index='both')
+            self.CV.get_cv(train_data_index, self.params.splits,
+                           self.params.n_repeats,
+                           self.params._splits_vals, self.random_state,
+                           return_index='both')
 
     def ng_cv_score(self, X, y, fit_params, **kwargs):
 
@@ -56,16 +58,17 @@ class NevergradSearchCV():
             # Fit estimator on train
             estimator.fit(X[tr_inds], y[tr_inds], **deepcopy(fit_params))
 
-            # Get the score, but scoring return high values as better, so flip sign
+            # Get the score, but scoring return high values as better,
+            # so flip sign
             score = -self.scoring(estimator, X[test_inds], y[test_inds])
             cv_scores.append(score)
 
         if self.weight_metric:
-            weights=[len(self.cv_inds[i][1]) for i in range(len(self.cv_inds))]
+            weights = [len(self.cv_inds[i][1]) for i
+                       in range(len(self.cv_inds))]
             return np.average(cv_scores, weights=weights)
         else:
             return np.mean(cv_scores)
-            
 
     def fit(self, X, y=None, train_data_index=None, **fit_params):
 
@@ -73,11 +76,12 @@ class NevergradSearchCV():
         self._set_cv(train_data_index)
 
         # Fit the nevergrad optimizer
-        instrumentation = ng.p.Instrumentation(X, y, fit_params, **self.param_distributions)
+        instrumentation =\
+            ng.p.Instrumentation(X, y, fit_params, **self.param_distributions)
 
         try:
             opt = ng.optimizers.registry[self.params.search_type]
-        
+
         # If not found, look for in expirimental variants
         except KeyError:
             import nevergrad.optimization.experimentalvariants
@@ -121,7 +125,7 @@ class NevergradSearchCV():
         # Full train index here
         if 'train_data_index' in get_possible_fit_params(self.best_estimator_):
             fit_params['train_data_index'] = train_data_index
-        
+
         self.best_estimator_.fit(X, y, **fit_params)
 
     def predict(self, X):

@@ -320,6 +320,6 @@ class Test_Data(TestCase):
         self.assertTrue(ML.data.shape == (5, 3))
         self.assertTrue(ML.targets.shape == (5, 1))
 
-        ML._prepare_data()
+        self.Prepare_All_Data()
         self.assertTrue(len(ML.data) == 0)
         self.assertTrue(len(ML.targets) == 0)

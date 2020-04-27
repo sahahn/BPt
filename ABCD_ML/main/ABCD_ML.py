@@ -165,17 +165,9 @@ class ABCD_ML():
 
         low_memory_mode : bool, optional
             This parameter dictates behavior around loading in data,
-            specifically, if `low_memory_mode` is set to True,
-            then when loading data from multiple sources, only common
-            subjects will be saved as each data source is loaded.
-            For comparison, when low memory mode if off, the dropping
-            of non-common subjects occurs later. Though regardless of if low
-            memory mode is on or off, subjects will be dropped right away
-            when exclusions or strat is loaded. Non-low memory mode
-            behavior is useful when the user wants to try loading different
-            data, and doesn't want automatic drops to occur.
+            specifically,
             If set to True, individual dataframes self.data, self.covars ect...
-            will also be deleted from memory as soon as modeling begins.
+            will be deleted from memory as soon as modeling begins.
             This parameter also controls the pandas read_csv behavior,
             which also has a low_memory flag.
 
@@ -457,8 +449,7 @@ class ABCD_ML():
                         _filter_excluded,
                         _filter_included,
                         _get_overlapping_subjects,
-                        _process_new,
-                        _prepare_data,
+                        Prepare_All_Data,
                         _get_cat_keys,
                         _set_data_scopes,
                         _get_base_targets_names,

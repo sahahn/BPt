@@ -30,7 +30,8 @@ from ..helpers.Data_Helpers import (process_binary_input,
 
 def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
                             eventname='default', eventname_col='default',
-                            overlap_subjects='default', na_values='default',
+                            overlap_subjects='default', merge='default',
+                            na_values='default',
                             drop_na='default', drop_or_na='default'):
     ''' This function is used to define default values for a series of
     params accessible to all or most of the different loading functions.
@@ -124,6 +125,19 @@ def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
         if 'default', and not already defined, set to False
         (default = 'default')
 
+    merge : {'inner' or 'outer'}
+        Simmilar to overlap subjects, this parameter controls the merge
+        behavior between different df's. i.e., when calling Load_Data twice,
+        a local dataframe is merged with the class self.data on the second
+        call.
+        There are two behaviors that make sense here, one is 'inner'
+        which says, only take the overlapping subjects from each dataframe,
+        and the other is 'outer' which will keep all subjects from both,
+        and set any missing subjects values to NaN.
+
+        if 'default', and not already defined, set to 'inner'
+        (default = 'default')
+
     na_values : list, optional
         Additional values to treat as NaN, by default ABCD specific
         values of '777' and '999' are treated as NaN,
@@ -200,6 +214,11 @@ def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
         self.default_load_params['overlap_subjects'] = overlap_subjects
     elif 'overlap_subjects' not in self.default_load_params:
         self.default_load_params['overlap_subjects'] = False
+
+    if merge != 'default':
+        self.default_load_params['merge'] = merge
+    elif 'merge' not in self.default_load_params:
+        self.default_load_params['merge'] = 'inner'
 
     if na_values != 'default':
         self.default_load_params['na_values'] = na_values
@@ -334,6 +353,7 @@ def Load_Name_Map(self, name_map=None, loc=None, dataset_type='default',
 def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
               inclusion_keys=None, subject_id='default', eventname='default',
               eventname_col='default', overlap_subjects='default',
+              merge='default',
               na_values='default', drop_na='default', drop_or_na='default',
               filter_outlier_percent=None, filter_outlier_std=None,
               unique_val_drop=None, unique_val_warn=.05,
@@ -397,6 +417,7 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
     eventname :
     eventname_col :
     overlap_subjects :
+    merge :
     na_values :
     drop_na :
     drop_or_na :
@@ -494,6 +515,7 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
 
     # Load in the raw dataframe - based on dataset type and/or passed user df
     data = self._load_datasets(loc, df, load_params)
+    self._print()
 
     # Set to only overlap subjects if passed
     data = self._set_overlap(data, load_params['overlap_subjects'])
@@ -525,10 +547,7 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
     self._print('loaded shape: ', data.shape)
 
     # Merge self.data with new loaded data
-    self.data = self._merge_existing(self.data, data)
-
-    # Process new loaded subjects
-    self._process_new(self.low_memory_mode)
+    self.data = self._merge_existing(self.data, data, load_params['merge'])
 
 
 def Load_Data_Files(self, loc=None, df=None, files=None,
@@ -537,6 +556,7 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
                     inclusion_keys=None,
                     subject_id='default', eventname='default',
                     eventname_col='default', overlap_subjects='default',
+                    merge='default',
                     reduce_func=np.mean, filter_outlier_percent=None,
                     filter_outlier_std=None, clear_existing=False):
     """Class method for loading in data as file paths, where file paths correspond
@@ -624,6 +644,7 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
     eventname :
     eventname_col :
     overlap_subjects :
+    merge :
 
     reduce_func : python function or list of, optional
         This function is used if either filter_outlier_percent or
@@ -705,6 +726,7 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
 
     # Load in the raw dataframe - based on dataset type and/or passed user df
     data = self._load_datasets(loc, df, load_params)
+    self._print()
 
     # Set to only overlap subjects if passed
     data = self._set_overlap(data, load_params['overlap_subjects'])
@@ -740,10 +762,8 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
                                   _print=self._print)
 
     # Merge self.data with new loaded data
-    self.data = self._merge_existing(self.data, data)
-
-    # Process new loaded subjects
-    self._process_new(self.low_memory_mode)
+    self.data = self._merge_existing(self.data, data,
+                                     load_params['merge'])
 
     # Only once the merge w/ existing has been confirmed,
     # merge with class globals
@@ -754,7 +774,8 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
 def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
                  dataset_type='default', subject_id='default',
                  eventname='default', eventname_col='default',
-                 overlap_subjects='default', filter_outlier_percent=None,
+                 overlap_subjects='default', merge='default',
+                 filter_outlier_percent=None,
                  filter_outlier_std=None, categorical_drop_percent=None,
                  na_values='default', drop_na='default', drop_or_na='default',
                  clear_existing=False):
@@ -811,6 +832,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     eventname :
     eventname_col :
     overlap_subjects :
+    merge :
 
     filter_outlier_percent : float, tuple, list of or None, optional
         For float datatypes only.
@@ -904,7 +926,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     load_params = self._make_load_params(args=locals())
 
     if not load_params['drop_na']:
-        self._print('Warning, you are choosing to keep NaNs loaded',
+        self._print('Warning: you are choosing to keep NaNs loaded',
                     'in the target variable.')
 
     # Load in the targets w/ basic pre-processing
@@ -939,10 +961,8 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     self._print('Final shape: ', targets.shape)
 
     # Merge with existing and set self.targets
-    self.targets = self._merge_existing(self.targets, targets)
-
-    # Process new subjects
-    self._process_new(self.low_memory_mode)
+    self.targets = self._merge_existing(self.targets, targets,
+                                        load_params['merge'])
 
     # Print out info on all loaded targets, w/ index names / keys
     self._print_loaded_targets()
@@ -1017,7 +1037,7 @@ def _print_loaded_targets(self):
 def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                 dataset_type='default', subject_id='default',
                 eventname='default', eventname_col='default',
-                overlap_subjects='default',
+                overlap_subjects='default', merge='defaut',
                 na_values='default', drop_na='default', drop_or_na='default',
                 code_categorical_as='dummy', categorical_drop_percent=None,
                 filter_outlier_percent=None,
@@ -1085,6 +1105,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     eventname :
     eventname_col :
     overlap_subjects :
+    merge :
     na_values :
     drop_na :
     drop_or_na :
@@ -1207,8 +1228,8 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
     # If other data is already loaded,
     # merge this data with existing loaded data.
-    self.covars = self._merge_existing(self.covars, covars)
-    self._process_new(self.low_memory_mode)
+    self.covars = self._merge_existing(self.covars, covars,
+                                       load_params['merge'])
 
 
 def _proc_covar(self, covars, key, d_type, cca, cdp, fop, fos, drop_val):
@@ -1474,8 +1495,7 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
     strat = drop_from_filter(strat, drop_val, _print=print)
 
     # Merge with existing if any, and process new overlap of global subjects
-    self.strat = self._merge_existing(self.strat, strat)
-    self._process_new(self.low_memory_mode)
+    self.strat = self._merge_existing(self.strat, strat, 'inner')
 
 
 def _proc_strat(self, strat, key, bc, fc, fb, fbs, cdp, drop_val):
@@ -2037,9 +2057,6 @@ def Binarize_Target(self, threshold=None, lower=None, upper=None, target=0,
     self.targets[targets_key] =\
         self.targets[targets_key].astype('category')
 
-    # Global proc.
-    self._process_new(self.low_memory_mode)
-
     # Save new encoder, either replacing or adding new
     if threshold is None:
         self.targets_encoders[targets_key] =\
@@ -2174,7 +2191,10 @@ def Get_Nan_Subjects(self):
     their pandas index.'''
 
     if self.all_data is None:
-        self._prepare_data()
+        self._print('Calling Prepare_All_Data()',
+                    'to change the default merge behavior',
+                    'call it again!')
+        self.Prepare_All_Data()
 
     return self.all_data[pd.isnull(self.all_data).any(axis=1)].index
 
@@ -2263,7 +2283,8 @@ def _load_datasets(self, locs, df, load_params):
             self._print('By default repeats will be added as new unique',
                         'columns within merged data.')
 
-        data = pd.merge(data, more_data, on=self.subject_id)
+        data = pd.merge(data, more_data, on=self.subject_id,
+                        how=load_params['merge'])
 
     return data
 
@@ -2320,8 +2341,6 @@ def _load_dataset(self, loc, dataset_type, load_params):
                     ' due to dataset type')
 
     data = self._proc_df(data, load_params)
-    self._print()
-
     return data
 
 
@@ -2415,7 +2434,7 @@ def _set_overlap(self, data, overlap_subjects):
     return data
 
 
-def _merge_existing(self, class_data, local_data):
+def _merge_existing(self, class_data, local_data, merge='inner'):
     '''Internal helper function to handle either merging dataframes
     after loading, or if not loaded then setting class data.
 
@@ -2441,8 +2460,9 @@ def _merge_existing(self, class_data, local_data):
             raise RuntimeError('These col_names appear in both dfs:',
                                repeat_col_names)
 
-        class_data = pd.merge(class_data, local_data, on=self.subject_id)
-        self._print('Merged with existing!')
+        class_data = pd.merge(class_data, local_data, on=self.subject_id,
+                              how=merge)
+        self._print('Merged with existing (merge=' + str(merge) + ')')
         self._print('New combined shape:', class_data.shape)
         return class_data
     else:
@@ -2810,45 +2830,48 @@ def _get_overlapping_subjects(self):
     return set()
 
 
-def _process_new(self, remove=False):
-    '''Internal helper function to handle keeping an overlapping subject list,
-    with additional useful print statements.
+def Prepare_All_Data(self, merge='default', low_memory_mode='default'):
+    '''Helper function to merge all loaded data from different sources.
+    self.data, self.covars, self.targets ect...
+    into self.all_data for use directly in ML.
+    This function must be called before Modelling.
 
     Parameters
     ----------
-    remove : bool, optional
-        If True, remove non overlapping subjects - exclusions
-        from all data in place.
+    merge : {'inner' or 'outer'}, optional
+        To generate all data, the different loaded dataframes must
+        be merged. This parameter controls the behavior of that merge.
+        If 'inner' is passed, then only the overlapping subjects will be
+        considered. If 'outer' is passed, then the union of all subjects
+        will be taken, with missing spots filled with NaN!
+
+        If left as 'default' will use the default value for
+        merge set in Set_Default_Load_Params,
+        which is initially 'inner', unless changed
+
+        ::
+
+            default = 'default'
+
+    low_memory_mode : bool or 'default', optional
+        If True, then all of the individual dataframes, e.g.,
+        self.data, self.covars, etc... will be removed from memory
+        once self.all_data is created. If False then they will
+        not.
+
+        If Prepare_All_Data is called with low_memory_mode True, then
+        calling it again will not work, as the data to create self.all_data
+        will have been deleted. In this case, just re-run your script.
+
+        If left as default, will use the saved class value, set upon init.
+
+        ::
+
+            default = 'default'
 
     '''
 
-    overlap = self._get_overlapping_subjects()
-
-    if len(overlap) > 0:
-        self._print()
-        self._print('Total valid overlapping subjects =', len(overlap))
-
-        if remove:
-            self._print('Removing non overlapping subjects from loaded data,',
-                        'covars, ect...')
-
-            if len(self.data) > 0:
-                self.data = self.data[self.data.index.isin(overlap)]
-            if len(self.covars) > 0:
-                self.covars = self.covars[self.covars.index.isin(overlap)]
-            if len(self.targets) > 0:
-                self.targets = self.targets[self.targets.index.isin(overlap)]
-            if len(self.strat) > 0:
-                self.strat = self.strat[self.strat.index.isin(overlap)]
-
-        self._print()
-
-
-def _prepare_data(self):
-    '''Helper function to prepare all loaded data,
-    from different sources, self.data, self.covars, ect...
-    into self.all_data for use directly in ML.
-    '''
+    load_params = self._make_load_params({'merge': merge})
 
     self._print('Preparing final data, in self.all_data')
     self._print('Any changes to loaded data, covars or strat will not be',
@@ -2857,8 +2880,8 @@ def _prepare_data(self):
 
     dfs = []
 
-    assert len(self.data) > 0 or len(self.covars) > 0, \
-        'Some data must be loaded!'
+    if len(self.data) == 0 and len(self.covars) == 0:
+        raise RuntimeError('Some data must be loaded!')
 
     if len(self.data) > 0:
         dfs.append(self.data)
@@ -2869,8 +2892,8 @@ def _prepare_data(self):
     if len(self.strat) > 0:
         dfs.append(self.strat)
 
-    assert len(self.targets) > 0, \
-        'Targets must be loaded!'
+    if len(self.targets) == 0:
+        raise RuntimeError('Targets must be loaded!')
 
     dfs.append(self.targets)
 
@@ -2886,9 +2909,10 @@ def _prepare_data(self):
                         'must be unique!')
 
             overlap = np.array(list(dfs[i]))[overlap_c_names]
-            assert 1 == 2, str(overlap) + ' col(s) overlap!'
+            raise RuntimeWarning(str(overlap) + ' col(s) overlap!')
 
-        self.all_data = pd.merge(self.all_data, dfs[i], on=self.subject_id)
+        self.all_data = pd.merge(self.all_data, dfs[i],
+                                 on=self.subject_id, how=load_params['merge'])
 
     # Set data keys, covars, strat, ect...
     self._set_data_scopes()
@@ -2896,7 +2920,10 @@ def _prepare_data(self):
     self._print('Final data (w/ target) for modeling loaded shape:',
                 self.all_data.shape)
 
-    if self.low_memory_mode:
+    if low_memory_mode == 'default':
+        low_memory_mode = self.low_memory_mode
+
+    if low_memory_mode:
         self._print('Low memory mode is on!')
         self._print('Clearing self.data, self.covars, self.targets',
                     'and self.strat from memory!')

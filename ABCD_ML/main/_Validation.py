@@ -125,7 +125,11 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
     '''
 
     # Ensures only final overlap of subjects, ect...
-    self._process_new(True)
+    if self.all_data is None:
+        self._print('Calling Prepare_All_Data()',
+                    'to change the default merge behavior',
+                    'call it again!')
+        self.Prepare_All_Data()
 
     if isinstance(train_only_subjects, str):
         if train_only_subjects == 'nan':
@@ -149,7 +153,7 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
                   for g in groups]
         groups = self._add_strat_u_name(groups)
 
-        grp, l_e = get_unique_combo_df(self.strat, groups)
+        grp, l_e = get_unique_combo_df(self.all_data, groups)
 
         self.CV = CV(groups=grp, train_only=train_only)
 
@@ -169,11 +173,11 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         targets = self._get_base_targets_names()
         for target in targets:
             if target in stratify:
-                self.strat[target + self.strat_u_name] =\
-                    self.targets[target].copy()
+                self.all_data[target + self.strat_u_name] =\
+                    self.all_data[target].copy()
 
         stratify = self._add_strat_u_name(stratify)
-        strat, l_e = get_unique_combo_df(self.strat, stratify)
+        strat, l_e = get_unique_combo_df(self.all_data, stratify)
 
         self.CV = CV(stratify=strat, train_only=train_only)
 
@@ -185,8 +189,8 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         for target in targets:
             strat_target_name = target + self.strat_u_name
 
-            if strat_target_name in self.strat:
-                self.strat = self.strat.drop(strat_target_name, axis=1)
+            if strat_target_name in self.all_data:
+                self.all_data = self.all_data.drop(strat_target_name, axis=1)
 
     # If only train only
     elif len(train_only) > 0:
@@ -238,7 +242,10 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         test_size = .2
 
     if self.all_data is None:
-        self._prepare_data()
+        self._print('Calling Prepare_All_Data()',
+                    'to change the default merge behavior',
+                    'call it again!')
+        self.Prepare_All_Data()
 
     if random_state == 'default':
         random_state = self.random_state

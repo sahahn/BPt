@@ -696,13 +696,16 @@ def Test(self,
 
 
 def _premodel_check(self):
-    '''Internal helper function to ensure that self._prepare_data()
+    '''Internal helper function
     has been called, and to force a train/test split if not already done.
     Will also call Set_Default_ML_Params if not already called.
     '''
 
     if self.all_data is None:
-        self._prepare_data()
+        self._print('Calling Prepare_All_Data()',
+                    'to change the default merge behavior',
+                    'call it again!')
+        self.Prepare_All_Data()
 
     if self.train_subjects is None:
 

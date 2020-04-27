@@ -71,7 +71,7 @@ class Model_Pipeline():
 
         for m in range(len(metric_strs)):
 
-            if isinstance(m, str):
+            if isinstance(metric_strs[m], str):
                 metric_strs[m] =\
                     proc_type_dep_str(metric_strs[m], AVALIABLE_METRICS,
                                       self.ps.problem_type)

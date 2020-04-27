@@ -1,5 +1,5 @@
 from sklearn.base import BaseEstimator, clone
-from ..helpers.ML_Helpers import proc_mapping
+from ..helpers.ML_Helpers import proc_mapping, update_mapping
 from sklearn.utils.metaestimators import if_delegate_has_method
 import numpy as np
 from copy import deepcopy
@@ -57,11 +57,22 @@ class Scope_Model(BaseEstimator):
         if mapping is None:
             mapping = {}
 
+        # Proc mapping
         self._proc_mapping(mapping)
+
+        # Okay now want to create the new_mapping based on wrapper_inds
+        new_mapping = {}
+        for i in range(len(self.wrapper_inds_)):
+            new_mapping[self.wrapper_inds_[i]] = i
+
+        # Now, we only want to pass along the updated mapping
+        # and specifically not change the passed mapping
+        pass_on_mapping = mapping.copy()
+        update_mapping(pass_on_mapping, new_mapping)
 
         try:
             self.wrapper_model_.fit(X[:, self.wrapper_inds_],
-                                    y=y, mapping=mapping, **kwargs)
+                                    y=y, mapping=pass_on_mapping, **kwargs)
         except TypeError:
             self.wrapper_model_.fit(X[:, self.wrapper_inds_],
                                     y=y, **kwargs)

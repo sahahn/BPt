@@ -8,6 +8,7 @@ from ..helpers.ML_Helpers import (check_for_duplicate_names,
                                   process_params_by_type)
 
 from ..extensions.Col_Selector import ColDropStrat, InPlaceColTransformer
+from ..extensions.Scope_Model import Scope_Model
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 
 from sklearn.pipeline import Pipeline
@@ -191,6 +192,19 @@ class Pieces():
 
         return obj
 
+    def check_model_scope(self, scope, model, params):
+
+        if scope != 'all':
+            inds = self.Data_Scopes.get_inds_from_scope(scope)
+            name = model[0]
+            scoped_model =\
+                (name, Scope_Model(model[1], inds))
+            params[name + '__needs_mapping'] = True
+
+            return scoped_model, params
+
+        return model, params
+
 
 class Type_Pieces(Pieces):
 
@@ -274,6 +288,14 @@ class Models(Type_Pieces):
             self._base_type_process(non_ensemble_params,
                                     get_base_model_and_params)
 
+        # If any non-ensemble models have scope != 'all'
+        for i in range(len(non_ensemble_params)):
+            scope = non_ensemble_params[i].scope
+
+            non_ensemble_objs[i], non_ensemble_obj_params =\
+                self.check_model_scope(scope, non_ensemble_objs[i],
+                                       non_ensemble_obj_params)
+
         # If not any ensembles, return the non_ensembles
         if not ensemble_mask.any():
             return non_ensemble_objs, non_ensemble_obj_params
@@ -324,6 +346,14 @@ class Models(Type_Pieces):
 
             # And add the params
             ensembled_obj_params.update(wrapper.get_updated_params())
+
+        # Check ensembled_objs for scope != 'all'
+        for i in range(len(ensemble_params)):
+            scope = ensemble_params[i].scope
+
+            ensembled_objs[i], ensembled_obj_params =\
+                self.check_model_scope(scope, ensembled_objs[i],
+                                       ensembled_obj_params)
 
         # In mixed case, merge with non_ensemble
         ensembled_objs += non_ensemble_objs
@@ -593,7 +623,7 @@ class Samplers(Scope_Pieces):
             sample_target = True
 
         return sample_target, sample_strat_keys
-    
+
     def _get_sampler(self, param, on, recover_strat):
 
         from .Samplers import get_sampler_and_params
@@ -653,7 +683,7 @@ class Feat_Selectors(Type_Pieces):
         # Standard base type process
         objs, obj_params =\
             self._base_type_process(params, get_feat_selector_and_params)
- 
+
         # If any base estimators, replace with a model
         objs, obj_params =\
             self._replace_base_rfe_estimator(objs, obj_params, params)

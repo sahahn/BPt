@@ -180,7 +180,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         params = {'wrapper_transformer': self.wrapper_transformer,
                   'wrapper_inds': self.wrapper_inds}
 
-        params.update(self.wrapper_transformer.get_params())
+        params.update(self.wrapper_transformer.get_params(deep=deep))
 
         return params
 

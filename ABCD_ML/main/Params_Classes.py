@@ -583,7 +583,7 @@ class Feat_Selector(Piece):
 
 class Model(Piece):
 
-    def __init__(self, obj, params=0, extra_params=None):
+    def __init__(self, obj, params=0, scope='all', extra_params=None):
         ''' Model represents a base components of the :class:`Model_Pipeline`,
         specifically a single Model / estimator.
         Model can also be used as a component
@@ -629,6 +629,7 @@ class Model(Piece):
 
         self.obj = obj
         self.params = params
+        self.scope = scope
         self.extra_params = extra_params
         self._is_model = True
 
@@ -637,7 +638,8 @@ class Model(Piece):
 
 class Ensemble(Piece):
 
-    def __init__(self, obj, models, params=0, is_des=False,
+    def __init__(self, obj, models, params=0, scope='all',
+                 is_des=False,
                  single_estimator=False, des_split=.2,
                  extra_params=None):
         ''' The Ensemble object is valid base
@@ -750,6 +752,7 @@ class Ensemble(Piece):
         self.obj = obj
         self.models = models
         self.params = params
+        self.scope = scope
         self.is_des = is_des
         self.des_split = des_split
         self.single_estimator = single_estimator
@@ -768,6 +771,7 @@ class Ensemble(Piece):
         else:
             if not hasattr(self.models, '_is_model'):
                 raise IOError('Passed model in models must be a valid Model/Ensemble, i.e., param wrapped.')
+
 
 class Param_Search(Params):
 

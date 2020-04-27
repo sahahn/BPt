@@ -78,6 +78,9 @@ class Base_Model_Pipeline():
             self.named_objs[name] = objs
             self.named_params[name] = params
 
+        # Set mapping to map
+        self._set_mapping_to_map()
+
     def _check_for_user_passed(self, objs, cnt):
 
         if objs is not None:
@@ -165,16 +168,14 @@ class Base_Model_Pipeline():
             self._print("Creating pipeline cache dr at:", self.cache)
             os.makedirs(self.cache, exist_ok=True)
 
-        # Get which pieces to map
-        mapping, to_map = self._get_mapping_to_map()
-
         model_pipeline = ABCD_Pipeline(steps, memory=self.cache,
-                                       mapping=mapping, to_map=to_map,
+                                       mapping=self.mapping,
+                                       to_map=self.to_map,
                                        names=names)
 
         return model_pipeline
 
-    def _get_mapping_to_map(self):
+    def _set_mapping_to_map(self):
 
         mapping, to_map = False, []
 
@@ -202,7 +203,19 @@ class Base_Model_Pipeline():
                 except AttributeError:
                     pass
 
-        return mapping, to_map
+            # Check model params for any needs_mapping
+            for key in self.named_params['model']:
+                if '__needs_mapping' in key:
+                    to_map.append(key.replace('__needs_mapping', ''))
+
+        # Remove any __needs_mapping keys from model params now
+        model_param_keys = list(self.named_params['model'])
+        for key in model_param_keys:
+            if '__needs_mapping' in key:
+                self.named_params['model'].pop(key)
+
+        self.mapping = mapping
+        self.to_map = to_map
 
     def is_search(self):
 

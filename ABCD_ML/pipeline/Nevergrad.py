@@ -107,8 +107,6 @@ class NevergradSearchCV():
                                                 batch_mode=False)
 
         else:
-
-            # Try to launch with spawn first, but if error use os default
             try:
                 with futures.ProcessPoolExecutor(
                   max_workers=self.params._n_jobs,

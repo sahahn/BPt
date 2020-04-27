@@ -9,6 +9,7 @@ from .Feat_Importances import get_feat_importances_and_params
 from .Base_Model_Pipeline import Base_Model_Pipeline
 from ..helpers.ML_Helpers import proc_type_dep_str
 from joblib import wrap_non_picklable_objects
+from copy import deepcopy
 
 
 class Model_Pipeline():
@@ -37,7 +38,7 @@ class Model_Pipeline():
 
         # Set / proc metrics
         self.metric_strs, self.metrics, _ =\
-            self._process_metrics(self.ps.metric)
+            self._process_metrics(deepcopy(self.ps.metric))
 
         # Set / proc feat importance info
         self.feat_importances =\
@@ -363,7 +364,7 @@ class Model_Pipeline():
             base_metric = self.ps.metric
             weight_metric = self.ps.weight_metric
 
-        _, _, metric = self._process_metrics(base_metric)
+        _, _, metric = self._process_metrics(deepcopy(base_metric))
         return metric, weight_metric
 
     def _get_base_fitted_pipeline(self):

@@ -407,7 +407,7 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
     for target in targets:
 
         self._show_single_dist(target, targets_df, self.targets_encoders,
-                               cat_show_original_name, show)
+                               cat_show_original_name, show, source='target')
         self._print()
 
 
@@ -466,7 +466,7 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
 
     for covar in covars:
         self._show_single_dist(covar, covars_df, self.covars_encoders,
-                               cat_show_original_name, show)
+                               cat_show_original_name, show, source='covar')
         self._print()
 
 
@@ -524,7 +524,7 @@ def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
 
     for s in strat:
         self._show_single_dist(s, strat_df, self.strat_encoders,
-                               cat_show_original_name, show)
+                               cat_show_original_name, show, source='strat')
         self._print()
 
 
@@ -591,7 +591,7 @@ def _get_single_df(self, name, df, all_encoders):
 
 
 def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
-                      show=True):
+                      show=True, source='target'):
 
     single_df, encoder, dropped_name =\
         self._get_single_df(name, df, all_encoders)
@@ -599,7 +599,7 @@ def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
     self._show_dist(single_df, plot_key=name,
                     cat_show_original_name=cat_show_original_name,
                     encoder=encoder, original_key=name,
-                    dropped_name=dropped_name, show=show)
+                    dropped_name=dropped_name, show=show, source=source)
 
 
 def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
@@ -641,7 +641,7 @@ def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
 
 def _show_dist(
  self, data, plot_key, cat_show_original_name, encoder=None, original_key=None,
- dropped_name=None, show=True):
+ dropped_name=None, show=True, source='target'):
 
     # Ensure works with NaN data loaded
     no_nan_subjects = data[~data.isna().any(axis=1)].index
@@ -690,7 +690,7 @@ def _show_dist(
         self._print('Note:', len(nan_subjects), 'subject(s) with NaN',
                     'not included/shown!')
 
-    title = plot_key + ' distributions'
+    title = plot_key + ' ' + source + ' distribution'
     plt.title(title)
     self._plot(title, show)
 

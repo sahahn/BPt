@@ -691,7 +691,7 @@ def _show_dist(
                     'not included/shown!')
 
     title = plot_key + ' ' + source + ' distribution'
-    plt.title(title)
+    plt.title(title.replace(' ' + source, ''))
     self._plot(title, show)
 
 

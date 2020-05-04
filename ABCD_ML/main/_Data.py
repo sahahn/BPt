@@ -2007,7 +2007,7 @@ def Binarize_Target(self, threshold=None, lower=None, upper=None, target=0,
 
     targets_key, self.targets =\
         self._proc_threshold(threshold, lower, upper, targets_key,
-                             self.targets, replace)
+                             self.targets, replace, merge)
 
     if not replace:
         self.targets_keys.append(targets_key)

@@ -432,6 +432,8 @@ class ABCD_ML():
                         _proc_data_unique_cols,
                         Drop_Data_Duplicates,
                         Binarize_Target,
+                        _proc_threshold,
+                        Binarize_Covar,
                         Get_Overlapping_Subjects,
                         Clear_Name_Map,
                         Clear_Data,

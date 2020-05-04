@@ -1944,7 +1944,7 @@ def Drop_Data_Duplicates(self, corr_thresh, overlap_subjects='default'):
 
 
 def Binarize_Target(self, threshold=None, lower=None, upper=None, target=0,
-                    replace=True):
+                    replace=True, merge='outer'):
     '''This function binarizes a loaded target variable,
     assuming that a float type target is loaded,
     otherwise this function will break!
@@ -1987,75 +1987,30 @@ def Binarize_Target(self, threshold=None, lower=None, upper=None, target=0,
     replace : bool, optional
         If True, then replace the target to be binarized in
         place, otherwise if False, add the binarized version as a
-        new target. Note: If dropping the middle with lower and upper,
-        then setting replace to False and dropping subjects will still
-        drop subjects from the original, as targets enforces an overlap
-        of subjects across all loaded targets!
+        new target.
 
         (default = True)
+
+    merge : {'inner' or 'outer'}
+        This argument is used only when replace is False,
+        and is further relevant only when upper and lower
+        arguments are passed. If 'inner', then drop from
+        the loaded target dataframe any subjects which do not
+        overlap, if 'outer', then set any non-overlapping subjects
+        data to NaN's.
+
+        (default = 'outer')
+
     '''
 
-    if threshold is None and lower is None and upper is None:
-        raise RuntimeError('Some value must be set.')
-    if lower is not None and upper is None:
-        raise RuntimeError('Upper must be set.')
-    if upper is not None and lower is None:
-        raise RuntimeError('Lower must be set.')
-
     targets_key = self._get_targets_key(target)
-    self._print('Binarizing', targets_key)
 
-    target_values = self.targets[targets_key]
-    original_key = targets_key
+    targets_key, self.targets =\
+        self._proc_threshold(threshold, lower, upper, targets_key,
+                             self.targets, replace)
 
     if not replace:
-        targets_key = 'binary_' + targets_key
-
-        if targets_key in self.targets:
-
-            cnt = 1
-            while targets_key + str(cnt) in self.targets:
-                cnt += 1
-            targets_key = targets_key + str(cnt)
-
         self.targets_keys.append(targets_key)
-
-    if threshold is None:
-        one_sum = (target_values > upper).sum()
-        zero_sum = (target_values < lower).sum()
-        drop_sum = len(target_values) - one_sum + zero_sum
-
-        self._print('Setting:', zero_sum, 'as 0.')
-        self._print('Setting:', one_sum, 'as 1.')
-        self._print('Dropping:', drop_sum)
-
-        # Drop out the middle
-        to_drop = target_values[(target_values <= upper) &
-                                (target_values >= lower)].index
-        self.targets = self.targets.drop(to_drop)
-        drop_middle = self.targets[original_key]
-
-        # Binarize remaining
-        binarize = drop_middle.where(drop_middle > lower, 0)
-        binarize = binarize.where(binarize < upper, 1)
-
-    else:
-        one_sum = (target_values >= threshold).sum()
-        zero_sum = (target_values < threshold).sum()
-
-        self._print('Setting:', zero_sum, 'as 0.')
-        self._print('Setting:', one_sum, 'as 1.')
-
-        # Grab targets, and binarize
-        binarize = target_values.where(target_values >= threshold, 0)
-        binarize = binarize.where(binarize < threshold, 1)
-
-    # Fill back into targets, either replacing or adding new
-    self.targets[targets_key] = binarize
-
-    # Conv to categorical data type
-    self.targets[targets_key] =\
-        self.targets[targets_key].astype('category')
 
     # Save new encoder, either replacing or adding new
     if threshold is None:
@@ -2067,6 +2022,151 @@ def Binarize_Target(self, threshold=None, lower=None, upper=None, target=0,
 
     if not replace:
         self._print_loaded_targets()
+
+
+def _proc_threshold(self, threshold, lower, upper, key, df, replace, merge):
+
+    if threshold is None and lower is None and upper is None:
+        raise RuntimeError('Some value must be set.')
+    if lower is not None and upper is None:
+        raise RuntimeError('Upper must be set.')
+    if upper is not None and lower is None:
+        raise RuntimeError('Lower must be set.')
+
+    values = df[key]
+    original_key = key
+    original_df = df.copy()
+
+    self._print('Binarizing', key)
+
+    if not replace:
+        key = 'binary_' + key
+
+        if key in df:
+
+            cnt = 1
+            while key + str(cnt) in df:
+                cnt += 1
+            key = key + str(cnt)
+
+    if threshold is None:
+        one_sum = (values > upper).sum()
+        zero_sum = (values < lower).sum()
+        drop_sum = len(values) - one_sum + zero_sum
+
+        self._print('Setting:', zero_sum, 'as 0.')
+        self._print('Setting:', one_sum, 'as 1.')
+        self._print('Dropping:', drop_sum)
+
+        # Drop out the middle
+        to_drop = values[(values <= upper) &
+                         (values >= lower)].index
+        df = df.drop(to_drop)
+
+        # If inner merge, drop subjects from original too
+        if merge == 'inner':
+            original_df = original_df.drop(to_drop)
+
+        drop_middle = df[original_key]
+
+        # Binarize remaining
+        binarize = drop_middle.where(drop_middle > lower, 0)
+        binarize = binarize.where(binarize < upper, 1)
+
+    else:
+        one_sum = (values >= threshold).sum()
+        zero_sum = (values < threshold).sum()
+
+        self._print('Setting:', zero_sum, 'as 0.')
+        self._print('Setting:', one_sum, 'as 1.')
+
+        # Grab targets, and binarize
+        binarize = values.where(values >= threshold, 0)
+        binarize = binarize.where(binarize < threshold, 1)
+
+    # Fill back into df, either replacing or adding new
+    original_df[key] = binarize
+
+    # Conv to categorical data type
+    original_df[key] = original_df[key].astype('category')
+
+    return key, original_df
+
+
+def Binarize_Covar(self, threshold=None, lower=None, upper=None, covar=0,
+                   replace=True, merge='outer'):
+    '''This function binarizes a loaded covar variable,
+    assuming that originally float type covar is loaded,
+    otherwise this function will break!
+
+    Parameters
+    ----------
+    threshold : float or None, optional
+        Single binary threshold, where any value less than the threshold
+        will be set to 0 and any value greater than or equal to the
+        threshold will be set to 1. Leave threshold as None, and use
+        lower and upper instead to 'cut' out a chunk of values in the middle.
+
+        (default = None)
+
+    lower : float or None, optional
+        Any value that is greater than lower will be set to 1,
+        and any value <= upper and >= lower will be dropped.
+
+        If a value is set for lower, one cannot be set for threshold,
+        and one must bet set for upper.
+
+        (default = None)
+
+    upper : float or None, optional
+        Any value that is less than upper will be set to 0,
+        and any value <= upper and >= lower will be dropped.
+
+        If a value is set for upper, one cannot be set for threshold,
+        and one must bet set for lower.
+
+        (default = None)
+
+    covar : str, optional
+        The loaded covar in which to Binarize. This should be
+        the loaded name of the covar column.
+
+        (default = 0)
+
+    replace : bool, optional
+        If True, then replace the covar to be binarized in
+        place, otherwise if False, add the binarized version as a
+        new covar.
+
+        (default = True)
+
+    merge : {'inner' or 'outer'}
+        This argument is used only when replace is False,
+        and is further relevant only when upper and lower
+        arguments are passed. If 'inner', then drop from
+        the loaded covar dataframe any subjects which do not
+        overlap, if 'outer', then set any non-overlapping subjects
+        data to NaN's.
+
+        (default = 'outer')
+    '''
+
+    covars_key = covar
+
+    if covars_key in self.name_map:
+        covars_key = self.name_map[covars_key]
+
+    covars_key, self.covars =\
+        self._proc_threshold(threshold, lower, upper, covars_key,
+                             self.covars, replace, merge)
+
+    # Save new encoder, either replacing or adding new
+    if threshold is None:
+        self.covars_encoders[covars_key] =\
+            {0: '<' + str(lower), 1: '>' + str(upper)}
+    else:
+        self.covars_encoders[covars_key] =\
+            {0: '<' + str(threshold), 1: '>=' + str(threshold)}
 
 
 def Get_Overlapping_Subjects(self):

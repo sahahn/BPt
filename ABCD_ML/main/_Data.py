@@ -1037,7 +1037,7 @@ def _print_loaded_targets(self):
 def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                 dataset_type='default', subject_id='default',
                 eventname='default', eventname_col='default',
-                overlap_subjects='default', merge='defaut',
+                overlap_subjects='default', merge='default',
                 na_values='default', drop_na='default', drop_or_na='default',
                 code_categorical_as='dummy', categorical_drop_percent=None,
                 filter_outlier_percent=None,

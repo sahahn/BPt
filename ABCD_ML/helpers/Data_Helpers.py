@@ -534,7 +534,7 @@ def get_original_cat_names(names, encoder, original_key):
             float(names[0])
             base = names
         except ValueError:
-            base = [int(name.replace(original_key + '_', ''))
+            base = [int(float(name.replace(original_key + '_', '')))
                     for name in names]
 
         try:

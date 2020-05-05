@@ -251,7 +251,7 @@ def process_categorical_input(data, key, drop='one hot', drop_percent=None,
     if drop == 'dummy':
         max_col = data[new_keys].sum().idxmax()
         data = data.drop(max_col, axis=1)
-        _print('dummy coding by dropping col', max_col)
+        _print('Dummy coding by dropping col', max_col)
 
         ind = new_keys.index(max_col)
 

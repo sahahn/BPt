@@ -544,7 +544,7 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
     self._show_na_info(data)
 
     # Display final shape
-    self._print('loaded shape: ', data.shape)
+    self._print('Loaded Shape:', data.shape)
 
     # Merge self.data with new loaded data
     self.data = self._merge_existing(self.data, data, load_params['merge'])
@@ -958,7 +958,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     # Drop rows set to drop
     targets = drop_from_filter(targets, drop_val, _print=self._print)
 
-    self._print('Final shape: ', targets.shape)
+    self._print('Loaded Shape:', targets.shape)
 
     # Merge with existing and set self.targets
     self.targets = self._merge_existing(self.targets, targets,

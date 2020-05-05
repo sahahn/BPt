@@ -330,7 +330,7 @@ def filter_float_by_outlier(data, key, filter_outlier_percent,
     fop = proc_fop(filter_outlier_percent)
 
     _print('Filtering for outliers, dropping rows with params: ', fop)
-    _print('Min-Max Score (before outlier filtering):',
+    _print('Min-Max value (pre-filter):',
            np.nanmin(data[key]), np.nanmax(data[key]))
 
     q1 = data[key].quantile(fop[0])
@@ -352,7 +352,7 @@ def filter_float_by_std(data, key, n_std,
         n_std = (n_std, n_std)
 
     _print('Filtering for outliers by stds:', n_std)
-    _print('Min-Max Score (before outlier filtering):',
+    _print('Min-Max value (post-filter):',
            np.nanmin(data[key]), np.nanmax(data[key]))
 
     mean = data[key].mean()

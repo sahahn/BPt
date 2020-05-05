@@ -155,8 +155,8 @@ def process_ordinal_input(data, key, drop_percent=None,
         to_drop = data.index[data[key].isin(drop_vals)]
         data.loc[to_drop, key] = drop_val
 
-        _print('Dropping', drop_vals, 'according to passed drop percent of',
-               drop_percent)
+        _print('Dropped value(s)', drop_vals, 'according to passed drop',
+               'percent of', drop_percent)
 
     # Work on only non_dropped data / non NaN data if applicable
     non_drop_data, non_drop_subjects =\

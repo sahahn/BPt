@@ -1224,7 +1224,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     if drop_val is not np.nan:
         covars = drop_from_filter(covars, drop_val, _print=self._print)
 
-    self._print('loaded shape: ', covars.shape)
+    self._print('Loaded Shape:', covars.shape)
 
     # If other data is already loaded,
     # merge this data with existing loaded data.

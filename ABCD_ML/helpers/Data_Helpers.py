@@ -588,6 +588,9 @@ def proc_datatypes(data_types, col_names):
     if not isinstance(data_types, list):
         data_types = list([data_types])
 
+    if len(data_types) == 1:
+        data_types = [data_types[0] for i in range(len(col_names))]
+
     if len(data_types) != len(col_names):
         raise RuntimeError('The same number of datatypes were not passed as',
                            'columns!')

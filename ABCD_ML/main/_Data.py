@@ -814,6 +814,10 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.
 
+        If a list is passed to col_name, then you can either supply
+        one data_type to be applied to all passed cols, or a list with
+        corresponding data types by index for each col_name passed.
+
         - 'binary' or 'b'
             Binary input
 
@@ -1078,6 +1082,10 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         The data types of the different columns to load,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.
+
+        If a list is passed to col_name, then you can either supply
+        one data_type to be applied to all passed cols, or a list with
+        corresponding data types by index for each col_name passed.
 
         - 'binary' or 'b'
             Binary input

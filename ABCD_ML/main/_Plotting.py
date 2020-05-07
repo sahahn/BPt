@@ -619,6 +619,16 @@ def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
         unique, counts = np.unique(df, return_counts=True)
         sums = pd.Series(counts, unique)
 
+        if isinstance(encoder, dict):
+            max_sum = len(encoder)
+        else:
+            max_sum = len(encoder.classes_)
+
+        for i in range(max_sum):
+            if i not in sums.index:
+                sums[i] = 0
+        sums = sums.sort_index()
+
     display_df = pd.DataFrame(sums, columns=['Counts'])
     display_df.index.name = 'Internal Name'
     display_df['Frequency'] = sums / len(df)

@@ -809,7 +809,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         Note: Must be in the same order as data types passed in.
         (default = None)
 
-    data_type : {'b', 'c', 'm', 'o', 'f'}, optional
+    data_type : {'b', 'c', 'f'}, optional
         The data types of the different columns to load,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.

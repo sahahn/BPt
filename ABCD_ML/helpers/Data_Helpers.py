@@ -338,7 +338,7 @@ def filter_float_by_outlier(data, key, filter_outlier_percent,
     data.loc[data[key] < q1, key] = drop_val
     data.loc[data[key] > q2, key] = drop_val
 
-    _print('Min-Max Score (post outlier filtering):',
+    _print('Min-Max value (post outlier filtering):',
            np.nanmin(data[key][data[key] != drop_val]),
            np.nanmax(data[key][data[key] != drop_val]))
 

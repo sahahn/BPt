@@ -2857,7 +2857,7 @@ def _drop_excluded(self, data):
     overlap = set(data.index).intersection(self.exclusions)
     data = data.drop(overlap)
     if in_num != len(data):
-        self._print('Dropped', in_num - len(data), ' excluded subjects')
+        self._print('Dropped', in_num - len(data), 'excluded subjects')
 
     return data
 
@@ -2885,7 +2885,7 @@ def _drop_included(self, data):
         data = data.drop(to_drop)
 
         if in_num != len(data):
-            self._print('Dropped', in_num - len(data), ' outside of included '
+            self._print('Dropped', in_num - len(data), 'outside of included '
                         'subjects')
 
     return data

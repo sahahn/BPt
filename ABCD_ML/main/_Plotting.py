@@ -622,7 +622,11 @@ def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
         if isinstance(encoder, dict):
             max_sum = len(encoder)
         else:
-            max_sum = len(encoder.classes_)
+            try:
+                max_sum = len(encoder.classes_)
+            except AttributeError:
+                max_sum = encoder.n_bins
+                cat_show_original_name = False
 
         for i in range(max_sum):
             if i not in sums.index:
@@ -688,6 +692,8 @@ def _show_dist(
         display_df, sums, original_names =\
             self._get_cat_display_df(no_nan_data, encoder, original_key,
                                      cat_show_original_name)
+        if original_names is None:
+            cat_show_original_name = False
 
         self._display_df(display_df)
 
@@ -710,7 +716,7 @@ def _show_dist(
                     'not included/shown!')
 
     title = plot_key + ' ' + source + ' distribution'
-    plt.title(title.replace(' ' + source, ''))
+    plt.title(title.replace(' ' + source, '').replace(self.strat_u_name, ''))
     self._plot(title, show)
 
 

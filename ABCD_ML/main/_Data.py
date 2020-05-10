@@ -358,7 +358,7 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
               filter_outlier_percent=None, filter_outlier_std=None,
               unique_val_drop=None, unique_val_warn=.05,
               drop_col_duplicates=None,
-              clear_existing=False):
+              clear_existing=False, ext=None):
     """Class method for loading ROI-style data, assuming all loaded
     columns are continuous / float datatype.
 
@@ -504,6 +504,13 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
             then reloading the notebook or re-running the script.
 
         (default = False)
+
+    ext : None or str, optional
+        Optional fixed extension to append to all loaded col names,
+        leave as None to ignore this param. Note: applied after
+        name mapping.
+
+        (default = None)
     """
 
     # Clear existing if requested, otherwise append to
@@ -514,7 +521,7 @@ def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
     load_params = self._make_load_params(args=locals())
 
     # Load in the raw dataframe - based on dataset type and/or passed user df
-    data = self._load_datasets(loc, df, load_params)
+    data = self._load_datasets(loc, df, load_params, ext=ext)
     self._print()
 
     # Set to only overlap subjects if passed
@@ -558,7 +565,7 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
                     eventname_col='default', overlap_subjects='default',
                     merge='default',
                     reduce_func=np.mean, filter_outlier_percent=None,
-                    filter_outlier_std=None, clear_existing=False):
+                    filter_outlier_std=None, clear_existing=False, ext=None):
     """Class method for loading in data as file paths, where file paths correspond
     to some sort of raw data which should only be actually loaded / proc'ed
     within the actual modelling. The further assumption made is
@@ -711,6 +718,13 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
             then reloading the notebook or re-running the script.
 
         (default = False)
+
+    ext : None or str, optional
+        Optional fixed extension to append to all loaded col names,
+        leave as None to ignore this param. Note: applied after
+        name mapping.
+
+        (default = None)
     """
 
     # Clear existing if requested, otherwise append to
@@ -725,7 +739,7 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
                          load_params['subject_id'])
 
     # Load in the raw dataframe - based on dataset type and/or passed user df
-    data = self._load_datasets(loc, df, load_params)
+    data = self._load_datasets(loc, df, load_params, ext=ext)
     self._print()
 
     # Set to only overlap subjects if passed
@@ -778,7 +792,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
                  filter_outlier_percent=None,
                  filter_outlier_std=None, categorical_drop_percent=None,
                  na_values='default', drop_na='default', drop_or_na='default',
-                 clear_existing=False):
+                 clear_existing=False, ext=None):
     '''Loads in targets, the outcome / variable(s) to predict.
 
     Parameters
@@ -904,6 +918,13 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
 
         (default = False)
 
+    ext : None or str, optional
+        Optional fixed extension to append to all loaded col names,
+        leave as None to ignore this param. Note: applied after
+        name mapping.
+
+        (default = None)
+
     Notes
     ----------
     Targets can be either 'binary', 'categorical',
@@ -936,7 +957,8 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     # Load in the targets w/ basic pre-processing
     targets, col_names = self._common_load(loc, df, dataset_type,
                                            load_params,
-                                           col_names=col_name)
+                                           col_names=col_name,
+                                           ext=ext)
 
     # Proccess the passed in data_types - get right number and in list
     data_types, col_names = proc_datatypes(data_type, col_names)
@@ -1046,7 +1068,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                 code_categorical_as='dummy', categorical_drop_percent=None,
                 filter_outlier_percent=None,
                 filter_outlier_std=None,
-                clear_existing=False):
+                clear_existing=False, ext=None):
     '''Load a covariate or covariates, type data.
 
     Parameters
@@ -1194,6 +1216,13 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
             then reloading the notebook or re-running the script.
 
         (default = False)
+
+    ext : None or str, optional
+        Optional fixed extension to append to all loaded col names,
+        leave as None to ignore this param. Note: applied after
+        name mapping.
+
+        (default = None)
     '''
 
     if clear_existing:
@@ -1205,7 +1234,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     # Load in covars w/ basic pre-proc
     covars, col_names = self._common_load(loc, df, dataset_type,
                                           load_params,
-                                          col_names=col_name)
+                                          col_names=col_name, ext=ext)
 
     # Proccess the passed in data_types / get right number and in list
     data_types, col_names = proc_datatypes(data_type, col_names)
@@ -1318,7 +1347,7 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
                binary_col=False, float_to_binary=False, float_col=False,
                float_bins=10, float_bin_strategy='uniform',
                categorical_drop_percent=None,
-               na_values='default', clear_existing=False):
+               na_values='default', clear_existing=False, ext=None):
     '''Load stratification values from a file.
     See Notes for more details on what stratification values are.
 
@@ -1466,6 +1495,13 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
 
         (default = False)
 
+    ext : None or str, optional
+        Optional fixed extension to append to all loaded col names,
+        leave as None to ignore this param. Note: applied after
+        name mapping.
+
+        (default = None)
+
     Notes
     ----------
     Stratification values are categorical variables which are loaded for the
@@ -1493,7 +1529,7 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
     # Load in strat w/ basic pre-processing
     strat, col_names = self._common_load(loc, df, dataset_type,
                                          load_params,
-                                         col_names=col_name)
+                                         col_names=col_name, ext=ext)
 
     # Add strat unique name to end of each col name
     col_mapping = {col: col + self.strat_u_name for col in strat}
@@ -1518,6 +1554,8 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
 
     # Drop rows set to drop
     strat = drop_from_filter(strat, drop_val, _print=print)
+
+    self._print('Loaded Shape:', strat.shape)
 
     # Merge with existing if any, and process new overlap of global subjects
     self.strat = self._merge_existing(self.strat, strat, 'inner')
@@ -2362,7 +2400,7 @@ def _get_targets_key(self, key, base_key=False):
     return self.targets_keys[ind]
 
 
-def _load_datasets(self, locs, df, load_params):
+def _load_datasets(self, locs, df, load_params, ext=None):
     '''Helper function to load in multiple datasets with default
     load and drop behavior based on type. And calls proc_df on each
     before merging.
@@ -2414,6 +2452,12 @@ def _load_datasets(self, locs, df, load_params):
                                                load_params['na_values'])
             single_df = self._proc_df(single_df, load_params)
             dfs.append(single_df)
+
+    # Add ext to col names if any ext
+    if ext is not None:
+        for d in range(len(dfs)):
+            col_mapping = {col: col + ext for col in dfs[d]}
+            dfs[d] = dfs[d].rename(col_mapping, axis=1)
 
     # Set first df
     data = dfs[0]
@@ -2490,7 +2534,7 @@ def _load_dataset(self, loc, dataset_type, load_params):
 
 
 def _common_load(self, loc, df, dataset_type, load_params,
-                 col_names=None):
+                 col_names=None, ext=None):
 
     if loc is not None and df is not None:
         raise AssertionError('Both loc and df cannot be set!')
@@ -2522,7 +2566,12 @@ def _common_load(self, loc, df, dataset_type, load_params,
     # Set data to only the requested cols and drop_na
     data = self._drop_na(data[col_names], load_params['drop_na'])
 
-    return data, col_names
+    # Add ext to col names if any ext
+    if ext is not None:
+        col_mapping = {col: col + ext for col in data}
+        data = data.rename(col_mapping, axis=1)
+
+    return data, list(data)
 
 
 def _load(self, loc, dataset_type, na_values):

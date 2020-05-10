@@ -1315,7 +1315,7 @@ def _proc_covar(self, covars, key, d_type, cca, cdp, fop, fos, drop_val):
 def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
                subject_id='default', eventname='default',
                eventname_col='default', overlap_subjects='default',
-               binary_col=False, float_col=False,
+               binary_col=False, float_to_binary=False, float_col=False,
                float_bins=10, float_bin_strategy='uniform',
                categorical_drop_percent=None,
                na_values='default', clear_existing=False):
@@ -1374,7 +1374,21 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
 
         (default = False)
 
-    float_col : int, list or None, optional
+    float_to_binary : False, int, (int, int), or list of
+        Strat values are loaded as ordinal categorical, but one
+        could also want to load a float value, and force it to be
+        binary via thresholding.
+
+        If False is passed, or False within a list of values,
+        this will be ignored. Otherwise, a single int can be
+        passed in the case of one threshold when values lower than
+        or equal should be converted to 0, and values > to 1. If
+        a tuple of ints passed, that corresponds to the case of
+        passing a lower and upper binary threshold.
+
+        (default = False)
+
+    float_col : bool, or list or None, optional
         Strat values are loaded as ordinal categorical, but one
         could also want to load a float value, and bin it into according
         to some strategy into ordinal categorical.
@@ -1487,6 +1501,7 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
 
     # Proc list optional args to right length
     bcs = proc_args(binary_col, col_names)
+    ftbs = proc_args(float_to_binary, col_names)
     fcs = proc_args(float_col, col_names)
     fbs = proc_args(float_bins, col_names)
     fbss = proc_args(float_bin_strategy, col_names)
@@ -1496,8 +1511,10 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
     drop_val = get_unused_drop_val(strat)
 
     # Load in each strat w/ passed args
-    for key, bc, fc, fb, fbs, cdp in zip(col_names, bcs, fcs, fbs, fbss, cdps):
-        strat = self._proc_strat(strat, key, bc, fc, fb, fbs, cdp, drop_val)
+    for key, bc, ftb, fc, fb, fbs, cdp in zip(col_names, bcs, ftbs, fcs,
+                                              fbs, fbss, cdps):
+        strat = self._proc_strat(strat, key, bc, ftb, fc, fb, fbs, cdp,
+                                 drop_val)
 
     # Drop rows set to drop
     strat = drop_from_filter(strat, drop_val, _print=print)
@@ -1506,7 +1523,7 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
     self.strat = self._merge_existing(self.strat, strat, 'inner')
 
 
-def _proc_strat(self, strat, key, bc, fc, fb, fbs, cdp, drop_val):
+def _proc_strat(self, strat, key, bc, ftb, fc, fb, fbs, cdp, drop_val):
 
     key = key + self.strat_u_name
 
@@ -1514,6 +1531,26 @@ def _proc_strat(self, strat, key, bc, fc, fb, fbs, cdp, drop_val):
     if bc:
         strat, self.strat_encoders[key] =\
             process_binary_input(strat, key, drop_val, self._print)
+
+    elif ftb is not False:
+
+        if isinstance(ftb, int):
+            threshold = ftb
+            lower, upper = None, None
+        else:
+            lower, upper = ftb
+            threshold = None
+
+        key, strat =\
+            self._proc_threshold(threshold, lower, upper, key,
+                                 strat, replace=True, merge='inner')
+
+        if threshold is None:
+            self.strat_encoders[key] =\
+                {0: '<' + str(lower), 1: '>' + str(upper)}
+        else:
+            self.strat_encoders[key] =\
+                {0: '<' + str(threshold), 1: '>=' + str(threshold)}
 
     # Float
     elif fc:

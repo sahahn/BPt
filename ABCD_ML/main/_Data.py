@@ -1572,12 +1572,12 @@ def _proc_strat(self, strat, key, bc, ftb, fc, fb, fbs, cdp, drop_val):
 
     elif ftb is not False:
 
-        if isinstance(ftb, int):
-            threshold = ftb
-            lower, upper = None, None
-        else:
+        try:
             lower, upper = ftb
             threshold = None
+        except TypeError:
+            threshold = ftb
+            lower, upper = None, None
 
         key, strat =\
             self._proc_threshold(threshold, lower, upper, key,
@@ -1654,6 +1654,10 @@ def Load_Inclusions(self, loc=None, subjects=None, clear_existing=False):
     '''Loads in a set of subjects such that only these subjects
     can be loaded in, and any subject not as an inclusion is dropped,
     from either a file or as directly passed in.
+
+    If multiple inclusions are loaded, the final set of inclusions
+    is computed as the union of all passed inclusions, not the intersection!
+    In this way, inclusions acts more as an iterative whitelist.
 
     Parameters
     ----------

@@ -68,3 +68,43 @@ def get_new_docstring(o_func, r_func):
             r_doc = r_doc.replace(r_mapping[key], o_mapping[key])
 
     return r_doc
+
+
+def get_name(obj):
+
+    name = obj.__module__ + '.' + obj.__qualname__
+
+    if '.<locals>.child' in name:
+        name = obj.__parent_name__
+
+    name = name.replace('.tree.tree', '.tree')
+    name = name.replace('.tree.tree', '.tree')
+
+    base_replace_list = ['logistic', 'gpc', 'gpr', 'classification',
+                         'regression', 'coordinate_descent', 'sklearn',
+                         'forest', 'classes', 'base', 'multilayer_perceptron',
+                         'univariate_selection', 'minimum_difference', 'deskl',
+                         'exponential', 'logarithmic', 'rrc', 'data',
+                         'variance_threshold']
+
+    for r in base_replace_list:
+        name = name.replace('.' + r + '.', '.')
+
+    splits = name.split('.')
+    for split in splits:
+        if split.startswith('_'):
+            name = name.replace('.' + split + '.', '.')
+
+    name = name.replace('ABCD_ML.extensions.Feat_Selectors.RFE_Wrapper',
+                        'sklearn.feature_selection.RFE')
+
+    return name
+
+
+def get_metric_name(obj):
+
+    name = obj.__name__
+    name = name.replace('_wrapper', '')
+    name = 'sklearn.metrics.' + name
+
+    return name

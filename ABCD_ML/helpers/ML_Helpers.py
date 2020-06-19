@@ -293,8 +293,12 @@ def get_possible_init_params(model):
     ----------
         All valid parameters to the model
     '''
-    pos_params = dict(inspect.getmembers(model.__init__.__code__))
-    return pos_params['co_varnames']
+
+    try:
+        return model._get_param_names()
+    except AttributeError:
+        pos_params = dict(inspect.getmembers(model.__init__.__code__))
+        return pos_params['co_varnames']
 
 
 def get_possible_fit_params(model):
@@ -372,52 +376,52 @@ def show_objects(problem_type=None, obj=None,
                  show_params_options=True, show_object=False,
                  show_all_possible_params=False, AVALIABLE=None, OBJS=None):
 
-        if obj is not None:
-            objs = conv_to_list(obj)
+    if obj is not None:
+        objs = conv_to_list(obj)
 
-            for obj in objs:
-                show_obj(obj, show_params_options, show_object,
-                         show_all_possible_params, OBJS)
-            return
+        for obj in objs:
+            show_obj(obj, show_params_options, show_object,
+                     show_all_possible_params, OBJS)
+        return
 
-        if AVALIABLE is not None:
+    if AVALIABLE is not None:
 
-            avaliable_by_type = get_avaliable_by_type(AVALIABLE)
-            problem_types = proc_problem_type(problem_type, avaliable_by_type)
+        avaliable_by_type = get_avaliable_by_type(AVALIABLE)
+        problem_types = proc_problem_type(problem_type, avaliable_by_type)
 
-            for pt in problem_types:
-                    show_type(pt, avaliable_by_type,
-                              show_params_options,
-                              show_object,
-                              show_all_possible_params, OBJS)
+        for pt in problem_types:
+            show_type(pt, avaliable_by_type,
+                      show_params_options,
+                      show_object,
+                      show_all_possible_params, OBJS)
 
-        else:
+    else:
 
-            for obj in OBJS:
-                show_obj(obj, show_params_options, show_object,
-                         show_all_possible_params, OBJS)
+        for obj in OBJS:
+            show_obj(obj, show_params_options, show_object,
+                     show_all_possible_params, OBJS)
 
 
 def show_type(problem_type, avaliable_by_type, show_params_options,
               show_object, show_all_possible_params, OBJS):
 
-        print('Avaliable for Problem Type:', problem_type)
-        print('----------------------------------------')
-        print()
-        print()
+    print('Avaliable for Problem Type:', problem_type)
+    print('----------------------------------------')
+    print()
+    print()
 
-        for obj_str in avaliable_by_type[problem_type]:
+    for obj_str in avaliable_by_type[problem_type]:
 
-            if 'basic ensemble' in obj_str:
+        if 'basic ensemble' in obj_str:
 
-                print('- - - - - - - - - - - - - - - - - - - - ')
-                print('("basic ensemble")')
-                print('- - - - - - - - - - - - - - - - - - - - ')
-                print()
+            print('- - - - - - - - - - - - - - - - - - - - ')
+            print('("basic ensemble")')
+            print('- - - - - - - - - - - - - - - - - - - - ')
+            print()
 
-            elif 'user passed' not in obj_str:
-                show_obj(obj_str, show_params_options, show_object,
-                         show_all_possible_params, OBJS)
+        elif 'user passed' not in obj_str:
+            show_obj(obj_str, show_params_options, show_object,
+                     show_all_possible_params, OBJS)
 
 
 def show_obj(obj_str, show_params_options, show_object,

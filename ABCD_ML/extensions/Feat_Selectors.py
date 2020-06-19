@@ -13,19 +13,36 @@ class RFE_Wrapper(RFE):
 
         if isinstance(self.n_features_to_select, float):
 
-            if self.n_features_to_select <= 0:
-                self.n_features_to_select = 1
+            if self.n_features_to_select > 1:
+                self.n_features_to_select = round(self.n_features_to_select)
 
-            if self.n_features_to_select < 1:
-                divide_by = self.n_features_to_select ** -1
-                self.n_features_to_select = X.shape[1] // divide_by
+            else:
+                if self.n_features_to_select <= 0:
+                    self.n_features_to_select = 1
+
+                if self.n_features_to_select < 1:
+                    divide_by = self.n_features_to_select ** -1
+                    self.n_features_to_select = X.shape[1] // divide_by
 
         return self._fit(X, y)
 
 
 class FeatureSelector(SelectorMixin, BaseEstimator):
 
-    def __init__(self, mask):
+    def __init__(self, mask='sets as random features'):
+        ''' Custom ABCD_ML feature selector for
+        integrating in feature selection with a hyper-parameter search.
+
+        Parameters
+        ----------
+        mask : {'sets as random features', 'sets as hyperparameters'}
+            - 'sets as random features': Use random features.
+            - 'sets as hyperparameters': Each feature is set as a
+            hyperparameter, such that the parameter search can
+            tune if each feature is included or not.
+
+        '''
+
         self.mask = mask
         self.name = 'selector'
 

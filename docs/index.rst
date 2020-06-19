@@ -16,7 +16,7 @@ This is a project.
    user_guide
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Modeling Params
 
    param_objects

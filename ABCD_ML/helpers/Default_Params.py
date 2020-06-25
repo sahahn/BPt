@@ -205,7 +205,7 @@ P['xgb dist3'] =\
          'objective': "'reg:squarederror'",
          'learning_rare': "ng.p.Scalar(lower=.005, upper=.3)",
          'min_child_weight': "ng.p.Scalar(lower=.5, upper=10)",
-         'max_depth': "ng.p.TransitionChoice([np.arange(3, 10)])",
+         'max_depth': "ng.p.TransitionChoice(np.arange(3, 10))",
          'subsample': "ng.p.Scalar(lower=.5, upper=1)",
          'colsample_bytree': "ng.p.Scalar(lower=.5, upper=1)",
          'reg_alpha': "ng.p.Log(lower=.00001, upper=1)"}
@@ -318,7 +318,7 @@ P['sgd classifier'] =\
          'power_t': "ng.p.Scalar(lower=.1, upper=.9)",
          'early_stopping': "ng.p.TransitionChoice([False, True])",
          'validation_fraction': "ng.p.Scalar(lower=.05, upper=.5)",
-         'n_iter_no_change': "ng.p.TransitionChoice([np.arange(2, 20)])",
+         'n_iter_no_change': "ng.p.TransitionChoice(np.arange(2, 20))",
          'class_weight': cls_weight}
 
 

@@ -21,7 +21,7 @@ class ABCD_Pipeline(Pipeline):
             names = []
         self.names = names
 
-        super().__init__(steps, memory, verbose)
+        super().__init__(steps=steps, memory=memory, verbose=verbose)
 
     def get_params(self, deep=True):
         params = super()._get_params('steps', deep=deep)

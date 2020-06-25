@@ -20,7 +20,8 @@ def roc_auc_score_wrapper(y_true, y_score, average='macro', sample_weight=None,
 
     y_score = mutlilabel_compat(y_score)
 
-    return M.roc_auc_score(y_true, y_score, average, sample_weight, max_fpr)
+    return M.roc_auc_score(y_true, y_score, average=average,
+                           sample_weight=sample_weight, max_fpr=max_fpr)
 
 
 def f1_score_wrapper(y_true, y_pred, labels=None, pos_label=1,
@@ -36,17 +37,18 @@ def recall_score_wrapper(y_true, y_pred, label=None, pos_label=1,
     '''Wrapper around sklearn recall to support multilabel'''
 
     y_pred = mutlilabel_compat(y_pred)
-    return M.recall_score(y_true, y_pred, label, pos_label, average,
-                          sample_weight)
+    return M.recall_score(y_true, y_pred, label=label, pos_label=pos_label,
+                          average=average, sample_weight=sample_weight)
 
 
-def precision_score_wrapper(y_true, y_pred, label=None, pos_label=1,
+def precision_score_wrapper(y_true, y_pred, labels=None, pos_label=1,
                             average='binary', sample_weight=None):
     '''Wrapper around sklearn precision_score to support multilabel'''
 
     y_pred = mutlilabel_compat(y_pred)
-    return M.precision_score(y_true, y_pred, label, pos_label, average,
-                             sample_weight)
+    return M.precision_score(y_true, y_pred, labels=labels,
+                             pos_label=pos_label, average=average,
+                             sample_weight=sample_weight)
 
 
 def log_loss_wrapper(y_true, y_pred, eps=1e-15, normalize=True,
@@ -54,7 +56,8 @@ def log_loss_wrapper(y_true, y_pred, eps=1e-15, normalize=True,
     '''Wrapper around sklearn log_loss to support multilabel'''
 
     y_pred = mutlilabel_compat(y_pred)
-    return M.log_loss(y_true, y_pred, eps, normalize, sample_weight)
+    return M.log_loss(y_true, y_pred, eps=eps, normalize=normalize,
+                      sample_weight=sample_weight)
 
 
 def average_precision_score_wrapper(y_true, y_score, average="macro",
@@ -66,8 +69,9 @@ def average_precision_score_wrapper(y_true, y_score, average="macro",
         y_true = binarize(y_true)
 
     y_score = mutlilabel_compat(y_score)
-    return M.average_precision_score(y_true, y_score, average, pos_label,
-                                     sample_weight)
+    return M.average_precision_score(y_true, y_score, average=average,
+                                     pos_label=pos_label,
+                                     sample_weight=sample_weight)
 
 
 def jaccard_score_wrapper(y_true, y_pred, labels=None, pos_label=1,
@@ -75,8 +79,9 @@ def jaccard_score_wrapper(y_true, y_pred, labels=None, pos_label=1,
     '''Wrapper around sklearn jaccard_score to support multilabel'''
 
     y_pred = mutlilabel_compat(y_pred)
-    return M.jaccard_score(y_true, y_pred, labels, pos_label, average,
-                           sample_weight)
+    return M.jaccard_score(y_true, y_pred, labels=labels,
+                           pos_label=pos_label, average=average,
+                           sample_weight=sample_weight)
 
 
 def mutlilabel_compat(y_score):
@@ -203,7 +208,8 @@ METRICS = {
 
     'multiclass weighted roc auc': {'score_func': roc_auc_score_wrapper,
                                     'greater_is_better': True,
-                                    'needs_threshold': True, 'average': 'weighted',
+                                    'needs_threshold': True,
+                                    'average': 'weighted',
                                     'multiclass': True},
 
     'multiclass macro roc auc': {'score_func': roc_auc_score_wrapper,

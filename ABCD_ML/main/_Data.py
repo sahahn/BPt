@@ -1947,6 +1947,9 @@ def Proc_Data_Unique_Cols(self, unique_val_drop=None, unique_val_warn=.05,
 
 def _proc_data_unique_cols(self, data, unique_val_drop, unique_val_warn):
 
+    if unique_val_drop is None and unique_val_warn is None:
+        return data
+
     # Seperate data from data files if applicable
     file_keys = [key for key in list(data) if key in self.data_file_keys]
     data_files = data[file_keys]

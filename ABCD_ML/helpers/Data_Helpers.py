@@ -280,15 +280,12 @@ def get_unused_drop_val(data):
 
 def proc_fop(fop):
 
+    # If provided as just % number, divide by 100
     if not isinstance(fop, tuple):
-
-        # If provided as just % number, divide by 100
-        if fop >= 1:
-            fop /= 100
-
+        fop /= 100
         fop = (fop, 1-fop)
 
-    elif fop[0] >= 1 or fop[1] >= 1:
+    else:
         fop = tuple([f/100 for f in fop])
 
     return fop

@@ -79,6 +79,9 @@ P['elastic classifier']['C'] = "ng.p.Log(lower=1e-5, upper=1e5)"
 P['elastic classifier']['l1_ratio'] = "ng.p.Scalar(lower=.01, upper=1)"
 P['elastic classifier']['class_weight'] = cls_weight
 
+P['elastic clf v2'] = P['elastic classifier'].copy()
+P['elastic clf v2']['C'] = "ng.p.Log(lower=1e-2, upper=1e5)"
+
 P['elastic classifier extra'] = P['elastic classifier'].copy()
 P['elastic classifier extra']['max_iter'] =\
         "ng.p.Scalar(lower=1000, upper=10000).set_integer_casting()"

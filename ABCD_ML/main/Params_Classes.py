@@ -539,11 +539,13 @@ class Feat_Selector(Piece):
         Parameters
         ----------
         obj : str
-            `obj` selects the feature selection strategy to use. See :ref:`Feat Selectors`
+            `obj` selects the feature selection strategy to use.
+            See :ref:`Feat Selectors`
             for all avaliable options. Notably, if 'rfe' is passed, then a
             base model must also be passed!
 
-            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
+            See :ref:`Pipeline Objects` to read more about pipeline objects
+            in general.
 
         params : int, str or dict of :ref:`params<Params>`, optional
             `params` set an associated distribution of hyper-parameters to

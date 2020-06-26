@@ -72,6 +72,7 @@ MODELS = {
 
     'elastic net logistic': (LogisticRegression, ['base elastic',
                                                   'elastic classifier',
+                                                  'elastic clf v2',
                                                   'elastic classifier extra']),
 
     'elastic net regressor': (ElasticNet, ['base elastic net',

@@ -778,7 +778,8 @@ class Ensemble(Piece):
 class Param_Search(Params):
 
     def __init__(self, search_type='RandomSearch',
-                 splits=3, n_repeats=1, n_iter=10, metric='default',
+                 splits=3, n_repeats=1, n_iter=10, CV='default',
+                 metric='default',
                  weight_metric=False, mp_context='default'):
         ''' Param_Search is special input object designed to be used with :class:`Model_Pipeline`.
         Param_Search defines a hyperparameter search strategy. When passed to :class:`Model_Pipeline`,
@@ -881,6 +882,14 @@ class Param_Search(Params):
 
                 default = 10
 
+        CV : 'default' or CV params object, optional
+            If left as default 'default', use the class defined CV behavior
+            for the splits, otherwise can pass custom behavior.
+
+            ::
+
+                default = 'default'
+
         metric : str or 'default', optional
             In order for a set of hyper-parameters to be evaluated, a single metric must
             be defined. By default (if left as 'default') this metric will be the first
@@ -930,14 +939,19 @@ class Param_Search(Params):
         self.splits = splits
         self.n_repeats = 1
         self.n_iter = n_iter
+        self.CV = CV
         self.metric = metric
         self.weight_metric = weight_metric
         self.mp_context = mp_context
 
+        self._CV = None
         self._splits_vals = None
         self._n_jobs = 1
 
         self.check_args()
+
+    def set_CV(self, CV):
+        self._CV = CV
 
     def set_split_vals(self, vals):
         self._splits_vals = vals
@@ -1880,3 +1894,15 @@ class Problem_Spec(Params):
         _print('n_jobs', self.n_jobs)
         _print('random_state', self.random_state)
         _print()
+
+
+
+class CV(Params):
+
+    def __init__(self, groups=None, stratify=None,
+                 train_only_loc=None, train_only_subjects=None):
+
+        self.groups = groups
+        self.stratify = stratify
+        self.train_only_loc = train_only_loc
+        self.train_only_subjects = train_only_subjects

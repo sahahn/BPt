@@ -8,7 +8,95 @@ import numpy as np
 import os
 
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
-from ..helpers.CV import CV
+
+
+def _get_CV(self, CV_params, show=False, show_original=True):
+
+    from ..helpers.CV import CV
+
+    train_only_subjects = CV_params.train_only_subjects
+    train_only_loc = CV_params.train_only_loc
+
+    if self.all_data is None:
+        self._print('Calling Prepare_All_Data()',
+                    'to change the default merge behavior',
+                    'call it again!')
+        self.Prepare_All_Data()
+
+    if isinstance(train_only_subjects, str):
+        if train_only_subjects == 'nan':
+            train_only_subjects = self.Get_Nan_Subjects()
+
+    train_only =\
+        self._load_set_of_subjects(loc=train_only_loc,
+                                   subjects=train_only_subjects)
+    train_only = np.array(list(train_only))
+
+    groups = CV_params.groups
+    stratify = CV_params.stratify
+
+    if groups is not None and stratify is not None:
+        print('Warning: ABCD_ML does not currently support groups and',
+              'stratify together!')
+
+    if groups is not None:
+
+        if isinstance(groups, str):
+            groups = [groups]
+
+        groups = [self.name_map[g] if g in self.name_map else g
+                  for g in groups]
+        groups = self._add_strat_u_name(groups)
+
+        grp, l_e = get_unique_combo_df(self.all_data, groups)
+
+        cv = CV(groups=grp, train_only=train_only)
+
+        if show:
+            self._get_info_on(cv.groups, groups, 'groups', l_e,
+                              train_only)
+
+    elif stratify is not None:
+
+        if isinstance(stratify, str):
+            stratify = [stratify]
+
+        stratify = [self.name_map[s] if s in self.name_map else s
+                    for s in stratify]
+
+        # Check if any target keys passed
+        targets = self._get_base_targets_names()
+        for target in targets:
+            if target in stratify:
+                self.all_data[target + self.strat_u_name] =\
+                    self.all_data[target].copy()
+
+        stratify = self._add_strat_u_name(stratify)
+        strat, l_e = get_unique_combo_df(self.all_data, stratify)
+
+        cv = CV(stratify=strat, train_only=train_only)
+
+        if show:
+            self._get_info_on(cv.stratify, stratify, 'stratify', l_e,
+                              train_only, show_original)
+
+        # Now drop any loaded targets from strat
+        for target in targets:
+            strat_target_name = target + self.strat_u_name
+
+            if strat_target_name in self.all_data:
+                self.all_data = self.all_data.drop(strat_target_name, axis=1)
+
+    # If only train only
+    elif len(train_only) > 0:
+        cv = CV(train_only=train_only)
+        self._print(len(train_only), 'Train only subjects defined.')
+
+    else:
+        cv = CV()
+        self._print('No params passed, CV set to random.')
+
+    return cv
 
 
 def Define_Validation_Strategy(self, groups=None, stratify=None,
@@ -124,86 +212,16 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
     the size of the smallest unique group decreases.
     '''
 
-    # Ensures only final overlap of subjects, ect...
-    if self.all_data is None:
-        self._print('Calling Prepare_All_Data()',
-                    'to change the default merge behavior',
-                    'call it again!')
-        self.Prepare_All_Data()
+    from .Params_Classes import CV
+    passed_CV = CV(groups=groups, stratify=stratify,
+                   train_only_loc=train_only_loc,
+                   train_only_subjects=train_only_subjects)
 
-    if isinstance(train_only_subjects, str):
-        if train_only_subjects == 'nan':
-            train_only_subjects = self.Get_Nan_Subjects()
-
-    train_only =\
-        self._load_set_of_subjects(loc=train_only_loc,
-                                   subjects=train_only_subjects)
-    train_only = np.array(list(train_only))
-
-    if groups is not None and stratify is not None:
-        print('Warning: ABCD_ML does not currently support groups and',
-              'stratify together!')
-
-    if groups is not None:
-
-        if isinstance(groups, str):
-            groups = [groups]
-
-        groups = [self.name_map[g] if g in self.name_map else g
-                  for g in groups]
-        groups = self._add_strat_u_name(groups)
-
-        grp, l_e = get_unique_combo_df(self.all_data, groups)
-
-        self.CV = CV(groups=grp, train_only=train_only)
-
-        if show:
-            self._get_info_on(self.CV.groups, groups, 'groups', l_e,
-                              train_only)
-
-    elif stratify is not None:
-
-        if isinstance(stratify, str):
-            stratify = [stratify]
-
-        stratify = [self.name_map[s] if s in self.name_map else s
-                    for s in stratify]
-
-        # Check if any target keys passed
-        targets = self._get_base_targets_names()
-        for target in targets:
-            if target in stratify:
-                self.all_data[target + self.strat_u_name] =\
-                    self.all_data[target].copy()
-
-        stratify = self._add_strat_u_name(stratify)
-        strat, l_e = get_unique_combo_df(self.all_data, stratify)
-
-        self.CV = CV(stratify=strat, train_only=train_only)
-
-        if show:
-            self._get_info_on(self.CV.stratify, stratify, 'stratify', l_e,
-                              train_only, show_original)
-
-        # Now drop any loaded targets from strat
-        for target in targets:
-            strat_target_name = target + self.strat_u_name
-
-            if strat_target_name in self.all_data:
-                self.all_data = self.all_data.drop(strat_target_name, axis=1)
-
-    # If only train only
-    elif len(train_only) > 0:
-        self.CV = CV(train_only=train_only)
-        self._print(len(train_only), 'Train only subjects defined.')
-
-    else:
-        self.CV = CV()
-        self._print('No params passed, CV set to random.')
+    self.CV = self._get_CV(passed_CV, show=show, show_original=show_original)
 
 
 def Train_Test_Split(self, test_size=None, test_loc=None,
-                     test_subjects=None, random_state='default'):
+                     test_subjects=None, CV='default', random_state='default'):
     '''Define the overarching train / test split, *highly reccomended*.
 
     Parameters
@@ -228,6 +246,14 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
 
         (default = None)
 
+    CV : 'default' or CV params object, optional
+        If left as default 'default', use the class defined CV behavior
+        for the train test split, otherwise can pass custom behavior
+
+        ::
+
+            default = 'default'
+
     random_state : int None or 'default', optional
         If using test_size, then can optionally provide a random state, in
         order to be able to recreate an exact test set.
@@ -237,6 +263,11 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
 
         (default = 'default')
     '''
+
+    if CV == 'default':
+        CV_obj = self.CV
+    else:
+        CV_obj = self._get_CV(CV)
 
     if test_size is None and test_loc is None and test_subjects is None:
         test_size = .2
@@ -253,7 +284,7 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
     if test_size is not None:
 
         original_subjects, subjects, train_only =\
-            self.CV.get_train_only(self.all_data.index)
+            CV_obj.get_train_only(self.all_data.index)
 
         self._print('Performing split on', len(subjects), 'subjects', end='')
 
@@ -273,7 +304,7 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
             self._print('random_state:', random_state)
             self._print('Test split size:', test_size)
 
-            self.train_subjects, self.test_subjects = self.CV.train_test_split(
+            self.train_subjects, self.test_subjects = CV_obj.train_test_split(
                                     self.all_data.index, test_size,
                                     random_state)
 

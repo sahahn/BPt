@@ -1,4 +1,3 @@
-import warnings
 import numpy as np
 from numpy.random import RandomState
 import nevergrad as ng
@@ -15,7 +14,7 @@ from ..helpers.ML_Helpers import get_possible_fit_params
 
 class NevergradSearchCV():
 
-    def __init__(self, params, estimator, param_distributions, CV=None,
+    def __init__(self, params, estimator, param_distributions,
                  scoring=None, weight_metric=False, random_state=None):
 
         self.params = params
@@ -23,9 +22,8 @@ class NevergradSearchCV():
         self.param_distributions = param_distributions
 
         # If no CV, use random
-        if CV is None:
-            CV = Base_CV()
-        self.CV = CV
+        if self.params._CV is None:
+            self.params.CV = Base_CV()
 
         self.scoring = scoring
         self.weight_metric = weight_metric
@@ -36,10 +34,10 @@ class NevergradSearchCV():
     def _set_cv(self, train_data_index):
 
         self.cv_subjects, self.cv_inds =\
-            self.CV.get_cv(train_data_index, self.params.splits,
-                           self.params.n_repeats,
-                           self.params._splits_vals, self.random_state,
-                           return_index='both')
+            self.params._CV.get_cv(train_data_index, self.params.splits,
+                                   self.params.n_repeats,
+                                   self.params._splits_vals, self.random_state,
+                                   return_index='both')
 
     def ng_cv_score(self, X, y, fit_params, **kwargs):
 

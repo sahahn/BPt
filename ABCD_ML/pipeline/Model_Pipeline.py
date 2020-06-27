@@ -355,7 +355,9 @@ class Model_Pipeline():
 
         # Get wrapped final model
         return self.base_model_pipeline.get_search_wrapped_pipeline(
-            self.CV, search_metric, weight_search_metric, self.ps.random_state)
+            search_metric=search_metric,
+            weight_search_metric=weight_search_metric,
+            random_state=self.ps.random_state)
 
     def _get_score_metric(self, base_metric, weight_metric):
 

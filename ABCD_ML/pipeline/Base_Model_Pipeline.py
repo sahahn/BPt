@@ -140,7 +140,7 @@ class Base_Model_Pipeline():
 
         all_obj_names = []
         for name in ORDERED_NAMES:
-            
+
             obj_names = []
             for obj in self.named_objs[name]:
                 obj_names.append(obj[0])
@@ -223,7 +223,7 @@ class Base_Model_Pipeline():
             return False
         return True
 
-    def get_search_wrapped_pipeline(self, CV, search_metric=None,
+    def get_search_wrapped_pipeline(self, search_metric=None,
                                     weight_search_metric=None,
                                     random_state=None):
 
@@ -239,7 +239,6 @@ class Base_Model_Pipeline():
             NevergradSearchCV(params=self.param_search,
                               estimator=base_pipeline,
                               param_distributions=self.get_all_params(),
-                              CV=CV,
                               scoring=search_metric,
                               weight_metric=weight_search_metric,
                               random_state=random_state)

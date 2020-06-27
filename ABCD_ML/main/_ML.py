@@ -221,6 +221,7 @@ def Evaluate(self,
              problem_spec,
              splits=3,
              n_repeats=2,
+             CV='default',
              train_subjects='train',
              run_name='default'):
     ''' The Evaluate function is one of the main interfaces
@@ -236,7 +237,7 @@ def Evaluate(self,
     if used carefully (i.e., dont try 50 Pipelines's and only report
     the one that does best), it can be used
     on a full dataset.
-    
+
     Parameters
     ------------
     model_pipeline : :class:`Model_Pipeline`
@@ -311,12 +312,20 @@ def Evaluate(self,
         1 repeat is likely enough. If instead the macro std in
         score (the std from in this case those 3 scores) is high,
         then it indicates you may not have enough subjects
-        to get stable results from just one 3-fold CV, and 
+        to get stable results from just one 3-fold CV, and
         that you might want to consider changing some settings.
-    
+
         ::
 
             default = 2
+
+    CV : 'default' or CV params object, optional
+        If left as default 'default', use the class defined CV behavior
+        for the splits, otherwise can pass custom behavior
+
+        ::
+
+            default = 'default'
 
     train_subjects : str, array-like or Value_Subset, optional
         This parameter determines the set of training subjects which are
@@ -353,7 +362,7 @@ def Evaluate(self,
         ::
 
             default = 'train'
-       
+
     run_name : str or 'default', optional
         Each run of Evaluate can be optionally associated with a specific `run_name`. This name
         is used to save scores in self.eval_scores, and also if `save_results` in
@@ -413,7 +422,8 @@ def Evaluate(self,
 
     # Should save the params used here*** before any preproc done
     run_name =\
-        get_avaliable_run_name(run_name, model_pipeline.model, self.eval_scores)
+        get_avaliable_run_name(run_name,
+                               model_pipeline.model, self.eval_scores)
     self.last_run_name = run_name
 
     # Preproc model pipeline & specs
@@ -423,7 +433,7 @@ def Evaluate(self,
 
     # Get the the train subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
-    
+
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
 
@@ -434,14 +444,21 @@ def Evaluate(self,
         self._print('---------------')
         self._print('splits =', splits)
         self._print('n_repeats =', n_repeats)
+        self._print('CV =', CV)
         self._print('train_subjects =', train_subjects)
         self._print('len(train_subjects) =', len(_train_subjects),
                     '(before overlap w/ problem_spec.subjects)')
         self._print('run_name =', run_name)
         self._print()
 
+    # Proc. CV
+    if CV == 'default':
+        CV_obj = self.CV
+    else:
+        CV_obj = self._get_CV(CV)
+
     # Init. the Model_Pipeline object with modeling params
-    self._init_model(model_pipeline, problem_spec)
+    self._init_model(model_pipeline, problem_spec, CV_obj)
 
     # Get the Eval splits
     _, splits_vals, _ = self._get_split_vals(splits)
@@ -493,17 +510,21 @@ def Test(self,
          train_subjects='train',
          test_subjects='test',
          run_name='default'):
-    ''' The test function is one of the main interfaces for testing a specific 
-    :class:`Model_Pipeline`. Test is conceptually different from :func:`Evaluate<ABCD_ML.Evaluate>`
-    in that it is designed to contrust / train a :class:`Model_Pipeline` on one discrete set of `train_subjects`
-    and evaluate it on a further discrete set of `test_subjects`. Otherwise, these functions are very simmilar as
+    ''' The test function is one of the main interfaces for testing a specific
+    :class:`Model_Pipeline`. Test is conceptually different from
+    :func:`Evaluate<ABCD_ML.Evaluate>`
+    in that it is designed to contrust / train a :class:`Model_Pipeline`
+    on one discrete set of `train_subjects`
+    and evaluate it on a further discrete set of `test_subjects`.
+    Otherwise, these functions are very simmilar as
     they both evaluate a :class:`Model_Pipeline` as defined in the context of a :class:`Problem_Spec`, and return
-    simmilar output.
-    
+    similar output.
+
     Parameters
     ------------
     model_pipeline : :class:`Model_Pipeline`
-        The passed `model_pipeline` should be an instance of the ABCD_ML params class :class:`Model_Pipeline`.
+        The passed `model_pipeline` should be an instance of the
+        ABCD_ML params class :class:`Model_Pipeline`.
         This object defines the underlying model pipeline to be evaluated.
 
         See :class:`Model_Pipeline` for more information / how to create a the model pipeline.
@@ -604,7 +625,8 @@ def Test(self,
 
     # Get a free run name
     run_name =\
-        get_avaliable_run_name(run_name, model_pipeline.model, self.test_scores)
+        get_avaliable_run_name(run_name, model_pipeline.model,
+                               self.test_scores)
     self.last_run_name = run_name
 
     # Preproc model pipeline & specs
@@ -634,7 +656,7 @@ def Test(self,
         self._print()
 
     # Init the Model_Pipeline object with modeling params
-    self._init_model(model_pipeline, problem_spec)
+    self._init_model(model_pipeline, problem_spec, self.CV)
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, raw_preds, FIs =\
@@ -733,6 +755,14 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs):
 
     if model_pipeline.param_search is not None:
 
+        # Set CV
+        if model_pipeline.param_search.CV == 'default':
+            search_CV = self.CV
+        else:
+            search_CV =\
+                self._get_CV(model_pipeline.param_search.CV, show=False)
+        model_pipeline.param_search.set_CV(search_CV)
+
         # Set split vals
         _, split_vals, _ =\
             self._get_split_vals(model_pipeline.param_search.splits)
@@ -830,18 +860,19 @@ def _get_subjects_to_use(self, subjects_to_use):
     return subjects
 
 
-def _init_model(self, model_pipeline, problem_specs):
+def _init_model(self, model_pipeline, problem_specs, CV):
 
     # Set Model_Pipeline
     self.Model_Pipeline =\
-        Model_Pipeline(model_pipeline, problem_specs, self.CV,
+        Model_Pipeline(model_pipeline, problem_specs, CV,
                        self.Data_Scopes,
                        self.default_ML_verbosity['progress_bar'],
                        self.default_ML_verbosity['compute_train_score'],
                        self._ML_print)
 
 
-def _handle_scores(self, scores, name, weight_metric, n_repeats, run_name, n_splits):
+def _handle_scores(self, scores, name, weight_metric, n_repeats, run_name,
+                   n_splits):
 
     all_summary_scores = []
     metric_strs = self.Model_Pipeline.metric_strs

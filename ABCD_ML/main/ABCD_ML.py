@@ -489,7 +489,8 @@ class ABCD_ML():
         get_new_docstring(Set_Default_Load_Params, Drop_Data_Duplicates)
 
     # Validation / CV funcationality
-    from ._Validation import (Define_Validation_Strategy,
+    from ._Validation import (_get_CV,
+                              Define_Validation_Strategy,
                               Train_Test_Split,
                               _add_strat_u_name,
                               _get_info_on)

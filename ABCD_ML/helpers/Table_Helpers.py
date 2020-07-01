@@ -101,7 +101,7 @@ def get_subjects_by_group(df, encoder, name):
 def get_base_title(display_df, name, ind, cat_show_original_name):
     
     if cat_show_original_name:
-        title = display_df.loc[ind, 'Original Name']
+        title = display_df.loc[ind, 'Original_Name']
 
         if isinstance(title, int):
             title = name + ' ' + str(title)

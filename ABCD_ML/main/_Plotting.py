@@ -634,7 +634,7 @@ def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
         sums = sums.sort_index()
 
     display_df = pd.DataFrame(sums, columns=['Counts'])
-    display_df.index.name = 'Internal Name'
+    display_df.index.name = 'Internal_Name'
     display_df['Frequency'] = sums / len(df)
 
     original_names = None
@@ -644,8 +644,8 @@ def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
                                                 encoder,
                                                 name)
 
-        display_df['Original Name'] = original_names
-        display_df = display_df[['Original Name', 'Counts', 'Frequency']]
+        display_df['Original_Name'] = original_names
+        display_df = display_df[['Original_Name', 'Counts', 'Frequency']]
 
     else:
         display_df = display_df[['Counts', 'Frequency']]
@@ -705,7 +705,7 @@ def _show_dist(
         display_names = sums.index
         if cat_show_original_name:
             display_names = pd.Index(original_names)
-            display_names.name = 'Original Name'
+            display_names.name = 'Original_Name'
 
         sns.barplot(x=sums.values, y=display_names, orient='h')
         plt.xlabel('Counts')

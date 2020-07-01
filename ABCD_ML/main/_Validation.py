@@ -396,6 +396,7 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only,
 
             if name in self.strat_encoders:
                 encoder = self.strat_encoders[name]
+                name = name.replace(self.strat_u_name, '')
             else:
                 name = name.replace(self.strat_u_name, '')
                 encoder = self.targets_encoders[name]

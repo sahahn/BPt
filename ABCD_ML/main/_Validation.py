@@ -380,7 +380,7 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only,
     self._print('CV defined with', chunk, 'over',
                 len(unique_vals), 'unique values.')
 
-    if self.verbose and v_type == 'stratify':
+    if v_type == 'stratify':
 
         if l_e is not None:
             col_split = reverse_unique_combo_df(unique_vals, l_e)
@@ -395,7 +395,7 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only,
             name = col_names[n]
 
             if name in self.strat_encoders:
-                    encoder = self.strat_encoders[name]
+                encoder = self.strat_encoders[name]
             else:
                 name = name.replace(self.strat_u_name, '')
                 encoder = self.targets_encoders[name]

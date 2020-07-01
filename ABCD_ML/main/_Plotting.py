@@ -668,15 +668,15 @@ def _show_dist(
     if encoder is None:
 
         summary = no_nan_data.describe()
-        
+
         median = no_nan_data.median()
         median.name = 'median'
         summary = summary.append(median)
-        
+
         skew = no_nan_data.skew()
         skew.name = 'skew'
         summary = summary.append(skew)
-        
+
         kurtosis = no_nan_data.kurtosis()
         kurtosis.name = 'kurtosis'
         summary = summary.append(kurtosis)

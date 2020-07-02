@@ -103,7 +103,8 @@ def Show_Data_Dist(self, data_subset='SHOW_ALL',
                    frame_interval=500,
                    plot_type='hist', show_only_overlap=True,
                    subjects=None, save=True, dpi='default',
-                   save_name='data distribution', random_state='default'):
+                   save_name='data distribution', random_state='default',
+                   return_anim=False):
 
     '''This method displays some summary statistics about
     the loaded targets, as well as plots the distibution if possible.
@@ -235,6 +236,13 @@ def Show_Data_Dist(self, data_subset='SHOW_ALL',
 
             default = 'default'
 
+    return_anim : bool, optional
+        If True, return just the animation
+
+        ::
+
+            default = False
+
     '''
 
     # If data in low memory work for all data instead
@@ -329,6 +337,8 @@ def Show_Data_Dist(self, data_subset='SHOW_ALL',
         frames = np.random.randint(0, data.shape[1], size=num_feats)
 
     anim = FuncAnimation(fig, update, frames=frames, interval=500)
+    if return_anim:
+        return anim
 
     try:
         html = HTML(anim.to_html5_video())

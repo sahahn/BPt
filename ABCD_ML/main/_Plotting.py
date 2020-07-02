@@ -35,7 +35,10 @@ def _plot(self, save_name, show=True):
 
 def _proc_subjects(self, data, subjects):
 
-    if subjects == 'train':
+    if subjects is None:
+        return data
+
+    elif subjects == 'train':
 
         try:
             return data.loc[self.train_subjects].copy()
@@ -65,6 +68,16 @@ def _proc_subjects(self, data, subjects):
             raise RuntimeError('Invalid subjects passed!')
 
 
+def _get_plot_df(self, source_df, subjects, show_only_overlap):
+
+    if len(source_df) == 0:
+        df = self.all_data.copy()
+    else:
+        df = self._set_overlap(source_df, show_only_overlap).copy()
+
+    return self._proc_subjects(df, subjects)
+
+
 def _get_col(data, i):
 
     col = data[list(data)[i]]
@@ -84,7 +97,9 @@ def _plot_seaborn_dist(data, plot_type, label=None):
         sns.distplot(data, label=label)
 
 
-def Show_Data_Dist(self, num_feats=20, feats='random', reduce_func=None,
+def Show_Data_Dist(self, data_subset='SHOW_ALL',
+                   num_feats=20, feats='random',
+                   reduce_func=None,
                    frame_interval=500,
                    plot_type='hist', show_only_overlap=True,
                    subjects=None, save=True, dpi='default',
@@ -98,6 +113,19 @@ def Show_Data_Dist(self, num_feats=20, feats='random', reduce_func=None,
 
     Parameters
     ----------
+    data_subset : 'SHOW_ALL' or array-like, optional
+        'SHOW_ALL' is reserved for showing
+        the distributions of loaded data.
+        You may also pass a list/array-like to specify specific
+        a custom source of features to show.
+
+        If self.all_data is already prepared, this data subset can also include
+        any float type features loaded as covar or target.
+
+        ::
+
+            default = 'SHOW_ALL'
+
     num_feats: int, optional
         The number of features' distributions in which to view.
         Note: If too many are selected it may take a long time to render
@@ -209,14 +237,32 @@ def Show_Data_Dist(self, num_feats=20, feats='random', reduce_func=None,
 
     '''
 
-    valid_data = self.data.drop(self.data_file_keys, axis=1)
+    # If data in low memory work for all data instead
+    if len(self.data) == 0:
+        valid_data = self.all_data.copy()[self.Data_Scopes.data_keys]
+    else:
+        valid_data = self.data.copy()
+        if subjects is None:
+            valid_data = self._set_overlap(valid_data, show_only_overlap)
 
-    if reduce_func is not None:
+    # If not all passed data subset are in data, try all data instead
+    if data_subset != 'SHOW_ALL':
+        if all([feat in valid_data for feat in data_subset]):
+            valid_data = valid_data[data_subset]
+        else:
+            valid_data = self.all_data.copy()[data_subset]
+
+    # If loading data files also
+    if reduce_func is None:
+        valid_data = valid_data.drop(self.data_file_keys, axis=1)
+    else:
         data_file_data =\
-            load_data_file_proxies(self.data, [reduce_func],
+            load_data_file_proxies(valid_data, [reduce_func],
                                    self.data_file_keys,
                                    self.file_mapping,
                                    n_jobs=self.n_jobs)[0]
+
+        valid_data = valid_data.drop(self.data_file_keys, axis=1)
         valid_data = pd.merge(valid_data, data_file_data, on=self.subject_id)
 
     if random_state == 'default':
@@ -236,10 +282,8 @@ def Show_Data_Dist(self, num_feats=20, feats='random', reduce_func=None,
         self._print('Viewing test data with shape:', test_data.shape)
 
     else:
-        if subjects is None:
-            data = self._set_overlap(valid_data, show_only_overlap)
-        else:
-            data = self._proc_subjects(valid_data, subjects)
+
+        data = self._proc_subjects(valid_data, subjects)
 
         self._print('Viewing data with shape:', data.shape)
         self._print()
@@ -349,7 +393,8 @@ def _input_strat(self, strat):
 
 
 def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
-                      show_only_overlap=True, subjects=None, show=True):
+                      show_only_overlap=True, subjects=None, show=True,
+                      cat_type='Counts', return_display_dfs=False):
     '''This method displays some summary statistics about
     the loaded targets, as well as plots the distibution if possible.
 
@@ -395,24 +440,41 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
         so in order to make changes, you can't call this until you are done.
 
         (default = True)
+
+    cat_type : {'Counts', 'Frequency'}, optional
+
+        If plotting a categorical variable (binary or categorical),
+        plot the X axis as either by raw count or frequency.
+
+        (default = 'Counts')
+
+    return_display_dfs : bool, optional
+
+        Optionally return the display df as a pandas df
+
+        (default = False)
     '''
 
-    if subjects is None:
-        targets_df = self._set_overlap(self.targets, show_only_overlap).copy()
-    else:
-        targets_df = self._proc_subjects(self.targets, subjects)
-
+    targets_df = self._get_plot_df(self.targets, subjects, show_only_overlap)
     targets = self._input_targets(targets)
 
+    display_dfs = []
     for target in targets:
+        display_df = self._show_single_dist(target, targets_df,
+                                            self.targets_encoders,
+                                            cat_show_original_name, show,
+                                            source='target',
+                                            cat_type=cat_type)
+        display_dfs.append(display_df)
+    self._print()
 
-        self._show_single_dist(target, targets_df, self.targets_encoders,
-                               cat_show_original_name, show, source='target')
-        self._print()
+    if return_display_dfs:
+        return display_dfs
 
 
 def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
-                     show_only_overlap=True, subjects=None, show=True):
+                     show_only_overlap=True, subjects=None, show=True,
+                     cat_type='Counts', return_display_dfs=False):
     '''Plot a single or multiple covar distributions, along with
     outputting useful summary statistics.
 
@@ -455,23 +517,41 @@ def Show_Covars_Dist(self, covars='SHOW_ALL', cat_show_original_name=True,
         so in order to make changes, you can't call this until you are done.
 
         (default = True)
+
+    cat_type : {'Counts', 'Frequency'}, optional
+
+        If plotting a categorical variable (binary or categorical),
+        plot the X axis as either by raw count or frequency.
+
+        (default = 'Counts')
+
+    return_display_dfs : bool, optional
+
+        Optionally return the display df as a pandas df
+
+        (default = False)
     '''
 
-    if subjects is None:
-        covars_df = self._set_overlap(self.covars, show_only_overlap).copy()
-    else:
-        covars_df = self._proc_subjects(self.covars, subjects)
-
+    covars_df = self._get_plot_df(self.covars, subjects, show_only_overlap)
     covars = self._input_covars(covars)
 
+    display_dfs = []
     for covar in covars:
-        self._show_single_dist(covar, covars_df, self.covars_encoders,
-                               cat_show_original_name, show, source='covar')
+        display_df = self._show_single_dist(covar, covars_df,
+                                            self.covars_encoders,
+                                            cat_show_original_name, show,
+                                            source='covar',
+                                            cat_type=cat_type)
+        display_dfs.append(display_df)
         self._print()
+
+    if return_display_dfs:
+        return display_dfs
 
 
 def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
-                    show_only_overlap=True, subjects=None, show=True):
+                    show_only_overlap=True, subjects=None, show=True,
+                    cat_type='Counts', return_display_dfs=False):
     '''Plot a single or multiple strat distributions, along with
     outputting useful summary statistics.
 
@@ -513,19 +593,35 @@ def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
         so in order to make changes, you can't call this until you are done.
 
         (default = True)
+
+    cat_type : {'Counts', 'Frequency'}, optional
+
+        If plotting a categorical variable (binary or categorical),
+        plot the X axis as either by raw count or frequency.
+
+        (default = 'Counts')
+
+    return_display_dfs : bool, optional
+
+        Optionally return the display df as a pandas df
+
+        (default = False)
     '''
 
-    if subjects is None:
-        strat_df = self._set_overlap(self.strat, show_only_overlap).copy()
-    else:
-        strat_df = self._proc_subjects(self.strat, subjects)
-
+    strat_df = self._get_plot_df(self.strat, subjects, show_only_overlap)
     strat = self._input_strat(strat)
 
+    display_dfs = []
     for s in strat:
-        self._show_single_dist(s, strat_df, self.strat_encoders,
-                               cat_show_original_name, show, source='strat')
+        display_df = self._show_single_dist(s, strat_df, self.strat_encoders,
+                                            cat_show_original_name, show,
+                                            source='strat',
+                                            cat_type=cat_type)
+        display_dfs.append(display_df)
         self._print()
+
+    if return_display_dfs:
+        return display_dfs
 
 
 def _get_single_df(self, name, df, all_encoders):
@@ -591,15 +687,78 @@ def _get_single_df(self, name, df, all_encoders):
 
 
 def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
-                      show=True, source='target'):
+                      show=True, source='target', cat_type='Counts', alpha=1,
+                      color=None, label=None):
 
-    single_df, encoder, dropped_name =\
-        self._get_single_df(name, df, all_encoders)
+    # If subjects passed as both
+    if len(df) == 2:
 
-    self._show_dist(single_df, plot_key=name,
-                    cat_show_original_name=cat_show_original_name,
-                    encoder=encoder, original_key=name,
-                    dropped_name=dropped_name, show=show, source=source)
+        # Temp mute verbose + log_file
+        verbose, log_file, notebook =\
+            self.verbose, self.log_file, self.notebook
+        self.verbose, self.log_file, self.notebook = False, None, False
+
+        train_df = self._show_single_dist(name, df[0],
+                                          all_encoders,
+                                          cat_show_original_name,
+                                          show=False,
+                                          source='target',
+                                          cat_type=cat_type,
+                                          label='Train')
+        test_df = self._show_single_dist(name, df[1],
+                                         all_encoders,
+                                         cat_show_original_name,
+                                         show=False,
+                                         source='target',
+                                         cat_type=cat_type,
+                                         label='Test')
+
+        self.verbose, self.log_file, self.notebook =\
+            verbose, log_file, notebook
+
+        # If binary or cat
+        if train_df.index.name == 'Internal_Name':
+
+            train_df['Split'] = 'Train'
+            test_df['Split'] = 'Test'
+            merged_df = pd.concat([train_df, test_df])
+
+            # Clear existing
+            plt.clf()
+
+            y = 'Internal_Name'
+            if 'Original_Name' in list(merged_df):
+                y = 'Original_Name'
+
+            sns.barplot(x=cat_type, y=y, hue='Split',
+                        data=merged_df.reset_index(), orient='h')
+        else:
+            name = list(train_df)[0]
+            merged_df = train_df.rename({name: 'Train'}, axis=1)
+            merged_df['Test'] = test_df[name]
+            merged_df.index.name = name
+
+        self._display_df(merged_df)
+
+        title = name + ' ' + source + ' distribution'
+        plt_title = title.replace(' ' + source, '')
+        plt_title = plt_title.replace(self.strat_u_name, '')
+        plt.title(plt_title)
+        self._plot(title, show)
+
+        return merged_df
+
+    else:
+
+        single_df, encoder, dropped_name =\
+            self._get_single_df(name, df, all_encoders)
+
+        return self._show_dist(single_df, plot_key=name,
+                               cat_show_original_name=cat_show_original_name,
+                               encoder=encoder, original_key=name,
+                               dropped_name=dropped_name, show=show,
+                               source=source, cat_type=cat_type,
+                               alpha=alpha, color=color, label=label)
 
 
 def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
@@ -655,7 +814,8 @@ def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
 
 def _show_dist(
  self, data, plot_key, cat_show_original_name, encoder=None, original_key=None,
- dropped_name=None, show=True, source='target'):
+ dropped_name=None, show=True, source='target', cat_type='Counts', alpha=1,
+ color=None, label=None):
 
     # Ensure works with NaN data loaded
     no_nan_subjects = data[~data.isna().any(axis=1)].index
@@ -667,24 +827,24 @@ def _show_dist(
     # Regression
     if encoder is None:
 
-        summary = no_nan_data.describe()
+        display_df = no_nan_data.describe()
 
         median = no_nan_data.median()
         median.name = 'median'
-        summary = summary.append(median)
+        display_df = display_df.append(median)
 
         skew = no_nan_data.skew()
         skew.name = 'skew'
-        summary = summary.append(skew)
+        display_df = display_df.append(skew)
 
         kurtosis = no_nan_data.kurtosis()
         kurtosis.name = 'kurtosis'
-        summary = summary.append(kurtosis)
+        display_df = display_df.append(kurtosis)
 
-        summary = summary.round(3)
+        display_df = display_df.round(3)
 
-        self._display_df(summary)
-        sns.distplot(no_nan_data)
+        self._display_df(display_df)
+        sns.distplot(no_nan_data, color=color, label=label)
 
     # Binary/ordinal or one-hot
     else:
@@ -707,8 +867,9 @@ def _show_dist(
             display_names = pd.Index(original_names)
             display_names.name = 'Original_Name'
 
-        sns.barplot(x=sums.values, y=display_names, orient='h')
-        plt.xlabel('Counts')
+        sns.barplot(x=display_df[cat_type], y=display_names, orient='h',
+                    alpha=alpha, color=color, label=label)
+        plt.xlabel(cat_type)
 
     # If any NaN
     if len(nan_subjects) > 0:
@@ -718,6 +879,8 @@ def _show_dist(
     title = plot_key + ' ' + source + ' distribution'
     plt.title(title.replace(' ' + source, '').replace(self.strat_u_name, ''))
     self._plot(title, show)
+
+    return display_df
 
 
 def _display_df(self, display_df):

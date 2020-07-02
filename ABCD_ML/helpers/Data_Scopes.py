@@ -44,7 +44,7 @@ class Data_Scopes():
     def get_keys_from_scope(self, scope):
 
         from ..helpers.VARS import SCOPES
-        
+
         if isinstance(scope, str) and scope in SCOPES:
 
             if scope == 'float':

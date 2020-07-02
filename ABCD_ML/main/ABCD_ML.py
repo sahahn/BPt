@@ -517,6 +517,7 @@ class ABCD_ML():
 
     from ._Plotting import (_plot,
                             _proc_subjects,
+                            _get_plot_df,
                             Show_Data_Dist,
                             _input_targets,
                             _input_covars,

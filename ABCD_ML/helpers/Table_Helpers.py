@@ -85,13 +85,13 @@ def proc_group_by(group_by, include_all, dfs, encoders, names, strat_u_name):
 
 
 def get_subjects_by_group(df, encoder, name):
-    
+
     if encoder is None:
         raise RuntimeError('Can only group by non-regression/float variables')
-        
+
     if df.shape[1] == 1:
         subjects_by_group = [(df[name][df[name] == v]).index for v in np.unique(df)]
-        
+
     else:
         subjects_by_group = [(df[c][df[c] == 1]).index for c in list(df)]
         

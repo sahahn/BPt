@@ -723,6 +723,9 @@ def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
                                          cat_type=cat_type,
                                          label='Test')
 
+        # Add legend!
+        plt.legend()
+
         self.verbose, self.log_file, self.notebook =\
             verbose, log_file, notebook
 

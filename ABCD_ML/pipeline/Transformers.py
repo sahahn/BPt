@@ -109,6 +109,8 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         X_trans = self.transform(X)
 
         # Get new names
+        if len(self.wrapper_inds) == 1:
+            base_name = feat_names[self.wrapper_inds[0]]
         new_names = self._get_new_df_names(base_name)
 
         # Remove old names

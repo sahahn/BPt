@@ -1271,6 +1271,11 @@ class Feat_Importance(Params):
             it will just return 0 for that feature. For a loader w/o, then it will return 
             'No inverse_transform'.
 
+            There are also other cases where this might be a bad idea, for example
+            if you are using one hot encoders in your transformers then trying to 
+            reverse_transform
+            feature importances will yield nonsense (NaN's).
+
             ::
 
                 default = True

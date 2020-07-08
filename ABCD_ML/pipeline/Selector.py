@@ -49,36 +49,41 @@ class Selector(_BaseComposition):
     def fit_predict(self, *args, **kwargs):
         self.estimator_ = self.estimators[self.to_use][1]
         return self.estimator_.fit_predict(*args, **kwargs)
-    
+
     @if_delegate_has_method(delegate='estimator_')
     def predict(self, *args, **kwargs):
         return self.estimator_.predict(*args, **kwargs)
-    
+
     @if_delegate_has_method(delegate='estimator_')
     def predict_proba(self, *args, **kwargs):
         return self.estimator_.predict_proba(*args, **kwargs)
-    
+
     @if_delegate_has_method(delegate='estimator_')
     def decision_function(self, *args, **kwargs):
         return self.estimator_.decision_function(*args, **kwargs)
-    
+
     @if_delegate_has_method(delegate='estimator_')
     def predict_log_proba(self, *args, **kwargs):
         return self.estimator_.predict_log_proba(*args, **kwargs)
-    
+
     @if_delegate_has_method(delegate='estimator_')
     def score(self, *args, **kwargs):
         return self.estimator_.score(*args, **kwargs)
 
+    @if_delegate_has_method(delegate='estimator_')
+    def inverse_transform(self, *args, **kwargs):
+        return self.estimator_.inverse_transform(*args, **kwargs)
+
 
 def selector_wrapper(objs, params, name):
-    
+
     selector = (name, Selector(objs))
 
     p_dicts = []
     for i in range(len(objs)):
         obj_name = objs[i][0]
-        rel_params = {p: params[p] for p in params if p.split('__')[0] == obj_name}
+        rel_params =\
+            {p: params[p] for p in params if p.split('__')[0] == obj_name}
         rel_params['to_use'] = i
 
         p_dict = ng.p.Dict(**rel_params)

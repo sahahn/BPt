@@ -496,15 +496,9 @@ class Imputers(Scope_Pieces):
             self._get_objs_and_params(get_imputer_and_params,
                                       params)
 
-        print(params)
-
-        print(objs, obj_params)
-
         # Replace any base estimators
         objs, obj_params =\
             self.replace_base_estimator(objs, obj_params, params)
-
-        print(objs, obj_params)
 
         # Wrap in col_transformer for scope
         col_imputers, col_imputer_params =\

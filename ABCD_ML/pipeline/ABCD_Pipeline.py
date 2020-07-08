@@ -171,6 +171,7 @@ class ABCD_Pipeline(Pipeline):
         # Transformers
         for transformer, name in zip(fitted_objs[3][::-1],
                                      self.names[3][::-1]):
+
             fis = transformer.inverse_transform(fis, name=name)
 
         # Loaders - special case

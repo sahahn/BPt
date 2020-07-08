@@ -751,7 +751,7 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs):
     model_pipeline.preproc(n_jobs)
 
     # Proc sample_on if needed (by adding strat name)
-    model_pipeline.check_samplers(self._add_strat_u_name)
+    # model_pipeline.check_samplers(self._add_strat_u_name)
 
     if model_pipeline.param_search is not None:
 

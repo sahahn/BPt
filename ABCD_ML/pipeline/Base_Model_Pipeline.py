@@ -5,7 +5,7 @@ import os
 from ..helpers.VARS import ORDERED_NAMES
 
 from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
-                              Transformers, Samplers, Feat_Selectors,
+                              Transformers, Feat_Selectors,
                               Drop_Strat)
 
 from copy import deepcopy
@@ -45,7 +45,7 @@ class Base_Model_Pipeline():
 
         # Order is:
         # ['loaders', 'imputers', 'scalers',
-        #  'transformers', 'samplers', '_drop_strat',
+        #  'transformers', '_drop_strat',
         #  'feat_selectors', 'model']
 
         # First check for user passed
@@ -62,7 +62,7 @@ class Base_Model_Pipeline():
 
         # These are the corresponding pieces classes
         pieces_classes = [Loaders, Imputers, Scalers,
-                          Transformers, Samplers, Drop_Strat,
+                          Transformers, Drop_Strat,
                           Feat_Selectors, Models]
 
         # Generate / process all of the pipeline pieces in order
@@ -189,7 +189,7 @@ class Base_Model_Pipeline():
             # Add every step that needs a mapping
             for valid in self._get_sep_objs(['loaders', 'imputers',
                                              'scalers', 'transformers',
-                                             'samplers', '_drop_strat']):
+                                             '_drop_strat']):
 
                 for step in valid:
                     to_map.append(step[0])

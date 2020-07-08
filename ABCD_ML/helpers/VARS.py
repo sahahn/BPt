@@ -7,5 +7,5 @@ SCOPES = set(['float', 'data', 'data files',
               'n', 'cat', 'categorical', 'covars'])
 
 ORDERED_NAMES = ['loaders', 'imputers', 'scalers',
-                 'transformers', 'samplers', '_drop_strat',
+                 'transformers', '_drop_strat',
                  'feat_selectors', 'model']

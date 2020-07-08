@@ -1,5 +1,6 @@
 from imblearn.pipeline import Pipeline
 import numpy as np
+from ..helpers.VARS import ORDERED_NAMES
 
 
 def f_array(in_array):
@@ -64,51 +65,38 @@ class ABCD_Pipeline(Pipeline):
 
     def proc_X_test(self, X_test, y_test, fs=True):
 
-        # Order of names is:
-        #
-        #  0 - 'loaders'
-        #  1 - 'imputers'
-        #  2 - 'scalers'
-        #  3 - 'transformers'
-        #  4 - 'samplers'
-        #  5 - 'drop_strat'
-        #  6 - 'feat_selectors',
-        #  7 - 'models'
-        #  8 - 'ensembles'
-
         # Load all base objects and corresponding fitted objs
         fitted_objs = self._get_objs_by_name()
 
         feat_names = list(X_test)
 
         # Process the loaders, while keeping track of feature names
-        for loader in fitted_objs[0]:
+        for loader in fitted_objs[ORDERED_NAMES.index('loaders')]:
 
             # Use special transform in place df func
             X_test = loader.transform_df(X_test, base_name=feat_names)
             feat_names = list(X_test)
 
         # Apply pipeline operations in place
-        for imputer in fitted_objs[1]:
+        for imputer in fitted_objs[ORDERED_NAMES.index('imputers')]:
             X_test[feat_names] = imputer.transform(f_array(X_test))
-        for scaler in fitted_objs[2]:
+        for scaler in fitted_objs[ORDERED_NAMES.index('scalers')]:
             X_test[feat_names] = scaler.transform(f_array(X_test))
 
         # Handle transformers, w/ simmilar func to loaders
-        for i in range(len(fitted_objs[3])):
+        trans_ind = ORDERED_NAMES.index('transformers')
+        for i in range(len(fitted_objs[trans_ind])):
 
             # Grab transformer and base name
-            transformer = fitted_objs[3][i]
-            base_name = self.names[3][i]
+            transformer = fitted_objs[trans_ind][i]
+            base_name = self.names[trans_ind][i]
 
             # Use special transform in place df func
             X_test = transformer.transform_df(X_test, base_name=base_name)
             feat_names = list(X_test)
 
-        # Skip fitted_objs[4] here, as it is samplers
-
         # Make sure to keep track of col changes w/ drop + feat_selector
-        for drop in fitted_objs[5]:
+        for drop in fitted_objs[ORDERED_NAMES.index('_drop_strat')]:
 
             valid_inds = np.array(drop.transformers[0][2])
             feat_names = np.array(feat_names)[valid_inds]
@@ -117,7 +105,7 @@ class ABCD_Pipeline(Pipeline):
         # Drop features according to feat_selectors, keeping track of changes
         # only if passed param fs is True
         if fs:
-            for feat_selector in fitted_objs[6]:
+            for feat_selector in fitted_objs[ORDERED_NAMES.index('feat_selectors')]:
 
                 feat_mask = feat_selector.get_support()
                 feat_names = np.array(feat_names)[feat_mask]
@@ -133,19 +121,19 @@ class ABCD_Pipeline(Pipeline):
         fitted_objs = self._get_objs_by_name()
 
         # No need to proc in place, so the transformations are pretty easy
-        for loader in fitted_objs[0]:
+        for loader in fitted_objs[ORDERED_NAMES.index('loaders')]:
             X_train = loader.transform(f_array(X_train))
-        for imputer in fitted_objs[1]:
+        for imputer in fitted_objs[ORDERED_NAMES.index('imputers')]:
             X_train = imputer.transform(f_array(X_train))
-        for scaler in fitted_objs[2]:
+        for scaler in fitted_objs[ORDERED_NAMES.index('scalers')]:
             X_train = scaler.transform(X_train)
-        for transformer in fitted_objs[3]:
+        for transformer in fitted_objs[ORDERED_NAMES.index('transformers')]:
             X_train = transformer.transform(X_train)
-        for sampler in fitted_objs[4]:
-            X_train, y_train = sampler.fit_resample(X_train, y_train)
-        for drop in fitted_objs[5]:
+        # for sampler in fitted_objs[4]:
+        #    X_train, y_train = sampler.fit_resample(X_train, y_train)
+        for drop in fitted_objs[ORDERED_NAMES.index('_drop_strat')]:
             X_train = drop.transform(X_train)
-        for feat_selector in fitted_objs[6]:
+        for feat_selector in fitted_objs[ORDERED_NAMES.index('feat_selectors')]:
             X_train = feat_selector.transform(X_train)
 
         return X_train
@@ -161,23 +149,25 @@ class ABCD_Pipeline(Pipeline):
         fitted_objs = self._get_objs_by_name()
 
         # Feat selectors
-        for feat_selector in fitted_objs[6][::-1]:
+        for feat_selector in fitted_objs[ORDERED_NAMES.index('feat_selectors')][::-1]:
             fis = feat_selector.inverse_transform(fis)
 
         # Reverse drop strat
-        for drop in fitted_objs[5]:
+        for drop in fitted_objs[ORDERED_NAMES.index('_drop_strat')]:
             fis = drop.inverse_transform(fis)
 
         # Transformers
-        for transformer, name in zip(fitted_objs[3][::-1],
-                                     self.names[3][::-1]):
+        trans_ind = ORDERED_NAMES.index('transformers')
+        for transformer, name in zip(fitted_objs[trans_ind][::-1],
+                                     self.names[trans_ind][::-1]):
 
             fis = transformer.inverse_transform(fis, name=name)
 
         # Loaders - special case
         inversed_loaders = {}
-        for loader, name in zip(fitted_objs[0][::-1],
-                                self.names[0][::-1]):
+        l_ind = ORDERED_NAMES.index('loaders')
+        for loader, name in zip(fitted_objs[l_ind][::-1],
+                                self.names[l_ind][::-1]):
             fis, inverse_X = loader.inverse_transform(fis, name=name)
             inversed_loaders.update(inverse_X)
 

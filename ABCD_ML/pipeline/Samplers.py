@@ -548,3 +548,237 @@ def get_sampler_and_params(param, search_type,
 
     return sampler, sampler_params
 
+
+class Sampler(Piece):
+
+    def __init__(self, obj, params=0, sample_on='targets', target_bins=3,
+                 target_bin_strategy='uniform', extra_params=None):
+        '''Sampler is a special base :class:`Model_Pipeline` pieces designed
+        to perform resampling on the data points / subjects themselves. This
+        is typically used in cases where there are extreme class imbalances, but can
+        also be used to resample based on a loaded Strat value.
+
+        Note: As of right now, the use of samplers, along with nested
+        parameter searches may cause problems! Samplers as a whole might
+        likely get fully re-designed at some point in the future, for now
+        if you use this Object, just be careful.
+
+        Parameters
+        ----------
+        obj : str
+            `obj` refers to one of the pre-defining sampling strategies,
+            and is selected by indicated one of the pre-set str indicators
+            found at :ref:`Samplers`.
+
+        params : int, str or dict of :ref:`params<Params>`, optional
+            `params` determines optionally if the distribution of hyper-parameters to
+            potentially search over for this sampler. Preset param distributions are
+            listed for each choice of obj at :ref:`Samplers`, and you can read more on
+            how params work more generally at :ref:`Params`.
+
+            ::
+
+                default = 0
+
+        sample_on : str, or list of, optional
+            This parameter dictates what the underlying sampler should use as its
+            variable to re-sample on. While the most typical case is to re-sample
+            based on the target variable, i.e., to potentially help correct a class imbalance,
+            you may also choose to re-sample based on a loaded Strat value
+            (see :func:`Load_Strat<ABCD_ML.Load_Strat>`).
+
+            If a list of values is passed to sample_on, then that will be interpretted as
+            sampling based on the unique overlap of values from all of those columns.
+            E.g., if passed `sex` and a k_binned `age` variable, then it would internally
+            create a new categorical variable as the unique intersection of all elements on the
+            passed list.
+
+            Note: if any single value, or value within the list of values passed is
+            not a valid loaded column within Strat values, then it will be converted
+            to the name of the currently selected target variable. In this way, to just
+            by default sample based on the target variable, you may keep sample_on at its
+            default value of 'target'
+
+            ::
+
+                default = 'target'
+
+        target_bins : int, optional
+            If the target variable is set to or included in `sample_on`, and further if you
+            are in the context of a regression problem, where the target variable is of float type,
+            then the variable will be binned before use as in sample_on, this parameter dictates
+            the number of bins to create.
+
+            ::
+
+                default = 3
+
+        target_bin_strategy : {'uniform', 'quantile', 'kmeans'}, optional
+            If the target variable is set to or included in `sample_on`, and further if you
+            are in the context of a regression problem, where the target variable is of float type,
+            then the variable will be binned according the the number of `target_bins` and also
+            this param, which controls what strategy is used to define the bins. Options are:
+
+            - 'uniform'
+                All bins in each feature have identical widths.
+
+            - 'quantile'
+                All bins in each feature have the same number of points.
+
+            - 'kmeans'
+                Values in each bin have the same nearest center of a 1D
+                k-means cluster.
+
+            You likely do not want to use `quantile` here...
+
+            ::
+
+                default = 'uniform'
+
+        extra_params : :ref`extra params dict<Extra Params>`, optional
+
+            See :ref:`Extra Params`
+
+            ::
+
+                default = None
+
+        '''
+
+        self.obj = obj
+        self.params = params
+        self.sample_on = sample_on
+        self.target_bins = target_bins
+        self.target_bin_strategy = target_bin_strategy
+        self.extra_params = extra_params
+
+        self.check_args()
+
+    def add_strat_u_name(self, func):
+        self.sample_on = func(self.sample_on)
+
+
+class Samplers(Scope_Pieces):
+
+    name = 'samplers'
+
+    def _process(self, params):
+
+        sample_on = [p.sample_on for p in params]
+        recover_strats = self._get_recover_strats(sample_on)
+
+        # Get the scalers and params
+        scalers_and_params =\
+            [self._get_sampler(param, on, recover_strat)
+             for param, on, recover_strat in zip(params, sample_on,
+                                                 recover_strats)]
+
+        samplers, sampler_params =\
+            self._proc_objs_and_params(scalers_and_params)
+
+        # Change Random State + n_jobs
+        samplers = self._check_and_replace_samplers(samplers,
+                                                    'random_state',
+                                                    self.spec['random_state'])
+
+        samplers = self._check_and_replace_samplers(samplers,
+                                                    'n_jobs',
+                                                    self.spec['n_jobs'])
+
+        return samplers, sampler_params
+
+    def _get_recover_strats(self, sample_on):
+
+        # Creates binary mask of, True if any strat inds used
+        uses_strat = [len(self._proc_sample_on(s)[1]) > 0 for s in sample_on]
+
+        # If never use strat, set all to False
+        if True not in uses_strat:
+            return [False for i in range(len(sample_on))]
+
+        # If strat is used, then just need Trues up to but not including
+        # the last true.
+        last_true = len(uses_strat) - 1 - uses_strat[::-1].index(True)
+
+        trues = [True for i in range(last_true)]
+        falses = [False for i in range(len(sample_on) - last_true)]
+
+        return trues + falses
+
+    def _proc_sample_on(self, on):
+
+        # On should be either a list, or a single str
+        if isinstance(on, str):
+            on = [on]
+        else:
+            on = list(on)
+
+        sample_strat_keys = [o for o in on if o in self.Data_Scopes.strat_keys]
+
+        # Set sample_target
+        sample_target = False
+        if len(sample_strat_keys) != len(on):
+            sample_target = True
+
+        return sample_target, sample_strat_keys
+
+    def _get_sampler(self, param, on, recover_strat):
+
+        from .Samplers import get_sampler_and_params
+
+        # Grab sample_target and sample_strat_keys, from on
+        sample_target, sample_strat_keys = self._proc_sample_on(on)
+
+        # Set strat inds and sample_strat
+        strat_inds = self.Data_Scopes.get_strat_inds()
+        sample_strat =\
+            self.Data_Scopes.get_train_inds_from_keys(sample_strat_keys)
+
+        # Set categorical flag
+        categorical = True
+        if self.spec['problem_type'] == 'regression':
+            categorical = False
+
+        cat_inds, ordinal_inds =\
+            self.Data_Scopes.get_cat_ordinal_inds()
+        covars_inds = cat_inds + [[o] for o in ordinal_inds]
+
+        # Get the sampler
+        sampler, sampler_params =\
+            get_sampler_and_params(param, self.spec['search_type'],
+                                   strat_inds=strat_inds,
+                                   sample_target=sample_target,
+                                   sample_strat=sample_strat,
+                                   categorical=categorical,
+                                   recover_strat=recover_strat,
+                                   covars_inds=covars_inds)
+
+        return param.obj, (sampler, sampler_params)
+
+    def _check_and_replace_samplers(self, samplers, param_name, replace_value):
+
+        for i in range(len(samplers)):
+
+            try:
+                getattr(samplers[i][1].sampler, param_name)
+                setattr(samplers[i][1].sampler, param_name, replace_value)
+
+            except AttributeError:
+                pass
+
+        return samplers
+
+'''
+samplers : :class:`Sampler`, list of or None, optional
+            Each :class:`Sampler` refers to an optional type
+            of data point resampling in which to preform, i.e., 
+            in attempt to correct for a class imbalance. See the
+            base :class:`Sampler` object for more information on
+            what different sampler options and restrictions are.
+
+            If passed a list, the sampling will be applied sequentially.
+
+            ::
+
+            default = None
+'''

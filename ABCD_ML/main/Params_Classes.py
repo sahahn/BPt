@@ -489,115 +489,6 @@ class Transformer(Piece):
         self.check_args()
 
 
-class Sampler(Piece):
-
-    def __init__(self, obj, params=0, sample_on='targets', target_bins=3,
-                 target_bin_strategy='uniform', extra_params=None):
-        '''Sampler is a special base :class:`Model_Pipeline` pieces designed
-        to perform resampling on the data points / subjects themselves. This
-        is typically used in cases where there are extreme class imbalances, but can
-        also be used to resample based on a loaded Strat value.
-
-        Note: As of right now, the use of samplers, along with nested
-        parameter searches may cause problems! Samplers as a whole might
-        likely get fully re-designed at some point in the future, for now
-        if you use this Object, just be careful.
-
-        Parameters
-        ----------
-        obj : str
-            `obj` refers to one of the pre-defining sampling strategies,
-            and is selected by indicated one of the pre-set str indicators
-            found at :ref:`Samplers`.
-
-        params : int, str or dict of :ref:`params<Params>`, optional
-            `params` determines optionally if the distribution of hyper-parameters to
-            potentially search over for this sampler. Preset param distributions are
-            listed for each choice of obj at :ref:`Samplers`, and you can read more on
-            how params work more generally at :ref:`Params`.
-
-            ::
-
-                default = 0
-
-        sample_on : str, or list of, optional
-            This parameter dictates what the underlying sampler should use as its
-            variable to re-sample on. While the most typical case is to re-sample
-            based on the target variable, i.e., to potentially help correct a class imbalance,
-            you may also choose to re-sample based on a loaded Strat value
-            (see :func:`Load_Strat<ABCD_ML.Load_Strat>`).
-
-            If a list of values is passed to sample_on, then that will be interpretted as
-            sampling based on the unique overlap of values from all of those columns.
-            E.g., if passed `sex` and a k_binned `age` variable, then it would internally
-            create a new categorical variable as the unique intersection of all elements on the
-            passed list.
-
-            Note: if any single value, or value within the list of values passed is
-            not a valid loaded column within Strat values, then it will be converted
-            to the name of the currently selected target variable. In this way, to just
-            by default sample based on the target variable, you may keep sample_on at its
-            default value of 'target'
-
-            ::
-
-                default = 'target'
-
-        target_bins : int, optional
-            If the target variable is set to or included in `sample_on`, and further if you
-            are in the context of a regression problem, where the target variable is of float type,
-            then the variable will be binned before use as in sample_on, this parameter dictates
-            the number of bins to create.
-
-            ::
-
-                default = 3
-
-        target_bin_strategy : {'uniform', 'quantile', 'kmeans'}, optional
-            If the target variable is set to or included in `sample_on`, and further if you
-            are in the context of a regression problem, where the target variable is of float type,
-            then the variable will be binned according the the number of `target_bins` and also
-            this param, which controls what strategy is used to define the bins. Options are:
-
-            - 'uniform'
-                All bins in each feature have identical widths.
-
-            - 'quantile'
-                All bins in each feature have the same number of points.
-
-            - 'kmeans'
-                Values in each bin have the same nearest center of a 1D
-                k-means cluster.
-
-            You likely do not want to use `quantile` here...
-
-            ::
-
-                default = 'uniform'
-
-        extra_params : :ref`extra params dict<Extra Params>`, optional
-
-            See :ref:`Extra Params`
-
-            ::
-
-                default = None
-
-        '''
-
-        self.obj = obj
-        self.params = params
-        self.sample_on = sample_on
-        self.target_bins = target_bins
-        self.target_bin_strategy = target_bin_strategy
-        self.extra_params = extra_params
-
-        self.check_args()
-
-    def add_strat_u_name(self, func):
-        self.sample_on = func(self.sample_on)
-
-
 class Feat_Selector(Piece):
 
     def __init__(self, obj, params=0, base_model=None, extra_params=None):
@@ -850,10 +741,14 @@ class Param_Search(Params):
                  splits=3, n_repeats=1, n_iter=10, CV='default',
                  metric='default',
                  weight_metric=False, mp_context='default'):
-        ''' Param_Search is special input object designed to be used with :class:`Model_Pipeline`.
-        Param_Search defines a hyperparameter search strategy. When passed to :class:`Model_Pipeline`,
-        its search strategy is applied in the context of any set :ref:`Params` within the base pieces.
-        Specifically, there must be atleast one parameter search somewhere in the object Param_Search is passed!
+        ''' Param_Search is special input object designed to be
+        used with :class:`Model_Pipeline`.
+        Param_Search defines a hyperparameter search strategy.
+        When passed to :class:`Model_Pipeline`,
+        its search strategy is applied in the context of any set :ref:`Params`
+        within the base pieces.
+        Specifically, there must be atleast one parameter search
+        somewhere in the object Param_Search is passed!
 
         All backend hyper-parameter searches make use of the 
         <https://github.com/facebookresearch/nevergrad>`_ library.
@@ -1214,7 +1109,7 @@ class Feat_Importance(Params):
 
     def __init__(self, obj, metric='default',
                  shap_params='default', n_perm=10,
-                 inverse_global=True, inverse_local=False):
+                 inverse_global=False, inverse_local=False):
         '''
         There are a number of options for creating Feature Importances in ABCD_ML.
         See :ref:`Feat Importances` to learn more about feature importances generally.
@@ -1260,6 +1155,8 @@ class Feat_Importance(Params):
                 default = 10
 
         inverse_global : bool
+            Warning: This feature, along with inverse_local, is still pretty expirimental.
+
             If there are any loaders, or transformers specified in the Model_Pipeline,
             then feature importance becomes slightly trickier. For example, if you have
             a PCA transformer, and what to calculate averaged feature importance
@@ -1278,7 +1175,7 @@ class Feat_Importance(Params):
 
             ::
 
-                default = True
+                default = False
 
         inverse_local : bool
             Same as inverse_global, but for local feature importances. By default
@@ -1327,7 +1224,7 @@ class Model_Pipeline(Params):
 
     def __init__(self, loaders=None, imputers='default',
                  scalers='default', transformers=None,
-                 samplers=None, feat_selectors=None,
+                 feat_selectors=None,
                  model='default', param_search=None,
                  feat_importances='default',
                  cache=None):
@@ -1432,19 +1329,6 @@ class Model_Pipeline(Params):
 
                 default = None
 
-        samplers : :class:`Sampler`, list of or None, optional
-            Each :class:`Sampler` refers to an optional type
-            of data point resampling in which to preform, i.e., 
-            in attempt to correct for a class imbalance. See the
-            base :class:`Sampler` object for more information on
-            what different sampler options and restrictions are.
-
-            If passed a list, the sampling will be applied sequentially.
-
-            ::
-
-                default = None
-
         feat_selectors : :class:`Feat_Selector`, list of or None, optional
             Each :class:`Feat_Selector` refers to an optional feature selection stage
             of the Pipeline. See :class:`Feat_Selector` for specific options.
@@ -1538,7 +1422,6 @@ class Model_Pipeline(Params):
         self.scalers = scalers
 
         self.transformers = transformers
-        self.samplers = samplers
 
         # Special place holder case for drop strat, for compat.
         self._drop_strat = Drop_Strat()
@@ -1769,6 +1652,7 @@ class Model_Pipeline(Params):
         if self.cache is not None:
             _print('cache =', self.cache)
         _print()
+
 
 class Problem_Spec(Params):
 

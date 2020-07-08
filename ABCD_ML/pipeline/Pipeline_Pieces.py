@@ -8,7 +8,7 @@ from ..helpers.ML_Helpers import (check_for_duplicate_names,
                                   process_params_by_type)
 
 from ..extensions.Col_Selector import ColDropStrat, InPlaceColTransformer
-from ..extensions.Scope_Model import Scope_Model
+from .Scope_Model import Scope_Model
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 
 from sklearn.pipeline import Pipeline
@@ -192,18 +192,17 @@ class Pieces():
 
         return obj
 
-    def check_model_scope(self, scope, model, params):
+    def wrap_model_scope(self, scope, model):
 
         if scope != 'all':
+
             inds = self.Data_Scopes.get_inds_from_scope(scope)
             name = model[0]
-            scoped_model =\
-                (name, Scope_Model(model[1], inds))
-            params[name + '__needs_mapping'] = True
+            scoped_model = (name, Scope_Model(model[1], inds))
 
-            return scoped_model, params
+            return scoped_model
 
-        return model, params
+        return model
 
     def replace_base_estimator(self, objs, obj_params, params):
 
@@ -247,31 +246,6 @@ class Pieces():
 
         return objs, obj_params
 
-
-class Type_Pieces(Pieces):
-
-    def _base_type_process(self, params, func):
-
-        # Check / replace by type
-        params = self._check_type(params)
-
-        # Then call get objs and params
-        objs, obj_params =\
-            self._get_objs_and_params(func, params)
-
-        return objs, obj_params
-
-    def _check_type(self, params):
-
-        for p in range(len(params)):
-            params[p].obj =\
-                proc_type_dep_str(params[p].obj, self.AVAILABLE,
-                                  self.spec['problem_type'])
-        return params
-
-
-class Scope_Pieces(Pieces):
-
     def _wrap_pipeline_objs(self, wrapper, objs, scopes, **params):
 
         inds = [self.Data_Scopes.get_inds_from_scope(scope)
@@ -310,6 +284,28 @@ class Scope_Pieces(Pieces):
         return col_objs, col_params
 
 
+class Type_Pieces(Pieces):
+
+    def _base_type_process(self, params, func):
+
+        # Check / replace by type
+        params = self._check_type(params)
+
+        # Then call get objs and params
+        objs, obj_params =\
+            self._get_objs_and_params(func, params)
+
+        return objs, obj_params
+
+    def _check_type(self, params):
+
+        for p in range(len(params)):
+            params[p].obj =\
+                proc_type_dep_str(params[p].obj, self.AVAILABLE,
+                                  self.spec['problem_type'])
+        return params
+
+
 class Models(Type_Pieces):
 
     name = 'models'
@@ -334,9 +330,8 @@ class Models(Type_Pieces):
         for i in range(len(non_ensemble_params)):
             scope = non_ensemble_params[i].scope
 
-            non_ensemble_objs[i], non_ensemble_obj_params =\
-                self.check_model_scope(scope, non_ensemble_objs[i],
-                                       non_ensemble_obj_params)
+            non_ensemble_objs[i] =\
+                self.wrap_model_scope(scope, non_ensemble_objs[i])
 
         # If not any ensembles, return the non_ensembles
         if not ensemble_mask.any():
@@ -393,9 +388,8 @@ class Models(Type_Pieces):
         for i in range(len(ensemble_params)):
             scope = ensemble_params[i].scope
 
-            ensembled_objs[i], ensembled_obj_params =\
-                self.check_model_scope(scope, ensembled_objs[i],
-                                       ensembled_obj_params)
+            ensembled_objs[i] =\
+                self.wrap_model_scope(scope, ensembled_objs[i])
 
         # In mixed case, merge with non_ensemble
         ensembled_objs += non_ensemble_objs
@@ -403,7 +397,7 @@ class Models(Type_Pieces):
         return ensembled_objs, ensembled_obj_params
 
 
-class Loaders(Scope_Pieces):
+class Loaders(Pieces):
 
     name = 'loaders'
 
@@ -483,7 +477,7 @@ class Loaders(Scope_Pieces):
         return passed_loaders, passed_loader_params
 
 
-class Imputers(Scope_Pieces):
+class Imputers(Pieces):
 
     name = 'imputers'
 
@@ -508,7 +502,7 @@ class Imputers(Scope_Pieces):
         return col_imputers, col_imputer_params
 
 
-class Scalers(Scope_Pieces):
+class Scalers(Pieces):
 
     name = 'scalers'
 
@@ -529,7 +523,7 @@ class Scalers(Scope_Pieces):
         return col_scalers, col_scaler_params
 
 
-class Transformers(Scope_Pieces):
+class Transformers(Pieces):
 
     name = 'transformers'
 
@@ -568,7 +562,31 @@ class Feat_Selectors(Type_Pieces):
         objs, obj_params =\
             self.replace_base_estimator(objs, obj_params, params)
 
-        return objs, obj_params
+        # Wrap in feat select wrapper
+        feat_objs, feat_params =\
+            self._wrap_feat_select(objs, obj_params)
+
+        return feat_objs, feat_params
+
+    def _wrap_feat_select(self, objs, params):
+        from .Feature_Selectors import FeatureSelectorWrapper
+
+        # Make wrapped objs
+        feat_objs = []
+        for i in range(len(objs)):
+            name, obj = objs[i][0], objs[i][1]
+            feat_obj = ('feat_' + name, FeatureSelectorWrapper(obj))
+            feat_objs.append(feat_obj)
+
+        # Update params
+        feat_params = {}
+        for key in params:
+            name = key.split('__')[0]
+            new_name = 'feat_' + name + '__' + key
+
+            feat_params[new_name] = params[key]
+
+        return feat_objs, feat_params
 
 
 class Ensembles(Type_Pieces):

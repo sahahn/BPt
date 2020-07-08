@@ -491,7 +491,8 @@ class Transformer(Piece):
 
 class Feat_Selector(Piece):
 
-    def __init__(self, obj, params=0, base_model=None, extra_params=None):
+    def __init__(self, obj, params=0, scope='all',
+                 base_model=None, extra_params=None):
         ''' Feat_Selector is a base piece of :class:`Model_Pipeline`, which is designed
         to preform feature selection.
 
@@ -508,18 +509,33 @@ class Feat_Selector(Piece):
 
         params : int, str or dict of :ref:`params<Params>`, optional
             `params` set an associated distribution of hyper-parameters to
-            potentially search over with this Feat_Selector. Preset param distributions are
-            listed for each choice of params with the corresponding obj at :ref:`Feat Selectors`,
-            and you can read more on how params work more generally at :ref:`Params`.
+            potentially search over with this Feat_Selector.
+            Preset param distributions are
+            listed for each choice of params with the corresponding
+            obj at :ref:`Feat Selectors`,
+            and you can read more on how params
+            work more generally at :ref:`Params`.
 
             ::
 
                 default = 0
 
+        scope : :ref:`valid scope<Scopes>`, optional
+            `scope` determines on which subset of features the specified
+            feature selector will have access to.
+            See :ref:`Scopes` for more information on how scopes can
+            be specified.
+
+            ::
+
+                default = 'all'
+
         base_model : :class:`Model`, :class:`Ensemble` or None, optional
             If 'rfe' is passed to obj, then a base_model is required in
-            order to perform recursive feature elimination. The base model can be
-            any valid argument accepts by param `model` in :class:`Model_Pipeline`.
+            order to perform recursive feature elimination.
+            The base model can be
+            any valid argument accepts by
+            param `model` in :class:`Model_Pipeline`.
 
             ::
 
@@ -537,6 +553,7 @@ class Feat_Selector(Piece):
 
         self.obj = obj
         self.params = params
+        self.scope = scope
         self.base_model = deepcopy(base_model)
         self.base_model_type = None
         self.extra_params = extra_params

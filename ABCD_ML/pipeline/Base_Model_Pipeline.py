@@ -10,6 +10,7 @@ from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
 
 from copy import deepcopy
 from .Nevergrad import NevergradSearchCV
+from .Scope_Model import Scope_Model
 
 
 class Base_Model_Pipeline():
@@ -177,42 +178,17 @@ class Base_Model_Pipeline():
 
     def _set_mapping_to_map(self):
 
-        mapping, to_map = False, []
+        mapping, to_map = True, []
 
-        # If any loaders or transformers passed, need mapping
-        # otherwise, just don't use it
-        if len(self.named_objs['transformers']) > 0 or \
-           len(self.named_objs['loaders']) > 0:
+        # Add every step that needs a mapping
+        for valid in self._get_sep_objs(set(ORDERED_NAMES) - set(['model'])):
+            for step in valid:
+                to_map.append(step[0])
 
-            mapping = True
-
-            # Add every step that needs a mapping
-            for valid in self._get_sep_objs(['loaders', 'imputers',
-                                             'scalers', 'transformers',
-                                             '_drop_strat']):
-
-                for step in valid:
-                    to_map.append(step[0])
-
-            # Special case for feat_selectors, add only if step is selector
-            for step in self.named_objs['feat_selectors']:
-
-                try:
-                    if step[1].name.startswith('selector'):
-                        to_map.append(step[0])
-                except AttributeError:
-                    pass
-
-            # Check model params for any needs_mapping
-            for key in self.named_params['model']:
-                if '__needs_mapping' in key:
-                    to_map.append(key.replace('__needs_mapping', ''))
-
-        # Remove any __needs_mapping keys from model params now
-        model_param_keys = list(self.named_params['model'])
-        for key in model_param_keys:
-            if '__needs_mapping' in key:
-                self.named_params['model'].pop(key)
+        # Handle model special
+        for step in self.named_objs['model']:
+            if isinstance(step[1], Scope_Model):
+                to_map.append(step[0])
 
         self.mapping = mapping
         self.to_map = to_map

@@ -326,7 +326,7 @@ def get_avaliable_by_type(AVALIABLE):
 
         avaliable_by_type[pt] = set()
         for select in AVALIABLE[pt]:
-                avaliable_by_type[pt].add(AVALIABLE[pt][select])
+            avaliable_by_type[pt].add(AVALIABLE[pt][select])
 
         avaliable_by_type[pt] = list(avaliable_by_type[pt])
         avaliable_by_type[pt].sort()
@@ -532,10 +532,14 @@ def proc_mapping(indx, mapping):
             for i in indx:
                 new = mapping[i]
 
+                if new is None:
+                    pass
+
                 # If mapping points to a list of values
-                if isinstance(new, list):
+                elif isinstance(new, list):
                     for n in new:
-                        new_indx.add(n)
+                        if n is not None:
+                            new_indx.add(n)
                 else:
                     new_indx.add(new)
 
@@ -570,7 +574,14 @@ def update_mapping(mapping, new_mapping):
                 else:
                     new_vals.append(v)
 
-            mapping[key] = sorted(list(set(new_vals)))
+            as_set = set(new_vals)
+
+            try:
+                as_set.remove(None)
+            except KeyError:
+                pass
+
+            mapping[key] = sorted(list(as_set))
 
         # Assume int if not list
         else:

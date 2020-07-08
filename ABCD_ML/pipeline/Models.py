@@ -6,22 +6,28 @@ with additional information on which work with which problem types
 and default params.
 """
 
+from sklearn.experimental import enable_hist_gradient_boosting
 from ..extensions.MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB
 from sklearn.gaussian_process import (GaussianProcessClassifier,
                                       GaussianProcessRegressor)
-from sklearn.ensemble import (GradientBoostingClassifier, AdaBoostClassifier,
-                              RandomForestRegressor, RandomForestClassifier)
+from sklearn.ensemble import (GradientBoostingClassifier,
+                              GradientBoostingRegressor,
+                              RandomForestRegressor, RandomForestClassifier,
+                              ExtraTreesClassifier, ExtraTreesRegressor,
+                              HistGradientBoostingRegressor,
+                              HistGradientBoostingClassifier)
 from sklearn.linear_model import (LogisticRegression, ElasticNet,
                                   LinearRegression, HuberRegressor,
-                                  Lasso, Ridge, RidgeClassifier, SGDClassifier)
+                                  Lasso, Ridge, SGDClassifier, 
+                                  PassiveAggressiveClassifier)
 
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
-from sklearn.neural_network import MLPClassifier
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from ..helpers.ML_Helpers import show_objects, get_obj_and_params
+from ..helpers.ML_Helpers import get_obj_and_params
+
+
 
 AVALIABLE = {
     'binary': {
@@ -40,6 +46,11 @@ AVALIABLE = {
         'linear svm':         'linear svm classifier',
         'mlp':                'mlp classifier',
         'sgd':                'sgd classifier',
+        'gb':                 'gb classifier',
+        'hgb':                'hgb classifier',
+        'et':                 'et classifier',
+        'pa':                 'pa classifier',
+        
     },
     'regression': {
         'linear':             'linear regressor',
@@ -54,6 +65,9 @@ AVALIABLE = {
         'mlp':                'mlp regressor',
         'ridge':              'ridge regressor',
         'lasso':              'lasso regressor',
+        'gb':                 'gb regressor',
+        'hgb':                'hgb regressor',
+        'et':                 'et regressor',
     },
 }
 
@@ -126,6 +140,17 @@ MODELS = {
                                          'linear svr dist']),
 
     'sgd classifier': (SGDClassifier, ['base sgd', 'sgd classifier']),
+
+    'gb classifier': (GradientBoostingClassifier, ['default']),
+    'gb regressor': (GradientBoostingRegressor, ['default']),
+
+    'hgb classifier': (HistGradientBoostingClassifier, ['default']),
+    'hgb regressor': (HistGradientBoostingRegressor, ['default']),
+
+    'et classifier': (ExtraTreesClassifier, ['default']),
+    'et regressor': (ExtraTreesRegressor, ['default']),
+
+    'pa classifier': (PassiveAggressiveClassifier, ['default']),
 }
 
 try:
@@ -133,7 +158,7 @@ try:
 
     AVALIABLE['binary']['xgb'] = 'xgb classifier'
     AVALIABLE['regression']['xgb'] = 'xgb regressor'
-    AVALIABLE['categorical']['light gbm'] = 'light gbm classifier'
+    AVALIABLE['categorical']['xgb'] = 'xgb classifier'
 
     MODELS['xgb regressor'] = (XGBRegressor, ['base xgb', 'xgb dist1',
                                               'xgb dist2', 'xgb dist3'])

@@ -11,6 +11,48 @@ import numpy as np
 from numpy.random import RandomState
 import nevergrad as ng
 
+from sklearn.base import BaseEstimator, clone
+from sklearn.feature_selection._base import SelectorMixin
+from ..helpers.ML_Helpers import update_mapping
+
+
+class FeatureSelectorWrapper(SelectorMixin, BaseEstimator):
+
+    def __init__(self, base_selector):
+        self.base_selector = base_selector
+
+    def fit(self, X, y=None, mapping=None, **fit_params):
+
+        if mapping is None:
+            mapping = {}
+
+        self.base_selector_ = clone(self.base_selector)
+
+        try:
+            self.base_selector_.fit(X=X, y=y, mapping=mapping, **fit_params)
+        except TypeError:
+            self.base_selector_.fit(X=X, y=y, **fit_params)
+
+        support = self.base_selector_.get_support()
+
+        new_mapping = {}
+        cnt = 0
+        for i in range(len(support)):
+            
+            if support[i]:
+                new_mapping[i] = cnt
+                cnt += 1
+            else:
+                new_mapping[i] = None
+
+        update_mapping(mapping, new_mapping)
+
+        return self
+
+    def _get_support_mask(self):
+        return self.base_selector_.get_support()
+
+
 AVALIABLE = {
         'binary': {
                 'univariate selection':

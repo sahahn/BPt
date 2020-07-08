@@ -153,7 +153,8 @@ class Check():
             return
 
         if not hasattr(base_model, '_is_model'):
-            raise IOError('base_model must be either None or a valid Model / Ensemble',
+            raise IOError('base_model must be either None or a valid'
+                          'Model / Ensemble',
                           'set of wrapeper params!')
 
 
@@ -242,10 +243,12 @@ class Loader(Piece):
 
         self.check_args()
 
+
 class Imputer(Piece):
 
-    def __init__(self, obj, params=0, scope='float',
-                 base_model=None, extra_params=None):
+    def __init__(self, obj, params=0, scope='all',
+                 base_model=None, base_model_type='default',
+                 extra_params=None):
         ''' If there is any missing data (NaN's) that have been kept
         within data or covars, then an imputation strategy must be
         defined! This object allows you to define an imputation strategy.
@@ -256,28 +259,68 @@ class Imputer(Piece):
         Parameters
         ----------
         obj : str
-            `obj` selects the base imputation strategy to use. See :ref:`Imputers`
-            for all avaliable options. Notably, if 'iterative' is passed, then a
-            base model must also be passed! Also note that the `sample_posterior`
+            `obj` selects the base imputation strategy to use.
+            See :ref:`Imputers` for all avaliable options.
+            Notably, if 'iterative' is passed,
+            then a base model must also be passed!
+            Also note that the `sample_posterior`
             argument within `iterative` imputer is not currently supported.
 
-            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
+            See :ref:`Pipeline Objects` to read more about
+            pipeline objects in general.
 
         params : int, str or dict of :ref:`params<Params>`, optional
             `params` set an associated distribution of hyper-parameters to
-            potentially search over with the Imputer. Preset param distributions are
-            listed for each choice of params with the corresponding obj at :ref:`Imputers`,
-            and you can read more on how params work more generally at :ref:`Params`.
+            potentially search over with the Imputer.
+            Preset param distributions are
+            listed for each choice of params with the corresponding
+            obj at :ref:`Imputers`,
+            and you can read more on how params
+            work more generally at :ref:`Params`.
 
             ::
 
                 default = 0
 
+        scope : :ref:`valid scope<Scopes>`, optional
+            `scope` determines on which subset of features the specified
+            imputer will have access to.
+
+            The main options that make sense for imputer are
+            one for `float` data and one for `categorical` / 'cat' datatypes.
+            Though you can also pass a custom set of keys.
+
+            Note: If using iterative imputation you may want to carefully
+            consider the scope passed. For example, while it may be beneficial
+            to impute categorical and float features seperately, i.e., with
+            different base_model_type's
+            (categorical for categorical and regression for float), you must
+            also consider that in predicting the missing values under
+            this setup, the categorical imputer would not have access to
+            to the float features and vice versa.
+
+            In this way, you
+            may want to either just treat all features as float, or
+            instead of imputing categorical features, load missing
+            values as a seperate category - and then set the scope
+            here to be 'all', such that the iterative imputer has
+            access to all features. Essently why this is neccisary
+            is the iterative imputer
+            will try to replace any NaN value present in its input
+            features.
+
+            See :ref:`Scopes` for more information on how scopes can
+            be specified.
+
+            ::
+
+                default = 'all'
+
         scope : {'float', 'cat', custom}, optional
-            `scope` determines on which subset of features the imputer should act on.
-            The main options that make sense for imputer are one for `float` data and one
-            for `categorical` / 'cat' datatypes. You can also pass a custom set of keys, see 
-            :ref:`Scopes`. 
+            `scope` determines on which subset of features
+            the imputer should act on.
+
+            :ref:`Scopes`.
 
             ::
 
@@ -292,6 +335,26 @@ class Imputer(Piece):
 
                 default = None
 
+        base_model_type : 'default' or Problem Type, optional
+            In setting a base imputer model, it may be desirable to
+            have this model have a different 'problem type', then your
+            over-arching problem. For example, if performing iterative
+            imputation on categorical features only, you will likely
+            want to use a categorical predictor - but for imputing on
+            float-type features, you will want to use a 'regression' type
+            base model.
+
+            Choices are {'binary', 'regression', 'categorical'} or 'default'.
+            If 'default', then the following behavior will be applied:
+            If the scope of the imputer is set to 'cat' or 'categorical',
+            then the 'categorical' problem type will be used for the base
+            model. If anything else, then the 'regression' type will be used.
+
+            ::
+
+                default = 'default'
+
+
         extra_params : :ref`extra params dict<Extra Params>`, optional
 
             See :ref:`Extra Params`
@@ -305,10 +368,12 @@ class Imputer(Piece):
         self.obj = obj
         self.params = params
         self.scope = scope
-        self.base_model = base_model
+        self.base_model = deepcopy(base_model)
+        self.base_model_type = base_model_type
         self.extra_params = extra_params
 
         self.check_args()
+
 
 class Scaler(Piece):
 
@@ -362,6 +427,7 @@ class Scaler(Piece):
         self.extra_params = extra_params
 
         self.check_args()
+
 
 class Transformer(Piece):
 
@@ -421,6 +487,7 @@ class Transformer(Piece):
         self.extra_params = extra_params
 
         self.check_args()
+
 
 class Sampler(Piece):
 
@@ -530,6 +597,7 @@ class Sampler(Piece):
     def add_strat_u_name(self, func):
         self.sample_on = func(self.sample_on)
 
+
 class Feat_Selector(Piece):
 
     def __init__(self, obj, params=0, base_model=None, extra_params=None):
@@ -578,10 +646,11 @@ class Feat_Selector(Piece):
 
         self.obj = obj
         self.params = params
-        self.base_model = base_model
+        self.base_model = deepcopy(base_model)
+        self.base_model_type = None
         self.extra_params = extra_params
-
         self.check_args()
+
 
 class Model(Piece):
 
@@ -963,6 +1032,7 @@ class Param_Search(Params):
         if isinstance(self.weight_metric, list):
             raise IOError('weight_metric within Param Search cannot be list-like')
 
+
 class Shap_Params(Params):
 
     def __init__(self,
@@ -1139,6 +1209,7 @@ class Shap_Params(Params):
         self.kernel_nsamples = kernel_nsamples
         self.kernel_l1_reg = kernel_l1_reg
 
+
 class Feat_Importance(Params):
 
     def __init__(self, obj, metric='default',
@@ -1232,6 +1303,7 @@ class Feat_Importance(Params):
 
         # For compatibility
         self.params = 0
+
 
 class Drop_Strat():
 

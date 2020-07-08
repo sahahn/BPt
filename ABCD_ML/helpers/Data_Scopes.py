@@ -23,7 +23,7 @@ class Data_Scopes():
 
     def set_all_keys(self, spec):
         '''Also returns all keys at end'''
-    
+
         # To start set all_keys with everything
         self.keys_at_end = self.strat_keys + conv_to_list(spec.target)
 

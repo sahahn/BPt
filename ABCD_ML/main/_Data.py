@@ -11,7 +11,6 @@ from ..helpers.Data_Scopes import Data_Scopes
 from ..helpers.Data_File import Data_File
 from ..helpers.Data_Helpers import (process_binary_input,
                                     process_ordinal_input,
-                                    process_categorical_input,
                                     process_float_input,
                                     process_multilabel_input,
                                     get_unused_drop_val,
@@ -674,13 +673,16 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
 
             default = np.mean
 
-    filter_outlier_percent : int, float, tuple or None
+    filter_outlier_percent : float, tuple or None
         A percent of values to exclude from either end of the
         data files distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
-        If over 1 then treated as a percent, if under 1, then
-        used directly.
+
+        For example, if passed (1, 1), then the bottom 1% and top 1%
+        of the distribution will be dropped, the same as passing 1.
+        Further, if passed (.1, 1), the bottom .1% and top 1% will be
+        removed.
 
         ::
 
@@ -858,6 +860,11 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         target distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
+
+        For example, if passed (1, 1), then the bottom 1% and top 1%
+        of the distribution will be dropped, the same as passing 1.
+        Further, if passed (.1, 1), the bottom .1% and top 1% will be
+        removed.
 
         A list of values can also be passed in the case that
         multiple col_names / targets are being loaded. In this
@@ -1064,8 +1071,11 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                 dataset_type='default', subject_id='default',
                 eventname='default', eventname_col='default',
                 overlap_subjects='default', merge='default',
-                na_values='default', drop_na='default', drop_or_na='default',
-                code_categorical_as='dummy', categorical_drop_percent=None,
+                na_values='default', drop_na='default',
+                drop_or_na='default',
+                nan_as_class=False,
+                code_categorical_as='depreciated',
+                categorical_drop_percent=None,
                 filter_outlier_percent=None,
                 filter_outlier_std=None,
                 clear_existing=False, ext=None):
@@ -1140,21 +1150,28 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     drop_na :
     drop_or_na :
 
-    code_categorical_as: {'dummy', 'one hot', 'ordinal', list of}, optional
-        How to code categorical data,
-
-        - 'dummy' : perform dummy coding, to len(unique classes)-1 columns
-
-        - 'one hot' : for one hot encoding, to len(unique classes) columns
-
-        - 'ordinal' : one column values 0 to len(unique classes) -1
+    nan_as_class : bool, or list of, optional
+        If True, then when data_type is categorical, instead of keeping
+        rows with NaN (explicitly this parameter does not override drop_na,
+        so to use this, drop_na must be set to not True).
+        the NaN values will be treated as a unique category.
 
         A list of values can also be passed in the case that
         multiple col_names / covars are being loaded. In this
         case, the index should correspond. If a list is not passed
         here, then the same value is used when loading all covars.
 
-        (default = 'dummy')
+        ::
+
+            default = False
+
+    code_categorical_as: 'depreciated', optional
+        This parameter has been removed, please use transformers
+        within the actual modelling to accomplish something simillar.
+
+        ::
+
+            default = 'depreciated'
 
     categorical_drop_percent: float, None or list of, optional
         Optional percentage threshold for dropping categories when
@@ -1176,6 +1193,11 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         covars distribution, provided as either 1 number,
         or a tuple (% from lower, % from higher).
         set `filter_outlier_percent` to None for no filtering.
+
+        For example, if passed (1, 1), then the bottom 1% and top 1%
+        of the distribution will be dropped, the same as passing 1.
+        Further, if passed (.1, 1), the bottom .1% and top 1% will be
+        removed.
 
         A list of values can also be passed in the case that
         multiple col_names / covars are being loaded. In this
@@ -1225,6 +1247,11 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         (default = None)
     '''
 
+    if code_categorical_as != 'depreciated':
+        print('Warning: code_categorical_as has been depreciated. ' +\
+              'Please move performing categorical encoding to within the ' +\
+              'Cross-validated loop via Transformers.')
+
     if clear_existing:
         self.Clear_Covars()
 
@@ -1240,7 +1267,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     data_types, col_names = proc_datatypes(data_type, col_names)
 
     # Process pass in other args to be list of len(datatypes)
-    ccas = proc_args(code_categorical_as, data_types)
+    nacs = proc_args(nan_as_class, data_types)
     cdps = proc_args(categorical_drop_percent, data_types)
     fops = proc_args(filter_outlier_percent, data_types)
     foss = proc_args(filter_outlier_std, data_types)
@@ -1252,10 +1279,10 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         drop_val = get_unused_drop_val(covars)
 
     # Load in each covar
-    for key, d_type, cca, cdp, fop, fos in zip(col_names, data_types,
-                                               ccas, cdps, fops, foss):
+    for key, d_type, nac, cdp, fop, fos in zip(col_names, data_types,
+                                               nacs, cdps, fops, foss):
         covars =\
-            self._proc_covar(covars, key, d_type, cca, cdp, fop, fos, drop_val)
+            self._proc_covar(covars, key, d_type, nac, cdp, fop, fos, drop_val)
 
     # Have to remove rows with drop_val if drop_val not NaN
     if drop_val is not np.nan:
@@ -1269,14 +1296,26 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                                        load_params['merge'])
 
 
-def _proc_covar(self, covars, key, d_type, cca, cdp, fop, fos, drop_val):
+def _proc_covar(self, covars, key, d_type, nac, cdp, fop, fos, drop_val):
 
     self._print('loading:', key)
     d_type = d_type[0]
 
+    # Special behavior if categorical data_type + nan_as_class
+    if nac and d_type == 'c':
+
+        # Set to all
+        non_nan_subjects = covars.index
+        non_nan_covars = covars.loc[non_nan_subjects]
+
+        # Set column to load as str - makes NaNs unique
+        non_nan_covars[key] = non_nan_covars[key].astype('str')
+
+
     # Set to only the non-Nan subjects for this column
-    non_nan_subjects = covars[~covars[key].isna()].index
-    non_nan_covars = covars.loc[non_nan_subjects]
+    else:
+        non_nan_subjects = covars[~covars[key].isna()].index
+        non_nan_covars = covars.loc[non_nan_subjects]
 
     # Binary
     if d_type == 'b':
@@ -1288,26 +1327,15 @@ def _proc_covar(self, covars, key, d_type, cca, cdp, fop, fos, drop_val):
     # Categorical
     elif d_type == 'c':
 
-        # Cat. ordinal
-        if cca == 'ordinal':
-            non_nan_covars, self.covars_encoders[key] =\
+        # Always encode as ordinal
+        non_nan_covars, self.covars_encoders[key] =\
                 process_ordinal_input(non_nan_covars, key, cdp,
                                       drop_val=drop_val, _print=self._print)
-
-        # Dummy or one-hot
-        else:
-            non_nan_covars, self.covars_encoders[key] =\
-                process_categorical_input(non_nan_covars, key, cca, cdp,
-                                          drop_val=drop_val,
-                                          _print=self._print)
-
-            # Add any new cols from encoding to base covars (removing old)
-            covars = covars.reindex(columns=list(non_nan_covars))
 
     # Float
     elif d_type == 'f':
 
-        # Float type need an encoder set to None
+        # Float type needs an encoder set to None
         self.covars_encoders[key] = None
 
         # If filter float outlier percent

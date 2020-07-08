@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 dist/*
+*old
+
 
 ABCD_ML/tests/test_data/*
 cover/*

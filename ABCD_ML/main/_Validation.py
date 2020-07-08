@@ -132,6 +132,13 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         float. Though you can consider loading in a float target as a strat,
         which will apply a specific k_bins, and then be valid here.
 
+        In the case that you have a loaded strat val with the same name
+        as your target, you can distinguish between the two by passing
+        either the raw name, e.g., if they are both loaded as 'Sex',
+        passing just 'Sex', will try to use the loaded target. If instead
+        you want to use your loaded strat val with the same name - you have
+        to pass 'Sex' + self.self.strat_u_name (by default this is '_Strat').
+
         (default = None)
 
     train_only_loc : str, Path or None, optional

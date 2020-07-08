@@ -636,8 +636,6 @@ def Show_Strat_Dist(self, strat='SHOW_ALL', cat_show_original_name=True,
 
 def _get_single_df(self, name, df, all_encoders):
 
-    dropped_name = None
-
     try:
         encoder = all_encoders[name]
     except KeyError:
@@ -657,43 +655,11 @@ def _get_single_df(self, name, df, all_encoders):
     elif isinstance(encoder, list):
         single_df = df[encoder].copy()
 
-    # Binary/ordinal or one-hot/dummy
+    # Binary/ordinal
     else:
+        single_df = df[[name]].copy()
 
-        # One-hot / dummy
-        if isinstance(encoder, tuple):
-            categories = encoder[1].categories_[0]
-            categories = sorted(categories)
-
-            df_names = [name + '_' + str(cat) for cat in categories]
-            valid_df_names = [name for name in df_names if name in df]
-
-            single_df = df[valid_df_names].copy()
-
-            # Recover dropped column if dummy coded
-            dropped_name = set(df_names).difference(set(valid_df_names))
-
-            if len(dropped_name) > 0:
-                dropped_name = list(dropped_name)[0]
-
-                nans = single_df[single_df.isna().any(axis=1)].index
-
-                single_df[dropped_name] =\
-                    np.where(single_df.sum(axis=1) == 1, 0, 1)
-
-                single_df.loc[nans] = np.nan
-
-                single_df[dropped_name] =\
-                    single_df[dropped_name].astype('category')
-
-            # Back into order
-            single_df = single_df[df_names]
-
-        # Binary / ordinal
-        else:
-            single_df = df[[name]].copy()
-
-    return single_df, encoder, dropped_name
+    return single_df, encoder
 
 
 def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
@@ -763,26 +729,21 @@ def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
 
     else:
 
-        single_df, encoder, dropped_name =\
+        single_df, encoder =\
             self._get_single_df(name, df, all_encoders)
 
         return self._show_dist(single_df, plot_key=name,
                                cat_show_original_name=cat_show_original_name,
                                encoder=encoder, original_key=name,
-                               dropped_name=dropped_name, show=show,
+                               show=show,
                                source=source, cat_type=cat_type,
                                alpha=alpha, color=color, label=label)
 
 
 def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
 
-    # One-hot
-    if isinstance(encoder, tuple):
-        encoder = encoder[0]
-        sums = df.sum()
-
     # Multilabel
-    elif isinstance(encoder, list):
+    if isinstance(encoder, list):
         cat_show_original_name = False
         sums = df.sum()
 
@@ -859,7 +820,7 @@ def _show_dist(
         self._display_df(display_df)
         sns.distplot(no_nan_data, color=color, label=label)
 
-    # Binary/ordinal or one-hot
+    # Binary/ordinal
     else:
 
         display_df, sums, original_names =\
@@ -869,11 +830,6 @@ def _show_dist(
             cat_show_original_name = False
 
         self._display_df(display_df)
-
-        if dropped_name is not None:
-            if len(dropped_name) > 0:
-                self._print('Note:', dropped_name, 'was dropped due to dummy',
-                            'coding but is still shown.')
 
         display_names = sums.index
         if cat_show_original_name:

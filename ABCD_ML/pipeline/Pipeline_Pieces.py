@@ -205,6 +205,48 @@ class Pieces():
 
         return model, params
 
+    def replace_base_estimator(self, objs, obj_params, params):
+
+        from ..helpers.ML_Helpers import replace_model_name
+
+        for i in range(len(objs)):
+
+            if (hasattr(objs[i][1], 'estimator') and
+               params[i].base_model is not None):
+
+                # Proc base model type
+                model_spec = self.spec.copy()
+                base_model_type = params[i].base_model_type
+                if base_model_type is not None:
+                    if base_model_type == 'default':
+
+                        # Default regression
+                        model_spec['problem_type'] = 'regression'
+
+                        # Check for categorical
+                        scope = params[i].scope
+                        if scope == 'cat' or scope == 'categorical':
+                            model_spec['problem_type'] = 'categorical'
+
+                    else:
+                        model_spec['problem_type'] = base_model_type
+
+                # Grab the base estimator
+                base_model_obj = Models(self.user_passed_objs,
+                                        self.Data_Scopes,
+                                        model_spec, self._print)
+                base_objs, base_params =\
+                    base_model_obj.process(params[i].base_model)
+
+                # Replace the estimator
+                objs[i][1].estimator = base_objs[0][1]
+
+                # Replace the model name in the params with estimator
+                base_params = replace_model_name(base_params)
+                obj_params.update(base_params)
+
+        return objs, obj_params
+
 
 class Type_Pieces(Pieces):
 
@@ -447,74 +489,29 @@ class Imputers(Scope_Pieces):
 
     def _process(self, params):
 
-        # Make the imputers and params combo
-        imputers_and_params = [self._get_imputer(param) for param in params]
-
-        # Remove None's if any
-        while None in imputers_and_params:
-            imputers_and_params.remove(None)
-
-        # Perform proc objs
-        imputers, imputer_params =\
-            self._proc_objs_and_params(imputers_and_params)
-
-        # Make column transformers for skipping strat cols
-        skip_strat_scopes = ['all' for i in range(len(imputers))]
-
-        col_imputers, col_imputer_params =\
-            self._make_col_version(imputers, imputer_params,
-                                   skip_strat_scopes)
-
-        return col_imputers, col_imputer_params
-
-    def _get_imputer(self, param):
-
         from .Imputers import get_imputer_and_params
 
-        # Proc special scopes for imputer
-        scopes = self.Data_Scopes.proc_imputer_scope(param.scope)
+        # Then call get objs and params
+        objs, obj_params =\
+            self._get_objs_and_params(get_imputer_and_params,
+                                      params)
 
-        if scopes is None:
-            return None
+        print(params)
 
-        # Determine base estimator based off str + scope
-        base_estimator, base_estimator_params =\
-            self._proc_imputer_base_estimator(param)
+        print(objs, obj_params)
 
-        cat_encoders = self.Data_Scopes.cat_encoders
-        for c_encoder in cat_encoders:
-            if c_encoder is None:
-                raise RuntimeError('Impution on multilabel-type covars is not',
-                                   'currently supported!')
+        # Replace any base estimators
+        objs, obj_params =\
+            self.replace_base_estimator(objs, obj_params, params)
 
-        imputer, imputer_params =\
-            get_imputer_and_params(param, scopes, cat_encoders,
-                                   base_estimator, base_estimator_params,
-                                   self.spec)
+        print(objs, obj_params)
 
-        scope_name = param.scope
-        if len(scope_name) > 20:
-            scope_name = 'custom' + len(scope_name)
+        # Wrap in col_transformer for scope
+        col_imputers, col_imputer_params =\
+            self._make_col_version(objs, obj_params,
+                                   [p.scope for p in params])
 
-        name = 'imputer_' + param.obj + '_' + scope_name
-
-        # Update imputer params with name of imputer obj
-        new_imputer_params = {}
-        for key in imputer_params:
-            new_imputer_params[name + '__' + key] = imputer_params[key]
-
-        return name, (imputer, new_imputer_params)
-
-    def _proc_imputer_base_estimator(self, param):
-
-        if param.base_model is None:
-            return None, {}
-
-        base_model_obj = Models(self.user_passed_objs, self.Data_Scopes,
-                                self.spec, self._print)
-
-        objs, obj_params = base_model_obj.process(param.base_model)
-        return objs[0][1], obj_params
+        return col_imputers, col_imputer_params
 
 
 class Scalers(Scope_Pieces):
@@ -686,34 +683,9 @@ class Feat_Selectors(Type_Pieces):
 
         # If any base estimators, replace with a model
         objs, obj_params =\
-            self._replace_base_rfe_estimator(objs, obj_params, params)
+            self.replace_base_estimator(objs, obj_params, params)
 
         return objs, obj_params
-
-    def _replace_base_rfe_estimator(self, feat_selectors, obj_params, params):
-        '''Check feat selectors for a RFE model'''
-
-        from ..helpers.ML_Helpers import replace_model_name
-
-        for i in range(len(feat_selectors)):
-
-            if hasattr(feat_selectors[i][1], 'estimator'):
-                base_model_params = params[i].base_model
-
-                # Grab the base estimator
-                base_model_obj = Models(self.user_passed_objs,
-                                        self.Data_Scopes,
-                                        self.spec, self._print)
-                objs, params = base_model_obj.process(base_model_params)
-
-                # Replace the estimator
-                feat_selectors[i][1].estimator = objs[0][1]
-
-                # Replace the model name in the params with estimator
-                params = replace_model_name(params)
-                obj_params.update(params)
-
-        return feat_selectors, obj_params
 
 
 class Ensembles(Type_Pieces):

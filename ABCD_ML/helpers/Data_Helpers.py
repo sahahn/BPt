@@ -172,92 +172,6 @@ def process_ordinal_input(data, key, drop_percent=None,
     return data, label_encoder
 
 
-def process_categorical_input(data, key, drop='one hot', drop_percent=None,
-                              drop_val=np.nan, _print=print):
-    '''Helper function to perform processing on categorical input
-
-    Parameters
-    ----------
-    data : pandas DataFrame
-        ABCD_ML formatted df. Must contain a column with `key`
-
-    key : str
-        Column key of the column to process within `data` input.
-
-    drop : 'dummy' or 'one hot', optional
-        If 'dummy', then dummy code categorical variable,
-        Otherwise if None or one hot (default), perform one-hot encoding
-        (default = 'one hot')
-
-    _print : print func, optional
-        Either python print statement or overriden print
-        func.
-
-        (default = print)
-
-    Returns
-    ----------
-    pandas DataFrame
-        The post-processed ABCD_ML formatted input df.
-
-    list
-        The new score keys to the encoded columns.
-
-    (sklearn LabelEncoder, sklearn OneHotEncoder)
-        The sklearn labelencoder object mapping input to
-        transformed ordinal label, in index 0 of the tuple,
-        and the sklearn onehotencoder obect mapping ordinal
-        input to sparsely/encoded.
-    '''
-
-    # First convert to label encoder style,
-    # want to be able to do reverse transform w/ 1-hot encoder
-    # between label encoded results.
-    data, label_encoder = process_ordinal_input(data, key, drop_percent,
-                                                drop_val=drop_val,
-                                                _print=_print)
-
-    # Work on only non_dropped data / non NaN data if applicable
-    non_drop_data, non_drop_subjects =\
-        get_non_drop(data, key, drop_val)
-
-    vals = np.array(non_drop_data[key]).reshape(-1, 1)
-
-    encoder = OneHotEncoder(categories='auto', sparse=False)
-    vals = encoder.fit_transform(vals).astype(int)
-    categories = encoder.categories_[0]
-
-    _print('Found', len(categories), 'categories')
-
-    new_keys = []
-
-    # Add the encoded features to the dataframe in their own columns
-    for i in range(len(categories)):
-        k = key + '_' + str(categories[i])
-
-        # First create new col in ordiginal df w/ all drop val
-        data[k] = drop_val
-
-        # Set non drop subjects to new vals
-        data.loc[non_drop_subjects, k] = vals[:, i]
-
-        data[k] = data[k].astype('category')
-        new_keys.append(k)
-
-    # Remove the original key column from the dataframe
-    data = data.drop(key, axis=1)
-    ind = None
-
-    if drop == 'dummy':
-        max_col = data[new_keys].sum().idxmax()
-        data = data.drop(max_col, axis=1)
-        _print('Dummy coding by dropping col', max_col)
-
-        ind = new_keys.index(max_col)
-
-    return data, (label_encoder, encoder, ind)
-
-
 def process_float_input(data, key, bins, strategy):
 
     encoder = KBinsDiscretizer(n_bins=bins, encode='ordinal',
@@ -286,7 +200,7 @@ def proc_fop(fop):
         fop = (fop, 1-fop)
 
     else:
-        fop = tuple([f/100 for f in fop])
+        fop = tuple([fop[0]/100, 1-(fop[1] / 100)])
 
     return fop
 

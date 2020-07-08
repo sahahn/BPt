@@ -31,7 +31,6 @@ from copy import deepcopy
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import (BaggingClassifier, BaggingRegressor,
                               AdaBoostRegressor, AdaBoostClassifier)
-from imblearn.ensemble import BalancedBaggingClassifier
 from sklearn.ensemble import (StackingRegressor, StackingClassifier,
                               VotingClassifier, VotingRegressor)
 
@@ -356,8 +355,6 @@ ENSEMBLES = {
     'bagging regressor': (BaggingRegressor, ['default']),
     'adaboost classifier': (AdaBoostClassifier, ['default']),
     'adaboost regressor': (AdaBoostRegressor, ['default']),
-    'balanced bagging classifier': (BalancedBaggingClassifier,
-                                    ['default']),
     'stacking regressor': (StackingRegressor,
                            ['default']),
     'stacking classifier': (StackingClassifier,
@@ -367,6 +364,16 @@ ENSEMBLES = {
     'voting regressor': (VotingRegressor,
                          ['default']),
 }
+
+try:
+
+    from imblearn.ensemble import BalancedBaggingClassifier
+
+    ENSEMBLES['balanced bagging classifier'] =\
+        (BalancedBaggingClassifier, ['default']),
+
+except ImportError:
+    pass
 
 
 def get_ensemble_and_params(ensemble_str, extra_params, params, search_type,

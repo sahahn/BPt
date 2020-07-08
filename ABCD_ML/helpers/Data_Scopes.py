@@ -5,17 +5,15 @@ class Data_Scopes():
 
     def __init__(self, data_keys, data_file_keys,
                  cat_keys, strat_keys, covars_keys,
-                 covar_scopes, cat_encoders,
                  file_mapping=None):
-        '''Class to hold and handle the different scope level / all keys type fields'''
+        '''Class to hold and handle the different scope level /
+         all keys type fields'''
 
         self.data_keys = data_keys
         self.data_file_keys = data_file_keys
         self.cat_keys = cat_keys
         self.strat_keys = strat_keys
         self.covars_keys = covars_keys
-        self.covar_scopes = covar_scopes
-        self.cat_encoders = cat_encoders
 
         if file_mapping is None:
             file_mapping = {}
@@ -78,32 +76,34 @@ class Data_Scopes():
         else:
 
             scope = conv_to_list(scope)
-            
+
             keys, restrict_keys = [], []
             for key in scope:
 
                 # If a valid scope, add to keys
                 if key in SCOPES:
                     keys += self.get_keys_from_scope(key)
-                
+
                 # If a passed column name, add to keys
                 elif key in self.all_keys:
                     keys.append(key)
-                
+
                 # Otherwise append to restrict keys
                 else:
                     restrict_keys.append(key)
 
-            # Restrict all keys by the stub strs passed that arn't scopes or valid column names
+            # Restrict all keys by the stub strs passed that arn't scopes
+            #  or valid column names
             if len(restrict_keys) > 0:
-                keys += [a for a in self.all_keys if all([r in a for r in restrict_keys])]
-            
+                keys += [a for a in self.all_keys if
+                         all([r in a for r in restrict_keys])]
+
             # Get rid of repeats if any
             keys = list(set(keys))
-        
+
         # Need to remove all strat keys + target_keys, if there regardless
         for key in self.keys_at_end:
-            
+
             try:
                 keys.remove(key)
             except ValueError:
@@ -129,55 +129,6 @@ class Data_Scopes():
 
         return inds
 
-    def get_cat_ordinal_inds(self):
-
-        cat_keys = self.covar_scopes['categorical']
-        ordinal_keys = self.covar_scopes['ordinal categorical']
-
-        cat_inds = [self.get_inds_from_scope(k) for k in cat_keys]
-        ordinal_inds = self.get_inds_from_scope(ordinal_keys)
-
-        return cat_inds, ordinal_inds
-
     def get_strat_inds(self):
 
         return self.get_train_inds_from_keys(self.strat_keys)
-
-    def proc_imputer_scope(self, scope):
-
-        # First grab the correct params based on scope
-        if scope == 'cat' or scope == 'categorical':
-            scope = 'categorical'
-
-            cat_inds, ordinal_inds =\
-                self.get_cat_ordinal_inds()
-
-            valid_cat_inds = []
-            for c in cat_inds:
-                if len(c) > 0:
-                    valid_cat_inds.append(c)
-            cat_inds = valid_cat_inds
-
-            inds = []
-
-            # If scope doesn't match any actual data, skip
-            if len(ordinal_inds) == 0 and len(cat_inds) == 0:
-                return None
-
-        else:
-
-            if scope == 'float':
-                scope = 'float'
-                keys = 'float'
-            else:
-                scope = 'custom'
-                keys = scope
-
-            inds = self.get_inds_from_scope(keys)
-            cat_inds, ordinal_inds = [], []
-
-            # If scope doesn't match any actual data, skip
-            if len(inds) == 0:
-                return None
-
-        return inds, cat_inds, ordinal_inds

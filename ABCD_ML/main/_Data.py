@@ -3201,15 +3201,11 @@ def _get_cat_keys(self):
 
 def _set_data_scopes(self):
 
-    covar_scopes, cat_encoders = self._get_covar_scopes()
-
     self.Data_Scopes = Data_Scopes(data_keys=list(self.data),
                                    data_file_keys=self.data_file_keys,
                                    cat_keys=self._get_cat_keys(),
                                    strat_keys=list(self.strat),
                                    covars_keys=list(self.covars),
-                                   covar_scopes=covar_scopes,
-                                   cat_encoders=cat_encoders,
                                    file_mapping=self.file_mapping)
 
 
@@ -3227,46 +3223,3 @@ def _get_base_targets_names(self):
         targets_base_keys.append(base_targets_key)
 
     return targets_base_keys
-
-
-def _get_covar_scopes(self):
-
-    # categorical also includes multilabel
-
-    covar_scopes = {'float': [],
-                    'categorical': [],
-                    'ordinal categorical': []}
-    cat_encoders = []
-
-    for base_covar in list(self.covars_encoders):
-
-        cov_encoder = self.covars_encoders[base_covar]
-
-        # One-hot or dummy
-        if isinstance(cov_encoder, tuple):
-
-            one_hot_encoder = cov_encoder[1]
-            cat_encoders.append(cov_encoder)
-
-            categories = one_hot_encoder.categories_[0]
-            covar_df_names = [base_covar + '_' + str(c) for
-                              c in categories]
-            valid_df_names = [c for c in covar_df_names if
-                              c in self.all_data]
-
-            covar_scopes['categorical'].append(valid_df_names)
-
-        # Multilabel
-        elif isinstance(cov_encoder, list):
-            cat_encoders.append(None)
-            covar_scopes['categorical'].append(cov_encoder)
-
-        # Float
-        elif cov_encoder is None:
-            covar_scopes['float'].append(base_covar)
-
-        # Binary/ordinal
-        else:
-            covar_scopes['ordinal categorical'].append(base_covar)
-
-    return covar_scopes, cat_encoders

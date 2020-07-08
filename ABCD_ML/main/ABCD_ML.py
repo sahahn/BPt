@@ -465,8 +465,7 @@ class ABCD_ML():
                         Prepare_All_Data,
                         _get_cat_keys,
                         _set_data_scopes,
-                        _get_base_targets_names,
-                        _get_covar_scopes)
+                        _get_base_targets_names)
 
     # Update loader docstrings
     Load_Name_Map.__doc__ =\
@@ -510,10 +509,6 @@ class ABCD_ML():
                       _print_summary_score,
                       _add_to_scores,
                       _save_results)
-
-    # Fill Evaluate and Test's docstring
-    # Evaluate.__doc__ = get_new_docstring(Set_Default_ML_Params, Evaluate)
-    # Test.__doc__ = get_new_docstring(Evaluate, Test)
 
     from ._Plotting import (_plot,
                             _proc_subjects,

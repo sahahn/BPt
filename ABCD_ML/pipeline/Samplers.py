@@ -539,7 +539,7 @@ def get_sampler_and_params(param, search_type,
     sampler_wrapper_params['categorical'] = categorical
     sampler_wrapper_params['recover_strat'] = recover_strat
     sampler_wrapper_params['covars_inds'] = covars_inds
-    
+
     sampler_wrapper_params['regression_bins'] = param.target_bins
     sampler_wrapper_params['regression_bin_strategy'] = param.target_bin_strategy
 
@@ -549,6 +549,7 @@ def get_sampler_and_params(param, search_type,
     return sampler, sampler_params
 
 
+# From Params_Classes
 class Sampler(Piece):
 
     def __init__(self, obj, params=0, sample_on='targets', target_bins=3,
@@ -658,6 +659,7 @@ class Sampler(Piece):
         self.sample_on = func(self.sample_on)
 
 
+# From Pipeline_Pieces
 class Samplers(Scope_Pieces):
 
     name = 'samplers'
@@ -768,6 +770,8 @@ class Samplers(Scope_Pieces):
 
         return samplers
 
+
+# From Model_Pipeline doc string
 '''
 samplers : :class:`Sampler`, list of or None, optional
             Each :class:`Sampler` refers to an optional type
@@ -782,3 +786,60 @@ samplers : :class:`Sampler`, list of or None, optional
 
             default = None
 '''
+
+
+## From Data_Scopes
+ def get_cat_ordinal_inds(self):
+
+        cat_keys = self.covar_scopes['categorical']
+        ordinal_keys = self.covar_scopes['ordinal categorical']
+
+        cat_inds = [self.get_inds_from_scope(k) for k in cat_keys]
+        ordinal_inds = self.get_inds_from_scope(ordinal_keys)
+
+        return cat_inds, ordinal_inds
+
+
+## From _Data
+
+def _get_covar_scopes(self):
+
+    # categorical also includes multilabel
+
+    covar_scopes = {'float': [],
+                    'categorical': [],
+                    'ordinal categorical': []}
+    cat_encoders = []
+
+    for base_covar in list(self.covars_encoders):
+
+        cov_encoder = self.covars_encoders[base_covar]
+
+        # One-hot or dummy
+        if isinstance(cov_encoder, tuple):
+
+            one_hot_encoder = cov_encoder[1]
+            cat_encoders.append(cov_encoder)
+
+            categories = one_hot_encoder.categories_[0]
+            covar_df_names = [base_covar + '_' + str(c) for
+                              c in categories]
+            valid_df_names = [c for c in covar_df_names if
+                              c in self.all_data]
+
+            covar_scopes['categorical'].append(valid_df_names)
+
+        # Multilabel
+        elif isinstance(cov_encoder, list):
+            cat_encoders.append(None)
+            covar_scopes['categorical'].append(cov_encoder)
+
+        # Float
+        elif cov_encoder is None:
+            covar_scopes['float'].append(base_covar)
+
+        # Binary/ordinal
+        else:
+            covar_scopes['ordinal categorical'].append(base_covar)
+
+    return covar_scopes, cat_encoders

@@ -10,7 +10,6 @@ matplotlib>=3.2.2
 seaborn>=0.9
 sphinx==2.0.1
 deslib
-imbalanced-learn>=0.6
 shap>=0.34
 scikit-image>=0.16
 tqdm>=4

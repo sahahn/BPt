@@ -24,37 +24,37 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from ..helpers.ML_Helpers import show_objects, get_obj_and_params
 
 AVALIABLE = {
-        'binary': {
-                        'logistic':           'logistic',
-                        'linear':             'logistic',
-                        'lasso':              'lasso logistic',
-                        'ridge':              'ridge logistic',
-                        'elastic':            'elastic net logistic',
-                        'elastic net':        'elastic net logistic',
-                        'gaussian nb':        'gaussian nb',
-                        'knn':                'knn classifier',
-                        'dt':                 'dt classifier',
-                        'random forest':      'random forest classifier',
-                        'gp':                 'gp classifier',
-                        'svm':                'svm classifier',
-                        'linear svm':         'linear svm classifier',
-                        'mlp':                'mlp classifier',
-                        'sgd':                'sgd classifier',
-        },
-        'regression': {
-                        'linear':             'linear regressor',
-                        'knn':                'knn regressor',
-                        'dt':                 'dt regressor',
-                        'elastic':            'elastic net regressor',
-                        'elastic net':        'elastic net regressor',
-                        'random forest':      'random forest regressor',
-                        'gp':                 'gp regressor',
-                        'svm':                'svm regressor',
-                        'linear svm':         'linear svm regressor',
-                        'mlp':                'mlp regressor',
-                        'ridge':              'ridge regressor',
-                        'lasso':              'lasso regressor',
-        },
+    'binary': {
+        'logistic':           'logistic',
+        'linear':             'logistic',
+        'lasso':              'lasso logistic',
+        'ridge':              'ridge logistic',
+        'elastic':            'elastic net logistic',
+        'elastic net':        'elastic net logistic',
+        'gaussian nb':        'gaussian nb',
+        'knn':                'knn classifier',
+        'dt':                 'dt classifier',
+        'random forest':      'random forest classifier',
+        'gp':                 'gp classifier',
+        'svm':                'svm classifier',
+        'linear svm':         'linear svm classifier',
+        'mlp':                'mlp classifier',
+        'sgd':                'sgd classifier',
+    },
+    'regression': {
+        'linear':             'linear regressor',
+        'knn':                'knn regressor',
+        'dt':                 'dt regressor',
+        'elastic':            'elastic net regressor',
+        'elastic net':        'elastic net regressor',
+        'random forest':      'random forest regressor',
+        'gp':                 'gp regressor',
+        'svm':                'svm regressor',
+        'linear svm':         'linear svm regressor',
+        'mlp':                'mlp regressor',
+        'ridge':              'ridge regressor',
+        'lasso':              'lasso regressor',
+    },
 }
 
 # Should be the same
@@ -108,12 +108,16 @@ MODELS = {
     'svm classifier': (SVC, ['base svm classifier', 'svm classifier dist']),
 
     'mlp regressor': (MLPRegressor_Wrapper, ['base mlp', 'mlp dist 3 layer',
-                                             'mlp dist es 3 layer', 'mlp dist 2 layer',
-                                             'mlp dist es 2 layer', 'mlp dist 1 layer',
+                                             'mlp dist es 3 layer',
+                                             'mlp dist 2 layer',
+                                             'mlp dist es 2 layer',
+                                             'mlp dist 1 layer',
                                              'mlp dist es 1 layer']),
     'mlp classifier': (MLPClassifier_Wrapper, ['base mlp', 'mlp dist 3 layer',
-                                               'mlp dist es 3 layer', 'mlp dist 2 layer',
-                                               'mlp dist es 2 layer', 'mlp dist 1 layer',
+                                               'mlp dist es 3 layer',
+                                               'mlp dist 2 layer',
+                                               'mlp dist es 2 layer',
+                                               'mlp dist 1 layer',
                                                'mlp dist es 1 layer']),
 
     'linear svm classifier': (LinearSVC, ['base linear svc',
@@ -122,51 +126,52 @@ MODELS = {
                                          'linear svr dist']),
 
     'sgd classifier': (SGDClassifier, ['base sgd', 'sgd classifier']),
-    }
+}
 
 try:
-        from xgboost import XGBClassifier, XGBRegressor
+    from xgboost import XGBClassifier, XGBRegressor
 
-        AVALIABLE['binary']['xgb'] = 'xgb classifier'
-        AVALIABLE['regression']['xgb'] = 'xgb regressor'
-        AVALIABLE['categorical']['light gbm'] = 'light gbm classifier'
+    AVALIABLE['binary']['xgb'] = 'xgb classifier'
+    AVALIABLE['regression']['xgb'] = 'xgb regressor'
+    AVALIABLE['categorical']['light gbm'] = 'light gbm classifier'
 
-        MODELS['xgb regressor'] = (XGBRegressor, ['base xgb', 'xgb dist1',
-                                                  'xgb dist2', 'xgb dist3'])
-        MODELS['xgb classifier'] = (XGBClassifier, ['base xgb classifier',
-                                                    'xgb classifier dist1',
-                                                    'xgb classifier dist2',
-                                                    'xgb classifier dist3'])
+    MODELS['xgb regressor'] = (XGBRegressor, ['base xgb', 'xgb dist1',
+                                              'xgb dist2', 'xgb dist3'])
+    MODELS['xgb classifier'] = (XGBClassifier, ['base xgb classifier',
+                                                'xgb classifier dist1',
+                                                'xgb classifier dist2',
+                                                'xgb classifier dist3'])
 
 except ImportError:
-        pass
+    pass
 
 try:
-        from lightgbm import LGBMRegressor, LGBMClassifier
+    from lightgbm import LGBMRegressor, LGBMClassifier
 
-        AVALIABLE['binary']['light gbm'] = 'light gbm classifier'
-        AVALIABLE['regression']['light gbm'] = 'light gbm regressor'
-        AVALIABLE['categorical']['light gbm'] = 'light gbm classifier'
+    AVALIABLE['binary']['light gbm'] = 'light gbm classifier'
+    AVALIABLE['regression']['light gbm'] = 'light gbm regressor'
+    AVALIABLE['categorical']['light gbm'] = 'light gbm classifier'
 
-        MODELS['light gbm regressor'] = (LGBMRegressor, ['base lgbm',
-                                                         'lgbm dist1',
-                                                         'lgbm dist2'])
-        MODELS['light gbm classifier'] = (LGBMClassifier,
-                                          ['base lgbm',
-                                           'lgbm classifier dist1',
-                                           'lgbm classifier dist2'])
+    MODELS['light gbm regressor'] = (LGBMRegressor, ['base lgbm',
+                                                     'lgbm dist1',
+                                                     'lgbm dist2'])
+    MODELS['light gbm classifier'] = (LGBMClassifier,
+                                      ['base lgbm',
+                                       'lgbm classifier dist1',
+                                       'lgbm classifier dist2'])
 except ImportError:
-        pass
+    pass
 
 
 def get_base_model_and_params(model_type, extra_params, model_type_params,
-                              search_type, random_state=None, num_feat_keys=None):
+                              search_type, random_state=None,
+                              num_feat_keys=None):
 
-        model, extra_model_params, model_type_params =\
-            get_obj_and_params(model_type, MODELS, extra_params,
-                               model_type_params, search_type)
+    model, extra_model_params, model_type_params =\
+        get_obj_and_params(model_type, MODELS, extra_params,
+                           model_type_params, search_type)
 
-        # Init model, w/ any user passed params + class params
-        model = model(**extra_model_params)
+    # Init model, w/ any user passed params + class params
+    model = model(**extra_model_params)
 
-        return model, model_type_params
+    return model, model_type_params

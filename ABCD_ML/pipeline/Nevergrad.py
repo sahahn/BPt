@@ -97,7 +97,7 @@ class NevergradSearchCV():
         elif self.random_state is not None:
             optimizer.parametrization.random_state = self.random_state
 
-        #with warnings.catch_warnings():
+        # with warnings.catch_warnings():
         #    warnings.simplefilter("ignore")
 
         if self.params._n_jobs == 1:
@@ -141,5 +141,3 @@ class NevergradSearchCV():
 
     def decision_function(self, X):
         return self.best_estimator_.decision_function(X)
-
-    

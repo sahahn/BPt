@@ -134,7 +134,8 @@ class ABCD_Pipeline(Pipeline):
         #    X_train, y_train = sampler.fit_resample(X_train, y_train)
         for drop in fitted_objs[ORDERED_NAMES.index('_drop_strat')]:
             X_train = drop.transform(X_train)
-        for feat_selector in fitted_objs[ORDERED_NAMES.index('feat_selectors')]:
+        fs_ind = ORDERED_NAMES.index('feat_selectors')
+        for feat_selector in fitted_objs[fs_ind]:
             X_train = feat_selector.transform(X_train)
 
         return X_train
@@ -150,7 +151,8 @@ class ABCD_Pipeline(Pipeline):
         fitted_objs = self._get_objs_by_name()
 
         # Feat selectors
-        for feat_selector in fitted_objs[ORDERED_NAMES.index('feat_selectors')][::-1]:
+        fs_ind = ORDERED_NAMES.index('feat_selectors')
+        for feat_selector in fitted_objs[fs_ind][::-1]:
             fis = feat_selector.inverse_transform(fis)
 
         # Reverse drop strat

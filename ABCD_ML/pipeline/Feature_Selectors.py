@@ -129,6 +129,19 @@ class FeatureSelectorWrapper(SelectorMixin, BaseEstimator):
 
         return return_X
 
+    def set_params(self, **params):
+
+        if 'base_selector' in params:
+            self.base_selector = params.pop('base_selector')
+        if 'wrapper_inds' in params:
+            self.wrapper_inds = params.pop('wrapper_inds')
+
+        # Padd on just relevant params
+        base_selector_params =\
+            {key.replace('base_selector__', ''): params[key]
+             for key in params if key.startswith('base_selector__')}
+        self.base_selector.set_params(**base_selector_params)
+
 
 AVALIABLE = {
         'binary': {

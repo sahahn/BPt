@@ -12,25 +12,6 @@ from sklearn.decomposition import (PCA, FactorAnalysis,
 import warnings
 
 
-def ce_conv(parent):
-    '''Wrapper function to make classes from category encoders
-    compatible with ABCD_ML transformer'''
-
-    class child(parent):
-
-        __parent_name__ = parent.__module__ + '.' + parent.__qualname__
-
-        def fit(self, X, y=None, **kwargs):
-
-            self.return_df = False
-            self.cols = [i for i in range(X.shape[1])]
-
-            super().fit(X, y, **kwargs)
-            return self
-
-    return child
-
-
 class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
     def __init__(self, wrapper_transformer, wrapper_inds, **params):
@@ -73,6 +54,12 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         inds = self.wrapper_inds
         self.rest_inds_ = [i for i in range(X.shape[1]) if i not in inds]
+
+        # Before fit, need to handle annoying categorical encoders case
+        # where there is no default setting to set to all cols
+        # It shouldn't hurt to set these for other transformers (hopefully...)
+        self.wrapper_transformer.cols = [i for i in range(len(inds))]
+        self.wrapper_transformer.return_df = False
 
         # Fit transform just inds of X
         X_trans = self.wrapper_transformer.fit_transform(X[:, inds])
@@ -210,20 +197,30 @@ try:
                                    PolynomialEncoder, SumEncoder,
                                    TargetEncoder, WOEEncoder)
 
+    class OneHotEncoderWrapper(OneHotEncoder):
+
+        def fit(self, X, y=None, **kwargs):
+
+            self.return_df = False
+            self.cols = [i for i in range(X.shape[1])]
+
+            super().fit(X, y, **kwargs)
+            return self
+
     extra = {
-     'one hot encoder': (ce_conv(OneHotEncoder), ['default']),
-     'backward difference encoder': (ce_conv(BackwardDifferenceEncoder),
+     'one hot encoder': (OneHotEncoder, ['default']),
+     'backward difference encoder': (BackwardDifferenceEncoder,
                                      ['default']),
-     'binary encoder': (ce_conv(BinaryEncoder), ['default']),
-     'cat boost encoder': (ce_conv(CatBoostEncoder), ['default']),
-     'helmert encoder': (ce_conv(HelmertEncoder), ['default']),
-     'james stein encoder': (ce_conv(JamesSteinEncoder), ['default']),
-     'leave one out encoder': (ce_conv(LeaveOneOutEncoder), ['default']),
-     'm estimate encoder': (ce_conv(MEstimateEncoder), ['default']),
-     'polynomial encoder': (ce_conv(PolynomialEncoder), ['default']),
-     'sum encoder': (ce_conv(SumEncoder), ['default']),
-     'target encoder': (ce_conv(TargetEncoder), ['default']),
-     'woe encoder': (ce_conv(WOEEncoder), ['default'])}
+     'binary encoder': (BinaryEncoder, ['default']),
+     'cat boost encoder': (CatBoostEncoder, ['default']),
+     'helmert encoder': (HelmertEncoder, ['default']),
+     'james stein encoder': (JamesSteinEncoder, ['default']),
+     'leave one out encoder': (LeaveOneOutEncoder, ['default']),
+     'm estimate encoder': (MEstimateEncoder, ['default']),
+     'polynomial encoder': (PolynomialEncoder, ['default']),
+     'sum encoder': (SumEncoder, ['default']),
+     'target encoder': (TargetEncoder, ['default']),
+     'woe encoder': (WOEEncoder, ['default'])}
 
     TRANSFORMERS.update(extra)
 

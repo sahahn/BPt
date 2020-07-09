@@ -593,8 +593,8 @@ class Feat_Selectors(Type_Pieces):
         feat_params = {}
         for key in params:
             name = key.split('__')[0]
-            new_name = 'feat_' + name + '__' + key
-
+            new_key = key.replace(name, 'base_selector', 1)
+            new_name = 'feat_' + name + '__' + new_key
             feat_params[new_name] = params[key]
 
         return feat_objs, feat_params

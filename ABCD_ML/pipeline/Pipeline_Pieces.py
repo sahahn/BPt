@@ -564,18 +564,29 @@ class Feat_Selectors(Type_Pieces):
 
         # Wrap in feat select wrapper
         feat_objs, feat_params =\
-            self._wrap_feat_select(objs, obj_params)
+            self._wrap_feat_select(objs, obj_params,
+                                   [p.scope for p in params])
 
         return feat_objs, feat_params
 
-    def _wrap_feat_select(self, objs, params):
+    def _wrap_feat_select(self, objs, params, scopes):
         from .Feature_Selectors import FeatureSelectorWrapper
 
         # Make wrapped objs
         feat_objs = []
         for i in range(len(objs)):
+
+            # Unpack name + obj
             name, obj = objs[i][0], objs[i][1]
-            feat_obj = ('feat_' + name, FeatureSelectorWrapper(obj))
+
+            # Get wrapper inds from scope
+            wrapper_inds = self.Data_Scopes.get_inds_from_scope(scopes[i])
+
+            # Wrap in feat selector wrapper, which handles scope +
+            # keeping track of updating mapping
+            feat_obj = ('feat_' + name,
+                        FeatureSelectorWrapper(base_selector=obj,
+                                               wrapper_inds=wrapper_inds))
             feat_objs.append(feat_obj)
 
         # Update params

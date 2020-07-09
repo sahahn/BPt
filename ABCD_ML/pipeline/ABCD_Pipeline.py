@@ -105,12 +105,13 @@ class ABCD_Pipeline(Pipeline):
         # Drop features according to feat_selectors, keeping track of changes
         # only if passed param fs is True
         if fs:
-            for feat_selector in fitted_objs[ORDERED_NAMES.index('feat_selectors')]:
+            fs_ind = ORDERED_NAMES.index('feat_selectors')
+            for feat_selector in fitted_objs[fs_ind]:
 
                 feat_mask = feat_selector.get_support()
                 feat_names = np.array(feat_names)[feat_mask]
 
-                X_test[feat_names] = feat_selector.transform(X_test)
+                X_test[feat_names] = feat_selector.transform(np.array(X_test))
                 X_test = X_test[feat_names]
 
         return X_test, y_test
@@ -160,7 +161,6 @@ class ABCD_Pipeline(Pipeline):
         trans_ind = ORDERED_NAMES.index('transformers')
         for transformer, name in zip(fitted_objs[trans_ind][::-1],
                                      self.names[trans_ind][::-1]):
-
             fis = transformer.inverse_transform(fis, name=name)
 
         # Loaders - special case

@@ -13,44 +13,121 @@ import nevergrad as ng
 
 from sklearn.base import BaseEstimator, clone
 from sklearn.feature_selection._base import SelectorMixin
-from ..helpers.ML_Helpers import update_mapping
+from ..helpers.ML_Helpers import proc_mapping, update_mapping
 
 
 class FeatureSelectorWrapper(SelectorMixin, BaseEstimator):
 
-    def __init__(self, base_selector):
+    def __init__(self, base_selector, wrapper_inds):
         self.base_selector = base_selector
+        self.wrapper_inds = wrapper_inds
+
+    def _proc_mapping(self, mapping):
+
+        try:
+            self._mapping
+            return
+        except AttributeError:
+            self._mapping = mapping.copy()
+
+        if len(mapping) > 0:
+            self.wrapper_inds_ = proc_mapping(self.wrapper_inds_, mapping)
+
+        return
 
     def fit(self, X, y=None, mapping=None, **fit_params):
 
+        # Clone base object
+        self.base_selector_ = clone(self.base_selector)
+        self.wrapper_inds_ = np.copy(self.wrapper_inds)
+
+        # Proc mapping
         if mapping is None:
             mapping = {}
 
-        self.base_selector_ = clone(self.base_selector)
+        self._proc_mapping(mapping)
 
+        # Calculate rest of inds
+        self.rest_inds_ = [i for i in range(X.shape[1])
+                           if i not in self.wrapper_inds_]
+
+        # Attempt fit w/ passing mapping on
         try:
-            self.base_selector_.fit(X=X, y=y, mapping=mapping, **fit_params)
+            self.base_selector_.fit(X=X[:, self.wrapper_inds_],
+                                    y=y, mapping=mapping, **fit_params)
         except TypeError:
-            self.base_selector_.fit(X=X, y=y, **fit_params)
+            self.base_selector_.fit(X=X[:, self.wrapper_inds_],
+                                    y=y, **fit_params)
 
+        # Grab the just calculated support mask
         support = self.base_selector_.get_support()
 
+        # Generate the new mapping
         new_mapping = {}
-        cnt = 0
-        for i in range(len(support)):
-            
-            if support[i]:
-                new_mapping[i] = cnt
-                cnt += 1
-            else:
-                new_mapping[i] = None
 
+        # First half is for updating the index within scope
+        cnt = 0
+        for i, wrap_ind in enumerate(self.wrapper_inds_):
+
+            # If kept by feat selection
+            if support[i]:
+                new_mapping[wrap_ind] = cnt
+                cnt += 1
+
+            # Else, set to None
+            else:
+                new_mapping[wrap_ind] = None
+
+        # Next, need to update the mapping for the remaining wrapper inds
+        for rem_ind in range(len(self.rest_inds_)):
+            new_mapping[self.rest_inds_[rem_ind]] = cnt
+            cnt += 1
+
+        # Save for reverse transform
+        self._out_mapping = new_mapping.copy()
+
+        # Update the passed mapping
         update_mapping(mapping, new_mapping)
 
         return self
 
+    def transform(self, X):
+
+        # Transform just wrapper inds
+        X_trans = self.base_selector_.transform(X[:, self.wrapper_inds_])
+        return_X = np.hstack([X_trans, X[:, self.rest_inds_]])
+
+        return return_X
+
     def _get_support_mask(self):
-        return self.base_selector_.get_support()
+
+        # Create full support as base support + True's for all rest inds
+        # i.e., those features originally out of scope
+        base_support = self.base_selector_.get_support()
+        rest_support = np.ones(len(self.rest_inds_), dtype='bool')
+        support = np.concatenate([base_support, rest_support])
+
+        return support
+
+    def inverse_transform(self, X):
+
+        # Get reverse inds
+        reverse_inds = proc_mapping(self.wrapper_inds_, self._out_mapping)
+        reverse_rest_inds = proc_mapping(self.rest_inds_, self._out_mapping)
+
+        # Reverse
+        X_trans =\
+            self.base_selector_.inverse_transform(X[:, reverse_inds])
+
+        # Make empty return_X
+        all_inds_len = len(self.wrapper_inds_) + len(self.rest_inds_)
+        return_X = np.zeros((X.shape[0], all_inds_len), dtype=X.dtype)
+
+        # Fill in return X
+        return_X[:, self.wrapper_inds_] = X_trans
+        return_X[:, self.rest_inds_] = X[:, reverse_rest_inds]
+
+        return return_X
 
 
 AVALIABLE = {

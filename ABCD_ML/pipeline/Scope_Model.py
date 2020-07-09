@@ -54,10 +54,10 @@ class Scope_Model(BaseEstimator):
         self.wrapper_model_ = clone(self.wrapper_model)
         self.wrapper_inds_ = np.copy(self.wrapper_inds)
 
+        # Proc mapping
         if mapping is None:
             mapping = {}
 
-        # Proc mapping
         self._proc_mapping(mapping)
 
         # Okay now want to create the new_mapping based on wrapper_inds
@@ -66,16 +66,29 @@ class Scope_Model(BaseEstimator):
             new_mapping[self.wrapper_inds_[i]] = i
 
         # Now, we only want to pass along the updated mapping
-        # and specifically not change the passed mapping
+        # and specifically not change the originally passed mapping
         pass_on_mapping = mapping.copy()
         update_mapping(pass_on_mapping, new_mapping)
 
+        # Try to fit
         try:
             self.wrapper_model_.fit(X[:, self.wrapper_inds_],
                                     y=y, mapping=pass_on_mapping, **kwargs)
         except TypeError:
             self.wrapper_model_.fit(X[:, self.wrapper_inds_],
                                     y=y, **kwargs)
+
+        # Check for feat importances
+        try:
+            self.coef_ = self.wrapper_model_.coef_
+        except AttributeError:
+            pass
+
+        try:
+            self.feature_importances_ =\
+                self.wrapper_model_.feature_importances_
+        except AttributeError:
+            pass
 
         return self
 

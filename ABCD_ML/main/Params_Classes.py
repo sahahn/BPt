@@ -15,7 +15,7 @@ def proc_all(base_obj):
     proc_name(base_obj, 'obj')
     proc_name(base_obj, 'base_model')
     proc_name(base_obj, 'models')
-    proc_name(base_obj, 'metric')
+    proc_name(base_obj, 'scorer')
 
 
 def proc_name(base_obj, name):
@@ -756,8 +756,8 @@ class Param_Search(Params):
 
     def __init__(self, search_type='RandomSearch',
                  splits=3, n_repeats=1, n_iter=10, CV='default',
-                 metric='default',
-                 weight_metric=False, mp_context='default'):
+                 scorer='default',
+                 weight_scorer=False, mp_context='default'):
         ''' Param_Search is special input object designed to be
         used with :class:`Model_Pipeline`.
         Param_Search defines a hyperparameter search strategy.
@@ -871,31 +871,38 @@ class Param_Search(Params):
 
                 default = 'default'
 
-        metric : str or 'default', optional
-            In order for a set of hyper-parameters to be evaluated, a single metric must
-            be defined. By default (if left as 'default') this metric will be the first
-            metric (if passed a list) of metrics passed to :class:`Problem_Spec`. Alternatively,
-            you may pass a specific `metric` to use for just hyper-parameter evaluation.
+        scorer : str or 'default', optional
+            In order for a set of hyper-parameters to be evaluated,
+            a single scorer must be defined. By default (if left as 'default')
+            this scorer will be the first scorer (if passed a list)
+            of scorers passed to :class:`Problem_Spec`. Alternatively,
+            you may pass a specific `scorer` to use
+            for just hyper-parameter evaluation.
 
-            See :ref:`Metrics` for a full list of options as limited by problem_type.
+            See:
+            https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
+            for different pre-defined scorers.
 
-            Only one value of `metric` may be passed here.
+            Be careful to make sure to select an appropriate scorer for
+            the problem type.
+
+            Only one value of `scorer` may be passed here.
 
             ::
 
                 default = 'default'
 
-        weight_metric : bool or 'default', optional
-            `weight_metric` describes if the metric of interest should be weighted by
+        weight_scorer : bool or 'default', optional
+            `weight_scorer` describes if the scorer of interest should be weighted by
             the number of subjects within each validation fold. So, for example, if
             a leave-out-group CV scheme is specified to `splits`, and the groups have
             drastically different numbers of subjects, then you may want to consider
             weighting the final average validation metric (as computed across in this case
             all groups used by themselves) by the number of subjects in each fold.
 
-            Likewise with `metric`, if `weight_metric` is left as 'default', then
-            the value of `weight_metric` will be set to the first value of
-            `weight_metric` (if passed a list) as passed to :class:`Problem_Spec`.
+            Likewise with `scorer`, if `weight_scorer` is left as 'default', then
+            the value of `weight_scorer` will be set to the first value of
+            `weight_scorer` (if passed a list) as passed to :class:`Problem_Spec`.
 
             ::
 
@@ -921,8 +928,8 @@ class Param_Search(Params):
         self.n_repeats = 1
         self.n_iter = n_iter
         self.CV = CV
-        self.metric = metric
-        self.weight_metric = weight_metric
+        self.scorer = scorer
+        self.weight_scorer = weight_scorer
         self.mp_context = mp_context
 
         self._CV = None
@@ -939,10 +946,10 @@ class Param_Search(Params):
 
     def check_args(self):
 
-        if isinstance(self.metric, list):
-            raise IOError('metric within Param Search cannot be list-like')
-        if isinstance(self.weight_metric, list):
-            raise IOError('weight_metric within Param Search cannot be list-like')
+        if isinstance(self.scorer, list):
+            raise IOError('scorer within Param Search cannot be list-like')
+        if isinstance(self.weight_scorer, list):
+            raise IOError('weight_scorer within Param Search cannot be list-like')
 
 
 class Shap_Params(Params):
@@ -1124,7 +1131,7 @@ class Shap_Params(Params):
 
 class Feat_Importance(Params):
 
-    def __init__(self, obj, metric='default',
+    def __init__(self, obj, scorer='default',
                  shap_params='default', n_perm=10,
                  inverse_global=False, inverse_local=False):
         '''
@@ -1140,12 +1147,14 @@ class Feat_Importance(Params):
             `obj` is the str indiciator for which feature importance to use. See
             :ref:`Feat Importances` for what options are avaliable.
 
-        metric : str or 'default', optional
-            If a permutation based feature importance is being used, then a metric is
-            required. By default (if left as 'default') this metric will be the first
-            metric (if passed a list) of metrics passed to :class:`Problem_Spec`.
+        scorer : str or 'default', optional
+            If a permutation based feature importance is being used, then a scorer is
+            required. By default (if left as 'default') this scorer will be the first
+            scorer (if passed a list) of scorers passed to :class:`Problem_Spec`.
           
-            For a full list of supported metrics please view the docs at :ref:`Metrics`
+            For a full list of supported scorers please view the scikit-learn docs at:
+            https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
+
             ::
 
                 default = 'default'
@@ -1206,7 +1215,7 @@ class Feat_Importance(Params):
         '''
 
         self.obj = obj
-        self.metric = metric
+        self.scorer = scorer
 
         if shap_params == 'default':
 
@@ -1674,7 +1683,7 @@ class Model_Pipeline(Params):
 class Problem_Spec(Params):
 
     def __init__(self, problem_type='regression',
-                 target=0, metric='default', weight_metric=False,
+                 target=0, scorer='default', weight_scorer=False,
                  scope='all', subjects='all',
                  n_jobs='default',
                  random_state='default'):
@@ -1710,42 +1719,43 @@ class Problem_Spec(Params):
             
                 default = 0
 
-        metric : str or list, optional
-            Indicator str for which metric(s) to use when calculating
+        scorer : str or list, optional
+            Indicator str for which scorer(s) to use when calculating
             average validation score in Evaluate, or Test set score in Test.
 
             A list of str's can be passed as well, in this case, scores for
-            all of the requested metrics will be calculated and returned.
+            all of the requested scorers will be calculated and returned.
 
             Note: If using a Param_Search, the Param_Search object has a
-            metric parameter as well. This metric describes the metric optimized
-            in a parameter search. In the case that this metric is left as 'default',
-            the the first metric passed here will be used in Param_Search!
+            scorer parameter as well. This scorer describes the scorer optimized
+            in a parameter search. In the case that this scorer is left as 'default',
+            the the first scorer passed here will be used in Param_Search!
 
-            For a full list of supported metrics please view the docs at :ref:`Metrics`
+            For a full list of supported scorers please view the scikit-learn docs at:
+            https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
 
-            If left as 'default', assign a reasonable metric based on the
+            If left as 'default', assign a reasonable scorer based on the
             passed problem type.
 
             - 'regression'  : 'r2'
-            - 'binary'      : 'macro roc auc'
-            - 'categorical' : 'matthews'
+            - 'binary'      : 'roc_auc'
+            - 'categorical' : 'roc_auc_ovr'
 
             ::
             
                 default = 'default'
 
-        weight_metric : bool, list of, optional
-            If True, then the metric of interest will be weighted within
+        weight_scorer : bool, list of, optional
+            If True, then the scorer of interest will be weighted within
             each repeated fold by the number of subjects in that validation set.
             This parameter only typically makes sense for custom split behavior where 
             validation folds may end up with differing sizes.
             When default CV schemes are employed, there is likely no point in
             applying this weighting, as the validation folds will have simmilar sizes.
 
-            If you are passing mutiple metrics, then you can also pass a 
-            list of values for weight_metric, with each value set as boolean True or False,
-            specifying if the corresponding metric by index should be weighted or not.
+            If you are passing mutiple scorers, then you can also pass a 
+            list of values for weight_scorer, with each value set as boolean True or False,
+            specifying if the corresponding scorer by index should be weighted or not.
 
             ::
             
@@ -1828,14 +1838,14 @@ class Problem_Spec(Params):
         self.problem_type = problem_type
         self.target = target
 
-        if metric == 'default':
-            default_metrics = {'regression': 'r2',
-                               'binary': 'macro roc auc',
-                               'categorical': 'matthews'}
-            metric = default_metrics[self.problem_type]
+        if scorer == 'default':
+            default_scorers = {'regression': 'r2',
+                               'binary': 'roc_auc',
+                               'categorical': 'roc_auc_ovr'}
+            scorer = default_scorers[self.problem_type]
 
-        self.metric = metric
-        self.weight_metric = weight_metric
+        self.scorer = scorer
+        self.weight_scorer = weight_scorer
         self.scope = scope
         self.subjects = subjects
 
@@ -1863,8 +1873,8 @@ class Problem_Spec(Params):
         _print('------------')
         _print('problem_type =', self.problem_type)
         _print('target =', self.target)
-        _print('metric =', self.metric)
-        _print('weight_metric =', self.weight_metric)
+        _print('scorer =', self.scorer)
+        _print('weight_scorer =', self.weight_scorer)
         _print('scope =', self.scope)
         _print('subjects =', self.subjects)
         _print('len(subjects) =', len(self._final_subjects),

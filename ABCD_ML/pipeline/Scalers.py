@@ -10,7 +10,7 @@ from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
 from ..extensions.Scalers import Winsorizer
 
 
-# Scalers differs from metrics and models in that the types are not restricted
+# Scalers differs from models in that the types are not restricted
 # by a given problem type. Therefore no AVALIABLE dictionary is neccisary,
 # all avaliable scalers are as indexed by SCALERS.
 SCALERS = {

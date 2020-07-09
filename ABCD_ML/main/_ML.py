@@ -46,7 +46,7 @@ def Set_Default_ML_Verbosity(
         (default = 'default')
 
     compute_train_score : bool, optional
-        If True, then metrics and raw preds will also be
+        If True, then metrics/scorers and raw preds will also be
         computed on the training set in addition to just the
         eval or testing set.
 
@@ -249,10 +249,15 @@ def Evaluate(self,
 
     problem_spec : :class:`Problem_Spec`
 
-        `problem_spec` accepts an instance of the ABCD_ML params class :class:`Problem_Spec`.
-        This object is essentially a wrapper around commonly used parameters needs to define the context
-        the model pipeline should be evaluated in. It includes parameters like problem_type, metric, n_jobs, random_state, etc...
-        See :class:`Problem_Spec` explicitly for more information and for how to create an instance of this object.
+        `problem_spec` accepts an instance of the ABCD_ML
+        params class :class:`Problem_Spec`.
+        This object is essentially a wrapper around commonly used
+        parameters needs to define the context
+        the model pipeline should be evaluated in.
+        It includes parameters like problem_type, scorer, n_jobs,
+        random_state, etc...
+        See :class:`Problem_Spec` explicitly for more information
+        and for how to create an instance of this object.
 
     splits : int, float, str or list of str, optional
         In every fold of the defined CV strategy, the passed `model_pipeline` will be fitted on
@@ -389,30 +394,32 @@ def Evaluate(self,
         if train scores are computed.
         'raw_scores', a numpy array of numpy arrays,
         where each internal array contains the raw scores as computed for
-        all passed in metrics, computed for each fold within
+        all passed in scorers, computed for each fold within
         each repeat. e.g., array will have a length of `n_repeats` * number of
-        folds, and each internal array will have the same length as the number of
-        metrics. Optionally, this could instead return a list containing as
+        folds, and each internal array will have the same length as
+        the number of
+        scorers. Optionally, this could instead return a list containing as
         the first element the raw training score in this same format,
         and then the raw testing scores.
         'raw_preds', A pandas dataframe containing the raw predictions
         for each subject, in the test set, and
-        'FIs' a list where each element corresponds to a passed feature importance.
+        'FIs' a list where each element corresponds
+        to a passed feature importance.
 
     Notes
     ----------
-    Prints by default the following for each metric,
+    Prints by default the following for each scorer,
 
     float
-        The mean macro score (as set by input metric) across each
+        The mean macro score (as set by input scorer) across each
         repeated K-fold.
 
     float
-        The standard deviation of the macro score (as set by input metric)
+        The standard deviation of the macro score (as set by input scorer)
         across each repeated K-fold.
 
     float
-        The standard deviation of the micro score (as set by input metric)
+        The standard deviation of the micro score (as set by input scorer)
         across each fold with the repeated K-fold.
 
     '''
@@ -475,7 +482,7 @@ def Evaluate(self,
 
     self._print()
 
-    # Print out summary stats for all passed metrics
+    # Print out summary stats for all passed scorers
     if self.default_ML_verbosity['compute_train_score']:
         score_list = [train_scores, scores]
         score_type_list = ['Training', 'Validation']
@@ -487,7 +494,7 @@ def Evaluate(self,
     for scrs, name in zip(score_list, score_type_list):
 
         summary_scores = self._handle_scores(scrs, name,
-                                             problem_spec.weight_metric,
+                                             problem_spec.weight_scorer,
                                              n_repeats, run_name,
                                              self.Model_Pipeline.n_splits_)
 
@@ -532,7 +539,7 @@ def Test(self,
     problem_spec : :class:`Problem_Spec`
         `problem_spec` accepts an instance of the ABCD_ML params class :class:`Problem_Spec`.
         This object is essentially a wrapper around commonly used parameters needs to define the context
-        the model pipeline should be evaluated in. It includes parameters like problem_type, metric, n_jobs, random_state, etc...
+        the model pipeline should be evaluated in. It includes parameters like problem_type, scorer, n_jobs, random_state, etc...
         See :class:`Problem_Spec` explicitly for more information and for how to create an instance of this object.
 
     train_subjects : str, array-like or Value_Subset, optional
@@ -613,7 +620,7 @@ def Test(self,
     ----------
     results : dict
         Dictionary containing:
-        'scores', the score on the test set by each metric,
+        'scores', the score on the test set by each scorer,
         'raw_preds', A pandas dataframe containing the raw predictions
         for each subject, in the test set, and 'FIs' a list where
         each element corresponds to a passed feature importance.
@@ -668,8 +675,8 @@ def Test(self,
         fi.set_target(problem_spec.target)
         fi.set_run_name(run_name)
 
-    # Print out score for all passed metrics
-    metric_strs = self.Model_Pipeline.metric_strs
+    # Print out score for all passed scorers
+    scorer_strs = self.Model_Pipeline.scorer_strs
     self._print()
 
     score_list, score_type_list = [], []
@@ -685,10 +692,10 @@ def Test(self,
         self._print(name + ' Scores')
         self._print(''.join('_' for i in range(len(name) + 7)))
 
-        for i in range(len(metric_strs)):
+        for i in range(len(scorer_strs)):
 
-            metric_name = metric_strs[i]
-            self._print('Metric: ', metric_name)
+            scorer_name = scorer_strs[i]
+            self._print('Scorer: ', scorer_name)
 
             scr = s[i]
             if len(scr.shape) > 0:
@@ -699,14 +706,14 @@ def Test(self,
                     self._print('for target class: ', class_name)
                     self._print(name + ' Score: ', score_by_class)
                     self._print()
-                    self._add_to_scores(run_name, name, metric_name,
+                    self._add_to_scores(run_name, name, scorer_name,
                                         'score', score_by_class,
                                         self.test_scores, class_name)
 
             else:
                 self._print(name + ' Score: ', scr)
                 self._print()
-                self._add_to_scores(run_name, name, metric_name,
+                self._add_to_scores(run_name, name, scorer_name,
                                     'score', scr, self.test_scores)
 
     results = {}
@@ -871,33 +878,33 @@ def _init_model(self, model_pipeline, problem_specs, CV):
                        self._ML_print)
 
 
-def _handle_scores(self, scores, name, weight_metric, n_repeats, run_name,
+def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,
                    n_splits):
 
     all_summary_scores = []
-    metric_strs = self.Model_Pipeline.metric_strs
+    scorer_strs = self.Model_Pipeline.scorer_strs
 
     self._print(name + ' Scores')
     self._print(''.join('_' for i in range(len(name) + 7)))
 
-    weight_metrics = conv_to_list(weight_metric, len(metric_strs))
+    weight_scorers = conv_to_list(weight_scorer, len(scorer_strs))
 
-    for i in range(len(metric_strs)):
+    for i in range(len(scorer_strs)):
 
         # Weight outputed scores if requested
-        if weight_metrics[i]:
+        if weight_scorers[i]:
             weights = self.Model_Pipeline.n_test_per_fold
         else:
             weights = None
 
-        metric_name = metric_strs[i]
-        self._print('Metric: ', metric_name)
-        score_by_metric = scores[:, i]
+        scorer_name = scorer_strs[i]
+        self._print('Scorer: ', scorer_name)
+        score_by_scorer = scores[:, i]
 
-        if len(score_by_metric[0].shape) > 0:
-            by_class = [[score_by_metric[i][j] for i in
-                        range(len(score_by_metric))] for j in
-                        range(len(score_by_metric[0]))]
+        if len(score_by_scorer[0].shape) > 0:
+            by_class = [[score_by_scorer[i][j] for i in
+                        range(len(score_by_scorer))] for j in
+                        range(len(score_by_scorer[0]))]
 
             summary_scores_by_class =\
                 [compute_macro_micro(class_scores, n_repeats,
@@ -916,21 +923,21 @@ def _handle_scores(self, scores, name, weight_metric, n_repeats, run_name,
                 self._print('Target class: ', class_name)
                 self._print_summary_score(name, summary_scores,
                                           n_repeats, run_name,
-                                          metric_name, class_name, weights=weights)
+                                          scorer_name, class_name, weights=weights)
 
             all_summary_scores.append(summary_scores_by_class)
 
         else:
 
             # Compute macro / micro summary of scores
-            summary_scores = compute_macro_micro(score_by_metric,
+            summary_scores = compute_macro_micro(score_by_scorer,
                                                  n_repeats,
                                                  n_splits,
                                                  weights=weights)
 
             self._print_summary_score(name, summary_scores,
                                       n_repeats, run_name,
-                                      metric_name, weights=weights)
+                                      scorer_name, weights=weights)
 
             all_summary_scores.append(summary_scores)
 
@@ -938,7 +945,7 @@ def _handle_scores(self, scores, name, weight_metric, n_repeats, run_name,
 
 
 def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
-                         metric_name, class_name=None, weights=None):
+                         scorer_name, class_name=None, weights=None):
     '''Besides printing, also adds scores to self.eval_scores dict
     under run name.'''
 
@@ -947,7 +954,7 @@ def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
         mn = 'Weighted ' + mn
 
     self._print(mn + ' ' + name + ' score: ', summary_scores[0])
-    self._add_to_scores(run_name, name, metric_name, mn,
+    self._add_to_scores(run_name, name, scorer_name, mn,
                         summary_scores[0], self.eval_scores,  class_name)
 
     if n_repeats > 1:
@@ -955,20 +962,20 @@ def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
                     summary_scores[1])
         self._print('Micro Std in ' + name + ' score: ',
                     summary_scores[2])
-        self._add_to_scores(run_name, name, metric_name, 'Macro Std',
+        self._add_to_scores(run_name, name, scorer_name, 'Macro Std',
                             summary_scores[1], self.eval_scores, class_name)
-        self._add_to_scores(run_name, name, metric_name, 'Micro Std',
+        self._add_to_scores(run_name, name, scorer_name, 'Micro Std',
                             summary_scores[2], self.eval_scores, class_name)
     else:
         self._print('Std in ' + name + ' score: ',
                     summary_scores[2])
-        self._add_to_scores(run_name, name, metric_name, 'Std',
+        self._add_to_scores(run_name, name, scorer_name, 'Std',
                             summary_scores[2], self.eval_scores, class_name)
 
     self._print()
 
 
-def _add_to_scores(self, run_name, name, metric_name, val_type, val, scores,
+def _add_to_scores(self, run_name, name, scorer_name, val_type, val, scores,
                    class_name=None):
 
     if run_name not in scores:
@@ -977,17 +984,17 @@ def _add_to_scores(self, run_name, name, metric_name, val_type, val, scores,
     if name not in scores[run_name]:
         scores[run_name][name] = {}
 
-    if metric_name not in scores[run_name][name]:
-        scores[run_name][name][metric_name] = {}
+    if scorer_name not in scores[run_name][name]:
+        scores[run_name][name][scorer_name] = {}
 
     if class_name is None:
-        scores[run_name][name][metric_name][val_type] = val
+        scores[run_name][name][scorer_name][val_type] = val
 
     else:
-        if class_name not in scores[run_name][name][metric_name]:
-            scores[run_name][name][metric_name][class_name] = {}
+        if class_name not in scores[run_name][name][scorer_name]:
+            scores[run_name][name][scorer_name][class_name] = {}
 
-        scores[run_name][name][metric_name][class_name][val_type] =\
+        scores[run_name][name][scorer_name][class_name][val_type] =\
             val
 
 

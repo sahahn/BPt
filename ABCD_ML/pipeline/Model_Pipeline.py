@@ -4,10 +4,8 @@ import numpy as np
 import time
 
 from ..helpers.ML_Helpers import conv_to_list, type_check
-from .Metrics import get_metric
 from .Feat_Importances import get_feat_importances_and_params
 from .Base_Model_Pipeline import Base_Model_Pipeline
-from ..helpers.ML_Helpers import proc_type_dep_str
 from joblib import wrap_non_picklable_objects
 from copy import deepcopy
 
@@ -36,9 +34,9 @@ class Model_Pipeline():
         # Default params
         self._set_default_params()
 
-        # Set / proc metrics
-        self.metric_strs, self.metrics, _ =\
-            self._process_metrics(deepcopy(self.ps.metric))
+        # Set / proc scorers
+        self.scorer_strs, self.scorers, _ =\
+            self._process_scorers(deepcopy(self.ps.scorer))
 
         # Set / proc feat importance info
         self.feat_importances =\
@@ -61,32 +59,27 @@ class Model_Pipeline():
         self.flags = {'linear': False,
                       'tree': False}
 
-    def _process_metrics(self, in_metrics):
+    def _process_scorers(self, in_scorers):
 
-        from .Metrics import AVALIABLE as AVALIABLE_METRICS
+        from sklearn.metrics import get_scorer
 
-        # get metric_strs as initially list
-        metric_strs = conv_to_list(in_metrics)
-        metrics = []
+        # get scorer_strs as initially list
+        scorer_strs = conv_to_list(in_scorers)
+        scorers = []
         cnt = 0
 
-        for m in range(len(metric_strs)):
+        for m in range(len(scorer_strs)):
 
-            if isinstance(metric_strs[m], str):
-                metric_strs[m] =\
-                    proc_type_dep_str(metric_strs[m], AVALIABLE_METRICS,
-                                      self.ps.problem_type)
-
-                metrics.append(get_metric(metric_strs[m]))
-
+            if isinstance(scorer_strs[m], str):
+                scorers.append(get_scorer(scorer_strs[m]))
             else:
-                metrics.append(wrap_non_picklable_objects(metric_strs[m]))
-                metric_strs[m] = 'user passed metric' + str(cnt)
+                scorers.append(wrap_non_picklable_objects(scorer_strs[m]))
+                scorer_strs[m] = 'user passed scorer' + str(cnt)
                 cnt += 1
 
-        metric = metrics[0]
+        scorer = scorers[0]
 
-        return metric_strs, metrics, metric
+        return scorer_strs, scorers, scorer
 
     def _process_feat_importances(self, feat_importances):
 
@@ -95,13 +88,13 @@ class Model_Pipeline():
 
         if feat_importances is not None:
 
-            metrics = [fi.metric for fi in feat_importances]
-            metrics = [self._get_score_metric(m, False)[0] for m in metrics]
+            scorers = [fi.scorer for fi in feat_importances]
+            scorers = [self._get_score_scorer(m, False)[0] for m in scorers]
 
             feat_importances =\
                 [get_feat_importances_and_params(fi, self.ps.problem_type,
-                                                 self.ps.n_jobs, metric)
-                    for fi, metric in zip(feat_importances, metrics)]
+                                                 self.ps.n_jobs, scorer)
+                    for fi, scorer in zip(feat_importances, scorers)]
 
             return feat_importances
         return []
@@ -134,11 +127,11 @@ class Model_Pipeline():
         array-like of array-like
             numpy array of numpy arrays,
             where each internal array contains the raw scores as computed for
-            all passed in metrics, computed for each fold within
+            all passed in scorers, computed for each fold within
             each repeat.
             e.g., array will have a length of `n_repeats` * n_splits
             (num folds) and each internal array will have the same length
-            as the number of metrics.
+            as the number of scorers.
         '''
 
         # Set train_subjects according to self.ps._final_subjects
@@ -195,12 +188,12 @@ class Model_Pipeline():
 
             # Score by fold verbosity
             if self.compute_train_score:
-                for i in range(len(self.metric_strs)):
-                    self._print('train ', self.metric_strs[i], ': ',
+                for i in range(len(self.scorer_strs)):
+                    self._print('train ', self.scorer_strs[i], ': ',
                                 train_scores[i], sep='', level='score')
 
-            for i in range(len(self.metric_strs)):
-                self._print('val ', self.metric_strs[i], ': ',
+            for i in range(len(self.scorer_strs)):
+                self._print('val ', self.scorer_strs[i], ': ',
                             scores[i], sep='', level='score')
 
             all_train_scores.append(train_scores)
@@ -345,29 +338,29 @@ class Model_Pipeline():
         if self.base_model_pipeline.is_search():
 
             # Get search metric
-            search_metric, weight_search_metric =\
-                self._get_score_metric(
-                    self.base_model_pipeline.param_search.metric,
-                    self.base_model_pipeline.param_search.weight_metric)
+            search_scorer, weight_search_scorer =\
+                self._get_score_scorer(
+                    self.base_model_pipeline.param_search.scorer,
+                    self.base_model_pipeline.param_search.weight_scorer)
 
         else:
-            search_metric, weight_search_metric = None, None
+            search_scorer, weight_search_scorer = None, None
 
         # Get wrapped final model
         return self.base_model_pipeline.get_search_wrapped_pipeline(
-            search_metric=search_metric,
-            weight_search_metric=weight_search_metric,
+            search_scorer=search_scorer,
+            weight_search_scorer=weight_search_scorer,
             random_state=self.ps.random_state)
 
-    def _get_score_metric(self, base_metric, weight_metric):
+    def _get_score_scorer(self, base_scorer, weight_scorer):
 
-        # If passed metric is default, set to class defaults
-        if base_metric == 'default':
-            base_metric = self.ps.metric
-            weight_metric = self.ps.weight_metric
+        # If passed scorer is default, set to class defaults
+        if base_scorer == 'default':
+            base_scorer = self.ps.scorer
+            weight_scorer = self.ps.weight_scorer
 
-        _, _, metric = self._process_metrics(deepcopy(base_metric))
-        return metric, weight_metric
+        _, _, scorer = self._process_scorers(deepcopy(base_scorer))
+        return scorer, weight_scorer
 
     def _get_base_fitted_pipeline(self):
 
@@ -665,10 +658,10 @@ class Model_Pipeline():
         non_nan_mask = ~np.isnan(y_test)
 
         # Get the scores
-        scores = [metric(self.Model,
+        scores = [scorer(self.Model,
                          X_test[non_nan_mask],
                          y_test[non_nan_mask])
-                  for metric in self.metrics]
+                  for scorer in self.scorers]
 
         return np.array(scores)
 

@@ -199,8 +199,8 @@ class Base_Model_Pipeline():
             return False
         return True
 
-    def get_search_wrapped_pipeline(self, search_metric=None,
-                                    weight_search_metric=None,
+    def get_search_wrapped_pipeline(self, search_scorer=None,
+                                    weight_search_scorer=None,
                                     random_state=None):
 
         # Grab the base pipeline
@@ -215,8 +215,8 @@ class Base_Model_Pipeline():
             NevergradSearchCV(params=self.param_search,
                               estimator=base_pipeline,
                               param_distributions=self.get_all_params(),
-                              scoring=search_metric,
-                              weight_metric=weight_search_metric,
+                              scoring=search_scorer,
+                              weight_scorer=weight_search_scorer,
                               random_state=random_state)
 
         return deepcopy(search_model)

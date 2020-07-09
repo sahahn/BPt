@@ -15,7 +15,7 @@ from ..helpers.ML_Helpers import get_possible_fit_params
 class NevergradSearchCV():
 
     def __init__(self, params, estimator, param_distributions,
-                 scoring=None, weight_metric=False, random_state=None):
+                 scoring=None, weight_scorer=False, random_state=None):
 
         self.params = params
         self.estimator = estimator
@@ -26,7 +26,7 @@ class NevergradSearchCV():
             self.params.CV = Base_CV()
 
         self.scoring = scoring
-        self.weight_metric = weight_metric
+        self.weight_scorer = weight_scorer
         self.random_state = random_state
 
         self.name = 'nevergrad'
@@ -61,7 +61,7 @@ class NevergradSearchCV():
             score = -self.scoring(estimator, X[test_inds], y[test_inds])
             cv_scores.append(score)
 
-        if self.weight_metric:
+        if self.weight_scorer:
             weights = [len(self.cv_inds[i][1]) for i
                        in range(len(self.cv_inds))]
             return np.average(cv_scores, weights=weights)

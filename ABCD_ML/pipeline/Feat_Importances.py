@@ -9,7 +9,7 @@ from ..helpers.ML_Helpers import get_obj_and_params
 
 class Feat_Importances():
 
-    def __init__(self, importance_info, params, n_jobs, metric):
+    def __init__(self, importance_info, params, n_jobs, scorer):
 
         self.name = importance_info['name']
         self.scopes = importance_info['scopes']
@@ -26,7 +26,7 @@ class Feat_Importances():
         self.test = False
 
         self.n_jobs = n_jobs
-        self.metric = metric
+        self.scorer = scorer
 
         self.global_df = None
         self.local_df = None
@@ -229,7 +229,7 @@ class Feat_Importances():
 
         perm_import = Perm_Feat_Importance(n_perm=self.n_perm,
                                            n_jobs=self.n_jobs)
-        feat_imps = perm_import.compute(base_model, self.metric,
+        feat_imps = perm_import.compute(base_model, self.scorer,
                                         X_test, y_test)
         return feat_imps
 
@@ -237,7 +237,7 @@ class Feat_Importances():
                                    random_state):
 
         results = permutation_importance(base_model, X_test, y_test,
-                                         scoring=self.metric,
+                                         scoring=self.scorer,
                                          n_repeats=self.n_perm,
                                          n_jobs=self.n_jobs,
                                          random_state=random_state)
@@ -571,7 +571,7 @@ IMPORTANCES = {
 }
 
 
-def get_feat_importances_and_params(params, problem_type, n_jobs, metric):
+def get_feat_importances_and_params(params, problem_type, n_jobs, scorer):
 
     # Search type should always be None
     imp_info, imp_params, _ =\
@@ -586,4 +586,4 @@ def get_feat_importances_and_params(params, problem_type, n_jobs, metric):
     FI = problem_types[problem_type]
 
     # Return the instance of the feat_importance obj
-    return FI(imp_info, params, n_jobs, metric)
+    return FI(imp_info, params, n_jobs, scorer)

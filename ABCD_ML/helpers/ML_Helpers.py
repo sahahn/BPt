@@ -89,7 +89,7 @@ def proc_input(in_vals):
 def proc_str_input(in_str):
     '''Perform common preprocs on a str.
     Speicifcally this function is is used to process user str input,
-    as referencing a model, metric, or scaler.'''
+    as referencing a model, or scaler.'''
 
     if not isinstance(in_str, str):
         return in_str
@@ -666,7 +666,7 @@ def check_for_duplicate_names(objs_and_params):
 def proc_type_dep_str(in_strs, avaliable, problem_type):
     '''Helper function to perform str correction on
     underlying proble type dependent input, e.g., for
-    metric or ensemble_types, and to update extra params
+    ensemble_types, and to update extra params
     and check to make sure input is valid ect...'''
 
     as_arr = True

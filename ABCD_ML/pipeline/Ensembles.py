@@ -370,7 +370,7 @@ try:
     from imblearn.ensemble import BalancedBaggingClassifier
 
     ENSEMBLES['balanced bagging classifier'] =\
-        (BalancedBaggingClassifier, ['default']),
+        (BalancedBaggingClassifier, ['default'])
 
 except ImportError:
     pass

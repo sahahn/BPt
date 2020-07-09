@@ -1,5 +1,8 @@
 from ABCD_ML.helpers.ML_Helpers import get_objects_by_type, get_objects
-from ABCD_ML.pipeline.Metrics import get_metrics_by_type
+from ABCD_ML.pipeline.Scorers import get_scorers_by_type
+
+from ABCD_ML.pipeline.Scorers import AVALIABLE as AVALIABLE_SCORERS
+from ABCD_ML.pipeline.Scorers import SCORERS
 
 from ABCD_ML.pipeline.Models import AVALIABLE as AVALIABLE_MODELS
 from ABCD_ML.pipeline.Models import MODELS
@@ -8,7 +11,6 @@ from ABCD_ML.pipeline.Loaders import LOADERS
 from ABCD_ML.pipeline.Transformers import TRANSFORMERS
 from ABCD_ML.pipeline.Scalers import SCALERS
 from ABCD_ML.pipeline.Imputers import IMPUTERS
-from ABCD_ML.pipeline.Samplers import SAMPLERS
 
 from ABCD_ML.pipeline.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
 from ABCD_ML.pipeline.Feature_Selectors import SELECTORS
@@ -19,7 +21,7 @@ from ABCD_ML.pipeline.Ensembles import ENSEMBLES
 from ABCD_ML.pipeline.Feat_Importances import IMPORTANCES
 
 from ABCD_ML.helpers.Default_Params import PARAMS
-from ABCD_ML.helpers.Docstring_Helpers import get_name, get_metric_name
+from ABCD_ML.helpers.Docstring_Helpers import get_name, get_scorer_name
 
 
 def main_category(lines, name):
@@ -38,22 +40,22 @@ def main_category(lines, name):
 
 
 def add_block(lines, problem_types, AVALIABLE=None, OBJS=None):
-    '''If AVALIABLE and OBJS stay none, assume that showing metrics'''
+    '''If AVALIABLE and OBJS stay none, assume that showing scorers'''
 
     for pt in problem_types:
         lines.append(pt)
         lines.append(''.join('=' for i in range(len(pt))))
 
         if AVALIABLE is None and OBJS is None:
-            objs = get_metrics_by_type(pt)
-            metric = True
+            objs = get_scorers_by_type(pt)
+            scorer = True
 
         else:
             objs = get_objects_by_type(pt, AVALIABLE, OBJS)
-            metric = False
+            scorer = False
 
         for obj in objs:
-            lines = add_obj(lines, obj, metric=metric)
+            lines = add_obj(lines, obj, scorer=scorer)
 
         lines.append('')
 
@@ -68,15 +70,15 @@ def add_no_type_block(lines, OBJS):
     objs = get_objects(OBJS)
 
     for obj in objs:
-        lines = add_obj(lines, obj, metric=False)
+        lines = add_obj(lines, obj, scorer=False)
 
     lines.append('')
     return lines
 
 
-def add_obj(lines, obj, metric=False):
+def add_obj(lines, obj, scorer=False):
     '''Obj as (obj_str, obj, obj_params),
-    or if metric = True, can have just
+    or if scorer = True, can have just
     obj_str and obj.'''
 
     obj_str = '"' + obj[0] + '"'
@@ -84,8 +86,8 @@ def add_obj(lines, obj, metric=False):
     lines.append(''.join(['*' for i in range(len(obj_str))]))
     lines.append('')
 
-    if metric:
-        o_path = get_metric_name(obj[1])
+    if scorer:
+        o_path = get_scorer_name(obj[1])
         lines.append('  Base Func Documenation: :func:`' + o_path + '`')
     else:
         o_path = get_name(obj[1])
@@ -148,21 +150,19 @@ lines.append('Additionally, a link to the original models documentation ' +
 lines.append('')
 lines = add_block(lines, problem_types, AVALIABLE_MODELS, MODELS)
 
-lines = main_category(lines, 'Metrics')
+lines = main_category(lines, 'Scorers')
 
-lines.append('Different availible choices for the `metric` parameter' +
+lines.append('Different availible choices for the `scorer` parameter' +
              ' are shown below.')
-lines.append('`metric` is accepted by ' +
+lines.append('`scorer` is accepted by ' +
              ':class:`Problem_Spec<ABCD_ML.Problem_Spec>`, :class:`Param_Search<ABCD_ML.Param_Search>`' +
              ' and :class:`Feat_Importance<ABCD_ML.Feat_Importance>`')
-lines.append('The str indicator for each `metric` is represented by' +
+lines.append('The str indicator for each `scorer` is represented by' +
              'the sub-heading (within "")')
-lines.append('The avaliable metrics are further broken down by which can' +
+lines.append('The avaliable scorers are further broken down by which can' +
              ' work with different problem_types.')
 lines.append('Additionally, a link to the original models documentation ' +
              'is shown.')
-lines.append('Note: When supplying the metric as a str indicator you do' +
-             'not need to include the prepended "multiclass"')
 lines.append('')
 
 lines = add_block(lines, problem_types)
@@ -209,14 +209,14 @@ lines.append('')
 lines = add_no_type_block(lines, TRANSFORMERS)
 
 
-lines = main_category(lines, 'Samplers')
-lines.append('Different base obj choices for the :class:`Sampler<ABCD_ML.Sampler>` are shown below')
-lines.append('The exact str indicator, as passed to the `obj` param is represented' +
-             ' by the sub-heading (within "")')
-lines.append('Additionally, a link to the original models documentation ' +
-             'as well as the implemented parameter distributions are shown.')
-lines.append('')
-lines = add_no_type_block(lines, SAMPLERS)
+# lines = main_category(lines, 'Samplers')
+# lines.append('Different base obj choices for the :class:`Sampler<ABCD_ML.Sampler>` are shown below')
+# lines.append('The exact str indicator, as passed to the `obj` param is represented' +
+#             ' by the sub-heading (within "")')
+# lines.append('Additionally, a link to the original models documentation ' +
+#             'as well as the implemented parameter distributions are shown.')
+# lines.append('')
+# lines = add_no_type_block(lines, SAMPLERS)
 
 
 lines = main_category(lines, 'Feat Selectors')

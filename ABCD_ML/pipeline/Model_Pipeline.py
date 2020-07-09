@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 
-from ..helpers.ML_Helpers import conv_to_list, type_check
+from ..helpers.ML_Helpers import conv_to_list, type_check, proc_type_dep_str
 from .Feat_Importances import get_feat_importances_and_params
 from .Base_Model_Pipeline import Base_Model_Pipeline
 from joblib import wrap_non_picklable_objects
@@ -61,7 +61,7 @@ class Model_Pipeline():
 
     def _process_scorers(self, in_scorers):
 
-        from sklearn.metrics import get_scorer
+        from .Scorers import get_scorer_from_str, AVALIABLE
 
         # get scorer_strs as initially list
         scorer_strs = conv_to_list(in_scorers)
@@ -71,14 +71,17 @@ class Model_Pipeline():
         for m in range(len(scorer_strs)):
 
             if isinstance(scorer_strs[m], str):
-                scorers.append(get_scorer(scorer_strs[m]))
+                scorer_strs[m] =\
+                    proc_type_dep_str(scorer_strs[m], AVALIABLE,
+                                      self.ps.problem_type)
+                scorers.append(get_scorer_from_str(scorer_strs[m]))
+
             else:
                 scorers.append(wrap_non_picklable_objects(scorer_strs[m]))
                 scorer_strs[m] = 'user passed scorer' + str(cnt)
                 cnt += 1
 
         scorer = scorers[0]
-
         return scorer_strs, scorers, scorer
 
     def _process_feat_importances(self, feat_importances):

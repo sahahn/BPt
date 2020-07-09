@@ -55,7 +55,17 @@ binary
 		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
 		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
 
-	2. "elastic classifier extra" ::
+	2. "elastic clf v2" ::
+
+		max_iter: 5000
+		multi_class: auto
+		penalty: elasticnet
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		solver: saga
+		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
+		C: Log{exp=14.677992676220699,Cl(0.01,100000)}:31.622776601683793
+
+	3. "elastic classifier extra" ::
 
 		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
 		multi_class: auto
@@ -65,6 +75,18 @@ binary
 		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
 		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
 		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
+
+
+"et classifier"
+***************
+
+  Base Class Documenation: :class:`sklearn.ensemble.ExtraTreesClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 "gaussian nb"
@@ -79,6 +101,18 @@ binary
 		var_smoothing: 1e-09
 
 
+"gb classifier"
+***************
+
+  Base Class Documenation: :class:`sklearn.ensemble.GradientBoostingClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 "gp classifier"
 ***************
 
@@ -89,6 +123,18 @@ binary
 	0. "base gp classifier" ::
 
 		n_restarts_optimizer: 5
+
+
+"hgb classifier"
+****************
+
+  Base Class Documenation: :class:`sklearn.ensemble.gradient_boosting.HistGradientBoostingClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 "knn classifier"
@@ -306,6 +352,18 @@ binary
 		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
 
 
+"pa classifier"
+***************
+
+  Base Class Documenation: :class:`sklearn.linear_model.PassiveAggressiveClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 "random forest classifier"
 **************************
 
@@ -379,7 +437,7 @@ binary
 		power_t: Scalar{Cl(0.1,0.9)}[sigma=Log{exp=1.2}]:0.5
 		early_stopping: TransitionChoice(choices=Tuple(False,True),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):False
 		validation_fraction: Scalar{Cl(0.05,0.5)}[sigma=Log{exp=1.2}]:0.275
-		n_iter_no_change: TransitionChoice(choices=Tuple([ 2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):[ 2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+		n_iter_no_change: TransitionChoice(choices=Tuple(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):11
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
@@ -425,8 +483,8 @@ binary
 		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
 		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
 		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
-		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
 
 	2. "xgb classifier dist2" ::
 
@@ -445,7 +503,7 @@ binary
 		objective: binary:logistic
 		learning_rare: Scalar{Cl(0.005,0.3)}[sigma=Log{exp=1.2}]:0.1525
 		min_child_weight: Scalar{Cl(0.5,10)}[sigma=Log{exp=1.2}]:5.25
-		max_depth: TransitionChoice(choices=Tuple([3 4 5 6 7 8 9]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):[3 4 5 6 7 8 9]
+		max_depth: TransitionChoice(choices=Tuple(3,4,5,6,7,8,9),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):6
 		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
 		colsample_bytree: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
 		reg_alpha: Log{exp=6.812920690579612,Cl(1e-05,1)}:0.0031622776601683794
@@ -496,6 +554,30 @@ regression
 		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
 
 
+"et regressor"
+**************
+
+  Base Class Documenation: :class:`sklearn.ensemble.ExtraTreesRegressor`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"gb regressor"
+**************
+
+  Base Class Documenation: :class:`sklearn.ensemble.GradientBoostingRegressor`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 "gp regressor"
 **************
 
@@ -507,6 +589,18 @@ regression
 
 		n_restarts_optimizer: 5
 		normalize_y: True
+
+
+"hgb regressor"
+***************
+
+  Base Class Documenation: :class:`sklearn.ensemble.gradient_boosting.HistGradientBoostingRegressor`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 "knn regressor"
@@ -779,8 +873,8 @@ regression
 		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
 		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
 		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
-		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
 
 	2. "xgb dist2" ::
 
@@ -799,7 +893,7 @@ regression
 		objective: reg:squarederror
 		learning_rare: Scalar{Cl(0.005,0.3)}[sigma=Log{exp=1.2}]:0.1525
 		min_child_weight: Scalar{Cl(0.5,10)}[sigma=Log{exp=1.2}]:5.25
-		max_depth: TransitionChoice(choices=Tuple([3 4 5 6 7 8 9]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):[3 4 5 6 7 8 9]
+		max_depth: TransitionChoice(choices=Tuple(3,4,5,6,7,8,9),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):6
 		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
 		colsample_bytree: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
 		reg_alpha: Log{exp=6.812920690579612,Cl(1e-05,1)}:0.0031622776601683794
@@ -852,7 +946,17 @@ categorical
 		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
 		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
 
-	2. "elastic classifier extra" ::
+	2. "elastic clf v2" ::
+
+		max_iter: 5000
+		multi_class: auto
+		penalty: elasticnet
+		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		solver: saga
+		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
+		C: Log{exp=14.677992676220699,Cl(0.01,100000)}:31.622776601683793
+
+	3. "elastic classifier extra" ::
 
 		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
 		multi_class: auto
@@ -862,6 +966,18 @@ categorical
 		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
 		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
 		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
+
+
+"et classifier"
+***************
+
+  Base Class Documenation: :class:`sklearn.ensemble.ExtraTreesClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 "gaussian nb"
@@ -876,6 +992,18 @@ categorical
 		var_smoothing: 1e-09
 
 
+"gb classifier"
+***************
+
+  Base Class Documenation: :class:`sklearn.ensemble.GradientBoostingClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 "gp classifier"
 ***************
 
@@ -886,6 +1014,18 @@ categorical
 	0. "base gp classifier" ::
 
 		n_restarts_optimizer: 5
+
+
+"hgb classifier"
+****************
+
+  Base Class Documenation: :class:`sklearn.ensemble.gradient_boosting.HistGradientBoostingClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
 
 
 "knn classifier"
@@ -1103,6 +1243,18 @@ categorical
 		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
 
 
+"pa classifier"
+***************
+
+  Base Class Documenation: :class:`sklearn.linear_model.PassiveAggressiveClassifier`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 "random forest classifier"
 **************************
 
@@ -1176,7 +1328,7 @@ categorical
 		power_t: Scalar{Cl(0.1,0.9)}[sigma=Log{exp=1.2}]:0.5
 		early_stopping: TransitionChoice(choices=Tuple(False,True),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):False
 		validation_fraction: Scalar{Cl(0.05,0.5)}[sigma=Log{exp=1.2}]:0.275
-		n_iter_no_change: TransitionChoice(choices=Tuple([ 2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):[ 2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+		n_iter_no_change: TransitionChoice(choices=Tuple(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):11
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
@@ -1202,19 +1354,64 @@ categorical
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
 
+"xgb classifier"
+****************
 
-.. _Metrics:
+  Base Class Documenation: :class:`xgboost.XGBClassifier`
+
+  Param Distributions
+
+	0. "base xgb classifier" ::
+
+		verbosity: 0
+		objective: binary:logistic
+
+	1. "xgb classifier dist1" ::
+
+		verbosity: 0
+		objective: binary:logistic
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
+		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
+		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
+		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+
+	2. "xgb classifier dist2" ::
+
+		verbosity: 0
+		objective: binary:logistic
+		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		learning_rate: Scalar{Cl(0.01,0.5)}[sigma=Log{exp=1.2}]:0.255
+		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:252
+		min_child_weight: TransitionChoice(choices=Tuple(1,5,10,50),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):10
+		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
+		colsample_bytree: Scalar{Cl(0.4,0.95)}[sigma=Log{exp=1.2}]:0.675
+
+	3. "xgb classifier dist3" ::
+
+		verbosity: 0
+		objective: binary:logistic
+		learning_rare: Scalar{Cl(0.005,0.3)}[sigma=Log{exp=1.2}]:0.1525
+		min_child_weight: Scalar{Cl(0.5,10)}[sigma=Log{exp=1.2}]:5.25
+		max_depth: TransitionChoice(choices=Tuple(3,4,5,6,7,8,9),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):6
+		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
+		colsample_bytree: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
+		reg_alpha: Log{exp=6.812920690579612,Cl(1e-05,1)}:0.0031622776601683794
+
+
+
+.. _Scorers:
  
 *******
-Metrics
+Scorers
 *******
 
-Different availible choices for the `metric` parameter are shown below.
-`metric` is accepted by :class:`Problem_Spec<ABCD_ML.Problem_Spec>`, :class:`Param_Search<ABCD_ML.Param_Search>` and :class:`Feat_Importance<ABCD_ML.Feat_Importance>`
-The str indicator for each `metric` is represented bythe sub-heading (within "")
-The avaliable metrics are further broken down by which can work with different problem_types.
+Different availible choices for the `scorer` parameter are shown below.
+`scorer` is accepted by :class:`Problem_Spec<ABCD_ML.Problem_Spec>`, :class:`Param_Search<ABCD_ML.Param_Search>` and :class:`Feat_Importance<ABCD_ML.Feat_Importance>`
+The str indicator for each `scorer` is represented bythe sub-heading (within "")
+The avaliable scorers are further broken down by which can work with different problem_types.
 Additionally, a link to the original models documentation is shown.
-Note: When supplying the metric as a str indicator you donot need to include the prepended "multiclass"
 
 binary
 ======
@@ -1223,53 +1420,73 @@ binary
 
   Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
 
-"balanced accuracy"
+"roc_auc"
+*********
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"roc_auc_ovr"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"roc_auc_ovo"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"roc_auc_ovr_weighted"
+**********************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"roc_auc_ovo_weighted"
+**********************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"balanced_accuracy"
 *******************
 
   Base Func Documenation: :func:`sklearn.metrics.balanced_accuracy_score`
 
-"f1"
-****
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"jaccard"
-*********
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"log"
-*****
-
-  Base Func Documenation: :func:`sklearn.metrics.log_loss`
-
-"macro average precision"
-*************************
+"average_precision"
+*******************
 
   Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
 
-"macro roc auc"
-***************
+"neg_log_loss"
+**************
 
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+  Base Func Documenation: :func:`sklearn.metrics.log_loss`
 
-"matthews"
-**********
-
-  Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
-
-"neg brier"
-***********
+"neg_brier_score"
+*****************
 
   Base Func Documenation: :func:`sklearn.metrics.brier_score_loss`
 
-"neg hamming"
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
-
 "precision"
 ***********
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"precision_macro"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"precision_micro"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"precision_samples"
+*******************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"precision_weighted"
+********************
 
   Base Func Documenation: :func:`sklearn.metrics.precision_score`
 
@@ -1278,43 +1495,138 @@ binary
 
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
 
+"recall_macro"
+**************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"recall_micro"
+**************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"recall_samples"
+****************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"recall_weighted"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"f1"
+****
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"f1_macro"
+**********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"f1_micro"
+**********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"f1_samples"
+************
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"f1_weighted"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"jaccard"
+*********
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"jaccard_macro"
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"jaccard_micro"
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"jaccard_samples"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"jaccard_weighted"
+******************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"neg_hamming"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
+
+"matthews"
+**********
+
+  Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
+
 
 regression
 ==========
-"explained variance"
+"explained_variance"
 ********************
 
   Base Func Documenation: :func:`sklearn.metrics.explained_variance_score`
-
-"neg max error"
-***************
-
-  Base Func Documenation: :func:`sklearn.metrics.max_error`
-
-"neg mean absolute error"
-*************************
-
-  Base Func Documenation: :func:`sklearn.metrics.mean_absolute_error`
-
-"neg mean squared error"
-************************
-
-  Base Func Documenation: :func:`sklearn.metrics.mean_squared_error`
-
-"neg mean squared log error"
-****************************
-
-  Base Func Documenation: :func:`sklearn.metrics.mean_squared_log_error`
-
-"neg median absolute error"
-***************************
-
-  Base Func Documenation: :func:`sklearn.metrics.median_absolute_error`
 
 "r2"
 ****
 
   Base Func Documenation: :func:`sklearn.metrics.r2_score`
+
+"max_error"
+***********
+
+  Base Func Documenation: :func:`sklearn.metrics.max_error`
+
+"neg_median_absolute_error"
+***************************
+
+  Base Func Documenation: :func:`sklearn.metrics.median_absolute_error`
+
+"neg_mean_absolute_error"
+*************************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_absolute_error`
+
+"neg_mean_squared_error"
+************************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_squared_error`
+
+"neg_mean_squared_log_error"
+****************************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_squared_log_error`
+
+"neg_root_mean_squared_error"
+*****************************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_squared_error`
+
+"neg_mean_poisson_deviance"
+***************************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_poisson_deviance`
+
+"neg_mean_gamma_deviance"
+*************************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_gamma_deviance`
 
 
 categorical
@@ -1324,155 +1636,160 @@ categorical
 
   Base Func Documenation: :func:`sklearn.metrics.accuracy_score`
 
-"balanced accuracy"
+"roc_auc"
+*********
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"roc_auc_ovr"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"roc_auc_ovo"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"roc_auc_ovr_weighted"
+**********************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"roc_auc_ovo_weighted"
+**********************
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
+"balanced_accuracy"
 *******************
 
   Base Func Documenation: :func:`sklearn.metrics.balanced_accuracy_score`
 
-"by class f1"
-*************
+"average_precision"
+*******************
 
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
 
-"by class jaccard"
-******************
+"neg_log_loss"
+**************
 
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+  Base Func Documenation: :func:`sklearn.metrics.log_loss`
 
-"by class precision"
+"neg_brier_score"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.brier_score_loss`
+
+"precision"
+***********
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"precision_macro"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"precision_micro"
+*****************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"precision_samples"
+*******************
+
+  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+
+"precision_weighted"
 ********************
 
   Base Func Documenation: :func:`sklearn.metrics.precision_score`
 
-"by class recall"
+"recall"
+********
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"recall_macro"
+**************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"recall_micro"
+**************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"recall_samples"
+****************
+
+  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+
+"recall_weighted"
 *****************
 
   Base Func Documenation: :func:`sklearn.metrics.recall_score`
 
-"log"
-*****
+"f1"
+****
 
-  Base Func Documenation: :func:`sklearn.metrics.log_loss`
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
 
-"macro f1"
+"f1_macro"
 **********
 
   Base Func Documenation: :func:`sklearn.metrics.f1_score`
 
-"macro jaccard"
+"f1_micro"
+**********
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"f1_samples"
+************
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"f1_weighted"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.f1_score`
+
+"jaccard"
+*********
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"jaccard_macro"
 ***************
 
   Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
 
-"macro precision"
+"jaccard_micro"
+***************
+
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"jaccard_samples"
 *****************
 
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
 
-"macro recall"
-**************
+"jaccard_weighted"
+******************
 
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
+  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
+
+"neg_hamming"
+*************
+
+  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
 
 "matthews"
 **********
 
   Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
-
-"micro f1"
-**********
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"micro jaccard"
-***************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"micro precision"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"micro recall"
-**************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
-
-"multiclass by class average precision"
-***************************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"multiclass by class roc auc"
-*****************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"multiclass macro average precision"
-************************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"multiclass macro roc auc"
-**************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"multiclass micro average precision"
-************************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"multiclass micro roc auc"
-**************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"multiclass samples average precision"
-**************************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"multiclass samples roc auc"
-****************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"multiclass weighted average precision"
-***************************************
-
-  Base Func Documenation: :func:`sklearn.metrics.average_precision_score`
-
-"multiclass weighted roc auc"
-*****************************
-
-  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
-
-"neg hamming"
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.hamming_loss`
-
-"weighted f1"
-*************
-
-  Base Func Documenation: :func:`sklearn.metrics.f1_score`
-
-"weighted jaccard"
-******************
-
-  Base Func Documenation: :func:`sklearn.metrics.jaccard_score`
-
-"weighted precision"
-********************
-
-  Base Func Documenation: :func:`sklearn.metrics.precision_score`
-
-"weighted recall"
-*****************
-
-  Base Func Documenation: :func:`sklearn.metrics.recall_score`
 
 
 .. _Loaders:
@@ -1607,6 +1924,7 @@ All Problem Types
 	0. "iterative imp" ::
 
 		initial_strategy: mean
+		skip_complete: True
 
 
 
@@ -2048,252 +2366,6 @@ All Problem Types
 
 
 
-.. _Samplers:
- 
-********
-Samplers
-********
-
-Different base obj choices for the :class:`Sampler<ABCD_ML.Sampler>` are shown below
-The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
-Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
-
-All Problem Types
-=================
-"random over sampler"
-*********************
-
-  Base Class Documenation: :class:`imblearn.over_sampling.RandomOverSampler`
-
-  Param Distributions
-
-	0. "base no change sampler" ::
-
-		sampler_type: no change
-
-
-"smote"
-*******
-
-  Base Class Documenation: :class:`imblearn.over_sampling.SMOTE`
-
-  Param Distributions
-
-	0. "base change sampler" ::
-
-		sampler_type: change
-
-
-"adasyn"
-********
-
-  Base Class Documenation: :class:`imblearn.over_sampling.ADASYN`
-
-  Param Distributions
-
-	0. "base change sampler" ::
-
-		sampler_type: change
-
-
-"borderline smote"
-******************
-
-  Base Class Documenation: :class:`imblearn.over_sampling.BorderlineSMOTE`
-
-  Param Distributions
-
-	0. "base change sampler" ::
-
-		sampler_type: change
-
-
-"svm smote"
-***********
-
-  Base Class Documenation: :class:`imblearn.over_sampling.SVMSMOTE`
-
-  Param Distributions
-
-	0. "base change sampler" ::
-
-		sampler_type: change
-
-
-"kmeans smote"
-**************
-
-  Base Class Documenation: :class:`imblearn.over_sampling.KMeansSMOTE`
-
-  Param Distributions
-
-	0. "base change sampler" ::
-
-		sampler_type: change
-
-
-"smote nc"
-**********
-
-  Base Class Documenation: :class:`imblearn.over_sampling.SMOTENC`
-
-  Param Distributions
-
-	0. "base special sampler" ::
-
-		sampler_type: special
-
-
-"cluster centroids"
-*******************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.ClusterCentroids`
-
-  Param Distributions
-
-	0. "base change sampler" ::
-
-		sampler_type: change
-
-
-"random under sampler"
-**********************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.RandomUnderSampler`
-
-  Param Distributions
-
-	0. "base no change sampler" ::
-
-		sampler_type: no change
-
-	1. "rus binary ratio" ::
-
-		sampler_type: no change
-		sampling_strategy: Scalar{Cl(0.1,1.2)}[sigma=Log{exp=1.2}]:0.8
-
-
-"near miss"
-***********
-
-  Base Class Documenation: :class:`imblearn.under_sampling.NearMiss`
-
-  Param Distributions
-
-	0. "base no change sampler" ::
-
-		sampler_type: no change
-
-
-"tomek links"
-*************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.TomekLinks`
-
-  Param Distributions
-
-	0. "base no change sampler" ::
-
-		sampler_type: no change
-
-
-"enn"
-*****
-
-  Base Class Documenation: :class:`imblearn.under_sampling.EditedNearestNeighbours`
-
-  Param Distributions
-
-	0. "base no change sampler" ::
-
-		sampler_type: no change
-
-
-"renn"
-******
-
-  Base Class Documenation: :class:`imblearn.under_sampling.RepeatedEditedNearestNeighbours`
-
-  Param Distributions
-
-	0. "base no change sampler" ::
-
-		sampler_type: no change
-
-
-"all knn"
-*********
-
-  Base Class Documenation: :class:`imblearn.under_sampling.AllKNN`
-
-  Param Distributions
-
-	0. "base no change sampler" ::
-
-		sampler_type: no change
-
-
-"condensed nn"
-**************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.CondensedNearestNeighbour`
-
-  Param Distributions
-
-	0. "base no change sampler" ::
-
-		sampler_type: no change
-
-
-"one sided selection"
-*********************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.OneSidedSelection`
-
-  Param Distributions
-
-	0. "base no change sampler" ::
-
-		sampler_type: no change
-
-
-"neighbourhood cleaning rule"
-*****************************
-
-  Base Class Documenation: :class:`imblearn.under_sampling.NeighbourhoodCleaningRule`
-
-  Param Distributions
-
-	0. "base no change sampler" ::
-
-		sampler_type: no change
-
-
-"smote enn"
-***********
-
-  Base Class Documenation: :class:`imblearn.combine.SMOTEENN`
-
-  Param Distributions
-
-	0. "base change sampler" ::
-
-		sampler_type: change
-
-
-"smote tomek"
-*************
-
-  Base Class Documenation: :class:`imblearn.combine.SMOTETomek`
-
-  Param Distributions
-
-	0. "base change sampler" ::
-
-		sampler_type: change
-
-
-
 .. _Feat Selectors:
  
 **************
@@ -2348,12 +2420,12 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7fc27ed944d0>
+		score_func: <function f_classif at 0x7f2dcb147b90>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7fc27ed944d0>
+		score_func: <function f_classif at 0x7f2dcb147b90>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2413,12 +2485,12 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7fc27ed947a0>
+		score_func: <function f_regression at 0x7f2dcb147f80>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7fc27ed947a0>
+		score_func: <function f_regression at 0x7f2dcb147f80>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2478,12 +2550,12 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7fc27ed944d0>
+		score_func: <function f_classif at 0x7f2dcb147b90>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7fc27ed944d0>
+		score_func: <function f_classif at 0x7f2dcb147b90>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 

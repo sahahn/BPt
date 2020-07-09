@@ -37,9 +37,11 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
         ----------
         mask : {'sets as random features', 'sets as hyperparameters'}
             - 'sets as random features': Use random features.
-            - 'sets as hyperparameters': Each feature is set as a
-            hyperparameter, such that the parameter search can
+
+            - 'sets as hyperparameters': Each feature is set as a \
+            hyperparameter, such that the parameter search can \
             tune if each feature is included or not.
+
 
         '''
 

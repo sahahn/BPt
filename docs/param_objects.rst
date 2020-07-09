@@ -27,10 +27,6 @@ Transformer
 **************
 .. autoclass:: Transformer
 
-Sampler
-********
-.. autoclass:: Sampler
-
 Feat_Selector
 **************
 .. autoclass:: Feat_Selector

@@ -100,3 +100,11 @@ def get_name(obj):
 
     return name
 
+
+def get_scorer_name(obj):
+
+    name = obj.__name__
+    name = name.replace('_wrapper', '')
+    name = 'sklearn.metrics.' + name
+
+    return name

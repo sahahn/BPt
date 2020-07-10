@@ -97,8 +97,14 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         # Get new names
         if len(self.wrapper_inds) == 1:
-            base_name = feat_names[self.wrapper_inds[0]]
-        new_names = self._get_new_df_names(base_name)
+            alt_name = feat_names[self.wrapper_inds[0]]
+        else:
+            alt_name = base_name
+
+        try:
+            new_names = self._get_new_df_names(alt_name)
+        except IndexError:
+            new_names = self._get_new_df_names(base_name)
 
         # Remove old names
         df, feat_names = self._remove_old_df_names(df, feat_names)

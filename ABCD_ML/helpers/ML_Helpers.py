@@ -94,7 +94,6 @@ def proc_str_input(in_str):
     if not isinstance(in_str, str):
         return in_str
 
-    in_str = in_str.replace('_', ' ')
     in_str = in_str.lower()
     in_str = in_str.rstrip()
 
@@ -118,9 +117,9 @@ def proc_str_input(in_str):
                             ' logistic': '',
                             }
 
-    for chunk in endwith_replace_dict:
-        if in_str.endswith(chunk):
-            in_str = in_str.replace(chunk, endwith_replace_dict[chunk])
+    # for chunk in endwith_replace_dict:
+    #    if in_str.endswith(chunk):
+    #        in_str = in_str.replace(chunk, endwith_replace_dict[chunk])
 
     startwith_replace_dict = {'rf ': 'random forest ',
                               'lgbm ': 'light gbm ',

@@ -14,10 +14,12 @@ import warnings
 
 class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
-    def __init__(self, wrapper_transformer, wrapper_inds, **params):
+    def __init__(self, wrapper_transformer, wrapper_inds,
+                 cache_loc=None, **params):
 
         self.wrapper_transformer = wrapper_transformer
         self.wrapper_inds = wrapper_inds
+        self.cache_loc = cache_loc
 
         # Set any remaining params to wrapper transformer
         self.wrapper_transformer.set_params(**params)

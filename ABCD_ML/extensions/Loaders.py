@@ -1,6 +1,7 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 import numpy as np
 import warnings
+import networkx as nx
 
 
 class Identity(BaseEstimator, TransformerMixin):
@@ -13,11 +14,11 @@ class Identity(BaseEstimator, TransformerMixin):
         pass
 
     def fit_transform(self, X, y=None):
-        
+
         return self.transform(X)
 
     def transform(self, X):
-        
+
         return X.flatten()
 
 
@@ -145,13 +146,13 @@ class SurfLabels(BaseEstimator, TransformerMixin):
 
             (default = True)
         '''
-        
+
         self.labels = labels
         self.background_label = background_label
         self.mask = mask
         self.strategy = strategy
         self.vectorize = vectorize
-        
+
         self.strats = {'mean': np.mean,
                        'median': np.median,
                        'sum': np.sum,
@@ -163,15 +164,15 @@ class SurfLabels(BaseEstimator, TransformerMixin):
                        'std': np.std,
                        'variance': np.var,
                        'var': np.var}
-        
+
     def fit(self, X, y=None):
-        
+
         # Load mask if any
         self.mask_ = load_surf(self.mask)
-        
+
         # Load labels
         self.labels_ = load_surf(self.labels)
-        
+
         # Mask labels if mask
         if self.mask_ is not None:
             self.mask_ = self.mask_.astype(bool)
@@ -194,17 +195,15 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         # If None...
         elif self.background_label is None:
             self._background_label = np.array([])
-        
+
         # Otherwise, if already list-like, just cast to np array
         else:
             self._background_label = np.array(self.background_label)
-        
-        
-            
+
         # Set the _non_bkg_unique as the valid labels to get ROIs for
         self._non_bkg_unique = np.setdiff1d(np.unique(self.labels_),
                                             self._background_label)
-            
+
         # Proc strategy if need be
         if self.strategy in self.strats:
             self.strategy = self.strats[self.strategy]
@@ -300,3 +299,113 @@ try:
 
 except ImportError:
     pass
+
+
+class Networks(BaseEstimator, TransformerMixin):
+    def __init__(self, threshold=.2, threshold_method='abs',
+                 to_compute='avg_degree'):
+
+        self.threshold = threshold
+        self.threshold_method = threshold_method
+        self.to_compute = to_compute
+
+    def fit(self, X, y=None):
+        '''X is a 2d correlation matrix'''
+
+        if isinstance(self.to_compute, str):
+            self.to_compute = [self.to_compute]
+
+        try:
+            import networkx
+        except ImportError:
+            raise ImportError(
+                'To use this class, make sure you have networkx installed!')
+        return self
+
+    def fit_transform(self, X, y=None):
+        return self.fit(X, y).transform(X)
+
+    def _apply_threshold(self, X):
+
+        if self.threshold_method == 'abs':
+            return np.where(np.abs(X) >= self.threshold, 1, 0)
+        elif self.threshold_method == 'pos':
+            return np.where(X[0] >= self.threshold, 1, 0)
+        elif self.threshold_method == 'neg':
+            return np.where(X[0] <= self.threshold, 1, 0)
+        elif self.threshold_method == 'density':
+            top_n = round((len(np.triu(X).flatten())-len(X))/2*self.threshold)
+            thres = sorted(np.triu(X).flatten(), reverse=True)[top_n]
+            return np.where(X >= thres, 1, 0)
+
+    def _threshold_check(self, X):
+
+        while np.sum(self._apply_threshold(X)) == 0:
+            print('warning setting threshold lower', self.threshold)
+            self.threshold -= .01
+
+    def transform(self, X):
+
+        # Squeeze X
+        X = np.squeeze(X)
+
+        # Make sure the specified threshold doesn't break everything
+        self._threshold_check(X)
+
+        # Apply threshold
+        X = self._apply_threshold(X)
+        G = nx.from_numpy_matrix(X)
+
+        func_dict = {'avg_cluster': nx.average_clustering,
+                     'assortativity': nx.degree_assortativity_coefficient,
+                     'global_eff': nx.global_efficiency,
+                     'local_eff': nx.local_efficiency,
+                     'transitivity': nx.transitivity,
+                     'avg_eigenvector_centrality': self._avg_eigenvector_centrality,
+                     'avg_closeness_centrality': self._avg_closeness_centrality,
+                     'avg_degree': self._avg_degree,
+                     'avg_triangles': self._avg_triangles,
+                     'avg_pagerank': self._avg_pagerank,
+                     'avg_betweenness_centrality': self._avg_betweenness_centrality,
+                     'avg_information_centrality': self._avg_information_centrality,
+                     'avg_shortest_path_length': nx.average_shortest_path_length
+                     }
+
+        X_trans = []
+        for compute in self.to_compute:
+            X_trans += [func_dict[compute](G)]
+        return np.array(X_trans)
+
+    # Local
+
+    def _avg_degree(self, G):
+        avg_degree = np.mean([i[1] for i in nx.degree(G)])
+        return avg_degree
+
+    def _avg_triangles(self, G):
+        avg_triangles = np.mean([nx.triangles(G)[i] for i in nx.triangles(G)])
+        return avg_triangles
+
+    def _avg_eigenvector_centrality(self, G):
+        avg_eigenvector_centrality = np.mean([nx.eigenvector_centrality_numpy(G)[
+                                             i] for i in nx.eigenvector_centrality_numpy(G)])
+        return avg_eigenvector_centrality
+
+    def _avg_closeness_centrality(self, G):
+        avg_closeness_centrality = np.mean(
+            [nx.closeness_centrality(G)[i] for i in nx.closeness_centrality(G)])
+        return avg_closeness_centrality
+
+    def _avg_betweenness_centrality(self, G):
+        avg_betweenness_centrality = np.mean(
+            [nx.betweenness_centrality(G)[i] for i in nx.betweenness_centrality(G)])
+        return avg_betweenness_centrality
+
+    def _avg_information_centrality(self, G):
+        avg_information_centrality = np.mean(
+            [nx.information_centrality(G)[i] for i in nx.information_centrality(G)])
+        return avg_information_centrality
+
+    def _avg_pagerank(self, G):
+        avg_pagerank = np.mean([nx.pagerank(G)[i] for i in nx.pagerank(G)])
+        return avg_pagerank

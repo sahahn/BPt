@@ -15,6 +15,15 @@ class Data_File():
     def load(self):
         return self._load()
 
+    def __lt__(self, other):
+        return self.loc < other.loc
+
+    def __eq__(self, other):
+        return self.loc == other.loc
+
+    def __hash__(self):
+        return hash(self.loc)
+
 
 def mp_load(files, reduce_funcs):
 

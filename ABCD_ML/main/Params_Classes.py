@@ -108,7 +108,7 @@ class Check():
         params = getattr(self, 'params')
 
         if is_pipe(obj):
-            
+
             if not isinstance(params, list):
 
                 if params == 0:
@@ -164,7 +164,8 @@ class Piece(Params, Check):
 
 class Loader(Piece):
 
-    def __init__(self, obj, params=0, scope='data files', extra_params=None):
+    def __init__(self, obj, params=0, scope='data files',
+                 cache_loc=None, extra_params=None):
         ''' Loader refers to transformations which operate on loaded Data_Files.
         (See :func:`Load_Data_Files`).
         They in essence take in saved file locations, and after some series
@@ -227,6 +228,9 @@ class Loader(Piece):
 
                 default = 'data files'
 
+        cache_loc : str, Path or None, optional
+            Optional location in which to cache loader transformations.
+
         extra_params : :ref`extra params dict<Extra Params>`, optional
 
             See :ref:`Extra Params`
@@ -239,6 +243,7 @@ class Loader(Piece):
         self.obj = obj
         self.params = params
         self.scope = scope
+        self.cache_loc = cache_loc
         self.extra_params = extra_params
 
         self.check_args()

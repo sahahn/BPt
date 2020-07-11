@@ -5,16 +5,23 @@ from .Transformers import Transformer_Wrapper
 from ..extensions.Loaders import Identity, SurfLabels
 from joblib import Parallel, delayed
 import warnings
+from sklearn.utils.validation import check_memory
+from sklearn.base import clone
 
 
-def get_trans_chunk(transformer, data_files):
+def load_and_trans(transformer, load_func, loc):
+
+    data = load_func(loc)
+    trans_data = np.squeeze(transformer.fit_transform(data))
+    return trans_data
+
+
+def get_trans_chunk(transformer, data_files, func, load_func):
 
     X_trans_chunk = []
-
     for data_file in data_files:
-
-        data = data_file.load()
-        trans_data = np.squeeze(transformer.transform(data))
+        loc = data_file.loc
+        trans_data = func(transformer, load_func, loc)
         X_trans_chunk.append(trans_data)
 
     return X_trans_chunk
@@ -24,10 +31,12 @@ class Loader_Wrapper(Transformer_Wrapper):
 
     def __init__(self, wrapper_transformer,
                  wrapper_inds, file_mapping,
-                 wrapper_n_jobs=1, **params):
+                 wrapper_n_jobs=1, cache_loc=None,
+                 **params):
 
-        super().__init__(wrapper_transformer,
-                         wrapper_inds, **params)
+        super().__init__(wrapper_transformer=wrapper_transformer,
+                         wrapper_inds=wrapper_inds, cache_loc=cache_loc,
+                         **params)
 
         self.file_mapping = file_mapping
         self.wrapper_n_jobs = wrapper_n_jobs
@@ -37,6 +46,8 @@ class Loader_Wrapper(Transformer_Wrapper):
         fit_fm_key = X[0, self.wrapper_inds[0]]
         fit_data = self.file_mapping[int(fit_fm_key)].load()
 
+        # Save load func
+        self.load_func = self.file_mapping[int(fit_fm_key)].load_func
         self.wrapper_transformer.fit(fit_data, y)
 
         return self
@@ -90,18 +101,29 @@ class Loader_Wrapper(Transformer_Wrapper):
     def _get_trans_col(self, fm_keys):
 
         data_files = [self.file_mapping[int(fm_key)] for fm_key in fm_keys]
+        cloned_transformer = clone(self.wrapper_transformer)
+
+        # Check caching for right function
+        if self.cache_loc is not None:
+            memory = check_memory(self.cache_loc)
+            load_and_trans_c = memory.cache(load_and_trans)
+        else:
+            load_and_trans_c = load_and_trans
 
         if self.wrapper_n_jobs == 1:
-            X_trans_cols = get_trans_chunk(self.wrapper_transformer,
-                                           data_files)
-
+            X_trans_cols = get_trans_chunk(cloned_transformer,
+                                           data_files, load_and_trans_c,
+                                           self.load_func)
         else:
             chunks = self.get_chunks(data_files)
 
             X_trans_chunks =\
                 Parallel(n_jobs=self.wrapper_n_jobs)(
                     delayed(get_trans_chunk)(
-                        transformer=self.wrapper_transformer, data_files=chunk)
+                        transformer=cloned_transformer,
+                        data_files=chunk,
+                        func=load_and_trans_c,
+                        load_func=self.load_func)
                     for chunk in chunks)
 
             X_trans_cols = []

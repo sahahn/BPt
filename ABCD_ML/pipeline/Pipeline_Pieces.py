@@ -456,8 +456,9 @@ class Loaders(Pieces):
 
         from .Loaders import Loader_Wrapper
 
-        # Extract scopes
+        # Extract scopes + cache loc
         passed_loader_scopes = [p.scope for p in params]
+        passed_cache_locs = [p.cache_loc for p in params]
 
         # Process according to passed tuples or not
         passed_loaders, passed_loader_params =\
@@ -466,7 +467,8 @@ class Loaders(Pieces):
         # The base objects have been created, but they need to be wrapped
         # in the loader wrapper.
         params = {'file_mapping': self.Data_Scopes.file_mapping,
-                  'wrapper_n_jobs': self.spec['n_jobs']}
+                  'wrapper_n_jobs': self.spec['n_jobs'],
+                  'cache_locs': passed_cache_locs}
 
         passed_loaders =\
             self._wrap_pipeline_objs(Loader_Wrapper,

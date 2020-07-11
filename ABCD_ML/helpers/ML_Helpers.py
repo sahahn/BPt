@@ -597,8 +597,15 @@ def wrap_pipeline_objs(wrapper, objs, inds, random_state,
         if params['wrapper_n_jobs'] != 1:
             n_jobs = 1
 
+    # If passed cache locs
+    if 'cache_locs' in params:
+        cache_locs = params.pop('cache_locs')
+    else:
+        cache_locs = [None for i in range(len(objs))]
+
     wrapped_objs = []
-    for chunk, ind in zip(objs, inds):
+    for chunk, ind, cache_loc in zip(objs, inds,
+                                     cache_locs):
 
         name, obj = chunk
 
@@ -613,7 +620,7 @@ def wrap_pipeline_objs(wrapper, objs, inds, random_state,
         except AttributeError:
             pass
 
-        wrapped_obj = wrapper(obj, ind, **params)
+        wrapped_obj = wrapper(obj, ind, cache_loc=cache_loc, **params)
         wrapped_objs.append((name, wrapped_obj))
 
     return wrapped_objs

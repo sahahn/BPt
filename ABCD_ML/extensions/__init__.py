@@ -8,6 +8,12 @@ except ImportError:
     class Connectivity():
         pass
 
+try:
+    from .Loaders import Networks
+except ImportError:
+    class Networks():
+        pass
+
 from .MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
 from .RandomParcels import RandomParcels
 from .Scalers import Winsorizer
@@ -16,5 +22,4 @@ __all__ = ['ColDropStrat', 'InPlaceColTransformer', 'RFE_Wrapper',
            'FeatureSelector',
            'Identity', 'SurfLabels', 'Connectivity', 'MLPRegressor_Wrapper',
            'MLPClassifier_Wrapper',
-           'RandomParcels', 'Winsorizer']
-
+           'RandomParcels', 'Winsorizer', 'Networks']

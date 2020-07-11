@@ -1,4 +1,4 @@
-from imblearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline
 import numpy as np
 from ..helpers.VARS import ORDERED_NAMES
 

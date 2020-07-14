@@ -233,11 +233,14 @@ def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
 
     # Process rest of params by search type, and w.r.t to extra params
     non_search_params, params =\
-        process_params_by_type(obj, obj_str, base_params, extra_params, search_type)
+        process_params_by_type(obj, obj_str, base_params,
+                               extra_params, search_type)
 
     return obj, non_search_params, params
 
-def process_params_by_type(obj, obj_str, base_params, extra_params, search_type):
+
+def process_params_by_type(obj, obj_str, base_params,
+                           extra_params, search_type):
 
     # Special case if search type None
     if search_type is None:
@@ -265,7 +268,8 @@ def process_params_by_type(obj, obj_str, base_params, extra_params, search_type)
 
         # process extra params
         non_search_params, _ =\
-            proc_extra_params(obj, extra_params, non_search_params, params=None)
+            proc_extra_params(obj, extra_params, non_search_params,
+                              params=None)
 
         return non_search_params, {}
 
@@ -274,7 +278,7 @@ def process_params_by_type(obj, obj_str, base_params, extra_params, search_type)
 
     # process extra params
     non_search_params, params =\
-            proc_extra_params(obj, extra_params, {}, params=params)
+        proc_extra_params(obj, extra_params, {}, params=params)
 
     return non_search_params, params
 

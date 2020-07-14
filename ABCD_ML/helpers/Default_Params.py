@@ -440,6 +440,9 @@ def get_base_params(str_indicator):
 
 def proc_params(base_params, prepend=None):
 
+    if isinstance(base_params, int):
+        return {}
+
     params = {prepend + '__' + key: base_params[key] for key in
               base_params}
 

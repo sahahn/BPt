@@ -569,7 +569,12 @@ class Model_Pipeline():
         self.Model.fit(X, y, train_data_index=train_data.index)
 
         # If a search object, show the best params
-        self._show_best_params()
+        try:
+            self._show_best_params()
+        except KeyError:
+            self._print('Error printing best params - this may be due to ',
+                        ' nested pipelines which are not yet supported',
+                        level='params')
 
     def _show_best_params(self):
 

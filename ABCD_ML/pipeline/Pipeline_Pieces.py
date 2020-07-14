@@ -445,9 +445,13 @@ class Loaders(Pieces):
             name = 'loader_pipe' + str(cnt)
             p_obj = (name, Pipeline(steps=p_objs))
 
+            # Add pipeline name to params
+            with_name =\
+                {name + '__' + key: p_obj_params[key] for key in p_obj_params}
+
             # Can update final params
             objs[ind] = p_obj
-            obj_params.update(p_obj_params)
+            obj_params.update(with_name)
             cnt += 1
 
         return objs, obj_params

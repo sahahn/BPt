@@ -269,7 +269,7 @@ class Loader_Wrapper(Transformer_Wrapper):
 
     def get_params(self, deep=False):
 
-        params = super().get_params()
+        params = super().get_params(deep=deep)
         params['file_mapping'] = self.file_mapping
         params['wrapper_n_jobs'] = self.wrapper_n_jobs
 

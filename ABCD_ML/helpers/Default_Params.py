@@ -193,8 +193,8 @@ P['xgb dist1'] =\
          'min_child_weight': "ng.p.Log(lower=1e-5, upper=1e4)",
          'subsample': "ng.p.Scalar(lower=.3, upper=.95)",
          'colsample_bytree': "ng.p.Scalar(lower=.3, upper=.95)",
-         'reg_alpha': "reg",
-         'reg_lambda': "reg"}
+         'reg_alpha': reg,
+         'reg_lambda': reg}
 
 P['xgb dist2'] =\
         {'verbosity': "0",
@@ -289,13 +289,6 @@ P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
 
 P['mlp dist es 3 layer'] = P['mlp dist es 1 layer'].copy()
 P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
-
-P['mlp dist 3 layer r'] = P['mlp dist 3 layer'].copy()
-P['mlp dist es 3 layer r'] = P['mlp dist es 3 layer'].copy()
-P['mlp dist 2 layer r'] = P['mlp dist 2 layer'].copy()
-P['mlp dist es 2 layer r'] = P['mlp dist es 2 layer'].copy()
-P['mlp dist 1 layer r'] = P['mlp dist 1 layer'].copy()
-P['mlp dist es 1 layer r'] = P['mlp dist es 1 layer'].copy()
 
 P['base linear svc'] = {'max_iter': "5000"}
 

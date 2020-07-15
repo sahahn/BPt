@@ -28,7 +28,6 @@ from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from ..helpers.ML_Helpers import get_obj_and_params
 
 
-
 AVALIABLE = {
     'binary': {
         'logistic':           'logistic',
@@ -50,7 +49,7 @@ AVALIABLE = {
         'hgb':                'hgb classifier',
         'et':                 'et classifier',
         'pa':                 'pa classifier',
-        
+   
     },
     'regression': {
         'linear':             'linear regressor',
@@ -103,17 +102,18 @@ MODELS = {
     'gaussian nb': (GaussianNB, ['base gnb']),
 
     'knn classifier': (KNeighborsClassifier, ['base knn', 'knn dist']),
-    'knn regressor': (KNeighborsRegressor, ['base knn', 'knn dist']),
+    'knn regressor': (KNeighborsRegressor, ['base knn regression',
+                                            'knn dist regression']),
 
-    'dt classifier': (DecisionTreeClassifier, ['base dt',
+    'dt classifier': (DecisionTreeClassifier, ['default',
                                                'dt classifier dist']),
-    'dt regressor':  (DecisionTreeRegressor, ['base dt', 'dt dist']),
+    'dt regressor':  (DecisionTreeRegressor, ['default', 'dt dist']),
 
     'linear regressor': (LinearRegression, ['base linear']),
 
     'random forest regressor': (RandomForestRegressor, ['base rf', 'rf dist']),
     'random forest classifier': (RandomForestClassifier,
-                                 ['base rf', 'rf classifier dist']),
+                                 ['base rf regressor', 'rf classifier dist']),
 
     'gp regressor': (GaussianProcessRegressor, ['base gp regressor']),
     'gp classifier': (GaussianProcessClassifier,  ['base gp classifier']),
@@ -121,18 +121,18 @@ MODELS = {
     'svm regressor': (SVR, ['base svm', 'svm dist']),
     'svm classifier': (SVC, ['base svm classifier', 'svm classifier dist']),
 
-    'mlp regressor': (MLPRegressor_Wrapper, ['base mlp', 'mlp dist 3 layer',
+    'mlp regressor': (MLPRegressor_Wrapper, ['default', 'mlp dist 3 layer',
                                              'mlp dist es 3 layer',
                                              'mlp dist 2 layer',
                                              'mlp dist es 2 layer',
                                              'mlp dist 1 layer',
                                              'mlp dist es 1 layer']),
-    'mlp classifier': (MLPClassifier_Wrapper, ['base mlp', 'mlp dist 3 layer',
-                                               'mlp dist es 3 layer',
-                                               'mlp dist 2 layer',
-                                               'mlp dist es 2 layer',
-                                               'mlp dist 1 layer',
-                                               'mlp dist es 1 layer']),
+    'mlp classifier': (MLPClassifier_Wrapper, ['default', 'mlp dist 3 layer r',
+                                               'mlp dist es 3 layer r',
+                                               'mlp dist 2 layer r',
+                                               'mlp dist es 2 layer r',
+                                               'mlp dist 1 layer r',
+                                               'mlp dist es 1 layer r']),
 
     'linear svm classifier': (LinearSVC, ['base linear svc',
                                           'linear svc dist']),

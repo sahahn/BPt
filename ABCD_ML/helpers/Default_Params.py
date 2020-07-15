@@ -106,6 +106,8 @@ P['base knn'] = {'n_neighbors': "5"}
 P['knn dist'] = {'weights': "ng.p.TransitionChoice(['uniform', 'distance'])",
                  'n_neighbors':
                  "ng.p.Scalar(lower=2, upper=25).set_integer_casting()"}
+P['base knn regression'] = P['base knn'].copy()
+P['knn dist regression'] = P['knn dist'].copy()
 
 P['base dt'] = {}
 P['dt dist'] = {'max_depth':
@@ -119,6 +121,7 @@ P['dt classifier dist']['class_weight'] = cls_weight
 P['base linear'] = {'fit_intercept': "True"}
 
 P['base rf'] = {'n_estimators': "100"}
+P['base rf regressor'] = P['base rf'].copy()
 
 n_estimators = "ng.p.Scalar(init=100, lower=3, upper=500).set_integer_casting()"
 depths = "ng.p.TransitionChoice([None, ng.p.Scalar(init=25, lower=2, upper=200).set_integer_casting()])"
@@ -287,6 +290,12 @@ P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
 P['mlp dist es 3 layer'] = P['mlp dist es 1 layer'].copy()
 P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
 
+P['mlp dist 3 layer r'] = P['mlp dist 3 layer'].copy()
+P['mlp dist es 3 layer r'] = P['mlp dist es 3 layer'].copy()
+P['mlp dist 2 layer r'] = P['mlp dist 2 layer'].copy()
+P['mlp dist es 2 layer r'] = P['mlp dist es 2 layer'].copy()
+P['mlp dist 1 layer r'] = P['mlp dist 1 layer'].copy()
+P['mlp dist es 1 layer r'] = P['mlp dist es 1 layer'].copy()
 
 P['base linear svc'] = {'max_iter': "5000"}
 

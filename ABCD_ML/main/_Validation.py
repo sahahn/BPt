@@ -64,28 +64,32 @@ def _get_CV(self, CV_params, show=False, show_original=True):
         stratify = [self.name_map[s] if s in self.name_map else s
                     for s in stratify]
 
-        # Check if any target keys passed
         targets = self._get_base_targets_names()
-        for target in targets:
-            if target in stratify:
-                self.all_data[target + self.strat_u_name] =\
-                    self.all_data[target].copy()
 
-        stratify = self._add_strat_u_name(stratify)
-        strat, l_e = get_unique_combo_df(self.all_data, stratify)
+        to_stratify = []
+        for s in stratify:
 
+            # Check if target - basically want to only add strat name
+            #  if not a target.
+            if s in targets:
+
+                # Add as is if target
+                to_stratify.append(s)
+
+            # Then it is a strat, so make sure to add name if not already added
+            else:
+                to_stratify.append(self._add_strat_u_name(s))
+
+        # Get the unique combo of passed to_stratify if multiple
+        strat, l_e = get_unique_combo_df(self.all_data, to_stratify)
+
+        # Generate the CV object
         cv = CV(stratify=strat, train_only=train_only)
 
+        # Optional if show
         if show:
-            self._get_info_on(cv.stratify, stratify, 'stratify', l_e,
+            self._get_info_on(cv.stratify, to_stratify, 'stratify', l_e,
                               train_only, show_original)
-
-        # Now drop any loaded targets from strat
-        for target in targets:
-            strat_target_name = target + self.strat_u_name
-
-            if strat_target_name in self.all_data:
-                self.all_data = self.all_data.drop(strat_target_name, axis=1)
 
     # If only train only
     elif len(train_only) > 0:

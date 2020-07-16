@@ -17,6 +17,7 @@ from ..pipeline.Model_Pipeline import Model_Pipeline
 
 def Set_Default_ML_Verbosity(
  self, save_results='default', progress_bar='default',
+ progress_loc='default',
  compute_train_score='default',
  show_init_params='default', fold_name='default',
  time_per_fold='default', score_per_fold='default', fold_sizes='default',
@@ -43,6 +44,13 @@ def Set_Default_ML_Verbosity(
         assuming self.notebook has been set correctly.
 
         if 'default', and not already defined, set to True.
+        (default = 'default')
+
+    progress_loc : str, Path or None, optional
+        If not None, then this will record the progress
+        of each Evaluate / Test call in this location.
+
+        if 'default', and not already defined, set to None
         (default = 'default')
 
     compute_train_score : bool, optional
@@ -121,6 +129,11 @@ def Set_Default_ML_Verbosity(
             self.default_ML_verbosity['progress_bar'] = tqdm_notebook
         else:
             self.default_ML_verbosity['progress_bar'] = tqdm
+
+    if progress_loc != 'default':
+        self.default_ML_verbosity['progress_loc'] = progress_loc
+    elif 'progress_loc' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['progress_loc'] = None
 
     if compute_train_score != 'default':
         self.default_ML_verbosity['compute_train_score'] = compute_train_score
@@ -875,7 +888,8 @@ def _init_model(self, model_pipeline, problem_specs, CV):
                        self.Data_Scopes,
                        self.default_ML_verbosity['progress_bar'],
                        self.default_ML_verbosity['compute_train_score'],
-                       self._ML_print)
+                       progress_loc=self.default_ML_verbosity['progress_loc'],
+                       _print=self._ML_print)
 
 
 def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,

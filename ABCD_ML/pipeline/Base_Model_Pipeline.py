@@ -201,7 +201,8 @@ class Base_Model_Pipeline():
 
     def get_search_wrapped_pipeline(self, search_scorer=None,
                                     weight_search_scorer=None,
-                                    random_state=None):
+                                    random_state=None,
+                                    progress_loc=None):
 
         # Grab the base pipeline
         base_pipeline = self.get_pipeline()
@@ -217,6 +218,7 @@ class Base_Model_Pipeline():
                               param_distributions=self.get_all_params(),
                               scoring=search_scorer,
                               weight_scorer=weight_search_scorer,
-                              random_state=random_state)
+                              random_state=random_state,
+                              progress_loc=progress_loc)
 
         return deepcopy(search_model)

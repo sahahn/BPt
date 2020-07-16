@@ -16,7 +16,8 @@ class Model_Pipeline():
     '''
 
     def __init__(self, pipeline_params, problem_spec, CV, Data_Scopes,
-                 progress_bar, compute_train_score, _print=print):
+                 progress_bar, compute_train_score, progress_loc=None,
+                 _print=print):
 
         # Save problem spec as sp
         self.ps = problem_spec
@@ -29,6 +30,7 @@ class Model_Pipeline():
         # Set passed values
         self.CV = CV
         self.progress_bar = progress_bar
+        self.progress_loc = progress_loc
         self._print = _print
 
         # Default params
@@ -151,12 +153,19 @@ class Model_Pipeline():
         all_train_scores, all_scores = [], []
         fold_ind = 0
 
+        # Init progress bar if any
         if self.progress_bar is not None:
             repeats_bar = self.progress_bar(total=n_repeats,
                                             desc='Repeats')
 
             folds_bar = self.progress_bar(total=self.n_splits_,
                                           desc='Folds')
+
+        # Init progress loc if any
+        if self.progress_loc is not None:
+            with open(self.progress_loc, 'w') as f:
+                f.write(str(n_repeats) + ',' + str(self.n_splits_))
+                f.write('\n')
 
         self.n_test_per_fold = []
 
@@ -198,6 +207,11 @@ class Model_Pipeline():
             for i in range(len(self.scorer_strs)):
                 self._print('val ', self.scorer_strs[i], ': ',
                             scores[i], sep='', level='score')
+
+            # If progress loc
+            if self.progress_loc is not None:
+                with open(self.progress_loc, 'a') as f:
+                    f.write('fold\n')
 
             all_train_scores.append(train_scores)
             all_scores.append(scores)
@@ -262,6 +276,12 @@ class Model_Pipeline():
             A numpy array of scores as determined by the passed
             metric/scorer(s) on the provided testing set.
         '''
+
+        # Reset progress loc if Test
+        if fold_ind == 'test':
+            if self.progress_loc is not None:
+                with open(self.progress_loc, 'w') as f:
+                    f.write('test\n')
 
         # Ensure train and test subjects are just the requested overlap
         train_subjects = self._get_subjects_overlap(train_subjects)
@@ -353,7 +373,8 @@ class Model_Pipeline():
         return self.base_model_pipeline.get_search_wrapped_pipeline(
             search_scorer=search_scorer,
             weight_search_scorer=weight_search_scorer,
-            random_state=self.ps.random_state)
+            random_state=self.ps.random_state,
+            progress_loc=self.progress_loc)
 
     def _get_score_scorer(self, base_scorer, weight_scorer):
 

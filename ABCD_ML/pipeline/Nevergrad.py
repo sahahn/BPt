@@ -12,10 +12,22 @@ from ..helpers.CV import CV as Base_CV
 from ..helpers.ML_Helpers import get_possible_fit_params
 
 
+class ProgressLogger():
+
+    def __init__(self, loc):
+        self.loc = loc
+
+    def __call__(self, optimizer=None, candidate=None, value=None):
+
+        with open(self.loc, 'a') as f:
+            f.write('params,')
+
+
 class NevergradSearchCV():
 
     def __init__(self, params, estimator, param_distributions,
-                 scoring=None, weight_scorer=False, random_state=None):
+                 scoring=None, weight_scorer=False,
+                 random_state=None, progress_loc=None):
 
         self.params = params
         self.estimator = estimator
@@ -28,6 +40,7 @@ class NevergradSearchCV():
         self.scoring = scoring
         self.weight_scorer = weight_scorer
         self.random_state = random_state
+        self.progress_loc = progress_loc
 
         self.name = 'nevergrad'
 
@@ -99,6 +112,10 @@ class NevergradSearchCV():
 
         # with warnings.catch_warnings():
         #    warnings.simplefilter("ignore")
+
+        if self.progress_loc is not None:
+            logger = ProgressLogger(self.progress_loc)
+            optimizer.register_callback('tell', logger)
 
         if self.params._n_jobs == 1:
             recommendation = optimizer.minimize(self.ng_cv_score,

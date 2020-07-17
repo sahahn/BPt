@@ -8,6 +8,7 @@ from .Feat_Importances import get_feat_importances_and_params
 from .Base_Model_Pipeline import Base_Model_Pipeline
 from joblib import wrap_non_picklable_objects
 from copy import deepcopy
+from os.path import dirname, abspath, exists
 
 
 class Model_Pipeline():
@@ -210,6 +211,11 @@ class Model_Pipeline():
 
             # If progress loc
             if self.progress_loc is not None:
+
+                if not exists(dirname(abspath(self.loc))):
+                    raise SystemExit('Folder where progress is stored '
+                                     ' was removed!')
+
                 with open(self.progress_loc, 'a') as f:
                     f.write('fold\n')
 
@@ -280,6 +286,11 @@ class Model_Pipeline():
         # Reset progress loc if Test
         if fold_ind == 'test':
             if self.progress_loc is not None:
+
+                if not exists(dirname(abspath(self.loc))):
+                    raise SystemExit('Folder where progress is stored '
+                                     ' was removed!')
+
                 with open(self.progress_loc, 'w') as f:
                     f.write('test\n')
 

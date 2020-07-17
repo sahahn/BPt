@@ -11,6 +11,8 @@ from copy import deepcopy
 from ..helpers.CV import CV as Base_CV
 from ..helpers.ML_Helpers import get_possible_fit_params
 
+from os.path import dirname, abspath, exists
+
 
 class ProgressLogger():
 
@@ -18,6 +20,10 @@ class ProgressLogger():
         self.loc = loc
 
     def __call__(self, optimizer=None, candidate=None, value=None):
+
+        # If progress loc parent folder is removed, stop program
+        if not exists(dirname(abspath(self.loc))):
+            raise SystemExit('Folder where progress is stored was removed!')
 
         with open(self.loc, 'a') as f:
             f.write('params,')

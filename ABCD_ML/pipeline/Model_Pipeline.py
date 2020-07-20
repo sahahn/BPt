@@ -212,7 +212,7 @@ class Model_Pipeline():
             # If progress loc
             if self.progress_loc is not None:
 
-                if not exists(dirname(abspath(self.loc))):
+                if not exists(dirname(abspath(self.progress_loc))):
                     raise SystemExit('Folder where progress is stored '
                                      ' was removed!')
 
@@ -286,8 +286,7 @@ class Model_Pipeline():
         # Reset progress loc if Test
         if fold_ind == 'test':
             if self.progress_loc is not None:
-
-                if not exists(dirname(abspath(self.loc))):
+                if not exists(dirname(abspath(self.progress_loc))):
                     raise SystemExit('Folder where progress is stored '
                                      ' was removed!')
 

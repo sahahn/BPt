@@ -13,6 +13,7 @@ from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ..helpers.ML_Helpers import (compute_macro_micro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Model_Pipeline import Model_Pipeline
+import pandas as pd
 
 
 def Set_Default_ML_Verbosity(
@@ -504,12 +505,15 @@ def Evaluate(self,
         score_type_list = ['Validation']
 
     results = {}
+    summary_dfs = {}
+
     for scrs, name in zip(score_list, score_type_list):
 
         summary_scores = self._handle_scores(scrs, name,
                                              problem_spec.weight_scorer,
                                              n_repeats, run_name,
-                                             self.Model_Pipeline.n_splits_)
+                                             self.Model_Pipeline.n_splits_,
+                                             summary_dfs)
 
         if name == 'Validation':
             results['summary_scores'] = summary_scores
@@ -817,13 +821,13 @@ def _preproc_problem_spec(self, problem_spec):
 
     # If any input has changed, manually (i.e., not by problem_spec init)
     problem_spec._proc_checks()
-    
+
     return problem_spec
 
 
 def _get_split_vals(self, splits):
 
-    if isinstance(splits, int):
+    if isinstance(splits, int) or isinstance(splits, float):
         split_names, split_vals, sv_le = None, None, None
 
     else:
@@ -893,9 +897,11 @@ def _init_model(self, model_pipeline, problem_specs, CV):
 
 
 def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,
-                   n_splits):
+                   n_splits, summary_dfs):
 
     all_summary_scores = []
+    summary_dfs[name] = pd.DataFrame()
+
     scorer_strs = self.Model_Pipeline.scorer_strs
 
     self._print(name + ' Scores')
@@ -937,7 +943,8 @@ def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,
                 self._print('Target class: ', class_name)
                 self._print_summary_score(name, summary_scores,
                                           n_repeats, run_name,
-                                          scorer_name, class_name, weights=weights)
+                                          scorer_name, class_name,
+                                          weights=weights)
 
             all_summary_scores.append(summary_scores_by_class)
 

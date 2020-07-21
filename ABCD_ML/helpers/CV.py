@@ -13,6 +13,7 @@ def inds_from_names(original_subjects, subject_splits):
                     for s in split] for split in subject_splits]
     return subject_inds
 
+
 class CV():
     '''Class for performing various cross validation functions'''
 
@@ -351,14 +352,16 @@ class CV():
     def get_cv(self, train_data_index, splits, n_repeats,
                splits_vals=None, random_state=None, return_index=False):
         '''Always return as list of tuples'''
-               
+
         if return_index == 'both':
             no_index = self.get_cv(train_data_index, splits, n_repeats,
-                                   splits_vals=splits_vals, random_state=random_state,
+                                   splits_vals=splits_vals,
+                                   random_state=random_state,
                                    return_index=False)
 
             index = self.get_cv(train_data_index, splits, n_repeats,
-                                splits_vals=splits_vals, random_state=random_state,
+                                splits_vals=splits_vals,
+                                random_state=random_state,
                                 return_index=True)
 
             return no_index, index
@@ -374,12 +377,15 @@ class CV():
         # K-fold is splits is an int
         elif isinstance(splits, int):
 
-            return self.repeated_k_fold(train_data_index, n_repeats, n_splits=splits,
-                                        random_state=random_state, return_index=return_index)
+            return self.repeated_k_fold(train_data_index, n_repeats,
+                                        n_splits=splits,
+                                        random_state=random_state,
+                                        return_index=return_index)
 
         # Otherwise, as train test splits
         else:
 
-            return self.repeated_train_test_split(train_data_index, n_repeats, test_size=splits,
-                                                  random_state=random_state, return_index=return_index)
-
+            return self.repeated_train_test_split(train_data_index, n_repeats,
+                                                  test_size=splits,
+                                                  random_state=random_state,
+                                                  return_index=return_index)

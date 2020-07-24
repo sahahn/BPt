@@ -136,7 +136,7 @@ class ABCD_Pipeline(Pipeline):
             X_train = drop.transform(X_train)
         fs_ind = ORDERED_NAMES.index('feat_selectors')
         for feat_selector in fitted_objs[fs_ind]:
-            X_train = feat_selector.transform(X_train)
+            X_train = feat_selector.transform(np.array(X_train))
 
         return X_train
 

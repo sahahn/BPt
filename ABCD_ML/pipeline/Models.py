@@ -21,8 +21,10 @@ from sklearn.ensemble import (GradientBoostingClassifier,
                               HistGradientBoostingClassifier)
 from sklearn.linear_model import (LogisticRegression, ElasticNet,
                                   LinearRegression, HuberRegressor,
-                                  Lasso, Ridge, SGDClassifier, 
-                                  PassiveAggressiveClassifier)
+                                  Lasso, Ridge, SGDClassifier,
+                                  PassiveAggressiveClassifier,
+                                  BayesianRidge, ARDRegression,
+                                  TweedieRegressor)
 
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
 from ..helpers.ML_Helpers import get_obj_and_params
@@ -49,7 +51,7 @@ AVALIABLE = {
         'hgb':                'hgb classifier',
         'et':                 'et classifier',
         'pa':                 'pa classifier',
-   
+
     },
     'regression': {
         'linear':             'linear regressor',
@@ -67,6 +69,9 @@ AVALIABLE = {
         'gb':                 'gb regressor',
         'hgb':                'hgb regressor',
         'et':                 'et regressor',
+        'bayesian ridge':     'bayesian ridge regressor',
+        'ard':                'ard regressor',
+        'tweedie':            'tweedie regressor',
     },
 }
 
@@ -151,6 +156,12 @@ MODELS = {
     'et regressor': (ExtraTreesRegressor, ['default']),
 
     'pa classifier': (PassiveAggressiveClassifier, ['default']),
+
+    'bayesian ridge regressor': (BayesianRidge, ['default']),
+    
+    'ard regressor': (ARDRegression, ['default']),
+
+    'tweedie regressor': (TweedieRegressor, ['default']),
 }
 
 try:

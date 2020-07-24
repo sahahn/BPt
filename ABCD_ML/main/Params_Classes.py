@@ -118,7 +118,7 @@ class Check():
                     raise IOError('obj is passed as Pipe, but params was not. Make sure',
                                   'params is either a list or Pipe with the same length as',
                                   'self.obj')
-  
+
             elif len(params) != len(obj):
 
                 if params == [0]:
@@ -126,8 +126,8 @@ class Check():
                     setattr(self, 'params', new_params)
                 else:
                     raise IOError('obj is passed as Pipe, Make sure',
-                                'params is either a list or Pipe with the same length as',
-                                'self.obj')
+                                  'params is either a list or Pipe with the same length as',
+                                  'self.obj')
 
     def _check_scope(self):
 
@@ -150,6 +150,10 @@ class Check():
 
         # None is okay
         if base_model is None:
+            return
+
+        # Assume select is okay too
+        if is_select(base_model):
             return
 
         if not hasattr(base_model, '_is_model'):
@@ -750,11 +754,13 @@ class Ensemble(Piece):
         if isinstance(self.models, list):
             for model in self.models:
                 if not hasattr(model, '_is_model'):
-                    raise IOError('All models must be valid Model/Ensemble param wrapped!')
+                    raise IOError(
+                        'All models must be valid Model/Ensemble param wrapped!')
 
         else:
             if not hasattr(self.models, '_is_model'):
-                raise IOError('Passed model in models must be a valid Model/Ensemble, i.e., param wrapped.')
+                raise IOError(
+                    'Passed model in models must be a valid Model/Ensemble, i.e., param wrapped.')
 
 
 class Param_Search(Params):
@@ -927,7 +933,7 @@ class Param_Search(Params):
                 default = 'default'
 
         '''
-        
+
         self.search_type = search_type
         self.splits = splits
         self.n_repeats = 1
@@ -954,7 +960,8 @@ class Param_Search(Params):
         if isinstance(self.scorer, list):
             raise IOError('scorer within Param Search cannot be list-like')
         if isinstance(self.weight_scorer, list):
-            raise IOError('weight_scorer within Param Search cannot be list-like')
+            raise IOError(
+                'weight_scorer within Param Search cannot be list-like')
 
 
 class Shap_Params(Params):
@@ -1129,7 +1136,7 @@ class Shap_Params(Params):
         self.tree_model_output = tree_model_output
         self.tree_tree_limit = tree_tree_limit
         self.kernel_nkmean = kernel_nkmean
-        self.kernel_link=kernel_link
+        self.kernel_link = kernel_link
         self.kernel_nsamples = kernel_nsamples
         self.kernel_l1_reg = kernel_l1_reg
 
@@ -1156,7 +1163,7 @@ class Feat_Importance(Params):
             If a permutation based feature importance is being used, then a scorer is
             required. By default (if left as 'default') this scorer will be the first
             scorer (if passed a list) of scorers passed to :class:`Problem_Spec`.
-          
+
             For a full list of supported scorers please view the scikit-learn docs at:
             https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
 
@@ -1251,6 +1258,7 @@ class Drop_Strat():
     def proc_input(self):
         return
 
+
 class Model_Pipeline(Params):
 
     def __init__(self, loaders=None, imputers='default',
@@ -1292,7 +1300,7 @@ class Model_Pipeline(Params):
 
                 # Just passing select
                 loaders = Select([Loader(...), Loader(...)])
-                
+
                 # Or nested
                 loaders = [Loader(...), Select([Loader(...), Loader(...)])]
 
@@ -1385,7 +1393,7 @@ class Model_Pipeline(Params):
             Note: You must have provide a model, there is no option for None. Instead
             default behavior is to use a simple linear/logistic regression, which will likely
             not be a good choice.
-            
+
             ::
 
                 default = Model('linear')
@@ -1442,7 +1450,7 @@ class Model_Pipeline(Params):
         '''
 
         self.loaders = loaders
-        
+
         if imputers == 'default':
             imputers = [Imputer('mean', scope='float'),
                         Imputer('median', scope='cat')]
@@ -1569,7 +1577,7 @@ class Model_Pipeline(Params):
 
         # Store n_jobs
         self.set_n_jobs(n_jobs)
-        
+
     def _proc_checks(self):
 
         # Check for duplicate scopes
@@ -1631,7 +1639,7 @@ class Model_Pipeline(Params):
             return
 
         elif not is_special(params):
-            
+
             _print(self.get_indent(indent), '[', sep='', end='')
             self._p_stack.append(']')
             self.params_print(params[0], None, _print=_print, end='')
@@ -1646,7 +1654,7 @@ class Model_Pipeline(Params):
         for param in params[1:-1]:
             self.params_print(param, 0, _print=_print, end='')
             _print(',', sep='')
-    
+
         self.params_print(params[-1], 0, _print=_print, end='')
         _print(self._p_stack.pop(), end=end)
 
@@ -1655,7 +1663,7 @@ class Model_Pipeline(Params):
     def print_all(self, _print=print):
 
         self._p_stack = []
-        
+
         _print('Model_Pipeline')
         _print('--------------')
 
@@ -1721,7 +1729,7 @@ class Problem_Spec(Params):
             If only one target is loaded, just leave as default of 0.
 
             ::
-            
+
                 default = 0
 
         scorer : str or list, optional
@@ -1747,7 +1755,7 @@ class Problem_Spec(Params):
             - 'categorical' : 'roc_auc_ovr'
 
             ::
-            
+
                 default = 'default'
 
         weight_scorer : bool, list of, optional
@@ -1763,7 +1771,7 @@ class Problem_Spec(Params):
             specifying if the corresponding scorer by index should be weighted or not.
 
             ::
-            
+
                 default = False
 
         scope : key str or Scope obj, optional
@@ -1863,7 +1871,7 @@ class Problem_Spec(Params):
 
     def _proc_checks(self):
         proc_all(self)
-        
+
     def set_final_subjects(self, final_subjects):
         self._final_subjects = final_subjects
 
@@ -1887,7 +1895,6 @@ class Problem_Spec(Params):
         _print('n_jobs', self.n_jobs)
         _print('random_state', self.random_state)
         _print()
-
 
 
 class CV(Params):

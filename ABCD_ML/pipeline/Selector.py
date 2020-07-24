@@ -89,7 +89,7 @@ def selector_wrapper(objs, params, name):
         p_dict = ng.p.Dict(**rel_params)
         p_dicts.append(p_dict)
 
-    select = ng.p.Choice(p_dicts)
+    select = ng.p.Choice(p_dicts, deterministic=True)
     select_params = {name + '__select': select}
 
     return selector, select_params

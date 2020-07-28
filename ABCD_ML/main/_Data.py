@@ -7,6 +7,7 @@ the ABCD_ML class.
 import pandas as pd
 import numpy as np
 
+from ..helpers.VARS import is_f2b
 from ..helpers.Data_Scopes import Data_Scopes
 from ..helpers.Data_File import Data_File
 from ..helpers.Data_Helpers import (process_binary_input,
@@ -1030,6 +1031,10 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, drop_val):
         # Encoder set to None for non_nan_targets
         self.targets_encoders[key] = None
 
+        if fop is not None and fos is not None:
+            raise RuntimeError('You may only pass one of filter outlier',
+                               ' percent or std')
+
         if fop is not None:
             non_nan_targets =\
                 filter_float_by_outlier(non_nan_targets, key,
@@ -1078,6 +1083,8 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                 categorical_drop_percent=None,
                 filter_outlier_percent=None,
                 filter_outlier_std=None,
+                float_bins=10,
+                float_bin_strategy='uniform',
                 clear_existing=False, ext=None):
     '''Load a covariate or covariates, type data.
 
@@ -1110,7 +1117,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
         (default = None)
 
-    data_type : {'b', 'c', 'm', 'f'} or None, optional
+    data_type : {'b', 'c', 'f', 'm', 'f2c'} or None, optional
         The data types of the different columns to load,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.
@@ -1125,12 +1132,16 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         - 'categorical' or 'c'
             Categorical input
 
-        - 'multilabel' or 'm'
-            Multilabel categorical input
-
         - 'float' or 'f'
             Float numerical input
 
+        - 'float_to_cat', 'f2c', 'float_to_bin' or 'f2b'
+            This specifies that the data should be loaded
+            initially as float, then descritized to be a binned
+            categorical feature.
+
+        - 'multilabel' or 'm'
+            Multilabel categorical input
 
         .. WARNING::
             If 'multilabel' datatype is specified, then the associated col name
@@ -1185,6 +1196,16 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         case, the index should correspond. If a list is not passed
         here, then the same value is used when loading all covars.
 
+        Note: percent in the name might be a bit misleading.
+        For 1%, you should pass .01, for 10%, you should pass .1.
+
+        If loading a categorical variable, this filtering will be applied
+        before ordinally encoding that variable. If instead loading a variable
+        with type 'float_to_cat' / 'float_to_bin', the outlier filtering will
+        be performed after kbin encoding
+        (as before then it is not categorical).
+        This can yield gaps in the oridinal outputted values.
+
         (default = None)
 
     filter_outlier_percent : int, float, tuple, None or list of, optional
@@ -1203,6 +1224,9 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         multiple col_names / covars are being loaded. In this
         case, the index should correspond. If a list is not passed
         here, then the same value is used when loading all covars.
+
+        Note: If loading a variable with type 'float_to_cat' / 'float_to_bin',
+        the outlier filtering will be performed before kbin encoding.
 
         (default = None)
 
@@ -1223,7 +1247,43 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         case, the index should correspond. If a list is not passed
         here, then the same value is used when loading all covars.
 
+        Note: If loading a variable with type 'float_to_cat' / 'float_to_bin',
+        the outlier filtering will be performed before kbin encoding.
+
         (default = None)
+
+    float_bins : int or list of, optional
+        If any columns are loaded as 'float_to_bin' or 'f2b' then
+        input must be discretized into bins. This param controls
+        the number of bins to create. As with other params, if one value
+        is passed, it is applied to all columns, but if different values
+        per column loaded are desired, a list of ints (with inds correponding)
+        should be pased. For columns that are not specifed as 'f2b' type,
+        anything can be passed in that list index spot as it will be igored.
+
+        (default = 10)
+
+    float_bin_strategy : {'uniform', 'quantile', 'kmeans'}, optional
+        If any columns are loaded as 'float_to_bin' or 'f2b' then
+        input must be discretized into bins. This param controls
+        the strategy used to define the bins. Options are,
+
+        - 'uniform'
+            All bins in each feature have identical widths.
+
+        - 'quantile'
+            All bins in each feature have the same number of points.
+
+        - 'kmeans'
+            Values in each bin have the same nearest center of a 1D
+            k-means cluster.
+
+        As with float_bins, if one value
+        is passed, it is applied to all columns, but if different values
+        per column loaded are desired, a list of choices
+        (with inds correponding) should be pased.
+
+        (default = 'uniform')
 
     clear_existing : bool, optional
         If this parameter is set to True, then any existing
@@ -1248,8 +1308,8 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     '''
 
     if code_categorical_as != 'depreciated':
-        print('Warning: code_categorical_as has been depreciated. ' +\
-              'Please move performing categorical encoding to within the ' +\
+        print('Warning: code_categorical_as has been depreciated. ' +
+              'Please move performing categorical encoding to within the ' +
               'Cross-validated loop via Transformers.')
 
     if clear_existing:
@@ -1271,6 +1331,8 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
     cdps = proc_args(categorical_drop_percent, data_types)
     fops = proc_args(filter_outlier_percent, data_types)
     foss = proc_args(filter_outlier_std, data_types)
+    fbs = proc_args(float_bins, data_types)
+    fbss = proc_args(float_bin_strategy, data_types)
 
     # Set the drop_val
     if load_params['drop_or_na'] == 'na':
@@ -1279,10 +1341,12 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
         drop_val = get_unused_drop_val(covars)
 
     # Load in each covar
-    for key, d_type, nac, cdp, fop, fos in zip(col_names, data_types,
-                                               nacs, cdps, fops, foss):
+    for key, d_type, nac, cdp, fop, fos, fb, fbs in zip(col_names, data_types,
+                                                        nacs, cdps, fops, foss,
+                                                        fbs, fbss):
         covars =\
-            self._proc_covar(covars, key, d_type, nac, cdp, fop, fos, drop_val)
+            self._proc_covar(covars, key, d_type, nac, cdp, fop, fos,
+                             fb, fbs, drop_val)
 
     # Have to remove rows with drop_val if drop_val not NaN
     if drop_val is not np.nan:
@@ -1296,13 +1360,25 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                                        load_params['merge'])
 
 
-def _proc_covar(self, covars, key, d_type, nac, cdp, fop, fos, drop_val):
+def _proc_covar(self, covars, key, d_type, nac, cdp,
+                fop, fos, fb, fbs, drop_val):
 
-    self._print('loading:', key)
-    d_type = d_type[0]
+    # If float to binary, recursively call this func with d_type float first
+    if is_f2b(d_type):
+
+        covars = self._proc_covar(covars, key, d_type='float',
+                                  nac=nac, cdp=None,
+                                  fop=fop,
+                                  fos=fos,
+                                  fb=None,
+                                  fbs=None,
+                                  drop_val=drop_val)
+
+    else:
+        self._print('loading:', key)
 
     # Special behavior if categorical data_type + nan_as_class
-    if nac and d_type == 'c':
+    if nac and (d_type == 'c' or d_type == 'categorical' or is_f2b(d_type)):
 
         # Set to all
         non_nan_subjects = covars.index
@@ -1311,32 +1387,27 @@ def _proc_covar(self, covars, key, d_type, nac, cdp, fop, fos, drop_val):
         # Set column to load as str - makes NaNs unique
         non_nan_covars[key] = non_nan_covars[key].astype('str')
 
-
     # Set to only the non-Nan subjects for this column
     else:
         non_nan_subjects = covars[~covars[key].isna()].index
         non_nan_covars = covars.loc[non_nan_subjects]
 
     # Binary
-    if d_type == 'b':
+    if d_type == 'b' or d_type == 'binary':
 
         non_nan_covars, self.covars_encoders[key] =\
             process_binary_input(non_nan_covars, key, drop_val=drop_val,
                                  _print=self._print)
 
-    # Categorical
-    elif d_type == 'c':
-
-        # Always encode as ordinal
-        non_nan_covars, self.covars_encoders[key] =\
-                process_ordinal_input(non_nan_covars, key, cdp,
-                                      drop_val=drop_val, _print=self._print)
-
     # Float
-    elif d_type == 'f':
+    elif d_type == 'f' or d_type == 'float':
 
         # Float type needs an encoder set to None
         self.covars_encoders[key] = None
+
+        if fop is not None and fos is not None:
+            raise RuntimeError('You may only pass one of filter outlier',
+                               ' percent or std')
 
         # If filter float outlier percent
         if fop is not None:
@@ -1350,8 +1421,26 @@ def _proc_covar(self, covars, key, d_type, nac, cdp, fop, fos, drop_val):
                                                  drop_val=drop_val,
                                                  _print=self._print)
 
+    # Categorical
+    elif d_type == 'c' or d_type == 'categorical':
+
+        # Always encode as ordinal
+        non_nan_covars, self.covars_encoders[key] =\
+                process_ordinal_input(non_nan_covars, key, drop_percent=cdp,
+                                      drop_val=drop_val, nac=nac,
+                                      _print=self._print)
+
+    # Float to Categorical case
+    elif is_f2b(d_type):
+
+        # K-bins encode
+        non_nan_covars, self.covars_encoders[key] =\
+            process_float_input(data=non_nan_covars, key=key,
+                                bins=fb, strategy=fbs, drop_percent=cdp,
+                                drop_val=drop_val, nac=nac, _print=self._print)
+
     # Multilabel
-    elif d_type == 'm':
+    elif d_type == 'm' or d_type == 'multilabel':
 
         common_name = process_multilabel_input(key)
 
@@ -1359,8 +1448,20 @@ def _proc_covar(self, covars, key, d_type, nac, cdp, fop, fos, drop_val):
         self._print('Base str indicator/name for loaded multilabel =',
                     common_name)
 
+    # Otherwise raise error
+    else:
+        raise RuntimeError('Unknown data_type: ' + d_type)
+
     # Now update the changed values within covars
     covars.loc[non_nan_subjects] = non_nan_covars
+
+    # Check for special code nan as categorical case
+    if nac and hasattr(self.covars_encoders[key], 'nan_val'):
+
+        # Make sure any NaNs are replaced with the nan val of the
+        # categorical encoder
+        nan_subjects = covars[covars[key].isna()].index
+        covars.loc[nan_subjects, key] = self.covars_encoders[key].nan_val
 
     # Update col datatype
     for dtype, k in zip(non_nan_covars.dtypes, list(covars)):
@@ -1375,6 +1476,7 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
                binary_col=False, float_to_binary=False, float_col=False,
                float_bins=10, float_bin_strategy='uniform',
                categorical_drop_percent=None,
+               filter_outlier_percent=None, filter_outlier_std=None,
                na_values='default', clear_existing=False, ext=None):
     '''Load stratification values from a file.
     See Notes for more details on what stratification values are.
@@ -1505,6 +1607,56 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
         here, then the same value is used when loading all non float non binary
         strat cols.
 
+        Note: if this is used with float col, then the outlier
+        removal will be performed after the k-binning. If also provided
+        filter_outlier_percent or std, that will be applied before binning.
+
+        (default = None)
+
+    filter_outlier_percent : int, float, tuple, None or list of, optional
+        If any float_col are set to True, then you may perform float based
+        outlier removal.
+
+        A percent of values to exclude from either end of the
+        covars distribution, provided as either 1 number,
+        or a tuple (% from lower, % from higher).
+        set `filter_outlier_percent` to None for no filtering.
+
+        For example, if passed (1, 1), then the bottom 1% and top 1%
+        of the distribution will be dropped, the same as passing 1.
+        Further, if passed (.1, 1), the bottom .1% and top 1% will be
+        removed.
+
+        As with float_col and float_bins, if one value
+        is passed, it is applied to all columns, but if different values
+        per column loaded are desired, a list of choices
+        (with inds correponding) should be pased.
+
+        Note: this filtering will be applied before binning.
+
+        (default = None)
+
+    filter_outlier_std : int, float, tuple, None or list of, optional
+        If any float_col are set to True, then you may perform float based
+        outlier removal.
+
+        Determines outliers as data points within each column where their
+        value is less than the mean of the column - `filter_outlier_std[0]`
+        * the standard deviation of the column,
+        and greater than the mean of the column + `filter_outlier_std[1]`
+        * the standard deviation of the column.
+
+        If a single number is passed, that number is applied to both the lower
+        and upper range. If a tuple with None on one side is passed, e.g.
+        (None, 3), then nothing will be taken off that lower or upper bound.
+
+        As with float_col and float_bins, if one value
+        is passed, it is applied to all columns, but if different values
+        per column loaded are desired, a list of choices
+        (with inds correponding) should be pased.
+
+        Note: this filtering will be applied before binning.
+
         (default = None)
 
     na_values :
@@ -1570,15 +1722,19 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
     fbs = proc_args(float_bins, col_names)
     fbss = proc_args(float_bin_strategy, col_names)
     cdps = proc_args(categorical_drop_percent, col_names)
+    fops = proc_args(filter_outlier_percent, col_names)
+    foss = proc_args(filter_outlier_std, col_names)
 
     # Get drop val, no option for keeping NaN for strat
     drop_val = get_unused_drop_val(strat)
 
     # Load in each strat w/ passed args
-    for key, bc, ftb, fc, fb, fbs, cdp in zip(col_names, bcs, ftbs, fcs,
-                                              fbs, fbss, cdps):
+    for key, bc, ftb, fc, fb, fbs, cdp, fop, fos in zip(col_names, bcs,
+                                                        ftbs, fcs,
+                                                        fbs, fbss, cdps,
+                                                        fops, foss):
         strat = self._proc_strat(strat, key, bc, ftb, fc, fb, fbs, cdp,
-                                 drop_val)
+                                 fop, fos, drop_val)
 
     # Drop rows set to drop
     strat = drop_from_filter(strat, drop_val, _print=print)
@@ -1589,7 +1745,8 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
     self.strat = self._merge_existing(self.strat, strat, 'inner')
 
 
-def _proc_strat(self, strat, key, bc, ftb, fc, fb, fbs, cdp, drop_val):
+def _proc_strat(self, strat, key, bc, ftb, fc, fb, fbs,
+                cdp, fop, fos, drop_val):
 
     key = key + self.strat_u_name
 
@@ -1620,6 +1777,23 @@ def _proc_strat(self, strat, key, bc, ftb, fc, fb, fbs, cdp, drop_val):
 
     # Float
     elif fc:
+
+        if fop is not None and fos is not None:
+            raise RuntimeError('You may only pass one of filter outlier',
+                               ' percent or std')
+
+        if fop is not None:
+            strat = filter_float_by_outlier(strat, key,
+                                            fop, drop_val=drop_val,
+                                            _print=self._print)
+            strat = drop_from_filter(strat, drop_val, _print=print)
+
+        if fos is not None:
+            strat = filter_float_by_std(strat, key, fos,
+                                        drop_val=drop_val,
+                                        _print=self._print)
+            strat = drop_from_filter(strat, drop_val, _print=print)
+
         strat, self.strat_encoders[key] =\
             process_float_input(strat, key, bins=fb, strategy=fbs)
 

@@ -750,20 +750,23 @@ def _get_cat_display_df(self, df, encoder, name, cat_show_original_name):
     # Binary/ordinal
     else:
         unique, counts = np.unique(df, return_counts=True)
-        sums = pd.Series(counts, unique)
+        sums = pd.Series(counts, index=unique)
 
+        # This portion is to ensure that
+        # every index with a count of 0 is filled in with 0's
+        # This works as all binary / ordinal's internal index
+        # go 0 to max_sum - 1, even those with saved dict encoding
         if isinstance(encoder, dict):
             max_sum = len(encoder)
         else:
             try:
-                max_sum = len(encoder.classes_)
-            except AttributeError:
                 max_sum = encoder.n_bins
-                cat_show_original_name = False
+            except AttributeError:
+                max_sum = len(encoder.classes_)
 
         for i in range(max_sum):
             if i not in sums.index:
-                sums[i] = 0
+                sums = sums.append(pd.Series([0], index=[i]))
         sums = sums.sort_index()
 
     display_df = pd.DataFrame(sums, columns=['Counts'])

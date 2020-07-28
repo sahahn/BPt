@@ -8,7 +8,7 @@ import numpy as np
 import numpy.ma as ma
 import random
 from sklearn.preprocessing import KBinsDiscretizer
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
 from operator import add
 from functools import reduce
 import warnings
@@ -114,7 +114,7 @@ def process_binary_input(data, key, drop_val=np.nan,
 
 
 def process_ordinal_input(data, key, drop_percent=None,
-                          drop_val=np.nan, _print=print):
+                          drop_val=np.nan, nac=False, _print=print):
     '''Helper function to perform processing on ordinal input,
     where note this definition of ordinal means categorical ordinal...
     so converting input to ordinal, but from categorical!
@@ -145,18 +145,9 @@ def process_ordinal_input(data, key, drop_percent=None,
         transformed ordinal label
     '''
 
+    # If requested, perform categorical dropping by percent
     if drop_percent:
-
-        unique_vals, counts = np.unique(data[key], return_counts=True)
-
-        drop_inds = np.where(counts / len(data) < drop_percent)
-        drop_vals = unique_vals[drop_inds]
-
-        to_drop = data.index[data[key].isin(drop_vals)]
-        data.loc[to_drop, key] = drop_val
-
-        _print('Dropped value(s)', drop_vals, 'according to passed drop',
-               'percent of', drop_percent)
+        data = cat_drop_by_percent(data, key, drop_percent, drop_val, _print)
 
     # Work on only non_dropped data / non NaN data if applicable
     non_drop_data, non_drop_subjects =\
@@ -167,21 +158,78 @@ def process_ordinal_input(data, key, drop_percent=None,
     non_drop_data[key] = label_encoder.fit_transform(non_drop_data[key])
     non_drop_data[key] = non_drop_data[key].astype('category')
 
+    # Re-create data
     data = put_non_drop_back(data, non_drop_subjects, non_drop_data)
+
+    # Check if nan was encoded if nac
+    if nac:
+        try:
+            nan_val = label_encoder.transform(['nan'])[0]
+            label_encoder.nan_val = nan_val
+
+        # Still need a NaN value, even if not already set
+        except ValueError:
+            label_encoder.classes_ =\
+                np.array(list(label_encoder.classes_) + ['nan'])
+            label_encoder.nan_val = len(label_encoder.classes_) - 1
 
     return data, label_encoder
 
 
-def process_float_input(data, key, bins, strategy):
+def process_float_input(data, key, bins, strategy,
+                        drop_percent=None, drop_val=np.nan,
+                        nac=False, _print=print):
+
+    # Data will come in either as w/o NaN's or everything as strs
+    non_nan_subjects = data[data[key].astype('str') != 'nan'].index
+    non_nan_data = data.loc[non_nan_subjects]
 
     encoder = KBinsDiscretizer(n_bins=bins, encode='ordinal',
                                strategy=strategy)
 
-    vals = np.array(data[key]).reshape(-1, 1)
+    vals = np.array(non_nan_data[key].astype('float')).reshape(-1, 1)
     vals = np.squeeze(encoder.fit_transform(vals))
-    data[key] = vals
+    _print('KBins encoded', encoder.n_bins, 'bins')
+
+    # Put back in data
+    data.loc[non_nan_subjects, key] = vals
+
+    # Set nan val if nan as class
+    if nac:
+        nan_val = np.max(vals) + 1
+
+        # If any NaNs replace with
+        nan_subjects = data[data[key].astype('str') == 'nan'].index
+        if len(nan_subjects) > 0:
+            data.loc[nan_subjects, key] = nan_val
+
+        # Save nan val in the encoder
+        encoder.nan_val = nan_val
+
+    # If requested, perform categorical dropping by percent
+    if drop_percent:
+        data = cat_drop_by_percent(data, key, drop_percent, drop_val, _print)
+
+    # Set type to category
+    data[key] = data[key].astype('category')
 
     return data, encoder
+
+
+def cat_drop_by_percent(data, key, drop_percent, drop_val, _print):
+
+    unique_vals, counts = np.unique(data[key], return_counts=True)
+
+    drop_inds = np.where(counts / len(data) < drop_percent)
+    drop_vals = unique_vals[drop_inds]
+
+    to_drop = data.index[data[key].isin(drop_vals)]
+    data.loc[to_drop, key] = drop_val
+
+    _print('Dropped value(s)', drop_vals, 'according to passed drop',
+           'percent of', drop_percent)
+
+    return data
 
 
 def get_unused_drop_val(data):
@@ -434,10 +482,32 @@ def drop_duplicate_cols(data, corr_thresh, _print=print):
     return data
 
 
+def get_r(val):
+
+    if isinstance(val, int):
+        return val
+
+    return str(np.round(float(val), 3))
+
+
 def get_original_cat_names(names, encoder, original_key):
 
     if isinstance(encoder, dict):
         original = [encoder[name] for name in names]
+
+    # K bins encoder case
+    elif hasattr(encoder, 'bin_edges_'):
+        bin_edges = encoder.bin_edges_[0]
+        names = []
+
+        for i in range(len(bin_edges)-1):
+            names.append(get_r(bin_edges[i]) + ' - ' + get_r(bin_edges[i+1]))
+
+        # Check and see if NaNs were passed as the last class
+        if hasattr(encoder, 'nan_val'):
+            names.append('nan')
+
+        return names
 
     else:
 
@@ -558,6 +628,10 @@ def filter_data_cols(data, filter_outlier_percent, filter_outlier_std,
 
     if filter_outlier_percent is None and filter_outlier_std is None:
         return data
+
+    if filter_outlier_percent is not None and filter_outlier_std is not None:
+        raise RuntimeError('You may only pass one of filter outlier',
+                           ' percent or std')
 
     if drop_or_na == 'na':
         drop_val = np.nan

@@ -353,8 +353,8 @@ def Load_Name_Map(self, name_map=None, loc=None, dataset_type='default',
 def Load_Data(self, loc=None, df=None, dataset_type='default', drop_keys=None,
               inclusion_keys=None, subject_id='default', eventname='default',
               eventname_col='default', overlap_subjects='default',
-              merge='default',
-              na_values='default', drop_na='default', drop_or_na='default',
+              merge='default', na_values='default', drop_na='default',
+              drop_or_na='default',
               filter_outlier_percent=None, filter_outlier_std=None,
               unique_val_drop=None, unique_val_warn=.05,
               drop_col_duplicates=None,
@@ -792,9 +792,10 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
                  dataset_type='default', subject_id='default',
                  eventname='default', eventname_col='default',
                  overlap_subjects='default', merge='default',
+                 na_values='default', drop_na='default', drop_or_na='default',
                  filter_outlier_percent=None,
                  filter_outlier_std=None, categorical_drop_percent=None,
-                 na_values='default', drop_na='default', drop_or_na='default',
+                 float_bins=10, float_bin_strategy='uniform',
                  clear_existing=False, ext=None):
     '''Loads in targets, the outcome / variable(s) to predict.
 
@@ -826,7 +827,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         Note: Must be in the same order as data types passed in.
         (default = None)
 
-    data_type : {'b', 'c', 'f'}, optional
+    data_type : {'b', 'c', 'f', 'f2c'}, optional
         The data types of the different columns to load,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.
@@ -844,6 +845,11 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         - 'float' or 'f'
             Float numerical input
 
+        - 'float_to_cat', 'f2c', 'float_to_bin' or 'f2b'
+            This specifies that the data should be loaded
+            initially as float, then descritized to be a binned
+            categorical feature.
+
         Datatypes are explained further in Notes.
 
         (default = None)
@@ -854,6 +860,9 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     eventname_col :
     overlap_subjects :
     merge :
+    na_values :
+    drop_na :
+    drop_or_na :
 
     filter_outlier_percent : float, tuple, list of or None, optional
         For float datatypes only.
@@ -908,9 +917,38 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
 
         (default = None)
 
-    na_values :
-    drop_na :
-    drop_or_na :
+    float_bins : int or list of, optional
+        If any columns are loaded as 'float_to_bin' or 'f2b' then
+        input must be discretized into bins. This param controls
+        the number of bins to create. As with other params, if one value
+        is passed, it is applied to all columns, but if different values
+        per column loaded are desired, a list of ints (with inds correponding)
+        should be pased. For columns that are not specifed as 'f2b' type,
+        anything can be passed in that list index spot as it will be igored.
+
+        (default = 10)
+
+    float_bin_strategy : {'uniform', 'quantile', 'kmeans'}, optional
+        If any columns are loaded as 'float_to_bin' or 'f2b' then
+        input must be discretized into bins. This param controls
+        the strategy used to define the bins. Options are,
+
+        - 'uniform'
+            All bins in each feature have identical widths.
+
+        - 'quantile'
+            All bins in each feature have the same number of points.
+
+        - 'kmeans'
+            Values in each bin have the same nearest center of a 1D
+            k-means cluster.
+
+        As with float_bins, if one value
+        is passed, it is applied to all columns, but if different values
+        per column loaded are desired, a list of choices
+        (with inds correponding) should be pased.
+
+        (default = 'uniform')
 
     clear_existing : bool, optional
         If this parameter is set to True, then any existing
@@ -975,17 +1013,24 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     fops = proc_args(filter_outlier_percent, data_types)
     foss = proc_args(filter_outlier_std, data_types)
     cdps = proc_args(categorical_drop_percent, data_types)
+    fbs = proc_args(float_bins, data_types)
+    fbss = proc_args(float_bin_strategy, data_types)
 
-    # Get drop val, no option for keeping NaN for targets
-    drop_val = get_unused_drop_val(targets)
+    # Set the drop_val
+    if load_params['drop_or_na'] == 'na':
+        drop_val = np.nan
+    else:
+        drop_val = get_unused_drop_val(targets)
 
     self._print()
 
     # Process each target to load
-    for key, d_type, fop, fos, cdp in zip(col_names, data_types,
-                                          fops, foss, cdps):
+    for key, d_type, fop, fos, cdp, fb, fbs, in zip(col_names, data_types,
+                                                    fops, foss, cdps,
+                                                    fbs, fbss):
         targets =\
-            self._proc_target(targets, key, d_type, fop, fos, cdp, drop_val)
+            self._proc_target(targets, key, d_type,
+                              fop, fos, cdp, fb, fbs, drop_val)
 
     self._print()
 
@@ -1002,31 +1047,44 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     self._print_loaded_targets()
 
 
-def _proc_target(self, targets, key, d_type, fop, fos, cdp, drop_val):
+def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb, 
+                 fbs, drop_val, add_key=True):
 
-    self._print('loading:', key)
+    # If float to binary, recursively call this func with d_type float first
+    if is_f2b(d_type):
+        targets = self._proc_target(targets, key,
+                                    d_type='float',
+                                    fop=fop,
+                                    fos=fos,
+                                    cdp=None,
+                                    fb=None,
+                                    fbs=None,
+                                    drop_val=drop_val,
+                                    add_key=False)
 
-    d_type = d_type[0]
+    else:
+        self._print('loading:', key)
 
     # Set to only the non-Nan subjects for this column
-    non_nan_subjects = targets[~targets[key].isna()].index
+    non_nan_subjects = targets[~targets[key].isna() &
+                               targets[key] != drop_val].index
     non_nan_targets = targets.loc[non_nan_subjects]
 
     # Processing for binary, with some tolerance to funky input
-    if d_type == 'b':
+    if d_type == 'b' or d_type == 'binary':
 
         non_nan_targets, self.targets_encoders[key] =\
             process_binary_input(non_nan_targets, key, drop_val, self._print)
 
     # Proc. Categoirical as ordinal
-    elif d_type == 'c':
+    elif d_type == 'c' or d_type == 'categorical':
 
         non_nan_targets, self.targets_encoders[key] =\
             process_ordinal_input(non_nan_targets, key, cdp, drop_val,
                                   _print=self._print)
 
     # For float, just optionally apply outlier percent filter
-    elif d_type == 'f':
+    elif d_type == 'f' or d_type == 'float':
 
         # Encoder set to None for non_nan_targets
         self.targets_encoders[key] = None
@@ -1047,6 +1105,16 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, drop_val):
                                     fos, drop_val=drop_val,
                                     _print=self._print)
 
+    # If float to binary
+    elif (is_f2b(d_type)):
+
+        # K-bins encode
+        non_nan_targets, self.targets_encoders[key] =\
+            process_float_input(data=non_nan_targets, key=key,
+                                bins=fb, strategy=fbs, drop_percent=cdp,
+                                drop_val=drop_val, nac=False,
+                                _print=self._print)
+
     else:
         raise RuntimeError('Invalid data type passed:', d_type)
 
@@ -1058,7 +1126,7 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, drop_val):
         targets[k] = targets[k].astype(dtype.name)
 
     # Keep track of each loaded target in targets_keys
-    if key not in self.targets_keys:
+    if key not in self.targets_keys and add_key:
         self.targets_keys.append(key)
 
     return targets
@@ -1080,9 +1148,9 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                 drop_or_na='default',
                 nan_as_class=False,
                 code_categorical_as='depreciated',
-                categorical_drop_percent=None,
                 filter_outlier_percent=None,
                 filter_outlier_std=None,
+                categorical_drop_percent=None,
                 float_bins=10,
                 float_bin_strategy='uniform',
                 clear_existing=False, ext=None):
@@ -1184,30 +1252,6 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
             default = 'depreciated'
 
-    categorical_drop_percent: float, None or list of, optional
-        Optional percentage threshold for dropping categories when
-        loading categorical data. If a float is given, then a category
-        will be dropped if it makes up less than that % of the data points.
-        E.g. if .01 is passed, then any datapoints with a category with less
-        then 1% of total valid datapoints is dropped.
-
-        A list of values can also be passed in the case that
-        multiple col_names / covars are being loaded. In this
-        case, the index should correspond. If a list is not passed
-        here, then the same value is used when loading all covars.
-
-        Note: percent in the name might be a bit misleading.
-        For 1%, you should pass .01, for 10%, you should pass .1.
-
-        If loading a categorical variable, this filtering will be applied
-        before ordinally encoding that variable. If instead loading a variable
-        with type 'float_to_cat' / 'float_to_bin', the outlier filtering will
-        be performed after kbin encoding
-        (as before then it is not categorical).
-        This can yield gaps in the oridinal outputted values.
-
-        (default = None)
-
     filter_outlier_percent : int, float, tuple, None or list of, optional
         For float datatypes only.
         A percent of values to exclude from either end of the
@@ -1249,6 +1293,30 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
         Note: If loading a variable with type 'float_to_cat' / 'float_to_bin',
         the outlier filtering will be performed before kbin encoding.
+
+        (default = None)
+
+    categorical_drop_percent: float, None or list of, optional
+        Optional percentage threshold for dropping categories when
+        loading categorical data. If a float is given, then a category
+        will be dropped if it makes up less than that % of the data points.
+        E.g. if .01 is passed, then any datapoints with a category with less
+        then 1% of total valid datapoints is dropped.
+
+        A list of values can also be passed in the case that
+        multiple col_names / covars are being loaded. In this
+        case, the index should correspond. If a list is not passed
+        here, then the same value is used when loading all covars.
+
+        Note: percent in the name might be a bit misleading.
+        For 1%, you should pass .01, for 10%, you should pass .1.
+
+        If loading a categorical variable, this filtering will be applied
+        before ordinally encoding that variable. If instead loading a variable
+        with type 'float_to_cat' / 'float_to_bin', the outlier filtering will
+        be performed after kbin encoding
+        (as before then it is not categorical).
+        This can yield gaps in the oridinal outputted values.
 
         (default = None)
 
@@ -1389,7 +1457,8 @@ def _proc_covar(self, covars, key, d_type, nac, cdp,
 
     # Set to only the non-Nan subjects for this column
     else:
-        non_nan_subjects = covars[~covars[key].isna()].index
+        non_nan_subjects = covars[~covars[key].isna() &
+                                  covars[key] != drop_val].index
         non_nan_covars = covars.loc[non_nan_subjects]
 
     # Binary
@@ -1475,8 +1544,8 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
                eventname_col='default', overlap_subjects='default',
                binary_col=False, float_to_binary=False, float_col=False,
                float_bins=10, float_bin_strategy='uniform',
-               categorical_drop_percent=None,
                filter_outlier_percent=None, filter_outlier_std=None,
+               categorical_drop_percent=None,
                na_values='default', clear_existing=False, ext=None):
     '''Load stratification values from a file.
     See Notes for more details on what stratification values are.
@@ -1593,26 +1662,6 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
 
         (default = 'uniform')
 
-    categorical_drop_percent: float, None or list of, optional
-        Optional percentage threshold for dropping categories when
-        loading categorical data (so for strat these are any column that are
-        not specified as float or binary). If a float is given, then a category
-        will be dropped if it makes up less than that % of the data points.
-        E.g. if .01 is passed, then any datapoints with a category with less
-        then 1% of total valid datapoints is dropped.
-
-        A list of values can also be passed in the case that
-        multiple col_names / strat vals are being loaded. In this
-        case, the indices should correspond. If a list is not passed
-        here, then the same value is used when loading all non float non binary
-        strat cols.
-
-        Note: if this is used with float col, then the outlier
-        removal will be performed after the k-binning. If also provided
-        filter_outlier_percent or std, that will be applied before binning.
-
-        (default = None)
-
     filter_outlier_percent : int, float, tuple, None or list of, optional
         If any float_col are set to True, then you may perform float based
         outlier removal.
@@ -1656,6 +1705,26 @@ def Load_Strat(self, loc=None, df=None, col_name=None, dataset_type='default',
         (with inds correponding) should be pased.
 
         Note: this filtering will be applied before binning.
+
+        (default = None)
+
+    categorical_drop_percent: float, None or list of, optional
+        Optional percentage threshold for dropping categories when
+        loading categorical data (so for strat these are any column that are
+        not specified as float or binary). If a float is given, then a category
+        will be dropped if it makes up less than that % of the data points.
+        E.g. if .01 is passed, then any datapoints with a category with less
+        then 1% of total valid datapoints is dropped.
+
+        A list of values can also be passed in the case that
+        multiple col_names / strat vals are being loaded. In this
+        case, the indices should correspond. If a list is not passed
+        here, then the same value is used when loading all non float non binary
+        strat cols.
+
+        Note: if this is used with float col, then the outlier
+        removal will be performed after the k-binning. If also provided
+        filter_outlier_percent or std, that will be applied before binning.
 
         (default = None)
 

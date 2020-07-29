@@ -311,7 +311,7 @@ def filter_float_by_std(data, key, n_std,
         n_std = (n_std, n_std)
 
     _print('Filtering for outliers by stds:', n_std)
-    _print('Min-Max value (post-filter):',
+    _print('Min-Max value (pre-filter):',
            np.nanmin(data[key]), np.nanmax(data[key]))
 
     mean = data[key].mean()
@@ -325,7 +325,7 @@ def filter_float_by_std(data, key, n_std,
         u_scale = n_std[1] * std
         data.loc[data[key] > mean + u_scale, key] = drop_val
 
-    _print('Min-Max Score (post outlier filtering):',
+    _print('Min-Max value (post outlier filtering):',
            np.nanmin(data[key][data[key] != drop_val]),
            np.nanmax(data[key][data[key] != drop_val]))
 

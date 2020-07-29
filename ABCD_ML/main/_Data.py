@@ -1030,7 +1030,8 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
                                                     fbs, fbss):
         targets =\
             self._proc_target(targets, key, d_type,
-                              fop, fos, cdp, fb, fbs, drop_val)
+                              fop, fos, cdp, fb, fbs,
+                              drop_val, load_params['drop_or_na']) 
 
     self._print()
 
@@ -1047,8 +1048,8 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
     self._print_loaded_targets()
 
 
-def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb, 
-                 fbs, drop_val, add_key=True):
+def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
+                 fbs, drop_val, don, add_key=True):
 
     # If float to binary, recursively call this func with d_type float first
     if is_f2b(d_type):
@@ -1060,6 +1061,7 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
                                     fb=None,
                                     fbs=None,
                                     drop_val=drop_val,
+                                    don=don,
                                     add_key=False)
 
     else:
@@ -1089,9 +1091,9 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
         # Encoder set to None for non_nan_targets
         self.targets_encoders[key] = None
 
-        if fop is not None and fos is not None:
+        if (fop is not None and fos is not None) and (don == 'na'):
             raise RuntimeError('You may only pass one of filter outlier',
-                               ' percent or std')
+                               ' percent or std with drop_or_na == na')
 
         if fop is not None:
             non_nan_targets =\
@@ -1414,7 +1416,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
                                                         fbs, fbss):
         covars =\
             self._proc_covar(covars, key, d_type, nac, cdp, fop, fos,
-                             fb, fbs, drop_val)
+                             fb, fbs, drop_val, load_params['drop_or_na'])
 
     # Have to remove rows with drop_val if drop_val not NaN
     if drop_val is not np.nan:
@@ -1429,7 +1431,7 @@ def Load_Covars(self, loc=None, df=None, col_name=None, data_type=None,
 
 
 def _proc_covar(self, covars, key, d_type, nac, cdp,
-                fop, fos, fb, fbs, drop_val):
+                fop, fos, fb, fbs, drop_val, don):
 
     # If float to binary, recursively call this func with d_type float first
     if is_f2b(d_type):
@@ -1440,7 +1442,8 @@ def _proc_covar(self, covars, key, d_type, nac, cdp,
                                   fos=fos,
                                   fb=None,
                                   fbs=None,
-                                  drop_val=drop_val)
+                                  drop_val=drop_val,
+                                  don=don)
 
     else:
         self._print('loading:', key)
@@ -1474,9 +1477,9 @@ def _proc_covar(self, covars, key, d_type, nac, cdp,
         # Float type needs an encoder set to None
         self.covars_encoders[key] = None
 
-        if fop is not None and fos is not None:
+        if (fop is not None and fos is not None) and (don == 'na'):
             raise RuntimeError('You may only pass one of filter outlier',
-                               ' percent or std')
+                               ' percent or std with drop_or_na == na')
 
         # If filter float outlier percent
         if fop is not None:
@@ -1846,10 +1849,6 @@ def _proc_strat(self, strat, key, bc, ftb, fc, fb, fbs,
 
     # Float
     elif fc:
-
-        if fop is not None and fos is not None:
-            raise RuntimeError('You may only pass one of filter outlier',
-                               ' percent or std')
 
         if fop is not None:
             strat = filter_float_by_outlier(strat, key,

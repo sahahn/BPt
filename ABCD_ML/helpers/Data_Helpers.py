@@ -245,12 +245,15 @@ def proc_fop(fop):
     # If provided as just % number, divide by 100
     if not isinstance(fop, tuple):
         fop /= 100
-        fop = (fop, 1-fop)
+        return (fop, 1-fop)
 
-    else:
-        fop = tuple([fop[0]/100, 1-(fop[1] / 100)])
+    elif fop[0] is None:
+        return tuple([None, 1-(fop[1] / 100)])
 
-    return fop
+    elif fop[1] is None:
+        return tuple([fop[0] / 100, None])
+
+    return tuple([fop[0]/100, 1-(fop[1] / 100)])
 
 
 def filter_float_by_outlier(data, key, filter_outlier_percent,
@@ -292,10 +295,12 @@ def filter_float_by_outlier(data, key, filter_outlier_percent,
     _print('Min-Max value (pre-filter):',
            np.nanmin(data[key]), np.nanmax(data[key]))
 
-    q1 = data[key].quantile(fop[0])
-    q2 = data[key].quantile(fop[1])
-    data.loc[data[key] < q1, key] = drop_val
-    data.loc[data[key] > q2, key] = drop_val
+    if fop[0] is not None:
+        q1 = data[key].quantile(fop[0])
+        data.loc[data[key] < q1, key] = drop_val
+    if fop[1] is not None:
+        q2 = data[key].quantile(fop[1])
+        data.loc[data[key] > q2, key] = drop_val
 
     _print('Min-Max value (post outlier filtering):',
            np.nanmin(data[key][data[key] != drop_val]),
@@ -338,8 +343,10 @@ def filter_float_df_by_outlier(data, filter_outlier_percent,
     # For length of code / readability
     fop = proc_fop(filter_outlier_percent)
 
-    data[data < data.quantile(fop[0])] = drop_val
-    data[data > data.quantile(fop[1])] = drop_val
+    if fop[0] is not None:
+        data[data < data.quantile(fop[0])] = drop_val
+    if fop[1] is not None:
+        data[data > data.quantile(fop[1])] = drop_val
 
     return data
 

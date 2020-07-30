@@ -312,7 +312,6 @@ AVALIABLE = {
             'stacked': 'stacked',
             'bagging': 'bagging classifier',
             'adaboost': 'adaboost classifier',
-            'balanced bagging': 'balanced bagging classifier',
             'stacking': 'stacking classifier',
         },
         'regression': {
@@ -325,8 +324,6 @@ AVALIABLE = {
         },
 }
 
-# Should be the same
-AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 
 ENSEMBLES = {
     'aposteriori': (APosteriori, ['default']),
@@ -369,11 +366,16 @@ try:
 
     from imblearn.ensemble import BalancedBaggingClassifier
 
+    AVALIABLE['binary']['balanced bagging'] = 'balanced bagging classifier'
+
     ENSEMBLES['balanced bagging classifier'] =\
         (BalancedBaggingClassifier, ['default'])
 
 except ImportError:
     pass
+
+# Should be the same
+AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 
 
 def get_ensemble_and_params(ensemble_str, extra_params, params, search_type,
@@ -388,4 +390,3 @@ def get_ensemble_and_params(ensemble_str, extra_params, params, search_type,
 
     # Slight tweak here, return tuple ensemble, extra_params
     return (ensemble, extra_ensemble_params), ensemble_params
-

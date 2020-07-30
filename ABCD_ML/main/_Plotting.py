@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import math
-import shap
+# import shap
 import os
 from IPython.display import display, HTML
 from matplotlib.animation import FuncAnimation

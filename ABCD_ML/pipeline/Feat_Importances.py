@@ -1,5 +1,5 @@
 import pandas as pd
-import shap
+# import shap
 import numpy as np
 
 from .Perm_Feat_Importance import Perm_Feat_Importance

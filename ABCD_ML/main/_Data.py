@@ -1110,6 +1110,8 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
     # If float to binary
     elif is_f2b(d_type):
 
+        self._print('Start encode!')
+
         # K-bins encode
         non_nan_targets, self.targets_encoders[key] =\
             process_float_input(data=non_nan_targets, key=key,

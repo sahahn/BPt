@@ -1123,11 +1123,14 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
     else:
         raise RuntimeError('Invalid data type passed:', d_type)
 
-    targets.loc[non_nan_subjects] = non_nan_targets
+    if targets.shape == non_nan_targets.shape:
+        targets = non_nan_targets
+    else:
+        targets.loc[non_nan_subjects] = non_nan_targets
 
-    # Update all col's datatypes
-    for dtype, k in zip(non_nan_targets.dtypes, list(targets)):
-        targets[k] = targets[k].astype(dtype.name)
+        # Update all col's datatypes
+        for dtype, k in zip(non_nan_targets.dtypes, list(targets)):
+            targets[k] = targets[k].astype(dtype.name)
 
     # Keep track of each loaded target in targets_keys
     if key not in self.targets_keys and add_key:

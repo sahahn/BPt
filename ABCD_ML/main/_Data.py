@@ -1122,7 +1122,7 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
     else:
         raise RuntimeError('Invalid data type passed:', d_type)
 
-    ML._print(non_nan_subjects)
+    self._print(non_nan_subjects)
 
     # Now update the changed values within covars
     targets.loc[non_nan_subjects] = non_nan_targets

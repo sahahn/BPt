@@ -194,24 +194,36 @@ def process_float_input(data, key, bins, strategy,
     # Put back in data
     data.loc[non_nan_subjects, key] = vals
 
+    _print('debug_1', nac)
+
     # Set nan val if nan as class
     if nac:
         nan_val = np.max(vals) + 1
+
+        _print('debug_2')
 
         # If any NaNs replace with
         nan_subjects = data[data[key].astype('str') == 'nan'].index
         if len(nan_subjects) > 0:
             data.loc[nan_subjects, key] = nan_val
 
+        _print('debug_3')
+
         # Save nan val in the encoder
         encoder.nan_val = nan_val
+
+    _print('debug_4')
 
     # If requested, perform categorical dropping by percent
     if drop_percent:
         data = cat_drop_by_percent(data, key, drop_percent, drop_val, _print)
 
+    _print('debug_5')
+
     # Set type to category
     data[key] = data[key].astype('category')
+
+    _print('debug_6')
 
     return data, encoder
 

@@ -1031,7 +1031,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         targets =\
             self._proc_target(targets, key, d_type,
                               fop, fos, cdp, fb, fbs,
-                              drop_val, load_params['drop_or_na']) 
+                              drop_val, load_params['drop_or_na'])
 
     self._print()
 
@@ -1108,7 +1108,7 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
                                     _print=self._print)
 
     # If float to binary
-    elif (is_f2b(d_type)):
+    elif is_f2b(d_type):
 
         # K-bins encode
         non_nan_targets, self.targets_encoders[key] =\
@@ -1116,6 +1116,8 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
                                 bins=fb, strategy=fbs, drop_percent=cdp,
                                 drop_val=drop_val, nac=False,
                                 _print=self._print)
+
+        self._print('encoded!')
 
     else:
         raise RuntimeError('Invalid data type passed:', d_type)

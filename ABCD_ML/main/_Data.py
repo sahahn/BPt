@@ -1125,7 +1125,10 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
     self._print(non_nan_subjects)
 
     # Now update the changed values within covars
-    targets.loc[non_nan_subjects] = non_nan_targets
+    try:
+        targets.loc[non_nan_subjects] = non_nan_targets
+    except Exception as e:
+        self._print(e)
 
     # Update all col's datatypes
     for dtype, k in zip(non_nan_targets.dtypes, list(targets)):

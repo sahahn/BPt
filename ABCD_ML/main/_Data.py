@@ -1868,7 +1868,11 @@ def _proc_strat(self, strat, key, bc, ftb, fc, fb, fbs,
             strat = drop_from_filter(strat, drop_val, _print=print)
 
         strat, self.strat_encoders[key] =\
-            process_float_input(strat, key, bins=fb, strategy=fbs)
+            process_float_input(data=strat, key=key,
+                                bins=fb, strategy=fbs,
+                                drop_percent=cdp,
+                                drop_val=drop_val, nac=False,
+                                _print=self._print)
 
     # Categorical
     else:

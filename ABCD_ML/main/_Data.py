@@ -1070,6 +1070,7 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
         self._print('loading:', key)
 
     # Set to only the non-Nan subjects for this column
+    self._print('drop val', drop_val)
     non_nan_subjects = targets[(~targets[key].isna()) &
                                (targets[key] != drop_val)].index
     non_nan_targets = targets.loc[non_nan_subjects]
@@ -1122,13 +1123,7 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
     else:
         raise RuntimeError('Invalid data type passed:', d_type)
 
-    self._print(targets)
-    self._print(non_nan_subjects)
-    self._print(targets.loc[non_nan_subjects])
-    self._print(non_nan_targets)
-
     targets.loc[non_nan_subjects] = non_nan_targets
-
 
     # Update all col's datatypes
     for dtype, k in zip(non_nan_targets.dtypes, list(targets)):

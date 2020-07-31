@@ -190,6 +190,7 @@ def process_float_input(data, key, bins, strategy,
     vals = np.array(non_nan_data[key].astype('float')).reshape(-1, 1)
     vals = np.squeeze(encoder.fit_transform(vals))
     _print('KBins encoded', encoder.n_bins, 'bins')
+    _print('debug_0', nac)
 
     # Put back in data
     data.loc[non_nan_subjects, key] = vals

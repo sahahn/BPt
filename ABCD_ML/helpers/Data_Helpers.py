@@ -189,6 +189,7 @@ def process_float_input(data, key, bins, strategy,
 
     vals = np.array(non_nan_data[key].astype('float')).reshape(-1, 1)
     vals = np.squeeze(encoder.fit_transform(vals))
+    _print('debug_neg1', nac)
     _print('KBins encoded', encoder.n_bins, 'bins')
     _print('debug_0', nac)
 

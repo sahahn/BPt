@@ -1070,7 +1070,6 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
         self._print('loading:', key)
 
     # Set to only the non-Nan subjects for this column
-    self._print('drop val', drop_val)
     non_nan_subjects = targets[(~targets[key].isna()) &
                                (targets[key] != drop_val)].index
     non_nan_targets = targets.loc[non_nan_subjects]
@@ -1465,8 +1464,8 @@ def _proc_covar(self, covars, key, d_type, nac, cdp,
 
     # Set to only the non-Nan subjects for this column
     else:
-        non_nan_subjects = covars[~covars[key].isna() &
-                                  covars[key] != drop_val].index
+        non_nan_subjects = covars[(~covars[key].isna()) &
+                                  (covars[key] != drop_val)].index
         non_nan_covars = covars.loc[non_nan_subjects]
 
     # Binary
@@ -1529,8 +1528,13 @@ def _proc_covar(self, covars, key, d_type, nac, cdp,
     else:
         raise RuntimeError('Unknown data_type: ' + d_type)
 
-    # Now update the changed values within covars
-    covars.loc[non_nan_subjects] = non_nan_covars
+    if covars.shape == non_nan_covars.shape:
+        covars = non_nan_covars
+    else:
+        covars.loc[non_nan_subjects] = non_nan_covars
+
+        for dtype, k in zip(non_nan_covars.dtypes, list(covars)):
+            covars[k] = covars[k].astype(dtype.name)
 
     # Check for special code nan as categorical case
     if nac and hasattr(self.covars_encoders[key], 'nan_val'):
@@ -1539,10 +1543,6 @@ def _proc_covar(self, covars, key, d_type, nac, cdp,
         # categorical encoder
         nan_subjects = covars[covars[key].isna()].index
         covars.loc[nan_subjects, key] = self.covars_encoders[key].nan_val
-
-    # Update col datatype
-    for dtype, k in zip(non_nan_covars.dtypes, list(covars)):
-        covars[k] = covars[k].astype(dtype.name)
 
     return covars
 

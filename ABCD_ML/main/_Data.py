@@ -1070,8 +1070,8 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
         self._print('loading:', key)
 
     # Set to only the non-Nan subjects for this column
-    non_nan_subjects = targets[~targets[key].isna() &
-                               targets[key] != drop_val].index
+    non_nan_subjects = targets[(~targets[key].isna()) &
+                               (targets[key] != drop_val)].index
     non_nan_targets = targets.loc[non_nan_subjects]
 
     # Processing for binary, with some tolerance to funky input

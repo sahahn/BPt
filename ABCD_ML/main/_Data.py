@@ -1122,25 +1122,18 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
     else:
         raise RuntimeError('Invalid data type passed:', d_type)
 
-    self._print(1)
+    ML._print(non_nan_subjects)
 
     # Now update the changed values within covars
     targets.loc[non_nan_subjects] = non_nan_targets
-
-    self._print(2)
 
     # Update all col's datatypes
     for dtype, k in zip(non_nan_targets.dtypes, list(targets)):
         targets[k] = targets[k].astype(dtype.name)
 
-        self._print(3)
-
     # Keep track of each loaded target in targets_keys
     if key not in self.targets_keys and add_key:
         self.targets_keys.append(key)
-        self._print(4)
-
-    self._print(5)
 
     return targets
 

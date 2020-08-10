@@ -568,27 +568,36 @@ def Test(self,
 
     train_subjects : str, array-like or Value_Subset, optional
         This parameter determines the set of training subjects which are
-        used to train the passed instance of :class:`Model_Pipeline`. 
-        
-        Note, this parameter and `test_subjects` are distinct, but complementary to
-        the `subjects` parameter within :class:`Problem_Spec`, which is applied after
+        used to train the passed instance of :class:`Model_Pipeline`.
+
+        Note, this parameter and `test_subjects` are distinct,
+        but complementary to
+        the `subjects` parameter within :class:`Problem_Spec`,
+        which is applied after
         selecting the subset of `train_subjects` specified here.
 
-        By default, this value will be set to the special str indiciator 'train', which
+        By default, this value will be set to the special
+        str indiciator 'train', which
         specifies that the full set of globally defined training subjects
-        (See: :func:`Define_Train_Test_Split`), should be used. Other special str indicators
-        include 'all' to select all subjects, and 'test' to select the test set subjects.
+        (See: :func:`Define_Train_Test_Split`),
+        should be used. Other special str indicators
+        include 'all' to select all subjects, and 'test'
+        to select the test set subjects.
 
-        If `subjects` is passed a str, and that str is not one of the str indicators listed above,
-        then it will be interpretted as the location of file in which to read subjects from (assuming one subjects per line).
+        If `subjects` is passed a str, and that str is not one of
+        the str indicators listed above,
+        then it will be interpretted as the location of file in which
+        to read subjects from (assuming one subjects per line).
 
         `subjects` may also be a custom array-like of subjects to use.
 
-        Lastly, a special wrapper, Value_Subset, can also be used to specify more specific,
+        Lastly, a special wrapper, Value_Subset, can also be used
+        to specify more specific,
         specifically value specific, subsets of subjects to use.
         See :class:`Value_Subset` for how this input wrapper can be used.
 
-        If passing custom input here, be warned that you NEVER want to pass an overlap of
+        If passing custom input here, be warned that you NEVER
+        want to pass an overlap of
         subjects between `train_subjects` and `test_subjects`
 
         ::
@@ -597,28 +606,39 @@ def Test(self,
 
     test_subjects : str, array-like or Value_Subset, optional
         This parameter determines the set of testing subjects which are
-        used to evaluate the passed instance of :class:`Model_Pipeline`, after it
+        used to evaluate the passed instance of :class:`Model_Pipeline`,
+        after it
         has been trained on the passed `train_subjects`.
-        
-        Note, this parameter and `train_subjects` are distinct, but complementary to
-        the `subjects` parameter within :class:`Problem_Spec`, which is applied after
+
+        Note, this parameter and `train_subjects` are distinct,
+        but complementary to
+        the `subjects` parameter within :class:`Problem_Spec`,
+        which is applied after
         selecting the subset of `test_subjects` specified here.
 
-        By default, this value will be set to the special str indiciator 'test', which
-        specifies that the full set of globally defined test subjects
-        (See: :func:`Define_Train_Test_Split`), should be used. Other special str indicators
-        include 'all' to select all subjects, and 'train' to select the train set subjects.
+        By default, this value will be set to the special str
+        indiciator 'test', which
+        specifies that the full set of globally defined
+        test subjects
+        (See: :func:`Define_Train_Test_Split`),
+        should be used. Other special str indicators
+        include 'all' to select all subjects, and 'train'
+        to select the train set subjects.
 
-        If `subjects` is passed a str, and that str is not one of the str indicators listed above,
-        then it will be interpretted as the location of file in which to read subjects from (assuming one subjects per line).
+        If `subjects` is passed a str, and that str is not one
+        of the str indicators listed above,
+        then it will be interpretted as the location of file in which
+        to read subjects from (assuming one subjects per line).
 
         `subjects` may also be a custom array-like of subjects to use.
 
-        Lastly, a special wrapper, Value_Subset, can also be used to specify more specific,
+        Lastly, a special wrapper, Value_Subset, can also be used
+        to specify more specific,
         specifically value specific, subsets of subjects to use.
         See :class:`Value_Subset` for how this input wrapper can be used.
 
-        If passing custom input here, be warned that you NEVER want to pass an overlap of
+        If passing custom input here, be warned that you NEVER
+        want to pass an overlap of
         subjects between `train_subjects` and `test_subjects`
 
         ::
@@ -627,14 +647,19 @@ def Test(self,
 
     run_name : str or 'default', optional
         Each run of test can be optionally
-         associated with a specific `run_name`. This name
-        is used to save scores in self.test_scores, and also if `save_results` in
-        :func:`Set_Default_ML_Verbosity<BPt_ML.Set_Default_ML_Verbosity>` is set to True,
-        then will be used as the name output from Test as saved as in the specific log_dr
-        (if any, and as set when Init'ing the :class:`BPt_ML <BPt.BPt_ML>` class object),
+        associated with a specific `run_name`. This name
+        is used to save scores in self.test_scores,
+        and also if `save_results` in
+        :func:`Set_Default_ML_Verbosity<BPt_ML.Set_Default_ML_Verbosity>`
+        is set to True,
+        then will be used as the name output from Test as saved as in the
+        specific log_dr
+        (if any, and as set when Init'ing
+        the :class:`BPt_ML <BPt.BPt_ML>` class object),
         with .test appended to the name.
 
-        If left as 'default', will come up with a kind of terrible name passed on the underlying
+        If left as 'default', will come up with a kind of
+        terrible name passed on the underlying
         model used in the passed `model_pipeline`.
 
         ::
@@ -649,7 +674,6 @@ def Test(self,
         'raw_preds', A pandas dataframe containing the raw predictions
         for each subject, in the test set, and 'FIs' a list where
         each element corresponds to a passed feature importance.
-
     '''
 
     # Perform pre-modeling check

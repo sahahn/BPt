@@ -15,7 +15,7 @@ Run on the command line,
 
 ::
 
-    pip install ABCD_ML
+    pip install BPt
 
 
 Github / Pip Installation
@@ -23,20 +23,20 @@ Github / Pip Installation
 
 Optionally, you can choose to download the latest development version through github.
 You need git installed for this, but on the plus side you are ensured to have the latest version.
-Run on the command line or anaconda prompt on windows, (In the location where you want ABCD_ML installed!)
+Run on the command line or anaconda prompt on windows, (In the location where you want BPt installed!)
 
 ::
 
-    git clone https://github.com/sahahn/ABCD_ML.git
+    git clone https://github.com/sahahn/BPt.git
 
-Then navigate into the ABCD_ML folder, and run
+Then navigate into the BPt folder, and run
 
 ::
 
-    cd ABCD_ML
+    cd BPt
     pip install .
 
-In the future, to grab the latest updated versions, navigate into the folder where you installed ABCD_ML, and run
+In the future, to grab the latest updated versions, navigate into the folder where you installed BPt, and run
 
 ::
 
@@ -46,11 +46,7 @@ In the future, to grab the latest updated versions, navigate into the folder whe
 
 Extra Libraries
 =========================
-There are some extra dependecies listed on thye github at optional_requirements.txt. You can consider
-downloading these libraries as well, as they add extra functions to ABCD_ML. Notably though, these include 
-Lightgbm and Xgboost which are both popular libraries for performing fast extreme gradient boosting.
-These tend to not install correctly via pip on some machines so if you recieve errors with these libraries, check their
-relevant documentations:
-
-Lightgbm python install instructions: https://github.com/microsoft/LightGBM/tree/master/python-package
-Xgboost install instructions: https://xgboost.readthedocs.io/en/latest/build.html
+There are a number of libraries which extend the functionality of the BPt. These can
+be found under docs in the file requiriments.txt. Notably, depending on your operating system,
+some of these additional libraries may not be installable through pip alone, and will require 
+taking further library specific steps.

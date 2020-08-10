@@ -18,8 +18,8 @@ master_doc = 'index'
 
 # -- Project information -----------------------------------------------------
 
-project = 'ABCD_ML'
-copyright = '2019, sahahn'
+project = 'BPt'
+copyright = '2020, sahahn'
 author = 'sahahn'
 
 # The full version, including alpha/beta/rc tags

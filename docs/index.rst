@@ -1,7 +1,7 @@
-Welcome to the ABCD_ML user documentation!
-==========================================
+Welcome to the Brain Predictability toolbox (BPt) user documentation!
+======================================================================
 
-This is a project.
+The following documentation includes information about the usage of this toolbox.
 
 .. toctree::
    :maxdepth: 1
@@ -23,9 +23,9 @@ This is a project.
 
 .. toctree::
    :maxdepth: 2
-   :caption: ABCD_ML Class Docs
+   :caption: BPt Class Docs
 
-   ABCD_ML_class_docs
+   BPt_class_docs
 
 .. toctree::
    :maxdepth: 2

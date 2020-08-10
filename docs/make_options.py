@@ -1,27 +1,27 @@
-from ABCD_ML.helpers.ML_Helpers import get_objects_by_type, get_objects
-from ABCD_ML.pipeline.Scorers import get_scorers_by_type
+from BPt.helpers.ML_Helpers import get_objects_by_type, get_objects
+from BPt.pipeline.Scorers import get_scorers_by_type
 
-from ABCD_ML.pipeline.Scorers import AVALIABLE as AVALIABLE_SCORERS
-from ABCD_ML.pipeline.Scorers import SCORERS
+from BPt.pipeline.Scorers import AVALIABLE as AVALIABLE_SCORERS
+from BPt.pipeline.Scorers import SCORERS
 
-from ABCD_ML.pipeline.Models import AVALIABLE as AVALIABLE_MODELS
-from ABCD_ML.pipeline.Models import MODELS
+from BPt.pipeline.Models import AVALIABLE as AVALIABLE_MODELS
+from BPt.pipeline.Models import MODELS
 
-from ABCD_ML.pipeline.Loaders import LOADERS
-from ABCD_ML.pipeline.Transformers import TRANSFORMERS
-from ABCD_ML.pipeline.Scalers import SCALERS
-from ABCD_ML.pipeline.Imputers import IMPUTERS
+from BPt.pipeline.Loaders import LOADERS
+from BPt.pipeline.Transformers import TRANSFORMERS
+from BPt.pipeline.Scalers import SCALERS
+from BPt.pipeline.Imputers import IMPUTERS
 
-from ABCD_ML.pipeline.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
-from ABCD_ML.pipeline.Feature_Selectors import SELECTORS
+from BPt.pipeline.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
+from BPt.pipeline.Feature_Selectors import SELECTORS
 
-from ABCD_ML.pipeline.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
-from ABCD_ML.pipeline.Ensembles import ENSEMBLES
+from BPt.pipeline.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
+from BPt.pipeline.Ensembles import ENSEMBLES
 
-from ABCD_ML.pipeline.Feat_Importances import IMPORTANCES
+from BPt.pipeline.Feat_Importances import IMPORTANCES
 
-from ABCD_ML.helpers.Default_Params import PARAMS
-from ABCD_ML.helpers.Docstring_Helpers import get_name, get_scorer_name
+from BPt.helpers.Default_Params import PARAMS
+from BPt.helpers.Docstring_Helpers import get_name, get_scorer_name
 
 
 def main_category(lines, name):
@@ -140,7 +140,7 @@ problem_types = ['binary', 'regression', 'categorical']
 lines = []
 
 lines = main_category(lines, 'Models')
-lines.append('Different base obj choices for the :class:`Model<ABCD_ML.Model>` are shown below')
+lines.append('Different base obj choices for the :class:`Model<BPt.Model>` are shown below')
 lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
 lines.append('The avaliable models are further broken down by which can work' +
@@ -155,8 +155,8 @@ lines = main_category(lines, 'Scorers')
 lines.append('Different availible choices for the `scorer` parameter' +
              ' are shown below.')
 lines.append('`scorer` is accepted by ' +
-             ':class:`Problem_Spec<ABCD_ML.Problem_Spec>`, :class:`Param_Search<ABCD_ML.Param_Search>`' +
-             ' and :class:`Feat_Importance<ABCD_ML.Feat_Importance>`')
+             ':class:`Problem_Spec<BPt.Problem_Spec>`, :class:`Param_Search<BPt.Param_Search>`' +
+             ' and :class:`Feat_Importance<BPt.Feat_Importance>`')
 lines.append('The str indicator for each `scorer` is represented by' +
              'the sub-heading (within "")')
 lines.append('The avaliable scorers are further broken down by which can' +
@@ -169,7 +169,7 @@ lines = add_block(lines, problem_types)
 
 
 lines = main_category(lines, 'Loaders')
-lines.append('Different base obj choices for the :class:`Loader<ABCD_ML.Loader>` are shown below')
+lines.append('Different base obj choices for the :class:`Loader<BPt.Loader>` are shown below')
 lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
 lines.append('Additionally, a link to the original models documentation ' +
@@ -179,7 +179,7 @@ lines = add_no_type_block(lines, LOADERS)
 
 
 lines = main_category(lines, 'Imputers')
-lines.append('Different base obj choices for the :class:`Imputer<ABCD_ML.Imputer>` are shown below')
+lines.append('Different base obj choices for the :class:`Imputer<BPt.Imputer>` are shown below')
 lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
 lines.append('Additionally, a link to the original models documentation ' +
@@ -190,7 +190,7 @@ lines = add_no_type_block(lines, IMPUTERS)
 
 
 lines = main_category(lines, 'Scalers')
-lines.append('Different base obj choices for the :class:`Scaler<ABCD_ML.Scaler>` are shown below')
+lines.append('Different base obj choices for the :class:`Scaler<BPt.Scaler>` are shown below')
 lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
 lines.append('Additionally, a link to the original models documentation ' +
@@ -200,7 +200,7 @@ lines = add_no_type_block(lines, SCALERS)
 
 
 lines = main_category(lines, 'Transformers')
-lines.append('Different base obj choices for the :class:`Transformer<ABCD_ML.Transformer>` are shown below')
+lines.append('Different base obj choices for the :class:`Transformer<BPt.Transformer>` are shown below')
 lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
 lines.append('Additionally, a link to the original models documentation ' +
@@ -210,7 +210,7 @@ lines = add_no_type_block(lines, TRANSFORMERS)
 
 
 # lines = main_category(lines, 'Samplers')
-# lines.append('Different base obj choices for the :class:`Sampler<ABCD_ML.Sampler>` are shown below')
+# lines.append('Different base obj choices for the :class:`Sampler<BPt.Sampler>` are shown below')
 # lines.append('The exact str indicator, as passed to the `obj` param is represented' +
 #             ' by the sub-heading (within "")')
 # lines.append('Additionally, a link to the original models documentation ' +
@@ -220,7 +220,7 @@ lines = add_no_type_block(lines, TRANSFORMERS)
 
 
 lines = main_category(lines, 'Feat Selectors')
-lines.append('Different base obj choices for the :class:`Feat_Selector<ABCD_ML.Feat_Selector>` are shown below')
+lines.append('Different base obj choices for the :class:`Feat_Selector<BPt.Feat_Selector>` are shown below')
 lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
 lines.append('The avaliable feat selectors are further broken down by which can work' +
@@ -232,7 +232,7 @@ lines = add_block(lines, problem_types, AVALIABLE_SELECTORS, SELECTORS)
 
 
 lines = main_category(lines, 'Ensemble Types')
-lines.append('Different base obj choices for the :class:`Ensemble<ABCD_ML.Ensemble>` are shown below')
+lines.append('Different base obj choices for the :class:`Ensemble<BPt.Ensemble>` are shown below')
 lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
 lines.append('The avaliable ensembles are further broken down by which can work' +

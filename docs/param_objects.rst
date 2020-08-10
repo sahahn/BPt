@@ -1,4 +1,4 @@
-.. currentmodule:: ABCD_ML
+.. currentmodule:: BPt
 
 Model_Pipeline
 ==============

@@ -7,8 +7,8 @@ Core Concepts
 Pipeline Objects
 ================
 
-Across all base :class:`Model_Pipeline<ABCD_ML.Model_Pipeline>` pieces, e.g., :class:`Model<ABCD_ML.Model>`
-or :class:`Scaler<ABCD_ML.Scaler>`, there exists an `obj` param when initizalizing these objects. This parameter
+Across all base :class:`Model_Pipeline<BPt.Model_Pipeline>` pieces, e.g., :class:`Model<BPt.Model>`
+or :class:`Scaler<BPt.Scaler>`, there exists an `obj` param when initizalizing these objects. This parameter
 can broadly refer to either a str, which indicates a valid pre-defined custom obj for that piece, or depending
 on the pieces, this parameter can be passed a custom object directly.
 
@@ -18,13 +18,13 @@ on the pieces, this parameter can be passed a custom object directly.
 Params
 ======
 
-On the back-end, if a :class:`Param_Search<ABCD_ML.Param_Search>` object is passed when creating a
-:class:`Model_Pipeline <ABCD_ML.Model_Pipeline>`, then a hyperparameter search will be conducted.
+On the back-end, if a :class:`Param_Search<BPt.Param_Search>` object is passed when creating a
+:class:`Model_Pipeline <BPt.Model_Pipeline>`, then a hyperparameter search will be conducted.
 All Hyperparameter search types are implemented on the backend with facebook's
 `Nevergrad <https://github.com/facebookresearch/nevergrad>`_ library.
 
 Specific hyperparameters distributions in which to search over are set within their corresponding
-base Model_Pipeline object, e.g., the params argument is :class:`Model<ABCD_ML.Model>`. For any object
+base Model_Pipeline object, e.g., the params argument is :class:`Model<BPt.Model>`. For any object
 with a params argument you can set an associated hyperparameter distribution, which specifies values to
 search over (again assuming that param_search != None, if param_search is None, only passed params with constant
 values will be applied to object of interest, and any with associated Nevergrad parameter distributions will just
@@ -33,13 +33,13 @@ be ignored).
 You have two different options in terms of input that params can accept, these are:
 
     - Select a preset distribution
-        To select a preset, ABCD_ML defined, distribution, the selected object must first
+        To select a preset, BPt defined, distribution, the selected object must first
         have atleast one preset distribution. These options can be found for each object
         specifically in the documentation under where that object is defined. Specifially,
         they will be listed with both an integer index, and a corresponding str name
         (see :ref:`Models`).
         
-        For example, in creating a binary :class:`Model<ABCD_ML.Model>` we could pass:
+        For example, in creating a binary :class:`Model<BPt.Model>` we could pass:
         
         ::
             
@@ -60,7 +60,7 @@ You have two different options in terms of input that params can accept, these a
         you can, you just need to specify it as a python dictionary of 
         `nevergrad parameters <https://facebookresearch.github.io/nevergrad/parametrization.html>`_ 
         (follow the link to learn more about how to specify nevergrad params).
-        You can also go into the source code for ABCD_ML, specifically ABCD_ML/helpers/Default_Params.py,
+        You can also go into the source code for BPt, specifically BPt/helpers/Default_Params.py,
         to see how the preset distributions are defined, as a further example.
 
         Specifically the dictionary of params should follow the scikit_learn param dictionary format,
@@ -82,8 +82,8 @@ You have two different options in terms of input that params can accept, these a
         (Note: extra params can also be used to pass static values, and extra_params takes precedence
         if a param is passed to both params and extra_params).
 
-The special input wrapper :class:`Select<ABCD_ML.Select>` can also be used to implicitly introduce hyperparameters
-into the :class:`Model_Pipeline <ABCD_ML.Model_Pipeline>`. 
+The special input wrapper :class:`Select<BPt.Select>` can also be used to implicitly introduce hyperparameters
+into the :class:`Model_Pipeline <BPt.Model_Pipeline>`. 
 
 
 .. _Scopes:
@@ -92,9 +92,9 @@ Scopes
 =======
 
 During the modeling and testing phases, it is often desirable to specify a subset of the total loaded columns/features.
-Within ABCD_ML the way subsets of columns can be specifed to different functions is through scope parameters.
+Within BPt the way subsets of columns can be specifed to different functions is through scope parameters.
 
-The `scope` argument can be found across different :class:`Model_Pipeline <ABCD_ML.Model_Pipeline>` pieces and within Problem_Spec.
+The `scope` argument can be found across different :class:`Model_Pipeline <BPt.Model_Pipeline>` pieces and within Problem_Spec.
 
 The base preset str options that can be passed to scope are:
 
@@ -185,14 +185,14 @@ For example, assuming we have the same loaded columns as above, and that 'name2'
     selected_columns = ['name2', 'name3']
 
 Scopes more generally are associated 1:1 with their corresponding base Model_Pipeline objects (except for the Problem_Spec scope).
-One useful function designed specifically for objects with Scope is the :class:`Duplicate<ABCD_ML.Duplicate>` Inute Wrapper, which
+One useful function designed specifically for objects with Scope is the :class:`Duplicate<BPt.Duplicate>` Inute Wrapper, which
 allows us to conviently replicate pipeline objects across a number of scopes. This functionality is especially useful with
-:class:`Transformer<ABCD_ML.Transformer>` objects, (though still usable with other pipeline pieces, though other pieces
+:class:`Transformer<BPt.Transformer>` objects, (though still usable with other pipeline pieces, though other pieces
 tend to work on each feature independenly, ruining some of the benefit). For example consider a case where you would like to
 run a PCA tranformer on different groups of variables seperately, or say you wanted to use a categorical encoder on 15 different
-categorical variables. Rather then having to manually type out every combination or write a for loop, you can use :class:`Duplicate<ABCD_ML.Duplicate>`.
+categorical variables. Rather then having to manually type out every combination or write a for loop, you can use :class:`Duplicate<BPt.Duplicate>`.
 
-See :class:`Duplicate<ABCD_ML.Duplicate>` for more information on how to use this funcationality.
+See :class:`Duplicate<BPt.Duplicate>` for more information on how to use this funcationality.
 
 
 .. _Extra Params:
@@ -200,13 +200,13 @@ See :class:`Duplicate<ABCD_ML.Duplicate>` for more information on how to use thi
 Extra Params
 =============
 
-All base :class:`Model_Pipeline <ABCD_ML.Model_Pipeline>` have the input argument `extra params`. This parameter is designed
+All base :class:`Model_Pipeline <BPt.Model_Pipeline>` have the input argument `extra params`. This parameter is designed
 to allow passing additional values to the base objects, seperate from :ref:`Params`. Take the case where you
 are using a preset model, with a preset parameter distribution, but you only want to change 1 parameter in the model while still keeping
 the rest of the parameters associated with the param distribution. In this case, you could pass that value in extra params.
 
 `extra params` are passed as a dictionary, where the keys are the names of parameters (only those accessible to the base classes init), for example
-if we were selecting the 'dt' ('decision tree') :class:`Model<ABCD_ML.Model>`, and we wanted to use the first built in
+if we were selecting the 'dt' ('decision tree') :class:`Model<BPt.Model>`, and we wanted to use the first built in
 preset distribution for :ref:`Params`, but then fix the number of `max_features`, we could do it is as:
 
 ::
@@ -221,7 +221,7 @@ preset distribution for :ref:`Params`, but then fix the number of `max_features`
 Custom Input Objects
 =====================
 
-Custom input objects can be passed to the `obj` parameter for a number of base :class:`Model_Pipeline <ABCD_ML.Model_Pipeline>` pieces.
+Custom input objects can be passed to the `obj` parameter for a number of base :class:`Model_Pipeline <BPt.Model_Pipeline>` pieces.
 
 There are though, depending on which base piece is being passed, different considerations you may have to make. More information will be
 provided here soon.

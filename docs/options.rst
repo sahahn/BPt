@@ -4,7 +4,7 @@
 Models
 ******
 
-Different base obj choices for the :class:`Model<ABCD_ML.Model>` are shown below
+Different base obj choices for the :class:`Model<BPt.Model>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
 The avaliable models are further broken down by which can workwith different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
@@ -265,7 +265,7 @@ binary
 "mlp classifier"
 ****************
 
-  Base Class Documenation: :class:`ABCD_ML.extensions.MLP.MLPClassifier_Wrapper`
+  Base Class Documenation: :class:`BPt.extensions.MLP.MLPClassifier_Wrapper`
 
   Param Distributions
 
@@ -708,7 +708,7 @@ regression
 "mlp regressor"
 ***************
 
-  Base Class Documenation: :class:`ABCD_ML.extensions.MLP.MLPRegressor_Wrapper`
+  Base Class Documenation: :class:`BPt.extensions.MLP.MLPRegressor_Wrapper`
 
   Param Distributions
 

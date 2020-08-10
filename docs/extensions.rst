@@ -2,13 +2,13 @@
 Extensions
 **********
 
-.. currentmodule:: ABCD_ML
+.. currentmodule:: BPt
 
 Winsorizer
 ==========
-.. autoclass:: ABCD_ML.extensions.Scalers.Winsorizer
+.. autoclass:: BPt.extensions.Scalers.Winsorizer
 
 
 FeatureSelector
 ===============
-.. autoclass:: ABCD_ML.extensions.Feat_Selectors.FeatureSelector
+.. autoclass:: BPt.extensions.Feat_Selectors.FeatureSelector

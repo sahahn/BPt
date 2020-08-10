@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
-setup(name='ABCD_ML',
+setup(name='BPt',
       version='1.2',
-      description='Python based Machine Learning library, for tabular ' +
-                  'Neuroimaging data, specifically geared towards the' +
-                  ' ABCD dataset.',
-      url='http://github.com/sahahn/ABCD_ML',
+      description='The Brain Predictability toolbox (BPt) is a ' +
+      'Python based machine learning library designed to work with ' +
+      'a range of neuroimaging data.',
+      url='http://github.com/sahahn/BPt',
       author='Sage Hahn',
       author_email='sahahn@euvm.edu',
       license='MIT',

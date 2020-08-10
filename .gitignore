@@ -6,10 +6,8 @@ dist/*
 *old
 
 
-ABCD_ML/tests/test_data/*
 cover/*
 
-ABCD_ML/Train_Light_GBM.py
 Examples/Test_Samplers.ipynb
 Examples/Full_Examples/philips.txt
 Examples/fake_*
@@ -17,7 +15,6 @@ Examples/fake_*
 .vscode
 Data/*
 
-ABCD_ML/old_temp_stuff.py
 
 # C extensions
 *.so

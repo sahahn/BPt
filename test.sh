@@ -1,2 +1,2 @@
 #!/bin/bash
-nosetests ABCD_ML/tests/ --with-coverage --cover-package=ABCD_ML --cover-html
+nosetests BPt/tests/ --with-coverage --cover-package=BPt --cover-html

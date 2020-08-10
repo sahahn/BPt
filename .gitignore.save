@@ -6,12 +6,8 @@ dist/*
 
 cover/*
 
-ABCD_ML/Train_Light_GBM.py
-
 .vscode
 Data/*
-
-ABCD_ML/old_temp_stuff.py
 
 # C extensions
 *.so

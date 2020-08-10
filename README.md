@@ -1,9 +1,6 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/sahahn/ABCD_ML/master/docs/logo/logo3.png"/>
-</p>
-  
+Brain Predictability Toolbox is a Python based Machine Learning library for working with Neuroimaging data.
 
-ABCD_ML is a Python based Machine Learning library for working with Neuroimaging data, specifically, but not neccisarily geared towards the ABCD dataset.
+This library is particularly suited towards working with large neuroimaging datasets, where a large number of subjects with potentially multimodal data are avaliable.
 
 Please check out the documentation at:
 <https://abcd-ml.readthedocs.io/en/latest/>

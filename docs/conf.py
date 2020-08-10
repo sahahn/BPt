@@ -57,7 +57,7 @@ html_theme_path = ["_themes"]
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
 
-html_logo = 'logo/logo3.png'
+# html_logo = 'logo/logo3.png'
 autoclass_content = 'both'
 
 html_theme_options = {'collapse_navigation': False,

@@ -18,7 +18,7 @@ binary
 
   Param Distributions
 
-	0. "base dt" ::
+	0. "default" ::
 
 		defaults only
 
@@ -269,7 +269,7 @@ binary
 
   Param Distributions
 
-	0. "base mlp" ::
+	0. "default" ::
 
 		defaults only
 
@@ -371,7 +371,7 @@ binary
 
   Param Distributions
 
-	0. "base rf" ::
+	0. "base rf regressor" ::
 
 		n_estimators: 100
 
@@ -483,8 +483,8 @@ binary
 		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
 		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
 		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
-		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
 
 	2. "xgb classifier dist2" ::
 
@@ -512,6 +512,30 @@ binary
 
 regression
 ==========
+"ard regressor"
+***************
+
+  Base Class Documenation: :class:`sklearn.linear_model.ARDRegression`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
+"bayesian ridge regressor"
+**************************
+
+  Base Class Documenation: :class:`sklearn.linear_model.BayesianRidge`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 "dt regressor"
 **************
 
@@ -519,7 +543,7 @@ regression
 
   Param Distributions
 
-	0. "base dt" ::
+	0. "default" ::
 
 		defaults only
 
@@ -610,11 +634,11 @@ regression
 
   Param Distributions
 
-	0. "base knn" ::
+	0. "base knn regression" ::
 
 		n_neighbors: 5
 
-	1. "knn dist" ::
+	1. "knn dist regression" ::
 
 		weights: TransitionChoice(choices=Tuple(uniform,distance),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):uniform
 		n_neighbors: Scalar{int,Cl(2,25)}[sigma=Log{exp=1.2}]:14
@@ -712,7 +736,7 @@ regression
 
   Param Distributions
 
-	0. "base mlp" ::
+	0. "default" ::
 
 		defaults only
 
@@ -853,6 +877,18 @@ regression
 		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
 
 
+"tweedie regressor"
+*******************
+
+  Base Class Documenation: :class:`sklearn.linear_model.glm.TweedieRegressor`
+
+  Param Distributions
+
+	0. "default" ::
+
+		defaults only
+
+
 "xgb regressor"
 ***************
 
@@ -873,8 +909,8 @@ regression
 		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
 		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
 		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
-		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
 
 	2. "xgb dist2" ::
 
@@ -909,7 +945,7 @@ categorical
 
   Param Distributions
 
-	0. "base dt" ::
+	0. "default" ::
 
 		defaults only
 
@@ -1156,11 +1192,11 @@ categorical
 "mlp classifier"
 ****************
 
-  Base Class Documenation: :class:`ABCD_ML.extensions.MLP.MLPClassifier_Wrapper`
+  Base Class Documenation: :class:`BPt.extensions.MLP.MLPClassifier_Wrapper`
 
   Param Distributions
 
-	0. "base mlp" ::
+	0. "default" ::
 
 		defaults only
 
@@ -1262,7 +1298,7 @@ categorical
 
   Param Distributions
 
-	0. "base rf" ::
+	0. "base rf regressor" ::
 
 		n_estimators: 100
 
@@ -1374,8 +1410,8 @@ categorical
 		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
 		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
 		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
-		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
 
 	2. "xgb classifier dist2" ::
 
@@ -1408,7 +1444,7 @@ Scorers
 *******
 
 Different availible choices for the `scorer` parameter are shown below.
-`scorer` is accepted by :class:`Problem_Spec<ABCD_ML.Problem_Spec>`, :class:`Param_Search<ABCD_ML.Param_Search>` and :class:`Feat_Importance<ABCD_ML.Feat_Importance>`
+`scorer` is accepted by :class:`Problem_Spec<BPt.Problem_Spec>`, :class:`Param_Search<BPt.Param_Search>` and :class:`Feat_Importance<BPt.Feat_Importance>`
 The str indicator for each `scorer` is represented bythe sub-heading (within "")
 The avaliable scorers are further broken down by which can work with different problem_types.
 Additionally, a link to the original models documentation is shown.
@@ -1798,7 +1834,7 @@ categorical
 Loaders
 *******
 
-Different base obj choices for the :class:`Loader<ABCD_ML.Loader>` are shown below
+Different base obj choices for the :class:`Loader<BPt.Loader>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
@@ -1807,7 +1843,7 @@ All Problem Types
 "identity"
 **********
 
-  Base Class Documenation: :class:`ABCD_ML.extensions.Loaders.Identity`
+  Base Class Documenation: :class:`BPt.extensions.Loaders.Identity`
 
   Param Distributions
 
@@ -1819,7 +1855,7 @@ All Problem Types
 "surface rois"
 **************
 
-  Base Class Documenation: :class:`ABCD_ML.extensions.Loaders.SurfLabels`
+  Base Class Documenation: :class:`BPt.extensions.Loaders.SurfLabels`
 
   Param Distributions
 
@@ -1843,7 +1879,7 @@ All Problem Types
 "connectivity"
 **************
 
-  Base Class Documenation: :class:`ABCD_ML.extensions.Loaders.Connectivity`
+  Base Class Documenation: :class:`BPt.extensions.Loaders.Connectivity`
 
   Param Distributions
 
@@ -1859,7 +1895,7 @@ All Problem Types
 Imputers
 ********
 
-Different base obj choices for the :class:`Imputer<ABCD_ML.Imputer>` are shown below
+Different base obj choices for the :class:`Imputer<BPt.Imputer>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 Note that if the iterative imputer is requested, base_model must also be passed.
@@ -1934,7 +1970,7 @@ All Problem Types
 Scalers
 *******
 
-Different base obj choices for the :class:`Scaler<ABCD_ML.Scaler>` are shown below
+Different base obj choices for the :class:`Scaler<BPt.Scaler>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
@@ -2022,7 +2058,7 @@ All Problem Types
 "winsorize"
 ***********
 
-  Base Class Documenation: :class:`ABCD_ML.extensions.Scalers.Winsorizer`
+  Base Class Documenation: :class:`BPt.extensions.Scalers.Winsorizer`
 
   Param Distributions
 
@@ -2078,7 +2114,7 @@ All Problem Types
 Transformers
 ************
 
-Different base obj choices for the :class:`Transformer<ABCD_ML.Transformer>` are shown below
+Different base obj choices for the :class:`Transformer<BPt.Transformer>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
 
@@ -2372,7 +2408,7 @@ All Problem Types
 Feat Selectors
 **************
 
-Different base obj choices for the :class:`Feat_Selector<ABCD_ML.Feat_Selector>` are shown below
+Different base obj choices for the :class:`Feat_Selector<BPt.Feat_Selector>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
 The avaliable feat selectors are further broken down by which can workwith different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.
@@ -2398,7 +2434,7 @@ binary
 "selector"
 **********
 
-  Base Class Documenation: :class:`ABCD_ML.extensions.Feat_Selectors.FeatureSelector`
+  Base Class Documenation: :class:`BPt.extensions.Feat_Selectors.FeatureSelector`
 
   Param Distributions
 
@@ -2420,12 +2456,12 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f2dcb147b90>
+		score_func: <function f_classif at 0x7f48ec1127a0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f2dcb147b90>
+		score_func: <function f_classif at 0x7f48ec1127a0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2463,7 +2499,7 @@ regression
 "selector"
 **********
 
-  Base Class Documenation: :class:`ABCD_ML.extensions.Feat_Selectors.FeatureSelector`
+  Base Class Documenation: :class:`BPt.extensions.Feat_Selectors.FeatureSelector`
 
   Param Distributions
 
@@ -2485,12 +2521,12 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f2dcb147f80>
+		score_func: <function f_regression at 0x7f48ec112b90>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f2dcb147f80>
+		score_func: <function f_regression at 0x7f48ec112b90>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2528,7 +2564,7 @@ categorical
 "selector"
 **********
 
-  Base Class Documenation: :class:`ABCD_ML.extensions.Feat_Selectors.FeatureSelector`
+  Base Class Documenation: :class:`BPt.extensions.Feat_Selectors.FeatureSelector`
 
   Param Distributions
 
@@ -2550,12 +2586,12 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f2dcb147b90>
+		score_func: <function f_classif at 0x7f48ec1127a0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f2dcb147b90>
+		score_func: <function f_classif at 0x7f48ec1127a0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
 
 
@@ -2578,7 +2614,7 @@ categorical
 Ensemble Types
 **************
 
-Different base obj choices for the :class:`Ensemble<ABCD_ML.Ensemble>` are shown below
+Different base obj choices for the :class:`Ensemble<BPt.Ensemble>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
 The avaliable ensembles are further broken down by which can workwith different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.

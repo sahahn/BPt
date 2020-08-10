@@ -247,7 +247,7 @@ def Evaluate(self,
     (`splits` and `n_repeats`). While Evaluate's ideal usage is
     an expirimental context for exploring
     different choices of :class:`Model_Pipeline` and then ultimately
-    with :func:`Test<ABCD_ML.Test>` -
+    with :func:`Test<ML.Test>` -
     if used carefully (i.e., dont try 50 Pipelines's and only report
     the one that does best), it can be used
     on a full dataset.
@@ -256,14 +256,16 @@ def Evaluate(self,
     ------------
     model_pipeline : :class:`Model_Pipeline`
 
-        The passed `model_pipeline` should be an instance of the ABCD_ML params class :class:`Model_Pipeline`.
+        The passed `model_pipeline` should be an instance of the BPt params
+        class :class:`Model_Pipeline`.
         This object defines the underlying model pipeline to be evaluated.
 
-        See :class:`Model_Pipeline` for more information / how to create a the model pipeline.
+        See :class:`Model_Pipeline` for more information /
+        how to create a the model pipeline.
 
     problem_spec : :class:`Problem_Spec`
 
-        `problem_spec` accepts an instance of the ABCD_ML
+        `problem_spec` accepts an instance of the BPt.ML
         params class :class:`Problem_Spec`.
         This object is essentially a wrapper around commonly used
         parameters needs to define the context
@@ -279,7 +281,7 @@ def Evaluate(self,
         controls the type of CV, i.e., specifies what the train and validation
         folds should be. These splits are further determined by the subjects passed to `train_subjects`.
         Notably, the splits defined will respect any special split behavior as defined in
-        :func:`Define_Validation_Strategy<ABCD_ML.Define_Validation_Strategy>`.
+        :func:`Define_Validation_Strategy<ML.Define_Validation_Strategy>`.
 
         Specifically, options for split are:
 
@@ -385,9 +387,9 @@ def Evaluate(self,
     run_name : str or 'default', optional
         Each run of Evaluate can be optionally associated with a specific `run_name`. This name
         is used to save scores in self.eval_scores, and also if `save_results` in
-        :func:`Set_Default_ML_Verbosity<ABCD_ML.Set_Default_ML_Verbosity>` is set to True,
+        :func:`Set_Default_ML_Verbosity<ML.Set_Default_ML_Verbosity>` is set to True,
         then will be used as the name output from Evaluate as saved as in the specific log_dr
-        (if any, and as set when Init'ing the :class:`ABCD_ML <ABCD_ML.ABCD_ML>` class object),
+        (if any, and as set when Init'ing the :class:`ML <BPt.BPt_ML>` class object),
         with '.eval' appended to the name.
 
         If left as 'default', will come up with a kind of terrible name passed on the underlying
@@ -536,7 +538,7 @@ def Test(self,
          run_name='default'):
     ''' The test function is one of the main interfaces for testing a specific
     :class:`Model_Pipeline`. Test is conceptually different from
-    :func:`Evaluate<ABCD_ML.Evaluate>`
+    :func:`Evaluate<ML.Evaluate>`
     in that it is designed to contrust / train a :class:`Model_Pipeline`
     on one discrete set of `train_subjects`
     and evaluate it on a further discrete set of `test_subjects`.
@@ -548,16 +550,21 @@ def Test(self,
     ------------
     model_pipeline : :class:`Model_Pipeline`
         The passed `model_pipeline` should be an instance of the
-        ABCD_ML params class :class:`Model_Pipeline`.
+        BPt params class :class:`Model_Pipeline`.
         This object defines the underlying model pipeline to be evaluated.
 
-        See :class:`Model_Pipeline` for more information / how to create a the model pipeline.
+        See :class:`Model_Pipeline` for more information / how to
+        create a the model pipeline.
 
     problem_spec : :class:`Problem_Spec`
-        `problem_spec` accepts an instance of the ABCD_ML params class :class:`Problem_Spec`.
-        This object is essentially a wrapper around commonly used parameters needs to define the context
-        the model pipeline should be evaluated in. It includes parameters like problem_type, scorer, n_jobs, random_state, etc...
-        See :class:`Problem_Spec` explicitly for more information and for how to create an instance of this object.
+        `problem_spec` accepts an instance of the BPt params
+        class :class:`Problem_Spec`.
+        This object is essentially a wrapper around commonly
+        used parameters needs to define the context
+        the model pipeline should be evaluated in. It includes parameters
+        like problem_type, scorer, n_jobs, random_state, etc...
+        See :class:`Problem_Spec` explicitly for more information
+        and for how to create an instance of this object.
 
     train_subjects : str, array-like or Value_Subset, optional
         This parameter determines the set of training subjects which are
@@ -617,13 +624,14 @@ def Test(self,
         ::
 
             default = 'test'
-       
+
     run_name : str or 'default', optional
-        Each run of test can be optionally associated with a specific `run_name`. This name
+        Each run of test can be optionally
+         associated with a specific `run_name`. This name
         is used to save scores in self.test_scores, and also if `save_results` in
-        :func:`Set_Default_ML_Verbosity<ABCD_ML.Set_Default_ML_Verbosity>` is set to True,
+        :func:`Set_Default_ML_Verbosity<ML.Set_Default_ML_Verbosity>` is set to True,
         then will be used as the name output from Test as saved as in the specific log_dr
-        (if any, and as set when Init'ing the :class:`ABCD_ML <ABCD_ML.ABCD_ML>` class object),
+        (if any, and as set when Init'ing the :class:`ML <BPt.BPt_ML>` class object),
         with .test appended to the name.
 
         If left as 'default', will come up with a kind of terrible name passed on the underlying
@@ -632,7 +640,7 @@ def Test(self,
         ::
 
             default = 'default'
-  
+
     Returns
     ----------
     results : dict

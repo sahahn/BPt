@@ -36,7 +36,7 @@ def _get_CV(self, CV_params, show=False, show_original=True):
     stratify = CV_params.stratify
 
     if groups is not None and stratify is not None:
-        print('Warning: ABCD_ML does not currently support groups and',
+        print('Warning: BPt does not currently support groups and',
               'stratify together!')
 
     if groups is not None:
@@ -270,7 +270,7 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         order to be able to recreate an exact test set.
 
         If set to default, will use the value saved in self.random_state,
-        (as set in :class:`ABCD_ML.ABCD_ML` upon class init).
+        (as set in :class:`BPt.BPt_ML` upon class init).
 
         (default = 'default')
     '''

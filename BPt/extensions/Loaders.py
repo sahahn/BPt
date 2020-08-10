@@ -23,7 +23,7 @@ class Identity(BaseEstimator, TransformerMixin):
 
 
 def load_surf(surf):
-    '''Helper function to load a surface within ABCD_ML, w/ appropriate
+    '''Helper function to load a surface within BPt, w/ appropriate
     checks for important'''
 
     # If str, assume file path

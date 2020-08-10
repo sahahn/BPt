@@ -2,7 +2,7 @@
 _Data.py
 ====================================
 Main class extension file for the Loading functionality methods of
-the ABCD_ML class.
+the ML class.
 """
 import pandas as pd
 import numpy as np
@@ -2705,7 +2705,7 @@ def _load_datasets(self, locs, df, load_params, ext=None):
     Returns
     ----------
     pandas DataFrame
-        ABCD ML formatted pd DataFrame, with the loaded
+        BPt formatted pd DataFrame, with the loaded
         and merged minimally proc'ed data.
     '''
 
@@ -2790,7 +2790,7 @@ def _load_dataset(self, loc, dataset_type, load_params):
     Returns
     ----------
     pandas DataFrame
-        ABCD ML formatted pd DataFrame, with the loaded
+        BPt formatted pd DataFrame, with the loaded
         minimally proc'ed data.
     '''
 
@@ -3000,7 +3000,7 @@ def _proc_df(self, data, load_params):
     after = data.shape[0]
 
     if before != after:
-        self._print('Note: ABCD_ML does not currently support',
+        self._print('Note: BPt does not currently support',
                     'duplicate subjects loaded as seperate rows!',
                     before - after, 'subjects have been dropped',
                     'accordingly.')
@@ -3085,21 +3085,6 @@ def _process_subject_name(self, subject):
 
 
 def _drop_na(self, data, drop_na=True):
-    '''Wrapper function to drop rows with NaN values.
-
-    Parameters
-    ----------
-    data : pandas DataFrame
-        ABCD_ML formatted.
-
-    drop_na : drop_na param
-        ABCD_ML drop_na param
-
-    Returns
-    ----------
-    pandas DataFrame
-        Input df, with dropped rows for NaN values
-    '''
 
     # Seperate data from data files if applicable
     file_keys = [key for key in list(data) if key in self.data_file_keys]
@@ -3142,7 +3127,7 @@ def _filter_by_eventname(self, data, eventname, eventname_col):
     Parameters
     ----------
     data : pandas DataFrame
-        ABCD_ML formatted.
+        BPt formatted.
 
     eventname : value or list of values
         The value that if eventname_col is equal to,
@@ -3217,7 +3202,7 @@ def _drop_excluded(self, data):
     Parameters
     ----------
     data : pandas DataFrame
-        ABCD_ML formatted.
+        BPt formatted.
 
     Returns
     ----------
@@ -3241,7 +3226,7 @@ def _drop_included(self, data):
     Parameters
     ----------
     data : pandas DataFrame
-        ABCD_ML formatted.
+        BPt formatted.
 
     Returns
     ----------

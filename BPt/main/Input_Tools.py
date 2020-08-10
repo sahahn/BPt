@@ -1,5 +1,5 @@
 class Select(list):
-    '''The Select object is an ABCD_ML specific Input Wrapper designed
+    '''The Select object is an BPt specific Input Wrapper designed
     to allow hyper-parameter searches to include not just choice of hyper-parameter,
     but also choosing between objects (as well as their relevant distributions).
 
@@ -44,8 +44,9 @@ def is_select(obj):
     except AttributeError:
         return False
 
+
 class Duplicate(list):
-    '''The Duplicate object is an ABCD_ML specific Input wrapper.
+    '''The Duplicate object is an BPt specific Input wrapper.
     It is designed to be cast on a list of valid scope parameters, e.g., 
 
     ::
@@ -54,14 +55,15 @@ class Duplicate(list):
 
     Such that the corresponding pipeline piece will be duplicated for every
     entry within Duplicate. In this case, two copies of the base object will be
-    made, where both have the same remaining non-scope params (i.e., obj, params, extra_params),
-    but one will have a scope of 'float' and the other 'cat'. 
-    
+    made, where both have the same remaining non-scope params
+    (i.e., obj, params, extra_params),
+    but one will have a scope of 'float' and the other 'cat'.
+
     Consider the following exentended example, where loaders is being specified
     when creating an instance of :class:`Model_Pipeline`:
 
     ::
-        
+
         loaders = Loader(obj='identity', scope=Duplicate(['float', 'cat']))
 
     Is transformed in post processing / equivalent to
@@ -77,8 +79,10 @@ class Duplicate(list):
 
     def __repr__(self):
         return 'Duplicate(' + super().__repr__() + ')'
+
     def __str__(self):
         return self.__repr__()
+
 
 def is_duplicate(obj):
 
@@ -90,10 +94,12 @@ def is_duplicate(obj):
     except AttributeError:
         return False
 
+
 class Pipe(list):
-    '''The Pipe object is an ABCD_ML specific Input wrapper, designed
-    for now to work specifically within :class:`Loader`. Because loader 
-    objects within ABCD_ML are designed to work on single files at a time,
+    '''The Pipe object is an BPt specific Input wrapper, designed
+    for now to work specifically within :class:`Loader`.
+    Because loader 
+    objects within BPt are designed to work on single files at a time,
     and further are resitricted in that they must go directly from some arbitrary
     file, shape and charteristics to outputted as a valid 2D (# Subects X # Features) array,
     it restricts potential sequential compositions. Pipe offers some utilty towards
@@ -119,14 +125,15 @@ class Pipe(list):
 
         loader = Loader(obj = Pipe(['rois', 'timeseries']))
 
-    We only passed arguments for obj above, but in our toy example as initially described we wanted to
+    We only passed arguments for obj above, but in our toy example
+    as initially described we wanted to
     further define parameters for a parameter search across both objects. See below for what different options
     for passing corresponding parameter distributions are:
 
     ::
 
         # Options loader1 and loader2 tell it explicitly no params
-        
+
         # Special case, if just default params = 0, will convert to second case internally
         loader1 = Loader(obj = Pipe(['rois', 'timeseries']),
                          params = 0)
@@ -135,19 +142,22 @@ class Pipe(list):
         loader2 = Loader(obj = Pipe(['rois', 'timeseries']),
                          params = [0, 0])
 
-        # Option 3 assumes that there are pre-defined valid class param distributions
+        # Option 3 assumes that there are pre-defined valid class param dists
         # for each of the base objects
         loader3 = Loader(obj = Pipe(['rois', 'timeseries']),
                          params = [1, 1])
 
-        # Option 4 lets set params for the 'rois' object, with a custom param distribution
+        # Option 4 lets set params for the 'rois' object, w/ custom param dists
         loader4 = Loader(obj = Pipe(['rois', 'timeseries']),
                          params = [{'some custom param dist'}, 0])
 
-    Note that still only one scope may be passed, and that scope will define the scope of the new combined loader.
-    Also note that if extra_params is passed, the same extra_params will be passed when creating both individual objects.
+    Note that still only one scope may be passed, and that scope will
+    define the scope of the new combined loader.
+    Also note that if extra_params is passed, the same extra_params will
+    be passed when creating both individual objects.
     Where extra params behavior is to add its contents, only when the name of that param appears in the base classes init, s.t.
-    there could exist a case where, if both 'rois' and 'timeseries' base objects had a parameter with the same name, passing a
+    there could exist a case where, if both 'rois' and 'timeseries'
+    base objects had a parameter with the same name, passing a
     value for that name in extra params would update them both with the passed value.
     '''
 
@@ -155,8 +165,10 @@ class Pipe(list):
 
     def __repr__(self):
         return 'Pipe(' + super().__repr__() + ')'
+
     def __str__(self):
         return self.__repr__()
+
 
 def is_pipe(obj):
 
@@ -168,37 +180,41 @@ def is_pipe(obj):
     except AttributeError:
         return False
 
+
 class Value_Subset():
-    ''' Value_Subset is special wrapper class for ABCD_ML designed to work with
-    passing `subjects` to either :class:`Param_Search`, or to the `train_subjects` or `test_subjects`
-    params in :func:`Evaluate <ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.Test>`.
+    ''' Value_Subset is special wrapper class for BPt designed to work with
+    passing `subjects` to either :class:`Param_Search`,
+    or to the `train_subjects` or `test_subjects`
+    params in :func:`Evaluate <BPt.BPt_ML.Evaluate>` and :func:`Test <BPt.BPt_ML.Test>`.
 
      This wrapper can be used as follows, just specify an object as
-     
+
      ::
-        
+
         Value_Subset(name, value)
-        
+
     Where name is the name of a loaded Strat column / feature,
     and value is the subset of values from that column to select subjects by.
-    E.g., if you wanted to select just subjects of a specific sex, and assuming a variable was
-    loaded in Strat (See :func:`Load_Strat <ABCD_ML.ABCD_ML.Load_Strat>`) you could pass:
+    E.g., if you wanted to select just subjects of a specific sex,
+    and assuming a variable was
+    loaded in Strat (See :func:`Load_Strat <BPt.BPt_ML.Load_Strat>`) you could pass:
 
     ::
 
         subjects = Value_Subset('sex', 0)
-        
-    Which would specify only subjects with 'sex' equal to 0. 
-    You may also pass a list-like set of multiple columns to the name param. In this case, the overlap
+
+    Which would specify only subjects with 'sex' equal to 0.
+    You may also pass a list-like set of multiple columns to the name param.
+    In this case, the overlap
     across all passed names will be computed, for example:
-    
+
     ::
-    
+
         subjects = Value_Subset(['sex', 'race'], 0)
-        
+
     Where 'race' is another valid loaded Strat, would select
     only subjects with a value of 0 in the computed unique overlap across 'sex' and 'race'.
-    
+
     Note it might be hard to tell what a value of 0 actually means, especially when you compose
     across multiple variables. With that in mind, as long as verbose is set to True, upon computation
     of the subset of subjects a message with be printed indicating what the passed value corresponds to

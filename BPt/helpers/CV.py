@@ -1,7 +1,7 @@
 """
 CV.py
 ====================================
-Class for performing train test splits and other cross validation for ABCD_ML
+Class for performing train test splits and other cross validation for BPt
 """
 import sklearn.model_selection as MS
 import numpy as np
@@ -26,7 +26,7 @@ class CV():
         ----------
         groups : pandas Series or None, optional
             `groups` should be passed a pandas Series,
-            by default passed from ABCD_ML.strat,
+            by default passed from ML.strat,
             where the Index are subject id's and the values are
             unique ids - where like ids are to be preserved within
             the same fold.
@@ -36,7 +36,7 @@ class CV():
 
         stratify : pandas Series or None, optional
             `groups` should be passed a pandas Series,
-            by default passed from ABCD_ML.strat,
+            by default passed from ML.strat,
             where the Index are subject id's and the values are
             unique ids - where like ids are to be as evenly distributed
             as possible between folds.
@@ -52,7 +52,7 @@ class CV():
 
         See Also
         --------
-        ABCD_ML.Define_Validation_Strategy : Main location to define CV object
+        ML.Define_Validation_Strategy : Main location to define CV object
 
         '''
 

@@ -1,7 +1,7 @@
 """
 ML_Helpers.py
 ====================================
-File with various ML helper functions for ABCD_ML.
+File with various ML helper functions for BPt.
 These are non-class functions that are used in _ML.py and Scoring.py
 """
 import numpy as np

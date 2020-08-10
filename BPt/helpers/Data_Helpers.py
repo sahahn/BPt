@@ -1,8 +1,8 @@
 """
 Data_Helpers.py
 ====================================
-Various helper functions for loading and processing data for ABCD_ML.
-Specifically, these are non-class functions used in _Data.py and ABCD_ML.py.
+Various helper functions for loading and processing data for BPt.
+Specifically, these are non-class functions used in _Data.py and ML.py.
 """
 import numpy as np
 import numpy.ma as ma
@@ -48,7 +48,7 @@ def process_binary_input(data, key, drop_val=np.nan,
     Parameters
     ----------
     data : pandas DataFrame
-        ABCD_ML formatted df. Must contain a column with `key`
+        BPt formatted df. Must contain a column with `key`
 
     key : str
         Column key of the column to process within `data` input.
@@ -67,7 +67,7 @@ def process_binary_input(data, key, drop_val=np.nan,
     Returns
     ----------
     pandas DataFrame
-        The post-processed ABCD_ML formatted input df.
+        The post-processed BPt formatted input df.
 
     sklearn LabelEncoder
         The sklearn labelencoder object mapping input to
@@ -122,7 +122,7 @@ def process_ordinal_input(data, key, drop_percent=None,
     Parameters
     ----------
     data : pandas DataFrame
-        ABCD_ML formatted df. Must contain a column with `key`
+        BPt formatted df. Must contain a column with `key`
 
     key : str
         Column key of the column to process within `data` input.
@@ -138,7 +138,7 @@ def process_ordinal_input(data, key, drop_percent=None,
     Returns
     ----------
     pandas DataFrame
-        The post-processed ABCD_ML formatted input df.
+        The post-processed BPt formatted input df.
 
     sklearn LabelEncoder
         The sklearn labelencoder object mapping input to
@@ -264,7 +264,7 @@ def filter_float_by_outlier(data, key, filter_outlier_percent,
     Parameters
     ----------
     data : pandas DataFrame
-        ABCD_ML formatted df. Must contain a column with `key`
+        BPt formatted df. Must contain a column with `key`
 
     key : str
         Column key of the column to process within `data` input.
@@ -285,7 +285,7 @@ def filter_float_by_outlier(data, key, filter_outlier_percent,
     Returns
     ----------
     pandas DataFrame
-        The post-processed ABCD_ML formatted input df.
+        The post-processed BPt formatted input df.
     '''
 
     # For length of code / readability
@@ -378,7 +378,7 @@ def get_unique_combo_df(data, keys):
     Parameters
     ----------
     data : pandas DataFrame
-        ABCD_ML formatted df. Must contain columns with `keys`.
+        BPt formatted df. Must contain columns with `keys`.
 
     keys : list
         Column keys within `data`, to merge unique values for.
@@ -386,7 +386,7 @@ def get_unique_combo_df(data, keys):
     Returns
     ----------
     pandas Series
-        Series as indexed by subject (ABCD_ML) format,
+        Series as indexed by subject (BPt) format,
         containing the merged unique values.
     '''
 
@@ -433,7 +433,7 @@ def drop_duplicate_cols(data, corr_thresh, _print=print):
     Parameters
     ----------
     data : pandas DataFrame
-        ABCD_ML formatted df.
+        BPt formatted df.
 
     corr_thresh : float
         A value between 0 and 1, where if two columns within .data
@@ -444,7 +444,7 @@ def drop_duplicate_cols(data, corr_thresh, _print=print):
     Returns
     ----------
     pandas DataFrame
-        ABCD_ML formatted df with duplicates removes
+        BPt formatted df with duplicates removes
 
     list
         The list of columns which were dropped from `data`

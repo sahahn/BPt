@@ -800,7 +800,7 @@ class Param_Search(Params):
             of hyper-parameters.
 
             Notably, the splits defined will respect any special split behavior as defined in
-            :func:`Define_Validation_Strategy<ABCD_ML.Define_Validation_Strategy>`.
+            :func:`Define_Validation_Strategy<ML.Define_Validation_Strategy>`.
 
             Specifically, options for split are:
 
@@ -836,7 +836,7 @@ class Param_Search(Params):
 
             For example, if `n_repeats` is set to 2, and `splits` is 3, then a twice repeated 3-fold CV
             will be performed to evaluate every choice of `n_iter` hyper-params (respecting any special split behavior
-            as defined in :func:`Define_Validation_Strategy<ABCD_ML.Define_Validation_Strategy>`.)
+            as defined in :func:`Define_Validation_Strategy<ML.Define_Validation_Strategy>`.)
 
             ::
 
@@ -904,16 +904,25 @@ class Param_Search(Params):
                 default = 'default'
 
         weight_scorer : bool or 'default', optional
-            `weight_scorer` describes if the scorer of interest should be weighted by
-            the number of subjects within each validation fold. So, for example, if
-            a leave-out-group CV scheme is specified to `splits`, and the groups have
-            drastically different numbers of subjects, then you may want to consider
-            weighting the final average validation metric (as computed across in this case
-            all groups used by themselves) by the number of subjects in each fold.
+            `weight_scorer` describes if the scorer of interest
+            should be weighted by
+            the number of subjects within each validation fold.
+            So, for example, if
+            a leave-out-group CV scheme is specified to `splits`,
+            and the groups have
+            drastically different numbers of subjects,
+            then you may want to consider
+            weighting the final average validation metric
+            (as computed across in this case
+            all groups used by themselves) by the number
+            of subjects in each fold.
 
-            Likewise with `scorer`, if `weight_scorer` is left as 'default', then
-            the value of `weight_scorer` will be set to the first value of
-            `weight_scorer` (if passed a list) as passed to :class:`Problem_Spec`.
+            Likewise with `scorer`, if `weight_scorer`
+            is left as 'default', then
+            the value of `weight_scorer` will be set
+            to the first value of
+            `weight_scorer` (if passed a list)
+            as passed to :class:`Problem_Spec`.
 
             ::
 
@@ -925,7 +934,7 @@ class Param_Search(Params):
             (assuming n_jobs > 1). Occassionally some choices can lead to
             odd errors.
 
-            If 'default' use the mp_context defined upon init of ABCD_ML
+            If 'default' use the mp_context defined upon init of BPt
             object.
 
             ::
@@ -981,8 +990,8 @@ class Shap_Params(Params):
         There are a number of parameters associated with using shap to determine
         feature importance. The best way to understand Shap is almost certainly through
         their documentation directly, `Shap Docs <https://shap.readthedocs.io/en/latest/>`_
-        Just note when using Shap within ABCD_ML to pay attention to the version on the shap
-        documentation vs. what is currently supported within ABCD_ML.
+        Just note when using Shap within BPt to pay attention to the version on the shap
+        documentation vs. what is currently supported within BPt.
 
         Broadly, shap feature importance params are split up into if they are used
         to explain linear models, tree based models or an abitrary model (kernel).
@@ -1147,7 +1156,7 @@ class Feat_Importance(Params):
                  shap_params='default', n_perm=10,
                  inverse_global=False, inverse_local=False):
         '''
-        There are a number of options for creating Feature Importances in ABCD_ML.
+        There are a number of options for creating Feature Importances in BPt.
         See :ref:`Feat Importances` to learn more about feature importances generally.
         The way this object works, is that you can a type of feature importance, and then
         its relevant parameters. This object is designed to passed directly to
@@ -1270,20 +1279,20 @@ class Model_Pipeline(Params):
         ''' Model_Pipeline is defined as essentially a wrapper around
         all of the explicit modelling pipeline parameters. This object is
         used as input to 
-        :func:`Evaluate <ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.Test>`
+        :func:`Evaluate <BPt.BPt_ML.Evaluate>` and :func:`Test <BPt.BPt_ML.Test>`
 
         The ordering of the parameters listed below defines the pre-set
         order in which these Pipeline pieces are composed
         (params up to model, param_search and feat_importances are not ordered pipeline pieces).
         For more flexibility, one can always use custom defined objects, or even pass custom defined
         pipelines directly to model (i.e., in the case where you have a specific pipeline you want to use
-        already defined, but say just want to use the loaders from ABCD_ML).
+        already defined, but say just want to use the loaders from BPt).
 
         Parameters
         ----------
         loaders : :class:`Loader`, list of or None, optional
             Each :class:`Loader` refers to transformations which operate on loaded Data_Files
-            (See :func:`Load_Data_Files <ABCD_ML.ABCD_ML.Load_Data_Files>`). See :class:`Loader`
+            (See :func:`Load_Data_Files <BPt.BPt_ML.Load_Data_Files>`). See :class:`Loader`
             explcitly for more information on how to create a valid object, with relevant params and scope.
 
             In the case that a list of Loaders is passed to loaders, if a native
@@ -1387,7 +1396,7 @@ class Model_Pipeline(Params):
             model selection via param search.
 
             See :class:`Model` for more information on how to specify a single
-            model to ABCD_ML, and :class:`Ensemble` for information on how
+            model to BPt, and :class:`Ensemble` for information on how
             to build an ensemble of models.
 
             Note: You must have provide a model, there is no option for None. Instead
@@ -1429,7 +1438,7 @@ class Model_Pipeline(Params):
                 default = Feat_Importance('base')
 
         cache : str or None, optional
-            The base scikit-learn Pipeline, upon which the ABCD_ML Pipeline extends,
+            The base scikit-learn Pipeline, upon which the BPt Pipeline extends,
             allows for the caching of fitted transformers - which in this context means all
             steps except for the model. If this behavior is desired
             (in the cases where a non-model step take a long time to fit),
@@ -1702,7 +1711,7 @@ class Problem_Spec(Params):
                  random_state='default'):
         '''Problem Spec is defined as an object of params encapsulating the set of
         parameters shared by modelling class functions
-        :func:`Evaluate <ABCD_ML.ABCD_ML.Evaluate>` and :func:`Test <ABCD_ML.ABCD_ML.Test>`
+        :func:`Evaluate <BPt.BPt_ML.Evaluate>` and :func:`Test <BPt.BPt_ML.Test>`
 
         Parameters
         ----------
@@ -1780,7 +1789,7 @@ class Problem_Spec(Params):
             / columns.
 
             See :ref:`Scopes` for a more detailed explained / guide on how scopes
-            are defined and used within ABCD_ML.
+            are defined and used within BPt.
 
             ::
 
@@ -1816,7 +1825,7 @@ class Problem_Spec(Params):
 
         n_jobs : int, or 'default'
             n_jobs are employed witin the context of a call to Evaluate or Test. 
-            If left as default, the class wide ABCD_ML value will be used.
+            If left as default, the class wide BPt value will be used.
 
             In general, the way n_jobs are propegated to the different pipeline
             pieces on the backend is that, if there is a parameter search, the base
@@ -1840,7 +1849,7 @@ class Problem_Spec(Params):
             exact replicicability.
 
             If 'default', use the saved class value.
-            (Defined in :class:`ABCD_ML <ABCD_ML.ABCD_ML>`)
+            (Defined in :class:`ML <BPt.BPt_ML>`)
 
             ::
 

@@ -123,7 +123,7 @@ class Model_Pipeline():
         Parameters
         ----------
         data : pandas DataFrame
-            ABCD_ML formatted, with both training and testing data.
+            BPt formatted, with both training and testing data.
 
         train_subjects : array-like
             An array or pandas Index of the train subjects should be passed.
@@ -268,7 +268,7 @@ class Model_Pipeline():
         Parameters
         ----------
         data : pandas DataFrame
-            ABCD_ML formatted, with both training and testing data.
+            BPt formatted, with both training and testing data.
 
         train_subjects : array-like
             An array or pandas Index of train subjects should be passed.
@@ -538,12 +538,12 @@ class Model_Pipeline():
         return
 
     def _get_X_y(self, data, X_as_df=False, copy=False):
-        '''Helper method to get X,y data from ABCD ML formatted df.
+        '''Helper method to get X,y data from BPt formatted df.
 
         Parameters
         ----------
         data : pandas DataFrame
-            ABCD ML formatted.
+            BPt formatted.
 
         X_as_df : bool, optional
             If True, return X as a pd DataFrame,
@@ -585,7 +585,7 @@ class Model_Pipeline():
         Parameters
         ----------
         train_data : pandas DataFrame
-            ABCD_ML formatted, training data.
+            BPt formatted, training data.
 
         Returns
         ----------
@@ -674,7 +674,7 @@ class Model_Pipeline():
         Parameters
         ----------
         test_data : pandas DataFrame
-            ABCD ML formatted test data.
+            BPt formatted test data.
 
         eval_type : {'train_', ''}
 

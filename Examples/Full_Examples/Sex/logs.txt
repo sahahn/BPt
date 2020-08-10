@@ -1,0 +1,30 @@
+exp_name = Sex
+log_dr = /home/sage/ABCD_ML/Examples/Full_Examples
+existing_log = overwrite
+verbose = True
+exp log dr setup at: /home/sage/ABCD_ML/Examples/Full_Examples/Sex
+log file at: /home/sage/ABCD_ML/Examples/Full_Examples/Sex/logs.txt
+Default params set:
+notebook = True
+use_abcd_subject_ids = True
+low memory mode = False
+strat_u_name = _Strat
+random state = 1
+n_jobs = 1
+dpi = 100
+mp_context = spawn
+ABCD_ML object initialized
+Default load params set within self.default_load_params.
+----------------------
+dataset_type: basic
+subject_id: src_subject_id
+eventname: baseline_year_1_arm_1
+eventname_col: eventname
+overlap_subjects: False
+merge: inner
+na_values: ['777', '999']
+drop_na: True
+drop_or_na: drop
+
+Loading /home/sage/work/ABCDFixRelease2p0p1/Fix Release Notes 2.0.1_Public/24. ABCD_Release_2.0.1_Updates/abcd_2.0.1_mapping.csv  with dataset type: explorer
+Loading new name_map from file!

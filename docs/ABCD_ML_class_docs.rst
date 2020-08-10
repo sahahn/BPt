@@ -6,7 +6,7 @@ Import
 ======
 To start, you must import the module.
 Assuming that it has been downloaded of course.
-Import and then make an object, in this example the obj is called "Your_ABCD_ML_Object",
+Import and then make an object, in this example the obj is called "Your_ML_Object",
 but in practice you would want to choose something shorter, like "ML".
 
 ::

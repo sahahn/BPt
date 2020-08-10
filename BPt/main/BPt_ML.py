@@ -1,5 +1,5 @@
 """
-ABCD_ML.py
+main.py
 ====================================
 The main project class.
 """
@@ -17,18 +17,18 @@ def Load(loc, exp_name='default', log_dr='default', existing_log='default',
          verbose='default', notebook='default', random_state='default'):
     '''
     This function is designed to load in a saved previously created
-    ABCD_ML object.
+    ML object.
 
-    See :func:`Save <BPt.BPt_ML.Save>` for saving an object.
-    See :func:`Init <BPt.BPt_ML>` for the
+    See :func:`Save <BPt.ML.Save>` for saving an object.
+    See :func:`Init <BPt.ML>` for the
     rest of changable param descriptions, e.g., log_dr, existing_log, ect...
 
     Parameters
     ----------
     loc : str or Path
 
-        A path/str to a saved ABCD_ML object,
-        (One saved with :func:`Save <BPt.BPt_ML.Save>`), then that object will be
+        A path/str to a saved ML object,
+        (One saved with :func:`Save <BPt.ML.Save>`), then that object will be
         loaded. Notably, if any additional params are passed along
         with it, e.g., exp_name, notebook, ect... they will override
         the saved values with the newly passed values.
@@ -68,18 +68,18 @@ def Load(loc, exp_name='default', log_dr='default', existing_log='default',
     if random_state != 'default':
         ML.random_state = random_state
 
-    ML._print('ABCD_ML object loaded from save!')
+    ML._print('ML object loaded from save!')
     return ML
 
 
-class ABCD_ML():
+class ML():
 
-    def __init__(self, exp_name='My_ML_Exp', log_dr='', existing_log='append',
+    def __init__(self, exp_name='My_Exp', log_dr='', existing_log='append',
                  verbose=True, notebook=True,
                  use_abcd_subject_ids=False,
                  low_memory_mode=False, strat_u_name='_Strat',
                  random_state=534, n_jobs=1, dpi=100, mp_context='spawn'):
-        '''Main class used within ABCD_ML for interfacing with Data Loading
+        '''Main class used within BPt for interfacing with Data Loading
         and Modeling / Other funcationality.
 
         Parameters
@@ -95,7 +95,7 @@ class ABCD_ML():
 
             ::
 
-                default = 'My_ML_Exp'
+                default = 'My_Exp'
 
         log_dr : str, Path or None, optional
             The directory in which to store logs...
@@ -132,10 +132,11 @@ class ABCD_ML():
                 default = 'append'
 
         verbose: bool, optional
-            If `verbose` is set to True, the ABCD_ML object
+            If `verbose` is set to True, the ML object
             will print output, diagnostic and more general, directly
             to std out. If set to False, no output will be printed, though
-            output will still be recorded within the logs assuming log_dr is not None.
+            output will still be recorded within the logs assuming
+            log_dr is not None.
 
             ::
 
@@ -201,7 +202,7 @@ class ABCD_ML():
 
         n_jobs : int, optional
             The default number of jobs / processors to use (if avaliable) where
-            ever avaliable class-wide across ABCD_ML.
+            ever avaliable class-wide across the BPt.
 
             ::
 
@@ -296,18 +297,18 @@ class ABCD_ML():
         self.file_mapping = {}
         self.data_file_keys = []
 
-        self._print('ABCD_ML object initialized')
+        self._print('ML object initialized')
 
     def Save(self, loc, low_memory=False):
-        '''This class method is used to save an existing ABCD_ML
+        '''This class method is used to save an existing ML
         object for further use.
 
         Parameters
         ----------
         loc : str or Path
-            The location in which the pickle of the ABCD_ML object
+            The location in which the pickle of the ML object
             should be saved! This is the same loc which should be
-            passed to :func:`Load <ABCD_ML.main.ABCD_ML.Load>` in order to
+            passed to :func:`Load <BPt.main.ML.Load>` in order to
             re-load the object.
 
         low_memory : bool, optional

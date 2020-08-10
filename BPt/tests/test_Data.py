@@ -1,6 +1,6 @@
 from nose.tools import *
 from unittest import TestCase
-from ABCD_ML import ABCD_ML
+from BPt import ML
 
 import os
 import numpy as np
@@ -18,7 +18,7 @@ class Test_Data(TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_Data, self).__init__(*args, **kwargs)
 
-        self.ML = ABCD_ML(log_dr=None, use_abcd_subject_ids=True)
+        self.ML = ML(log_dr=None, use_abcd_subject_ids=True)
 
     def test_init(self):
 
@@ -307,8 +307,8 @@ class Test_Data(TestCase):
 
     def test_low_memory_mode1(self):
 
-        ML = ABCD_ML(low_memory_mode=True,
-                     log_dr=None)
+        ML = ML(low_memory_mode=True,
+                log_dr=None)
 
         loc = get_file_path('custom_data2.csv')
         ML.Load_Data(loc=loc, dataset_type='custom')

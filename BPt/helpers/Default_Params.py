@@ -2,7 +2,7 @@
 Default_Params.py
 ====================================
 File with different saved default parameter grids,
-for various classifiers within ABCD_ML.
+for various classifiers within BPt.
 """
 
 from copy import deepcopy

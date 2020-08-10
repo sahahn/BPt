@@ -17,6 +17,8 @@ Data/*
 
 logs.txt*
 
+Examples/Full_Examples/Sex*
+
 
 # C extensions
 *.so

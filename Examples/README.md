@@ -1,0 +1,1 @@
+Examples are split up into two categories, Full Examples (those which seek to cover a more complete example work-flow), and Short Examples (which tend to focus on one particular concept in more detail, and are typically geared towards a more advanced auidience).

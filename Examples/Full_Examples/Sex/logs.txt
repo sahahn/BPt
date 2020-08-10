@@ -1,30 +1,391 @@
-exp_name = Sex
-log_dr = /home/sage/ABCD_ML/Examples/Full_Examples
-existing_log = overwrite
-verbose = True
-exp log dr setup at: /home/sage/ABCD_ML/Examples/Full_Examples/Sex
-log file at: /home/sage/ABCD_ML/Examples/Full_Examples/Sex/logs.txt
-Default params set:
-notebook = True
-use_abcd_subject_ids = True
-low memory mode = False
-strat_u_name = _Strat
-random state = 1
-n_jobs = 1
-dpi = 100
-mp_context = spawn
-ABCD_ML object initialized
-Default load params set within self.default_load_params.
+ML object loaded from save!
+Default ML verbosity set within self.default_ML_verbosity.
 ----------------------
-dataset_type: basic
-subject_id: src_subject_id
-eventname: baseline_year_1_arm_1
-eventname_col: eventname
-overlap_subjects: False
-merge: inner
-na_values: ['777', '999']
-drop_na: True
-drop_or_na: drop
+save_results: False
+progress_bar: True
+progress_loc: None
+compute_train_score: False
+show_init_params: True
+fold_name: False
+time_per_fold: False
+score_per_fold: False
+fold_sizes: False
+best_params: False
+save_to_logs: False
 
-Loading /home/sage/work/ABCDFixRelease2p0p1/Fix Release Notes 2.0.1_Public/24. ABCD_Release_2.0.1_Updates/abcd_2.0.1_mapping.csv  with dataset type: explorer
-Loading new name_map from file!
+Model_Pipeline
+--------------
+imputers=\
+[Imputer(extra_params={}, obj='mean', scope='float'),
+ Imputer(extra_params={}, obj='median', scope='cat')]
+
+scalers=\
+Scaler(extra_params={}, obj='standard')
+
+model=\
+Model(extra_params={}, obj='dt')
+
+param_search=\
+None
+
+feat_importances=\
+Feat_Importance(obj='base', shap_params=None)
+
+
+Problem_Spec
+------------
+problem_type = binary
+target = sex
+scorer = ['roc_auc']
+weight_scorer = False
+scope = all
+subjects = all
+len(subjects) = 11519 (before overlap w/ train/test subjects)
+n_jobs 8
+random_state 1
+
+Evaluate Params
+---------------
+splits = 3
+n_repeats = 1
+CV = default
+train_subjects = train
+len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
+run_name = dt
+
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.6290240473774017
+Std in Validation score:  0.001091302102811239
+
+Model_Pipeline
+--------------
+imputers=\
+[Imputer(extra_params={}, obj='mean', scope='float'),
+ Imputer(extra_params={}, obj='median', scope='cat')]
+
+scalers=\
+Scaler(extra_params={}, obj='standard')
+
+model=\
+Model(extra_params={}, obj='dt')
+
+param_search=\
+None
+
+feat_importances=\
+Feat_Importance(obj='base', shap_params=None)
+
+
+Problem_Spec
+------------
+problem_type = binary
+target = sex
+scorer = ['roc_auc']
+weight_scorer = False
+scope = smri_thick_cort
+subjects = all
+len(subjects) = 11519 (before overlap w/ train/test subjects)
+n_jobs 8
+random_state 1
+
+Evaluate Params
+---------------
+splits = 3
+n_repeats = 1
+CV = default
+train_subjects = train
+len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
+run_name = dt0
+
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.5530805374578515
+Std in Validation score:  0.0066028640938684035
+
+Model_Pipeline
+--------------
+imputers=\
+[Imputer(extra_params={}, obj='mean', scope='float'),
+ Imputer(extra_params={}, obj='median', scope='cat')]
+
+scalers=\
+Scaler(extra_params={}, obj='standard')
+
+model=\
+Model(extra_params={}, obj='linear')
+
+param_search=\
+None
+
+feat_importances=\
+Feat_Importance(obj='base', shap_params=None)
+
+
+Problem_Spec
+------------
+problem_type = binary
+target = sex
+scorer = ['roc_auc']
+weight_scorer = False
+scope = smri_thick_cort
+subjects = all
+len(subjects) = 11519 (before overlap w/ train/test subjects)
+n_jobs 8
+random_state 1
+
+Evaluate Params
+---------------
+splits = 3
+n_repeats = 1
+CV = default
+train_subjects = train
+len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
+run_name = linear
+
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.80010443704392
+Std in Validation score:  0.007728816271198328
+
+Model_Pipeline
+--------------
+imputers=\
+[Imputer(extra_params={}, obj='mean', scope='float'),
+ Imputer(extra_params={}, obj='median', scope='cat')]
+
+scalers=\
+Scaler(extra_params={}, obj='standard')
+
+model=\
+Model(extra_params={}, obj='light gbm')
+
+param_search=\
+None
+
+feat_importances=\
+Feat_Importance(obj='base', shap_params=None)
+
+
+Problem_Spec
+------------
+problem_type = binary
+target = sex
+scorer = ['roc_auc']
+weight_scorer = False
+scope = smri_thick_cort
+subjects = all
+len(subjects) = 11519 (before overlap w/ train/test subjects)
+n_jobs 8
+random_state 1
+
+Evaluate Params
+---------------
+splits = 3
+n_repeats = 1
+CV = default
+train_subjects = train
+len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
+run_name = light gbm
+
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.7656475942951767
+Std in Validation score:  0.006606292029016598
+
+Model_Pipeline
+--------------
+imputers=\
+[Imputer(extra_params={}, obj='mean', scope='float'),
+ Imputer(extra_params={}, obj='median', scope='cat')]
+
+scalers=\
+Scaler(extra_params={}, obj='standard')
+
+model=\
+Model(extra_params={}, obj='light gbm', params=1)
+
+param_search=\
+Param_Search(mp_context='spawn', n_iter=50)
+
+feat_importances=\
+Feat_Importance(obj='base', shap_params=None)
+
+
+Problem_Spec
+------------
+problem_type = binary
+target = sex
+scorer = ['roc_auc']
+weight_scorer = False
+scope = smri_thick_cort
+subjects = all
+len(subjects) = 11519 (before overlap w/ train/test subjects)
+n_jobs 8
+random_state 1
+
+Evaluate Params
+---------------
+splits = 3
+n_repeats = 1
+CV = default
+train_subjects = train
+len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
+run_name = light gbm0
+
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.7785520551725499
+Std in Validation score:  0.0031825967834672145
+
+Model_Pipeline
+--------------
+imputers=\
+[Imputer(extra_params={}, obj='mean', scope='float'),
+ Imputer(extra_params={}, obj='median', scope='cat')]
+
+scalers=\
+Scaler(extra_params={}, obj='standard')
+
+model=\
+Model(extra_params={}, obj='elastic net', params=1)
+
+param_search=\
+Param_Search(mp_context='spawn', n_iter=50)
+
+feat_importances=\
+Feat_Importance(obj='base', shap_params=None)
+
+
+Problem_Spec
+------------
+problem_type = binary
+target = sex
+scorer = ['roc_auc']
+weight_scorer = False
+scope = smri_thick_cort
+subjects = all
+len(subjects) = 11519 (before overlap w/ train/test subjects)
+n_jobs 8
+random_state 1
+
+Evaluate Params
+---------------
+splits = 3
+n_repeats = 1
+CV = default
+train_subjects = train
+len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
+run_name = elastic net
+
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.8001947442506164
+Std in Validation score:  0.0076682835709702395
+
+Model_Pipeline
+--------------
+imputers=\
+[Imputer(extra_params={}, obj='mean', scope='float'),
+ Imputer(extra_params={}, obj='median', scope='cat')]
+
+scalers=\
+Scaler(extra_params={}, obj='standard')
+
+model=\
+Model(extra_params={}, obj='ridge', params=1)
+
+param_search=\
+Param_Search(mp_context='spawn', n_iter=50)
+
+feat_importances=\
+Feat_Importance(obj='base', shap_params=None)
+
+
+Problem_Spec
+------------
+problem_type = binary
+target = sex
+scorer = ['roc_auc']
+weight_scorer = False
+scope = smri_thick_cort
+subjects = all
+len(subjects) = 11519 (before overlap w/ train/test subjects)
+n_jobs 8
+random_state 1
+
+Evaluate Params
+---------------
+splits = 3
+n_repeats = 1
+CV = default
+train_subjects = train
+len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
+run_name = ridge
+
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.7997568741818677
+Std in Validation score:  0.006052019917451967
+
+Model_Pipeline
+--------------
+imputers=\
+[Imputer(extra_params={}, obj='mean', scope='float'),
+ Imputer(extra_params={}, obj='median', scope='cat')]
+
+scalers=\
+Scaler(extra_params={}, obj='standard')
+
+model=\
+Model(extra_params={}, obj='ridge', params=1)
+
+param_search=\
+Param_Search(mp_context='spawn', n_iter=50)
+
+feat_importances=\
+Feat_Importance(obj='base', shap_params=None)
+
+
+Problem_Spec
+------------
+problem_type = binary
+target = sex
+scorer = ['roc_auc']
+weight_scorer = False
+scope = smri_thick_cort
+subjects = all
+len(subjects) = 11519 (before overlap w/ train/test subjects)
+n_jobs 8
+random_state 1
+
+Evaluate Params
+---------------
+splits = 3
+n_repeats = 1
+CV = default
+train_subjects = train
+len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
+run_name = ridge0
+
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.7997568741818677
+Std in Validation score:  0.006052019917451967
+

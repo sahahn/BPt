@@ -247,7 +247,7 @@ def Evaluate(self,
     (`splits` and `n_repeats`). While Evaluate's ideal usage is
     an expirimental context for exploring
     different choices of :class:`Model_Pipeline` and then ultimately
-    with :func:`Test<ML.Test>` -
+    with :func:`Test<BPt_ML.Test>` -
     if used carefully (i.e., dont try 50 Pipelines's and only report
     the one that does best), it can be used
     on a full dataset.
@@ -265,7 +265,7 @@ def Evaluate(self,
 
     problem_spec : :class:`Problem_Spec`
 
-        `problem_spec` accepts an instance of the BPt.ML
+        `problem_spec` accepts an instance of the BPt.BPt_ML
         params class :class:`Problem_Spec`.
         This object is essentially a wrapper around commonly used
         parameters needs to define the context
@@ -281,7 +281,7 @@ def Evaluate(self,
         controls the type of CV, i.e., specifies what the train and validation
         folds should be. These splits are further determined by the subjects passed to `train_subjects`.
         Notably, the splits defined will respect any special split behavior as defined in
-        :func:`Define_Validation_Strategy<ML.Define_Validation_Strategy>`.
+        :func:`Define_Validation_Strategy<BPt_ML.Define_Validation_Strategy>`.
 
         Specifically, options for split are:
 
@@ -387,9 +387,9 @@ def Evaluate(self,
     run_name : str or 'default', optional
         Each run of Evaluate can be optionally associated with a specific `run_name`. This name
         is used to save scores in self.eval_scores, and also if `save_results` in
-        :func:`Set_Default_ML_Verbosity<ML.Set_Default_ML_Verbosity>` is set to True,
+        :func:`Set_Default_ML_Verbosity<BPt_ML.Set_Default_ML_Verbosity>` is set to True,
         then will be used as the name output from Evaluate as saved as in the specific log_dr
-        (if any, and as set when Init'ing the :class:`ML <BPt.BPt_ML>` class object),
+        (if any, and as set when Init'ing the :class:`BPt_ML <BPt.BPt_ML>` class object),
         with '.eval' appended to the name.
 
         If left as 'default', will come up with a kind of terrible name passed on the underlying
@@ -538,7 +538,7 @@ def Test(self,
          run_name='default'):
     ''' The test function is one of the main interfaces for testing a specific
     :class:`Model_Pipeline`. Test is conceptually different from
-    :func:`Evaluate<ML.Evaluate>`
+    :func:`Evaluate<BPt_ML.Evaluate>`
     in that it is designed to contrust / train a :class:`Model_Pipeline`
     on one discrete set of `train_subjects`
     and evaluate it on a further discrete set of `test_subjects`.
@@ -629,9 +629,9 @@ def Test(self,
         Each run of test can be optionally
          associated with a specific `run_name`. This name
         is used to save scores in self.test_scores, and also if `save_results` in
-        :func:`Set_Default_ML_Verbosity<ML.Set_Default_ML_Verbosity>` is set to True,
+        :func:`Set_Default_ML_Verbosity<BPt_ML.Set_Default_ML_Verbosity>` is set to True,
         then will be used as the name output from Test as saved as in the specific log_dr
-        (if any, and as set when Init'ing the :class:`ML <BPt.BPt_ML>` class object),
+        (if any, and as set when Init'ing the :class:`BPt_ML <BPt.BPt_ML>` class object),
         with .test appended to the name.
 
         If left as 'default', will come up with a kind of terrible name passed on the underlying

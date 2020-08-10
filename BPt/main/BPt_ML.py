@@ -17,18 +17,18 @@ def Load(loc, exp_name='default', log_dr='default', existing_log='default',
          verbose='default', notebook='default', random_state='default'):
     '''
     This function is designed to load in a saved previously created
-    ML object.
+    BPt_ML object.
 
-    See :func:`Save <BPt.ML.Save>` for saving an object.
-    See :func:`Init <BPt.ML>` for the
+    See :func:`Save <BPt.BPt_ML.Save>` for saving an object.
+    See :func:`Init <BPt.BPt_ML>` for the
     rest of changable param descriptions, e.g., log_dr, existing_log, ect...
 
     Parameters
     ----------
     loc : str or Path
 
-        A path/str to a saved ML object,
-        (One saved with :func:`Save <BPt.ML.Save>`), then that object will be
+        A path/str to a saved BPt_ML object,
+        (One saved with :func:`Save <BPt.BPt_ML.Save>`), then that object will be
         loaded. Notably, if any additional params are passed along
         with it, e.g., exp_name, notebook, ect... they will override
         the saved values with the newly passed values.
@@ -72,7 +72,7 @@ def Load(loc, exp_name='default', log_dr='default', existing_log='default',
     return ML
 
 
-class ML():
+class BPt_ML():
 
     def __init__(self, exp_name='My_Exp', log_dr='', existing_log='append',
                  verbose=True, notebook=True,
@@ -132,7 +132,7 @@ class ML():
                 default = 'append'
 
         verbose: bool, optional
-            If `verbose` is set to True, the ML object
+            If `verbose` is set to True, the BPt_ML object
             will print output, diagnostic and more general, directly
             to std out. If set to False, no output will be printed, though
             output will still be recorded within the logs assuming
@@ -297,18 +297,18 @@ class ML():
         self.file_mapping = {}
         self.data_file_keys = []
 
-        self._print('ML object initialized')
+        self._print('BPt_ML object initialized')
 
     def Save(self, loc, low_memory=False):
-        '''This class method is used to save an existing ML
+        '''This class method is used to save an existing BPt_ML
         object for further use.
 
         Parameters
         ----------
         loc : str or Path
-            The location in which the pickle of the ML object
+            The location in which the pickle of the BPt_ML object
             should be saved! This is the same loc which should be
-            passed to :func:`Load <BPt.main.ML.Load>` in order to
+            passed to :func:`Load <BPt.main.BPt_ML.Load>` in order to
             re-load the object.
 
         low_memory : bool, optional

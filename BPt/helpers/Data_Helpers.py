@@ -2,7 +2,7 @@
 Data_Helpers.py
 ====================================
 Various helper functions for loading and processing data for BPt.
-Specifically, these are non-class functions used in _Data.py and ML.py.
+Specifically, these are non-class functions used in _Data.py and BPt_ML.py.
 """
 import numpy as np
 import numpy.ma as ma

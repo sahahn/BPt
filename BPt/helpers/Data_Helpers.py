@@ -169,6 +169,7 @@ def process_ordinal_input(data, key, drop_percent=None,
 
         # Still need a NaN value, even if not already set
         except ValueError:
+
             label_encoder.classes_ =\
                 np.array(list(label_encoder.classes_) + ['nan'])
             label_encoder.nan_val = len(label_encoder.classes_) - 1

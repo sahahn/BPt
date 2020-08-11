@@ -1,5 +1,4 @@
 import pandas as pd
-# import shap
 import numpy as np
 
 from .Perm_Feat_Importance import Perm_Feat_Importance
@@ -245,6 +244,11 @@ class Feat_Importances():
 
     def get_shap_feature_importance(self, base_model, X_test, X_train):
 
+        try:
+            import shap
+        except ImportError:
+            raise ImportError('You must have shap installed to use shap')
+
         if self.flags['tree'] or self.flags['linear']:
 
             if self.flags['linear']:
@@ -300,6 +304,11 @@ class Feat_Importances():
         return shap_values
 
     def get_kernel_explainer(self, model, X_train_summary, link):
+
+        try:
+            import shap
+        except ImportError:
+            raise ImportError('You must have shap installed to use shap')s
 
         if link == 'default':
             link = 'logic'
@@ -392,6 +401,11 @@ class Feat_Importances():
 class Regression_Feat_Importances(Feat_Importances):
 
     def get_kernel_explainer(self, model, X_train_summary, link):
+
+        try:
+            import shap
+        except ImportError:
+            raise ImportError('You must have shap installed to use shap')
 
         if link == 'default':
             link = 'identity'

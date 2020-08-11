@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import math
-# import shap
 import os
 from IPython.display import display, HTML
 from matplotlib.animation import FuncAnimation
@@ -1302,6 +1301,11 @@ def Plot_Local_Feat_Importances(self, feat_importances='most recent', top_n=10,
 
 
 def _plot_shap_summary(self, shap_df, top_n, title, xlabel, show):
+
+    try:
+        import shap
+    except ImportError:
+        raise ImportError('You must have shap installed to use shap')
 
     shap_cols, shap_inds = list(shap_df), shap_df.index
     data = self.all_data.loc[shap_inds][shap_cols]

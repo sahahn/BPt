@@ -1138,6 +1138,12 @@ class Shap_Params(Params):
 
         '''
 
+        try:
+            import shap
+        except ImportError:
+            raise ImportError('You must have shap installed to use shap')
+
+
         self.avg_abs = avg_abs
         self.linear_feature_perturbation = linear_feature_perturbation
         self.linear_nsamples = linear_nsamples

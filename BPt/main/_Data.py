@@ -1877,7 +1877,9 @@ def _proc_strat(self, strat, key, bc, ftb, fc, fb, fbs,
     # Categorical
     else:
         strat, self.strat_encoders[key] =\
-            process_ordinal_input(strat, key, cdp, drop_val, self._print)
+            process_ordinal_input(strat, key, drop_percent=cdp,
+                                  drop_val=drop_val, nac=False,
+                                  _print=self._print)
 
     return strat
 

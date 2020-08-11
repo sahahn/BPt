@@ -308,7 +308,7 @@ class Feat_Importances():
         try:
             import shap
         except ImportError:
-            raise ImportError('You must have shap installed to use shap')s
+            raise ImportError('You must have shap installed to use shap')
 
         if link == 'default':
             link = 'logic'

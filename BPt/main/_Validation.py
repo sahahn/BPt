@@ -322,12 +322,20 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         self._print()
 
     else:
+
+        # Load passed subjects
         test_subjects = self._load_set_of_subjects(loc=test_loc,
                                                    subjects=test_subjects)
 
+        # Take only the overlap of the passed subjects with what is loaded
+        test_subjects = [subject for subject in test_subjects
+                         if subject in self.all_data.index]
+
+        # Set remaining subjects to train subjects
         train_subjects = [subject for subject in self.all_data.index
                           if subject not in test_subjects]
 
+        # Set the tr test subjects saved within class obj
         self.train_subjects = pd.Index(train_subjects,
                                        name=self.subject_id)
         self.test_subjects = pd.Index(test_subjects,

@@ -1905,7 +1905,7 @@ class Problem_Spec(Params):
         _print('weight_scorer =', self.weight_scorer)
         _print('scope =', self.scope)
 
-        if len(self.subjects) > 50:
+        if len(self.subjects) < 50:
             _print('subjects =', self.subjects)
     
         _print('len(subjects) =', len(self._final_subjects),

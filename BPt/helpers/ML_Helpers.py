@@ -13,7 +13,7 @@ from ..main.Input_Tools import is_special, Select
 from nevergrad.parametrization.core import Constant
 
 
-def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
+def compute_micro_macro(scores, n_repeats, n_splits, weights=None):
     '''Compute and return scores, as computed froma repeated k-fold.
 
     Parameters
@@ -34,10 +34,10 @@ def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
         The mean macro score
 
     float
-        The standard deviation of the macro score
+        The standard deviation of the micro score
 
     float
-        The standard deviation of the micro score
+        The standard deviation of the macro score
     '''
 
     r_scores = np.reshape(np.array(scores), (n_repeats, n_splits))
@@ -48,8 +48,8 @@ def compute_macro_micro(scores, n_repeats, n_splits, weights=None):
         r_weights = np.reshape(np.array(weights), (n_repeats, n_splits))
         macro_scores = np.average(r_scores, weights=r_weights, axis=1)
 
-    return (np.mean(macro_scores), np.std(macro_scores),
-            np.std(scores))
+    return (np.mean(macro_scores), np.std(scores), np.std(macro_scores))
+
 
 
 def is_array_like(in_val):

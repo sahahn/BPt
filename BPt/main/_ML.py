@@ -10,7 +10,7 @@ from tqdm import tqdm, tqdm_notebook
 
 from .Input_Tools import is_value_subset
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
-from ..helpers.ML_Helpers import (compute_macro_micro, conv_to_list,
+from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Model_Pipeline import Model_Pipeline
 import pandas as pd
@@ -290,8 +290,10 @@ def Evaluate(self,
             3-fold CV).
 
         - float
-            Must be 0 < `splits` < 1, and defines a single train-test like split,
-            with `splits` as the % of the current training data size used as a validation/test set.
+            Must be 0 < `splits` < 1, and defines a single
+            train-test like split,
+            with `splits` as the % of the current training data size
+            used as a validation/test set.
 
         - str
             If a str is passed, then it must correspond to a loaded Strat variable. In
@@ -355,9 +357,9 @@ def Evaluate(self,
         applied after
         selecting the subset of `train_subjects` specified here.
         These subjects are
-        used as the input to `Evaluate`, i.e., 
+        used as the input to `Evaluate`, i.e.,
         so typically any subjects data you want
-        to remain untouched (say your global test subjects) 
+        to remain untouched (say your global test subjects)
         are considered within `Evaluate`,
         and only those explicitly passed here are.
 
@@ -385,14 +387,20 @@ def Evaluate(self,
             default = 'train'
 
     run_name : str or 'default', optional
-        Each run of Evaluate can be optionally associated with a specific `run_name`. This name
-        is used to save scores in self.eval_scores, and also if `save_results` in
-        :func:`Set_Default_ML_Verbosity<BPt_ML.Set_Default_ML_Verbosity>` is set to True,
-        then will be used as the name output from Evaluate as saved as in the specific log_dr
-        (if any, and as set when Init'ing the :class:`BPt_ML <BPt.BPt_ML>` class object),
+        Each run of Evaluate can be optionally associated with
+        a specific `run_name`. This name
+        is used to save scores in self.eval_scores,
+        and also if `save_results` in
+        :func:`Set_Default_ML_Verbosity<BPt_ML.Set_Default_ML_Verbosity>`
+        is set to True,
+        then will be used as the name output from Evaluate as saved as in
+        the specific log_dr
+        (if any, and as set when Init'ing the
+        :class:`BPt_ML <BPt.BPt_ML>` class object),
         with '.eval' appended to the name.
 
-        If left as 'default', will come up with a kind of terrible name passed on the underlying
+        If left as 'default', will come up with a kind of
+        terrible name passed on the underlying
         model used in the passed `model_pipeline`.
 
         ::
@@ -959,7 +967,7 @@ def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,
                         range(len(score_by_scorer[0]))]
 
             summary_scores_by_class =\
-                [compute_macro_micro(class_scores, n_repeats,
+                [compute_micro_macro(class_scores, n_repeats,
                  n_splits, weights=weights) for class_scores in by_class]
 
             targets_key = self.Model_Pipeline.targets_key
@@ -983,7 +991,7 @@ def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,
         else:
 
             # Compute macro / micro summary of scores
-            summary_scores = compute_macro_micro(score_by_scorer,
+            summary_scores = compute_micro_macro(score_by_scorer,
                                                  n_repeats,
                                                  n_splits,
                                                  weights=weights)
@@ -1011,19 +1019,19 @@ def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
                         summary_scores[0], self.eval_scores,  class_name)
 
     if n_repeats > 1:
-        self._print('Macro Std in ' + name + ' score: ',
-                    summary_scores[1])
         self._print('Micro Std in ' + name + ' score: ',
+                    summary_scores[1])
+        self._print('Macro Std in ' + name + ' score: ',
                     summary_scores[2])
-        self._add_to_scores(run_name, name, scorer_name, 'Macro Std',
-                            summary_scores[1], self.eval_scores, class_name)
         self._add_to_scores(run_name, name, scorer_name, 'Micro Std',
+                            summary_scores[1], self.eval_scores, class_name)
+        self._add_to_scores(run_name, name, scorer_name, 'Macro Std',
                             summary_scores[2], self.eval_scores, class_name)
     else:
         self._print('Std in ' + name + ' score: ',
-                    summary_scores[2])
+                    summary_scores[1])
         self._add_to_scores(run_name, name, scorer_name, 'Std',
-                            summary_scores[2], self.eval_scores, class_name)
+                            summary_scores[1], self.eval_scores, class_name)
 
     self._print()
 

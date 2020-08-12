@@ -1904,7 +1904,10 @@ class Problem_Spec(Params):
         _print('scorer =', self.scorer)
         _print('weight_scorer =', self.weight_scorer)
         _print('scope =', self.scope)
-        _print('subjects =', self.subjects)
+
+        if len(self.subjects) > 50:
+            _print('subjects =', self.subjects)
+    
         _print('len(subjects) =', len(self._final_subjects),
                '(before overlap w/ train/test subjects)')
         _print('n_jobs', self.n_jobs)

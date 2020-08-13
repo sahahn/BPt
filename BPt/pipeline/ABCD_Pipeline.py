@@ -100,7 +100,7 @@ class ABCD_Pipeline(Pipeline):
 
             valid_inds = np.array(drop.transformers[0][2])
             feat_names = np.array(feat_names)[valid_inds]
-            X_test = X_test[feat_names]
+            X_test = X_test[feat_names].copy()
 
         # Drop features according to feat_selectors, keeping track of changes
         # only if passed param fs is True
@@ -108,11 +108,23 @@ class ABCD_Pipeline(Pipeline):
             fs_ind = ORDERED_NAMES.index('feat_selectors')
             for feat_selector in fitted_objs[fs_ind]:
 
+                # This feat mask corresponds to the already transformed feats
                 feat_mask = feat_selector.get_support()
-                feat_names = np.array(feat_names)[feat_mask]
 
+                # So we first need to compute the right order of new
+                # names that X gets transformed into, as concat wrapper_inds
+                # + rest inds
+                out_feat_names =\
+                    [feat_names[i] for i in feat_selector.wrapper_inds_] +\
+                    [feat_names[i] for i in feat_selector.rest_inds_]
+
+                # Then we can apply the computed mask, and get the actually
+                # selected features
+                feat_names = np.array(out_feat_names)[feat_mask]
+
+                # Now set within X_test, the results of the transformation
                 X_test[feat_names] = feat_selector.transform(np.array(X_test))
-                X_test = X_test[feat_names]
+                X_test = X_test[feat_names].copy()
 
         return X_test, y_test
 

@@ -51,10 +51,37 @@ class FeatureSelectorWrapper(SelectorMixin, BaseEstimator):
         self.rest_inds_ = [i for i in range(X.shape[1])
                            if i not in self.wrapper_inds_]
 
+        pass_mapping = {}
+        cnt = 0
+
+        for i in self.wrapper_inds:
+
+            # This is the value in the updated wrapper_inds
+            new = mapping[i]
+
+            if isinstance(new, list):
+                pass_mapping[cnt] = [self.wrapper_inds_.index(n) for n in new]
+
+            elif isinstance(new, int):
+                pass_mapping[cnt] = self.wrapper_inds_.index(new)
+
+            else:
+                pass_mapping[cnt] = None
+
+            cnt += 1
+
+        # pass_mapping = mapping.copy()
+        # new_pass_mapping = {i: None for i in pass_mapping}
+        # cnt = 0
+        # for i in self.wrapper_inds_:
+        #     new_pass_mapping[i] = cnt
+        #     cnt += 1
+        # update_mapping(pass_mapping, new_pass_mapping)
+
         # Attempt fit w/ passing mapping on
         try:
             self.base_selector_.fit(X=X[:, self.wrapper_inds_],
-                                    y=y, mapping=mapping, **fit_params)
+                                    y=y, mapping=pass_mapping, **fit_params)
         except TypeError:
             self.base_selector_.fit(X=X[:, self.wrapper_inds_],
                                     y=y, **fit_params)

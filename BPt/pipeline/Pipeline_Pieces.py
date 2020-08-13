@@ -127,11 +127,17 @@ class Pieces():
                                                      extra_params))
 
             else:
+
+                # Set the original number of feat keys based on the
+                # original scope
+                num_feat_keys =\
+                    len(self.Data_Scopes.get_inds_from_scope(param.scope))
+
                 objs_and_params.append(
                     (name, get_func(name, extra_params,
                                     param_str, self.spec['search_type'],
                                     self.spec['random_state'],
-                                    self.Data_Scopes.num_feat_keys)
+                                    num_feat_keys)
                      ))
 
         # Perform extra proc, to split into objs and merged param dict

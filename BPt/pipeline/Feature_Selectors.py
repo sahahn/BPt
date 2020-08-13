@@ -3,7 +3,7 @@ Feature_Selectors.py
 ====================================
 File with different Feature Selectors
 """
-from ..helpers.ML_Helpers import (show_objects, get_possible_init_params,
+from ..helpers.ML_Helpers import (get_possible_init_params,
                                   get_obj_and_params)
 from sklearn.feature_selection import SelectPercentile, VarianceThreshold
 from ..extensions.Feat_Selectors import RFE_Wrapper, FeatureSelector

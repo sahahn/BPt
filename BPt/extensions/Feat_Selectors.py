@@ -57,8 +57,8 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
 
         if len(mapping) > 0:
 
-            mask_0 = np.where(self.mask is False)[0]
-            mask_1 = np.where(self.mask is True)[0]
+            mask_0 = np.where(~self.mask)[0]
+            mask_1 = np.where(self.mask)[0]
 
             mask_0 = proc_mapping(mask_0, mapping)
             mask_1 = proc_mapping(mask_1, mapping)
@@ -74,6 +74,7 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
                 mx_1 = 0
 
             max_ind = np.max([mx_0, mx_1])
+
             self.mask = np.zeros(max_ind+1, dtype='bool')
             self.mask[mask_1] = True
         return

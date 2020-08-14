@@ -13,7 +13,7 @@ from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Evaluator import Evaluator
-from ..main.Params_Classes import Feat_Importance
+from ..main.Params_Classes import Feat_Importance, Model_Pipeline
 from ..pipeline.Model_Pipeline import get_pipe
 import pandas as pd
 
@@ -475,17 +475,23 @@ def Evaluate(self,
                                model_pipeline.model, self.eval_scores)
     self.last_run_name = run_name
 
-    # Preproc model pipeline & specs
-    problem_spec = self._preproc_problem_spec(problem_spec)
-    model_pipeline = self._preproc_model_pipeline(model_pipeline,
-                                                  problem_spec.n_jobs)
-
     # Get the the train subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
 
     # Proc feat importances
     if feat_importances == 'default':
         feat_importances = Feat_Importance(obj='base')
+
+    # Proc. CV
+    if CV == 'default':
+        CV_obj = self.CV
+    else:
+        CV_obj = self._get_CV(CV)
+
+    # Init. the Model_Pipeline object with modeling params
+    self._init_evaluator(model_pipeline, problem_spec,
+                         CV_obj, feat_importances)
+
 
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
@@ -504,16 +510,6 @@ def Evaluate(self,
                     '(before overlap w/ problem_spec.subjects)')
         self._print('run_name =', run_name)
         self._print()
-
-    # Proc. CV
-    if CV == 'default':
-        CV_obj = self.CV
-    else:
-        CV_obj = self._get_CV(CV)
-
-    # Init. the Model_Pipeline object with modeling params
-    self._init_evaluator(model_pipeline, problem_spec,
-                         CV_obj, feat_importances)
 
     # Get the Eval splits
     _, splits_vals, _ = self._get_split_vals(splits)
@@ -738,11 +734,6 @@ def Test(self,
                                self.test_scores)
     self.last_run_name = run_name
 
-    # Preproc model pipeline & specs
-    problem_spec = self._preproc_problem_spec(problem_spec)
-    model_pipeline = self._preproc_model_pipeline(model_pipeline,
-                                                  problem_spec.n_jobs)
-
     # Get the the train subjects + test subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
     _test_subjects = self._get_subjects_to_use(test_subjects)
@@ -750,6 +741,10 @@ def Test(self,
     # Proc feat importances
     if feat_importances == 'default':
         feat_importances = Feat_Importance(obj='base')
+
+    # Init the Model_Pipeline object with modeling params
+    self._init_evaluator(model_pipeline, problem_spec,
+                         self.CV, feat_importances)
 
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
@@ -768,10 +763,6 @@ def Test(self,
         self._print('feat_importances =', feat_importances)
         self._print('run_name =', run_name)
         self._print()
-
-    # Init the Model_Pipeline object with modeling params
-    self._init_evaluator(model_pipeline, problem_spec,
-                         self.CV, feat_importances)
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, raw_preds, FIs =\
@@ -975,10 +966,18 @@ def _get_subjects_to_use(self, subjects_to_use):
     return subjects
 
 
-def Get_Pipeline(self, model_pipeline, problem_spec, progress_loc=None):
+def get_pipeline(self, model_pipeline, problem_spec, progress_loc=None):
 
-    # Init problem spec + pipeline as needed
-    problem_spec = self._preproc_problem_spec(problem_spec)
+    # Check for nested model pipeline
+    if isinstance(model_pipeline.model.obj, Model_Pipeline):
+
+        # Force nested pipelines to progress loc none
+        model_pipeline.model.obj =\
+            self.get_pipeline(model_pipeline.model.obj,
+                              problem_spec,
+                              progress_loc=None)
+
+    # Preproc model
     model_pipeline = self._preproc_model_pipeline(model_pipeline,
                                                   problem_spec.n_jobs)
 
@@ -994,11 +993,15 @@ def Get_Pipeline(self, model_pipeline, problem_spec, progress_loc=None):
 
 def _init_evaluator(self, model_pipeline, problem_spec, CV, feat_importances):
 
-    # Calling get pipeline performs preproc on problem spec, model_pipeline
-    # and Data_Scopes
-    model = self.Get_Pipeline(model_pipeline, problem_spec,
-                              self.default_ML_verbosity['progress_loc'])
+    # Init problem spec first
+    problem_spec = self._preproc_problem_spec(problem_spec)
 
+    # Calling get pipeline performs preproc on model_pipeline
+    # and Data_Scopes
+    model = self.get_pipeline(model_pipeline, problem_spec,
+                              self.default_ML_verbosity['progress_loc'])
+    
+    # Set the evaluator obj
     self.evaluator =\
         Evaluator(model=model,
                   problem_spec=problem_spec,

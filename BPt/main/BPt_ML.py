@@ -506,7 +506,7 @@ class BPt_ML():
                       _print_summary_score,
                       _add_to_scores,
                       _save_results,
-                      Get_Pipeline)
+                      get_pipeline)
 
     from ._Plotting import (_plot,
                             _proc_subjects,

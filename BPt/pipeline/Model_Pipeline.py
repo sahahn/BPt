@@ -3,12 +3,13 @@ import pandas as pd
 import numpy as np
 import time
 
-from ..helpers.ML_Helpers import conv_to_list, type_check, proc_type_dep_str
+from ..helpers.ML_Helpers import conv_to_list, type_check
 from .Feat_Importances import get_feat_importances_and_params
-from .Base_Model_Pipeline import Base_Model_Pipeline
-from joblib import wrap_non_picklable_objects
+from .Base_Model_Pipeline import get_final_model
+from .Scorers import process_scorers
 from copy import deepcopy
 from os.path import dirname, abspath, exists
+from ..helpers.VARS import ORDERED_NAMES
 
 
 class Model_Pipeline():
@@ -17,7 +18,8 @@ class Model_Pipeline():
     '''
 
     def __init__(self, pipeline_params, problem_spec, CV, Data_Scopes,
-                 progress_bar, compute_train_score, progress_loc=None,
+                 feat_importances, progress_bar, compute_train_score,
+                 progress_loc=None,
                  _print=print):
 
         # Save problem spec as sp
@@ -39,21 +41,18 @@ class Model_Pipeline():
 
         # Set / proc scorers
         self.scorer_strs, self.scorers, _ =\
-            self._process_scorers(deepcopy(self.ps.scorer))
+            process_scorers(deepcopy(self.ps.scorer), self.ps.problem_type)
 
         # Set / proc feat importance info
         self.feat_importances =\
-            self._process_feat_importances(pipeline_params.feat_importances)
+            self._process_feat_importances(feat_importances)
 
-        # Get the model specs from problem_spec
-        model_spec = self.ps.get_model_spec()
-
-        # Init the Base_Model_Pipeline, which creates the pipeline pieces
-        self.base_model_pipeline =\
-            Base_Model_Pipeline(pipeline_params=pipeline_params,
-                                model_spec=model_spec,
-                                Data_Scopes=Data_Scopes,
-                                _print=self._print)
+        # Get model
+        self.model_ =\
+            get_final_model(pipeline_params=pipeline_params,
+                            problem_spec=self.ps,
+                            Data_Scopes=Data_Scopes,
+                            progress_loc=self.progress_loc)
 
     def _set_default_params(self):
 
@@ -61,31 +60,6 @@ class Model_Pipeline():
 
         self.flags = {'linear': False,
                       'tree': False}
-
-    def _process_scorers(self, in_scorers):
-
-        from .Scorers import get_scorer_from_str, AVALIABLE
-
-        # get scorer_strs as initially list
-        scorer_strs = conv_to_list(in_scorers)
-        scorers = []
-        cnt = 0
-
-        for m in range(len(scorer_strs)):
-
-            if isinstance(scorer_strs[m], str):
-                scorer_strs[m] =\
-                    proc_type_dep_str(scorer_strs[m], AVALIABLE,
-                                      self.ps.problem_type)
-                scorers.append(get_scorer_from_str(scorer_strs[m]))
-
-            else:
-                scorers.append(wrap_non_picklable_objects(scorer_strs[m]))
-                scorer_strs[m] = 'user passed scorer' + str(cnt)
-                cnt += 1
-
-        scorer = scorers[0]
-        return scorer_strs, scorers, scorer
 
     def _process_feat_importances(self, feat_importances):
 
@@ -95,7 +69,8 @@ class Model_Pipeline():
         if feat_importances is not None:
 
             scorers = [fi.scorer for fi in feat_importances]
-            scorers = [self._get_score_scorer(m, False)[0] for m in scorers]
+            scorers =\
+                [process_scorers(m, self.ps.problem_type)[2] for m in scorers]
 
             feat_importances =\
                 [get_feat_importances_and_params(fi, self.ps.problem_type,
@@ -338,9 +313,6 @@ class Model_Pipeline():
                         len(all_test_subjects) - len(test_subjects),
                         level='size')
 
-        # Wrap in search CV if needed / set to self.Model
-        self.Model = self._get_final_model(train_data)
-
         # Train the model(s)
         self._train_model(train_data)
 
@@ -366,42 +338,12 @@ class Model_Pipeline():
 
         return train_scores, scores
 
-    def _get_final_model(self, train_data):
-
-        if self.base_model_pipeline.is_search():
-
-            # Get search metric
-            search_scorer, weight_search_scorer =\
-                self._get_score_scorer(
-                    self.base_model_pipeline.param_search.scorer,
-                    self.base_model_pipeline.param_search.weight_scorer)
-
-        else:
-            search_scorer, weight_search_scorer = None, None
-
-        # Get wrapped final model
-        return self.base_model_pipeline.get_search_wrapped_pipeline(
-            search_scorer=search_scorer,
-            weight_search_scorer=weight_search_scorer,
-            random_state=self.ps.random_state,
-            progress_loc=self.progress_loc)
-
-    def _get_score_scorer(self, base_scorer, weight_scorer):
-
-        # If passed scorer is default, set to class defaults
-        if base_scorer == 'default':
-            base_scorer = self.ps.scorer
-            weight_scorer = self.ps.weight_scorer
-
-        _, _, scorer = self._process_scorers(deepcopy(base_scorer))
-        return scorer, weight_scorer
-
     def _get_base_fitted_pipeline(self):
 
-        if hasattr(self.Model, 'name') and self.Model.name == 'nevergrad':
-            return self.Model.best_estimator_
+        if hasattr(self.model, 'name') and self.model.name == 'nevergrad':
+            return self.model.best_estimator_
 
-        return self.Model
+        return self.model
 
     def _get_base_fitted_model(self):
 
@@ -597,7 +539,8 @@ class Model_Pipeline():
         X, y = self._get_X_y(train_data)
 
         # Fit the model
-        self.Model.fit(X, y, train_data_index=train_data.index)
+        self.model = deepcopy(self.model_)
+        self.model.fit(X, y, train_data_index=train_data.index)
 
         # If a search object, show the best params
         try:
@@ -610,20 +553,23 @@ class Model_Pipeline():
     def _show_best_params(self):
 
         try:
-            name = self.Model.name
+            name = self.model.name
+            if name != 'nevergrad':
+                return None
         except AttributeError:
-            return
+            return None
 
-        all_params, names =\
-            self.base_model_pipeline.get_all_params_with_names()
         self._print('Params Selected by Best Pipeline:', level='params')
+        self._print(self.model.best_params_, level='params')
 
-        for params, name in zip(all_params, names):
+        return None
+
+        for params, name in zip(self.model.all_params, ORDERED_NAMES):
 
             if len(params) > 0:
 
                 to_show = []
-                all_ps = self.Model.best_estimator_.get_params()
+                all_ps = self.model.best_estimator_.get_params()
 
                 params, to_show = self._get_all_params(params, all_ps, to_show)
 
@@ -697,7 +643,7 @@ class Model_Pipeline():
         non_nan_mask = ~np.isnan(y_test)
 
         # Get the scores
-        scores = [scorer(self.Model,
+        scores = [scorer(self.model,
                          X_test[non_nan_mask],
                          y_test[non_nan_mask])
                   for scorer in self.scorers]
@@ -722,7 +668,7 @@ class Model_Pipeline():
             self.classes = np.array([0, 1])
 
         try:
-            raw_prob_preds = self.Model.predict_proba(X_test)
+            raw_prob_preds = self.model.predict_proba(X_test)
             pred_col = eval_type + repeat + '_prob'
 
             if len(np.shape(raw_prob_preds)) == 3:
@@ -745,7 +691,7 @@ class Model_Pipeline():
         except AttributeError:
             pass
 
-        raw_preds = self.Model.predict(X_test)
+        raw_preds = self.model.predict(X_test)
         pred_col = eval_type + repeat
 
         if len(np.shape(raw_preds)) == 2:

@@ -884,15 +884,17 @@ class Param_Search(Params):
 
         scorer : str or 'default', optional
             In order for a set of hyper-parameters to be evaluated,
-            a single scorer must be defined. By default (if left as 'default')
-            this scorer will be the first scorer (if passed a list)
-            of scorers passed to :class:`Problem_Spec`. Alternatively,
-            you may pass a specific `scorer` to use
-            for just hyper-parameter evaluation.
+            a single scorer must be defined.
 
-            See:
+            For a full list of supported scorers please view the scikit-learn docs at:
             https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
-            for different pre-defined scorers.
+
+            If left as 'default', assign a reasonable scorer based on the
+            passed problem type.
+
+            - 'regression'  : 'r2'
+            - 'binary'      : 'roc_auc'
+            - 'categorical' : 'roc_auc_ovr'
 
             Be careful to make sure to select an appropriate scorer for
             the problem type.
@@ -917,16 +919,9 @@ class Param_Search(Params):
             all groups used by themselves) by the number
             of subjects in each fold.
 
-            Likewise with `scorer`, if `weight_scorer`
-            is left as 'default', then
-            the value of `weight_scorer` will be set
-            to the first value of
-            `weight_scorer` (if passed a list)
-            as passed to :class:`Problem_Spec`.
-
             ::
 
-                default = 'default'
+                default = False
 
         mp_context : {None, 'fork', 'spawn' or 'default'}, optional
             When a hyper-parameter search is launched, there are different
@@ -948,6 +943,7 @@ class Param_Search(Params):
         self.n_repeats = 1
         self.n_iter = n_iter
         self.CV = CV
+
         self.scorer = scorer
         self.weight_scorer = weight_scorer
         self.mp_context = mp_context
@@ -1175,12 +1171,19 @@ class Feat_Importance(Params):
             :ref:`Feat Importances` for what options are avaliable.
 
         scorer : str or 'default', optional
+        
             If a permutation based feature importance is being used, then a scorer is
-            required. By default (if left as 'default') this scorer will be the first
-            scorer (if passed a list) of scorers passed to :class:`Problem_Spec`.
+            required.
 
             For a full list of supported scorers please view the scikit-learn docs at:
             https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
+
+            If left as 'default', assign a reasonable scorer based on the
+            passed problem type.
+
+            - 'regression'  : 'r2'
+            - 'binary'      : 'roc_auc'
+            - 'categorical' : 'roc_auc_ovr'
 
             ::
 
@@ -1280,7 +1283,6 @@ class Model_Pipeline(Params):
                  scalers='default', transformers=None,
                  feat_selectors=None,
                  model='default', param_search=None,
-                 feat_importances='default',
                  cache=None):
         ''' Model_Pipeline is defined as essentially a wrapper around
         all of the explicit modelling pipeline parameters. This object is
@@ -1289,7 +1291,7 @@ class Model_Pipeline(Params):
 
         The ordering of the parameters listed below defines the pre-set
         order in which these Pipeline pieces are composed
-        (params up to model, param_search and feat_importances are not ordered pipeline pieces).
+        (params up to model, param_search is not an ordered pipeline piece).
         For more flexibility, one can always use custom defined objects, or even pass custom defined
         pipelines directly to model (i.e., in the case where you have a specific pipeline you want to use
         already defined, but say just want to use the loaders from BPt).
@@ -1428,21 +1430,6 @@ class Model_Pipeline(Params):
 
                 default = None
 
-        feat_importances : :class:`Feat_Importance` list of or None, optional
-            Provide here either a single, or list of :class:`Feat_Importance` param objects
-            in which to specify what importance values, and with what settings should be computed.
-            See the base :class:`Feat_Importance` object for more information on how to specify
-            these objects. 
-
-            See :ref:`Feat Importances` to learn more about feature importances generally.
-
-            In this case of a passed list, all passed Feat_Importances will attempt to be
-            computed.
-
-            ::
-
-                default = Feat_Importance('base')
-
         cache : str or None, optional
             The base scikit-learn Pipeline, upon which the BPt Pipeline extends,
             allows for the caching of fitted transformers - which in this context means all
@@ -1487,10 +1474,6 @@ class Model_Pipeline(Params):
         self.model = model
 
         self.param_search = param_search
-
-        if feat_importances == 'default':
-            feat_importances = Feat_Importance(obj='base')
-        self.feat_importances = feat_importances
 
         self.cache = cache
 
@@ -1601,7 +1584,7 @@ class Model_Pipeline(Params):
         # Proc input
         self._proc_all_pieces(self._proc_input)
         proc_all(self.param_search)
-        proc_all(self.feat_importances)
+
 
         # Double check input args in case something changed
         self._proc_all_pieces(self._check_args)
@@ -1699,8 +1682,6 @@ class Model_Pipeline(Params):
         _print('param_search=\\')
         _print(self.param_search)
         _print()
-        _print('feat_importances=\\')
-        _print(self.feat_importances)
         _print()
 
         if self.cache is not None:
@@ -1756,8 +1737,7 @@ class Problem_Spec(Params):
 
             Note: If using a Param_Search, the Param_Search object has a
             scorer parameter as well. This scorer describes the scorer optimized
-            in a parameter search. In the case that this scorer is left as 'default',
-            the the first scorer passed here will be used in Param_Search!
+            in a parameter search.
 
             For a full list of supported scorers please view the scikit-learn docs at:
             https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules

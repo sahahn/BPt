@@ -146,6 +146,7 @@ class NevergradSearchCV():
         # Fit best estimator, w/ found best params
         self.best_estimator_ = clone(self.estimator)
         self.best_estimator_.set_params(**recommendation.kwargs)
+        self.best_params_ = recommendation.kwargs
 
         # Full train index here
         if 'train_data_index' in get_possible_fit_params(self.best_estimator_):

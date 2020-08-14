@@ -1,5 +1,7 @@
 from sklearn.metrics import SCORERS
 import sklearn.metrics as M
+from ..helpers.ML_Helpers import conv_to_list, proc_type_dep_str
+from joblib import wrap_non_picklable_objects
 
 AVALIABLE = {
     'binary': {
@@ -51,6 +53,11 @@ AVALIABLE = {
 }
 AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 
+# Set defaults
+AVALIABLE['binary']['default'] = 'roc_auc'
+AVALIABLE['regression']['default'] = 'r2'
+AVALIABLE['categorical']['default'] = 'roc_auc_ovr'
+
 SCORERS.update({
 
     'neg_hamming': M.make_scorer(score_func=M.hamming_loss,
@@ -76,3 +83,27 @@ def get_scorers_by_type(problem_type):
         objs.append((scorer_str, score_func))
 
     return objs
+
+
+def process_scorers(in_scorers, problem_type):
+
+    # get scorer_strs as initially list
+    scorer_strs = conv_to_list(in_scorers)
+    scorers = []
+    cnt = 0
+
+    for m in range(len(scorer_strs)):
+
+        if isinstance(scorer_strs[m], str):
+            scorer_strs[m] =\
+                proc_type_dep_str(scorer_strs[m], AVALIABLE,
+                                  problem_type)
+            scorers.append(get_scorer_from_str(scorer_strs[m]))
+
+        else:
+            scorers.append(wrap_non_picklable_objects(scorer_strs[m]))
+            scorer_strs[m] = 'user passed scorer' + str(cnt)
+            cnt += 1
+
+    scorer = scorers[0]
+    return scorer_strs, scorers, scorer

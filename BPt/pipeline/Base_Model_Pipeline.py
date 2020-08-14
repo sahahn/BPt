@@ -1,5 +1,6 @@
 from .ABCD_Pipeline import ABCD_Pipeline
 from ..helpers.ML_Helpers import is_array_like
+from .Scorers import process_scorers
 import os
 
 from ..helpers.VARS import ORDERED_NAMES
@@ -8,29 +9,28 @@ from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
                               Transformers, Feat_Selectors,
                               Drop_Strat)
 
-from copy import deepcopy
 from .Nevergrad import NevergradSearchCV
 from .Scope_Model import Scope_Model
 
 
 class Base_Model_Pipeline():
 
-    def __init__(self, pipeline_params, model_spec, Data_Scopes, _print=print):
+    def __init__(self, pipeline_params, spec, Data_Scopes):
 
         # Save param search here
         self.param_search = pipeline_params.param_search
 
         if self.param_search is None:
-            model_spec['search_type'] = None
+            spec['search_type'] = None
         else:
-            model_spec['search_type'] = self.param_search.search_type
+            spec['search_type'] = self.param_search.search_type
 
         # Set n_jobs in model spec
-        model_spec['n_jobs'] = pipeline_params._n_jobs
+        spec['n_jobs'] = pipeline_params._n_jobs
+        self.spec = spec
 
-        # Save cache param + print
+        # Save cache param
         self.cache = pipeline_params.cache
-        self._print = _print
 
         # Extract ordered
         ordered_pipeline_params = pipeline_params.get_ordered_pipeline_params()
@@ -38,11 +38,9 @@ class Base_Model_Pipeline():
         # Create the pipeline pieces
         self._create_pipeline_pieces(
             ordered_pipeline_params=ordered_pipeline_params,
-            Data_Scopes=Data_Scopes,
-            spec=model_spec)
+            Data_Scopes=Data_Scopes)
 
-    def _create_pipeline_pieces(self, ordered_pipeline_params, Data_Scopes,
-                                spec):
+    def _create_pipeline_pieces(self, ordered_pipeline_params, Data_Scopes):
 
         # Order is:
         # ['loaders', 'imputers', 'scalers',
@@ -72,8 +70,7 @@ class Base_Model_Pipeline():
 
             piece = piece_class(user_passed_objs=self.user_passed_objs,
                                 Data_Scopes=Data_Scopes,
-                                spec=spec,
-                                _print=self._print)
+                                spec=self.spec)
             objs, params = piece.process(params)
 
             self.named_objs[name] = objs
@@ -121,14 +118,6 @@ class Base_Model_Pipeline():
 
         return all_params
 
-    def get_all_params_with_names(self):
-
-        all_params = []
-        for name in ORDERED_NAMES:
-            all_params.append(self.named_params[name])
-
-        return all_params, ORDERED_NAMES
-
     def _get_objs(self, names):
 
         objs = []
@@ -166,7 +155,6 @@ class Base_Model_Pipeline():
 
         # If caching passed, create directory
         if self.cache is not None and not os.path.isdir(self.cache):
-            self._print("Creating pipeline cache dr at:", self.cache)
             os.makedirs(self.cache, exist_ok=True)
 
         model_pipeline = ABCD_Pipeline(steps, memory=self.cache,
@@ -199,26 +187,48 @@ class Base_Model_Pipeline():
             return False
         return True
 
-    def get_search_wrapped_pipeline(self, search_scorer=None,
-                                    weight_search_scorer=None,
-                                    random_state=None,
-                                    progress_loc=None):
+    def get_search_wrapped_pipeline(self, progress_loc=None):
 
         # Grab the base pipeline
         base_pipeline = self.get_pipeline()
 
         # If no search, just return copy of pipeline
-        if self.param_search is None:
-            return deepcopy(base_pipeline)
+        if not self.is_search():
+            return base_pipeline
+
+        # Get the search scorer
+        search_scorer =\
+            process_scorers(self.param_search.scorer,
+                            self.spec['problem_type'])[2]
 
         # Create the search object
         search_model =\
-            NevergradSearchCV(params=self.param_search,
-                              estimator=base_pipeline,
-                              param_distributions=self.get_all_params(),
-                              scoring=search_scorer,
-                              weight_scorer=weight_search_scorer,
-                              random_state=random_state,
-                              progress_loc=progress_loc)
+            NevergradSearchCV(
+                params=self.param_search,
+                estimator=base_pipeline,
+                param_distributions=self.get_all_params(),
+                scoring=search_scorer,
+                weight_scorer=self.param_search.weight_scorer,
+                random_state=self.spec['random_state'],
+                progress_loc=progress_loc)
 
-        return deepcopy(search_model)
+        return search_model
+
+
+def get_final_model(pipeline_params, problem_spec, Data_Scopes, progress_loc):
+
+    # Get the model specs from problem_spec
+    model_spec = problem_spec.get_model_spec()
+
+    # Init the Base_Model_Pipeline, which creates the pipeline pieces
+    base_model_pipeline =\
+        Base_Model_Pipeline(pipeline_params=pipeline_params,
+                            spec=model_spec,
+                            Data_Scopes=Data_Scopes)
+
+    # Set the final model // search wrap
+    Model =\
+        base_model_pipeline.get_search_wrapped_pipeline(
+            progress_loc)
+
+    return Model

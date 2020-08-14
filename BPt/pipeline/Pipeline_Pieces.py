@@ -28,14 +28,13 @@ def process_input_types(obj_strs, param_strs, scopes):
 
 class Pieces():
 
-    def __init__(self, user_passed_objs, Data_Scopes, spec, _print=print):
+    def __init__(self, user_passed_objs, Data_Scopes, spec):
         # problem_type, random_state, n_jobs, search_type are stored in spec
 
         # Class values
         self.user_passed_objs = user_passed_objs
         self.Data_Scopes = Data_Scopes
         self.spec = spec
-        self._print = _print
 
         # This value with be replaced in child classes
         self.AVAILABLE = None
@@ -239,7 +238,7 @@ class Pieces():
                 # Grab the base estimator
                 base_model_obj = Models(self.user_passed_objs,
                                         self.Data_Scopes,
-                                        model_spec, self._print)
+                                        model_spec)
                 base_objs, base_params =\
                     base_model_obj.process(params[i].base_model)
 
@@ -352,7 +351,7 @@ class Models(Type_Pieces):
 
         # Get base ensemble objs. by proc all at once
         ensembles = Ensembles(self.user_passed_objs, self.Data_Scopes,
-                              self.spec, _print=self._print)
+                              self.spec)
         ensemble_objs, ensemble_obj_params = ensembles.process(ensemble_params)
 
         # Get the base models + model_params for each ensemble

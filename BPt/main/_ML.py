@@ -13,6 +13,7 @@ from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Model_Pipeline import Model_Pipeline
+from ..main.Params_Classes import Feat_Importance
 import pandas as pd
 
 
@@ -237,6 +238,7 @@ def Evaluate(self,
              n_repeats=2,
              CV='default',
              train_subjects='train',
+             feat_importances='default',
              run_name='default'):
     ''' The Evaluate function is one of the main interfaces
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
@@ -386,6 +388,21 @@ def Evaluate(self,
 
             default = 'train'
 
+    feat_importances : :class:`Feat_Importance` list of or None, optional
+        Provide here either a single, or list of :class:`Feat_Importance` param objects
+        in which to specify what importance values, and with what settings should be computed.
+        See the base :class:`Feat_Importance` object for more information on how to specify
+        these objects. 
+
+        See :ref:`Feat Importances` to learn more about feature importances generally.
+
+        In this case of a passed list, all passed Feat_Importances will attempt to be
+        computed.
+
+        ::
+
+            default = Feat_Importance('base')
+
     run_name : str or 'default', optional
         Each run of Evaluate can be optionally associated with
         a specific `run_name`. This name
@@ -465,6 +482,10 @@ def Evaluate(self,
     # Get the the train subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
 
+    # Proc feat importances
+    if feat_importances == 'default':
+        feat_importances = Feat_Importance(obj='base')
+
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
 
@@ -477,6 +498,7 @@ def Evaluate(self,
         self._print('n_repeats =', n_repeats)
         self._print('CV =', CV)
         self._print('train_subjects =', train_subjects)
+        self._print('feat_importances =', feat_importances)
         self._print('len(train_subjects) =', len(_train_subjects),
                     '(before overlap w/ problem_spec.subjects)')
         self._print('run_name =', run_name)
@@ -489,7 +511,7 @@ def Evaluate(self,
         CV_obj = self._get_CV(CV)
 
     # Init. the Model_Pipeline object with modeling params
-    self._init_model(model_pipeline, problem_spec, CV_obj)
+    self._init_model(model_pipeline, problem_spec, CV_obj, feat_importances)
 
     # Get the Eval splits
     _, splits_vals, _ = self._get_split_vals(splits)
@@ -543,6 +565,7 @@ def Test(self,
          problem_spec,
          train_subjects='train',
          test_subjects='test',
+         feat_importances='default',
          run_name='default'):
     ''' The test function is one of the main interfaces for testing a specific
     :class:`Model_Pipeline`. Test is conceptually different from
@@ -653,6 +676,26 @@ def Test(self,
 
             default = 'test'
 
+    feat_importances : :class:`Feat_Importance` list of or None, optional
+        Provide here either a single, or list of :class:`Feat_Importance`
+        param objects
+        in which to specify what importance values, and with what settings
+        should be computed.
+        See the base :class:`Feat_Importance` object for more information
+        on how to specify
+        these objects. 
+
+        See :ref:`Feat Importances` to learn more about feature
+        importances generally.
+
+        In this case of a passed list, all passed Feat_Importances
+        will attempt to be
+        computed.
+
+        ::
+
+            default = Feat_Importance('base')
+
     run_name : str or 'default', optional
         Each run of test can be optionally
         associated with a specific `run_name`. This name
@@ -702,6 +745,10 @@ def Test(self,
     _train_subjects = self._get_subjects_to_use(train_subjects)
     _test_subjects = self._get_subjects_to_use(test_subjects)
 
+    # Proc feat importances
+    if feat_importances == 'default':
+        feat_importances = Feat_Importance(obj='base')
+
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
 
@@ -716,11 +763,13 @@ def Test(self,
         self._print('test_subjects =', test_subjects)
         self._print('len(test_subjects) =', len(_test_subjects),
                     '(before overlap w/ problem_spec.subjects)')
+        self._print('feat_importances =', feat_importances)
         self._print('run_name =', run_name)
         self._print()
 
     # Init the Model_Pipeline object with modeling params
-    self._init_model(model_pipeline, problem_spec, self.CV)
+    self._init_model(model_pipeline, problem_spec,
+                     self.CV, feat_importances)
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, raw_preds, FIs =\
@@ -924,12 +973,13 @@ def _get_subjects_to_use(self, subjects_to_use):
     return subjects
 
 
-def _init_model(self, model_pipeline, problem_specs, CV):
+def _init_model(self, model_pipeline, problem_specs, CV, feat_importances):
 
     # Set Model_Pipeline
     self.Model_Pipeline =\
         Model_Pipeline(model_pipeline, problem_specs, CV,
                        self.Data_Scopes,
+                       feat_importances,
                        self.default_ML_verbosity['progress_bar'],
                        self.default_ML_verbosity['compute_train_score'],
                        progress_loc=self.default_ML_verbosity['progress_loc'],

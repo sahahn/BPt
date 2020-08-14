@@ -12,8 +12,9 @@ from .Input_Tools import is_value_subset
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
-from ..pipeline.Model_Pipeline import Model_Pipeline
+from ..pipeline.Evaluator import Evaluator
 from ..main.Params_Classes import Feat_Importance
+from ..pipeline.Model_Pipeline import get_pipe
 import pandas as pd
 
 
@@ -511,15 +512,16 @@ def Evaluate(self,
         CV_obj = self._get_CV(CV)
 
     # Init. the Model_Pipeline object with modeling params
-    self._init_model(model_pipeline, problem_spec, CV_obj, feat_importances)
+    self._init_evaluator(model_pipeline, problem_spec,
+                         CV_obj, feat_importances)
 
     # Get the Eval splits
     _, splits_vals, _ = self._get_split_vals(splits)
 
     # Evaluate the model
     train_scores, scores, raw_preds, FIs =\
-        self.Model_Pipeline.Evaluate(self.all_data, _train_subjects,
-                                     splits, n_repeats, splits_vals)
+        self.evaluator.Evaluate(self.all_data, _train_subjects,
+                                splits, n_repeats, splits_vals)
 
     # Set target and run name
     for fi in FIs:
@@ -544,7 +546,7 @@ def Evaluate(self,
         summary_scores = self._handle_scores(scrs, name,
                                              problem_spec.weight_scorer,
                                              n_repeats, run_name,
-                                             self.Model_Pipeline.n_splits_,
+                                             self.evaluator.n_splits_,
                                              summary_dfs)
 
         if name == 'Validation':
@@ -768,13 +770,13 @@ def Test(self,
         self._print()
 
     # Init the Model_Pipeline object with modeling params
-    self._init_model(model_pipeline, problem_spec,
-                     self.CV, feat_importances)
+    self._init_evaluator(model_pipeline, problem_spec,
+                         self.CV, feat_importances)
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, raw_preds, FIs =\
-        self.Model_Pipeline.Test(self.all_data, _train_subjects,
-                                 _test_subjects)
+        self.evaluator.Test(self.all_data, _train_subjects,
+                            _test_subjects)
 
     # Set run name
     for fi in FIs:
@@ -782,7 +784,7 @@ def Test(self,
         fi.set_run_name(run_name)
 
     # Print out score for all passed scorers
-    scorer_strs = self.Model_Pipeline.scorer_strs
+    scorer_strs = self.evaluator.scorer_strs
     self._print()
 
     score_list, score_type_list = [], []
@@ -806,7 +808,7 @@ def Test(self,
             scr = s[i]
             if len(scr.shape) > 0:
 
-                targets_key = self.Model_Pipeline.targets_key
+                targets_key = self.evaluator.targets_key
 
                 for score_by_class, class_name in zip(scr, targets_key):
                     self._print('for target class: ', class_name)
@@ -973,17 +975,38 @@ def _get_subjects_to_use(self, subjects_to_use):
     return subjects
 
 
-def _init_model(self, model_pipeline, problem_specs, CV, feat_importances):
+def Get_Pipeline(self, model_pipeline, problem_spec, progress_loc=None):
 
-    # Set Model_Pipeline
-    self.Model_Pipeline =\
-        Model_Pipeline(model_pipeline, problem_specs, CV,
-                       self.Data_Scopes,
-                       feat_importances,
-                       self.default_ML_verbosity['progress_bar'],
-                       self.default_ML_verbosity['compute_train_score'],
-                       progress_loc=self.default_ML_verbosity['progress_loc'],
-                       _print=self._ML_print)
+    # Init problem spec + pipeline as needed
+    problem_spec = self._preproc_problem_spec(problem_spec)
+    model_pipeline = self._preproc_model_pipeline(model_pipeline,
+                                                  problem_spec.n_jobs)
+
+    # Init data scopes
+    self.Data_Scopes.set_all_keys(problem_spec)
+
+    # Return the pipeline
+    return get_pipe(pipeline_params=model_pipeline,
+                    problem_spec=problem_spec,
+                    Data_Scopes=self.Data_Scopes,
+                    progress_loc=progress_loc)
+
+
+def _init_evaluator(self, model_pipeline, problem_spec, CV, feat_importances):
+
+    # Calling get pipeline performs preproc on problem spec, model_pipeline
+    # and Data_Scopes
+    model = self.Get_Pipeline(model_pipeline, problem_spec,
+                              self.default_ML_verbosity['progress_loc'])
+
+    self.evaluator =\
+        Evaluator(model=model,
+                  problem_spec=problem_spec,
+                  CV=CV,
+                  all_keys=self.Data_Scopes.all_keys,
+                  feat_importances=feat_importances,
+                  verbosity=self.default_ML_verbosity,
+                  _print=self._ML_print)
 
 
 def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,
@@ -992,7 +1015,7 @@ def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,
     all_summary_scores = []
     summary_dfs[name] = pd.DataFrame()
 
-    scorer_strs = self.Model_Pipeline.scorer_strs
+    scorer_strs = self.evaluator.scorer_strs
 
     self._print(name + ' Scores')
     self._print(''.join('_' for i in range(len(name) + 7)))
@@ -1003,7 +1026,7 @@ def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,
 
         # Weight outputed scores if requested
         if weight_scorers[i]:
-            weights = self.Model_Pipeline.n_test_per_fold
+            weights = self.evaluator.n_test_per_fold
         else:
             weights = None
 
@@ -1020,8 +1043,8 @@ def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,
                 [compute_micro_macro(class_scores, n_repeats,
                  n_splits, weights=weights) for class_scores in by_class]
 
-            targets_key = self.Model_Pipeline.targets_key
-            classes = self.Model_Pipeline.classes
+            targets_key = self.evaluator.targets_key
+            classes = self.evaluator.classes
 
             class_names =\
                 self.targets_encoders[targets_key].inverse_transform(
@@ -1119,3 +1142,6 @@ def _save_results(self, results, save_name):
         save_spot = os.path.join(save_dr, save_name)
         with open(save_spot, 'wb') as f:
             pkl.dump(results, f)
+
+
+

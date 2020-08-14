@@ -1,744 +1,234 @@
-import pandas as pd
-
-import numpy as np
-import time
-
-from ..helpers.ML_Helpers import conv_to_list, type_check
-from .Feat_Importances import get_feat_importances_and_params
-from .Base_Model_Pipeline import get_final_model
+from .BPt_Pipeline import BPt_Pipeline
+from ..helpers.ML_Helpers import is_array_like
 from .Scorers import process_scorers
-from copy import deepcopy
-from os.path import dirname, abspath, exists
+import os
+
 from ..helpers.VARS import ORDERED_NAMES
+
+from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
+                              Transformers, Feat_Selectors,
+                              Drop_Strat)
+
+from .Nevergrad import NevergradSearchCV
+from .Scope_Model import Scope_Model
 
 
 class Model_Pipeline():
-    '''Helper class for handling all of the different parameters involved in
-    model training, scaling, handling different datatypes ect...
-    '''
 
-    def __init__(self, pipeline_params, problem_spec, CV, Data_Scopes,
-                 feat_importances, progress_bar, compute_train_score,
-                 progress_loc=None,
-                 _print=print):
+    def __init__(self, pipeline_params, spec, Data_Scopes):
 
-        # Save problem spec as sp
-        self.ps = problem_spec
-        self.progress_bar = progress_bar
-        self.compute_train_score = compute_train_score
+        # Save param search here
+        self.param_search = pipeline_params.param_search
 
-        # Init scopes all keys, based on scope + target key
-        self.all_keys = Data_Scopes.set_all_keys(spec=self.ps)
-
-        # Set passed values
-        self.CV = CV
-        self.progress_bar = progress_bar
-        self.progress_loc = progress_loc
-        self._print = _print
-
-        # Default params
-        self._set_default_params()
-
-        # Set / proc scorers
-        self.scorer_strs, self.scorers, _ =\
-            process_scorers(deepcopy(self.ps.scorer), self.ps.problem_type)
-
-        # Set / proc feat importance info
-        self.feat_importances =\
-            self._process_feat_importances(feat_importances)
-
-        # Get model
-        self.model_ =\
-            get_final_model(pipeline_params=pipeline_params,
-                            problem_spec=self.ps,
-                            Data_Scopes=Data_Scopes,
-                            progress_loc=self.progress_loc)
-
-    def _set_default_params(self):
-
-        self.n_splits_ = None
-
-        self.flags = {'linear': False,
-                      'tree': False}
-
-    def _process_feat_importances(self, feat_importances):
-
-        # Grab feat_importance from spec as a list
-        feat_importances = conv_to_list(feat_importances)
-
-        if feat_importances is not None:
-
-            scorers = [fi.scorer for fi in feat_importances]
-            scorers =\
-                [process_scorers(m, self.ps.problem_type)[2] for m in scorers]
-
-            feat_importances =\
-                [get_feat_importances_and_params(fi, self.ps.problem_type,
-                                                 self.ps.n_jobs, scorer)
-                    for fi, scorer in zip(feat_importances, scorers)]
-
-            return feat_importances
-        return []
-
-    def _get_subjects_overlap(self, subjects):
-        '''Computer overlapping subjects with self.ps._final_subjects'''
-
-        if self.ps._final_subjects is None:
-            overlap = set(subjects)
+        if self.param_search is None:
+            spec['search_type'] = None
         else:
-            overlap = self.ps._final_subjects.intersection(set(subjects))
+            spec['search_type'] = self.param_search.search_type
 
-        return np.array(list(overlap))
+        # Set n_jobs in model spec
+        spec['n_jobs'] = pipeline_params._n_jobs
+        self.spec = spec
 
-    def Evaluate(self, data, train_subjects, splits, n_repeats, splits_vals):
-        '''Method to perform a full evaluation
-        on a provided model type and training subjects, according to
-        class set parameters.
+        # Save cache param
+        self.cache = pipeline_params.cache
 
-        Parameters
-        ----------
-        data : pandas DataFrame
-            BPt formatted, with both training and testing data.
+        # Extract ordered
+        ordered_pipeline_params = pipeline_params.get_ordered_pipeline_params()
 
-        train_subjects : array-like
-            An array or pandas Index of the train subjects should be passed.
+        # Create the pipeline pieces
+        self._create_pipeline_pieces(
+            ordered_pipeline_params=ordered_pipeline_params,
+            Data_Scopes=Data_Scopes)
 
-        Returns
-        ----------
-        array-like of array-like
-            numpy array of numpy arrays,
-            where each internal array contains the raw scores as computed for
-            all passed in scorers, computed for each fold within
-            each repeat.
-            e.g., array will have a length of `n_repeats` * n_splits
-            (num folds) and each internal array will have the same length
-            as the number of scorers.
-        '''
+    def _create_pipeline_pieces(self, ordered_pipeline_params, Data_Scopes):
 
-        # Set train_subjects according to self.ps._final_subjects
-        train_subjects = self._get_subjects_overlap(train_subjects)
+        # Order is:
+        # ['loaders', 'imputers', 'scalers',
+        #  'transformers', '_drop_strat',
+        #  'feat_selectors', 'model']
 
-        # Init raw_preds_df
-        self._init_raw_preds_df(train_subjects)
+        # First check for user passed
+        self.user_passed_objs = {}
+        conv_pipeline_params = []
+        cnt = 0
 
-        # Setup the desired eval splits
-        subject_splits =\
-            self._get_eval_splits(train_subjects, splits,
-                                  n_repeats, splits_vals)
+        for params in ordered_pipeline_params:
+            conv_params, cnt = self._check_for_user_passed(params, cnt)
+            conv_pipeline_params.append(conv_params)
 
-        all_train_scores, all_scores = [], []
-        fold_ind = 0
+        self.named_objs = {}
+        self.named_params = {}
 
-        # Init progress bar if any
-        if self.progress_bar is not None:
-            repeats_bar = self.progress_bar(total=n_repeats,
-                                            desc='Repeats')
+        # These are the corresponding pieces classes
+        pieces_classes = [Loaders, Imputers, Scalers,
+                          Transformers, Drop_Strat,
+                          Feat_Selectors, Models]
 
-            folds_bar = self.progress_bar(total=self.n_splits_,
-                                          desc='Folds')
+        # Generate / process all of the pipeline pieces in order
+        for params, piece_class, name in zip(conv_pipeline_params,
+                                             pieces_classes, ORDERED_NAMES):
 
-        # Init progress loc if any
-        if self.progress_loc is not None:
-            with open(self.progress_loc, 'w') as f:
-                f.write(str(n_repeats) + ',' + str(self.n_splits_))
-                f.write('\n')
+            piece = piece_class(user_passed_objs=self.user_passed_objs,
+                                Data_Scopes=Data_Scopes,
+                                spec=self.spec)
+            objs, params = piece.process(params)
 
-        self.n_test_per_fold = []
+            self.named_objs[name] = objs
+            self.named_params[name] = params
 
-        # For each split with the repeated K-fold
-        for train_subjects, test_subjects in subject_splits:
+        # Set mapping to map
+        self._set_mapping_to_map()
 
-            self.n_test_per_fold.append(len(test_subjects))
+    def _check_for_user_passed(self, objs, cnt):
 
-            # Fold name verbosity
-            repeat = str((fold_ind // self.n_splits_) + 1)
-            fold = str((fold_ind % self.n_splits_) + 1)
-            self._print(level='name')
-            self._print('Repeat: ', repeat, '/', n_repeats, ' Fold: ',
-                        fold, '/', self.n_splits_, sep='', level='name')
+        if objs is not None:
 
-            if self.progress_bar is not None:
-                repeats_bar.n = int(repeat) - 1
-                repeats_bar.refresh()
+            # If list / array like passed
+            if is_array_like(objs):
 
-                folds_bar.n = int(fold) - 1
-                folds_bar.refresh()
+                # Call recursively on each entry
+                for o in range(len(objs)):
+                    objs[o], cnt = self._check_for_user_passed(objs[o], cnt)
 
-            # Run actual code for this evaluate fold
-            start_time = time.time()
-            train_scores, scores = self.Test(data, train_subjects,
-                                             test_subjects, fold_ind)
-
-            # Time by fold verbosity
-            elapsed_time = time.time() - start_time
-            time_str = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
-            self._print('Time Elapsed:', time_str, level='time')
-
-            # Score by fold verbosity
-            if self.compute_train_score:
-                for i in range(len(self.scorer_strs)):
-                    self._print('train ', self.scorer_strs[i], ': ',
-                                train_scores[i], sep='', level='score')
-
-            for i in range(len(self.scorer_strs)):
-                self._print('val ', self.scorer_strs[i], ': ',
-                            scores[i], sep='', level='score')
-
-            # If progress loc
-            if self.progress_loc is not None:
-
-                if not exists(dirname(abspath(self.progress_loc))):
-                    raise SystemExit('Folder where progress is stored '
-                                     ' was removed!')
-
-                with open(self.progress_loc, 'a') as f:
-                    f.write('fold\n')
-
-            all_train_scores.append(train_scores)
-            all_scores.append(scores)
-            fold_ind += 1
-
-        if self.progress_bar is not None:
-            repeats_bar.n = n_repeats
-            repeats_bar.refresh()
-            repeats_bar.close()
-
-            folds_bar.n = self.n_splits_
-            folds_bar.refresh()
-            folds_bar.close()
-
-        # If any local feat importances
-        for feat_imp in self.feat_importances:
-            feat_imp.set_final_local()
-
-        # self.micro_scores = self._compute_micro_scores()
-
-        # Return all scores
-        return (np.array(all_train_scores), np.array(all_scores),
-                self.raw_preds_df, self.feat_importances)
-
-    def _get_eval_splits(self, train_subjects, splits, n_repeats, splits_vals):
-
-        subject_splits = self.CV.get_cv(train_subjects, splits, n_repeats,
-                                        splits_vals, self.ps.random_state,
-                                        return_index=False)
-
-        # Want to save n_splits by type
-        if splits_vals is not None:
-            self.n_splits_ = self.CV.get_num_groups(train_subjects,
-                                                    splits_vals)
-
-        elif isinstance(splits, int):
-            self.n_splits_ = splits
-
-        else:
-            self.n_splits_ = 1
-
-        return subject_splits
-
-    def Test(self, data, train_subjects, test_subjects, fold_ind='test'):
-        '''Method to test given input data, training a model on train_subjects
-        and testing the model on test_subjects.
-
-        Parameters
-        ----------
-        data : pandas DataFrame
-            BPt formatted, with both training and testing data.
-
-        train_subjects : array-like
-            An array or pandas Index of train subjects should be passed.
-
-        test_subjects : array-like
-            An array or pandas Index of test subjects should be passed.
-
-        Returns
-        ----------
-        array-like
-            A numpy array of scores as determined by the passed
-            metric/scorer(s) on the provided testing set.
-        '''
-
-        # Reset progress loc if Test
-        if fold_ind == 'test':
-            if self.progress_loc is not None:
-                if not exists(dirname(abspath(self.progress_loc))):
-                    raise SystemExit('Folder where progress is stored '
-                                     ' was removed!')
-
-                with open(self.progress_loc, 'w') as f:
-                    f.write('test\n')
-
-        # Ensure train and test subjects are just the requested overlap
-        train_subjects = self._get_subjects_overlap(train_subjects)
-
-        # Remove any train subjects with NaN targets
-        train_targets = data.loc[train_subjects, self.ps.target]
-        if pd.isna(train_targets).any():
-            valid = train_targets[~pd.isna(train_targets)].index
-            train_subjects = self._get_subjects_overlap(valid)
-
-        # For test subjects set to overlap
-        all_test_subjects = self._get_subjects_overlap(test_subjects)
-
-        # Get another version of the test_subjects w/o NaN
-        test_targets = data.loc[all_test_subjects, self.ps.target]
-        if pd.isna(test_targets).any():
-            valid = test_targets[~pd.isna(test_targets)].index
-            test_subjects = self._get_subjects_overlap(valid)
-        else:
-            test_subjects = all_test_subjects
-
-        # Ensure data being used is just the selected col / feats
-        data = data[self.all_keys]
-
-        # Init raw_preds_df
-        if fold_ind == 'test':
-
-            # For raw preds df, keep NaNs, so use all_test_subjects
-            if self.compute_train_score:
-                self._init_raw_preds_df(np.concatenate([train_subjects,
-                                                        all_test_subjects]))
+            # If a single obj
             else:
-                self._init_raw_preds_df(all_test_subjects)
 
-        # Assume the train_subjects here are final
-        train_data = data.loc[train_subjects]
+                # If a Param obj - call recursively to set the value of the
+                # base obj
+                if hasattr(objs, 'obj'):
+                    objs.obj, cnt = self._check_for_user_passed(objs.obj, cnt)
 
-        self._print('Train shape:', train_data.shape, level='size')
-        self._print('Val/Test shape:', data.loc[test_subjects].shape,
-                    level='size')
-        if len(test_subjects) != len(all_test_subjects):
-            self._print('Making predictions for additional target NaN '
-                        'subjects:',
-                        len(all_test_subjects) - len(test_subjects),
-                        level='size')
+                # Now, we assume any single obj that gets here, if not
+                # a str is user passed obj
+                elif not isinstance(objs, str):
+                    save_name = 'user passed' + str(cnt)
+                    cnt += 1
 
-        # Train the model(s)
-        self._train_model(train_data)
+                    self.user_passed_objs[save_name] = objs
+                    objs = save_name
 
-        # Proc the different feat importances,
-        # Pass only test subjects w/o missing targets here
-        self._proc_feat_importance(train_data, data.loc[test_subjects],
-                                   fold_ind)
+        return objs, cnt
 
-        # Get the scores
-        if self.compute_train_score:
-            train_scores = self._get_scores(train_data, 'train_', fold_ind)
-        else:
-            train_scores = 0
+    def get_all_params(self):
+        '''Returns a dict with all the params combined'''
 
-        # Pass test_data w/ Nans to get_scores, in order to
-        # still record predictions for targets w/ a missing
-        # ground truth.
-        scores = self._get_scores(data.loc[all_test_subjects], '', fold_ind)
+        all_params = {}
+        for name in ORDERED_NAMES:
+            all_params.update(self.named_params[name])
 
-        if fold_ind == 'test':
-            return (train_scores, scores, self.raw_preds_df,
-                    self.feat_importances)
+        return all_params
 
-        return train_scores, scores
+    def _get_objs(self, names):
 
-    def _get_base_fitted_pipeline(self):
+        objs = []
+        for name in names:
+            objs += self.named_objs[name]
 
-        if hasattr(self.model, 'name') and self.model.name == 'nevergrad':
-            return self.model.best_estimator_
+        return objs
 
-        return self.model
+    def _get_all_names(self):
 
-    def _get_base_fitted_model(self):
+        all_obj_names = []
+        for name in ORDERED_NAMES:
 
-        base_pipeline = self._get_base_fitted_pipeline()
-        last_name = base_pipeline.steps[-1][0]
-        base_model = base_pipeline[last_name]
+            obj_names = []
+            for obj in self.named_objs[name]:
+                obj_names.append(obj[0])
 
-        return base_model
+            all_obj_names.append(obj_names)
 
-    def _set_model_flags(self):
+        return all_obj_names
 
-        base_model = self._get_base_fitted_model()
+    def _get_sep_objs(self, names):
 
-        try:
-            base_model.coef_
-            self.flags['linear'] = True
-        except AttributeError:
-            pass
+        objs = []
+        for name in names:
+            objs.append(self.named_objs[name])
 
-        try:
-            base_model.feature_importances_
-            self.flags['tree'] = True
-        except AttributeError:
-            pass
+        return objs
 
-    def _proc_feat_importance(self, train_data, test_data, fold_ind):
+    def get_pipeline(self):
+        '''Make the model pipeline object'''
 
-        # Ensure model flags are set / there are feat importances to proc
-        if len(self.feat_importances) > 0:
-            self._set_model_flags()
-        else:
-            return
+        steps = self._get_objs(ORDERED_NAMES)
+        names = self._get_all_names()
 
-        # Process each feat importance
-        for feat_imp in self.feat_importances:
+        # If caching passed, create directory
+        if self.cache is not None and not os.path.isdir(self.cache):
+            os.makedirs(self.cache, exist_ok=True)
 
-            split = feat_imp.split
+        model_pipeline = BPt_Pipeline(steps, memory=self.cache,
+                                      mapping=self.mapping,
+                                      to_map=self.to_map,
+                                      names=names)
 
-            # Init global feature df
-            if fold_ind == 0 or fold_ind == 'test':
+        return model_pipeline
 
-                X, y = self._proc_X_test(train_data, fs=False)
-                feat_imp.init_global(X, y)
+    def _set_mapping_to_map(self):
 
-            # Local init - Test
-            if fold_ind == 'test':
+        mapping, to_map = True, []
 
-                if split == 'test':
-                    X, y = self._proc_X_test(test_data, fs=False)
+        # Add every step that needs a mapping
+        for valid in self._get_sep_objs(set(ORDERED_NAMES) - set(['model'])):
+            for step in valid:
+                to_map.append(step[0])
 
-                elif split == 'train':
-                    X, y = self._proc_X_test(train_data, fs=False)
+        # Handle model special
+        for step in self.named_objs['model']:
+            if isinstance(step[1], Scope_Model):
+                to_map.append(step[0])
 
-                elif split == 'all':
-                    X, y =\
-                        self._proc_X_test(pd.concat([train_data, test_data]),
-                                          fs=False)
+        self.mapping = mapping
+        self.to_map = to_map
 
-                feat_imp.init_local(X, y, test=True, n_splits=None)
+    def is_search(self):
 
-            # Local init - Evaluate
-            elif fold_ind % self.n_splits_ == 0:
+        if self.param_search is None:
+            return False
+        return True
 
-                X, y = self._proc_X_test(pd.concat([train_data, test_data]),
-                                         fs=False)
-                feat_imp.init_local(X, y, n_splits=self.n_splits_)
-
-            self._print('Calculate', feat_imp.name, 'feat importances',
-                        level='name')
-
-            # Get base fitted model
-            base_model = self._get_base_fitted_model()
-
-            # Optionally proc train, though train is always train
-            if feat_imp.get_data_needed_flags(self.flags):
-                X_train = self._proc_X_train(train_data)
-            else:
-                X_train = None
+    def get_search_wrapped_pipeline(self, progress_loc=None):
 
-            # Test depends on scope
-            if split == 'test':
-                test = test_data
-            elif split == 'train':
-                test = train_data
-            elif split == 'all':
-                test = pd.concat([train_data, test_data])
+        # Grab the base pipeline
+        base_pipeline = self.get_pipeline()
 
-            # Always proc test.
-            X_test, y_test = self._proc_X_test(test)
-
-            try:
-                fold = fold_ind % self.n_splits_
-            except TypeError:
-                fold = 'test'
-
-            # Process the feature importance, provide all needed
-            fis =\
-                feat_imp.proc_importances(base_model, X_test, y_test=y_test,
-                                          X_train=X_train, fold=fold,
-                                          random_state=self.ps.random_state)
-
-            # Grab the names of all input features
-            feat_names = list(train_data)
-            feat_names.remove(self.ps.target)
-
-            # Inverse transform FIs back to original feat_space is requested
-            self._inverse_transform_FIs(feat_imp, fis, feat_names)
-
-            # For local, need an intermediate average, move df to dfs
-            if isinstance(fold_ind, int):
-                if fold_ind % self.n_splits_ == self.n_splits_-1:
-                    feat_imp.proc_local()
-
-    def _inverse_transform_FIs(self, feat_imp, fis, feat_names):
-
-        global_fi, local_fi = fis
-        pipeline = self._get_base_fitted_pipeline()
-
-        # Only compute the inverse transform FI's if there
-        # are either transformers or loaders in the base pipeline
-        if not pipeline.has_transforms():
-            feat_imp.warning = False
-            return
-
-        if feat_imp.inverse_global and global_fi is not None:
-            feat_imp.inverse_global_fis.append(
-                pipeline.inverse_transform_FIs(global_fi, feat_names))
-
-        if feat_imp.inverse_local and local_fi is not None:
-            feat_imp.inverse_local_fis.append(
-                pipeline.inverse_transform_FIs(local_fi, feat_names))
-
-        feat_imp.warning = True
-        return
-
-    def _get_X_y(self, data, X_as_df=False, copy=False):
-        '''Helper method to get X,y data from BPt formatted df.
-
-        Parameters
-        ----------
-        data : pandas DataFrame
-            BPt formatted.
-
-        X_as_df : bool, optional
-            If True, return X as a pd DataFrame,
-            otherwise, return as a numpy array
-
-            (default = False)
-
-        copy : bool, optional
-            If True, return a copy of X
-
-            (default = False)
-
-        Returns
-        ----------
-        array-like
-            X data for ML
-        array-like
-            y target for ML
-        '''
-
-        if copy:
-            X = data.drop(self.ps.target, axis=1).copy()
-            y = data[self.ps.target].copy()
-        else:
-            X = data.drop(self.ps.target, axis=1)
-            y = data[self.ps.target]
-
-        if not X_as_df:
-            X = np.array(X).astype(float)
-
-        y = np.array(y).astype(float)
-
-        return X, y
-
-    def _train_model(self, train_data):
-        '''Helper method to train a models given
-        a str indicator and training data.
-
-        Parameters
-        ----------
-        train_data : pandas DataFrame
-            BPt formatted, training data.
-
-        Returns
-        ----------
-        sklearn api compatible model object
-            The trained model.
-        '''
-
-        # Data, score split
-        X, y = self._get_X_y(train_data)
-
-        # Fit the model
-        self.model = deepcopy(self.model_)
-        self.model.fit(X, y, train_data_index=train_data.index)
-
-        # If a search object, show the best params
-        try:
-            self._show_best_params()
-        except KeyError:
-            self._print('Error printing best params - this may be due to ',
-                        ' nested pipelines which are not yet supported',
-                        level='params')
-
-    def _show_best_params(self):
-
-        try:
-            name = self.model.name
-            if name != 'nevergrad':
-                return None
-        except AttributeError:
-            return None
-
-        self._print('Params Selected by Best Pipeline:', level='params')
-        self._print(self.model.best_params_, level='params')
-
-        return None
-
-        for params, name in zip(self.model.all_params, ORDERED_NAMES):
-
-            if len(params) > 0:
-
-                to_show = []
-                all_ps = self.model.best_estimator_.get_params()
-
-                params, to_show = self._get_all_params(params, all_ps, to_show)
-
-                for p in params:
-                    ud = params[p]
-
-                    if type_check(ud):
-                        to_show.append(p + ': ' + str(all_ps[p]))
-
-                if len(to_show) > 0:
-                    self._print(name, level='params')
-
-                    for show in to_show:
-                        self._print(show, level='params')
-
-                    self._print('', level='params')
-
-    def _get_all_params(self, params, all_ps, to_show):
-
-        if any(['__select' in p for p in params]):
-
-            all_params = {}
-            for p in params:
-                ud = params[p]
-
-                if '__select' in p:
-                    base_name = '__'.join(p.split('__')[:-1])
-                    to_use = all_ps[base_name + '__to_use']
-                    to_show.append(base_name + '__selected: ' + str(to_use))
-                    extra_ps = ud.choices[to_use]._content
-                    extra_ps =\
-                        {base_name + '__' + e: extra_ps[e] for e in extra_ps}
-
-                    all_params.update(extra_ps)
-                else:
-                    all_params[p] = params[p]
-
-            # Recursively call
-            return self._get_all_params(all_params, all_ps, to_show)
-
-        return params, to_show
-
-    def _get_scores(self, test_data, eval_type, fold_ind):
-        '''Helper method to get the scores of
-        the trained model saved in the class on input test data.
-        For all metrics/scorers.
-
-        Parameters
-        ----------
-        test_data : pandas DataFrame
-            BPt formatted test data.
-
-        eval_type : {'train_', ''}
-
-        fold_ind : int or 'test'
-
-        Returns
-        ----------
-        float
-            The score of the trained model on the given test data.
-        '''
-
-        # Data, score split
-        X_test, y_test = self._get_X_y(test_data)
-
-        # Add raw preds to raw_preds_df
-        self._add_raw_preds(X_test, y_test, test_data.index, eval_type,
-                            fold_ind)
-
-        # Only compute scores on Non-Nan y
-        non_nan_mask = ~np.isnan(y_test)
-
-        # Get the scores
-        scores = [scorer(self.model,
-                         X_test[non_nan_mask],
-                         y_test[non_nan_mask])
-                  for scorer in self.scorers]
-
-        return np.array(scores)
-
-    def _add_raw_preds(self, X_test, y_test, subjects, eval_type, fold_ind):
-
-        if fold_ind == 'test':
-            fold = 'test'
-            repeat = ''
-        else:
-            fold = str((fold_ind % self.n_splits_) + 1)
-            repeat = str((fold_ind // self.n_splits_) + 1)
-
-        # Get non-nan classes
-        self.classes = np.unique(y_test[~np.isnan(y_test)])
-
-        # Catch case where there is only one class present in y_test
-        # Assume in this case that it should be binary, 0 and 1
-        if len(self.classes) == 1:
-            self.classes = np.array([0, 1])
-
-        try:
-            raw_prob_preds = self.model.predict_proba(X_test)
-            pred_col = eval_type + repeat + '_prob'
-
-            if len(np.shape(raw_prob_preds)) == 3:
-
-                for i in range(len(raw_prob_preds)):
-                    p_col = pred_col + '_class_' + str(self.classes[i])
-                    class_preds = [val[1] for val in raw_prob_preds[i]]
-                    self.raw_preds_df.loc[subjects, p_col] = class_preds
-
-            elif len(np.shape(raw_prob_preds)) == 2:
-
-                for i in range(np.shape(raw_prob_preds)[1]):
-                    p_col = pred_col + '_class_' + str(self.classes[i])
-                    class_preds = raw_prob_preds[:, i]
-                    self.raw_preds_df.loc[subjects, p_col] = class_preds
-
-            else:
-                self.raw_preds_df.loc[subjects, pred_col] = raw_prob_preds
-
-        except AttributeError:
-            pass
-
-        raw_preds = self.model.predict(X_test)
-        pred_col = eval_type + repeat
-
-        if len(np.shape(raw_preds)) == 2:
-            for i in range(np.shape(raw_preds)[1]):
-                p_col = pred_col + '_class_' + str(self.classes[i])
-                class_preds = raw_preds[:, i]
-                self.raw_preds_df.loc[subjects, p_col] = class_preds
-
-        else:
-            self.raw_preds_df.loc[subjects, pred_col] = raw_preds
-
-        self.raw_preds_df.loc[subjects, pred_col + '_fold'] = fold
-
-        # Make copy of true values
-        if len(np.shape(y_test)) > 1:
-            for i in range(len(self.ps.target)):
-                self.raw_preds_df.loc[subjects, self.ps.target[i]] =\
-                    y_test[:, i]
-
-        elif isinstance(self.ps.target, list):
-            t_base_key = '_'.join(self.ps.target[0].split('_')[:-1])
-            self.raw_preds_df.loc[subjects, 'multiclass_' + t_base_key] =\
-                y_test
-
-        else:
-            self.raw_preds_df.loc[subjects, self.ps.target] = y_test
-
-    def _init_raw_preds_df(self, subjects):
-
-        self.raw_preds_df = pd.DataFrame(index=subjects)
-
-    def _proc_X_test(self, test_data, fs=True):
-
-        # Grab the test data, X as df + copy
-        X_test, y_test = self._get_X_y(test_data, X_as_df=True, copy=True)
-
-        # Get the base pipeline
-        pipeline = self._get_base_fitted_pipeline()
-
-        return pipeline.proc_X_test(X_test, y_test, fs=fs)
-
-    def _proc_X_train(self, train_data):
-
-        # Get X,y train
-        X_train, y_train = self._get_X_y(train_data, copy=True)
-
-        # Get the base pipeline
-        pipeline = self._get_base_fitted_pipeline()
-
-        return pipeline.proc_X_train(X_train, y_train)
+        # If no search, just return copy of pipeline
+        if not self.is_search():
+            return base_pipeline
+
+        # Get the search scorer
+        search_scorer =\
+            process_scorers(self.param_search.scorer,
+                            self.spec['problem_type'])[2]
+
+        # Create the search object
+        search_model =\
+            NevergradSearchCV(
+                params=self.param_search,
+                estimator=base_pipeline,
+                param_distributions=self.get_all_params(),
+                scoring=search_scorer,
+                weight_scorer=self.param_search.weight_scorer,
+                random_state=self.spec['random_state'],
+                progress_loc=progress_loc)
+
+        return search_model
+
+
+def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc):
+
+    # Get the model specs from problem_spec
+    model_spec = problem_spec.get_model_spec()
+
+    # Init the Model_Pipeline, which creates the pipeline pieces
+    base_model_pipeline =\
+        Model_Pipeline(pipeline_params=pipeline_params,
+                       spec=model_spec,
+                       Data_Scopes=Data_Scopes)
+
+    # Set the final model // search wrap
+    Model =\
+        base_model_pipeline.get_search_wrapped_pipeline(
+            progress_loc)
+
+    return Model

@@ -320,10 +320,6 @@ class BPt_ML():
             be deleted as the user will not need to work with them directly
             any more.
 
-            In addition, self.Model_Pipeline (which contains
-            information about the last run Evaluate or Test call) will be
-            deleted.
-
             ::
 
                 default = False
@@ -334,7 +330,7 @@ class BPt_ML():
             self.targets, self.strat = pd.DataFrame(), pd.DataFrame()
 
             try:
-                del self.Model_Pipeline
+                del self.evaluator
             except AttributeError:
                 pass
 
@@ -505,11 +501,12 @@ class BPt_ML():
                       _preproc_problem_spec,
                       _get_split_vals,
                       _get_subjects_to_use,
-                      _init_model,
+                      _init_evaluator,
                       _handle_scores,
                       _print_summary_score,
                       _add_to_scores,
-                      _save_results)
+                      _save_results,
+                      Get_Pipeline)
 
     from ._Plotting import (_plot,
                             _proc_subjects,

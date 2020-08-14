@@ -7,7 +7,7 @@ def f_array(in_array):
     return np.array(in_array).astype(float)
 
 
-class ABCD_Pipeline(Pipeline):
+class BPt_Pipeline(Pipeline):
 
     def __init__(self, steps, memory=None, verbose=False,
                  mapping=False, to_map=None, names=None):

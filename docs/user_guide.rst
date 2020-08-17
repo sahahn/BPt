@@ -60,7 +60,7 @@ that found in scikit-learn and other packages in a number of key ways:
   In the future we hope to support the sharing of user defined hyper-parameter 
   distributions (note: this feature is already supported in the multi-user version of the web interface).
 
-- We introduce meta hyper-parameter objects, e.g., the Select object, which allows specifying the choice between
+- We introduce meta hyper-parameter objects, e.g., the :class:`Select<BPt.Select>` object, which allows specifying the choice between
   different pipeline objects as a hyper-parameter. For example, the choice between base two or more base models,
   say a Random Forest model and an Elastic Net Regression (each with their own associated distributions of hyper-parameters), 
   can be specified with the Select wrapper as itself a hyper-parameter.

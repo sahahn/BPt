@@ -359,6 +359,7 @@ def Show_Data_Dist(self, data_subset='SHOW_ALL',
         plt.close()
 
     if self.notebook:
+        plt.close()
         return html
 
     return None

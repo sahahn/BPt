@@ -766,8 +766,11 @@ def get_avaliable_run_name(name, model, scores):
             name = 'select'
         elif isinstance(model, list):
             name = 'special'
-        elif isinstance(model.obj, str):
-            name = model.obj
+        elif hasattr(model, 'obj'):
+            if isinstance(model.obj, str):
+                name = model.obj
+            else:
+                name = 'user passed'
         else:
             name = 'user passed'
 

@@ -1492,6 +1492,9 @@ class Model_Pipeline(Params):
         if feat_importances != 'depreciated':
             print('Warning: Passing feature importances have been moved to the Evaluate and Test functions!')
 
+        # Regardless save the value to avoid sklearn warnings
+        self.feat_importances = feat_importances
+
         # Perform all preproc on input which can be run
         # more then once, these are essentially checks on the input
         self._proc_checks()

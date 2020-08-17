@@ -1283,7 +1283,7 @@ class Model_Pipeline(Params):
                  scalers='default', transformers=None,
                  feat_selectors=None,
                  model='default', param_search=None,
-                 cache=None):
+                 cache=None, feat_importances='depreciated'):
         ''' Model_Pipeline is defined as essentially a wrapper around
         all of the explicit modelling pipeline parameters. This object is
         used as input to 
@@ -1449,6 +1449,15 @@ class Model_Pipeline(Params):
 
                 default = None
 
+        feat_importances : depreciated
+            Feature importances in a past version of BPt were specified via this Model Pipeline object.
+            Now they should be provided to either
+            :func:`Evaluate <BPt.BPt_ML.Evaluate>` and :func:`Test <BPt.BPt_ML.Test>`
+
+        ::
+
+            default = 'depreciated'
+
         '''
 
         self.loaders = loaders
@@ -1478,6 +1487,9 @@ class Model_Pipeline(Params):
         self.cache = cache
 
         self._n_jobs = 1
+
+        if feat_importances != 'depreciated':
+            print('Warning: Passing feature importances have been moved to the Evaluate and Test functions!')
 
         # Perform all preproc on input which can be run
         # more then once, these are essentially checks on the input

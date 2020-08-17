@@ -13,9 +13,11 @@ from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Evaluator import Evaluator
-from ..main.Params_Classes import Feat_Importance, Model_Pipeline
+from ..main.Params_Classes import (Feat_Importance, Model_Pipeline,
+                                   Model, Ensemble)
 from ..pipeline.Model_Pipeline import get_pipe
 import pandas as pd
+import copy
 
 
 def Set_Default_ML_Verbosity(
@@ -966,16 +968,62 @@ def _get_subjects_to_use(self, subjects_to_use):
     return subjects
 
 
-def get_pipeline(self, model_pipeline, problem_spec, progress_loc=None):
+def get_pipeline(self, model_pipeline, problem_spec,
+                 progress_loc=None, has_search=False):
+
+    # If has search is False, means this is the top level
+    # or the top level didnt have a search
+    if not has_search:
+        if model_pipeline.param_search is None:
+            has_search = False
+        else:
+            has_search = True
+
+    # If either this set of model_pipeline params or the parent
+    # params had search params, then a copy of problem spec with n_jobs set
+    # to 1 should be passed to children get pipelines
+    if has_search:
+        nested_ps = copy.deepcopy(problem_spec)
+        nested_ps.n_jobs = 1
+    else:
+        nested_ps = problem_spec
+
+    def nested_check(piece_name):
+        if hasattr(model_pipeline, piece_name):
+            piece = getattr(model_pipeline, piece_name)
+
+            if isinstance(piece, list):
+                for i in range(len(piece)):
+                    if isinstance(piece[i].base_model, Model_Pipeline):
+                        piece[i].base_model = self.get_pipeline(
+                            piece[i].base_model, nested_ps,
+                            progress_loc=None,
+                            has_search=has_search)
+
+            elif hasattr(piece, 'base_model'):
+                if isinstance(piece.base_model, Model_Pipeline):
+                    piece.base_model = self.get_pipeline(
+                            piece.base_model, nested_ps,
+                            progress_loc=None,
+                            has_search=has_search)
+
+            setattr(model_pipeline, piece_name, piece)
 
     # Check for nested model pipeline
-    if isinstance(model_pipeline.model.obj, Model_Pipeline):
+    if isinstance(model_pipeline.model, Model):
+        if isinstance(model_pipeline.model.obj, Model_Pipeline):
+            model_pipeline.model.obj =\
+                self.get_pipeline(model_pipeline.model.obj,
+                                  nested_ps,
+                                  progress_loc=None,
+                                  has_search=has_search)
 
-        # Force nested pipelines to progress loc none
-        model_pipeline.model.obj =\
-            self.get_pipeline(model_pipeline.model.obj,
-                              problem_spec,
-                              progress_loc=None)
+    elif isinstance(model_pipeline.model, Ensemble):
+        nested_check('model')
+
+    nested_check('imputers')
+    nested_check('feat_selectors')
+
 
     # Preproc model
     model_pipeline = self._preproc_model_pipeline(model_pipeline,
@@ -1000,7 +1048,7 @@ def _init_evaluator(self, model_pipeline, problem_spec, CV, feat_importances):
     # and Data_Scopes
     model = self.get_pipeline(model_pipeline, problem_spec,
                               self.default_ML_verbosity['progress_loc'])
-    
+
     # Set the evaluator obj
     self.evaluator =\
         Evaluator(model=model,
@@ -1145,6 +1193,3 @@ def _save_results(self, results, save_name):
         save_spot = os.path.join(save_dr, save_name)
         with open(save_spot, 'wb') as f:
             pkl.dump(results, f)
-
-
-

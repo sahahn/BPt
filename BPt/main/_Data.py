@@ -1542,7 +1542,15 @@ def _proc_covar(self, covars, key, d_type, nac, cdp,
         # Make sure any NaNs are replaced with the nan val of the
         # categorical encoder
         nan_subjects = covars[covars[key].isna()].index
-        covars.loc[nan_subjects, key] = self.covars_encoders[key].nan_val
+
+        if len(nan_subjects) > 0:
+
+            # Make sure to add the category if new
+            n_v = self.covars_encoders[key].nan_val
+            if n_v not in covars[key].dtype.categories:
+                covars[key].cat.add_categories(n_v, inplace=True)
+
+            covars.loc[nan_subjects, key] = n_v
 
     return covars
 

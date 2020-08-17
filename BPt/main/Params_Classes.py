@@ -4,7 +4,8 @@ import pandas as pd
 from ..helpers.ML_Helpers import conv_to_list, proc_input
 
 from ..helpers.VARS import ORDERED_NAMES
-from ..main.Input_Tools import is_duplicate, is_pipe, is_select, is_special
+from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
+                                is_special, is_value_subset)
 
 
 def proc_all(base_obj):
@@ -1897,7 +1898,7 @@ class Problem_Spec(Params):
         _print('weight_scorer =', self.weight_scorer)
         _print('scope =', self.scope)
 
-        if len(self.subjects) < 50:
+        if is_value_subset(self.subjects) or len(self.subjects) < 50:
             _print('subjects =', self.subjects)
     
         _print('len(subjects) =', len(self._final_subjects),

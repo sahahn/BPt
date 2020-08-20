@@ -27,9 +27,14 @@ def _get_CV(self, CV_params, show=False, show_original=True):
         if train_only_subjects == 'nan':
             train_only_subjects = self.Get_Nan_Subjects()
 
-    train_only =\
-        self._load_set_of_subjects(loc=train_only_loc,
-                                   subjects=train_only_subjects)
+    subjects_to_use = None
+    if train_only_loc is not None:
+        subjects_to_use = train_only_loc
+
+    elif train_only_subjects is not None:
+        subjects_to_use = train_only_subjects
+
+    train_only = self._get_subjects_to_use(subjects_to_use)
     train_only = np.array(list(train_only))
 
     groups = CV_params.groups
@@ -231,8 +236,9 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
     self.CV = self._get_CV(passed_CV, show=show, show_original=show_original)
 
 
-def Train_Test_Split(self, test_size=None, test_loc=None,
-                     test_subjects=None, CV='default', random_state='default'):
+def Train_Test_Split(self, test_size=None,
+                     test_subjects=None, CV='default',
+                     random_state='default', test_loc='depreciated'):
     '''Define the overarching train / test split, *highly reccomended*.
 
     Parameters
@@ -242,20 +248,21 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         the proportion of the dataset to be included in the test split.
         If int, represents the absolute number (or target number) to
         include in the testing group.
-        Set to None if using test_loc or test_subjects.
+        Keep as None if using test_subjects.
 
-        (default = None)
+        ::
 
-    test_loc : str, Path or None, optional
-        Location of a file to load in test subjects from.
-        The file should be formatted as one subject per line.
+            default = None
 
-        (default = None)
+    test_subjects : :ref:`Subjects`, optional
+        Pass in a :ref:`Subjects` (see for more info) formatted input.
+        This will define an explicit set of subjects to use as a test set.
+        If anything but None is passed here, nothing should be passed to the
+        test_size parameter.
 
-    test_subjects : list, set, array-like or None, optional
-        An explicit list of subjects to constitute the testing set
+        ::
 
-        (default = None)
+            default = None
 
     CV : 'default' or CV params object, optional
         If left as default 'default', use the class defined CV behavior
@@ -272,15 +279,30 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
         If set to default, will use the value saved in self.random_state,
         (as set in :class:`BPt.BPt_ML` upon class init).
 
-        (default = 'default')
+        ::
+
+            default = 'default'
+
+     test_loc : depreciated
+        Pass a single str with the test loc to test_subjects instead.
+
+        ::
+
+            default = 'depreciated'
+
     '''
+
+    if test_loc != 'depreciated':
+        print('Test loc is depreciated, please pass it as a single ',
+              'string to test_subjects.')
+        test_subjects = test_loc
 
     if CV == 'default':
         CV_obj = self.CV
     else:
         CV_obj = self._get_CV(CV)
 
-    if test_size is None and test_loc is None and test_subjects is None:
+    if test_size is None and test_subjects is None:
         test_size = .2
 
     if self.all_data is None:
@@ -324,8 +346,7 @@ def Train_Test_Split(self, test_size=None, test_loc=None,
     else:
 
         # Load passed subjects
-        test_subjects = self._load_set_of_subjects(loc=test_loc,
-                                                   subjects=test_subjects)
+        test_subjects = self._get_subjects_to_use(test_subjects)
 
         # Take only the overlap of the passed subjects with what is loaded
         test_subjects = [subject for subject in test_subjects

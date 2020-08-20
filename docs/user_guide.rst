@@ -362,3 +362,29 @@ Custom input objects can be passed to the `obj` parameter for a number of base :
 
 There are though, depending on which base piece is being passed, different considerations you may have to make. More information will be
 provided here soon.
+
+
+.. _Subjects:
+
+Subjects
+=========
+
+Various functions within BPt can accept subjects as an argument. The parameter can
+accept a range of values.
+
+First, you may pass the location to a text file with subject names seperated one on each line.
+
+Secondly, you can pass any array-like (e.g., list, set, pandas Index, etc...), to pass an 
+explicit list of subjects.
+
+There are also a few reserved str key words which specify pre-defining groups of subjects.
+These are: 'all' to select all valid loaded subjects, 'train' and 'test' which
+specifies that the full set of globally defined training subjects, or testing subjects be used.
+See :func:`Define_Train_Test_Split <BPt.Define_Train_Test_Split>`.
+
+Lastly, you can consider passing special input wrappers.
+
+These are :class:`Value_Subset` and :class:`Values_Subset`. See each for more details
+on how they can be used.
+
+

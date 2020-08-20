@@ -8,7 +8,7 @@ import pickle as pkl
 
 from tqdm import tqdm, tqdm_notebook
 
-from .Input_Tools import is_value_subset
+from .Input_Tools import is_value_subset, is_values_subset
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
@@ -355,7 +355,7 @@ def Evaluate(self,
 
             default = 'default'
 
-    train_subjects : str, array-like or Value_Subset, optional
+    train_subjects : :ref:`Subjects`, optional
         This parameter determines the set of training subjects which are
         used in this call to `Evaluate`. Note, this parameter is distinct to
         the `subjects` parameter within :class:`Problem_Spec`, which is
@@ -382,24 +382,27 @@ def Evaluate(self,
 
         `subjects` may also be a custom array-like of subjects to use.
 
-        Lastly, a special wrapper, Value_Subset, can also be used to
-        specify more specific, specifically value specific, subsets of
-        subjects to use.
-        See :class:`Value_Subset` for how this input wrapper can be used.
+        See :ref:`Subjects` for how to correctly format input and for
+        other special options.
 
         ::
 
             default = 'train'
 
     feat_importances : :class:`Feat_Importance` list of or None, optional
-        Provide here either a single, or list of :class:`Feat_Importance` param objects
-        in which to specify what importance values, and with what settings should be computed.
-        See the base :class:`Feat_Importance` object for more information on how to specify
+        Provide here either a single, or list of
+        :class:`Feat_Importance` param objects
+        in which to specify what importance values, and with what
+        settings should be computed.
+        See the base :class:`Feat_Importance` object for more information
+        on how to specify
         these objects. 
 
-        See :ref:`Feat Importances` to learn more about feature importances generally.
+        See :ref:`Feat Importances` to learn more about feature importances
+        generally.
 
-        In this case of a passed list, all passed Feat_Importances will attempt to be
+        In this case of a passed list, all passed Feat_Importances
+        will attempt to be
         computed.
 
         ::
@@ -493,7 +496,6 @@ def Evaluate(self,
     # Init. the Model_Pipeline object with modeling params
     self._init_evaluator(model_pipeline, problem_spec,
                          CV_obj, feat_importances)
-
 
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
@@ -950,16 +952,35 @@ def _get_subjects_to_use(self, subjects_to_use):
 
         rev_values = reverse_unique_combo_df(selected, sv_le)[0]
 
-        self.last_subjects_names = []
+        last_subjects_names = []
         for strat_name, value in zip(split_names, rev_values):
             if self.strat_u_name in strat_name:
                 strat_name = strat_name.replace(self.strat_u_name, '')
 
-            self.last_subjects_names.append((strat_name, value))
+            last_subjects_names.append((strat_name, value))
 
         self._print('subjects set to: ',
-                    self.last_subjects_names)
+                    last_subjects_names)
         self._print()
+
+    # Can also be values subset
+    elif is_values_subset(subjects_to_use):
+
+        # Add strat u name to name if not already added
+        name = self._add_strat_u_name(subjects_to_use.name)
+
+        # Extract the values as list
+        values = conv_to_list(subjects_to_use.values)
+
+        # Check name to make sure loaded
+        if name not in self.all_data:
+            raise ValueError(name, 'is not a valid loaded Strat feature!')
+
+        # Get by value
+        subjects = self.all_data[self.all_data[name].isin(values)].index
+
+        # Make sure subjects is set-like
+        subjects = set(list(subjects))
 
     # Lastly, if not the above, assume it is an array-like of subjects
     else:

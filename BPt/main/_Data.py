@@ -3025,7 +3025,7 @@ def _proc_df(self, data, load_params):
     return data
 
 
-def _load_set_of_subjects(self, loc=None, subjects=None):
+def _load_set_of_subjects(self, loc=None, subjects=None, auto=None):
     '''Internal helper function, to load in a set of subjects from either
     a saved location, or directly passed in as a set or list of subjects.
 
@@ -3047,6 +3047,11 @@ def _load_set_of_subjects(self, loc=None, subjects=None):
     '''
 
     loaded_subjects = set()
+
+    if isinstance(auto, str):
+        loc = auto
+    elif auto is not None:
+        subjects = auto
 
     if loc is not None:
         with open(loc, 'r') as f:

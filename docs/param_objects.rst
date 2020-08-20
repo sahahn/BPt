@@ -65,3 +65,7 @@ Pipe
 Value_Subset
 *************
 .. autoclass:: Value_Subset
+
+Values_Subset
+*************
+.. autoclass:: Values_Subset

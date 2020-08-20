@@ -2,11 +2,12 @@ import numpy as np
 from numpy.random import RandomState
 from sklearn.base import BaseEstimator
 
+
 class RandomParcels(BaseEstimator):
-    
+
     def __init__(self, geo, n_parcels, medial_wall_inds=None,
                  medial_wall_mask=None, random_state=1):
-        
+
         # Set passed params
         self.geo = geo
         self.n_parcels = n_parcels

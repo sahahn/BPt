@@ -79,7 +79,8 @@ def get_scorers_by_type(problem_type):
 
     objs = []
     for scorer_str in AVALIABLE[problem_type]:
-        score_func = get_scorer_from_str(scorer_str)._score_func
+        conv = AVALIABLE[problem_type][scorer_str]
+        score_func = get_scorer_from_str(conv)._score_func
         objs.append((scorer_str, score_func))
 
     return objs

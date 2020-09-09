@@ -21,7 +21,7 @@ def proc_title_length(title, br='-\n'):
     LIM = 60
 
     new_title = ''
-    for i in range(LIM, len(title)+1, LIM):
+    for i in range(LIM, len(title)+(LIM-1), LIM):
 
         if i >= len(title):
             new_title += title[i-LIM:]

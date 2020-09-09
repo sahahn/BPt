@@ -18,7 +18,7 @@ from ..helpers.Data_Helpers import get_original_cat_names
 
 def proc_title_length(title, br='-\n'):
 
-    LIM = 60
+    LIM = 55
 
     new_title = ''
     for i in range(LIM, len(title)+(LIM-1), LIM):

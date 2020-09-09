@@ -16,6 +16,21 @@ from ..helpers.Data_File import load_data_file_proxies
 from ..helpers.Data_Helpers import get_original_cat_names
 
 
+def proc_title_length(title, br='-\n'):
+
+    LIM = 40
+
+    new_title = ''
+    for i in range(LIM, len(title)+1, LIM):
+
+        if i >= len(title):
+            new_title += title[i-LIM:]
+        else:
+            new_title += title[i-LIM:i] + br
+
+    return new_title
+
+
 def _plot(self, save_name, show=True):
 
     if show:
@@ -326,7 +341,7 @@ def Show_Data_Dist(self, data_subset='SHOW_ALL',
 
             _plot_seaborn_dist(non_nan_col, plot_type)
 
-        plt.title(title, fontdict={'fontsize': 'medium'})
+        plt.title(proc_title_length(title), fontdict={'fontsize': 'medium'})
 
     if 'skew':
         most_skewed = data.skew().abs().sort_values()[-num_feats:].index
@@ -722,6 +737,7 @@ def _show_single_dist(self, name, df, all_encoders, cat_show_original_name,
         title = name + ' ' + source + ' distribution'
         plt_title = title.replace(' ' + source, '')
         plt_title = plt_title.replace(self.strat_u_name, '')
+        plt_title = proc_title_length(plt_title)
         plt.title(plt_title)
         self._plot(title, show)
 
@@ -849,7 +865,10 @@ def _show_dist(
                     'not included/shown!')
 
     title = plot_key + ' ' + source + ' distribution'
-    plt.title(title.replace(' ' + source, '').replace(self.strat_u_name, ''))
+    plt_title = title.replace(' ' + source, '').replace(self.strat_u_name, '')
+    plt_title = proc_title_length(plt_title)
+    plt.title(plt_title)
+
     self._plot(title, show)
 
     return display_df

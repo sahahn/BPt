@@ -43,8 +43,6 @@ class BPt_Pipeline(Pipeline):
         else:
             self._mapping = {}
 
-        print('self._mapping', self._mapping)
-
         for name in self.to_map:
             fit_params[name + '__mapping'] = self._mapping
 

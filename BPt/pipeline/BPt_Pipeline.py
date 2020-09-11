@@ -37,11 +37,13 @@ class BPt_Pipeline(Pipeline):
 
         # Add mapping to fit params, as either passed or new
         if mapping is not None:
-            self._mapping = mapping
+            self._mapping = mapping.copy()
         elif self.mapping:
             self._mapping = {i: i for i in range(X.shape[1])}
         else:
             self._mapping = {}
+
+        print('self._mapping', self._mapping)
 
         for name in self.to_map:
             fit_params[name + '__mapping'] = self._mapping

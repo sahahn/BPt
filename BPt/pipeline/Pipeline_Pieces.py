@@ -247,6 +247,11 @@ class Pieces():
 
                 # Replace the model name in the params with estimator
                 base_params = replace_model_name(base_params)
+
+                # Add the name of the object pre-pended
+                base_params = {objs[i][0] + '__' + p_name: base_params[p_name]
+                               for p_name in base_params}
+
                 obj_params.update(base_params)
 
         return objs, obj_params

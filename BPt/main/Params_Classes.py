@@ -158,8 +158,8 @@ class Check():
             return
 
         if not hasattr(base_model, '_is_model'):
-            raise IOError('base_model must be either None or a valid'
-                          'Model / Ensemble',
+            raise IOError('base_model must be either None or a valid '
+                          'Model / Ensemble ',
                           'set of wrapeper params!')
 
 
@@ -442,11 +442,16 @@ class Scaler(Piece):
 class Transformer(Piece):
 
     def __init__(self, obj, params=0, scope='float', extra_params=None):
-        ''' The Transformer is base optional component of the :class:`Model_Pipeline` class.
-        Transformers define any type of transformation to the loaded data which may change the number
-        of features in a non-simple way (i.e., conceptually distinct from :class:`Feat_Selector`, where you
-        know in advance the transformation is just selecting a subset of existing features). These are
-        transformations like applying Principle Component Analysis, or on the fly One Hot Encoding.
+        ''' The Transformer is base optional component of the
+        :class:`Model_Pipeline` class.
+        Transformers define any type of transformation to the loaded
+        data which may change the number
+        of features in a non-simple way (i.e., conceptually distinct
+        from :class:`Feat_Selector`, where you
+        know in advance the transformation is just selecting a subset
+        of existing features). These are
+        transformations like applying Principle Component Analysis,
+        or on the fly One Hot Encoding.
 
         Parameters
         ----------
@@ -1281,7 +1286,7 @@ class Drop_Strat():
 class Model_Pipeline(Params):
 
     def __init__(self, loaders=None, imputers='default',
-                 scalers='default', transformers=None,
+                 scalers=None, transformers=None,
                  feat_selectors=None,
                  model='default', param_search=None,
                  cache=None, feat_importances='depreciated'):
@@ -1367,9 +1372,11 @@ class Model_Pipeline(Params):
             is passed as input to the next). Likewise, you may also use valid input wrappers,
             e.g., :class:`Select`.
 
+            By default no scaler is used, though it is reccomended.
+
             ::
 
-                default = Scaler('standard')
+                default = None
 
         transformers : :class:`Transformer`, list of or None, optional
             Each :class:`Transformer` defines a type of transformation to
@@ -1468,10 +1475,7 @@ class Model_Pipeline(Params):
                         Imputer('median', scope='cat')]
         self.imputers = imputers
 
-        if scalers == 'default':
-            scalers = Scaler('standard')
         self.scalers = scalers
-
         self.transformers = transformers
 
         # Special place holder case for drop strat, for compat.
@@ -1484,9 +1488,7 @@ class Model_Pipeline(Params):
         self.model = model
 
         self.param_search = param_search
-
         self.cache = cache
-
         self._n_jobs = 1
 
         if feat_importances != 'depreciated':

@@ -93,18 +93,19 @@ class Model_Pipeline():
             # If a single obj
             else:
 
+                if hasattr(objs, 'base_model'):
+                    if objs.base_model is not None:
+                        objs.base_model, cnt =\
+                            self._check_for_user_passed(objs.base_model, cnt)
+                if hasattr(objs, 'models'):
+                    if objs.models is not None:
+                        objs.models, cnt =\
+                            self._check_for_user_passed(objs.models, cnt)
+
                 # If a Param obj - call recursively to set the value of the
                 # base obj
                 if hasattr(objs, 'obj'):
                     objs.obj, cnt = self._check_for_user_passed(objs.obj, cnt)
-
-                if hasattr(objs, 'base_model'):
-                    objs.base_model, cnt =\
-                        self._check_for_user_passed(objs.base_model, cnt)
-
-                if hasattr(objs, 'models'):
-                    objs.models, cnt =\
-                        self._check_for_user_passed(objs.models, cnt)
 
                 # Now, we assume any single obj that gets here, if not
                 # a str is user passed obj

@@ -1010,23 +1010,26 @@ def get_pipeline(self, model_pipeline, problem_spec,
         nested_ps = problem_spec
 
     def nested_check(piece_name):
+
         if hasattr(model_pipeline, piece_name):
             piece = getattr(model_pipeline, piece_name)
 
             if isinstance(piece, list):
                 for i in range(len(piece)):
-                    if isinstance(piece[i].base_model, Model_Pipeline):
-                        piece[i].base_model = self.get_pipeline(
-                            piece[i].base_model, nested_ps,
-                            progress_loc=None,
-                            has_search=has_search)
+                    if isinstance(piece[i].base_model, Model):
+                        if isinstance(piece[i].base_model.obj, Model_Pipeline):
+                            piece[i].base_model.obj = self.get_pipeline(
+                                piece[i].base_model.obj, nested_ps,
+                                progress_loc=None,
+                                has_search=has_search)
 
             elif hasattr(piece, 'base_model'):
-                if isinstance(piece.base_model, Model_Pipeline):
-                    piece.base_model = self.get_pipeline(
-                            piece.base_model, nested_ps,
-                            progress_loc=None,
-                            has_search=has_search)
+                if isinstance(piece.base_model, Model):
+                    if isinstance(piece.base_model.obj, Model_Pipeline):
+                        piece.base_model.obj = self.get_pipeline(
+                                piece.base_model.obj, nested_ps,
+                                progress_loc=None,
+                                has_search=has_search)
 
             setattr(model_pipeline, piece_name, piece)
 
@@ -1044,7 +1047,6 @@ def get_pipeline(self, model_pipeline, problem_spec,
 
     nested_check('imputers')
     nested_check('feat_selectors')
-
 
     # Preproc model
     model_pipeline = self._preproc_model_pipeline(model_pipeline,

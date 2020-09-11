@@ -341,7 +341,7 @@ def Show_Data_Dist(self, data_subset='SHOW_ALL',
 
             _plot_seaborn_dist(non_nan_col, plot_type)
 
-        plt.title(proc_title_length(title), fontdict={'fontsize': 'medium'})
+        plt.title(title, fontdict={'fontsize': 'medium'})
 
     if 'skew':
         most_skewed = data.skew().abs().sort_values()[-num_feats:].index

@@ -528,13 +528,31 @@ class Evaluator():
         self.model = deepcopy(self.model_)
         self.model.fit(X, y, train_data_index=train_data.index)
 
+        # If a search object, try to print best score
+        try:
+            self._show_best_score()
+        except KeyError:
+            self._print('Error printing best score',
+                        level='cv_score')
+
         # If a search object, show the best params
         try:
             self._show_best_params()
         except KeyError:
-            self._print('Error printing best params - this may be due to ',
-                        ' nested pipelines which are not yet supported',
+            self._print('Error printing best params',
                         level='params')
+
+    def _show_best_score(self):
+
+        try:
+            name = self.model.name
+            if name != 'nevergrad':
+                return None
+        except AttributeError:
+            return None
+
+        self._print('Best Params Score:',
+                    self.best_search_score, level='cv_score')
 
     def _show_best_params(self):
 
@@ -545,7 +563,7 @@ class Evaluator():
         except AttributeError:
             return None
 
-        self._print('Params Selected by Best Pipeline:', level='params')
+        self._print('Params Selected by Pipeline:', level='params')
         self._print(self.model.best_params_, level='params')
 
         return None

@@ -23,6 +23,7 @@ import copy
 def Set_Default_ML_Verbosity(
  self, save_results='default', progress_bar='default',
  progress_loc='default',
+ best_params_score='default',
  compute_train_score='default',
  show_init_params='default', fold_name='default',
  time_per_fold='default', score_per_fold='default', fold_sizes='default',
@@ -175,6 +176,11 @@ def Set_Default_ML_Verbosity(
     elif 'best_params' not in self.default_ML_verbosity:
         self.default_ML_verbosity['best_params'] = False
 
+    if best_params_score != 'default':
+        self.default_ML_verbosity['best_params_score'] = best_params
+    elif 'best_params_score' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['best_params_score'] = False
+
     if save_to_logs != 'default':
         self.default_ML_verbosity['save_to_logs'] = save_to_logs
     elif 'save_to_logs' not in self.default_ML_verbosity:
@@ -231,6 +237,9 @@ def _ML_print(self, *args, **kwargs):
         _print(*args, **kwargs)
 
     elif level == 'params' and self.default_ML_verbosity['best_params']:
+        _print(*args, **kwargs)
+
+    elif level == 'cv_score' and self.default_ML_verbosity['best_params_score']:
         _print(*args, **kwargs)
 
 

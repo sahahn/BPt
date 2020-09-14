@@ -15,7 +15,7 @@ from .Scope_Model import Scope_Model
 
 class Model_Pipeline():
 
-    def __init__(self, pipeline_params, spec, Data_Scopes):
+    def __init__(self, pipeline_params, spec, Data_Scopes, verbose=False):
 
         # Save param search here
         self.param_search = pipeline_params.param_search
@@ -31,6 +31,7 @@ class Model_Pipeline():
 
         # Save cache param
         self.cache = pipeline_params.cache
+        self.verbose = verbose
 
         # Extract ordered
         ordered_pipeline_params = pipeline_params.get_ordered_pipeline_params()
@@ -167,6 +168,7 @@ class Model_Pipeline():
             os.makedirs(self.cache, exist_ok=True)
 
         model_pipeline = BPt_Pipeline(steps, memory=self.cache,
+                                      verbose=self.verbose,
                                       mapping=self.mapping,
                                       to_map=self.to_map,
                                       names=names)
@@ -224,7 +226,8 @@ class Model_Pipeline():
         return search_model
 
 
-def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc):
+def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc,
+             verbose=False):
 
     # Get the model specs from problem_spec
     model_spec = problem_spec.get_model_spec()
@@ -233,7 +236,8 @@ def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc):
     base_model_pipeline =\
         Model_Pipeline(pipeline_params=pipeline_params,
                        spec=model_spec,
-                       Data_Scopes=Data_Scopes)
+                       Data_Scopes=Data_Scopes,
+                       verbose=verbose)
 
     # Set the final model // search wrap
     Model =\

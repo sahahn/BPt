@@ -53,6 +53,9 @@ class Scope_Model(BaseEstimator):
 
     def fit(self, X, y=None, mapping=None, **kwargs):
 
+        # Set n_features in 
+        self.n_features_in_ = X.shape[1]
+
         # Clear any previous fits
         self.wrapper_model_ = clone(self.wrapper_model)
         self.wrapper_inds_ = np.copy(self.wrapper_inds)
@@ -90,12 +93,6 @@ class Scope_Model(BaseEstimator):
         try:
             self.feature_importances_ =\
                 self.wrapper_model_.feature_importances_
-        except AttributeError:
-            pass
-
-        try:
-            self.n_features_in_ =\
-                self.wrapper_model_.n_features_in_
         except AttributeError:
             pass
 

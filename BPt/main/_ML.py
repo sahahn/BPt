@@ -23,6 +23,7 @@ import copy
 def Set_Default_ML_Verbosity(
  self, save_results='default', progress_bar='default',
  progress_loc='default',
+ pipeline_verbose='default',
  best_params_score='default',
  compute_train_score='default',
  show_init_params='default', fold_name='default',
@@ -57,6 +58,14 @@ def Set_Default_ML_Verbosity(
         of each Evaluate / Test call in this location.
 
         if 'default', and not already defined, set to None
+        (default = 'default')
+
+    pipeline_verbose : bool, optional
+        This controls the verbose parameter for the pipeline object itself.
+        If set to True, then time elapsed while fitting each step will be
+        printed.
+
+        if 'default', and not already defined, set to False
         (default = 'default')
 
     compute_train_score : bool, optional
@@ -140,6 +149,11 @@ def Set_Default_ML_Verbosity(
         self.default_ML_verbosity['progress_loc'] = progress_loc
     elif 'progress_loc' not in self.default_ML_verbosity:
         self.default_ML_verbosity['progress_loc'] = None
+
+    if pipeline_verbose != 'default':
+        self.default_ML_verbosity['pipeline_verbose'] = pipeline_verbose
+    elif 'pipeline_verbose' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['pipeline_verbose'] = False
 
     if compute_train_score != 'default':
         self.default_ML_verbosity['compute_train_score'] = compute_train_score
@@ -1068,7 +1082,8 @@ def get_pipeline(self, model_pipeline, problem_spec,
     return get_pipe(pipeline_params=model_pipeline,
                     problem_spec=problem_spec,
                     Data_Scopes=self.Data_Scopes,
-                    progress_loc=progress_loc)
+                    progress_loc=progress_loc,
+                    verbose=self.default_ML_verbosity['pipeline_verbose'])
 
 
 def _init_evaluator(self, model_pipeline, problem_spec, CV, feat_importances):

@@ -38,16 +38,16 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         return
 
-    def fit(self, X, y=None, mapping=None, **kwargs):
+    def fit(self, X, y=None, mapping=None, **fit_params):
 
         if mapping is None:
             mapping = {}
 
         # Need to call fit_transform to figure out change to mapping
-        self.fit_transform(X, y, mapping=mapping, **kwargs)
+        self.fit_transform(X, y, mapping=mapping, **fit_params)
         return self
 
-    def fit_transform(self, X, y=None, mapping=None, **kwargs):
+    def fit_transform(self, X, y=None, mapping=None, **fit_params):
 
         if mapping is None:
             mapping = {}
@@ -64,7 +64,8 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         self.wrapper_transformer.return_df = False
 
         # Fit transform just inds of X
-        X_trans = self.wrapper_transformer.fit_transform(X[:, inds])
+        X_trans = self.wrapper_transformer.fit_transform(X=X[:, inds],
+                                                         y=y, **fit_params)
         self._X_trans_inds = [i for i in range(X_trans.shape[1])]
 
         new_mapping = {}

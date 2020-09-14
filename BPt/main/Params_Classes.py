@@ -1439,6 +1439,8 @@ class Model_Pipeline(Params):
                 default = None
 
         cache : str or None, optional
+            Warning: using cache with a Transformer or Loader is currently broken! 
+         
             The base scikit-learn Pipeline, upon which the BPt Pipeline extends,
             allows for the caching of fitted transformers - which in this context means all
             steps except for the model. If this behavior is desired

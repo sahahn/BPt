@@ -1,568 +1,387 @@
+import pandas as pd
+import numpy as np
 
 
+def proc_fop(fop):
 
-class Dataset():
+    # If provided as just % number, divide by 100
+    if not isinstance(fop, tuple):
+        fop /= 100
+        return (fop, 1-fop)
 
-    def __init__(self, subject_id='src_subject_id',
-                 eventname=None, eventname_col=None,
-                 merge='inner', drop_na=True,
-                 drop_or_na='drop', ext=None):
-        ''' This class is used in order to load and prepare a dataset for modelling.
-        The values set upon initialization here reflect the setting of default
-        values for Dataset methods, e.g., for Load_Variable and Load_Variables.
+    elif fop[0] is None:
+        return tuple([None, 1-(fop[1] / 100)])
 
-        Parameters
-        ----------
-        subject_id : str, optional
-            The default name of the column in a provided location or dataframe
-            in which the unique subject identifier or subject id is stored.
+    elif fop[1] is None:
+        return tuple([fop[0] / 100, None])
 
-            In the case of longitudinal data, it may be neccisary to further
-            specify an eventname and eventname_col arguments.
+    return tuple([fop[0]/100, 1-(fop[1] / 100)])
 
-            ::
 
-                default = 'src_subject_id'
+class Dataset(pd.DataFrame):
 
-        eventname : str or None, optional
-            Optional default eventname value,
-            if set to None as is by default, this parameter is ignored.
-            Eventname is used mostly in the context of loading data
-            from longitudinal studies.
-            This value provided here must be provided along with the following
-            eventname_col
-            (which specified the name of the column where this value).
+    ROLES = set(['data', 'target', 'non input'])
+    RESERVED_SCOPES = set(['all', 'float', 'category',
+                           'data', 'data file',
+                           'non input', 'target'])
+    _metadata = ['roles', 'scopes', 'name_mapping']
 
-            The value passed here specifies which value in the eventname column
-            should be kept.
+    @property
+    def _constructor(self):
+        return Dataset
 
-            For example, lets say the eventname column contained entries for
-            'year 1' and 'year 2'. By passing 'year 1' here, only data points
-            with a value of 'year 1' will be kept.
+    @property
+    def _constructor_sliced(self):
+        return pd.Series
 
-            ::
+    def _check_roles(self):
 
-                default = None
+        if not hasattr(self, 'roles'):
+            self.roles = {}
 
-        eventname_col : str or None, optional
-            Default eventname_col value.
+        # Fill in any column without a role.
+        for col in self.columns:
+            if col not in self.roles:
+                self._set_role(col, 'data')
 
-            If an eventname is provided, this param refers to
-            the name of the column within the dataframe. This could
-            also be used along with eventname to be set to any
-            arbitrary value, in order to perform selection by specific
-            column value.
+        # Remove any saved roles that are not
+        # in the data any more.
+        for col in self.roles:
+            if col not in self.columns:
+                del self.roles[col]
 
-            If `eventname` is None, this parameter will be skipped.
+    def get_roles(self):
 
-            ::
+        self._check_roles()
+        return self.roles
 
-                default = None
+    def set_role(self, col, role):
 
-        merge : {'inner' or 'outer'}, optional
-            This default parameter controls the merge
-            behavior when loading a new variable or set of variables.
-            Specifically, the options are:
+        self._check_roles()
+        self._set_role(col, role)
 
-            - 'inner'
-                Only the overlapping subjects between those already loaded
-                and those about to be loaded will be kept.
+    def set_roles(self, col_to_roles):
 
-            - 'outer'
-                All subjects are kept, and in any columns where data
-                is missing, NaN's will be inserted.
+        self._check_roles()
+        for col, role in zip(col_to_roles, col_to_roles.values()):
+            self._set_role(col, role)
 
-            ::
+    def _set_role(self, col, role):
 
-                default = 'inner'
+        if role not in self.ROLES:
+            raise AttributeError(
+                'Passed role "' + str(role) + '" must be one of ' +
+                str(self.ROLES))
 
-        drop_na : bool, optional
-            This setting sets the default value for drop_na.
+        # Set as role
+        self.roles[col] = role
 
-            If set to True, then any row containing 1 or more missing
-            values will be dropped. If False, the missing value will remain.
+    def _check_scopes(self):
 
-            If missing data is kept, missing data imputation
-            will likely be required later on.
+        # If doesnt exist, create scopes
+        if not hasattr(self, 'scopes'):
+            self.scopes = {}
 
+        # Make sure each col is init'ed with a scope
+        for col in self.columns:
+            if col not in self.scopes:
+                self.scopes[col] = set()
 
-            ::
+        # Make sure to get rid of any removed cols
+        for col in self.scopes:
+            if col not in self.columns:
+                del self.scopes[col]
 
-                default = True
+        # Make sure scopes includes if categorical or not
+        for col in self.columns:
+            if self[col].dtype.name == 'category':
+                self._add_scope(col, 'category')
+            else:
+                self._remove_scope(col, 'category')
 
-        drop_or_na : {'drop', 'na'}, optional
+    def get_scopes(self):
 
-            This setting sets the default value for drop_na,
-            which is relevant when performing outlier filtering.
-            In this case the default behavior is for outliers,
-            however defined by the user, to be dropped ('drop'),
-            dropping the whole row of subjects data.
-            Alternatively, by setting this parameter to 'na',
-            you can specify that the value prompting the drop
-            to instead be replaced with NaN (to be imputed later on).
-
-            ::
-
-                default = 'drop'
-
-        ext : None, or str, optional
-            Optional fixed extension in which to append to
-            all loaded column names. If left as default value
-            of None, ignore this parameter.
-            leave as None to ignore this param. Note: applied after
-            name mapping.
-
-            This parameter can be useful, especially when loading
-            data from multiple timepoints in a longitudinal context.
-
-            ::
-
-                default = None
-        '''
-
-        self.subject_id = subject_id
-        self.eventname = eventname
-        self.eventname_col = eventname_col
-        self.merge = merge
-        self.drop_na = drop_na
-        self.drop_or_na = drop_or_na
-        self.ext = ext
-
-    def Load_Variable(self,
-                      df,
-                      col_name,
-                      type,
-                      data_type,
-                      scopes='default',
-                      filter_outlier_percent=None,
-                      filter_outlier_std=None,
-                      categorical_drop_percent=None,
-                      nan_as_class=False,
-                      float_bins=10,
-                      float_bin_strategy='uniform',
-                      subject_id='default',
-                      eventname='default',
-                      eventname_col='default',
-                      merge='default',
-                      drop_na='default',
-                      drop_or_na='default',
-                      ext='default',
-                      clear_existing=False):
-
-    '''
-    Load a single variable from a pandas dataframe into the Dataset.
-
-    Parameters
-    ----------
-    df : pandas DataFrame
-        The DataFrame in which the variable to load is included in.
-        This can be prepared ahead of time with the pandas library.
-
-    col_name : str
-        The name of the column to load.
-
-    type : {'data', 'target', 'strat'}
-        This determines the role of the data to
-        be loaded in. Valid values are:
-
-        - 'data'
-            Data represents variables which will ultimately be
-            used as input features for an ML expiriment.
-
-        - 'target'
-            Target's are the variables to be predicted using
-            the loaded data.
-
-        - 'strat'
-            Strat represent non-input variables. These
-            are converted internally to ordinal variables
-            and are used to inform things like cross-validation
-            strategies.
-
-     data_type : {'b', 'c', 'f', 'f2c', 'm'}
-        The data type of the column to load in.
-
-        The extensive list of values accepted here is listed below:
-
-        - 'binary' or 'b'
-            Binary variable. If more than two unique values
-            are found, all but the most freuqent two will be
-            dropped, ensuring that this variable is loaded
-            in as binary.
-
-        - 'categorical' or 'c'
-            Categorical input. This variable will be
-            ordinally encoded, and if specified as non-null, the
-            `categorical_drop_percent` parameter will be applied.
-
-        - 'float', 'f' or 'continuous'
-            A floating point numerical / continuous variable.
-            If either `filter_outlier_percent` or `filter_outlier_std`
-            is specified as non-null, then the respective outlier
-            removal method will be applied.
-
-        - 'float_to_cat', 'f2c', 'float_to_bin' or 'f2b'
-            This specifies that the data should be loaded
-            initially as float, then descritized via k-bin
-            encoding to be a categorical feature.
-            The `float_bins` and `float_bin_strategy` will
-            be applied if this data_type is selected.
-
-        - 'multilabel' or 'm'
-            Multilabel categorical input.
-            If 'multilabel' datatype is specified, then the associated col_name
-            should be a list of columns.
-
-    scopes : str, list of str or 'default', optional
-        When loading a variable you have the option to
-        associate either a single scope (as a str) or multiple
-        scopes (list of strs). By default, both the type and
-        data_type arguments will be added as scopes.
-        If any additional scopes are passed here, they will be added
-        in addition.
-
-        Scopes are used in a number of places in order to select single
-        or subsets of variables. For example, you may want to only perform
-        a certain type of processing on categorical variables.
-
-        ::
-
-            default = 'default'
-
-    filter_outlier_percent : float, tuple or None, optional
-        For float datatypes only.
-        A percent of values to exclude from either end of the
-        variables distribution, provided as either 1 number,
-        or a tuple (% from lower, % from higher).
-        set `filter_outlier_percent` to None for no filtering.
-
-        For example, if passed (1, 1), then the bottom 1% and top 1%
-        of the distribution will be dropped, the same as passing 1.
-        Further, if passed (.1, 1), the bottom .1% and top 1% will be
-        removed.
-
-        Note: If loading a variable with data_type 'float_to_cat'
-         / 'float_to_bin',
-        the outlier filtering will be performed before kbin encoding.
-
-        ::
-
-            default = None
-
-    filter_outlier_std : float, tuple, or None, optional
-        For float datatypes only.
-        Determines outliers as data points within each column where their
-        value is less than the mean of the column - `filter_outlier_std[0]`
-        * the standard deviation of the column,
-        and greater than the mean of the column + `filter_outlier_std[1]`
-        * the standard deviation of the column.
-
-        If a single number is passed, that number is applied to both the lower
-        and upper range. If a tuple with None on one side is passed, e.g.
-        (None, 3), then nothing will be taken off that lower or upper bound.
-
-        Note: If loading a variable with type 'float_to_cat' / 'float_to_bin',
-        the outlier filtering will be performed before kbin encoding.
-
-        ::
-
-            default = None
-
-
-    
-    
-    
-    # See :class:`Dataset`
-    '''
-
-                  
- 
-                  
-                  
-                  f
-                  clear_existing=False, ext=None):
-    '''Load a single variable, or 
-
-    Parameters
-    ----------
-   
-
-   
-
-   
-
-    dataset_type :
-    subject_id :
-    eventname :
-    eventname_col :
-    overlap_subjects :
-    merge :
-    na_values :
-    drop_na :
-    drop_or_na :
-
-    nan_as_class : bool, or list of, optional
-        If True, then when data_type is categorical, instead of keeping
-        rows with NaN (explicitly this parameter does not override drop_na,
-        so to use this, drop_na must be set to not True).
-        the NaN values will be treated as a unique category.
-
-        A list of values can also be passed in the case that
-        multiple col_names / covars are being loaded. In this
-        case, the index should correspond. If a list is not passed
-        here, then the same value is used when loading all covars.
-
-        ::
-
-            default = False
-
-    code_categorical_as: 'depreciated', optional
-        This parameter has been removed, please use transformers
-        within the actual modelling to accomplish something simillar.
-
-        ::
-
-            default = 'depreciated'
-
-    categorical_drop_percent: float, None or list of, optional
-        Optional percentage threshold for dropping categories when
-        loading categorical data. If a float is given, then a category
-        will be dropped if it makes up less than that % of the data points.
-        E.g. if .01 is passed, then any datapoints with a category with less
-        then 1% of total valid datapoints is dropped.
-
-        A list of values can also be passed in the case that
-        multiple col_names / covars are being loaded. In this
-        case, the index should correspond. If a list is not passed
-        here, then the same value is used when loading all covars.
-
-        Note: percent in the name might be a bit misleading.
-        For 1%, you should pass .01, for 10%, you should pass .1.
-
-        If loading a categorical variable, this filtering will be applied
-        before ordinally encoding that variable. If instead loading a variable
-        with type 'float_to_cat' / 'float_to_bin', the outlier filtering will
-        be performed after kbin encoding
-        (as before then it is not categorical).
-        This can yield gaps in the oridinal outputted values.
-
-        (default = None)
-
-    
-
-    float_bins : int or list of, optional
-        If any columns are loaded as 'float_to_bin' or 'f2b' then
-        input must be discretized into bins. This param controls
-        the number of bins to create. As with other params, if one value
-        is passed, it is applied to all columns, but if different values
-        per column loaded are desired, a list of ints (with inds correponding)
-        should be pased. For columns that are not specifed as 'f2b' type,
-        anything can be passed in that list index spot as it will be igored.
-
-        (default = 10)
-
-    float_bin_strategy : {'uniform', 'quantile', 'kmeans'}, optional
-        If any columns are loaded as 'float_to_bin' or 'f2b' then
-        input must be discretized into bins. This param controls
-        the strategy used to define the bins. Options are,
-
-        - 'uniform'
-            All bins in each feature have identical widths.
-
-        - 'quantile'
-            All bins in each feature have the same number of points.
-
-        - 'kmeans'
-            Values in each bin have the same nearest center of a 1D
-            k-means cluster.
-
-        As with float_bins, if one value
-        is passed, it is applied to all columns, but if different values
-        per column loaded are desired, a list of choices
-        (with inds correponding) should be pased.
-
-        (default = 'uniform')
-
-    clear_existing : bool, optional
-        If this parameter is set to True, then any existing
-        loaded covars will first be cleared before loading new covars!
-
-        .. WARNING::
-            If any subjects have been dropped from a different place,
-            e.g. targets or data, then simply reloading / clearing existing
-            covars might result in computing a misleading overlap of final
-            valid subjects. Reloading should therefore be best used
-            right after loading the original data, or if not possible,
-            then reloading the notebook or re-running the script.
-
-        (default = False)
-
-    ext : None or str, optional
-        Optional fixed extension to append to all loaded col names,
-        leave as None to ignore this param. Note: applied after
-        name mapping.
-
-        (default = None)
-    '''
-
-    if code_categorical_as != 'depreciated':
-        print('Warning: code_categorical_as has been depreciated. ' +
-              'Please move performing categorical encoding to within the ' +
-              'Cross-validated loop via Transformers.')
-
-    if clear_existing:
-        self.Clear_Covars()
-
-    # Get the common load params as a mix of user-passed + default values
-    load_params = self._make_load_params(args=locals())
-
-    # Load in covars w/ basic pre-proc
-    covars, col_names = self._common_load(loc, df, dataset_type,
-                                          load_params,
-                                          col_names=col_name, ext=ext)
-
-    # Proccess the passed in data_types / get right number and in list
-    data_types, col_names = proc_datatypes(data_type, col_names)
-
-    # Process pass in other args to be list of len(datatypes)
-    nacs = proc_args(nan_as_class, data_types)
-    cdps = proc_args(categorical_drop_percent, data_types)
-    fops = proc_args(filter_outlier_percent, data_types)
-    foss = proc_args(filter_outlier_std, data_types)
-    fbs = proc_args(float_bins, data_types)
-    fbss = proc_args(float_bin_strategy, data_types)
-
-    # Set the drop_val
-    if load_params['drop_or_na'] == 'na':
-        drop_val = np.nan
-    else:
-        drop_val = get_unused_drop_val(covars)
-
-    # Load in each covar
-    for key, d_type, nac, cdp, fop, fos, fb, fbs in zip(col_names, data_types,
-                                                        nacs, cdps, fops, foss,
-                                                        fbs, fbss):
-        covars =\
-            self._proc_covar(covars, key, d_type, nac, cdp, fop, fos,
-                             fb, fbs, drop_val)
-
-    # Have to remove rows with drop_val if drop_val not NaN
-    if drop_val is not np.nan:
-        covars = drop_from_filter(covars, drop_val, _print=self._print)
-
-    self._print('Loaded Shape:', covars.shape)
-
-    # If other data is already loaded,
-    # merge this data with existing loaded data.
-    self.covars = self._merge_existing(self.covars, covars,
-                                       load_params['merge'])
-
-
-def _proc_covar(self, covars, key, d_type, nac, cdp,
-                fop, fos, fb, fbs, drop_val):
-
-    # If float to binary, recursively call this func with d_type float first
-    if is_f2b(d_type):
-
-        covars = self._proc_covar(covars, key, d_type='float',
-                                  nac=nac, cdp=None,
-                                  fop=fop,
-                                  fos=fos,
-                                  fb=None,
-                                  fbs=None,
-                                  drop_val=drop_val)
-
-    else:
-        self._print('loading:', key)
-
-    # Special behavior if categorical data_type + nan_as_class
-    if nac and (d_type == 'c' or d_type == 'categorical' or is_f2b(d_type)):
-
-        # Set to all
-        non_nan_subjects = covars.index
-        non_nan_covars = covars.loc[non_nan_subjects]
-
-        # Set column to load as str - makes NaNs unique
-        non_nan_covars[key] = non_nan_covars[key].astype('str')
-
-    # Set to only the non-Nan subjects for this column
-    else:
-        non_nan_subjects = covars[~covars[key].isna()].index
-        non_nan_covars = covars.loc[non_nan_subjects]
-
-    # Binary
-    if d_type == 'b' or d_type == 'binary':
-
-        non_nan_covars, self.covars_encoders[key] =\
-            process_binary_input(non_nan_covars, key, drop_val=drop_val,
-                                 _print=self._print)
-
-    # Float
-    elif d_type == 'f' or d_type == 'float':
-
-        # Float type needs an encoder set to None
-        self.covars_encoders[key] = None
-
-        if fop is not None and fos is not None:
-            raise RuntimeError('You may only pass one of filter outlier',
-                               ' percent or std')
-
-        # If filter float outlier percent
-        if fop is not None:
-            non_nan_covars = filter_float_by_outlier(non_nan_covars, key,
-                                                     fop, drop_val=drop_val,
-                                                     _print=self._print)
-
-        # if filter float by std
-        if fos is not None:
-            non_nan_covars = filter_float_by_std(non_nan_covars, key, fos,
-                                                 drop_val=drop_val,
-                                                 _print=self._print)
-
-    # Categorical
-    elif d_type == 'c' or d_type == 'categorical':
-
-        # Always encode as ordinal
-        non_nan_covars, self.covars_encoders[key] =\
-                process_ordinal_input(non_nan_covars, key, drop_percent=cdp,
-                                      drop_val=drop_val, nac=nac,
-                                      _print=self._print)
-
-    # Float to Categorical case
-    elif is_f2b(d_type):
-
-        # K-bins encode
-        non_nan_covars, self.covars_encoders[key] =\
-            process_float_input(data=non_nan_covars, key=key,
-                                bins=fb, strategy=fbs, drop_percent=cdp,
-                                drop_val=drop_val, nac=nac, _print=self._print)
-
-    # Multilabel
-    elif d_type == 'm' or d_type == 'multilabel':
-
-        common_name = process_multilabel_input(key)
-
-        self.covars_encoders[common_name] = key
-        self._print('Base str indicator/name for loaded multilabel =',
-                    common_name)
-
-    # Otherwise raise error
-    else:
-        raise RuntimeError('Unknown data_type: ' + d_type)
-
-    # Now update the changed values within covars
-    covars.loc[non_nan_subjects] = non_nan_covars
-
-    # Check for special code nan as categorical case
-    if nac and hasattr(self.covars_encoders[key], 'nan_val'):
-
-        # Make sure any NaNs are replaced with the nan val of the
-        # categorical encoder
-        nan_subjects = covars[covars[key].isna()].index
-        covars.loc[nan_subjects, key] = self.covars_encoders[key].nan_val
-
-    # Update col datatype
-    for dtype, k in zip(non_nan_covars.dtypes, list(covars)):
-        covars[k] = covars[k].astype(dtype.name)
-
-    return covars
+        self._check_scopes()
+        return self.scopes
+
+    def add_scope(self, col, scope):
+
+        self._check_scopes()
+        self._add_scope(col, scope)
+
+    def add_scopes(self, col_to_scopes):
+
+        self._check_scopes()
+        for col, scope in zip(col_to_scopes, col_to_scopes.values()):
+            self._add_scope(col, scope)
+
+    def _add_scope(self, col, scope):
+
+        # Add checks to make sure not adding reserved key word scope
+        # i.e., 'all'.
+
+        if isinstance(scope, str):
+            self.scopes[col].add(scope)
+
+        elif isinstance(scope, int) or isinstance(scope, float):
+            self.scopes[col].add(str(scope))
+
+        else:
+            for s in set(list(scope)):
+                self._add_scope(col, s)
+
+    def remove_scope(self, col, scope):
+
+        self._check_scopes()
+        self._remove_scope(col, scope)
+
+    def remove_scopes(self, col_to_scopes):
+
+        self._check_scopes()
+        for col, scope in zip(col_to_scopes, col_to_scopes.values()):
+            self._remove_scope(col, scope)
+
+    def _remove_scope(self, col, scope):
+
+        try:
+            self.scopes[col].remove(scope)
+        except KeyError:
+            pass
+
+    def _get_cols_from_scope(self, scope):
+
+        # Perform checks first
+        self._check_scopes()
+        self._check_roles()
+
+        saved_scopes = set()
+        for col in self.columns:
+            saved_scopes.update(self.scopes[col])
+
+        # Check is passed scope is reserved
+        if isinstance(scope, str):
+            if scope in self.RESERVED_SCOPES:
+
+                if scope == 'all':
+                    return list(self.columns)
+
+                elif scope == 'float':
+                    return [col for col in self.columns if
+                            'category' not in self.scopes[col] and
+                            'data file' not in self.scopes[col]]
+
+                elif scope == 'category':
+                    return [col for col in self.columns if
+                            'category' in self.scopes[col]]
+
+                elif scope == 'data':
+                    return [col for col in self.columns if
+                            self.roles[col] == 'data']
+
+                elif scope == 'target':
+                    return [col for col in self.columns if
+                            self.roles[col] == 'target']
+
+                elif scope == 'non input':
+                    return [col for col in self.columns if
+                            self.roles[col] == 'non input']
+
+                elif scope == 'data file':
+                    return [col for col in self.columns if
+                            'data file' in self.scopes[col]]
+
+            # Check if passed scope is a loaded column
+            elif scope in self.columns:
+                return [scope]
+
+            # Check if a saved scope
+            elif scope in saved_scopes:
+                return [col for col in self.columns if
+                        scope in self.scopes[col]]
+
+            # Do a search, see if passed scope is a stub of any strings
+            else:
+                return [col for col in self.columns if
+                        scope in col]
+
+        cols = []
+        for scp in scope:
+            cols += self._get_cols_from_scope(scp)
+
+        return list(set(cols))
+
+    def auto_detect_categorical(self):
+        pass
+
+    def filter_outliers_by_percent(self, fop=1, scope='float', drop=True):
+        '''Right now is fixed to work as in place'''
+
+        # Proc fop
+        fop = proc_fop(fop)
+        lower, upper = fop
+
+        # Get cols from scope
+        cols = self._get_cols_from_scope(scope)
+
+        if drop:
+            to_drop = set()
+
+            if lower is not None:
+                mask = self[cols] < self[cols].quantile(lower)
+                to_drop.update(set(self[cols][mask.any(axis=1)].index))
+
+            if upper is not None:
+                mask = self[cols] > self[cols].quantile(upper)
+                to_drop.update(set(self[cols][mask.any(axis=1)].index))
+
+            self.drop(list(to_drop), inplace=True)
+
+        else:
+
+            for c in cols:
+                if lower is not None:
+                    l_thresh = self[c] < self[c].quantile(lower)
+                if upper is not None:
+                    u_thresh = self[c] > self[c].quantile(upper)
+                if lower is not None:
+                    self.loc[l_thresh, c] = np.nan
+                if upper is not None:
+                    self.loc[u_thresh, c] = np.nan
+
+    def filter_outliers_by_std(self, n_std=10, scope='float', drop=True):
+
+        if not isinstance(n_std, tuple):
+            n_std = (n_std, n_std)
+
+        # Get cols from scope
+        cols = self._get_cols_from_scope(scope)
+
+        if drop:
+
+            mean = self[cols].mean()
+            std = self[cols].std()
+
+            to_drop = set()
+
+            if n_std[0] is not None:
+                l_scale = mean - (n_std[0] * std)
+                mask = self[cols] < l_scale
+                to_drop.update(set(self[cols][mask.any(axis=1)].index))
+
+            if n_std[1] is not None:
+                u_scale = mean + (n_std[1] * std)
+                mask = self[cols] > u_scale
+                to_drop.update(set(self[cols][mask.any(axis=1)].index))
+
+            self.drop(list(to_drop), inplace=True)
+
+        else:
+
+            for c in cols:
+                if n_std[0] is not None:
+                    l_scale = self[c].mean() - (n_std[0] * self[c].std())
+                if n_std[1] is not None:
+                    u_scale = self[c].mean() + (n_std[1] * self[c].std())
+                if n_std[0] is not None:
+                    self.loc[self[c] < l_scale, c] = np.nan
+                if n_std[1] is not None:
+                    self.loc[self[c] > u_scale, c] = np.nan
+
+    def filter_categorical_by_percent(self, scope):
+
+        # Add cast to categorical
+        pass
+
+    def binarize(self, scope):
+        pass
+
+    def k_bin(self, scope):
+        pass
+
+    def ordinalize(self, scope):
+        pass
+
+    def nan_to_class(self, scope):
+
+        # Have checks s.t., only works if all columns are categorical
+        pass
+
+    def drop_duplicate_cols(self, scope):
+        pass
+
+    def drop_by_unique_val(self, scope):
+        pass
+
+    def print_nan_info(self, scope):
+        pass
+
+    # need to handle data files still***
+    def add_data_files(self):
+        pass
+
+    # Plotting
+    def plot_var(self, scope):
+        pass
+
+    def plot_vars(self, scope):
+        pass
+
+
+def get_fake_dataset():
+
+    fake = Dataset()
+    fake['1'] = [1, 2, 3]
+    fake['2'] = ['6', '7', '8']
+    fake['2'] = fake['2'].astype('category')
+    fake['3'] = [np.nan, 2, 3]
+
+    return fake
+
+
+def test_add_scope():
+
+    df = get_fake_dataset()
+
+    df.add_scope(col='1', scope='a')
+    assert df.scopes['1'] == set(['a'])
+
+    df.add_scope(col='1', scope='b')
+    assert df.scopes['1'] != set(['a'])
+    assert df.scopes['1'] == set(['a', 'b'])
+
+    # Test some get cols from scope
+    assert(set(df._get_cols_from_scope('a')) == set(['1']))
+    assert(set(df._get_cols_from_scope('b')) == set(['1']))
+    assert(set(df._get_cols_from_scope(['a', 'b'])) == set(['1']))
+
+
+def test_set_roles():
+
+    df = get_fake_dataset()
+    df.set_role('1', 'target')
+    df.set_role('2', 'non input')
+
+    assert(set(df._get_cols_from_scope('target')) == set(['1']))
+    assert(set(df._get_cols_from_scope('non input')) == set(['2']))
+
+
+def test_get_cols_from_scope():
+
+    df = get_fake_dataset()
+    assert(set(df._get_cols_from_scope('all')) == set(['1', '2', '3']))
+    assert(set(df._get_cols_from_scope('data')) == set(['1', '2', '3']))
+    assert(set(df._get_cols_from_scope('1')) == set(['1']))
+    assert(set(df._get_cols_from_scope('category')) == set(['2']))
+
+
+def test_filter_outliers():
+
+    df = get_fake_dataset()
+    df.filter_outliers_by_percent(20, scope='3', drop=False)
+    assert pd.isnull(df['3']).all()
+
+
+test_add_scope()
+test_set_roles()
+test_get_cols_from_scope()
+test_filter_outliers()

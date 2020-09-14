@@ -552,7 +552,7 @@ class Evaluator():
             return None
 
         self._print('Best Params Score:',
-                    self.best_search_score, level='cv_score')
+                    self.model.best_search_score, level='cv_score')
 
     def _show_best_params(self):
 

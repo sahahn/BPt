@@ -128,8 +128,8 @@ depths = "ng.p.TransitionChoice([None, ng.p.Scalar(init=25, lower=2, upper=200).
 
 P['rf dist'] = {'n_estimators': n_estimators,
                 'max_depth': depths,
-                'max_features': "ng.p.Scalar(lower=0, upper=1)",
-                'min_samples_split': "ng.p.Scalar(lower=0, upper=1)",
+                'max_features': "ng.p.Scalar(lower=.1, upper=1.0)",
+                'min_samples_split': "ng.p.Scalar(lower=.1, upper=1.0)",
                 'bootstrap': "True"}
 
 P['rf classifier dist'] = P['rf dist'].copy()

@@ -14,6 +14,9 @@ class Scope_Model(BaseEstimator):
         # Set remaining params to base model
         self.wrapper_model.set_params(**params)
 
+        if hasattr(self.wrapper_model, '_estimator_type'):
+            self._estimator_type = self.wrapper_model._estimator_type
+
     def set_params(self, **params):
 
         if 'wrapper_model' in params:
@@ -90,9 +93,14 @@ class Scope_Model(BaseEstimator):
         except AttributeError:
             pass
 
+        try:
+            self.n_features_in_ =\
+                self.wrapper_model_.n_features_in_
+        except AttributeError:
+            pass
+
         return self
 
-    @if_delegate_has_method(delegate='wrapper_model_')
     def predict(self, X, *args, **kwargs):
         return self.wrapper_model_.predict(X[:, self.wrapper_inds_],
                                            *args, **kwargs)

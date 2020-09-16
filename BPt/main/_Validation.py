@@ -14,6 +14,9 @@ def _get_CV(self, CV_params, show=False, show_original=True):
 
     from ..helpers.CV import CV
 
+    if isinstance(CV_params, CV):
+        return CV_params
+
     train_only_subjects = CV_params.train_only_subjects
     train_only_loc = CV_params.train_only_loc
 

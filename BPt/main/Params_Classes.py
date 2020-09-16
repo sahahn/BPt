@@ -6,6 +6,7 @@ from ..helpers.ML_Helpers import conv_to_list, proc_input
 from ..helpers.VARS import ORDERED_NAMES
 from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
                                 is_special, is_value_subset)
+import copy
 
 
 def proc_all(base_obj):
@@ -744,7 +745,11 @@ class Ensemble(Piece):
         '''
 
         self.obj = obj
+
+        if not isinstance(models, list):
+            models = [models]
         self.models = models
+
         self.params = params
         self.scope = scope
         self.is_des = is_des
@@ -954,14 +959,13 @@ class Param_Search(Params):
         self.weight_scorer = weight_scorer
         self.mp_context = mp_context
 
-        self._CV = None
         self._splits_vals = None
         self._n_jobs = 1
 
         self.check_args()
 
     def set_CV(self, CV):
-        self._CV = CV
+        self.CV = CV
 
     def set_split_vals(self, vals):
         self._splits_vals = vals

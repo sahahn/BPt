@@ -126,13 +126,13 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
     return self
 
 
-class StackingRegressorWrapper(StackingRegressor):
+class BPtStackingRegressor(StackingRegressor):
     needs_mapping = True
     needs_train_data_index = True
     fit = pass_params_fit
 
 
-class StackingClassifierWrapper(StackingClassifier):
+class BPtStackingClassifier(StackingClassifier):
     needs_mapping = True
     needs_train_data_index = True
     fit = pass_params_fit
@@ -455,9 +455,9 @@ ENSEMBLES = {
     'bagging regressor': (BaggingRegressor, ['default']),
     'adaboost classifier': (AdaBoostClassifier, ['default']),
     'adaboost regressor': (AdaBoostRegressor, ['default']),
-    'stacking regressor': (StackingRegressorWrapper,
+    'stacking regressor': (BPtStackingRegressor,
                            ['default']),
-    'stacking classifier': (StackingClassifierWrapper,
+    'stacking classifier': (BPtStackingClassifier,
                             ['default']),
     'voting classifier': (VotingClassifier,
                           ['default']),

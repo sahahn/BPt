@@ -5,6 +5,7 @@ Class for performing train test splits and other cross validation for BPt
 """
 import sklearn.model_selection as MS
 import numpy as np
+from sklearn.base import BaseEstimator
 
 
 def inds_from_names(original_subjects, subject_splits):
@@ -14,7 +15,7 @@ def inds_from_names(original_subjects, subject_splits):
     return subject_inds
 
 
-class CV():
+class CV(BaseEstimator):
     '''Class for performing various cross validation functions'''
 
     def __init__(self, groups=None, stratify=None, train_only=None):
@@ -63,6 +64,12 @@ class CV():
         if self.train_only is not None:
             if len(self.train_only) == 0:
                 self.train_only = None
+
+    def __repr__(self):
+        return 'CV()'
+
+    def __str__(self):
+        return self.__repr__()
 
     def repeated_train_test_split(self, subjects, n_repeats, test_size=.2, 
                                   random_state=None, return_index=False):
@@ -389,3 +396,7 @@ class CV():
                                                   test_size=splits,
                                                   random_state=random_state,
                                                   return_index=return_index)
+
+
+                                
+

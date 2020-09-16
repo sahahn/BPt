@@ -55,7 +55,6 @@ class BPt_Pipeline(Pipeline):
             fit_params[name + '__train_data_index'] = train_data_index
 
         super().fit(X, y, **fit_params)
-
         return self
 
     def _get_objs_by_name(self):

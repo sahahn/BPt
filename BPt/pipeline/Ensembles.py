@@ -42,7 +42,7 @@ from .base import _fit_single_estimator, _get_est_fit_params
 
 
 def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
-                    train_data_index=None):
+                    train_data_index=None, **kwargs):
 
     # all_estimators contains all estimators, the one to be fitted and the
     # 'drop' string.
@@ -126,13 +126,16 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
     return self
 
 
-StackingRegressor.needs_mapping = True
-StackingRegressor.needs_train_data_index = True
-StackingRegressor.fit = pass_params_fit
+class StackingRegressorWrapper(StackingRegressor):
+    needs_mapping = True
+    needs_train_data_index = True
+    fit = pass_params_fit
 
-StackingClassifier.needs_mapping = True
-StackingClassifier.needs_train_data_index = True
-StackingClassifier.fit = pass_params_fit
+
+class StackingClassifierWrapper(StackingClassifier):
+    needs_mapping = True
+    needs_train_data_index = True
+    fit = pass_params_fit
 
 
 class DES_Ensemble(VotingClassifier):
@@ -452,9 +455,9 @@ ENSEMBLES = {
     'bagging regressor': (BaggingRegressor, ['default']),
     'adaboost classifier': (AdaBoostClassifier, ['default']),
     'adaboost regressor': (AdaBoostRegressor, ['default']),
-    'stacking regressor': (StackingRegressor,
+    'stacking regressor': (StackingRegressorWrapper,
                            ['default']),
-    'stacking classifier': (StackingClassifier,
+    'stacking classifier': (StackingClassifierWrapper,
                             ['default']),
     'voting classifier': (VotingClassifier,
                           ['default']),

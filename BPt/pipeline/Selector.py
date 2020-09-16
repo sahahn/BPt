@@ -74,6 +74,10 @@ class Selector(_BaseComposition):
     def inverse_transform(self, *args, **kwargs):
         return self.estimator_.inverse_transform(*args, **kwargs)
 
+    @property
+    def _estimator_type(self):
+        return self.example_estimator_._estimator_type
+
 
 def selector_wrapper(objs, params, name):
 

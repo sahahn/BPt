@@ -3,9 +3,13 @@ from ..helpers.ML_Helpers import proc_mapping, update_mapping
 from sklearn.utils.metaestimators import if_delegate_has_method
 import numpy as np
 from copy import deepcopy
+from .base import _get_est_fit_params
 
 
 class Scope_Model(BaseEstimator):
+
+    needs_mapping = True
+    needs_train_data_index = True
 
     def __init__(self, wrapper_model, wrapper_inds, **params):
         self.wrapper_model = wrapper_model
@@ -14,8 +18,9 @@ class Scope_Model(BaseEstimator):
         # Set remaining params to base model
         self.wrapper_model.set_params(**params)
 
-        if hasattr(self.wrapper_model, '_estimator_type'):
-            self._estimator_type = self.wrapper_model._estimator_type
+    @property
+    def _estimator_type(self):
+        return self.wrapper_model._estimator_type
 
     def set_params(self, **params):
 
@@ -51,9 +56,9 @@ class Scope_Model(BaseEstimator):
 
         return
 
-    def fit(self, X, y=None, mapping=None, **kwargs):
+    def fit(self, X, y=None, mapping=None, train_data_index=None, **kwargs):
 
-        # Set n_features in 
+        # Set n_features in
         self.n_features_in_ = X.shape[1]
 
         # Clear any previous fits
@@ -63,40 +68,48 @@ class Scope_Model(BaseEstimator):
         # Proc mapping
         if mapping is None:
             mapping = {}
-
         self._proc_mapping(mapping)
 
         # Okay now want to create the new_mapping based on wrapper_inds
         new_mapping = {}
         for i in range(len(self.wrapper_inds_)):
             new_mapping[self.wrapper_inds_[i]] = i
+        for i in mapping:
+            if i not in self.wrapper_inds_:
+                new_mapping[i] = None
 
         # Now, we only want to pass along the updated mapping
         # and specifically not change the originally passed mapping
         pass_on_mapping = mapping.copy()
         update_mapping(pass_on_mapping, new_mapping)
 
-        # Try to fit
-        try:
-            self.wrapper_model_.fit(X[:, self.wrapper_inds_],
-                                    y=y, mapping=pass_on_mapping, **kwargs)
-        except TypeError:
-            self.wrapper_model_.fit(X[:, self.wrapper_inds_],
-                                    y=y, **kwargs)
+        # Set the necc. fit params for thisa base estimator
+        fit_params = _get_est_fit_params(estimator=self.wrapper_model_,
+                                         mapping=pass_on_mapping,
+                                         train_data_index=train_data_index,
+                                         other_params=kwargs)
 
-        # Check for feat importances
-        try:
-            self.coef_ = self.wrapper_model_.coef_
-        except AttributeError:
-            pass
+        # print('Fit Scope Model, len(train_data_index) == ',
+        #      len(train_data_index),
+        #      'len wrapper_inds == ', len(self.wrapper_inds),
+        #      'len wrapper_inds_ == ', len(self.wrapper_inds_),
+        #      'mapping in fit_params == ', 'mapping' in fit_params,
+        #      'train_data_index in fit_params ==',
+        #      'train_data_index' in fit_params,
+        #      'X.shape ==', X.shape)
 
-        try:
-            self.feature_importances_ =\
-                self.wrapper_model_.feature_importances_
-        except AttributeError:
-            pass
+        # Fit the base model
+        self.wrapper_model_.fit(X=X[:, self.wrapper_inds_], y=y, **fit_params)
 
         return self
+
+    @property
+    def coef_(self):
+        return self.wrapper_model_.coef_
+
+    @property
+    def feature_importances_(self):
+        return self.wrapper_model_.feature_importances_
 
     def predict(self, X, *args, **kwargs):
         return self.wrapper_model_.predict(X[:, self.wrapper_inds_],

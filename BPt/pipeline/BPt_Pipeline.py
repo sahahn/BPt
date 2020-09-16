@@ -9,17 +9,16 @@ def f_array(in_array):
 
 class BPt_Pipeline(Pipeline):
 
+    needs_mapping = True
+    needs_train_data_index = True
+
     def __init__(self, steps, memory=None, verbose=False,
-                 mapping=False, to_map=None, names=None):
+                 mapping=False, to_map=None, needs_index=None,
+                 names=None):
 
         self.mapping = mapping
-
-        if to_map is None:
-            to_map = []
         self.to_map = to_map
-
-        if names is None:
-            names = []
+        self.needs_index = needs_index
         self.names = names
 
         super().__init__(steps=steps, memory=memory, verbose=verbose)
@@ -35,6 +34,13 @@ class BPt_Pipeline(Pipeline):
     def fit(self, X, y=None, mapping=None,
             train_data_index=None, **fit_params):
 
+        if self.to_map is None:
+            self.to_map = []
+        if self.needs_index is None:
+            self.needs_index = []
+        if self.names is None:
+            self.names = []
+
         # Add mapping to fit params, as either passed or new
         if mapping is not None:
             self._mapping = mapping.copy()
@@ -45,12 +51,17 @@ class BPt_Pipeline(Pipeline):
 
         for name in self.to_map:
             fit_params[name + '__mapping'] = self._mapping
+        for name in self.needs_index:
+            fit_params[name + '__train_data_index'] = train_data_index
 
         super().fit(X, y, **fit_params)
 
         return self
 
     def _get_objs_by_name(self):
+
+        if self.names is None:
+            self.names = []
 
         fitted_objs = [[self.__getitem__(name) for name in obj]
                        for obj in self.names]

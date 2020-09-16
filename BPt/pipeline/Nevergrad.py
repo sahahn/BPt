@@ -12,6 +12,7 @@ from ..helpers.CV import CV as Base_CV
 from ..helpers.ML_Helpers import get_possible_fit_params
 
 from os.path import dirname, abspath, exists
+from sklearn.base import BaseEstimator
 
 
 class ProgressLogger():
@@ -29,34 +30,40 @@ class ProgressLogger():
             f.write('params,')
 
 
-class NevergradSearchCV():
+class NevergradSearchCV(BaseEstimator):
+
+    needs_mapping = True
+    needs_train_data_index = True
+    name = 'nevergrad'
 
     def __init__(self, params, estimator, param_distributions,
                  scoring=None, weight_scorer=False,
-                 random_state=None, progress_loc=None):
+                 random_state=None, progress_loc=None, verbose=False):
 
         self.params = params
         self.estimator = estimator
         self.param_distributions = param_distributions
-
-        # If no CV, use random
-        if self.params._CV is None:
-            self.params.CV = Base_CV()
-
         self.scoring = scoring
         self.weight_scorer = weight_scorer
         self.random_state = random_state
         self.progress_loc = progress_loc
+        self.verbose = verbose
 
-        self.name = 'nevergrad'
+    @property
+    def _estimator_type(self):
+        return self.estimator._estimator_type
 
     def _set_cv(self, train_data_index):
 
+        # If no CV, use random
+        if self.params.CV is None:
+            self.params.CV = Base_CV()
+
         self.cv_subjects, self.cv_inds =\
-            self.params._CV.get_cv(train_data_index, self.params.splits,
-                                   self.params.n_repeats,
-                                   self.params._splits_vals, self.random_state,
-                                   return_index='both')
+            self.params.CV.get_cv(train_data_index, self.params.splits,
+                                  self.params.n_repeats,
+                                  self.params._splits_vals, self.random_state,
+                                  return_index='both')
 
     def ng_cv_score(self, X, y, fit_params, **kwargs):
 
@@ -88,6 +95,16 @@ class NevergradSearchCV():
             return np.mean(cv_scores)
 
     def fit(self, X, y=None, train_data_index=None, **fit_params):
+
+        if train_data_index is None:
+            raise RuntimeWarning('NevergradSearchCV must be passed a ' +
+                                 'train_data_index!')
+
+        if self.verbose:
+            print('Fit Nevergrad CV, len(train_data_index) == ',
+                  len(train_data_index),
+                  'has mapping == ', 'mapping' in fit_params,
+                  'X.shape ==', X.shape)
 
         # Set the search cv passed on passed train_data_index
         self._set_cv(train_data_index)

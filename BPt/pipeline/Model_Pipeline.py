@@ -79,6 +79,7 @@ class Model_Pipeline():
 
         # Set mapping to map
         self._set_mapping_to_map()
+        self._set_needs_index()
 
     def _check_for_user_passed(self, objs, cnt):
 
@@ -171,6 +172,7 @@ class Model_Pipeline():
                                       verbose=self.verbose,
                                       mapping=self.mapping,
                                       to_map=self.to_map,
+                                      needs_index=self.needs_index,
                                       names=names)
 
         return model_pipeline
@@ -186,11 +188,20 @@ class Model_Pipeline():
 
         # Handle model special
         for step in self.named_objs['model']:
-            if isinstance(step[1], Scope_Model):
-                to_map.append(step[0])
+            if hasattr(step[1], 'needs_mapping'):
+                if step[1].needs_mapping:
+                    to_map.append(step[0])
 
         self.mapping = mapping
         self.to_map = to_map
+
+    def _set_needs_index(self):
+
+        self.needs_index = []
+        for step in self.named_objs['model']:
+            if hasattr(step[1], 'needs_train_data_index'):
+                if step[1].needs_train_data_index:
+                    self.needs_index.append(step[0])
 
     def is_search(self):
 

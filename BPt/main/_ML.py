@@ -516,10 +516,6 @@ def Evaluate(self,
     else:
         CV_obj = self._get_CV(CV)
 
-    # Init. the Model_Pipeline object with modeling params
-    self._init_evaluator(model_pipeline, problem_spec,
-                         CV_obj, feat_importances)
-
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
 
@@ -537,6 +533,10 @@ def Evaluate(self,
                     '(before overlap w/ problem_spec.subjects)')
         self._print('run_name =', run_name)
         self._print()
+
+    # Init. the Model_Pipeline object with modeling params
+    self._init_evaluator(model_pipeline, problem_spec,
+                         CV_obj, feat_importances)
 
     # Get the Eval splits
     _, splits_vals, _ = self._get_split_vals(splits)
@@ -769,10 +769,6 @@ def Test(self,
     if feat_importances == 'default':
         feat_importances = Feat_Importance(obj='base')
 
-    # Init the Model_Pipeline object with modeling params
-    self._init_evaluator(model_pipeline, problem_spec,
-                         self.CV, feat_importances)
-
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
 
@@ -790,6 +786,10 @@ def Test(self,
         self._print('feat_importances =', feat_importances)
         self._print('run_name =', run_name)
         self._print()
+
+    # Init the Model_Pipeline object with modeling params
+    self._init_evaluator(model_pipeline, problem_spec,
+                         self.CV, feat_importances)
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, raw_preds, FIs =\

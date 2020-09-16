@@ -1912,8 +1912,9 @@ class Problem_Spec(Params):
         if is_value_subset(self.subjects) or len(self.subjects) < 50:
             _print('subjects =', self.subjects)
     
-        _print('len(subjects) =', len(self._final_subjects),
-               '(before overlap w/ train/test subjects)')
+        if self._final_subjects is not None:
+            _print('len(subjects) =', len(self._final_subjects),
+                   '(before overlap w/ train/test subjects)')
         _print('n_jobs', self.n_jobs)
         _print('random_state', self.random_state)
         _print()

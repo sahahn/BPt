@@ -23,13 +23,6 @@ class BPt_Pipeline(Pipeline):
 
         super().__init__(steps=steps, memory=memory, verbose=verbose)
 
-    def __repr__(self):
-        return 'BPt_Pipeline(piece_names=' + \
-                repr([n for n in self.names if len(n) > 0]) + ')'
-
-    def __str__(self):
-        return self.__repr__()
-
     def get_params(self, deep=True):
         params = super()._get_params('steps', deep=deep)
         return params

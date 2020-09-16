@@ -1054,6 +1054,15 @@ def get_pipeline(self, model_pipeline, problem_spec,
                                 progress_loc=None,
                                 has_search=has_search)
 
+            elif hasattr(piece, 'models'):
+                for i in range(len(piece.models)):
+                    if isinstance(piece.models[i], Model):
+                        if isinstance(piece.models[i].obj, Model_Pipeline):
+                            piece.models[i].obj = self.get_pipeline(
+                                piece.models[i].obj, nested_ps,
+                                progress_loc=None,
+                                has_search=has_search)
+
             setattr(model_pipeline, piece_name, piece)
 
     # Check for nested model pipeline

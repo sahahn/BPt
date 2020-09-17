@@ -10,7 +10,6 @@ from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
                               Drop_Strat)
 
 from .Nevergrad import NevergradSearchCV
-from .Scope_Model import Scope_Model
 
 
 class Model_Pipeline():
@@ -44,7 +43,8 @@ class Model_Pipeline():
     def _create_pipeline_pieces(self, ordered_pipeline_params, Data_Scopes):
 
         # Order is:
-        # ['loaders', 'imputers', 'scalers',
+        # ['loaders', 'imputers',
+        #  'scalers',
         #  'transformers', '_drop_strat',
         #  'feat_selectors', 'model']
 
@@ -103,6 +103,11 @@ class Model_Pipeline():
                     if objs.models is not None:
                         objs.models, cnt =\
                             self._check_for_user_passed(objs.models, cnt)
+                if hasattr(objs, 'target_scaler'):
+                    if objs.target_scaler is not None:
+                        objs.target_scaler, cnt =\
+                            self._check_for_user_passed(objs.target_scaler,
+                                                        cnt)
 
                 # If a Param obj - call recursively to set the value of the
                 # base obj
@@ -137,10 +142,10 @@ class Model_Pipeline():
 
         return objs
 
-    def _get_all_names(self):
+    def _get_names(self, names):
 
         all_obj_names = []
-        for name in ORDERED_NAMES:
+        for name in names:
 
             obj_names = []
             for obj in self.named_objs[name]:
@@ -161,8 +166,9 @@ class Model_Pipeline():
     def get_pipeline(self):
         '''Make the model pipeline object'''
 
+        # Get all steps + names
         steps = self._get_objs(ORDERED_NAMES)
-        names = self._get_all_names()
+        names = self._get_names(ORDERED_NAMES)
 
         # If caching passed, create directory
         if self.cache is not None and not os.path.isdir(self.cache):

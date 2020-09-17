@@ -15,6 +15,7 @@ from sklearn.pipeline import Pipeline
 from copy import deepcopy
 
 from .Selector import selector_wrapper
+from sklearn.compose import TransformedTargetRegressor
 
 import numpy as np
 
@@ -197,18 +198,6 @@ class Pieces():
 
         return obj
 
-    def wrap_model_scope(self, scope, model):
-
-        if scope != 'all':
-
-            inds = self.Data_Scopes.get_inds_from_scope(scope)
-            name = model[0]
-            scoped_model = (name, Scope_Model(model[1], inds))
-
-            return scoped_model
-
-        return model
-
     def replace_base_estimator(self, objs, obj_params, params):
 
         from ..helpers.ML_Helpers import replace_model_name
@@ -336,6 +325,14 @@ class Models(Type_Pieces):
             self._base_type_process(non_ensemble_params,
                                     get_base_model_and_params)
 
+        # Check for target_scaler
+        for i in range(len(non_ensemble_params)):
+            target_scaler = non_ensemble_params[i].target_scaler
+
+            non_ensemble_objs[i], non_ensemble_obj_params =\
+                self.wrap_target_scaler(target_scaler, non_ensemble_objs[i],
+                                        non_ensemble_obj_params)
+
         # If any non-ensemble models have scope != 'all'
         for i in range(len(non_ensemble_params)):
             scope = non_ensemble_params[i].scope
@@ -394,6 +391,14 @@ class Models(Type_Pieces):
             # And add the params
             ensembled_obj_params.update(wrapper.get_updated_params())
 
+        # Check ensembled_objs for target_scaler
+        for i in range(len(ensemble_params)):
+            target_scaler = ensemble_params[i].target_scaler
+
+            ensemble_objs[i], ensemble_obj_params =\
+                self.wrap_target_scaler(target_scaler, ensemble_objs[i],
+                                        ensemble_obj_params)
+
         # Check ensembled_objs for scope != 'all'
         for i in range(len(ensemble_params)):
             scope = ensemble_params[i].scope
@@ -405,6 +410,67 @@ class Models(Type_Pieces):
         ensembled_objs += non_ensemble_objs
         ensembled_obj_params.update(non_ensemble_obj_params)
         return ensembled_objs, ensembled_obj_params
+
+    def wrap_target_scaler(self, target_scaler, model_obj, model_params):
+
+        if self.spec['problem_type'] != 'regression':
+            return model_obj, model_params
+        if target_scaler is None:
+            return model_obj, model_params
+
+        # Process and get the base scaler_obj + params
+        base_scaler_obj = Target_Scalers(self.user_passed_objs,
+                                         self.Data_Scopes,
+                                         self.spec)
+        scaler_objs, scaler_params =\
+            base_scaler_obj.process(target_scaler)
+        scaler_obj = scaler_objs[0]
+
+        # Unwrap into name + base
+        model_name, base_model = model_obj[0], model_obj[1]
+        scaler_name, base_scaler = scaler_obj[0], scaler_obj[1]
+
+        # Now, wrap the model + scaler in the transformed target regressor
+        base_wrapper_model =\
+            TransformedTargetRegressor(regressor=base_model,
+                                       transformer=base_scaler)
+        wrapped_name = 'scale_target_' + model_name
+        wrapper_model_obj = (wrapped_name, base_wrapper_model)
+
+        # Need to update model params with new nested model name
+        model_param_names = list(model_params)
+        for param_name in model_param_names:
+            if param_name.startswith(model_name + '__'):
+
+                new_base = wrapped_name + '__regressor__'
+                new_param_name =\
+                    param_name.replace(model_name + '__', new_base, 1)
+
+                model_params[new_param_name] = model_params.pop(param_name)
+
+        # Need to also update / add any scaler params
+        for param_name in scaler_params:
+            if param_name.startswith(scaler_name + '__'):
+
+                new_base = wrapped_name + '__transformer__'
+                new_param_name =\
+                    param_name.replace(scaler_name + '__', new_base, 1)
+
+                model_params[new_param_name] = scaler_params[param_name]
+
+        return wrapper_model_obj, model_params
+
+    def wrap_model_scope(self, scope, model):
+
+        if scope != 'all':
+
+            inds = self.Data_Scopes.get_inds_from_scope(scope)
+            name = model[0]
+            scoped_model = (name, Scope_Model(model[1], inds))
+
+            return scoped_model
+
+        return model
 
 
 class Loaders(Pieces):
@@ -516,6 +582,22 @@ class Imputers(Pieces):
                                    [p.scope for p in params])
 
         return col_imputers, col_imputer_params
+
+
+class Target_Scalers(Pieces):
+
+    name = 'target scalers'
+
+    def _process(self, params):
+
+        from .Scalers import get_scaler_and_params
+
+        # Then call get objs and params
+        objs, obj_params =\
+            self._get_objs_and_params(get_scaler_and_params,
+                                      params)
+
+        return objs, obj_params
 
 
 class Scalers(Pieces):

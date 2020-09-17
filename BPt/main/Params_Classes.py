@@ -6,7 +6,6 @@ from ..helpers.ML_Helpers import conv_to_list, proc_input
 from ..helpers.VARS import ORDERED_NAMES
 from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
                                 is_special, is_value_subset)
-import copy
 
 
 def proc_all(base_obj):
@@ -389,25 +388,35 @@ class Imputer(Piece):
 class Scaler(Piece):
 
     def __init__(self, obj, params=0, scope='float', extra_params=None):
-        ''' Scaler refers to a piece in the :class:`Model_Pipeline`, which is responsible
-        for performing any sort of scaling or transformation on the data which doesn't require the
-        target variable, and doesn't change the number of data points or features.
+        ''' Scaler refers to a piece in the :class:`Model_Pipeline`,
+        which is responsible
+        for performing any sort of scaling or transformation on the data
+        which doesn't require the
+        target variable, and doesn't change the number of data
+        points or features.
 
         Parameters
         ----------
         obj : str or custom obj
-            `obj` if passed a str selects a scaler from the preset defined scalers, See :ref:`Scalers`
-            for all avaliable options. If passing a custom object, it must be a sklearn compatible
-            transformer, and further must not require the target variable, not change the number of data
+            `obj` if passed a str selects a scaler from the preset defined
+            scalers, See :ref:`Scalers`
+            for all avaliable options. If passing a custom object, it must
+            be a sklearn compatible
+            transformer, and further must not require the target variable,
+            not change the number of data
             points or features.
 
-            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
+            See :ref:`Pipeline Objects` to read more about
+            pipeline objects in general.
 
         params : int, str or dict of :ref:`params<Params>`, optional
             `params` set an associated distribution of hyper-parameters to
-            potentially search over with this Scaler. Preset param distributions are
-            listed for each choice of params with the corresponding obj at :ref:`Scalers`,
-            and you can read more on how params work more generally at :ref:`Params`.
+            potentially search over with this Scaler.
+            Preset param distributions are
+            listed for each choice of params with the
+            corresponding obj at :ref:`Scalers`,
+            and you can read more on how params work more
+            generally at :ref:`Params`.
 
             ::
 
@@ -415,7 +424,8 @@ class Scaler(Piece):
 
         scope : :ref:`valid scope<Scopes>`, optional
             `scope` determines on which subset of features the specified scaler
-            should transform. See :ref:`Scopes` for more information on how scopes can
+            should transform. See :ref:`Scopes` for more
+            information on how scopes can
             be specified.
 
             ::
@@ -457,19 +467,25 @@ class Transformer(Piece):
         Parameters
         ----------
         obj : str or custom_obj
-            `obj` if passed a str selects from the avaliable class defined options for
+            `obj` if passed a str selects from the avaliable class
+            defined options for
             transformer as found at :ref:`Transformers`.
 
-            If a custom object is passed as `obj`, it must be a sklearn api compatible
-            transformer (i.e., have fit, transform, get_params and set_params methods, and further be
-            cloneable via sklearn's clone function). See :ref:`Custom Input Objects` for more info.
+            If a custom object is passed as `obj`, it must be a
+            sklearn api compatible
+            transformer (i.e., have fit, transform, get_params
+            and set_params methods, and further be
+            cloneable via sklearn's clone function).
+            See :ref:`Custom Input Objects` for more info.
 
-            See :ref:`Pipeline Objects` to read more about pipeline objects in general.
+            See :ref:`Pipeline Objects` to read more about
+            pipeline objects in general.
 
         params : int, str or dict of :ref:`params<Params>`, optional
-            `params` determines optionally if the distribution of hyper-parameters to
-            potentially search over for this transformer. Preset param distributions are
-            listed for each choice of obj at :ref:`Transformers`, and you can read more on
+            `params` determines optionally if the distribution of
+            hyper-parameters to potentially search over for this transformer.
+            Preset param distributions are listed for each choice of obj
+            at :ref:`Transformers`, and you can read more on
             how params work more generally at :ref:`Params`.
 
             ::
@@ -477,11 +493,14 @@ class Transformer(Piece):
                 default = 0
 
         scope : :ref:`valid scope<Scopes>`, optional
-            `scope` determines on which subset of features the specified transformer
-            should transform. See :ref:`Scopes` for more information on how scopes can
+            `scope` determines on which subset of features
+            the specified transformer
+            should transform. See :ref:`Scopes` for more information
+            on how scopes can
             be specified.
 
-            Specifically, it may be useful to consider the use of :class:`Duplicate` here.
+            Specifically, it may be useful to consider the use of
+            :class:`Duplicate` here.
 
             ::
 
@@ -578,7 +597,8 @@ class Feat_Selector(Piece):
 
 class Model(Piece):
 
-    def __init__(self, obj, params=0, scope='all', extra_params=None):
+    def __init__(self, obj, params=0, scope='all',
+                 target_scaler=None, extra_params=None):
         ''' Model represents a base components of the :class:`Model_Pipeline`,
         specifically a single Model / estimator.
         Model can also be used as a component
@@ -612,6 +632,31 @@ class Model(Piece):
 
                 default = 0
 
+        scope : :ref:`valid scope<Scopes>`, optional
+            `scope` determines on which subset of features the specified model
+            should work on. See :ref:`Scopes` for more
+            information on how scopes can
+            be specified.
+
+            ::
+
+                default = 'all'
+
+        target_scaler : Scaler, None, optional
+
+            Still somewhat experimental, can pass
+            a Scaler object here and have this model
+            perform target scaling + reverse scaling.
+
+            Note: Has not been fully tested in
+            complicated nesting cases, e.g., if Model is
+            wrapping a nested Model_Pipeline, this param will
+            likely break.
+
+            ::
+
+                default = None
+
         extra_params : :ref`extra params dict<Extra Params>`, optional
 
             See :ref:`Extra Params`
@@ -625,6 +670,7 @@ class Model(Piece):
         self.obj = obj
         self.params = params
         self.scope = scope
+        self.target_scaler = target_scaler
         self.extra_params = extra_params
         self._is_model = True
 
@@ -634,6 +680,7 @@ class Model(Piece):
 class Ensemble(Piece):
 
     def __init__(self, obj, models, params=0, scope='all',
+                 target_scaler=None,
                  is_des=False,
                  single_estimator=False, des_split=.2,
                  extra_params=None):
@@ -700,14 +747,46 @@ class Ensemble(Piece):
 
                 default = 0
 
-        is_des : bool, optional
-            `is_des` refers to if the requested ensemble obj requires a further
-            training test split in order to train the base ensemble. As of right now,
-            If this parameter is True, it means that the base ensemble is from the
-            `DESlib library <https://deslib.readthedocs.io/en/latest/>`_ . Which means
-            the base ensemble obj must have a `pool_classifiers` init parameter.
+        scope : :ref:`valid scope<Scopes>`, optional
+            `scope` determines on which subset of features the specified
+            ensemble model
+            should work on. See :ref:`Scopes` for more
+            information on how scopes can
+            be specified.
 
-            The following `des_split` parameter determines the size of the split if
+            ::
+
+                default = 'all'
+
+        target_scaler : Scaler, None, optional
+
+            Still somewhat experimental, can pass
+            a Scaler object here and have this model
+            perform target scaling + reverse scaling.
+
+            scope in the passed scaler is ignored.
+
+            Note: Has not been fully tested in
+            complicated nesting cases, e.g., if Model is
+            wrapping a nested Model_Pipeline, this param will
+            likely break.
+
+            ::
+
+                default = None
+
+        is_des : bool, optional
+            `is_des` refers to if the requested ensemble obj requires
+            a further training test split in order to train the base ensemble.
+            As of right now, If this parameter is True, it means that the
+            base ensemble is from the
+            `DESlib library <https://deslib.readthedocs.io/en/latest/>`_ .
+            Which means
+            the base ensemble obj must have a `pool_classifiers`
+            init parameter.
+
+            The following `des_split` parameter determines the
+            size of the split if
             is_des is True.
 
             ::
@@ -752,6 +831,7 @@ class Ensemble(Piece):
 
         self.params = params
         self.scope = scope
+        self.target_scaler = target_scaler
         self.is_des = is_des
         self.des_split = des_split
         self.single_estimator = single_estimator
@@ -1289,10 +1369,12 @@ class Drop_Strat():
 
 class Model_Pipeline(Params):
 
-    def __init__(self, loaders=None, imputers='default',
+    def __init__(self,
+                 loaders=None, imputers='default',
                  scalers=None, transformers=None,
                  feat_selectors=None,
-                 model='default', param_search=None,
+                 model='default',
+                 param_search=None,
                  cache=None, feat_importances='depreciated'):
         ''' Model_Pipeline is defined as essentially a wrapper around
         all of the explicit modelling pipeline parameters. This object is

@@ -172,6 +172,8 @@ class FeatureSelectorWrapper(SelectorMixin, BaseEstimator):
 
 AVALIABLE = {
         'binary': {
+                'univariate selection c':
+                'univariate selection c',
                 'univariate selection':
                 'univariate selection c',
                 'rfe': 'rfe',
@@ -179,6 +181,8 @@ AVALIABLE = {
                 'selector': 'selector',
         },
         'regression': {
+                'univariate selection r':
+                'univariate selection r',
                 'univariate selection':
                 'univariate selection r',
                 'rfe': 'rfe',

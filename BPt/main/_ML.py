@@ -419,7 +419,7 @@ def Evaluate(self,
         settings should be computed.
         See the base :class:`Feat_Importance` object for more information
         on how to specify
-        these objects. 
+        these objects.
 
         See :ref:`Feat Importances` to learn more about feature importances
         generally.

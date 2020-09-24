@@ -1,4 +1,5 @@
 from joblib import Parallel, delayed
+from copy import deepcopy
 import numpy as np
 
 
@@ -23,6 +24,9 @@ class Data_File():
 
     def __hash__(self):
         return hash(self.loc)
+
+    def __deepcopy__(self, memo):
+        return Data_File(deepcopy(self.loc, memo), self.load_func)
 
 
 def mp_load(files, reduce_funcs):

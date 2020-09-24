@@ -546,15 +546,15 @@ class Loaders(Pieces):
 
         # The base objects have been created, but they need to be wrapped
         # in the loader wrapper.
-        params = {'file_mapping': self.Data_Scopes.file_mapping,
-                  'wrapper_n_jobs': self.spec['n_jobs'],
-                  'cache_locs': passed_cache_locs}
+        pass_params = {'file_mapping': self.Data_Scopes.file_mapping,
+                       'wrapper_n_jobs': self.spec['n_jobs'],
+                       'cache_locs': passed_cache_locs}
 
         passed_loaders =\
             self._wrap_pipeline_objs(Loader_Wrapper,
                                      passed_loaders,
                                      passed_loader_scopes,
-                                     **params)
+                                     **pass_params)
 
         return passed_loaders, passed_loader_params
 
@@ -630,6 +630,11 @@ class Transformers(Pieces):
         from .Transformers import (get_transformer_and_params,
                                    Transformer_Wrapper)
 
+        # Extract scopes + cache loc
+        passed_scopes = [p.scope for p in params]
+        passed_cache_locs = [p.cache_loc for p in params]
+        pass_params = {'cache_locs': passed_cache_locs}
+
         # Then call get objs and params
         objs, obj_params =\
             self._get_objs_and_params(get_transformer_and_params,
@@ -638,7 +643,8 @@ class Transformers(Pieces):
         transformers =\
             self._wrap_pipeline_objs(Transformer_Wrapper,
                                      objs,
-                                     [p.scope for p in params])
+                                     passed_scopes,
+                                     **pass_params)
 
         return transformers, obj_params
 

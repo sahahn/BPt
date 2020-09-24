@@ -140,7 +140,8 @@ class Check():
 
         extra_params = getattr(self, 'extra_params')
         if extra_params is None:
-            setattr(self, 'extra_params', {})
+            return
+        #    setattr(self, 'extra_params', {})
 
         elif not isinstance(extra_params, dict):
             raise IOError('extra params must be a dict!')
@@ -452,7 +453,8 @@ class Scaler(Piece):
 
 class Transformer(Piece):
 
-    def __init__(self, obj, params=0, scope='float', extra_params=None):
+    def __init__(self, obj, params=0, scope='float', cache_loc=None,
+                 extra_params=None):
         ''' The Transformer is base optional component of the
         :class:`Model_Pipeline` class.
         Transformers define any type of transformation to the loaded
@@ -519,6 +521,7 @@ class Transformer(Piece):
         self.obj = obj
         self.params = params
         self.scope = scope
+        self.cache_loc = cache_loc
         self.extra_params = extra_params
 
         self.check_args()

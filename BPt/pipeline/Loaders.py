@@ -10,18 +10,22 @@ from sklearn.base import clone
 
 
 def load_and_trans(transformer, load_func, loc):
+    '''This function is designed to be able to be wrapped in a cache
+    check_memory.'''
 
     data = load_func(loc)
     trans_data = np.squeeze(transformer.fit_transform(data))
     return trans_data
 
 
-def get_trans_chunk(transformer, data_files, func, load_func):
+def get_trans_chunk(transformer, data_files, func):
+    '''This function is designed to be used for multi-processing'''
 
     X_trans_chunk = []
     for data_file in data_files:
         loc = data_file.loc
-        trans_data = func(transformer, load_func, loc)
+        load_func = data_file.load_func
+        trans_data = func(clone(transformer), load_func, loc)
         X_trans_chunk.append(trans_data)
 
     return X_trans_chunk
@@ -46,9 +50,8 @@ class Loader_Wrapper(Transformer_Wrapper):
         fit_fm_key = X[0, self.wrapper_inds[0]]
         fit_data = self.file_mapping[int(fit_fm_key)].load()
 
-        # Save load func
-        self.load_func = self.file_mapping[int(fit_fm_key)].load_func
-        self.wrapper_transformer.fit(fit_data, y)
+        self.wrapper_transformer_ = clone(self.wrapper_transformer)
+        self.wrapper_transformer_.fit(fit_data, y)
 
         return self
 
@@ -60,7 +63,8 @@ class Loader_Wrapper(Transformer_Wrapper):
         # If any changes to mapping, update
         self._proc_mapping(mapping)
 
-        # Fit on the first data-point only
+        # Fit a copy on the first data-point only
+        # this is used for say reverse transformations
         self._fit(X, y)
 
         # Transform X
@@ -100,10 +104,13 @@ class Loader_Wrapper(Transformer_Wrapper):
 
     def _get_trans_col(self, fm_keys):
 
+        # Grab the right data files from the file mapping (casting to int!)
         data_files = [self.file_mapping[int(fm_key)] for fm_key in fm_keys]
+
+        # Clone the base loader transformer
         cloned_transformer = clone(self.wrapper_transformer)
 
-        # Check caching for right function
+        # If a caching location is passed, create new load_cand_trans_c func
         if self.cache_loc is not None:
             memory = check_memory(self.cache_loc)
             load_and_trans_c = memory.cache(load_and_trans)
@@ -112,8 +119,7 @@ class Loader_Wrapper(Transformer_Wrapper):
 
         if self.wrapper_n_jobs == 1:
             X_trans_cols = get_trans_chunk(cloned_transformer,
-                                           data_files, load_and_trans_c,
-                                           self.load_func)
+                                           data_files, load_and_trans_c)
         else:
             chunks = self.get_chunks(data_files)
 
@@ -122,8 +128,7 @@ class Loader_Wrapper(Transformer_Wrapper):
                     delayed(get_trans_chunk)(
                         transformer=cloned_transformer,
                         data_files=chunk,
-                        func=load_and_trans_c,
-                        load_func=self.load_func)
+                        func=load_and_trans_c)
                     for chunk in chunks)
 
             X_trans_cols = []
@@ -201,10 +206,10 @@ class Loader_Wrapper(Transformer_Wrapper):
             for subject_X in X[:, reverse_inds]:
 
                 # If pipeline
-                if hasattr(self.wrapper_transformer, 'steps'):
-                    for step in self.wrapper_transformer.steps[::-1]:
+                if hasattr(self.wrapper_transformer_, 'steps'):
+                    for step in self.wrapper_transformer_.steps[::-1]:
                         s_name = step[0]
-                        pipe_piece = self.wrapper_transformer[s_name]
+                        pipe_piece = self.wrapper_transformer_[s_name]
 
                         try:
                             subject_X = pipe_piece.inverse_transform(subject_X)
@@ -216,7 +221,7 @@ class Loader_Wrapper(Transformer_Wrapper):
                 else:
                     try:
                         subject_X =\
-                            self.wrapper_transformer.inverse_transform(
+                            self.wrapper_transformer_.inverse_transform(
                                 subject_X)
                     except AttributeError:
                         no_it_warns.add(name)
@@ -270,6 +275,8 @@ class Loader_Wrapper(Transformer_Wrapper):
     def get_params(self, deep=False):
 
         params = super().get_params(deep=deep)
+
+        # Passing file_mapping as just a reference *should* be okay
         params['file_mapping'] = self.file_mapping
         params['wrapper_n_jobs'] = self.wrapper_n_jobs
 

@@ -51,7 +51,6 @@ def compute_micro_macro(scores, n_repeats, n_splits, weights=None):
     return (np.mean(macro_scores), np.std(scores), np.std(macro_scores))
 
 
-
 def is_array_like(in_val):
 
     if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
@@ -107,15 +106,15 @@ def proc_str_input(in_str):
         in_str = in_str.replace(chunk, chunk_replace_dict[chunk])
 
     # This is a dict of of values to replace, if the str ends with that value
-    endwith_replace_dict = {' score': '',
-                            ' loss': '',
-                            ' corrcoef': '',
-                            ' ap': ' average precision',
-                            ' jac': ' jaccard',
-                            ' iou': ' jaccard',
-                            ' intersection over union': ' jaccard',
-                            ' logistic': '',
-                            }
+    # endwith_replace_dict = {' score': '',
+    #                        ' loss': '',
+    #                        ' corrcoef': '',
+    #                        ' ap': ' average precision',
+    #                        ' jac': ' jaccard',
+    #                        ' iou': ' jaccard',
+    #                        ' intersection over union': ' jaccard',
+    #                        ' logistic': '',
+    #                        }
 
     # for chunk in endwith_replace_dict:
     #    if in_str.endswith(chunk):
@@ -178,9 +177,9 @@ def proc_extra_params(obj, extra_params, non_search_params, params=None):
     except AttributeError:
         return non_search_params, params
 
-    # If any of the passed keys in extra_params are valid params to 
+    # If any of the passed keys in extra_params are valid params to
     # the base classes init, add them to non_search_params
-   
+
     for key in extra_params:
         if key in init_params:
             non_search_params[key] = deepcopy(extra_params[key])

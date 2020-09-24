@@ -3170,7 +3170,7 @@ def _filter_by_eventname(self, data, eventname, eventname_col):
             after = data.shape[0]
 
             if before != after:
-                self._print(before - after, 'subjects have been dropped',
+                self._print(before - after, 'data points have been dropped',
                             'based on passed eventname params.')
 
         else:

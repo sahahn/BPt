@@ -153,18 +153,6 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         self.strategy = strategy
         self.vectorize = vectorize
 
-        self.strats = {'mean': np.mean,
-                       'median': np.median,
-                       'sum': np.sum,
-                       'minimum': np.min,
-                       'min': np.min,
-                       'maximum': np.max,
-                       'max': np.max,
-                       'standard_deviation': np.std,
-                       'std': np.std,
-                       'variance': np.var,
-                       'var': np.var}
-
     def fit(self, X, y=None):
 
         # Load mask if any
@@ -190,23 +178,37 @@ class SurfLabels(BaseEstimator, TransformerMixin):
 
         # Proc self.background_label, if int turn to np array
         if isinstance(self.background_label, int):
-            self._background_label = np.array([self.background_label])
+            self.background_label_ = np.array([self.background_label])
 
         # If None...
         elif self.background_label is None:
-            self._background_label = np.array([])
+            self.background_label_ = np.array([])
 
         # Otherwise, if already list-like, just cast to np array
         else:
-            self._background_label = np.array(self.background_label)
+            self.background_label_ = np.array(self.background_label)
 
         # Set the _non_bkg_unique as the valid labels to get ROIs for
-        self._non_bkg_unique = np.setdiff1d(np.unique(self.labels_),
-                                            self._background_label)
+        self.non_bkg_unique_ = np.setdiff1d(np.unique(self.labels_),
+                                            self.background_label_)
 
         # Proc strategy if need be
-        if self.strategy in self.strats:
-            self.strategy = self.strats[self.strategy]
+        strats = {'mean': np.mean,
+                  'median': np.median,
+                  'sum': np.sum,
+                  'minimum': np.min,
+                  'min': np.min,
+                  'maximum': np.max,
+                  'max': np.max,
+                  'standard_deviation': np.std,
+                  'std': np.std,
+                  'variance': np.var,
+                  'var': np.var}
+
+        if self.strategy in strats:
+            self.strategy_ = strats[self.strategy]
+        else:
+            self.strategy_ = self.strategy
 
         return self
 
@@ -231,14 +233,14 @@ class SurfLabels(BaseEstimator, TransformerMixin):
 
         # Get the ROI value for each label
         X_trans = []
-        for i in self._non_bkg_unique:
+        for i in self.non_bkg_unique_:
 
             if self.data_dim_ == 0:
                 X_i = X[self.labels_ == i]
             else:
                 X_i = X[:, self.labels_ == i]
 
-            X_trans.append(self.strategy(X_i, axis=self.data_dim_))
+            X_trans.append(self.strategy_(X_i, axis=self.data_dim_))
 
         if self.data_dim_ == 1:
             X_trans = np.stack(X_trans, axis=1)
@@ -264,7 +266,7 @@ class SurfLabels(BaseEstimator, TransformerMixin):
             X_trans = np.rollaxis(X_trans, -1)
             X = np.rollaxis(X, -1)
 
-        for i, label in enumerate(self._non_bkg_unique):
+        for i, label in enumerate(self.non_bkg_unique_):
             X_trans[self.labels_ == label] = X[i]
 
         if self.data_dim_ == 1:

@@ -13,10 +13,10 @@ class BPt_Pipeline(Pipeline):
     needs_train_data_index = True
 
     def __init__(self, steps, memory=None, verbose=False,
-                 mapping=False, to_map=None, needs_index=None,
+                 add_mapping=False, to_map=None, needs_index=None,
                  names=None):
 
-        self.mapping = mapping
+        self.add_mapping = add_mapping
         self.to_map = to_map
         self.needs_index = needs_index
         self.names = names
@@ -44,7 +44,7 @@ class BPt_Pipeline(Pipeline):
         # Add mapping to fit params, as either passed or new
         if mapping is not None:
             self._mapping = mapping.copy()
-        elif self.mapping:
+        elif self.add_mapping:
             self._mapping = {i: i for i in range(X.shape[1])}
         else:
             self._mapping = {}

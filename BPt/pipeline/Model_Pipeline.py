@@ -176,7 +176,7 @@ class Model_Pipeline():
 
         model_pipeline = BPt_Pipeline(steps, memory=self.cache,
                                       verbose=self.verbose,
-                                      mapping=self.mapping,
+                                      add_mapping=self.add_mapping,
                                       to_map=self.to_map,
                                       needs_index=self.needs_index,
                                       names=names)
@@ -198,7 +198,7 @@ class Model_Pipeline():
                 if step[1].needs_mapping:
                     to_map.append(step[0])
 
-        self.mapping = mapping
+        self.add_mapping = mapping
         self.to_map = to_map
 
     def _set_needs_index(self):

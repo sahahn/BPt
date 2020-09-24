@@ -2582,6 +2582,8 @@ def Clear_Data(self):
 
     '''
     self.data = pd.DataFrame()
+    self.file_mapping = {}
+    self.data_file_keys = []
     self._print('Cleared loaded data.')
     self._print()
 

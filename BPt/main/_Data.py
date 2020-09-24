@@ -758,8 +758,18 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
     data_file_keys = list(data)
     cnt = self._get_data_file_cnt()
 
-    # Wrap load_func here
-    wrapped_load_func = wrap_non_picklable_objects(load_func)
+    # Wrap load_func here if needed.
+    if load_func.__module__ == '__main__':
+        wrapped_load_func = wrap_non_picklable_objects(load_func)
+        self._print('Warning: Passed load_func was defined within the',
+                    '__main__ namespace and therefore has been cloud wrapped.',
+                    'The function will still work, but it is reccomended to',
+                    'define this function in a seperate file, and then import',
+                    'it , otherwise loader caching will be limited',
+                    'in utility!')
+
+    else:
+        wrapped_load_func = load_func
 
     for col in data:
         for subject in data.index:

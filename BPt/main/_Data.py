@@ -6,6 +6,7 @@ the ML class.
 """
 import pandas as pd
 import numpy as np
+from joblib import wrap_non_picklable_objects
 
 from ..helpers.VARS import is_f2b
 from ..helpers.Data_Scopes import Data_Scopes
@@ -757,10 +758,13 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
     data_file_keys = list(data)
     cnt = self._get_data_file_cnt()
 
+    # Wrap load_func here
+    wrapped_load_func = wrap_non_picklable_objects(load_func)
+
     for col in data:
         for subject in data.index:
 
-            data_file = Data_File(data.at[subject, col], load_func)
+            data_file = Data_File(data.at[subject, col], wrapped_load_func)
             file_mapping[cnt] = data_file
 
             data.at[subject, col] = cnt

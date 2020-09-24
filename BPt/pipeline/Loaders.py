@@ -168,7 +168,7 @@ class Loader_Wrapper(Transformer_Wrapper):
         X_trans, _ = self._get_X_trans(X)
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
-    def _get_new_df_names(self, feat_names):
+    def _get_new_df_names(self, base_name=None, feat_names=None):
         '''Create new feature names for the transformed features,
         in loaders this is done per feature/column'''
 

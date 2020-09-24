@@ -10,6 +10,15 @@ from sklearn.decomposition import (PCA, FactorAnalysis,
                                    MiniBatchSparsePCA, NMF, SparsePCA,
                                    TruncatedSVD)
 import warnings
+from sklearn.utils.validation import check_memory
+from sklearn.base import clone
+
+
+def _fit_transform_single_transformer(transformer, X, y):
+
+    transformer.fit(X=X, y=y)
+    X_trans = transformer.transform(X=X)
+    return transformer, X_trans
 
 
 class Transformer_Wrapper(BaseEstimator, TransformerMixin):
@@ -60,12 +69,24 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         # Before fit, need to handle annoying categorical encoders case
         # where there is no default setting to set to all cols
         # It shouldn't hurt to set these for other transformers (hopefully...)
-        self.wrapper_transformer.cols = [i for i in range(len(inds))]
-        self.wrapper_transformer.return_df = False
+        self.wrapper_transformer_ = clone(self.wrapper_transformer)
+        self.wrapper_transformer_.cols = [i for i in range(len(inds))]
+        self.wrapper_transformer_.return_df = False
 
-        # Fit transform just inds of X
-        X_trans = self.wrapper_transformer.fit_transform(X=X[:, inds],
-                                                         y=y, **fit_params)
+        if self.cache_loc is not None:
+            memory = check_memory(self.cache_loc)
+            _fit_transform_single_transformer_c =\
+                memory.cache(_fit_transform_single_transformer)
+        else:
+            _fit_transform_single_transformer_c =\
+                _fit_transform_single_transformer
+
+        self.wrapper_transformer_, X_trans =\
+            _fit_transform_single_transformer_c(
+                transformer=self.wrapper_transformer_,
+                X=X[:, inds],
+                y=y)
+
         self._X_trans_inds = [i for i in range(X_trans.shape[1])]
 
         new_mapping = {}
@@ -86,7 +107,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
     def transform(self, X):
 
         # Transform just wrapper inds
-        X_trans = self.wrapper_transformer.transform(X[:, self.wrapper_inds])
+        X_trans = self.wrapper_transformer_.transform(X[:, self.wrapper_inds])
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def transform_df(self, df, base_name='transformer'):
@@ -95,19 +116,11 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         # Transform data as np array
         X = np.array(df).astype(float)
-
         X_trans = self.transform(X)
 
         # Get new names
-        if len(self.wrapper_inds) == 1:
-            alt_name = feat_names[self.wrapper_inds[0]]
-        else:
-            alt_name = base_name
-
-        try:
-            new_names = self._get_new_df_names(alt_name)
-        except IndexError:
-            new_names = self._get_new_df_names(base_name)
+        new_names = self._get_new_df_names(base_name=base_name,
+                                           feat_names=feat_names)
 
         # Remove old names
         df, feat_names = self._remove_old_df_names(df, feat_names)
@@ -128,7 +141,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         # If no inver_transformer in base transformer, set to 0
         try:
             X_trans =\
-                self.wrapper_transformer.inverse_transform(X[:, reverse_inds])
+                self.wrapper_transformer_.inverse_transform(X[:, reverse_inds])
         except AttributeError:
             X_trans = np.zeros((X.shape[0], len(self.wrapper_inds)))
             warnings.warn('Passed transformer: "' + name + '" has no '
@@ -147,11 +160,20 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         return Xt
 
-    def _get_new_df_names(self, base_name):
+    def _get_new_df_names(self, base_name=None, feat_names=None):
         '''Create new feature names for the transformed features'''
 
+        if len(self.wrapper_inds) == 1:
+            alt_name = feat_names[self.wrapper_inds[0]]
+        else:
+            alt_name = base_name
+
         n_trans = len(self._X_trans_inds)
-        new_names = [base_name + '_' + str(i) for i in range(n_trans)]
+
+        try:
+            new_names = [alt_name + '_' + str(i) for i in range(n_trans)]
+        except IndexError:
+            new_names = [base_name + '_' + str(i) for i in range(n_trans)]
 
         return new_names
 
@@ -170,13 +192,16 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
             self.wrapper_transformer = params.pop('wrapper_transformer')
         if 'wrapper_inds' in params:
             self.wrapper_inds = params.pop('wrapper_inds')
+        if 'cache_loc' in params:
+            self.cache_loc = params.pop('cache_loc')
 
         self.wrapper_transformer.set_params(**params)
 
     def get_params(self, deep=False):
 
         params = {'wrapper_transformer': self.wrapper_transformer,
-                  'wrapper_inds': self.wrapper_inds}
+                  'wrapper_inds': self.wrapper_inds,
+                  'cache_loc': self.cache_loc}
 
         params.update(self.wrapper_transformer.get_params(deep=deep))
 

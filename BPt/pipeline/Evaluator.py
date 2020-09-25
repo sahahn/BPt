@@ -388,6 +388,10 @@ class Evaluator():
                         self._proc_X_test(pd.concat([train_data, test_data]),
                                           fs=False)
 
+                # Error if here
+                else:
+                    X, y = None, None
+
                 feat_imp.init_local(X, y, test=True, n_splits=None)
 
             # Local init - Evaluate
@@ -396,6 +400,10 @@ class Evaluator():
                 X, y = self._proc_X_test(pd.concat([train_data, test_data]),
                                          fs=False)
                 feat_imp.init_local(X, y, n_splits=self.n_splits_)
+
+            # Error if reaches here
+            else:
+                X, y = None, None
 
             self._print('Calculate', feat_imp.name, 'feat importances',
                         level='name')

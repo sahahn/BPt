@@ -108,7 +108,10 @@ def _plot_seaborn_dist(data, plot_type, label=None):
     elif plot_type == 'bar':
         sns.boxplot(data, label=label)
     else:
-        sns.distplot(data, label=label)
+        try:
+            sns.distplot(data, label=label)
+        except RuntimeError:
+            sns.distplot(data, kde=False, label=label)
 
 
 def Show_Data_Dist(self, data_subset='SHOW_ALL',
@@ -837,7 +840,11 @@ def _show_dist(
         display_df = display_df.round(3)
 
         self._display_df(display_df)
-        sns.distplot(no_nan_data, color=color, label=label)
+
+        try:
+            sns.distplot(no_nan_data, color=color, label=label)
+        except RuntimeError:
+            sns.distplot(no_nan_data, kde=False, color=color, label=label)
 
     # Binary/ordinal
     else:

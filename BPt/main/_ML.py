@@ -253,7 +253,8 @@ def _ML_print(self, *args, **kwargs):
     elif level == 'params' and self.default_ML_verbosity['best_params']:
         _print(*args, **kwargs)
 
-    elif level == 'cv_score' and self.default_ML_verbosity['best_params_score']:
+    elif level == 'cv_score' and self.default_ML_verbosity[
+                                 'best_params_score']:
         _print(*args, **kwargs)
 
 
@@ -304,11 +305,14 @@ def Evaluate(self,
         and for how to create an instance of this object.
 
     splits : int, float, str or list of str, optional
-        In every fold of the defined CV strategy, the passed `model_pipeline` will be fitted on
+        In every fold of the defined CV strategy, the passed `model_pipeline`
+        will be fitted on
         a train fold, and evaluated on a validation fold. This parameter
         controls the type of CV, i.e., specifies what the train and validation
-        folds should be. These splits are further determined by the subjects passed to `train_subjects`.
-        Notably, the splits defined will respect any special split behavior as defined in
+        folds should be. These splits are further determined by the subjects
+        passed to `train_subjects`.
+        Notably, the splits defined will respect any special split behavior
+        as defined in
         :func:`Define_Validation_Strategy<BPt_ML.Define_Validation_Strategy>`.
 
         Specifically, options for split are:
@@ -324,19 +328,27 @@ def Evaluate(self,
             used as a validation/test set.
 
         - str
-            If a str is passed, then it must correspond to a loaded Strat variable. In
-            this case, a leave-out-group CV will be used according to the value of the
+            If a str is passed, then it must correspond to a
+            loaded Strat variable. In
+            this case, a leave-out-group CV will be used according
+            to the value of the
             indicated Strat variable (E.g., a leave-out-site CV scheme).
 
         - list of str
-            If multiple str passed, first determine the overlapping unique values from
-            their corresponing loaded Strat variables, and then use this overlapped
+            If multiple str passed, first determine the
+            overlapping unique values from
+            their corresponing loaded Strat variables,
+            and then use this overlapped
             value to define the leave-out-group CV as described above.
 
-        Note that this defines only the base CV strategy, and that the following param `n_repeats`
-        is optionally used to replicate this base strategy, e.g., for a twice repeated train-test split evaluation.
-        Note further that `n_repeats` will work with any of these options, but say in the case of
-        a leave out group CV, it would be awfully redundant, versus, with a passed float value, very reasonable.
+        Note that this defines only the base CV strategy,
+        and that the following param `n_repeats`
+        is optionally used to replicate this base strategy, e.g.,
+        for a twice repeated train-test split evaluation.
+        Note further that `n_repeats` will work with any of these options,
+        but say in the case of
+        a leave out group CV, it would be awfully redundant, versus,
+        with a passed float value, very reasonable.
 
         ::
 
@@ -401,7 +413,8 @@ def Evaluate(self,
 
         If `subjects` is passed a str, and that str is not one of the str
         indicators listed above, then it will be interpretted as the location
-        of file in which to read subjects from (assuming one subjects per line).
+        of file in which to read subjects from
+        (assuming one subjects per line).
 
         `subjects` may also be a custom array-like of subjects to use.
 
@@ -599,7 +612,8 @@ def Test(self,
     on one discrete set of `train_subjects`
     and evaluate it on a further discrete set of `test_subjects`.
     Otherwise, these functions are very simmilar as
-    they both evaluate a :class:`Model_Pipeline` as defined in the context of a :class:`Problem_Spec`, and return
+    they both evaluate a :class:`Model_Pipeline` as defined in the context of
+    a :class:`Problem_Spec`, and return
     similar output.
 
     Parameters
@@ -708,7 +722,7 @@ def Test(self,
         should be computed.
         See the base :class:`Feat_Importance` object for more information
         on how to specify
-        these objects. 
+        these objects.
 
         See :ref:`Feat Importances` to learn more about feature
         importances generally.
@@ -1097,18 +1111,23 @@ def get_pipeline(self, model_pipeline, problem_spec,
 
 def _init_evaluator(self, model_pipeline, problem_spec, CV, feat_importances):
 
+    # Make copies of the passed problem spec + pipeline
+    # and only make changes and pass along the copies
+    ps = copy.deepcopy(problem_spec)
+    pipe = copy.deepcopy(model_pipeline)
+
     # Init problem spec first
-    problem_spec = self._preproc_problem_spec(problem_spec)
+    ps = self._preproc_problem_spec(ps)
 
     # Calling get pipeline performs preproc on model_pipeline
     # and Data_Scopes
-    model = self.get_pipeline(model_pipeline, problem_spec,
+    model = self.get_pipeline(pipe, ps,
                               self.default_ML_verbosity['progress_loc'])
 
     # Set the evaluator obj
     self.evaluator =\
         Evaluator(model=model,
-                  problem_spec=problem_spec,
+                  problem_spec=ps,
                   CV=CV,
                   all_keys=self.Data_Scopes.all_keys,
                   feat_importances=feat_importances,

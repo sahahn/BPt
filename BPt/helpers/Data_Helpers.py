@@ -456,20 +456,16 @@ def drop_duplicate_cols(data, corr_thresh, _print=print):
         dropped = []
 
         for col1 in data:
-
-            if col1 in data:
-
-                A = data[col1]
-                a = ma.masked_invalid(A)
-
             for col2 in data:
                 if col1 != col2 and col1 in list(data) and col2 in list(data):
 
-                    B = data[col2]
-                    b = ma.masked_invalid(B)
+                    A, B = data[col1], data[col2]
+                    a, b = ma.masked_invalid(A), ma.masked_invalid(B)
 
+                    # Compute overlap
                     overlap = (~a.mask & ~b.mask)
 
+                    # Two cases, if corr_thresh 1 (faster)
                     if corr_thresh == 1:
 
                         A_o, B_o = np.array(A[overlap]), np.array(B[overlap])
@@ -479,7 +475,6 @@ def drop_duplicate_cols(data, corr_thresh, _print=print):
                             dropped.append(col2)
 
                     else:
-
                         corr = np.corrcoef(A[overlap], B[overlap])[0][1]
                         if corr >= corr_thresh:
                             data = data.drop(col2, axis=1)
@@ -633,6 +628,8 @@ def filter_data_cols(data, filter_outlier_percent, filter_outlier_std,
     if seperate_keys is not None:
         sep_data = data[seperate_keys]
         data = data.drop(seperate_keys, axis=1)
+    else:
+        sep_data = pd.DataFrame()
 
     if filter_outlier_percent is None and filter_outlier_std is None:
         return data
@@ -677,16 +674,22 @@ def filter_data_file_cols(data, reduce_funcs, filter_outlier_percent,
     if not isinstance(reduce_funcs, list):
         reduce_funcs = [reduce_funcs]
 
+    # Data file proxies returns a list of dataframes
+    # where the length of the list is == to the number of reduce funcs
     data_file_proxies = load_data_file_proxies(data, reduce_funcs,
                                                data_file_keys,
                                                file_mapping, n_jobs)
 
     valid_subjects = set(data.index)
     for proxy in data_file_proxies:
+
+        # drop_or_na is fixed as drop.
         proxy = filter_data_cols(proxy, filter_outlier_percent,
                                  filter_outlier_std, drop_or_na='drop',
                                  seperate_keys=None, subject_id=subject_id,
                                  _print=_print)
+
+        # Only need to save from each calculation to the valid subjects
         valid_subjects = valid_subjects.intersection(proxy.index)
 
     filtered_data = data.loc[list(valid_subjects)]

@@ -1076,7 +1076,8 @@ class Shap_Params(Params):
                  kernel_nsamples='auto',
                  kernel_l1_reg='auto'):
         '''
-        There are a number of parameters associated with using shap to determine
+        There are a number of parameters associated
+        with using shap to determine
         feature importance. The best way to understand Shap is almost certainly through
         their documentation directly, `Shap Docs <https://shap.readthedocs.io/en/latest/>`_
         Just note when using Shap within BPt to pay attention to the version on the shap
@@ -1356,20 +1357,6 @@ class Feat_Importance(Params):
         self.params = 0
 
 
-class Drop_Strat():
-
-    def __init__(self):
-
-        self.obj = None
-        self.params = 0
-
-    def check_args(self):
-        return
-
-    def proc_input(self):
-        return
-
-
 class Model_Pipeline(Params):
 
     def __init__(self,
@@ -1569,9 +1556,6 @@ class Model_Pipeline(Params):
         self.scalers = scalers
         self.transformers = transformers
 
-        # Special place holder case for drop strat, for compat.
-        self._drop_strat = Drop_Strat()
-
         self.feat_selectors = feat_selectors
 
         if model == 'default':
@@ -1597,23 +1581,21 @@ class Model_Pipeline(Params):
         that accepts a list of pieces'''
 
         for param_name in ORDERED_NAMES:
+            params = getattr(self, param_name)
 
-            if param_name != '_drop_strat':
-                params = getattr(self, param_name)
+            if params is None:
+                new_params = params
 
-                if params is None:
-                    new_params = params
+            elif isinstance(params, list):
+                new_params = func(params)
 
-                elif isinstance(params, list):
-                    new_params = func(params)
+            # If not list-
+            else:
+                new_params = func([params])
+                if isinstance(new_params, list) and len(new_params) == 1:
+                    new_params = new_params[0]
 
-                # If not list-
-                else:
-                    new_params = func([params])
-                    if isinstance(new_params, list) and len(new_params) == 1:
-                        new_params = new_params[0]
-
-                setattr(self, param_name, new_params)
+            setattr(self, param_name, new_params)
 
     def _proc_duplicates(self, params):
 
@@ -1777,13 +1759,7 @@ class Model_Pipeline(Params):
         pipeline_params = self.get_ordered_pipeline_params()
         for name, params in zip(ORDERED_NAMES, pipeline_params):
 
-            if name == '_drop_strat':
-                pass
-
-            elif params is None:
-                pass
-
-            else:
+            if params is not None:
                 _print(name + '=\\')
                 self.params_print(params, 0, _print=_print)
                 _print()

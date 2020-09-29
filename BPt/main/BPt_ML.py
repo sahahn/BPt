@@ -287,7 +287,7 @@ class BPt_ML():
         self.default_load_params, self.default_ML_verbosity = {}, {}
 
         # Scores are saved after each eval or test run
-        self.eval_scores, self.test_scores =  {}, {}
+        self.eval_scores, self.test_scores = {}, {}
 
         self.subject_id = 'src_subject_id'
 

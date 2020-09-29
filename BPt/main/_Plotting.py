@@ -453,7 +453,7 @@ def Show_Targets_Dist(self, targets='SHOW_ALL', cat_show_original_name=True,
         (default = True)
 
     subjects : None, 'train', 'test' or array-like, optional
-        If None, plot all subjects. 
+        If None, plot all subjects.
         If not None, then plot only the subjects loaded as train_subjects,
         or as test subjects, or you can pass a custom list or array-like of
         subjects.

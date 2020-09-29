@@ -680,9 +680,9 @@ def filter_data_file_cols(data, reduce_funcs, filter_outlier_percent,
     data_file_proxies = load_data_file_proxies(data, reduce_funcs,
                                                data_file_keys,
                                                file_mapping, n_jobs)
+
     valid_subjects = set(data.index)
     for proxy in data_file_proxies:
-
         proxy = filter_data_cols(proxy, filter_outlier_percent,
                                  filter_outlier_std, drop_or_na='drop',
                                  seperate_keys=None, subject_id=subject_id,
@@ -692,11 +692,12 @@ def filter_data_file_cols(data, reduce_funcs, filter_outlier_percent,
     filtered_data = data.loc[list(valid_subjects)]
 
     # Remove any unused file mapping entries
-    all_keys = list(file_mapping)
-    remaining_keys = np.unique(filtered_data)
-    for key in all_keys:
-        if key not in remaining_keys:
-            file_mapping.pop(key)
+    all_keys = set(list(file_mapping))
+    remaining_keys = set(np.unique(filtered_data))
+
+    # Calculate the keys to remove, and remove them
+    remove_keys = all_keys - remaining_keys
+    [file_mapping.pop(key) for key in remove_keys]
 
     return filtered_data, file_mapping
 

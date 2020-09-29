@@ -1,4 +1,3 @@
-from sklearn.preprocessing import FunctionTransformer
 from ..main.Input_Tools import is_pipe, is_select
 
 from ..helpers.ML_Helpers import (check_for_duplicate_names,
@@ -7,7 +6,7 @@ from ..helpers.ML_Helpers import (check_for_duplicate_names,
                                   conv_to_list,
                                   process_params_by_type)
 
-from ..extensions.Col_Selector import ColDropStrat, InPlaceColTransformer
+from ..extensions.Col_Selector import InPlaceColTransformer
 from .Scope_Model import Scope_Model
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 
@@ -741,21 +740,3 @@ class Ensembles(Type_Pieces):
                                 n_jobs=self.spec['n_jobs'])
 
 
-class Drop_Strat(Pieces):
-
-    name = 'drop_strat'
-
-    def _process(self, params):
-
-        non_strat_inds = self.Data_Scopes.get_inds_from_scope('all')
-        identity = FunctionTransformer(validate=False)
-
-        # Make base col_transformer, just for dropping strat cols
-        col_transformer =\
-            ColDropStrat(transformers=[('keep_all_but_strat_inds',
-                                        identity, non_strat_inds)],
-                         remainder='drop', sparse_threshold=0)
-
-        # Put in list, to easily add to pipeline
-        drop_strat = [('drop_strat', col_transformer)]
-        return drop_strat, {}

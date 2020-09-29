@@ -105,13 +105,6 @@ class BPt_Pipeline(Pipeline):
             X_test = transformer.transform_df(X_test, base_name=base_name)
             feat_names = list(X_test)
 
-        # Make sure to keep track of col changes w/ drop + feat_selector
-        for drop in fitted_objs[ORDERED_NAMES.index('_drop_strat')]:
-
-            valid_inds = np.array(drop.transformers[0][2])
-            feat_names = np.array(feat_names)[valid_inds]
-            X_test = X_test[feat_names].copy()
-
         # Drop features according to feat_selectors, keeping track of changes
         # only if passed param fs is True
         if fs:
@@ -152,10 +145,6 @@ class BPt_Pipeline(Pipeline):
             X_train = scaler.transform(X_train)
         for transformer in fitted_objs[ORDERED_NAMES.index('transformers')]:
             X_train = transformer.transform(X_train)
-        # for sampler in fitted_objs[4]:
-        #    X_train, y_train = sampler.fit_resample(X_train, y_train)
-        for drop in fitted_objs[ORDERED_NAMES.index('_drop_strat')]:
-            X_train = drop.transform(X_train)
         fs_ind = ORDERED_NAMES.index('feat_selectors')
         for feat_selector in fitted_objs[fs_ind]:
             X_train = feat_selector.transform(np.array(X_train))
@@ -176,10 +165,6 @@ class BPt_Pipeline(Pipeline):
         fs_ind = ORDERED_NAMES.index('feat_selectors')
         for feat_selector in fitted_objs[fs_ind][::-1]:
             fis = feat_selector.inverse_transform(fis)
-
-        # Reverse drop strat
-        for drop in fitted_objs[ORDERED_NAMES.index('_drop_strat')]:
-            fis = drop.inverse_transform(fis)
 
         # Transformers
         trans_ind = ORDERED_NAMES.index('transformers')

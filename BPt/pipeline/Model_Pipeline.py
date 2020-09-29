@@ -6,8 +6,7 @@ import os
 from ..helpers.VARS import ORDERED_NAMES
 
 from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
-                              Transformers, Feat_Selectors,
-                              Drop_Strat)
+                              Transformers, Feat_Selectors)
 
 from .Nevergrad import NevergradSearchCV
 
@@ -45,7 +44,7 @@ class Model_Pipeline():
         # Order is:
         # ['loaders', 'imputers',
         #  'scalers',
-        #  'transformers', '_drop_strat',
+        #  'transformers',
         #  'feat_selectors', 'model']
 
         # First check for user passed
@@ -62,8 +61,7 @@ class Model_Pipeline():
 
         # These are the corresponding pieces classes
         pieces_classes = [Loaders, Imputers, Scalers,
-                          Transformers, Drop_Strat,
-                          Feat_Selectors, Models]
+                          Transformers, Feat_Selectors, Models]
 
         # Generate / process all of the pipeline pieces in order
         for params, piece_class, name in zip(conv_pipeline_params,

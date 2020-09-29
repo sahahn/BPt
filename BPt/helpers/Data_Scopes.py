@@ -20,19 +20,17 @@ class Data_Scopes():
         self.file_mapping = file_mapping
 
     def set_all_keys(self, spec):
-        '''Also returns all keys at end'''
 
-        # To start set all_keys with everything
-        self.keys_at_end = self.strat_keys + conv_to_list(spec.target)
+        # Keys at end used to include strat, now have only be targt
+        self.keys_at_end = conv_to_list(spec.target)
 
+        # Set all keys to data keys + covars keys + target keys at end to start
         self.all_keys =\
             self.data_keys + self.covars_keys + self.keys_at_end
 
         # Filter all_keys by scope, and set new all keys
         scoped_keys = self.get_keys_from_scope(spec.scope)
         self.all_keys = scoped_keys + self.keys_at_end
-
-        # Target key(s) should always be last in all_keys!
 
         # Store total number of valid keys
         self.num_feat_keys = len(self.all_keys) - len(self.keys_at_end)
@@ -128,7 +126,3 @@ class Data_Scopes():
         inds = self.get_train_inds_from_keys(keys)
 
         return inds
-
-    def get_strat_inds(self):
-
-        return self.get_train_inds_from_keys(self.strat_keys)

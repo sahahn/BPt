@@ -107,7 +107,8 @@ class Data_Scopes():
             except ValueError:
                 pass
 
-        return keys
+        # Return sorted keys (for reproducible results)
+        return sorted(keys)
 
     def get_train_inds_from_keys(self, keys):
         '''Assume target is always last within self.all_keys ...

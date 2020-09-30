@@ -24,7 +24,7 @@ class Model_Pipeline():
             spec['search_type'] = self.param_search.search_type
 
         # Set n_jobs in model spec
-        spec['n_jobs'] = pipeline_params._n_jobs
+        spec['n_jobs'] = pipeline_params.n_jobs
         self.spec = spec
 
         # Save cache param
@@ -230,8 +230,8 @@ class Model_Pipeline():
         # Create the search object
         search_model =\
             NevergradSearchCV(
-                params=self.param_search,
                 estimator=base_pipeline,
+                param_search=self.param_search,
                 param_distributions=self.get_all_params(),
                 scoring=search_scorer,
                 weight_scorer=self.param_search.weight_scorer,

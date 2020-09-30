@@ -36,14 +36,14 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
     def _proc_mapping(self, mapping):
 
         try:
-            self._mapping
+            self.mapping_
             return
 
         except AttributeError:
-            self._mapping = mapping.copy()
+            self.mapping_ = mapping.copy()
 
         if len(mapping) > 0:
-            self.wrapper_inds = proc_mapping(self.wrapper_inds, mapping)
+            self.wrapper_inds_ = proc_mapping(self.wrapper_inds, mapping)
 
         return
 
@@ -63,7 +63,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         self._proc_mapping(mapping)
 
-        inds = self.wrapper_inds
+        inds = self.wrapper_inds_
         self.rest_inds_ = [i for i in range(X.shape[1]) if i not in inds]
 
         # Before fit, need to handle annoying categorical encoders case
@@ -107,7 +107,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
     def transform(self, X):
 
         # Transform just wrapper inds
-        X_trans = self.wrapper_transformer_.transform(X[:, self.wrapper_inds])
+        X_trans = self.wrapper_transformer_.transform(X[:, self.wrapper_inds_])
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def transform_df(self, df, base_name='transformer'):
@@ -136,14 +136,14 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
     def inverse_transform(self, X, name='base transformer'):
 
-        reverse_inds = proc_mapping(self.wrapper_inds, self._out_mapping)
+        reverse_inds = proc_mapping(self.wrapper_inds_, self._out_mapping)
 
         # If no inver_transformer in base transformer, set to 0
         try:
             X_trans =\
                 self.wrapper_transformer_.inverse_transform(X[:, reverse_inds])
         except AttributeError:
-            X_trans = np.zeros((X.shape[0], len(self.wrapper_inds)))
+            X_trans = np.zeros((X.shape[0], len(self.wrapper_inds_)))
             warnings.warn('Passed transformer: "' + name + '" has no '
                           'inverse_transform! '
                           'Setting relevant inverse '
@@ -151,11 +151,11 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         reverse_rest_inds = proc_mapping(self.rest_inds_, self._out_mapping)
 
-        all_inds_len = len(self.wrapper_inds) + len(self.rest_inds_)
+        all_inds_len = len(self.wrapper_inds_) + len(self.rest_inds_)
         Xt = np.zeros((X.shape[0], all_inds_len), dtype=X.dtype)
 
         # Fill in Xt
-        Xt[:, self.wrapper_inds] = X_trans
+        Xt[:, self.wrapper_inds_] = X_trans
         Xt[:, self.rest_inds_] = X[:, reverse_rest_inds]
 
         return Xt
@@ -163,8 +163,8 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
     def _get_new_df_names(self, base_name=None, feat_names=None):
         '''Create new feature names for the transformed features'''
 
-        if len(self.wrapper_inds) == 1:
-            alt_name = feat_names[self.wrapper_inds[0]]
+        if len(self.wrapper_inds_) == 1:
+            alt_name = feat_names[self.wrapper_inds_[0]]
         else:
             alt_name = base_name
 
@@ -180,7 +180,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
     def _remove_old_df_names(self, df, feat_names):
         '''Create new feature names for the transformed features'''
 
-        to_remove = [feat_names[i] for i in self.wrapper_inds]
+        to_remove = [feat_names[i] for i in self.wrapper_inds_]
         feat_names = [name for name in feat_names if name not in to_remove]
         df = df.drop(to_remove, axis=1)
 

@@ -36,11 +36,12 @@ class NevergradSearchCV(BaseEstimator):
     needs_train_data_index = True
     name = 'nevergrad'
 
-    def __init__(self, params, estimator, param_distributions,
+    def __init__(self, estimator=None, param_search=None,
+                 param_distributions=None,
                  scoring=None, weight_scorer=False,
                  random_state=None, progress_loc=None, verbose=False):
 
-        self.params = params
+        self.param_search = param_search
         self.estimator = estimator
         self.param_distributions = param_distributions
         self.scoring = scoring
@@ -56,13 +57,13 @@ class NevergradSearchCV(BaseEstimator):
     def _set_cv(self, train_data_index):
 
         # If no CV, use random
-        if self.params.CV is None:
-            self.params.CV = Base_CV()
+        if self.param_search.CV is None:
+            self.param_search.CV = Base_CV()
 
         self.cv_subjects, self.cv_inds =\
-            self.params.CV.get_cv(train_data_index, self.params.splits,
-                                  self.params.n_repeats,
-                                  self.params._splits_vals, self.random_state,
+            self.param_search.CV.get_cv(train_data_index, self.param_search.splits,
+                                  self.param_search.n_repeats,
+                                  self.param_search._splits_vals, self.random_state,
                                   return_index='both')
 
     def ng_cv_score(self, X, y, fit_params, **kwargs):
@@ -114,16 +115,16 @@ class NevergradSearchCV(BaseEstimator):
             ng.p.Instrumentation(X, y, fit_params, **self.param_distributions)
 
         try:
-            opt = ng.optimizers.registry[self.params.search_type]
+            opt = ng.optimizers.registry[self.param_search.search_type]
 
         # If not found, look for in expirimental variants
         except KeyError:
             import nevergrad.optimization.experimentalvariants
-            opt = ng.optimizers.registry[self.params.search_type]
+            opt = ng.optimizers.registry[self.param_search.search_type]
 
         optimizer = opt(parametrization=instrumentation,
-                        budget=self.params.n_iter,
-                        num_workers=self.params._n_jobs)
+                        budget=self.param_search.n_iter,
+                        num_workers=self.param_search.n_jobs)
 
         # Set random state is defined
         if isinstance(self.random_state, int):
@@ -140,15 +141,15 @@ class NevergradSearchCV(BaseEstimator):
             logger = ProgressLogger(self.progress_loc)
             optimizer.register_callback('tell', logger)
 
-        if self.params._n_jobs == 1:
+        if self.param_search.n_jobs == 1:
             recommendation = optimizer.minimize(self.ng_cv_score,
                                                 batch_mode=False)
 
         else:
             try:
                 with futures.ProcessPoolExecutor(
-                  max_workers=self.params._n_jobs,
-                  mp_context=mp.get_context(self.params.mp_context)) as ex:
+                  max_workers=self.param_search.n_jobs,
+                  mp_context=mp.get_context(self.param_search.mp_context)) as ex:
 
                     recommendation = optimizer.minimize(self.ng_cv_score,
                                                         executor=ex,

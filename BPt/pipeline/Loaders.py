@@ -47,7 +47,7 @@ class Loader_Wrapper(Transformer_Wrapper):
 
     def _fit(self, X, y=None):
 
-        fit_fm_key = X[0, self.wrapper_inds[0]]
+        fit_fm_key = X[0, self.wrapper_inds_[0]]
         fit_data = self.file_mapping[int(fit_fm_key)].load()
 
         self.wrapper_transformer_ = clone(self.wrapper_transformer)
@@ -74,13 +74,13 @@ class Loader_Wrapper(Transformer_Wrapper):
         new_mapping = {}
 
         # Add changed X_trans by col
-        for c in range(len(self.wrapper_inds)):
-            ind = self.wrapper_inds[c]
+        for c in range(len(self.wrapper_inds_)):
+            ind = self.wrapper_inds_[c]
             new_mapping[ind] = self._X_trans_inds[c]
 
         # Update rest of inds, as just shifted over
         self.rest_inds_ = [i for i in range(X.shape[1])
-                           if i not in self.wrapper_inds]
+                           if i not in self.wrapper_inds_]
 
         for c in range(len(self.rest_inds_)):
             ind = self.rest_inds_[c]
@@ -144,7 +144,7 @@ class Loader_Wrapper(Transformer_Wrapper):
         cnt = 0
 
         # For each column to fit_transform
-        for col in self.wrapper_inds:
+        for col in self.wrapper_inds_:
 
             # Get transformer column
             fm_keys = [key for key in X[:, col]]
@@ -164,7 +164,6 @@ class Loader_Wrapper(Transformer_Wrapper):
 
         # Stack final
         X_trans = np.hstack(X_trans)
-
         return X_trans, X_trans_inds
 
     def transform(self, X):
@@ -178,9 +177,9 @@ class Loader_Wrapper(Transformer_Wrapper):
         in loaders this is done per feature/column'''
 
         new_names = []
-        for c in range(len(self.wrapper_inds)):
+        for c in range(len(self.wrapper_inds_)):
 
-            ind = self.wrapper_inds[c]
+            ind = self.wrapper_inds_[c]
             base_name = feat_names[ind]
 
             new_inds = self._X_trans_inds[c]
@@ -193,12 +192,12 @@ class Loader_Wrapper(Transformer_Wrapper):
 
         # For each column, compute the inverse transform of what's loaded
         inverse_X = {}
-        reverse_mapping = get_reverse_mapping(self._mapping)
+        reverse_mapping = get_reverse_mapping(self.mapping_)
 
         no_it_warns = set()
         other_warns = set()
 
-        for col_ind in self.wrapper_inds:
+        for col_ind in self.wrapper_inds_:
             reverse_inds = proc_mapping([col_ind], self._out_mapping)
 
             # for each subject
@@ -255,10 +254,10 @@ class Loader_Wrapper(Transformer_Wrapper):
         # An otherwise inversed X, we will just set values to 0 in this version
         reverse_rest_inds = proc_mapping(self.rest_inds_, self._out_mapping)
 
-        all_inds_len = len(self.wrapper_inds) + len(self.rest_inds_)
+        all_inds_len = len(self.wrapper_inds_) + len(self.rest_inds_)
         Xt = np.zeros((X.shape[0], all_inds_len), dtype=X.dtype)
 
-        Xt[:, self.wrapper_inds] = 0
+        Xt[:, self.wrapper_inds_] = 0
         Xt[:, self.rest_inds_] = X[:, reverse_rest_inds]
 
         return Xt, inverse_X

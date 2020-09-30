@@ -209,7 +209,8 @@ class Loader(Piece):
             and passing on features as extracted by ROI.
 
         params : int, str or dict of :ref:`params<Params>`, optional
-            `params` determines optionally if the distribution of hyper-parameters to
+            `params` determines optionally if the distribution
+            of hyper-parameters to
             potentially search over for this loader. Preset param distributions are
             listed for each choice of obj at :ref:`Loaders`, and you can read more on
             how params work more generally at :ref:`Params`.
@@ -862,7 +863,9 @@ class Param_Search(Params):
     def __init__(self, search_type='RandomSearch',
                  splits=3, n_repeats=1, n_iter=10, CV='default',
                  scorer='default',
-                 weight_scorer=False, mp_context='default'):
+                 weight_scorer=False,
+                 mp_context='default',
+                 n_jobs='default'):
         ''' Param_Search is special input object designed to be
         used with :class:`Model_Pipeline`.
         Param_Search defines a hyperparameter search strategy.
@@ -949,20 +952,27 @@ class Param_Search(Params):
                 on average to find a good set of hyper-parameters
 
             - The dimension of the underlying search space
-                If you are only optimizing a few, say 2, underlying parameter distributions,
-                this will require a far smaller budget then say a really high dimensional search space.
+                If you are only optimizing a few, say 2,
+                underlying parameter distributions,
+                this will require a far smaller budget then say a really
+                high dimensional search space.
 
             - The CV strategy
-                The CV strategy defined via `splits` and `n_repeats` may make it easier
-                or harder to overfit when searching for hyper-parameters, thus conceptually
-                a good choice of CV strategy can serve to increase the number `n_iter` you can use
+                The CV strategy defined via `splits` and `n_repeats`
+                may make it easier or harder to overfit when searching
+                for hyper-parameters, thus conceptually
+                a good choice of CV strategy can serve to increase
+                the number `n_iter` you can use
                 before overfitting, or conversely a bad choice may limit it.
 
             - Number of data points / subjects
-                Along with CV strategy, the number of data points/subjects will greatly influence
-                how quickly you overfit, and therefore a good choice of `n_iter`.
+                Along with CV strategy, the number of data points/subjects
+                will greatly influence
+                how quickly you overfit, and therefore a
+                good choice of `n_iter`.
 
-            Notably, one can always if they have the resources simply expiriment with this parameter.
+            Notably, one can always if they have the resources
+            simply expiriment with this parameter.
 
             ::
 
@@ -980,7 +990,8 @@ class Param_Search(Params):
             In order for a set of hyper-parameters to be evaluated,
             a single scorer must be defined.
 
-            For a full list of supported scorers please view the scikit-learn docs at:
+            For a full list of supported scorers please view the
+            scikit-learn docs at:
             https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
 
             If left as 'default', assign a reasonable scorer based on the
@@ -1021,7 +1032,7 @@ class Param_Search(Params):
             When a hyper-parameter search is launched, there are different
             ways through python that the multi-processing can be launched
             (assuming n_jobs > 1). Occassionally some choices can lead to
-            odd errors.
+            unexpected errors.
 
             If 'default' use the mp_context defined upon init of BPt
             object.
@@ -1030,20 +1041,31 @@ class Param_Search(Params):
 
                 default = 'default'
 
+        n_jobs : int or 'default', optional
+            The number of cores to be used for the
+            search. In general, this parameter
+            should be left as 'default', which will set it
+            based on the n_jobs as set in the problem spec-
+            and will attempt to automatically change this
+            value if say in the context of nesting.
+
+            ::
+
+                default = 'default'
         '''
 
         self.search_type = search_type
         self.splits = splits
-        self.n_repeats = 1
+        self.n_repeats = n_repeats
         self.n_iter = n_iter
         self.CV = CV
 
         self.scorer = scorer
         self.weight_scorer = weight_scorer
         self.mp_context = mp_context
+        self.n_jobs = n_jobs
 
         self._splits_vals = None
-        self._n_jobs = 1
 
         self.check_args()
 
@@ -1135,14 +1157,22 @@ class Shap_Params(Params):
 
         tree_feature_perturbation : {"interventional", "tree_path_dependent"}, optional
             Only used with tree based models.
-            Since SHAP values rely on conditional expectations we need to decide how to handle correlated
-            (or otherwise dependent) input features. The "interventional" approach breaks the dependencies between
-            features according to the rules dictated by casual inference (Janzing et al. 2019). Note that the
-            "interventional" option requires a background dataset and its runtime scales linearly with the size
-            of the background dataset you use. Anywhere from 100 to 1000 random background samples are good
-            sizes to use. The "tree_path_dependent" approach is to just follow the trees and use the number
-            of training examples that went down each leaf to represent the background distribution. This approach
-            does not require a background dataset and so is used by default when no background dataset is provided.
+            Since SHAP values rely on conditional expectations
+            we need to decide how to handle correlated
+            (or otherwise dependent) input features.
+            The "interventional" approach breaks the dependencies between
+            features according to the rules dictated by casual
+            inference (Janzing et al. 2019). Note that the
+            "interventional" option requires a background dataset
+            and its runtime scales linearly with the size
+            of the background dataset you use. Anywhere from 100 to 1000
+            random background samples are good
+            sizes to use. The "tree_path_dependent" approach is to just follow
+            the trees and use the number
+            of training examples that went down each leaf to represent
+            the background distribution. This approach
+            does not require a background dataset and so is used
+            by default when no background dataset is provided.
 
             ::
 
@@ -1365,7 +1395,8 @@ class Model_Pipeline(Params):
                  feat_selectors=None,
                  model='default',
                  param_search=None,
-                 cache=None, feat_importances='depreciated'):
+                 cache=None, n_jobs='default',
+                 feat_importances='depreciated'):
         ''' Model_Pipeline is defined as essentially a wrapper around
         all of the explicit modelling pipeline parameters. This object is
         used as input to 
@@ -1535,6 +1566,18 @@ class Model_Pipeline(Params):
 
                 default = None
 
+        n_jobs : int or 'default', optional
+            The number of cores to be used with this pipeline.
+            In general, this parameter
+            should be left as 'default', which will set it
+            based on the n_jobs as set in the problem spec-
+            and will attempt to automatically change this
+            value if say in the context of nesting.
+
+            ::
+
+                default = 'default'
+
         feat_importances : depreciated
             Feature importances in a past version of BPt were specified via this Model Pipeline object.
             Now they should be provided to either
@@ -1564,7 +1607,7 @@ class Model_Pipeline(Params):
 
         self.param_search = param_search
         self.cache = cache
-        self._n_jobs = 1
+        self.n_jobs = n_jobs
 
         if feat_importances != 'depreciated':
             print('Warning: Passing feature importances have been moved to the Evaluate and Test functions!')
@@ -1686,16 +1729,27 @@ class Model_Pipeline(Params):
 
     def set_n_jobs(self, n_jobs):
 
-        # If no param search, each objs base n_jobs is
-        # the passed n_jobs
-        if self.param_search is None:
-            self._n_jobs = n_jobs
+        if self.n_jobs == 'default':
 
-        # Otherwise, base jobs are 1, and the search_n_jobs
-        # are set to passed n_jobs
-        else:
-            self._n_jobs = 1
-            self.param_search._n_jobs = n_jobs
+            # If no param search, each objs base n_jobs is
+            # the passed n_jobs
+            if self.param_search is None:
+                self.n_jobs = n_jobs
+
+            # Otherwise, base jobs are 1, and the search_n_jobs
+            # are set to passed n_jobs
+            else:
+                self.n_jobs = 1
+
+                if self.param_search.n_jobs == 'default':
+                    self.param_search.n_jobs = n_jobs
+
+        # There is still the case where the nested param_search
+        # n_jobs is default, in this case set it as the passed n_jobs
+        elif self.param_search is not None:
+            if self.param_search.n_jobs == 'default':
+                self.param_search.n_jobs = n_jobs
+
 
     def get_ordered_pipeline_params(self):
 

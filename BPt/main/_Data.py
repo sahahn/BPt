@@ -3440,6 +3440,10 @@ def Prepare_All_Data(self, merge='default', low_memory_mode='default'):
         self.Clear_Covars()
         self.Clear_Strat()
 
+    # IMPORTANT, @ end sort all data by index, so that calculated splits
+    # are reporoducible
+    self.all_data.sort_index(inplace=True)
+
 
 def _get_cat_keys(self):
     '''Determines and sets the column for

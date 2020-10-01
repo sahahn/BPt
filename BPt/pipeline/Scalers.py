@@ -3,7 +3,7 @@ Scalers.py
 ====================================
 File containing the various data scalers.
 """
-from ..helpers.ML_Helpers import (get_obj_and_params, show_objects)
+from ..helpers.ML_Helpers import get_obj_and_params
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer, MaxAbsScaler,
                                    QuantileTransformer, Normalizer)

@@ -86,73 +86,18 @@ def proc_input(in_vals):
 
 
 def proc_str_input(in_str):
-    '''Perform common preprocs on a str.
-    Speicifcally this function is is used to process user str input,
-    as referencing a model, or scaler.'''
 
     if not isinstance(in_str, str):
         return in_str
 
+    # Make sure lower-case
     in_str = in_str.lower()
-    in_str = in_str.rstrip()
 
+    # Remove regressor or classifier
     chunk_replace_dict = {' regressor': '',
-                          ' regresure': '',
-                          ' classifier': '',
-                          ' classifer': '',
-                          ' classification': ''}
-
+                          ' classifier': ''}
     for chunk in chunk_replace_dict:
         in_str = in_str.replace(chunk, chunk_replace_dict[chunk])
-
-    # This is a dict of of values to replace, if the str ends with that value
-    # endwith_replace_dict = {' score': '',
-    #                        ' loss': '',
-    #                        ' corrcoef': '',
-    #                        ' ap': ' average precision',
-    #                        ' jac': ' jaccard',
-    #                        ' iou': ' jaccard',
-    #                        ' intersection over union': ' jaccard',
-    #                        ' logistic': '',
-    #                        }
-
-    # for chunk in endwith_replace_dict:
-    #    if in_str.endswith(chunk):
-    #        in_str = in_str.replace(chunk, endwith_replace_dict[chunk])
-
-    startwith_replace_dict = {'rf ': 'random forest ',
-                              'lgbm ': 'light gbm ',
-                              'lightgbm ': 'light gbm ',
-                              'svc ': 'svm ',
-                              'svr ': 'svm ',
-                              'neg ': '',
-                              }
-
-    for chunk in startwith_replace_dict:
-        if in_str.startswith(chunk):
-            in_str = in_str.replace(chunk, startwith_replace_dict[chunk])
-
-    # This is a dict where if the input is exactly one
-    # of the keys, the value will be replaced.
-    replace_dict = {'acc': 'accuracy',
-                    'bas': 'balanced accuracy',
-                    'ap': 'average precision',
-                    'jac': 'jaccard',
-                    'iou': 'jaccard',
-                    'intersection over union': 'jaccard',
-                    'mse': 'mean squared error',
-                    'ev': 'explained variance',
-                    'mae': 'mean absolute error',
-                    'msle': 'mean squared log error',
-                    'med ae': 'median absolute error',
-                    'rf': 'random forest',
-                    'lgbm': 'light gbm',
-                    'svc': 'svm',
-                    'svr': 'svm',
-                    }
-
-    if in_str in replace_dict:
-        in_str = replace_dict[in_str]
 
     return in_str
 
@@ -194,13 +139,11 @@ def proc_extra_params(obj, extra_params, non_search_params, params=None):
 
 def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
 
-
     # First get the object, and process the base params!
-
     try:
         obj, param_names = OBJS[obj_str]
     except KeyError:
-        print('Requested:', obj_str, 'does not exist!')
+        raise KeyError(repr(obj_str) + ' does not exist!')
 
     # If params is a str, change it to the relevant index
     if isinstance(params, str):
@@ -372,97 +315,6 @@ def proc_problem_type(problem_type, avaliable_by_type):
         problem_types = list(avaliable_by_type)
 
     return problem_types
-
-
-def show_objects(problem_type=None, obj=None,
-                 show_params_options=True, show_object=False,
-                 show_all_possible_params=False, AVALIABLE=None, OBJS=None):
-
-    if obj is not None:
-        objs = conv_to_list(obj)
-
-        for obj in objs:
-            show_obj(obj, show_params_options, show_object,
-                     show_all_possible_params, OBJS)
-        return
-
-    if AVALIABLE is not None:
-
-        avaliable_by_type = get_avaliable_by_type(AVALIABLE)
-        problem_types = proc_problem_type(problem_type, avaliable_by_type)
-
-        for pt in problem_types:
-            show_type(pt, avaliable_by_type,
-                      show_params_options,
-                      show_object,
-                      show_all_possible_params, OBJS)
-
-    else:
-
-        for obj in OBJS:
-            show_obj(obj, show_params_options, show_object,
-                     show_all_possible_params, OBJS)
-
-
-def show_type(problem_type, avaliable_by_type, show_params_options,
-              show_object, show_all_possible_params, OBJS):
-
-    print('Avaliable for Problem Type:', problem_type)
-    print('----------------------------------------')
-    print()
-    print()
-
-    for obj_str in avaliable_by_type[problem_type]:
-
-        if 'basic ensemble' in obj_str:
-
-            print('- - - - - - - - - - - - - - - - - - - - ')
-            print('("basic ensemble")')
-            print('- - - - - - - - - - - - - - - - - - - - ')
-            print()
-
-        elif 'user passed' not in obj_str:
-            show_obj(obj_str, show_params_options, show_object,
-                     show_all_possible_params, OBJS)
-
-
-def show_obj(obj_str, show_params_options, show_object,
-             show_all_possible_params, OBJS):
-
-        print('- - - - - - - - - - - - - - - - - - - - ')
-        OBJ = OBJS[obj_str]
-        print(OBJ[0].__name__, end='')
-        print(' ("', obj_str, '")', sep='')
-        print('- - - - - - - - - - - - - - - - - - - - ')
-        print()
-
-        if show_object:
-            print('Object: ', OBJ[0])
-
-        print()
-        if show_params_options:
-            show_param_options(OBJ[1])
-
-        if show_all_possible_params:
-            possible_params = get_possible_init_params(OBJ[0])
-            print('All Possible Params:', possible_params)
-        print()
-
-
-def show_param_options(param_options):
-
-    print('Param Indices')
-    print('-------------')
-
-    for ind in range(len(param_options)):
-
-        print()
-        print(ind, ":", sep='')
-        print()
-        print('"', param_options[ind], '"', sep='')
-        show(param_options[ind])
-        print()
-    print('-------------')
 
 
 def f_array(in_array):

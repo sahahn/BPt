@@ -41,10 +41,13 @@ AVALIABLE = {
         'gaussian nb':        'gaussian nb',
         'knn':                'knn classifier',
         'dt':                 'dt classifier',
+        'rf':                 'random forest classifier',
         'random forest':      'random forest classifier',
         'gp':                 'gp classifier',
         'svm':                'svm classifier',
+        'svc':                'svm classifier',
         'linear svm':         'linear svm classifier',
+        'linear svc':         'linear svm classifier',
         'mlp':                'mlp classifier',
         'sgd':                'sgd classifier',
         'gb':                 'gb classifier',
@@ -59,10 +62,13 @@ AVALIABLE = {
         'dt':                 'dt regressor',
         'elastic':            'elastic net regressor',
         'elastic net':        'elastic net regressor',
+        'rf':                 'random forest regressor',
         'random forest':      'random forest regressor',
         'gp':                 'gp regressor',
         'svm':                'svm regressor',
+        'svr':                'svr regressor',
         'linear svm':         'linear svm regressor',
+        'linear svr':         'linear svm regressor',
         'mlp':                'mlp regressor',
         'ridge':              'ridge regressor',
         'lasso':              'lasso regressor',
@@ -185,8 +191,11 @@ try:
     from lightgbm import LGBMRegressor, LGBMClassifier
 
     AVALIABLE['binary']['light gbm'] = 'light gbm classifier'
-    AVALIABLE['regression']['light gbm'] = 'light gbm regressor'
+    AVALIABLE['binary']['lgbm'] = 'light gbm classifier'
     AVALIABLE['categorical']['light gbm'] = 'light gbm classifier'
+    AVALIABLE['categorical']['lgbm'] = 'light gbm classifier'
+    AVALIABLE['regression']['light gbm'] = 'light gbm regressor'
+    AVALIABLE['regression']['lgbm'] = 'light gbm regressor'
 
     MODELS['light gbm regressor'] = (LGBMRegressor, ['base lgbm',
                                                      'lgbm dist1',

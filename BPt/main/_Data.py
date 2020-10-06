@@ -3185,7 +3185,7 @@ def _filter_by_eventname(self, data, eventname, eventname_col):
 
             if before != after:
                 self._print(before - after, 'data points have been dropped',
-                            'based on passed eventname params.')
+                            'based on the passed eventname params.')
 
         else:
             self._print('Warning: filter by eventname_col:',

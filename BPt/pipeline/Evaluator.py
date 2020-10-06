@@ -17,17 +17,21 @@ class Evaluator():
     '''
 
     def __init__(self, model, problem_spec, CV, all_keys,
-                 feat_importances, verbosity, _print=print):
+                 feat_importances, return_raw_preds, return_models,
+                 verbosity, _print=print):
 
         # Save passed params
         self.model_ = model
         self.ps = problem_spec
         self.CV = CV
         self.all_keys = all_keys
+        self.return_raw_preds = return_raw_preds
+        self.return_models = return_models
         self.progress_bar = verbosity['progress_bar']
         self.compute_train_score = verbosity['compute_train_score']
         self.progress_loc = verbosity['progress_loc']
         self._print = _print
+        self.models = []
 
         # Default params
         self._set_default_params()
@@ -75,6 +79,21 @@ class Evaluator():
             overlap = self.ps._final_subjects.intersection(set(subjects))
 
         return np.array(list(overlap))
+
+    def _get_results(self):
+
+        results = {}
+
+        # If raw_preds off, will just return None
+        results['raw_preds'] = self.raw_preds_df
+
+        # If no feature importances will just be empty list
+        results['FIs'] = self.feat_importances
+
+        # If return models off, will just be empty list
+        results['models'] = self.models
+
+        return results
 
     def Evaluate(self, data, train_subjects, splits, n_repeats, splits_vals):
         '''Method to perform a full evaluation
@@ -199,9 +218,8 @@ class Evaluator():
 
         # self.micro_scores = self._compute_micro_scores()
 
-        # Return all scores
-        return (np.array(all_train_scores), np.array(all_scores),
-                self.raw_preds_df, self.feat_importances)
+        results = self._get_results()
+        return (np.array(all_train_scores), np.array(all_scores), results)
 
     def _get_eval_splits(self, train_subjects, splits, n_repeats, splits_vals):
 
@@ -318,9 +336,10 @@ class Evaluator():
         # ground truth.
         scores = self._get_scores(data.loc[all_test_subjects], '', fold_ind)
 
+        # Return differently based on if test
         if fold_ind == 'test':
-            return (train_scores, scores, self.raw_preds_df,
-                    self.feat_importances)
+            results = self._get_results()
+            return (train_scores, scores, results)
 
         return train_scores, scores
 
@@ -536,6 +555,10 @@ class Evaluator():
         self.model = deepcopy(self.model_)
         self.model.fit(X, y, train_data_index=train_data.index)
 
+        # If return models, save model
+        if self.return_models:
+            self.models.append(self.model)
+
         # If a search object, try to print best score
         try:
             self._show_best_score()
@@ -647,8 +670,12 @@ class Evaluator():
         # Data, score split
         X_test, y_test = self._get_X_y(test_data)
 
+        # For book-keeping set num y classes
+        self._set_classes(y_test)
+
         # Add raw preds to raw_preds_df
-        self._add_raw_preds(X_test, y_test, test_data.index, eval_type,
+        self._add_raw_preds(X_test, y_test,
+                            test_data.index, eval_type,
                             fold_ind)
 
         # Only compute scores on Non-Nan y
@@ -662,14 +689,7 @@ class Evaluator():
 
         return np.array(scores)
 
-    def _add_raw_preds(self, X_test, y_test, subjects, eval_type, fold_ind):
-
-        if fold_ind == 'test':
-            fold = 'test'
-            repeat = ''
-        else:
-            fold = str((fold_ind % self.n_splits_) + 1)
-            repeat = str((fold_ind // self.n_splits_) + 1)
+    def _set_classes(self, y_test):
 
         # Get non-nan classes
         self.classes = np.unique(y_test[~np.isnan(y_test)])
@@ -678,6 +698,19 @@ class Evaluator():
         # Assume in this case that it should be binary, 0 and 1
         if len(self.classes) == 1:
             self.classes = np.array([0, 1])
+
+    def _add_raw_preds(self, X_test, y_test, subjects, eval_type, fold_ind):
+
+        # If return_raw_preds set to false, skip
+        if not self.return_raw_preds:
+            return
+
+        if fold_ind == 'test':
+            fold = 'test'
+            repeat = ''
+        else:
+            fold = str((fold_ind % self.n_splits_) + 1)
+            repeat = str((fold_ind // self.n_splits_) + 1)
 
         try:
             raw_prob_preds = self.model.predict_proba(X_test)
@@ -733,7 +766,10 @@ class Evaluator():
 
     def _init_raw_preds_df(self, subjects):
 
-        self.raw_preds_df = pd.DataFrame(index=subjects)
+        if self.return_raw_preds:
+            self.raw_preds_df = pd.DataFrame(index=subjects)
+        else:
+            self.raw_preds_df = None
 
     def _proc_X_test(self, test_data, fs=True):
 

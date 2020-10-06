@@ -266,6 +266,8 @@ def Evaluate(self,
              CV='default',
              train_subjects='train',
              feat_importances='default',
+             return_raw_preds=False,
+             return_models=False,
              run_name='default'):
     ''' The Evaluate function is one of the main interfaces
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
@@ -445,6 +447,20 @@ def Evaluate(self,
 
             default = Feat_Importance('base')
 
+    return_raw_preds : bool, optional
+        If True, return the raw predictions from each fold.
+
+        ::
+
+            default = False
+
+    return_models : bool, optional
+        If True, return the trained models from each evaluation.
+
+        ::
+
+            default = False
+
     run_name : str or 'default', optional
         Each run of Evaluate can be optionally associated with
         a specific `run_name`. This name
@@ -549,20 +565,22 @@ def Evaluate(self,
 
     # Init. the Model_Pipeline object with modeling params
     self._init_evaluator(model_pipeline, problem_spec,
-                         CV_obj, feat_importances)
+                         CV_obj, feat_importances,
+                         return_raw_preds,
+                         return_models)
 
     # Get the Eval splits
     _, splits_vals, _ = self._get_split_vals(splits)
 
     # Evaluate the model
-    train_scores, scores, raw_preds, FIs =\
+    train_scores, scores, results =\
         self.evaluator.Evaluate(self.all_data, _train_subjects,
                                 splits, n_repeats, splits_vals)
 
-    # Set target and run name
-    for fi in FIs:
-        fi.set_target(problem_spec.target)
-        fi.set_run_name(run_name)
+    if 'FIs' in results:
+        for fi in results['FIs']:
+            fi.set_target(problem_spec.target)
+            fi.set_run_name(run_name)
 
     self._print()
 
@@ -590,11 +608,12 @@ def Evaluate(self,
         else:
             results['train_summary_scores'] = summary_scores
 
+    # Add scores to results
     results['raw_scores'] = score_list
-    results['raw_preds'] = raw_preds
-    results['FIs'] = FIs
 
+    # Saves based on verbose setting
     self._save_results(results, run_name + '.eval')
+
     return results
 
 
@@ -604,6 +623,8 @@ def Test(self,
          train_subjects='train',
          test_subjects='test',
          feat_importances='default',
+         return_raw_preds=False,
+         return_models=False,
          run_name='default'):
     ''' The test function is one of the main interfaces for testing a specific
     :class:`Model_Pipeline`. Test is conceptually different from
@@ -735,6 +756,20 @@ def Test(self,
 
             default = Feat_Importance('base')
 
+    return_raw_preds : bool, optional
+        If True, return the raw predictions from each fold.
+
+        ::
+
+            default = False
+
+    return_models : bool, optional
+        If True, return the trained models from each evaluation.
+
+        ::
+
+            default = False
+
     run_name : str or 'default', optional
         Each run of test can be optionally
         associated with a specific `run_name`. This name
@@ -803,17 +838,20 @@ def Test(self,
 
     # Init the Model_Pipeline object with modeling params
     self._init_evaluator(model_pipeline, problem_spec,
-                         self.CV, feat_importances)
+                         self.CV, feat_importances,
+                         return_raw_preds,
+                         return_models)
 
     # Train the model w/ selected parameters and test on test subjects
-    train_scores, scores, raw_preds, FIs =\
+    train_scores, scores, results =\
         self.evaluator.Test(self.all_data, _train_subjects,
                             _test_subjects)
 
     # Set run name
-    for fi in FIs:
-        fi.set_target(problem_spec.target)
-        fi.set_run_name(run_name)
+    if 'FIs' in results:
+        for fi in results['FIs']:
+            fi.set_target(problem_spec.target)
+            fi.set_run_name(run_name)
 
     # Print out score for all passed scorers
     scorer_strs = self.evaluator.scorer_strs
@@ -856,12 +894,12 @@ def Test(self,
                 self._add_to_scores(run_name, name, scorer_name,
                                     'score', scr, self.test_scores)
 
-    results = {}
+    # Add scores to results
     results['scores'] = score_list
-    results['raw_preds'] = raw_preds
-    results['FIs'] = FIs
 
+    # Save based on default verbosity
     self._save_results(results, run_name + '.test')
+
     return results
 
 
@@ -1109,7 +1147,8 @@ def get_pipeline(self, model_pipeline, problem_spec,
                     verbose=self.default_ML_verbosity['pipeline_verbose'])
 
 
-def _init_evaluator(self, model_pipeline, problem_spec, CV, feat_importances):
+def _init_evaluator(self, model_pipeline, problem_spec, CV, feat_importances,
+                    return_raw_preds, return_models):
 
     # Make copies of the passed problem spec + pipeline
     # and only make changes and pass along the copies
@@ -1131,6 +1170,8 @@ def _init_evaluator(self, model_pipeline, problem_spec, CV, feat_importances):
                   CV=CV,
                   all_keys=self.Data_Scopes.all_keys,
                   feat_importances=feat_importances,
+                  return_raw_preds=return_raw_preds,
+                  return_models=return_models,
                   verbosity=self.default_ML_verbosity,
                   _print=self._ML_print)
 

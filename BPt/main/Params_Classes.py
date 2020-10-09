@@ -1830,7 +1830,7 @@ class Model_Pipeline(Params):
 
 class Problem_Spec(Params):
 
-    def __init__(self, problem_type='regression',
+    def __init__(self, problem_type='default',
                  target=0, scorer='default', weight_scorer=False,
                  scope='all', subjects='all',
                  n_jobs='default',
@@ -1841,20 +1841,28 @@ class Problem_Spec(Params):
 
         Parameters
         ----------
-        problem_type : str, optional
+        problem_type : str or 'default', optional
+            This parameter controls what type of machine learning
+            should be conducted. As either a regression, or classification
+            where 'categorical' represents a special case of binary classification,
+            where typically a binary classifier is trained on each class.
 
-            - 'regression'
+            - 'default'
+                Determine the problem type based on how
+                the requested target variable is loaded.
+
+            - 'regression', 'f' or 'float'
                 For ML on float/continuous target data.
 
-            - 'binary'
+            - 'binary' or 'b'
                 For ML on binary target data.
 
-            - 'categorical'
+            - 'categorical' or 'c'
                 For ML on categorical target data, as multiclass.
 
             ::
 
-                default = 'regression'
+                default = 'default'
 
         target : int or str, optional
             The loaded target in which to use during modelling.
@@ -1984,18 +1992,10 @@ class Problem_Spec(Params):
 
         self.problem_type = problem_type
         self.target = target
-
-        if scorer == 'default':
-            default_scorers = {'regression': 'r2',
-                               'binary': 'roc_auc',
-                               'categorical': 'roc_auc_ovr'}
-            scorer = default_scorers[self.problem_type]
-
         self.scorer = scorer
         self.weight_scorer = weight_scorer
         self.scope = scope
         self.subjects = subjects
-
         self.n_jobs = n_jobs
         self.random_state = random_state
 

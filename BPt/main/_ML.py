@@ -9,12 +9,14 @@ import pickle as pkl
 from tqdm import tqdm, tqdm_notebook
 
 from .Input_Tools import is_value_subset, is_values_subset
-from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
+from ..helpers.Data_Helpers import (get_unique_combo_df,
+                                    reverse_unique_combo_df,
+                                    get_target_type)
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Evaluator import Evaluator
 from ..main.Params_Classes import (Feat_Importance, Model_Pipeline,
-                                   Model, Ensemble)
+                                   Model, Ensemble, Problem_Spec)
 from ..pipeline.Model_Pipeline import get_pipe
 import pandas as pd
 import copy
@@ -260,7 +262,7 @@ def _ML_print(self, *args, **kwargs):
 
 def Evaluate(self,
              model_pipeline,
-             problem_spec,
+             problem_spec='default',
              splits=3,
              n_repeats=2,
              CV='default',
@@ -294,7 +296,7 @@ def Evaluate(self,
         See :class:`Model_Pipeline` for more information /
         how to create a the model pipeline.
 
-    problem_spec : :class:`Problem_Spec`
+    problem_spec : :class:`Problem_Spec` or 'default', optional
 
         `problem_spec` accepts an instance of the BPt.BPt_ML
         params class :class:`Problem_Spec`.
@@ -305,6 +307,13 @@ def Evaluate(self,
         random_state, etc...
         See :class:`Problem_Spec` explicitly for more information
         and for how to create an instance of this object.
+
+        If left as 'default', then will just initialize a
+        Problem_Spec with default params.
+
+        ::
+
+            default = 'default'
 
     splits : int, float, str or list of str, optional
         In every fold of the defined CV strategy, the passed `model_pipeline`
@@ -534,6 +543,10 @@ def Evaluate(self,
 
     # Get the the train subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
+
+    # Check if problem_spec is left as default
+    if problem_spec == 'default':
+        problem_spec = Problem_Spec()
 
     # Proc feat importances
     if feat_importances == 'default':
@@ -971,13 +984,31 @@ def _preproc_problem_spec(self, problem_spec):
 
     # Replace problem_spec type w/ correct if passed short hands
     pt = problem_spec.problem_type
-    if pt == 'b':
+    if pt == 'default':
+
+        # For future multi-label support...
+        if isinstance(target_key, list):
+            pt = 'multilabel'
+        else:
+            pt = get_target_type(self.all_data[target_key])
+
+    elif pt == 'b':
         pt = 'binary'
+
     elif pt == 'c':
         pt = 'categorical'
+
     elif pt == 'f' or pt == 'float':
         pt = 'regression'
+
     problem_spec.problem_type = pt
+
+    # Check for if default scorer
+    if problem_spec.scorer == 'default':
+        default_scorers = {'regression': 'r2',
+                           'binary': 'roc_auc',
+                           'categorical': 'roc_auc_ovr'}
+        problem_spec.scorer = default_scorers[pt]
 
     # Proc subjects to use
     final_subjects = self._get_subjects_to_use(problem_spec.subjects)

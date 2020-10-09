@@ -1064,7 +1064,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
 def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
                  fbs, drop_val, don, add_key=True):
 
-    # If float to binary, recursively call this func with d_type float first
+    # If float to bin, recursively call this func with d_type float first
     if is_f2b(d_type):
         targets = self._proc_target(targets, key,
                                     d_type='float',
@@ -2697,7 +2697,6 @@ def _get_targets_key(self, key, base_key=False):
 
     if isinstance(key, int):
         ind = key
-
     else:
         if key in self.name_map:
             key = self.name_map[key]

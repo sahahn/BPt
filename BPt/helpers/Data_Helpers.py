@@ -765,3 +765,14 @@ def proc_file_input(files, file_to_subject, df, subject_id):
     df.append(files_df)
 
     return df
+
+
+def get_target_type(target_series):
+
+    if target_series.dtype.name == 'category':
+        if len(target_series.dtype.categories) == 2:
+            return 'binary'
+        else:
+            return 'categorical'
+
+    return 'regression'

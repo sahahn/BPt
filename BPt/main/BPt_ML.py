@@ -286,13 +286,7 @@ class BPt_ML():
         # Store default dicts as init empty
         self.default_load_params, self.default_ML_verbosity = {}, {}
 
-        # Scores are saved after each eval or test run
-        self.eval_scores, self.test_scores = {}, {}
-
         self.subject_id = 'src_subject_id'
-
-        self.last_run_name = None
-        self.last_subjects_to_use_names = None
 
         self.file_mapping = {}
         self.data_file_keys = []

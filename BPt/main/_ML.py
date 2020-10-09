@@ -43,6 +43,9 @@ def Set_Default_ML_Verbosity(
         under run_name + .eval, and simmilarly for results
         returned by Test, but as run_name + .test.
 
+        Warning: if using the same run_name will overwrite previous
+        results!
+
         if 'default', and not already defined, set to False.
         (default = 'default')
 
@@ -483,8 +486,7 @@ def Evaluate(self,
     run_name : str or 'default', optional
         Each run of Evaluate can be optionally associated with
         a specific `run_name`. This name
-        is used to save scores in self.eval_scores,
-        and also if `save_results` in
+        is used if `save_results` in
         :func:`Set_Default_ML_Verbosity<BPt_ML.Set_Default_ML_Verbosity>`
         is set to True,
         then will be used as the name output from Evaluate as saved as in
@@ -548,8 +550,7 @@ def Evaluate(self,
     # Should save the params used here*** before any preproc done
     run_name =\
         get_avaliable_run_name(run_name,
-                               model_pipeline.model, self.eval_scores)
-    self.last_run_name = run_name
+                               model_pipeline.model)
 
     # Get the the train subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
@@ -637,6 +638,17 @@ def Evaluate(self,
 
     # Add scores to results
     results['raw_scores'] = score_list
+
+    # Create single scores
+    for scorer_str, sum_scores in zip(self.evaluator.scorer_strs,
+                                      results['summary_scores']):
+        results[scorer_str] = sum_scores[0]
+    
+    if 'train_summary_scores' in results:
+        for scorer_str, sum_scores in zip(self.evaluator.scorer_strs,
+                                          results['train_summary_scores']):
+            results['train_' + scorer_str] = sum_scores[0]
+
 
     # Saves based on verbose setting
     self._save_results(results, run_name + '.eval')
@@ -818,8 +830,7 @@ def Test(self,
     run_name : str or 'default', optional
         Each run of test can be optionally
         associated with a specific `run_name`. This name
-        is used to save scores in self.test_scores,
-        and also if `save_results` in
+        is used if `save_results` in
         :func:`Set_Default_ML_Verbosity<BPt_ML.Set_Default_ML_Verbosity>`
         is set to True,
         then will be used as the name output from Test as saved as in the
@@ -851,9 +862,7 @@ def Test(self,
 
     # Get a free run name
     run_name =\
-        get_avaliable_run_name(run_name, model_pipeline.model,
-                               self.test_scores)
-    self.last_run_name = run_name
+        get_avaliable_run_name(run_name, model_pipeline.model)
 
     # Get the the train subjects + test subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
@@ -937,15 +946,10 @@ def Test(self,
                     self._print('for target class: ', class_name)
                     self._print(name + ' Score: ', score_by_class)
                     self._print()
-                    self._add_to_scores(run_name, name, scorer_name,
-                                        'score', score_by_class,
-                                        self.test_scores, class_name)
 
             else:
                 self._print(name + ' Score: ', scr)
                 self._print()
-                self._add_to_scores(run_name, name, scorer_name,
-                                    'score', scr, self.test_scores)
 
     # Add scores to results
     results['scores'] = score_list
@@ -1331,56 +1335,23 @@ def _handle_scores(self, scores, name, weight_scorer, n_repeats, run_name,
 
 def _print_summary_score(self, name, summary_scores, n_repeats, run_name,
                          scorer_name, class_name=None, weights=None):
-    '''Besides printing, also adds scores to self.eval_scores dict
-    under run name.'''
 
     mn = 'Mean'
     if weights is not None:
         mn = 'Weighted ' + mn
 
     self._print(mn + ' ' + name + ' score: ', summary_scores[0])
-    self._add_to_scores(run_name, name, scorer_name, mn,
-                        summary_scores[0], self.eval_scores,  class_name)
 
     if n_repeats > 1:
         self._print('Micro Std in ' + name + ' score: ',
                     summary_scores[1])
         self._print('Macro Std in ' + name + ' score: ',
                     summary_scores[2])
-        self._add_to_scores(run_name, name, scorer_name, 'Micro Std',
-                            summary_scores[1], self.eval_scores, class_name)
-        self._add_to_scores(run_name, name, scorer_name, 'Macro Std',
-                            summary_scores[2], self.eval_scores, class_name)
     else:
         self._print('Std in ' + name + ' score: ',
                     summary_scores[1])
-        self._add_to_scores(run_name, name, scorer_name, 'Std',
-                            summary_scores[1], self.eval_scores, class_name)
 
     self._print()
-
-
-def _add_to_scores(self, run_name, name, scorer_name, val_type, val, scores,
-                   class_name=None):
-
-    if run_name not in scores:
-        scores[run_name] = {}
-
-    if name not in scores[run_name]:
-        scores[run_name][name] = {}
-
-    if scorer_name not in scores[run_name][name]:
-        scores[run_name][name][scorer_name] = {}
-
-    if class_name is None:
-        scores[run_name][name][scorer_name][val_type] = val
-
-    else:
-        if class_name not in scores[run_name][name][scorer_name]:
-            scores[run_name][name][scorer_name][class_name] = {}
-
-        scores[run_name][name][scorer_name][class_name][val_type] =\
-            val
 
 
 def _save_results(self, results, save_name):

@@ -609,7 +609,7 @@ def replace_model_name(base_estimator_params):
     return new
 
 
-def get_avaliable_run_name(name, model, scores):
+def get_avaliable_run_name(name, model):
 
     if name is None or name == 'default':
 
@@ -624,14 +624,6 @@ def get_avaliable_run_name(name, model, scores):
                 name = 'user passed'
         else:
             name = 'user passed'
-
-    if name in scores:
-
-        n = 0
-        while name + str(n) in scores:
-            n += 1
-
-        name = name + str(n)
 
     return name
 

@@ -498,7 +498,6 @@ class BPt_ML():
                       _init_evaluator,
                       _handle_scores,
                       _print_summary_score,
-                      _add_to_scores,
                       _save_results,
                       get_pipeline)
 

@@ -3,6 +3,7 @@ _ML.py
 ====================================
 Main class extension file for the Machine Learning functionality
 """
+from copy import deepcopy
 import os
 import pickle as pkl
 
@@ -544,10 +545,6 @@ def Evaluate(self,
     # Get the the train subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
 
-    # Check if problem_spec is left as default
-    if problem_spec == 'default':
-        problem_spec = Problem_Spec()
-
     # Proc feat importances
     if feat_importances == 'default':
         feat_importances = Feat_Importance(obj='base')
@@ -558,11 +555,14 @@ def Evaluate(self,
     else:
         CV_obj = self._get_CV(CV)
 
+    # Pre-proc problem spec, set as copy ps, right before print
+    ps = self._preproc_problem_spec(problem_spec)
+
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
 
         model_pipeline.print_all(self._print)
-        problem_spec.print_all(self._print)
+        ps.print_all(self._print)
 
         self._print('Evaluate Params')
         self._print('---------------')
@@ -577,7 +577,7 @@ def Evaluate(self,
         self._print()
 
     # Init. the Model_Pipeline object with modeling params
-    self._init_evaluator(model_pipeline, problem_spec,
+    self._init_evaluator(model_pipeline, ps,
                          CV_obj, feat_importances,
                          return_raw_preds,
                          return_models)
@@ -592,7 +592,7 @@ def Evaluate(self,
 
     if 'FIs' in results:
         for fi in results['FIs']:
-            fi.set_target(problem_spec.target)
+            fi.set_target(ps.target)
             fi.set_run_name(run_name)
 
     self._print()
@@ -611,7 +611,7 @@ def Evaluate(self,
     for scrs, name in zip(score_list, score_type_list):
 
         summary_scores = self._handle_scores(scrs, name,
-                                             problem_spec.weight_scorer,
+                                             ps.weight_scorer,
                                              n_repeats, run_name,
                                              self.evaluator.n_splits_,
                                              summary_dfs)
@@ -632,7 +632,7 @@ def Evaluate(self,
 
 def Test(self,
          model_pipeline,
-         problem_spec,
+         problem_spec='default',
          train_subjects='train',
          test_subjects='test',
          feat_importances='default',
@@ -660,15 +660,24 @@ def Test(self,
         See :class:`Model_Pipeline` for more information / how to
         create a the model pipeline.
 
-    problem_spec : :class:`Problem_Spec`
-        `problem_spec` accepts an instance of the BPt params
-        class :class:`Problem_Spec`.
-        This object is essentially a wrapper around commonly
-        used parameters needs to define the context
-        the model pipeline should be evaluated in. It includes parameters
-        like problem_type, scorer, n_jobs, random_state, etc...
+    problem_spec : :class:`Problem_Spec` or 'default', optional
+
+        `problem_spec` accepts an instance of the BPt.BPt_ML
+        params class :class:`Problem_Spec`.
+        This object is essentially a wrapper around commonly used
+        parameters needs to define the context
+        the model pipeline should be evaluated in.
+        It includes parameters like problem_type, scorer, n_jobs,
+        random_state, etc...
         See :class:`Problem_Spec` explicitly for more information
         and for how to create an instance of this object.
+
+        If left as 'default', then will just initialize a
+        Problem_Spec with default params.
+
+        ::
+
+            default = 'default'
 
     train_subjects : str, array-like or Value_Subset, optional
         This parameter determines the set of training subjects which are
@@ -831,11 +840,14 @@ def Test(self,
     if feat_importances == 'default':
         feat_importances = Feat_Importance(obj='base')
 
+    # Pre-proc problem spec, set as copy ps, right before print
+    ps = self._preproc_problem_spec(problem_spec)
+
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
 
         model_pipeline.print_all(self._print)
-        problem_spec.print_all(self._print)
+        ps.print_all(self._print)
 
         self._print('Test Params')
         self._print('---------------')
@@ -850,7 +862,7 @@ def Test(self,
         self._print()
 
     # Init the Model_Pipeline object with modeling params
-    self._init_evaluator(model_pipeline, problem_spec,
+    self._init_evaluator(model_pipeline, ps,
                          self.CV, feat_importances,
                          return_raw_preds,
                          return_models)
@@ -863,7 +875,7 @@ def Test(self,
     # Set run name
     if 'FIs' in results:
         for fi in results['FIs']:
-            fi.set_target(problem_spec.target)
+            fi.set_target(ps.target)
             fi.set_run_name(run_name)
 
     # Print out score for all passed scorers
@@ -978,12 +990,19 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs):
 
 def _preproc_problem_spec(self, problem_spec):
 
+    # Check if problem_spec is left as default
+    if problem_spec == 'default':
+        problem_spec = Problem_Spec()
+
+    # Set ps to copy of problem spec and init
+    ps = deepcopy(problem_spec)
+
     # Update target with actual target key
-    target_key = self._get_targets_key(problem_spec.target)
-    problem_spec.set_params(target=target_key)
+    target_key = self._get_targets_key(ps.target)
+    ps.set_params(target=target_key)
 
     # Replace problem_spec type w/ correct if passed short hands
-    pt = problem_spec.problem_type
+    pt = ps.problem_type
     if pt == 'default':
 
         # For future multi-label support...
@@ -1001,30 +1020,30 @@ def _preproc_problem_spec(self, problem_spec):
     elif pt == 'f' or pt == 'float':
         pt = 'regression'
 
-    problem_spec.problem_type = pt
+    ps.problem_type = pt
 
     # Check for if default scorer
-    if problem_spec.scorer == 'default':
+    if ps.scorer == 'default':
         default_scorers = {'regression': 'r2',
                            'binary': 'roc_auc',
                            'categorical': 'roc_auc_ovr'}
-        problem_spec.scorer = default_scorers[pt]
+        ps.scorer = default_scorers[pt]
 
     # Proc subjects to use
-    final_subjects = self._get_subjects_to_use(problem_spec.subjects)
-    problem_spec.set_final_subjects(final_subjects)
+    final_subjects = self._get_subjects_to_use(ps.subjects)
+    ps.set_final_subjects(final_subjects)
 
     # Set by class defaults
-    if problem_spec.n_jobs == 'default':
-        problem_spec.n_jobs = self.n_jobs
+    if ps.n_jobs == 'default':
+        ps.n_jobs = self.n_jobs
 
-    if problem_spec.random_state == 'default':
-        problem_spec.random_state = self.random_state
+    if ps.random_state == 'default':
+        ps.random_state = self.random_state
 
     # If any input has changed, manually (i.e., not by problem_spec init)
-    problem_spec._proc_checks()
+    ps._proc_checks()
 
-    return problem_spec
+    return ps
 
 
 def _get_split_vals(self, splits):
@@ -1188,16 +1207,12 @@ def get_pipeline(self, model_pipeline, problem_spec,
                     verbose=self.default_ML_verbosity['pipeline_verbose'])
 
 
-def _init_evaluator(self, model_pipeline, problem_spec, CV, feat_importances,
+def _init_evaluator(self, model_pipeline, ps, CV, feat_importances,
                     return_raw_preds, return_models):
 
-    # Make copies of the passed problem spec + pipeline
+    # Make copies of the passed pipeline
     # and only make changes and pass along the copies
-    ps = copy.deepcopy(problem_spec)
     pipe = copy.deepcopy(model_pipeline)
-
-    # Init problem spec first
-    ps = self._preproc_problem_spec(ps)
 
     # Calling get pipeline performs preproc on model_pipeline
     # and Data_Scopes

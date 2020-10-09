@@ -385,3 +385,11 @@ test_add_scope()
 test_set_roles()
 test_get_cols_from_scope()
 test_filter_outliers()
+
+
+
+
+
+# If the plotting is moved within this dataset class,
+# could likewise move the feature importance plotting within its own class
+# as well!

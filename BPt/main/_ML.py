@@ -43,9 +43,6 @@ def Set_Default_ML_Verbosity(
         under run_name + .eval, and simmilarly for results
         returned by Test, but as run_name + .test.
 
-        Warning: if using the same run_name will overwrite previous
-        results!
-
         if 'default', and not already defined, set to False.
         (default = 'default')
 
@@ -643,12 +640,11 @@ def Evaluate(self,
     for scorer_str, sum_scores in zip(self.evaluator.scorer_strs,
                                       results['summary_scores']):
         results[scorer_str] = sum_scores[0]
-    
+
     if 'train_summary_scores' in results:
         for scorer_str, sum_scores in zip(self.evaluator.scorer_strs,
                                           results['train_summary_scores']):
             results['train_' + scorer_str] = sum_scores[0]
-
 
     # Saves based on verbose setting
     self._save_results(results, run_name + '.eval')
@@ -909,6 +905,8 @@ def Test(self,
         self.evaluator.Test(self.all_data, _train_subjects,
                             _test_subjects)
 
+    results['scores'] = scores
+
     # Set run name
     if 'FIs' in results:
         for fi in results['FIs']:
@@ -923,6 +921,7 @@ def Test(self,
     if self.default_ML_verbosity['compute_train_score']:
         score_list.append(train_scores)
         score_type_list.append('Training')
+        results['train_scores'] = scores
 
     score_list.append(scores)
     score_type_list.append('Testing')
@@ -951,8 +950,12 @@ def Test(self,
                 self._print(name + ' Score: ', scr)
                 self._print()
 
-    # Add scores to results
-    results['scores'] = score_list
+    # Add single scores
+    for i in range(len(scorer_strs)):
+        results[scorer_strs[i]] = scores[i]
+
+        if 'train_scores' in results:
+            results['train_' + scorer_strs[i]] = results['train_scores'][i]
 
     # Save based on default verbosity
     self._save_results(results, run_name + '.test')
@@ -1362,5 +1365,11 @@ def _save_results(self, results, save_name):
         os.makedirs(save_dr, exist_ok=True)
 
         save_spot = os.path.join(save_dr, save_name)
-        with open(save_spot, 'wb') as f:
+
+        append, cnt = '', 0
+        while os.path.exists(save_spot+append):
+            cnt += 1
+            append = str(cnt)
+
+        with open(save_spot+append, 'wb') as f:
             pkl.dump(results, f)

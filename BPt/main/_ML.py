@@ -558,6 +558,9 @@ def Evaluate(self,
     # Pre-proc problem spec, set as copy ps, right before print
     ps = self._preproc_problem_spec(problem_spec)
 
+     # Run checks before print
+    model_pipeline._proc_checks()
+
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:
 
@@ -842,6 +845,9 @@ def Test(self,
 
     # Pre-proc problem spec, set as copy ps, right before print
     ps = self._preproc_problem_spec(problem_spec)
+
+    # Run checks before print
+    model_pipeline._proc_checks()
 
     # Print the params being used
     if self.default_ML_verbosity['show_init_params']:

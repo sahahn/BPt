@@ -1712,13 +1712,50 @@ class Model_Pipeline(Params):
 
     def _proc_checks(self):
 
+        try:
+            self.model = self.models
+        except AttributeError:
+            pass
+
+        try:
+            self.transformers = self.transformer
+        except AttributeError:
+            pass
+
+        try:
+            self.imputers = self.imputer
+        except AttributeError:
+            pass
+
+        try:
+            self.feat_selectors = self.feat_selector
+        except AttributeError:
+            pass
+
+        try:
+            self.scalers = self.scaler
+        except AttributeError:
+            pass
+
+        try:
+            self.loaders = self.loader
+        except AttributeError:
+            pass
+
+        to_check = ['ensemble', 'scorer', 'metric',
+                    'feature_selector', 'feature_selectors']
+        for p in to_check:
+            if hasattr(self, p):
+                print('Warning: Model_Pipeline user set param', p,
+                      ' was set,',
+                      'but will have no effect as it is not a valid parameter!')
+
         # Check for duplicate scopes
         self._proc_all_pieces(self._proc_duplicates)
 
         # Proc input
         self._proc_all_pieces(self._proc_input)
         proc_all(self.param_search)
-
 
         # Double check input args in case something changed
         self._proc_all_pieces(self._check_args)
@@ -1727,6 +1764,7 @@ class Model_Pipeline(Params):
         if self.param_search is not None:
             self.param_search.check_args()
 
+        
     def set_n_jobs(self, n_jobs):
 
         if self.n_jobs == 'default':

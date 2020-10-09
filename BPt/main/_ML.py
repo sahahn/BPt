@@ -969,6 +969,16 @@ def _preproc_problem_spec(self, problem_spec):
     target_key = self._get_targets_key(problem_spec.target)
     problem_spec.set_params(target=target_key)
 
+    # Replace problem_spec type w/ correct if passed short hands
+    pt = problem_spec.problem_type
+    if pt == 'b':
+        pt = 'binary'
+    elif pt == 'c':
+        pt = 'categorical'
+    elif pt == 'f' or pt == 'float':
+        pt = 'regression'
+    problem_spec.problem_type = pt
+
     # Proc subjects to use
     final_subjects = self._get_subjects_to_use(problem_spec.subjects)
     problem_spec.set_final_subjects(final_subjects)

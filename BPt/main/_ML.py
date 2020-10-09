@@ -268,7 +268,7 @@ def Evaluate(self,
              n_repeats=2,
              CV='default',
              train_subjects='train',
-             feat_importances='default',
+             feat_importances=None,
              return_raw_preds=False,
              return_models=False,
              run_name='default'):
@@ -437,8 +437,17 @@ def Evaluate(self,
 
             default = 'train'
 
-    feat_importances : :class:`Feat_Importance` list of or None, optional
-        Provide here either a single, or list of
+    feat_importances : :class:`Feat_Importance` list of, str or None, optional
+
+        If passed None, by default, no feature importances will be saved.
+
+        Alternatively, one may pass the keyword 'base', to indicate that
+        the base feature importances - those automatically calculated
+        by base objects (e.g., beta weights from linear models) be
+        saved. In this case, the object Feat_Importance('base') will be made.
+
+        Otherwise, for more detailed control provide here either
+        a single, or list of
         :class:`Feat_Importance` param objects
         in which to specify what importance values, and with what
         settings should be computed.
@@ -455,7 +464,7 @@ def Evaluate(self,
 
         ::
 
-            default = Feat_Importance('base')
+            default = None
 
     return_raw_preds : bool, optional
         If True, return the raw predictions from each fold.
@@ -546,8 +555,10 @@ def Evaluate(self,
     _train_subjects = self._get_subjects_to_use(train_subjects)
 
     # Proc feat importances
-    if feat_importances == 'default':
+    if feat_importances == 'base':
         feat_importances = Feat_Importance(obj='base')
+    elif feat_importances == 'default':
+        raise RuntimeError('feat_importaces == default is depreciated')
 
     # Proc. CV
     if CV == 'default':
@@ -558,7 +569,7 @@ def Evaluate(self,
     # Pre-proc problem spec, set as copy ps, right before print
     ps = self._preproc_problem_spec(problem_spec)
 
-     # Run checks before print
+    # Run checks before print
     model_pipeline._proc_checks()
 
     # Print the params being used
@@ -638,7 +649,7 @@ def Test(self,
          problem_spec='default',
          train_subjects='train',
          test_subjects='test',
-         feat_importances='default',
+         feat_importances=None,
          return_raw_preds=False,
          return_models=False,
          run_name='default'):
@@ -761,17 +772,26 @@ def Test(self,
 
             default = 'test'
 
-    feat_importances : :class:`Feat_Importance` list of or None, optional
-        Provide here either a single, or list of :class:`Feat_Importance`
-        param objects
-        in which to specify what importance values, and with what settings
-        should be computed.
+    feat_importances : :class:`Feat_Importance` list of, str or None, optional
+
+        If passed None, by default, no feature importances will be saved.
+
+        Alternatively, one may pass the keyword 'base', to indicate that
+        the base feature importances - those automatically calculated
+        by base objects (e.g., beta weights from linear models) be
+        saved. In this case, the object Feat_Importance('base') will be made.
+
+        Otherwise, for more detailed control provide here either
+        a single, or list of
+        :class:`Feat_Importance` param objects
+        in which to specify what importance values, and with what
+        settings should be computed.
         See the base :class:`Feat_Importance` object for more information
         on how to specify
         these objects.
 
-        See :ref:`Feat Importances` to learn more about feature
-        importances generally.
+        See :ref:`Feat Importances` to learn more about feature importances
+        generally.
 
         In this case of a passed list, all passed Feat_Importances
         will attempt to be
@@ -779,7 +799,7 @@ def Test(self,
 
         ::
 
-            default = Feat_Importance('base')
+            default = None
 
     return_raw_preds : bool, optional
         If True, return the raw predictions from each fold.
@@ -840,8 +860,10 @@ def Test(self,
     _test_subjects = self._get_subjects_to_use(test_subjects)
 
     # Proc feat importances
-    if feat_importances == 'default':
+    if feat_importances == 'base':
         feat_importances = Feat_Importance(obj='base')
+    elif feat_importances == 'default':
+        raise RuntimeError('feat_importaces == default is depreciated')
 
     # Pre-proc problem spec, set as copy ps, right before print
     ps = self._preproc_problem_spec(problem_spec)

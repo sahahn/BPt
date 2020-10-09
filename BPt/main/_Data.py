@@ -1046,9 +1046,6 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
             self._proc_target(targets, key, d_type,
                               fop, fos, cdp, fb, fbs,
                               drop_val, load_params['drop_or_na'])
-
-        self._print(10)
-
     self._print()
 
     # Drop rows set to drop

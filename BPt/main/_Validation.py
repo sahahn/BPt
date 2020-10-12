@@ -106,7 +106,6 @@ def _get_CV(self, CV_params, show=False, show_original=True):
 
     else:
         cv = CV()
-        self._print('No params passed, CV set to random.')
 
     return cv
 
@@ -408,6 +407,8 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only,
         chunk = 'group preserving'
     elif v_type == 'stratify':
         chunk = 'stratifying behavior'
+    else:
+        chunk = 'error'
 
     if len(train_only) > 0:
         self._print(len(train_only), 'Train only subjects defined.')

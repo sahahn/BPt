@@ -617,7 +617,6 @@ def Evaluate(self,
         score_list = [scores]
         score_type_list = ['Validation']
 
-    results = {}
     summary_dfs = {}
 
     for scrs, name in zip(score_list, score_type_list):

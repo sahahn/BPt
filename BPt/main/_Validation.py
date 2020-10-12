@@ -10,7 +10,7 @@ import os
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 
 
-def _get_CV(self, CV_params, show=False, show_original=True):
+def _get_CV(self, CV_params, show=False, show_original=True, return_df=False):
 
     from ..helpers.CV import CV
 
@@ -61,8 +61,9 @@ def _get_CV(self, CV_params, show=False, show_original=True):
         cv = CV(groups=grp, train_only=train_only)
 
         if show:
-            self._get_info_on(cv.groups, groups, 'groups', l_e,
-                              train_only)
+            # Note, groups has no return df, will set to None
+            df = self._get_info_on(cv.groups, groups, 'groups', l_e,
+                                   train_only)
 
     elif stratify is not None:
 
@@ -96,23 +97,29 @@ def _get_CV(self, CV_params, show=False, show_original=True):
 
         # Optional if show
         if show:
-            self._get_info_on(cv.stratify, to_stratify, 'stratify', l_e,
-                              train_only, show_original)
+            df = self._get_info_on(cv.stratify, to_stratify, 'stratify', l_e,
+                                   train_only, show_original,
+                                   return_df=return_df)
 
     # If only train only
     elif len(train_only) > 0:
         cv = CV(train_only=train_only)
         self._print(len(train_only), 'Train only subjects defined.')
+        df = None
 
     else:
         cv = CV()
+        df = None
+
+    if return_df:
+        return cv, df
 
     return cv
 
 
 def Define_Validation_Strategy(self, groups=None, stratify=None,
                                train_only_loc=None, train_only_subjects=None,
-                               show=True, show_original=True):
+                               show=True, show_original=True, return_df=False):
     '''Define a validation strategy to be used during different train/test
     splits, in addition to model selection and model hyperparameter CV.
     See Notes for more info.
@@ -197,6 +204,15 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
 
         (default = True)
 
+    return_df : bool, optional
+
+        If set to true, then will return as dataframe version of
+        the defined validation strategy. Note: this will return
+        None in all cases execpt for when stratifying by a variable
+        is requested!
+
+        (default = False)
+
     Notes
     ----------
     Validation strategy choices are explained in more detail:
@@ -235,7 +251,12 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
                    train_only_loc=train_only_loc,
                    train_only_subjects=train_only_subjects)
 
-    self.CV = self._get_CV(passed_CV, show=show, show_original=show_original)
+    self.CV, df = self._get_CV(passed_CV, show=show,
+                               show_original=show_original,
+                               return_df=return_df)
+
+    if return_df:
+        return df
 
 
 def Train_Test_Split(self, test_size=None,
@@ -401,7 +422,7 @@ def _add_strat_u_name(self, in_vals):
 
 
 def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only,
-                 show_original=True):
+                 show_original=True, return_df=False):
 
     if v_type == 'groups':
         chunk = 'group preserving'
@@ -464,3 +485,10 @@ def _get_info_on(self, all_vals, col_names, v_type, l_e, train_only,
 
         display_df['Counts'] = counts
         self._display_df(display_df)
+
+        # If return_df and strat, return display_df
+        if return_df:
+            return display_df
+
+    # All other cases, return None
+    return None

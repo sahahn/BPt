@@ -66,7 +66,7 @@ AVALIABLE = {
         'random forest':      'random forest regressor',
         'gp':                 'gp regressor',
         'svm':                'svm regressor',
-        'svr':                'svr regressor',
+        'svr':                'svm regressor',
         'linear svm':         'linear svm regressor',
         'linear svr':         'linear svm regressor',
         'mlp':                'mlp regressor',

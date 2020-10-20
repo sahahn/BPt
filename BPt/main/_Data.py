@@ -868,8 +868,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         - 'auto' or 'a'
             This specifies that the type should be automatically inferred.
             Current inference rules are: if 2 unique non-nan categories then
-            binary, if between 3 to 14 unique non-categories, then categorical,
-            everything else float.
+            binary, if pandas datatype category, then categorical, otherwise float.
 
         Datatypes are explained further in Notes.
 

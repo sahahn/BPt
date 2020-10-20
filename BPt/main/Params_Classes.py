@@ -21,6 +21,10 @@ def clone(estimator, *, safe=True):
         If safe is false, clone will fall back to a deep copy on objects
         that are not estimators.
     """
+
+    if estimator is None:
+        return None
+
     estimator_type = type(estimator)
     # XXX: not handling dictionaries
     if estimator_type in (list, tuple, set, frozenset):

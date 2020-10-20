@@ -9,6 +9,7 @@ from .Scorers import process_scorers
 from copy import deepcopy
 from os.path import dirname, abspath, exists
 from ..helpers.VARS import ORDERED_NAMES
+from sklearn.base import clone
 
 
 class Evaluator():
@@ -21,7 +22,7 @@ class Evaluator():
                  verbosity, _print=print):
 
         # Save passed params
-        self.model_ = model
+        self.model = model
         self.ps = problem_spec
         self.CV = CV
         self.all_keys = all_keys
@@ -345,10 +346,10 @@ class Evaluator():
 
     def _get_base_fitted_pipeline(self):
 
-        if hasattr(self.model, 'name') and self.model.name == 'nevergrad':
-            return self.model.best_estimator_
+        if hasattr(self.model_, 'name') and self.model_.name == 'nevergrad':
+            return self.model_.best_estimator_
 
-        return self.model
+        return self.model_
 
     def _get_base_fitted_model(self):
 
@@ -552,12 +553,12 @@ class Evaluator():
         X, y = self._get_X_y(train_data)
 
         # Fit the model
-        self.model = deepcopy(self.model_)
-        self.model.fit(X, y, train_data_index=train_data.index)
+        self.model_ = clone(self.model)
+        self.model_.fit(X, y, train_data_index=train_data.index)
 
         # If return models, save model
         if self.return_models:
-            self.models.append(self.model)
+            self.models.append(self.model_)
 
         # If a search object, try to print best score
         try:
@@ -576,51 +577,28 @@ class Evaluator():
     def _show_best_score(self):
 
         try:
-            name = self.model.name
+            name = self.model_.name
             if name != 'nevergrad':
                 return None
         except AttributeError:
             return None
 
         self._print('Best Params Score:',
-                    self.model.best_search_score, level='cv_score')
+                    self.model_.best_search_score, level='cv_score')
 
     def _show_best_params(self):
 
         try:
-            name = self.model.name
+            name = self.model_.name
             if name != 'nevergrad':
                 return None
         except AttributeError:
             return None
 
         self._print('Params Selected by Pipeline:', level='params')
-        self._print(self.model.best_params_, level='params')
+        self._print(self.model_.best_params_, level='params')
 
         return None
-
-        for params, name in zip(self.model.all_params, ORDERED_NAMES):
-
-            if len(params) > 0:
-
-                to_show = []
-                all_ps = self.model.best_estimator_.get_params()
-
-                params, to_show = self._get_all_params(params, all_ps, to_show)
-
-                for p in params:
-                    ud = params[p]
-
-                    if type_check(ud):
-                        to_show.append(p + ': ' + str(all_ps[p]))
-
-                if len(to_show) > 0:
-                    self._print(name, level='params')
-
-                    for show in to_show:
-                        self._print(show, level='params')
-
-                    self._print('', level='params')
 
     def _get_all_params(self, params, all_ps, to_show):
 
@@ -682,7 +660,7 @@ class Evaluator():
         non_nan_mask = ~np.isnan(y_test)
 
         # Get the scores
-        scores = [scorer(self.model,
+        scores = [scorer(self.model_,
                          X_test[non_nan_mask],
                          y_test[non_nan_mask])
                   for scorer in self.scorers]
@@ -713,7 +691,7 @@ class Evaluator():
             repeat = str((fold_ind // self.n_splits_) + 1)
 
         try:
-            raw_prob_preds = self.model.predict_proba(X_test)
+            raw_prob_preds = self.model_.predict_proba(X_test)
             pred_col = eval_type + repeat + '_prob'
 
             if len(np.shape(raw_prob_preds)) == 3:
@@ -736,7 +714,7 @@ class Evaluator():
         except AttributeError:
             pass
 
-        raw_preds = self.model.predict(X_test)
+        raw_preds = self.model_.predict(X_test)
         pred_col = eval_type + repeat
 
         if len(np.shape(raw_preds)) == 2:

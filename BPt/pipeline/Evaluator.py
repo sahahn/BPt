@@ -3,13 +3,70 @@ import pandas as pd
 import numpy as np
 import time
 
-from ..helpers.ML_Helpers import conv_to_list, type_check
+from ..helpers.ML_Helpers import conv_to_list
 from .Feat_Importances import get_feat_importances_and_params
 from .Scorers import process_scorers
 from copy import deepcopy
 from os.path import dirname, abspath, exists
-from ..helpers.VARS import ORDERED_NAMES
-from sklearn.base import clone
+import copy
+
+
+def clone(estimator, *, safe=True):
+    """Constructs a new estimator with the same parameters.
+    Clone does a deep copy of the model in an estimator
+    without actually copying attached data. It yields a new estimator
+    with the same parameters that has not been fit on any data.
+    Parameters
+    ----------
+    estimator : {list, tuple, set} of estimator objects or estimator object
+        The estimator or group of estimators to be cloned.
+    safe : bool, default=True
+        If safe is false, clone will fall back to a deep copy on objects
+        that are not estimators.
+    """
+    estimator_type = type(estimator)
+    # XXX: not handling dictionaries
+    if estimator_type in (list, tuple, set, frozenset):
+        return estimator_type([clone(e, safe=safe) for e in estimator])
+    elif not hasattr(estimator, 'get_params') or isinstance(estimator, type):
+        if not safe:
+            return copy.deepcopy(estimator)
+        else:
+            if isinstance(estimator, type):
+                raise TypeError("Cannot clone object. " +
+                                "You should provide an instance of " +
+                                "scikit-learn estimator instead of a class.")
+            else:
+                raise TypeError("Cannot clone object '%s' (type %s): "
+                                "it does not seem to be a scikit-learn "
+                                "estimator as it does not implement a "
+                                "'get_params' method."
+                                % (repr(estimator), type(estimator)))
+
+    klass = estimator.__class__
+    new_object_params = estimator.get_params(deep=False)
+    for name, param in new_object_params.items():
+
+        try:
+            new_object_params[name] = clone(param, safe=False)
+
+        # In the case of type error, and executor param, just pass along
+        except TypeError:
+            if name == 'executor':
+                new_object_params[name] = param
+
+    new_object = klass(**new_object_params)
+    params_set = new_object.get_params(deep=False)
+
+    # quick sanity check of the parameters of the clone
+    for name in new_object_params:
+        param1 = new_object_params[name]
+        param2 = params_set[name]
+        if param1 is not param2:
+            raise RuntimeError('Cannot clone object %s, as the constructor '
+                               'either does not set or modifies parameter %s' %
+                               (estimator, name))
+    return new_object
 
 
 class Evaluator():

@@ -13,6 +13,7 @@ from ..helpers.ML_Helpers import get_possible_fit_params
 
 from os.path import dirname, abspath, exists
 from sklearn.base import BaseEstimator
+import warnings
 
 
 class ProgressLogger():
@@ -28,6 +29,37 @@ class ProgressLogger():
 
         with open(self.loc, 'a') as f:
             f.write('params,')
+
+
+def ng_cv_score(X, y, estimator, scoring, weight_scorer,
+                cv_inds, cv_subjects, fit_params, **kwargs):
+
+    cv_scores = []
+    for i in range(len(cv_inds)):
+        tr_inds, test_inds = cv_inds[i]
+
+        # Clone estimator & set search params
+        estimator = clone(estimator)
+        estimator.set_params(**kwargs)
+
+        # Add this folds train_data_index to fit_params, if valid
+        if 'train_data_index' in get_possible_fit_params(estimator):
+            fit_params['train_data_index'] = cv_subjects[i][0]
+
+        # Fit estimator on train
+        estimator.fit(X[tr_inds], y[tr_inds], **deepcopy(fit_params))
+
+        # Get the score, but scoring return high values as better,
+        # so flip sign
+        score = -scoring(estimator, X[test_inds], y[test_inds])
+        cv_scores.append(score)
+
+    if weight_scorer:
+        weights = [len(cv_inds[i][1]) for i
+                   in range(len(cv_inds))]
+        return np.average(cv_scores, weights=weights)
+    else:
+        return np.mean(cv_scores)
 
 
 class NevergradSearchCV(BaseEstimator):
@@ -51,6 +83,36 @@ class NevergradSearchCV(BaseEstimator):
         self.executor = executor
         self.progress_loc = progress_loc
         self.verbose = verbose
+
+    def get_params(self, deep=True):
+        """
+        Get parameters for this estimator.
+        Parameters
+        ----------
+        deep : bool, default=True
+            If True, will return the parameters for this estimator and
+            contained subobjects that are estimators.
+        Returns
+        -------
+        params : mapping of string to any
+            Parameter names mapped to their values.
+        """
+        out = dict()
+        for key in self._get_param_names():
+            try:
+                value = getattr(self, key)
+            except AttributeError:
+                warnings.warn('From version 0.24, get_params will raise an '
+                              'AttributeError if a parameter cannot be '
+                              'retrieved as an instance attribute. Previously '
+                              'it would return None.',
+                              FutureWarning)
+                value = None
+            if deep and hasattr(value, 'get_params'):
+                deep_items = value.get_params().items()
+                out.update((key + '__' + k, val) for k, val in deep_items)
+            out[key] = value
+        return out
 
     @property
     def _estimator_type(self):
@@ -116,7 +178,10 @@ class NevergradSearchCV(BaseEstimator):
 
         # Fit the nevergrad optimizer
         instrumentation =\
-            ng.p.Instrumentation(X, y, fit_params, **self.param_distributions)
+            ng.p.Instrumentation(X, y, self.estimator, self.scoring,
+                                 self.weight_scorer, self.cv_inds,
+                                 self.cv_subjects,
+                                 fit_params, **self.param_distributions)
 
         try:
             opt = ng.optimizers.registry[self.param_search.search_type]
@@ -146,11 +211,11 @@ class NevergradSearchCV(BaseEstimator):
             optimizer.register_callback('tell', logger)
 
         if self.param_search.n_jobs == 1:
-            recommendation = optimizer.minimize(self.ng_cv_score,
+            recommendation = optimizer.minimize(ng_cv_score,
                                                 batch_mode=False)
 
         elif self.executor is not None:
-            recommendation = optimizer.minimize(self.ng_cv_score,
+            recommendation = optimizer.minimize(ng_cv_score,
                                                 executor=self.executor,
                                                 batch_mode=False)
 
@@ -160,7 +225,7 @@ class NevergradSearchCV(BaseEstimator):
                   max_workers=self.param_search.n_jobs,
                   mp_context=mp.get_context(self.param_search.mp_context)) as ex:
 
-                    recommendation = optimizer.minimize(self.ng_cv_score,
+                    recommendation = optimizer.minimize(ng_cv_score,
                                                         executor=ex,
                                                         batch_mode=False)
             except RuntimeError:

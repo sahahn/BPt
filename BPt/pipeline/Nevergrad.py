@@ -215,8 +215,10 @@ class NevergradSearchCV(BaseEstimator):
                                                 batch_mode=False)
 
         elif self.executor is not None:
+            from dask.distributed import Client
+            client = Client(self.executor)
             recommendation = optimizer.minimize(ng_cv_score,
-                                                executor=self.executor,
+                                                executor=client,
                                                 batch_mode=False)
 
         else:

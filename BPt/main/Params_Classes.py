@@ -1619,6 +1619,9 @@ class Model_Pipeline(Params):
         # more then once, these are essentially checks on the input
         self._proc_checks()
 
+        # Check for duplicate scopes only on init
+        self._proc_all_pieces(self._proc_duplicates)
+
     def _proc_all_pieces(self, func):
         '''Helper to proc all pieces with a function
         that accepts a list of pieces'''
@@ -2037,9 +2040,7 @@ class Problem_Spec(Params):
         self._final_subjects = None
 
         self._proc_checks()
-        
-        # Check for duplicate scopes only on init
-        self._proc_all_pieces(self._proc_duplicates)
+
 
     def _proc_checks(self):
         proc_all(self)

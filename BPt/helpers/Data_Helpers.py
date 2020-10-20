@@ -19,13 +19,19 @@ from ..helpers.Data_File import load_data_file_proxies
 def auto_data_type(col):
     '''Assumes passed non nan data'''
 
+    # First check for binary / categorical by unique num columns
     n_unique = len(col.unique())
     if n_unique == 2:
         return 'binary'
     elif n_unique < 15:
         return 'categorical'
-    else:
-        return 'float'
+
+    # If loaded as category data-type
+    if col.dtype.name == 'category':
+        return 'categorical'
+
+    # All else, float
+    return 'float'
 
 
 def get_non_drop(data, key, drop_val):

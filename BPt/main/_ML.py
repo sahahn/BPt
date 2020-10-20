@@ -271,6 +271,7 @@ def Evaluate(self,
              feat_importances=None,
              return_raw_preds=False,
              return_models=False,
+             executor=None,
              run_name='default'):
     ''' The Evaluate function is one of the main interfaces
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
@@ -480,6 +481,14 @@ def Evaluate(self,
 
             default = False
 
+    executor : async future-like or None, optional
+        This should be an Executor-like object, for example
+        via dask.distributed for advanced hyper-parameter tuning options.
+
+        ::
+
+            default = None
+
     run_name : str or 'default', optional
         Each run of Evaluate can be optionally associated with
         a specific `run_name`. This name
@@ -588,11 +597,15 @@ def Evaluate(self,
         self._print('run_name =', run_name)
         self._print()
 
-    # Init. the Model_Pipeline object with modeling params
-    self._init_evaluator(model_pipeline, ps,
-                         CV_obj, feat_importances,
-                         return_raw_preds,
-                         return_models)
+    # Init the Model_Pipeline object with modeling params
+    self._init_evaluator(
+        model_pipeline=model_pipeline,
+        ps=ps,
+        executor=executor,
+        CV=CV_obj,
+        feat_importances=feat_importances,
+        return_raw_preds=return_raw_preds,
+        return_models=return_models)
 
     # Get the Eval splits
     _, splits_vals, _ = self._get_split_vals(splits)
@@ -659,6 +672,7 @@ def Test(self,
          feat_importances=None,
          return_raw_preds=False,
          return_models=False,
+         executor=None,
          run_name='default'):
     ''' The test function is one of the main interfaces for testing a specific
     :class:`Model_Pipeline`. Test is conceptually different from
@@ -822,6 +836,14 @@ def Test(self,
 
             default = False
 
+    executor : async future-like or None, optional
+        This should be an Executor-like object, for example
+        via dask.distributed for advanced hyper-parameter tuning options.
+
+        ::
+
+            default = None
+
     run_name : str or 'default', optional
         Each run of test can be optionally
         associated with a specific `run_name`. This name
@@ -894,10 +916,14 @@ def Test(self,
         self._print()
 
     # Init the Model_Pipeline object with modeling params
-    self._init_evaluator(model_pipeline, ps,
-                         self.CV, feat_importances,
-                         return_raw_preds,
-                         return_models)
+    self._init_evaluator(
+        model_pipeline=model_pipeline,
+        ps=ps,
+        executor=executor,
+        CV=self.CV,
+        feat_importances=feat_importances,
+        return_raw_preds=return_raw_preds,
+        return_models=return_models)
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, results =\
@@ -1159,7 +1185,7 @@ def _get_subjects_to_use(self, subjects_to_use):
 
 
 def get_pipeline(self, model_pipeline, problem_spec,
-                 progress_loc=None, has_search=False):
+                 executor=None, progress_loc=None, has_search=False):
 
     # If has search is False, means this is the top level
     # or the top level didnt have a search
@@ -1171,12 +1197,17 @@ def get_pipeline(self, model_pipeline, problem_spec,
 
     # If either this set of model_pipeline params or the parent
     # params had search params, then a copy of problem spec with n_jobs set
-    # to 1 should be passed to children get pipelines
+    # to 1 should be passed to children get pipelines,
+    # Likewise, nested_executor should be set to None
+    # but if doesn't have search, then should set nested executor as
+    # the passed param.
     if has_search:
         nested_ps = copy.deepcopy(problem_spec)
         nested_ps.n_jobs = 1
+        nested_executor = None
     else:
         nested_ps = problem_spec
+        nested_executor = executor
 
     def nested_check(piece_name):
 
@@ -1189,7 +1220,8 @@ def get_pipeline(self, model_pipeline, problem_spec,
                         if isinstance(piece[i].base_model.obj, Model_Pipeline):
                             piece[i].base_model.obj = self.get_pipeline(
                                 piece[i].base_model.obj, nested_ps,
-                                progress_loc=None,
+                                executor=nested_executor,
+                                progress_loc=progress_loc,
                                 has_search=has_search)
 
             elif hasattr(piece, 'base_model'):
@@ -1197,7 +1229,8 @@ def get_pipeline(self, model_pipeline, problem_spec,
                     if isinstance(piece.base_model.obj, Model_Pipeline):
                         piece.base_model.obj = self.get_pipeline(
                                 piece.base_model.obj, nested_ps,
-                                progress_loc=None,
+                                executor=nested_executor,
+                                progress_loc=progress_loc,
                                 has_search=has_search)
 
             elif hasattr(piece, 'models'):
@@ -1206,7 +1239,8 @@ def get_pipeline(self, model_pipeline, problem_spec,
                         if isinstance(piece.models[i].obj, Model_Pipeline):
                             piece.models[i].obj = self.get_pipeline(
                                 piece.models[i].obj, nested_ps,
-                                progress_loc=None,
+                                executor=nested_executor,
+                                progress_loc=progress_loc,
                                 has_search=has_search)
 
             setattr(model_pipeline, piece_name, piece)
@@ -1217,7 +1251,8 @@ def get_pipeline(self, model_pipeline, problem_spec,
             model_pipeline.model.obj =\
                 self.get_pipeline(model_pipeline.model.obj,
                                   nested_ps,
-                                  progress_loc=None,
+                                  executor=nested_executor,
+                                  progress_loc=progress_loc,
                                   has_search=has_search)
 
     elif isinstance(model_pipeline.model, Ensemble):
@@ -1238,11 +1273,12 @@ def get_pipeline(self, model_pipeline, problem_spec,
                     problem_spec=problem_spec,
                     Data_Scopes=self.Data_Scopes,
                     progress_loc=progress_loc,
+                    executor=executor,
                     verbose=self.default_ML_verbosity['pipeline_verbose'])
 
 
-def _init_evaluator(self, model_pipeline, ps, CV, feat_importances,
-                    return_raw_preds, return_models):
+def _init_evaluator(self, model_pipeline, ps, executor,
+                    CV, feat_importances, return_raw_preds, return_models):
 
     # Make copies of the passed pipeline
     # and only make changes and pass along the copies
@@ -1250,8 +1286,10 @@ def _init_evaluator(self, model_pipeline, ps, CV, feat_importances,
 
     # Calling get pipeline performs preproc on model_pipeline
     # and Data_Scopes
-    model = self.get_pipeline(pipe, ps,
-                              self.default_ML_verbosity['progress_loc'])
+    model = self.get_pipeline(
+        pipe, ps,
+        executor=executor,
+        progress_loc=self.default_ML_verbosity['progress_loc'])
 
     # Set the evaluator obj
     self.evaluator =\

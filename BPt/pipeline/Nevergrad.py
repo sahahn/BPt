@@ -39,7 +39,8 @@ class NevergradSearchCV(BaseEstimator):
     def __init__(self, estimator=None, param_search=None,
                  param_distributions=None,
                  scoring=None, weight_scorer=False,
-                 random_state=None, progress_loc=None, verbose=False):
+                 random_state=None, executor=None,
+                 progress_loc=None, verbose=False):
 
         self.param_search = param_search
         self.estimator = estimator
@@ -47,6 +48,7 @@ class NevergradSearchCV(BaseEstimator):
         self.scoring = scoring
         self.weight_scorer = weight_scorer
         self.random_state = random_state
+        self.executor = executor
         self.progress_loc = progress_loc
         self.verbose = verbose
 
@@ -61,10 +63,12 @@ class NevergradSearchCV(BaseEstimator):
             self.param_search.CV = Base_CV()
 
         self.cv_subjects, self.cv_inds =\
-            self.param_search.CV.get_cv(train_data_index, self.param_search.splits,
-                                  self.param_search.n_repeats,
-                                  self.param_search._splits_vals, self.random_state,
-                                  return_index='both')
+            self.param_search.CV.get_cv(train_data_index,
+                                        self.param_search.splits,
+                                        self.param_search.n_repeats,
+                                        self.param_search._splits_vals,
+                                        self.random_state,
+                                        return_index='both')
 
     def ng_cv_score(self, X, y, fit_params, **kwargs):
 
@@ -143,6 +147,11 @@ class NevergradSearchCV(BaseEstimator):
 
         if self.param_search.n_jobs == 1:
             recommendation = optimizer.minimize(self.ng_cv_score,
+                                                batch_mode=False)
+
+        elif self.executor is not None:
+            recommendation = optimizer.minimize(self.ng_cv_score,
+                                                executor=self.executor,
                                                 batch_mode=False)
 
         else:

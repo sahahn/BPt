@@ -28,6 +28,10 @@ def auto_data_type(col):
     if col.dtype.name == 'category':
         return 'categorical'
 
+    # If object dtype and less then 30 unique categories
+    elif col.dtype.name == 'object' and n_unique < 30:
+        return 'categorical'
+
     # All else, float
     return 'float'
 

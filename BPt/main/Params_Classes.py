@@ -1642,6 +1642,8 @@ class Model_Pipeline(Params):
 
     def _proc_duplicates(self, params):
 
+        print(params)
+
         if isinstance(params, list):
             new_params = deepcopy(params)
             del new_params[:]

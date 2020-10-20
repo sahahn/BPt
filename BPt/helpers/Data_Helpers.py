@@ -16,6 +16,18 @@ import pandas as pd
 from ..helpers.Data_File import load_data_file_proxies
 
 
+def auto_data_type(col):
+    '''Assumes passed non nan data'''
+
+    n_unique = len(col.unique())
+    if n_unique == 2:
+        return 'binary'
+    elif n_unique < 15:
+        return 'categorical'
+    else:
+        return 'float'
+
+
 def get_non_drop(data, key, drop_val):
 
     # If drop_val np.nan, means treating dropped as missing value

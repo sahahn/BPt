@@ -11,7 +11,8 @@ from joblib import wrap_non_picklable_objects
 from ..helpers.VARS import is_f2b
 from ..helpers.Data_Scopes import Data_Scopes
 from ..helpers.Data_File import Data_File
-from ..helpers.Data_Helpers import (process_binary_input,
+from ..helpers.Data_Helpers import (auto_data_type,
+                                    process_binary_input,
                                     process_ordinal_input,
                                     process_float_input,
                                     process_multilabel_input,
@@ -841,7 +842,7 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
         Note: Must be in the same order as data types passed in.
         (default = None)
 
-    data_type : {'b', 'c', 'f', 'f2c'}, optional
+    data_type : {'b', 'c', 'f', 'f2c', 'a'}, optional
         The data types of the different columns to load,
         in the same order as the column names passed in.
         Shorthands for datatypes can be used as well.
@@ -863,6 +864,12 @@ def Load_Targets(self, loc=None, df=None, col_name=None, data_type=None,
             This specifies that the data should be loaded
             initially as float, then descritized to be a binned
             categorical feature.
+
+        - 'auto' or 'a'
+            This specifies that the type should be automatically inferred.
+            Current inference rules are: if 2 unique non-nan categories then
+            binary, if between 3 to 14 unique non-categories, then categorical,
+            everything else float.
 
         Datatypes are explained further in Notes.
 
@@ -1084,6 +1091,10 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
     non_nan_subjects = targets[(~targets[key].isna()) &
                                (targets[key] != drop_val)].index
     non_nan_targets = targets.loc[non_nan_subjects]
+
+    # Check for auto data type
+    if d_type == 'a' or d_type == 'auto':
+        d_type = auto_data_type(non_nan_targets[key])
 
     # Processing for binary, with some tolerance to funky input
     if d_type == 'b' or d_type == 'binary':

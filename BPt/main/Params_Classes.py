@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import deepcopy, copy
 from sklearn.base import BaseEstimator
 import pandas as pd
 from ..helpers.ML_Helpers import conv_to_list, proc_input
@@ -1642,10 +1642,8 @@ class Model_Pipeline(Params):
 
     def _proc_duplicates(self, params):
 
-        print(params)
-
         if isinstance(params, list):
-            new_params = deepcopy(params)
+            new_params = copy(params)
             del new_params[:]
 
             if len(params) == 1:
@@ -1751,9 +1749,6 @@ class Model_Pipeline(Params):
                 print('Warning: Model_Pipeline user set param', p,
                       ' was set,',
                       'but will have no effect as it is not a valid parameter!')
-
-        # Check for duplicate scopes
-        self._proc_all_pieces(self._proc_duplicates)
 
         # Proc input
         self._proc_all_pieces(self._proc_input)
@@ -2042,6 +2037,9 @@ class Problem_Spec(Params):
         self._final_subjects = None
 
         self._proc_checks()
+        
+        # Check for duplicate scopes only on init
+        self._proc_all_pieces(self._proc_duplicates)
 
     def _proc_checks(self):
         proc_all(self)

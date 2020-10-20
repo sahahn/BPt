@@ -8,6 +8,64 @@ from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
                                 is_special, is_value_subset)
 
 
+def clone(estimator, *, safe=True):
+    """Constructs a new estimator with the same parameters.
+    Clone does a deep copy of the model in an estimator
+    without actually copying attached data. It yields a new estimator
+    with the same parameters that has not been fit on any data.
+    Parameters
+    ----------
+    estimator : {list, tuple, set} of estimator objects or estimator object
+        The estimator or group of estimators to be cloned.
+    safe : bool, default=True
+        If safe is false, clone will fall back to a deep copy on objects
+        that are not estimators.
+    """
+    estimator_type = type(estimator)
+    # XXX: not handling dictionaries
+    if estimator_type in (list, tuple, set, frozenset):
+        return estimator_type([clone(e, safe=safe) for e in estimator])
+    elif not hasattr(estimator, 'get_params') or isinstance(estimator, type):
+        if not safe:
+            return copy.deepcopy(estimator)
+        else:
+            if isinstance(estimator, type):
+                raise TypeError("Cannot clone object. " +
+                                "You should provide an instance of " +
+                                "scikit-learn estimator instead of a class.")
+            else:
+                raise TypeError("Cannot clone object '%s' (type %s): "
+                                "it does not seem to be a scikit-learn "
+                                "estimator as it does not implement a "
+                                "'get_params' method."
+                                % (repr(estimator), type(estimator)))
+
+    klass = estimator.__class__
+    new_object_params = estimator.get_params(deep=False)
+    for name, param in new_object_params.items():
+
+        try:
+            new_object_params[name] = clone(param, safe=False)
+
+        # In the case of type error, and executor param, just pass along
+        except TypeError:
+            if name == 'executor':
+                new_object_params[name] = param
+
+    new_object = klass(**new_object_params)
+    params_set = new_object.get_params(deep=False)
+
+    # quick sanity check of the parameters of the clone
+    for name in new_object_params:
+        param1 = new_object_params[name]
+        param2 = params_set[name]
+        if param1 is not param2:
+            raise RuntimeError('Cannot clone object %s, as the constructor '
+                               'either does not set or modifies parameter %s' %
+                               (estimator, name))
+    return new_object
+
+
 def proc_all(base_obj):
 
     if base_obj is None:
@@ -54,7 +112,7 @@ class Params(BaseEstimator):
                     setattr(self, key, args[key])
 
     def copy(self):
-        return deepcopy(self)
+        return clone(self)
 
 
 class Check():
@@ -380,7 +438,7 @@ class Imputer(Piece):
         self.obj = obj
         self.params = params
         self.scope = scope
-        self.base_model = deepcopy(base_model)
+        self.base_model = clone(base_model)
         self.base_model_type = base_model_type
         self.extra_params = extra_params
 
@@ -593,7 +651,7 @@ class Feat_Selector(Piece):
         self.obj = obj
         self.params = params
         self.scope = scope
-        self.base_model = deepcopy(base_model)
+        self.base_model = clone(base_model)
         self.base_model_type = None
         self.extra_params = extra_params
         self.check_args()
@@ -1663,7 +1721,7 @@ class Model_Pipeline(Params):
 
             if is_duplicate(scopes):
                 for scope in scopes:
-                    new = deepcopy(params)
+                    new = clone(params)
                     new.scope = scope
                     new_params.append(new)
 
@@ -1792,7 +1850,7 @@ class Model_Pipeline(Params):
     def get_ordered_pipeline_params(self):
 
         # Conv all to list & return in order as a deep copy
-        return deepcopy([conv_to_list(getattr(self, piece_name))
+        return clone([conv_to_list(getattr(self, piece_name))
                          for piece_name in ORDERED_NAMES])
 
     def get_indent(self, indent):

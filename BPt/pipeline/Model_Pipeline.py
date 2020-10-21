@@ -213,7 +213,7 @@ class Model_Pipeline():
             return False
         return True
 
-    def get_search_wrapped_pipeline(self, executor=None, progress_loc=None):
+    def get_search_wrapped_pipeline(self, dask_ip=None, progress_loc=None):
 
         # Grab the base pipeline
         base_pipeline = self.get_pipeline()
@@ -236,14 +236,14 @@ class Model_Pipeline():
                 scoring=search_scorer,
                 weight_scorer=self.param_search.weight_scorer,
                 random_state=self.spec['random_state'],
-                executor=executor,
+                dask_ip=dask_ip,
                 progress_loc=progress_loc)
 
         return search_model
 
 
 def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc,
-             executor=None, verbose=False):
+             dask_ip=None, verbose=False):
 
     # Get the model specs from problem_spec
     model_spec = problem_spec.get_model_spec()
@@ -258,7 +258,7 @@ def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc,
     # Set the final model // search wrap
     Model =\
         base_model_pipeline.get_search_wrapped_pipeline(
-            executor=executor,
+            dask_ip=dask_ip,
             progress_loc=progress_loc)
 
     return Model

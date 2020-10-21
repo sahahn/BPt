@@ -271,7 +271,7 @@ def Evaluate(self,
              feat_importances=None,
              return_raw_preds=False,
              return_models=False,
-             executor=None,
+             dask_ip=None,
              run_name='default'):
     ''' The Evaluate function is one of the main interfaces
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
@@ -481,9 +481,7 @@ def Evaluate(self,
 
             default = False
 
-    executor : async future-like or None, optional
-        This should be an Executor-like object, for example
-        via dask.distributed for advanced hyper-parameter tuning options.
+    dask_ip : str, optional
 
         ::
 
@@ -601,7 +599,7 @@ def Evaluate(self,
     self._init_evaluator(
         model_pipeline=model_pipeline,
         ps=ps,
-        executor=executor,
+        dask_ip=dask_ip,
         CV=CV_obj,
         feat_importances=feat_importances,
         return_raw_preds=return_raw_preds,
@@ -672,7 +670,7 @@ def Test(self,
          feat_importances=None,
          return_raw_preds=False,
          return_models=False,
-         executor=None,
+         dask_ip=None,
          run_name='default'):
     ''' The test function is one of the main interfaces for testing a specific
     :class:`Model_Pipeline`. Test is conceptually different from
@@ -836,9 +834,8 @@ def Test(self,
 
             default = False
 
-    executor : async future-like or None, optional
-        This should be an Executor-like object, for example
-        via dask.distributed for advanced hyper-parameter tuning options.
+    dask_ip : str or None, optional
+        Optional ip of dask controller to create Client.
 
         ::
 
@@ -919,7 +916,7 @@ def Test(self,
     self._init_evaluator(
         model_pipeline=model_pipeline,
         ps=ps,
-        executor=executor,
+        dask_ip=dask_ip,
         CV=self.CV,
         feat_importances=feat_importances,
         return_raw_preds=return_raw_preds,
@@ -1185,7 +1182,7 @@ def _get_subjects_to_use(self, subjects_to_use):
 
 
 def get_pipeline(self, model_pipeline, problem_spec,
-                 executor=None, progress_loc=None, has_search=False):
+                 dask_ip=None, progress_loc=None, has_search=False):
 
     # If has search is False, means this is the top level
     # or the top level didnt have a search
@@ -1198,16 +1195,16 @@ def get_pipeline(self, model_pipeline, problem_spec,
     # If either this set of model_pipeline params or the parent
     # params had search params, then a copy of problem spec with n_jobs set
     # to 1 should be passed to children get pipelines,
-    # Likewise, nested_executor should be set to None
-    # but if doesn't have search, then should set nested executor as
+    # Likewise, nested_dask_ip should be set to None
+    # but if doesn't have search, then should set nested dask_ip as
     # the passed param.
     if has_search:
         nested_ps = copy.deepcopy(problem_spec)
         nested_ps.n_jobs = 1
-        nested_executor = None
+        nested_dask_ip = None
     else:
         nested_ps = problem_spec
-        nested_executor = executor
+        nested_dask_ip = dask_ip
 
     def nested_check(piece_name):
 
@@ -1220,7 +1217,7 @@ def get_pipeline(self, model_pipeline, problem_spec,
                         if isinstance(piece[i].base_model.obj, Model_Pipeline):
                             piece[i].base_model.obj = self.get_pipeline(
                                 piece[i].base_model.obj, nested_ps,
-                                executor=nested_executor,
+                                dask_ip=nested_dask_ip,
                                 progress_loc=progress_loc,
                                 has_search=has_search)
 
@@ -1229,7 +1226,7 @@ def get_pipeline(self, model_pipeline, problem_spec,
                     if isinstance(piece.base_model.obj, Model_Pipeline):
                         piece.base_model.obj = self.get_pipeline(
                                 piece.base_model.obj, nested_ps,
-                                executor=nested_executor,
+                                dask_ip=nested_dask_ip,
                                 progress_loc=progress_loc,
                                 has_search=has_search)
 
@@ -1239,7 +1236,7 @@ def get_pipeline(self, model_pipeline, problem_spec,
                         if isinstance(piece.models[i].obj, Model_Pipeline):
                             piece.models[i].obj = self.get_pipeline(
                                 piece.models[i].obj, nested_ps,
-                                executor=nested_executor,
+                                dask_ip=nested_dask_ip,
                                 progress_loc=progress_loc,
                                 has_search=has_search)
 
@@ -1251,7 +1248,7 @@ def get_pipeline(self, model_pipeline, problem_spec,
             model_pipeline.model.obj =\
                 self.get_pipeline(model_pipeline.model.obj,
                                   nested_ps,
-                                  executor=nested_executor,
+                                  dask_ip=nested_dask_ip,
                                   progress_loc=progress_loc,
                                   has_search=has_search)
 
@@ -1273,11 +1270,11 @@ def get_pipeline(self, model_pipeline, problem_spec,
                     problem_spec=problem_spec,
                     Data_Scopes=self.Data_Scopes,
                     progress_loc=progress_loc,
-                    executor=executor,
+                    dask_ip=dask_ip,
                     verbose=self.default_ML_verbosity['pipeline_verbose'])
 
 
-def _init_evaluator(self, model_pipeline, ps, executor,
+def _init_evaluator(self, model_pipeline, ps, dask_ip,
                     CV, feat_importances, return_raw_preds, return_models):
 
     # Make copies of the passed pipeline
@@ -1288,7 +1285,7 @@ def _init_evaluator(self, model_pipeline, ps, executor,
     # and Data_Scopes
     model = self.get_pipeline(
         pipe, ps,
-        executor=executor,
+        dask_ip=dask_ip,
         progress_loc=self.default_ML_verbosity['progress_loc'])
 
     # Set the evaluator obj

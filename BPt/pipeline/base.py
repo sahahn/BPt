@@ -1,3 +1,6 @@
+from ..helpers.ML_Helpers import get_possible_fit_params
+
+
 def _get_est_fit_params(estimator, mapping=None, train_data_index=None,
                         other_params=None):
 
@@ -6,12 +9,26 @@ def _get_est_fit_params(estimator, mapping=None, train_data_index=None,
     else:
         fit_params = other_params.copy()
 
+    possible_f_params = get_possible_fit_params(estimator)
+
     if mapping is not None:
-        if hasattr(estimator, 'needs_mapping'):
+
+        # If an explicit arg, pass
+        if 'mapping' in possible_f_params:
+            fit_params['mapping'] = mapping.copy()
+
+        # Otherwise, check for flag
+        elif hasattr(estimator, 'needs_mapping'):
             if estimator.needs_mapping:
                 fit_params['mapping'] = mapping.copy()
 
     if train_data_index is not None:
+
+        # If an explicit arg, pass
+        if 'train_data_index' in possible_f_params:
+            fit_params['train_data_index'] = train_data_index
+
+        # Otherwise, check for flag
         if hasattr(estimator, 'needs_train_data_index'):
             if estimator.needs_train_data_index:
                 fit_params['train_data_index'] = train_data_index

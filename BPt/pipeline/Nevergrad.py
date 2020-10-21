@@ -1,3 +1,4 @@
+from nevergrad.parametrization.container import Instrumentation
 import numpy as np
 from numpy.random import RandomState
 import nevergrad as ng
@@ -8,9 +9,8 @@ import multiprocessing as mp
 from sklearn.base import clone
 from copy import deepcopy
 
+from .base import _get_est_fit_params
 from ..helpers.CV import CV as Base_CV
-from ..helpers.ML_Helpers import get_possible_fit_params
-
 from os.path import dirname, abspath, exists
 from sklearn.base import BaseEstimator
 import warnings
@@ -32,7 +32,7 @@ class ProgressLogger():
 
 
 def ng_cv_score(X, y, estimator, scoring, weight_scorer,
-                cv_inds, cv_subjects, fit_params, **kwargs):
+                cv_inds, cv_subjects, mapping, fit_params, **kwargs):
 
     cv_scores = []
     for i in range(len(cv_inds)):
@@ -42,12 +42,15 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer,
         estimator = clone(estimator)
         estimator.set_params(**kwargs)
 
-        # Add this folds train_data_index to fit_params, if valid
-        if 'train_data_index' in get_possible_fit_params(estimator):
-            fit_params['train_data_index'] = cv_subjects[i][0]
+        # Adds mapping / train data index if needed
+        f_params = _get_est_fit_params(
+            estimator,
+            mapping=mapping,
+            train_data_index=cv_subjects[i][0],
+            other_params=fit_params)
 
         # Fit estimator on train
-        estimator.fit(X[tr_inds], y[tr_inds], **deepcopy(fit_params))
+        estimator.fit(X[tr_inds], y[tr_inds], **deepcopy(f_params))
 
         # Get the score, but scoring return high values as better,
         # so flip sign
@@ -71,7 +74,7 @@ class NevergradSearchCV(BaseEstimator):
     def __init__(self, estimator=None, param_search=None,
                  param_distributions=None,
                  scoring=None, weight_scorer=False,
-                 random_state=None, executor=None,
+                 random_state=None, dask_ip=None,
                  progress_loc=None, verbose=False):
 
         self.param_search = param_search
@@ -80,7 +83,7 @@ class NevergradSearchCV(BaseEstimator):
         self.scoring = scoring
         self.weight_scorer = weight_scorer
         self.random_state = random_state
-        self.executor = executor
+        self.dask_ip = dask_ip
         self.progress_loc = progress_loc
         self.verbose = verbose
 
@@ -132,56 +135,31 @@ class NevergradSearchCV(BaseEstimator):
                                         self.random_state,
                                         return_index='both')
 
-    def ng_cv_score(self, X, y, fit_params, **kwargs):
+    def get_instrumentation(self, X, y, mapping, fit_params, client):
 
-        cv_scores = []
-        for i in range(len(self.cv_inds)):
-            tr_inds, test_inds = self.cv_inds[i]
+        if client is None:
+            instrumentation =\
+                ng.p.Instrumentation(X, y, self.estimator, self.scoring,
+                                     self.weight_scorer, self.cv_inds,
+                                     self.cv_subjects, mapping,
+                                     fit_params, **self.param_distributions)
 
-            # Clone estimator & set search params
-            estimator = clone(self.estimator)
-            estimator.set_params(**kwargs)
-
-            # Add this folds train_data_index to fit_params, if valid
-            if 'train_data_index' in get_possible_fit_params(estimator):
-                fit_params['train_data_index'] = self.cv_subjects[i][0]
-
-            # Fit estimator on train
-            estimator.fit(X[tr_inds], y[tr_inds], **deepcopy(fit_params))
-
-            # Get the score, but scoring return high values as better,
-            # so flip sign
-            score = -self.scoring(estimator, X[test_inds], y[test_inds])
-            cv_scores.append(score)
-
-        if self.weight_scorer:
-            weights = [len(self.cv_inds[i][1]) for i
-                       in range(len(self.cv_inds))]
-            return np.average(cv_scores, weights=weights)
+        # If using dask client, pre-scatter some big memory fixed params
         else:
-            return np.mean(cv_scores)
+            X_s = client.scatter(X)
+            y_s = client.scatter(y)
+            cv_inds_s = client.scatter(self.cv_inds)
+            cv_subjects_s = client.scatter(self.cv_subjects)
 
-    def fit(self, X, y=None, train_data_index=None, **fit_params):
+            instrumentation =\
+                ng.p.Instrumentation(X_s, y_s, self.estimator, self.scoring,
+                                     self.weight_scorer, cv_inds_s,
+                                     cv_subjects_s, mapping,
+                                     fit_params, **self.param_distributions)
 
-        if train_data_index is None:
-            raise RuntimeWarning('NevergradSearchCV must be passed a ' +
-                                 'train_data_index!')
+        return instrumentation
 
-        if self.verbose:
-            print('Fit Nevergrad CV, len(train_data_index) == ',
-                  len(train_data_index),
-                  'has mapping == ', 'mapping' in fit_params,
-                  'X.shape ==', X.shape)
-
-        # Set the search cv passed on passed train_data_index
-        self._set_cv(train_data_index)
-
-        # Fit the nevergrad optimizer
-        instrumentation =\
-            ng.p.Instrumentation(X, y, self.estimator, self.scoring,
-                                 self.weight_scorer, self.cv_inds,
-                                 self.cv_subjects,
-                                 fit_params, **self.param_distributions)
+    def get_optimizer(self, instrumentation):
 
         try:
             opt = ng.optimizers.registry[self.param_search.search_type]
@@ -203,24 +181,26 @@ class NevergradSearchCV(BaseEstimator):
         elif self.random_state is not None:
             optimizer.parametrization.random_state = self.random_state
 
-        # with warnings.catch_warnings():
-        #    warnings.simplefilter("ignore")
-
         if self.progress_loc is not None:
             logger = ProgressLogger(self.progress_loc)
             optimizer.register_callback('tell', logger)
 
+        return optimizer
+
+    def run_search(self, optimizer, client):
+
+        # n_jobs 1, always local
         if self.param_search.n_jobs == 1:
             recommendation = optimizer.minimize(ng_cv_score,
                                                 batch_mode=False)
 
-        elif self.executor is not None:
-            from dask.distributed import Client
-            client = Client(self.executor)
+        # If generated client
+        elif client is not None:
             recommendation = optimizer.minimize(ng_cv_score,
                                                 executor=client,
                                                 batch_mode=False)
 
+        # Otherwise use futures pool executor
         else:
             try:
                 with futures.ProcessPoolExecutor(
@@ -234,19 +214,69 @@ class NevergradSearchCV(BaseEstimator):
                 raise(RuntimeError('Try changing the mp_context'))
 
         # Save best search search score
-        self.best_search_score = optimizer.current_bests["pessimistic"].mean
         # "optimistic", "pessimistic", "average"
+        # and best params
+        self.best_search_score = optimizer.current_bests["pessimistic"].mean
+        self.best_params_ = recommendation.kwargs
+
+        return recommendation
+
+    def fit(self, X, y=None, mapping=None,
+            train_data_index=None, **fit_params):
+
+        if train_data_index is None:
+            raise RuntimeWarning('NevergradSearchCV must be passed a ' +
+                                 'train_data_index!')
+
+        if self.verbose:
+            print('Fit Nevergrad CV, len(train_data_index) == ',
+                  len(train_data_index),
+                  'has mapping == ', 'mapping' in fit_params,
+                  'X.shape ==', X.shape)
+
+        # Set the search cv passed on passed train_data_index
+        self._set_cv(train_data_index)
+
+        # Check if need to make dask client
+        # Criteria is greater than 1 job, and passed as dask_ip of non-None
+        if self.param_search.n_jobs > 1 and self.dask_ip is not None:
+            from dask.distributed import Client
+            client = Client(self.dask_ip)
+        else:
+            client = None
+
+        # Get the instrumentation
+        instrumentation =\
+            self.get_instrumentation(X, y, mapping=mapping,
+                                     fit_params=fit_params,
+                                     client=client)
+
+        # Get the optimizer
+        optimizer = self.get_optimizer(instrumentation)
+
+        # Run the search
+        recommendation = self.run_search(optimizer, client)
+
+        # Fit best est, w/ best params
+        self.fit_best_estimator(recommendation, X, y, mapping,
+                                train_data_index, fit_params)
+
+    def fit_best_estimator(self, recommendation,  X, y, mapping,
+                           train_data_index, fit_params):
 
         # Fit best estimator, w/ found best params
         self.best_estimator_ = clone(self.estimator)
         self.best_estimator_.set_params(**recommendation.kwargs)
-        self.best_params_ = recommendation.kwargs
 
-        # Full train index here
-        if 'train_data_index' in get_possible_fit_params(self.best_estimator_):
-            fit_params['train_data_index'] = train_data_index
+        # Add in mapping / train data index to fit params if needed
+        f_params = _get_est_fit_params(
+            self.best_estimator_,
+            mapping=mapping,
+            train_data_index=train_data_index,
+            other_params=fit_params)
 
-        self.best_estimator_.fit(X, y, **fit_params)
+        # Fit
+        self.best_estimator_.fit(X, y, **f_params)
 
     def predict(self, X):
         return self.best_estimator_.predict(X)

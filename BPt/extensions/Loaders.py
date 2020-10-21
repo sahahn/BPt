@@ -224,10 +224,13 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         ''' If X has the both the same dimensions, raise warning'''
 
         if len(X.shape) == 2 and (X.shape[0] == X.shape[1]):
-            warnings.warn('X was passed with the same length in each dimension, '
-                          'Assuming that axis=0 is that data dimension w/ vertex values')
+            warnings.warn('X was passed with the same length',
+                          ' in each dimension, ',
+                          'Assuming that axis=0 is that data dimension',
+                          ' w/ vertex values')
 
-        # The data dimension is just the dimension with the same len as the label
+        # The data dimension is just the dimension with
+        # the same len as the label
         self.data_dim_ = X.shape.index(len(self.labels_))
         self.X_shape_ = X.shape
 

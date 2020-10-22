@@ -685,9 +685,12 @@ class Model(Piece):
         from ..pipeline.Models import get_base_model_and_params, AVALIABLE
 
         proc_str = proc_type_dep_str(self.obj, AVALIABLE, problem_type)
+        model_params = get_base_model_and_params(proc_str, self.extra_params,
+                                                 self.params, True)[1]
+        model_params = {'__'.join(m.split('__')[1:]): model_params[m]
+                        for m in model_params}
 
-        return get_base_model_and_params(proc_str, self.extra_params,
-                                         self.params, True)[1]
+        return model_params
 
 
 class Ensemble(Piece):

@@ -3200,7 +3200,7 @@ def _filter_by_eventname(self, data, eventname, eventname_col):
 
     # Remove eventname column
     if eventname_col in list(data):
-        data = data.drop('eventname', axis=1)
+        data = data.drop(eventname_col, axis=1)
 
     return data
 

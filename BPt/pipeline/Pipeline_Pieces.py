@@ -502,7 +502,8 @@ class Models(Type_Pieces):
         # Remove the relevant model params
         # and put in m_params
         m_params = {}
-        for param in model_params:
+        model_param_names = list(model_params)
+        for param in model_param_names:
 
             if param.startswith(prepend):
                 m_params[param.replace(prepend, '', 1)] =\

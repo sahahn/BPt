@@ -1012,7 +1012,7 @@ def _premodel_check(self):
         self.Set_Default_ML_Verbosity()
 
 
-def _preproc_param_search(self, object):
+def _preproc_param_search(self, object, problem_type):
 
     param_search = getattr(object, 'param_search')
     if param_search is None:
@@ -1025,6 +1025,9 @@ def _preproc_param_search(self, object):
         search_CV =\
             self._get_CV(param_search.CV, show=False)
     param_search.set_CV(search_CV)
+
+    # Set scorer
+    param_search.set_scorer(problem_type)
 
     # Set split vals
     _, split_vals, _ =\
@@ -1039,16 +1042,32 @@ def _preproc_param_search(self, object):
     setattr(object, 'param_search', param_search)
 
 
-def _preproc_model_pipeline(self, model_pipeline, n_jobs):
+def _preproc_model_pipeline(self, model_pipeline, n_jobs, problem_type):
 
     # Set values across each pipeline pieces params
     model_pipeline.preproc(n_jobs)
 
     # Pre-proc param search
-    self._preproc_param_search(model_pipeline)
+    self._preproc_param_search(model_pipeline, problem_type)
+
+    def nested_model_check(obj):
+
+        if isinstance(obj, Model):
+            self._preproc_param_search(obj, problem_type)
+
+        if isinstance(obj, list):
+            [nested_model_check(o) for o in obj]
+            return
+
+        if hasattr(obj, 'get_params'):
+            for param in obj.get_params(deep=False):
+                nested_model_check(getattr(obj, param))
+            return
+
+        return
 
     # Run nested check for
-    nested_model_check(model_pipeline, self._preproc_param_search)
+    nested_model_check(model_pipeline)
 
     # Early check to see if imputer could even be needed
     model_pipeline.check_imputer(self.all_data)
@@ -1244,7 +1263,8 @@ def get_pipeline(self, model_pipeline, problem_spec,
 
     # Preproc model
     model_pipeline = self._preproc_model_pipeline(model_pipeline,
-                                                  problem_spec.n_jobs)
+                                                  problem_spec.n_jobs,
+                                                  problem_spec.problem_type)
 
     # Init data scopes
     self.Data_Scopes.set_all_keys(problem_spec)
@@ -1392,19 +1412,3 @@ def _save_results(self, results, save_name):
         with open(save_spot+append, 'wb') as f:
             pkl.dump(results, f)
 
-
-def nested_model_check(obj, func):
-
-    if isinstance(obj, Model):
-        func(obj)
-
-    if isinstance(obj, list):
-        [nested_model_check(o, func) for o in obj]
-        return
-
-    if hasattr(obj, 'get_params'):
-        for param in obj.get_params(deep=False):
-            nested_model_check(getattr(obj, param), func)
-        return
-
-    return

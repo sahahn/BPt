@@ -332,6 +332,16 @@ class Models(Type_Pieces):
                 self.wrap_target_scaler(target_scaler, non_ensemble_objs[i],
                                         non_ensemble_obj_params)
 
+        # Check for nested param search
+        for i in range(len(non_ensemble_params)):
+
+            param_search = non_ensemble_params[i].param_search
+
+            non_ensemble_objs[i], non_ensemble_obj_params =\
+                self.wrap_param_search(param_search,
+                                       non_ensemble_objs[i],
+                                       non_ensemble_obj_params)
+
         # If any non-ensemble models have scope != 'all'
         for i in range(len(non_ensemble_params)):
             scope = non_ensemble_params[i].scope
@@ -458,6 +468,16 @@ class Models(Type_Pieces):
                 model_params[new_param_name] = scaler_params[param_name]
 
         return wrapper_model_obj, model_params
+
+    def wrap_param_search(self, param_search, model_obj, model_params):
+
+        if param_search is None:
+            return model_obj, model_params
+
+        print(model_obj)
+        print(model_params)
+
+        return model_obj, model_params
 
     def wrap_model_scope(self, scope, model):
 

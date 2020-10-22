@@ -73,15 +73,12 @@ class NevergradSearchCV(BaseEstimator):
 
     def __init__(self, estimator=None, param_search=None,
                  param_distributions=None,
-                 scoring=None, weight_scorer=False,
                  random_state=None, dask_ip=None,
                  progress_loc=None, verbose=False):
 
         self.param_search = param_search
         self.estimator = estimator
         self.param_distributions = param_distributions
-        self.scoring = scoring
-        self.weight_scorer = weight_scorer
         self.random_state = random_state
         self.dask_ip = dask_ip
         self.progress_loc = progress_loc
@@ -124,23 +121,25 @@ class NevergradSearchCV(BaseEstimator):
     def _set_cv(self, train_data_index):
 
         # If no CV, use random
-        if self.param_search.CV is None:
-            self.param_search.CV = Base_CV()
+        if self.param_search._CV is None:
+            self.param_search._CV = Base_CV()
 
         self.cv_subjects, self.cv_inds =\
-            self.param_search.CV.get_cv(train_data_index,
-                                        self.param_search.splits,
-                                        self.param_search.n_repeats,
-                                        self.param_search._splits_vals,
-                                        self.random_state,
-                                        return_index='both')
+            self.param_search._CV.get_cv(train_data_index,
+                                         self.param_search.splits,
+                                         self.param_search.n_repeats,
+                                         self.param_search._splits_vals,
+                                         self.random_state,
+                                         return_index='both')
 
     def get_instrumentation(self, X, y, mapping, fit_params, client):
 
         if client is None:
             instrumentation =\
-                ng.p.Instrumentation(X, y, self.estimator, self.scoring,
-                                     self.weight_scorer, self.cv_inds,
+                ng.p.Instrumentation(X, y, self.estimator,
+                                     self.param_search._scorer,
+                                     self.param_search.weight_scorer,
+                                     self.cv_inds,
                                      self.cv_subjects, mapping,
                                      fit_params, **self.param_distributions)
 
@@ -152,8 +151,10 @@ class NevergradSearchCV(BaseEstimator):
             cv_subjects_s = client.scatter(self.cv_subjects)
 
             instrumentation =\
-                ng.p.Instrumentation(X_s, y_s, self.estimator, self.scoring,
-                                     self.weight_scorer, cv_inds_s,
+                ng.p.Instrumentation(X_s, y_s, self.estimator,
+                                     self.param_search._scorer,
+                                     self.param_search.weight_scorer,
+                                     cv_inds_s,
                                      cv_subjects_s, mapping,
                                      fit_params, **self.param_distributions)
 

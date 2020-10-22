@@ -491,6 +491,7 @@ class BPt_ML():
                       Evaluate,
                       Test,
                       _premodel_check,
+                      _preproc_param_search,
                       _preproc_model_pipeline,
                       _preproc_problem_spec,
                       _get_split_vals,

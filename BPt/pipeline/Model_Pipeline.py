@@ -1,6 +1,5 @@
 from .BPt_Pipeline import BPt_Pipeline
 from ..helpers.ML_Helpers import is_array_like
-from .Scorers import process_scorers
 import os
 
 from ..helpers.VARS import ORDERED_NAMES
@@ -222,19 +221,12 @@ class Model_Pipeline():
         if not self.is_search():
             return base_pipeline
 
-        # Get the search scorer
-        search_scorer =\
-            process_scorers(self.param_search.scorer,
-                            self.spec['problem_type'])[2]
-
         # Create the search object
         search_model =\
             NevergradSearchCV(
                 estimator=base_pipeline,
                 param_search=self.param_search,
                 param_distributions=self.get_all_params(),
-                scoring=search_scorer,
-                weight_scorer=self.param_search.weight_scorer,
                 random_state=self.spec['random_state'],
                 dask_ip=dask_ip,
                 progress_loc=progress_loc)

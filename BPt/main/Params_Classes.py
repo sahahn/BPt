@@ -6,6 +6,7 @@ from ..helpers.ML_Helpers import conv_to_list, proc_input, proc_type_dep_str
 from ..helpers.VARS import ORDERED_NAMES
 from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
                                 is_special, is_value_subset)
+from ..pipeline.Scorers import process_scorers
 
 
 def proc_all(base_obj):
@@ -601,7 +602,7 @@ class Feat_Selector(Piece):
 
 class Model(Piece):
 
-    def __init__(self, obj, params=0, scope='all',
+    def __init__(self, obj, params=0, scope='all', param_search=None,
                  target_scaler=None, extra_params=None):
         ''' Model represents a base components of the :class:`Model_Pipeline`,
         specifically a single Model / estimator.
@@ -646,6 +647,13 @@ class Model(Piece):
 
                 default = 'all'
 
+        param_search : Param_Search, None, optional
+            Experimental.
+
+            ::
+
+                default = None
+
         target_scaler : Scaler, None, optional
 
             Still somewhat experimental, can pass
@@ -674,6 +682,7 @@ class Model(Piece):
         self.obj = obj
         self.params = params
         self.scope = scope
+        self.param_search = param_search
         self.target_scaler = target_scaler
         self.extra_params = extra_params
         self._is_model = True
@@ -877,7 +886,10 @@ class Param_Search(Params):
                  scorer='default',
                  weight_scorer=False,
                  mp_context='default',
-                 n_jobs='default'):
+                 n_jobs='default',
+                 _splits_vals=None,
+                 _CV=None,
+                 _scorer=None):
         ''' Param_Search is special input object designed to be
         used with :class:`Model_Pipeline`.
         Param_Search defines a hyperparameter search strategy.
@@ -1077,12 +1089,19 @@ class Param_Search(Params):
         self.mp_context = mp_context
         self.n_jobs = n_jobs
 
-        self._splits_vals = None
+        self._splits_vals = _splits_vals
+        self._CV = _CV
+        self._scorer = _scorer
 
         self.check_args()
 
+    def set_scorer(self, problem_type):
+        self._scorer =\
+            process_scorers(self.scorer,
+                            problem_type)[2]
+
     def set_CV(self, CV):
-        self.CV = CV
+        self._CV = CV
 
     def set_split_vals(self, vals):
         self._splits_vals = vals
@@ -1775,8 +1794,7 @@ class Model_Pipeline(Params):
         # Proc param search if not None
         if self.param_search is not None:
             self.param_search.check_args()
-
-        
+    
     def set_n_jobs(self, n_jobs):
 
         if self.n_jobs == 'default':
@@ -1799,7 +1817,6 @@ class Model_Pipeline(Params):
         elif self.param_search is not None:
             if self.param_search.n_jobs == 'default':
                 self.param_search.n_jobs = n_jobs
-
 
     def get_ordered_pipeline_params(self):
 

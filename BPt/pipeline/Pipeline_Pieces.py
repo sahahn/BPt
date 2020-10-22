@@ -15,6 +15,7 @@ from copy import deepcopy
 
 from .Selector import selector_wrapper
 from sklearn.compose import TransformedTargetRegressor
+from .Nevergrad import NevergradSearchCV
 
 import numpy as np
 
@@ -34,7 +35,7 @@ class Pieces():
         # Class values
         self.user_passed_objs = user_passed_objs
         self.Data_Scopes = Data_Scopes
-        self.spec = spec
+        self.spec = spec.copy()
 
         # This value with be replaced in child classes
         self.AVAILABLE = None
@@ -113,12 +114,23 @@ class Pieces():
         '''Helper function to grab scaler / feat_selectors and
         their relevant parameter grids'''
 
+        # Save copy of the original spec
+        spec = self.spec.copy()
+
         # Make the object + params based on passed settings
         objs_and_params = []
         for param in params:
 
             name, param_str = param.obj, param.params
             extra_params = param.extra_params
+
+            # If this param has an associated param search of non None,
+            # set class to that search type.
+            # Otherwise, set spec to copy of the original class
+            if hasattr(param, 'param_search') and param.param_search is not None:
+                self.spec['search_type'] = param.param_search.search_type
+            else:
+                self.spec = spec.copy()
 
             if 'user passed' in name:
                 objs_and_params.append(
@@ -408,6 +420,16 @@ class Models(Type_Pieces):
                 self.wrap_target_scaler(target_scaler, ensemble_objs[i],
                                         ensemble_obj_params)
 
+        # Check for nested param search
+        for i in range(len(ensemble_params)):
+
+            param_search = ensemble_params[i].param_search
+
+            ensemble_objs[i], ensemble_obj_params =\
+                self.wrap_param_search(param_search,
+                                       ensemble_objs[i],
+                                       ensemble_obj_params)
+
         # Check ensembled_objs for scope != 'all'
         for i in range(len(ensemble_params)):
             scope = ensemble_params[i].scope
@@ -474,10 +496,25 @@ class Models(Type_Pieces):
         if param_search is None:
             return model_obj, model_params
 
-        print(model_obj)
-        print(model_params)
+        name = model_obj[0]
+        prepend = name + '__'
 
-        return model_obj, model_params
+        # Remove the relevant model params
+        # and put in m_params
+        m_params = {}
+        for param in model_params:
+
+            if param.startswith(prepend):
+                m_params[param.replace(prepend, '', 1)] =\
+                    model_params.pop(param)
+
+        # Create the wrapper nevergrad CV model
+        cv_obj = NevergradSearchCV(
+            estimator=model_obj[1],
+            param_search=param_search,
+            param_distributions=m_params)
+
+        return (name + '_CV', cv_obj), model_params
 
     def wrap_model_scope(self, scope, model):
 

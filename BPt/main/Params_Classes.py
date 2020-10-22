@@ -1,4 +1,5 @@
 from copy import deepcopy
+from scipy.sparse.construct import random
 from sklearn.base import BaseEstimator
 import pandas as pd
 from ..helpers.ML_Helpers import conv_to_list, proc_input, proc_type_dep_str
@@ -887,9 +888,12 @@ class Param_Search(Params):
                  weight_scorer=False,
                  mp_context='default',
                  n_jobs='default',
+                 dask_ip=None,
+                 _random_state=None,
                  _splits_vals=None,
                  _CV=None,
-                 _scorer=None):
+                 _scorer=None,
+                 _n_jobs=None):
         ''' Param_Search is special input object designed to be
         used with :class:`Model_Pipeline`.
         Param_Search defines a hyperparameter search strategy.
@@ -915,64 +919,90 @@ class Param_Search(Params):
                 default = 'RandomSearch'
 
         splits : int, float, str or list of str, optional
-            In order to optimize hyper-parameters, some sort of internal cross validation must be specified,
-            such that combinations of hyper-parameters can be evaluated on different data then they were trained on.
-            `splits` allows you to specify the base of what CV strategy should be used to evaluate every `n_iter` combination
+            In order to optimize hyper-parameters, some sort of
+            internal cross validation must be specified,
+            such that combinations of hyper-parameters can be evaluated
+            on different data then they were trained on.
+            `splits` allows you to specify the base of what CV strategy
+            should be used to evaluate every `n_iter` combination
             of hyper-parameters.
 
-            Notably, the splits defined will respect any special split behavior as defined in
+            Notably, the splits defined will respect any special
+            split behavior as defined in
             :func:`Define_Validation_Strategy<ML.Define_Validation_Strategy>`.
 
             Specifically, options for split are:
 
             - int
                 The number of k-fold splits to conduct. (E.g., 3 for
-                3-fold CV split to be conducted at every hyper-param evaluation).
+                3-fold CV split to be conducted at
+                every hyper-param evaluation).
 
             - float
-                Must be 0 < `splits` < 1, and defines a single train-test like split,
-                with `splits` % of the current training data size used as a validation set.
+                Must be 0 < `splits` < 1, and defines a
+                single train-test like split,
+                with `splits` % of the current training data size used
+                as a validation set.
 
             - str
-                If a str is passed, then it must correspond to a loaded Strat variable. In
-                this case, a leave-out-group CV will be used according to the value of the
+                If a str is passed, then it must correspond to a
+                loaded Strat variable. In
+                this case, a leave-out-group CV will be used according
+                to the value of the
                 indicated Strat variable (E.g., a leave-out-site CV scheme).
 
             - list of str
-                If multiple str passed, first determine the overlapping unique values from
-                their corresponing loaded Strat variables, and then use this overlapped
+                If multiple str passed, first determine the overlapping
+                unique values from
+                their corresponing loaded Strat variables,
+                and then use this overlapped
                 value to define the leave-out-group CV as described above.
 
-            Also note that `n_repeats` will work with any of these options, but say in the case of
-            a leave out group CV, would be awfully redundant, versus, with a passed float value, very reasonable.
+            Also note that `n_repeats` will work with any of these options,
+            but say in the case of
+            a leave out group CV, would be awfully redundant,
+            versus, with a passed float value, very reasonable.
 
             ::
 
                 default = 3
 
         n_repeats : int, optional
-            Given the base hyper-param search CV defined / described in the `splits` param, this
-            parameter further controls if the defined train/val splits should be repeated (w/ different random
+            Given the base hyper-param search CV defined /
+            described in the `splits` param, this
+            parameter further controls if the defined train/val splits
+            should be repeated (w/ different random
             splits in all cases but the leave-out-group passed str option).
 
-            For example, if `n_repeats` is set to 2, and `splits` is 3, then a twice repeated 3-fold CV
-            will be performed to evaluate every choice of `n_iter` hyper-params (respecting any special split behavior
-            as defined in :func:`Define_Validation_Strategy<ML.Define_Validation_Strategy>`.)
+            For example, if `n_repeats` is set to 2, and `splits` is 3,
+            then a twice repeated 3-fold CV
+            will be performed to evaluate every choice of `n_iter`
+            hyper-params (respecting any special split behavior
+            as defined in
+            :func:`Define_Validation_Strategy<ML.Define_Validation_Strategy>`.)
 
             ::
 
                 default = 1
 
         n_iter : int, optional
-            The number of hyper-parameters to try / budget of the underlying search algorithm.
-            How well a hyper-parameter search works and how long it takes will be very dependent on this parameter
-            and the defined internal CV strategy (via `splits` and `n_repeats`). In general, if too few choices are provided
-            the algorithm will likely not select high performing hyper-paramers, and alternatively if too high a value/budget is
-            set, then you may find overfit/non-generalize hyper-parameter choices. Other factors which will influence the 'right'
-            number of `n_iter` to specify are:
+            The number of hyper-parameters to try / budget
+            of the underlying search algorithm.
+            How well a hyper-parameter search works and how long
+            it takes will be very dependent on this parameter
+            and the defined internal CV strategy
+            (via `splits` and `n_repeats`). In general, if too few
+            choices are provided
+            the algorithm will likely not select high
+            performing hyper-paramers, and alternatively
+            if too high a value/budget is
+            set, then you may find overfit/non-generalize
+            hyper-parameter choices. Other factors which will influence
+            the 'right' number of `n_iter` to specify are:
 
             - `search_type`
-                Depending on the underlying search type, it may take a bigger or smaller budget
+                Depending on the underlying search type, it may
+                take a bigger or smaller budget
                 on average to find a good set of hyper-parameters
 
             - The dimension of the underlying search space
@@ -1076,6 +1106,13 @@ class Param_Search(Params):
             ::
 
                 default = 'default'
+
+        dask_ip : str or None, optional
+            For experimental Dask support.
+
+            ::
+
+                default = None
         '''
 
         self.search_type = search_type
@@ -1088,12 +1125,25 @@ class Param_Search(Params):
         self.weight_scorer = weight_scorer
         self.mp_context = mp_context
         self.n_jobs = n_jobs
+        self.dask_ip = dask_ip
 
+        self._random_state = _random_state
         self._splits_vals = _splits_vals
         self._CV = _CV
         self._scorer = _scorer
+        self._n_jobs = _n_jobs
 
         self.check_args()
+
+    def set_random_state(self, random_state):
+        self._random_state = random_state
+
+    def set_n_jobs(self, n_jobs):
+
+        if self.n_jobs == 'default':
+            self._n_jobs = n_jobs
+        else:
+            self._n_jobs = self.n_jobs
 
     def set_scorer(self, problem_type):
         self._scorer =\
@@ -1804,19 +1854,9 @@ class Model_Pipeline(Params):
             if self.param_search is None:
                 self.n_jobs = n_jobs
 
-            # Otherwise, base jobs are 1, and the search_n_jobs
-            # are set to passed n_jobs
+            # Otherwise, base jobs are 1
             else:
                 self.n_jobs = 1
-
-                if self.param_search.n_jobs == 'default':
-                    self.param_search.n_jobs = n_jobs
-
-        # There is still the case where the nested param_search
-        # n_jobs is default, in this case set it as the passed n_jobs
-        elif self.param_search is not None:
-            if self.param_search.n_jobs == 'default':
-                self.param_search.n_jobs = n_jobs
 
     def get_ordered_pipeline_params(self):
 

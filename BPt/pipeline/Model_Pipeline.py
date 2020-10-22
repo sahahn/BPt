@@ -24,7 +24,6 @@ class Model_Pipeline():
 
         # Set n_jobs in model spec
         spec['n_jobs'] = pipeline_params.n_jobs
-        self.spec = spec
 
         # Save cache param
         self.cache = pipeline_params.cache
@@ -36,9 +35,10 @@ class Model_Pipeline():
         # Create the pipeline pieces
         self._create_pipeline_pieces(
             ordered_pipeline_params=ordered_pipeline_params,
-            Data_Scopes=Data_Scopes)
+            Data_Scopes=Data_Scopes, spec=spec)
 
-    def _create_pipeline_pieces(self, ordered_pipeline_params, Data_Scopes):
+    def _create_pipeline_pieces(self, ordered_pipeline_params,
+                                Data_Scopes, spec):
 
         # Order is:
         # ['loaders', 'imputers',
@@ -68,7 +68,7 @@ class Model_Pipeline():
 
             piece = piece_class(user_passed_objs=self.user_passed_objs,
                                 Data_Scopes=Data_Scopes,
-                                spec=self.spec)
+                                spec=spec)
             objs, params = piece.process(params)
 
             self.named_objs[name] = objs
@@ -212,7 +212,7 @@ class Model_Pipeline():
             return False
         return True
 
-    def get_search_wrapped_pipeline(self, dask_ip=None, progress_loc=None):
+    def get_search_wrapped_pipeline(self, progress_loc=None):
 
         # Grab the base pipeline
         base_pipeline = self.get_pipeline()
@@ -227,15 +227,13 @@ class Model_Pipeline():
                 estimator=base_pipeline,
                 param_search=self.param_search,
                 param_distributions=self.get_all_params(),
-                random_state=self.spec['random_state'],
-                dask_ip=dask_ip,
                 progress_loc=progress_loc)
 
         return search_model
 
 
 def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc,
-             dask_ip=None, verbose=False):
+             verbose=False):
 
     # Get the model specs from problem_spec
     model_spec = problem_spec.get_model_spec()
@@ -250,7 +248,6 @@ def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc,
     # Set the final model // search wrap
     Model =\
         base_model_pipeline.get_search_wrapped_pipeline(
-            dask_ip=dask_ip,
             progress_loc=progress_loc)
 
     return Model

@@ -73,14 +73,11 @@ class NevergradSearchCV(BaseEstimator):
 
     def __init__(self, estimator=None, param_search=None,
                  param_distributions=None,
-                 random_state=None, dask_ip=None,
                  progress_loc=None, verbose=False):
 
-        self.param_search = param_search
         self.estimator = estimator
+        self.param_search = param_search
         self.param_distributions = param_distributions
-        self.random_state = random_state
-        self.dask_ip = dask_ip
         self.progress_loc = progress_loc
         self.verbose = verbose
 
@@ -129,7 +126,7 @@ class NevergradSearchCV(BaseEstimator):
                                          self.param_search.splits,
                                          self.param_search.n_repeats,
                                          self.param_search._splits_vals,
-                                         self.random_state,
+                                         self.param_search._random_state,
                                          return_index='both')
 
     def get_instrumentation(self, X, y, mapping, fit_params, client):
@@ -172,15 +169,16 @@ class NevergradSearchCV(BaseEstimator):
 
         optimizer = opt(parametrization=instrumentation,
                         budget=self.param_search.n_iter,
-                        num_workers=self.param_search.n_jobs)
+                        num_workers=self.param_search._n_jobs)
 
         # Set random state is defined
-        if isinstance(self.random_state, int):
+        if isinstance(self.param_search._random_state, int):
             optimizer.parametrization.random_state =\
-                RandomState(self.random_state)
+                RandomState(self.param_search._random_state)
 
-        elif self.random_state is not None:
-            optimizer.parametrization.random_state = self.random_state
+        elif self.param_search._random_state is not None:
+            optimizer.parametrization.random_state =\
+                self.param_search._random_state
 
         if self.progress_loc is not None:
             logger = ProgressLogger(self.progress_loc)
@@ -190,8 +188,8 @@ class NevergradSearchCV(BaseEstimator):
 
     def run_search(self, optimizer, client):
 
-        # n_jobs 1, always local
-        if self.param_search.n_jobs == 1:
+        # _n_jobs 1, always local
+        if self.param_search._n_jobs == 1:
             recommendation = optimizer.minimize(ng_cv_score,
                                                 batch_mode=False)
 
@@ -205,7 +203,7 @@ class NevergradSearchCV(BaseEstimator):
         else:
             try:
                 with futures.ProcessPoolExecutor(
-                  max_workers=self.param_search.n_jobs,
+                  max_workers=self.param_search._n_jobs,
                   mp_context=mp.get_context(self.param_search.mp_context)) as ex:
 
                     recommendation = optimizer.minimize(ng_cv_score,
@@ -240,9 +238,9 @@ class NevergradSearchCV(BaseEstimator):
 
         # Check if need to make dask client
         # Criteria is greater than 1 job, and passed as dask_ip of non-None
-        if self.param_search.n_jobs > 1 and self.dask_ip is not None:
+        if self.param_search._n_jobs > 1 and self.param_search.dask_ip is not None:
             from dask.distributed import Client
-            client = Client(self.dask_ip)
+            client = Client(self.param_search.dask_ip)
         else:
             client = None
 

@@ -6,6 +6,7 @@ Main class extension file for the Machine Learning functionality
 from copy import deepcopy
 import os
 import pickle as pkl
+from scipy.sparse.construct import random
 
 from tqdm import tqdm, tqdm_notebook
 
@@ -271,7 +272,6 @@ def Evaluate(self,
              feat_importances=None,
              return_raw_preds=False,
              return_models=False,
-             dask_ip=None,
              run_name='default'):
     ''' The Evaluate function is one of the main interfaces
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
@@ -481,12 +481,6 @@ def Evaluate(self,
 
             default = False
 
-    dask_ip : str, optional
-
-        ::
-
-            default = None
-
     run_name : str or 'default', optional
         Each run of Evaluate can be optionally associated with
         a specific `run_name`. This name
@@ -599,7 +593,6 @@ def Evaluate(self,
     self._init_evaluator(
         model_pipeline=model_pipeline,
         ps=ps,
-        dask_ip=dask_ip,
         CV=CV_obj,
         feat_importances=feat_importances,
         return_raw_preds=return_raw_preds,
@@ -670,7 +663,6 @@ def Test(self,
          feat_importances=None,
          return_raw_preds=False,
          return_models=False,
-         dask_ip=None,
          run_name='default'):
     ''' The test function is one of the main interfaces for testing a specific
     :class:`Model_Pipeline`. Test is conceptually different from
@@ -834,13 +826,6 @@ def Test(self,
 
             default = False
 
-    dask_ip : str or None, optional
-        Optional ip of dask controller to create Client.
-
-        ::
-
-            default = None
-
     run_name : str or 'default', optional
         Each run of test can be optionally
         associated with a specific `run_name`. This name
@@ -916,7 +901,6 @@ def Test(self,
     self._init_evaluator(
         model_pipeline=model_pipeline,
         ps=ps,
-        dask_ip=dask_ip,
         CV=self.CV,
         feat_importances=feat_importances,
         return_raw_preds=return_raw_preds,
@@ -1012,11 +996,13 @@ def _premodel_check(self):
         self.Set_Default_ML_Verbosity()
 
 
-def _preproc_param_search(self, object, problem_type):
+def _preproc_param_search(self, object, n_jobs,
+                          problem_type,
+                          random_state):
 
     param_search = getattr(object, 'param_search')
     if param_search is None:
-        return
+        return False
 
     # Set CV
     if param_search.CV == 'default':
@@ -1028,6 +1014,12 @@ def _preproc_param_search(self, object, problem_type):
 
     # Set scorer
     param_search.set_scorer(problem_type)
+
+    # Set random_state
+    param_search.set_random_state(random_state)
+
+    # Set n_jobs
+    param_search.set_n_jobs(n_jobs)
 
     # Set split vals
     _, split_vals, _ =\
@@ -1041,19 +1033,29 @@ def _preproc_param_search(self, object, problem_type):
     # Set new proc'ed
     setattr(object, 'param_search', param_search)
 
+    return True
 
-def _preproc_model_pipeline(self, model_pipeline, n_jobs, problem_type):
+
+def _preproc_model_pipeline(self, model_pipeline, n_jobs,
+                            problem_type, random_state):
 
     # Set values across each pipeline pieces params
     model_pipeline.preproc(n_jobs)
 
     # Pre-proc param search
-    self._preproc_param_search(model_pipeline, problem_type)
+    has_param_search =\
+        self._preproc_param_search(model_pipeline, n_jobs,
+                                   problem_type, random_state)
+
+    # If there is a param search set for the Model Pipeline,
+    # set n_jobs, the value to pass in the nested check, to 1
+    if has_param_search:
+        n_jobs = 1
 
     def nested_model_check(obj):
 
         if isinstance(obj, Model):
-            self._preproc_param_search(obj, problem_type)
+            self._preproc_param_search(obj, n_jobs, problem_type, random_state)
 
         if isinstance(obj, list):
             [nested_model_check(o) for o in obj]
@@ -1212,7 +1214,7 @@ def _get_subjects_to_use(self, subjects_to_use):
 
 
 def get_pipeline(self, model_pipeline, problem_spec,
-                 dask_ip=None, progress_loc=None, has_search=False):
+                 progress_loc=None, has_search=False):
 
     # If has search is False, means this is the top level
     # or the top level didnt have a search
@@ -1225,16 +1227,11 @@ def get_pipeline(self, model_pipeline, problem_spec,
     # If either this set of model_pipeline params or the parent
     # params had search params, then a copy of problem spec with n_jobs set
     # to 1 should be passed to children get pipelines,
-    # Likewise, nested_dask_ip should be set to None
-    # but if doesn't have search, then should set nested dask_ip as
-    # the passed param.
     if has_search:
         nested_ps = copy.deepcopy(problem_spec)
         nested_ps.n_jobs = 1
-        nested_dask_ip = None
     else:
         nested_ps = problem_spec
-        nested_dask_ip = dask_ip
 
     def nested_check(obj):
 
@@ -1243,7 +1240,6 @@ def get_pipeline(self, model_pipeline, problem_spec,
                     self.get_pipeline(
                         model_pipeline=obj.obj,
                         problem_spec=nested_ps,
-                        dask_ip=nested_dask_ip,
                         progress_loc=progress_loc,
                         has_search=has_search))
 
@@ -1264,7 +1260,8 @@ def get_pipeline(self, model_pipeline, problem_spec,
     # Preproc model
     model_pipeline = self._preproc_model_pipeline(model_pipeline,
                                                   problem_spec.n_jobs,
-                                                  problem_spec.problem_type)
+                                                  problem_spec.problem_type,
+                                                  problem_spec.random_state)
 
     # Init data scopes
     self.Data_Scopes.set_all_keys(problem_spec)
@@ -1274,11 +1271,10 @@ def get_pipeline(self, model_pipeline, problem_spec,
                     problem_spec=problem_spec,
                     Data_Scopes=self.Data_Scopes,
                     progress_loc=progress_loc,
-                    dask_ip=dask_ip,
                     verbose=self.default_ML_verbosity['pipeline_verbose'])
 
 
-def _init_evaluator(self, model_pipeline, ps, dask_ip,
+def _init_evaluator(self, model_pipeline, ps,
                     CV, feat_importances, return_raw_preds, return_models):
 
     # Make copies of the passed pipeline
@@ -1289,7 +1285,6 @@ def _init_evaluator(self, model_pipeline, ps, dask_ip,
     # and Data_Scopes
     model = self.get_pipeline(
         pipe, ps,
-        dask_ip=dask_ip,
         progress_loc=self.default_ML_verbosity['progress_loc'])
 
     # Set the evaluator obj

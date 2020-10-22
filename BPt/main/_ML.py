@@ -1012,32 +1012,43 @@ def _premodel_check(self):
         self.Set_Default_ML_Verbosity()
 
 
+def _preproc_param_search(self, object):
+
+    param_search = getattr(object, 'param_search')
+    if param_search is None:
+        return
+
+    # Set CV
+    if param_search.CV == 'default':
+        search_CV = self.CV
+    else:
+        search_CV =\
+            self._get_CV(param_search.CV, show=False)
+    param_search.set_CV(search_CV)
+
+    # Set split vals
+    _, split_vals, _ =\
+        self._get_split_vals(param_search.splits)
+    param_search.set_split_vals(split_vals)
+
+    # Check mp_context for default
+    if param_search.mp_context == 'default':
+        param_search.mp_context = self.mp_context
+
+    # Set new proc'ed
+    setattr(object, 'param_search', param_search)
+
+
 def _preproc_model_pipeline(self, model_pipeline, n_jobs):
 
     # Set values across each pipeline pieces params
     model_pipeline.preproc(n_jobs)
 
-    # Proc sample_on if needed (by adding strat name)
-    # model_pipeline.check_samplers(self._add_strat_u_name)
+    # Pre-proc param search
+    self._preproc_param_search(model_pipeline)
 
-    if model_pipeline.param_search is not None:
-
-        # Set CV
-        if model_pipeline.param_search.CV == 'default':
-            search_CV = self.CV
-        else:
-            search_CV =\
-                self._get_CV(model_pipeline.param_search.CV, show=False)
-        model_pipeline.param_search.set_CV(search_CV)
-
-        # Set split vals
-        _, split_vals, _ =\
-            self._get_split_vals(model_pipeline.param_search.splits)
-        model_pipeline.param_search.set_split_vals(split_vals)
-
-        # Check mp_context for default
-        if model_pipeline.param_search.mp_context == 'default':
-            model_pipeline.param_search.mp_context = self.mp_context
+    # Run nested check for
+    nested_model_check(model_pipeline, self._preproc_param_search)
 
     # Early check to see if imputer could even be needed
     model_pipeline.check_imputer(self.all_data)
@@ -1206,57 +1217,30 @@ def get_pipeline(self, model_pipeline, problem_spec,
         nested_ps = problem_spec
         nested_dask_ip = dask_ip
 
-    def nested_check(piece_name):
+    def nested_check(obj):
 
-        if hasattr(model_pipeline, piece_name):
-            piece = getattr(model_pipeline, piece_name)
+        if hasattr(obj, 'obj') and isinstance(obj.obj, Model_Pipeline):
+            setattr(obj, 'obj',
+                    self.get_pipeline(
+                        model_pipeline=obj.obj,
+                        problem_spec=nested_ps,
+                        dask_ip=nested_dask_ip,
+                        progress_loc=progress_loc,
+                        has_search=has_search))
 
-            if isinstance(piece, list):
-                for i in range(len(piece)):
-                    if isinstance(piece[i].base_model, Model):
-                        if isinstance(piece[i].base_model.obj, Model_Pipeline):
-                            piece[i].base_model.obj = self.get_pipeline(
-                                piece[i].base_model.obj, nested_ps,
-                                dask_ip=nested_dask_ip,
-                                progress_loc=progress_loc,
-                                has_search=has_search)
+            return
 
-            elif hasattr(piece, 'base_model'):
-                if isinstance(piece.base_model, Model):
-                    if isinstance(piece.base_model.obj, Model_Pipeline):
-                        piece.base_model.obj = self.get_pipeline(
-                                piece.base_model.obj, nested_ps,
-                                dask_ip=nested_dask_ip,
-                                progress_loc=progress_loc,
-                                has_search=has_search)
+        if isinstance(obj, list):
+            [nested_check(o) for o in obj]
+            return
 
-            elif hasattr(piece, 'models'):
-                for i in range(len(piece.models)):
-                    if isinstance(piece.models[i], Model):
-                        if isinstance(piece.models[i].obj, Model_Pipeline):
-                            piece.models[i].obj = self.get_pipeline(
-                                piece.models[i].obj, nested_ps,
-                                dask_ip=nested_dask_ip,
-                                progress_loc=progress_loc,
-                                has_search=has_search)
+        if hasattr(obj, 'get_params'):
+            for param in obj.get_params(deep=False):
+                nested_check(getattr(obj, param))
+            return
 
-            setattr(model_pipeline, piece_name, piece)
-
-    # Check for nested model pipeline
-    if isinstance(model_pipeline.model, Model):
-        if isinstance(model_pipeline.model.obj, Model_Pipeline):
-            model_pipeline.model.obj =\
-                self.get_pipeline(model_pipeline.model.obj,
-                                  nested_ps,
-                                  dask_ip=nested_dask_ip,
-                                  progress_loc=progress_loc,
-                                  has_search=has_search)
-
-    elif isinstance(model_pipeline.model, Ensemble):
-        nested_check('model')
-
-    nested_check('imputers')
-    nested_check('feat_selectors')
+    # Run nested check on model_pipeline
+    nested_check(model_pipeline)
 
     # Preproc model
     model_pipeline = self._preproc_model_pipeline(model_pipeline,
@@ -1407,3 +1391,20 @@ def _save_results(self, results, save_name):
 
         with open(save_spot+append, 'wb') as f:
             pkl.dump(results, f)
+
+
+def nested_model_check(obj, func):
+
+    if isinstance(obj, Model):
+        func(obj)
+
+    if isinstance(obj, list):
+        [nested_model_check(o, func) for o in obj]
+        return
+
+    if hasattr(obj, 'get_params'):
+        for param in obj.get_params(deep=False):
+            nested_model_check(getattr(obj, param), func)
+        return
+
+    return

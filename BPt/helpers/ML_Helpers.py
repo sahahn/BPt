@@ -191,13 +191,16 @@ def process_params_by_type(obj, obj_str, base_params,
             return {}, {}
 
         elif not isinstance(base_params, dict):
-            raise RuntimeError('params passed with custom obj must be either 0, for None, or a dict')
+            raise RuntimeError('params passed with custom obj must be',
+                               'either 0, for None, or a dict')
 
         params = base_params.copy()
         non_search_params = {}
 
-        # First, grab any params from the params passed which are not Nevergrad distributions
-        # These, regardless of search_type of None, should still be passed to class init.
+        # First, grab any params from the params passed which
+        # are not Nevergrad distributions
+        # These, regardless of search_type of None,
+        # should still be passed to class init.
         for p in params:
 
             try:

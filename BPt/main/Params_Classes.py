@@ -680,6 +680,16 @@ class Model(Piece):
 
         self.check_args()
 
+    def show_params(self, problem_type='regression'):
+
+        from ..pipeline.Models import get_base_model_and_params, AVALIABLE
+        from ..helpers import proc_type_dep_str
+
+        proc_str = proc_type_dep_str(self.obj, AVALIABLE, problem_type)
+
+        return get_base_model_and_params(proc_str, self.extra_params,
+                                         self.params, True)[1]
+
 
 class Ensemble(Piece):
 

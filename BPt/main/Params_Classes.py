@@ -1,7 +1,7 @@
 from copy import deepcopy
 from sklearn.base import BaseEstimator
 import pandas as pd
-from ..helpers.ML_Helpers import conv_to_list, proc_input
+from ..helpers.ML_Helpers import conv_to_list, proc_input, proc_type_dep_str
 
 from ..helpers.VARS import ORDERED_NAMES
 from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
@@ -683,7 +683,6 @@ class Model(Piece):
     def show_params(self, problem_type='regression'):
 
         from ..pipeline.Models import get_base_model_and_params, AVALIABLE
-        from ..helpers import proc_type_dep_str
 
         proc_str = proc_type_dep_str(self.obj, AVALIABLE, problem_type)
 

@@ -368,6 +368,10 @@ P['univar fs regression dist'] = {'score_func': "f_regression",
                                   'percentile':
                                   "ng.p.Scalar(init=50, lower=1, upper=99)"}
 
+P['univar fs regression dist2'] = {'score_func': "f_regression",
+                                   'percentile':
+                                   "ng.p.Scalar(init=75, lower=50, upper=99)"}
+
 
 P['base univar fs classifier'] = {'score_func': "f_classif",
                                   'percentile': "50"}
@@ -375,6 +379,10 @@ P['base univar fs classifier'] = {'score_func': "f_classif",
 P['univar fs classifier dist'] = {'score_func': "f_classif",
                                   'percentile':
                                   "ng.p.Scalar(init=50, lower=1, upper=99)"}
+
+P['univar fs classifier dist2'] = {'score_func': "f_classif",
+                                   'percentile':
+                                   "ng.p.Scalar(init=75, lower=50, upper=99)"}
 
 
 P['base rfe'] = {'n_features_to_select': "None"}

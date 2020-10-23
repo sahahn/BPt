@@ -45,6 +45,8 @@ def _plot(self, save_name, show=True):
 
         if self.notebook:
             plt.show()
+        else:
+            plt.close()
 
 
 def _proc_subjects(self, data, subjects):

@@ -20,19 +20,19 @@ P['default'] = {}
 
 # Models
 P['base logistic'] =\
-        {'max_iter': "5000",
+        {'max_iter': "1000",
          'multi_class': "'auto'",
          'penalty': "'none'",
          'class_weight': "None",
          'solver': "'lbfgs'"}
 
 # Ridge classifier
-P['base ridge'] = {'max_iter': "5000",
+P['base ridge'] = {'max_iter': "1000",
                    'penalty': "'l2'",
                    'solver': "'saga'"}
 
 P['ridge C'] =\
-        {'max_iter': "5000",
+        {'max_iter': "1000",
          'solver': "'saga'",
          'C': "ng.p.Log(lower=1e-5, upper=1e3)",
          'class_weight': cls_weight}
@@ -43,14 +43,14 @@ P['ridge C extra']['max_iter'] =\
 P['ridge C extra']['tol'] = "ng.p.Log(lower=1e-6, upper=.01)"
 
 # Ridge regressor
-P['base ridge regressor'] = {'max_iter': "5000",
+P['base ridge regressor'] = {'max_iter': "1000",
                              'solver': "'lsqr'"}
 
 P['ridge regressor dist'] = P['base ridge regressor'].copy()
 P['ridge regressor dist']['alpha'] = "ng.p.Log(lower=1e-3, upper=1e5)"
 
 # Lasso regressor
-P['base lasso regressor'] = {'max_iter': "5000"}
+P['base lasso regressor'] = {'max_iter': "1000"}
 P['lasso regressor dist'] = P['base lasso regressor'].copy()
 P['lasso regressor dist']['alpha'] = "ng.p.Log(lower=1e-5, upper=1e5)"
 
@@ -88,7 +88,7 @@ P['elastic classifier extra']['max_iter'] =\
 P['elastic classifier extra']['tol'] = "ng.p.Log(lower=1e-6, upper=.01)"
 
 # Elastic net regression
-P['base elastic net'] = {'max_iter': "5000"}
+P['base elastic net'] = {'max_iter': "1000"}
 P['elastic regression'] = P['base elastic net'].copy()
 P['elastic regression']['alpha'] = "ng.p.Log(lower=1e-5, upper=1e5)"
 P['elastic regression']['l1_ratio'] = "ng.p.Scalar(lower=.01, upper=1)"
@@ -290,14 +290,14 @@ P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
 P['mlp dist es 3 layer'] = P['mlp dist es 1 layer'].copy()
 P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
 
-P['base linear svc'] = {'max_iter': "5000"}
+P['base linear svc'] = {'max_iter': "1000"}
 
 P['linear svc dist'] = P['base linear svc'].copy()
 P['linear svc dist']['C'] = "ng.p.Log(lower=1e-4, upper=1e4)"
 P['linear svc dist']['class_weight'] = cls_weight
 
 P['base linear svr'] = {'loss': "'epsilon_insensitive'",
-                        'max_iter': "5000"}
+                        'max_iter': "1000"}
 
 P['linear svr dist'] = P['base linear svr'].copy()
 P['linear svr dist']['C'] = "ng.p.Log(lower=1e-4, upper=1e4)"
@@ -317,7 +317,7 @@ P['sgd classifier'] =\
          'penalty': "ng.p.TransitionChoice(['l2', 'l1', 'elasticnet'])",
          'alpha': "ng.p.Log(lower=1e-5, upper=1e2)",
          'l1_ratio': "ng.p.Scalar(lower=0, upper=1)",
-         'max_iter': "5000",
+         'max_iter': "1000",
          'learning_rate': lr_choice,
          'eta0': "ng.p.Log(lower=1e-6, upper=1e3)",
          'power_t': "ng.p.Scalar(lower=.1, upper=.9)",

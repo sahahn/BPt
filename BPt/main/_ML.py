@@ -6,7 +6,6 @@ Main class extension file for the Machine Learning functionality
 from copy import deepcopy
 import os
 import pickle as pkl
-from scipy.sparse.construct import random
 
 from tqdm import tqdm, tqdm_notebook
 
@@ -18,7 +17,7 @@ from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Evaluator import Evaluator
 from ..main.Params_Classes import (Feat_Importance, Model_Pipeline,
-                                   Model, Ensemble, Problem_Spec)
+                                   Model, Problem_Spec)
 from ..pipeline.Model_Pipeline import get_pipe
 import pandas as pd
 import copy
@@ -32,7 +31,7 @@ def Set_Default_ML_Verbosity(
  compute_train_score='default',
  show_init_params='default', fold_name='default',
  time_per_fold='default', score_per_fold='default', fold_sizes='default',
- best_params='default', save_to_logs='default'):
+ best_params='default', save_to_logs='default', flush='default'):
     '''This function allows setting various verbosity options that effect
     output during :func:`Evaluate` and :func:`Test`.
 
@@ -45,7 +44,10 @@ def Set_Default_ML_Verbosity(
         returned by Test, but as run_name + .test.
 
         if 'default', and not already defined, set to False.
-        (default = 'default')
+
+        ::
+
+            default = 'default'
 
     progress_bar : bool, optional
         If True, a progress bar, implemented in the python
@@ -55,22 +57,31 @@ def Set_Default_ML_Verbosity(
         assuming self.notebook has been set correctly.
 
         if 'default', and not already defined, set to True.
-        (default = 'default')
+
+        ::
+
+            default = 'default'
 
     progress_loc : str, Path or None, optional
         If not None, then this will record the progress
         of each Evaluate / Test call in this location.
 
-        if 'default', and not already defined, set to None
-        (default = 'default')
+        if 'default', and not already defined, set to False.
+
+        ::
+
+            default = 'default'
 
     pipeline_verbose : bool, optional
         This controls the verbose parameter for the pipeline object itself.
         If set to True, then time elapsed while fitting each step will be
         printed.
 
-        if 'default', and not already defined, set to False
-        (default = 'default')
+        if 'default', and not already defined, set to False.
+
+        ::
+
+            default = 'default'
 
     compute_train_score : bool, optional
         If True, then metrics/scorers and raw preds will also be
@@ -78,14 +89,20 @@ def Set_Default_ML_Verbosity(
         eval or testing set.
 
         if 'default', and not already defined, set to False.
-        (default = 'default')
+
+        ::
+
+            default = 'default'
 
     show_init_params : bool, optional
         If True, then print/show the parameters used before running
         Evaluate / Test. If False, then don't print the params used.
 
         if 'default', and not already defined, set to True.
-        (default = 'default')
+
+        ::
+
+            default = 'default'
 
     fold_name : bool, optional
         If True, prints a rough measure of progress via
@@ -95,31 +112,49 @@ def Set_Default_ML_Verbosity(
         with each fold). If False, nothing is shown.
 
         if 'default', and not already defined, set to False.
-        (default = 'default')
+
+        ::
+
+            default = 'default'
 
     time_per_fold : bool, optional
         If True, prints the full time that a fold took to complete.
 
         if 'default', and not already defined, set to False.
-        (default = 'default')
+
+        ::
+
+            default = 'default'
 
     score_per_fold : bool, optional
         If True, displays the score for each fold, though slightly less
         formatted then in the final display.
 
         if 'default', and not already defined, set to False.
-        (default = 'default')
+
+        ::
+
+            default = 'default'
 
     fold_sizes : bool, optional
         If True, will show the number of subjects within each train
         and val/test fold.
 
         if 'default', and not already defined, set to False.
-        (default = 'default')
+
+        ::
+
+            default = 'default'
 
     best_params : bool, optional
         If True, print the best search params found after every
         param search.
+
+        if 'default', and not already defined, set to False.
+
+        ::
+
+            default = 'default'
 
     save_to_logs : bool, optional
         If True, then when possible, and with the selected model
@@ -127,7 +162,20 @@ def Set_Default_ML_Verbosity(
         log file.
 
         if 'default', and not already defined, set to False.
-        (default = 'default')
+
+        ::
+
+            default = 'default'
+
+    flush : bool, optional
+        If True, then add flush=True to all ML prints, which
+        adds a call to flush the std output.
+
+        if 'default', and not already defined, set to False.
+
+        ::
+
+            default = False
     '''
 
     if save_results != 'default':
@@ -204,6 +252,11 @@ def Set_Default_ML_Verbosity(
     elif 'save_to_logs' not in self.default_ML_verbosity:
         self.default_ML_verbosity['save_to_logs'] = False
 
+    if flush != 'default':
+        self.default_ML_verbosity['flush'] = flush
+    elif 'flush' not in self.default_ML_verbosity:
+        self.default_ML_verbosity['flush'] = False
+
     self._print('Default ML verbosity set within self.default_ML_verbosity.')
     self._print('----------------------')
     for param in self.default_ML_verbosity:
@@ -235,6 +288,10 @@ def _ML_print(self, *args, **kwargs):
         _print = self._print
     else:
         _print = print
+
+    # If flush specified, add as kwarg
+    if self.default_ML_verbosity['flush']:
+        kwargs['flush'] = True
 
     level = kwargs.pop('level', None)
 

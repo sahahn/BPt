@@ -1051,9 +1051,9 @@ class Param_Search(Params):
             If left as 'default', assign a reasonable scorer based on the
             passed problem type.
 
-            - 'regression'  : 'r2'
-            - 'binary'      : 'roc_auc'
-            - 'categorical' : 'roc_auc_ovr'
+            - 'regression'  : 'explained_variance'
+            - 'binary'      : 'matthews'
+            - 'categorical' : 'matthews'
 
             Be careful to make sure to select an appropriate scorer for
             the problem type.
@@ -1376,7 +1376,7 @@ class Feat_Importance(Params):
             :ref:`Feat Importances` for what options are avaliable.
 
         scorer : str or 'default', optional
-        
+
             If a permutation based feature importance is being used, then a scorer is
             required.
 
@@ -1386,9 +1386,9 @@ class Feat_Importance(Params):
             If left as 'default', assign a reasonable scorer based on the
             passed problem type.
 
-            - 'regression'  : 'r2'
-            - 'binary'      : 'roc_auc'
-            - 'categorical' : 'roc_auc_ovr'
+            - 'regression'  : 'explained_variance'
+            - 'binary'      : 'matthews'
+            - 'categorical' : 'matthews'
 
             ::
 
@@ -1999,9 +1999,9 @@ class Problem_Spec(Params):
             If left as 'default', assign a reasonable scorer based on the
             passed problem type.
 
-            - 'regression'  : 'r2'
-            - 'binary'      : 'roc_auc'
-            - 'categorical' : 'roc_auc_ovr'
+            - 'regression'  : ['explained_variance', 'neg_mean_squared_error']
+            - 'binary'      : ['matthews', 'roc_auc', 'f1']
+            - 'categorical' : ['matthews', 'roc_auc_ovr', 'f1_macro']
 
             ::
 

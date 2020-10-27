@@ -40,15 +40,23 @@ AVALIABLE = {
     },
     'regression': {
         'explained_variance': 'explained_variance',
+        'explained_variance score': 'explained_variance',
         'r2': 'r2',
         'max_error': 'max_error',
         'neg_median_absolute_error': 'neg_median_absolute_error',
+        'median_absolute_error': 'neg_median_absolute_error',
         'neg_mean_absolute_error': 'neg_mean_absolute_error',
+        'mean_absolute_error': 'neg_mean_absolute_error',
         'neg_mean_squared_error': 'neg_mean_squared_error',
+        'mean_squared_error': 'neg_mean_squared_error',
         'neg_mean_squared_log_error': 'neg_mean_squared_log_error',
+        'mean_squared_log_error': 'neg_mean_squared_log_error',
         'neg_root_mean_squared_error': 'neg_root_mean_squared_error',
+        'root_mean_squared_error': 'neg_root_mean_squared_error',
         'neg_mean_poisson_deviance': 'neg_mean_poisson_deviance',
-        'neg_mean_gamma_deviance': 'neg_mean_gamma_deviance'
+        'mean_poisson_deviance': 'neg_mean_poisson_deviance',
+        'neg_mean_gamma_deviance': 'neg_mean_gamma_deviance',
+        'mean_gamma_deviance': 'neg_mean_gamma_deviance',
     },
 }
 AVALIABLE['categorical'] = AVALIABLE['binary'].copy()

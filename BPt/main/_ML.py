@@ -1170,8 +1170,8 @@ def _preproc_problem_spec(self, problem_spec):
 
     # Check for if default scorer
     if ps.scorer == 'default':
-        default_scorers = {'regression': ['explained_variance_score',
-                                          'r2' 'neg_mean_squared_error'],
+        default_scorers = {'regression': ['explained_variance',
+                                          'neg_mean_squared_error'],
                            'binary': ['matthews', 'roc_auc', 'f1'],
                            'categorical': ['matthews', 'roc_auc_ovr',
                                            'f1_macro']}

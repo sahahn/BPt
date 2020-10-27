@@ -690,17 +690,18 @@ class Model(Piece):
 
         self.check_args()
 
-    def show_params(self, problem_type='regression'):
+    def view(self, problem_type='regression'):
 
         from ..pipeline.Models import get_base_model_and_params, AVALIABLE
 
         proc_str = proc_type_dep_str(self.obj, AVALIABLE, problem_type)
-        model_params = get_base_model_and_params(proc_str, self.extra_params,
-                                                 self.params, True)[1]
+        model, model_params =\
+            get_base_model_and_params(proc_str, self.extra_params,
+                                      self.params, True)
         model_params = {'__'.join(m.split('__')[1:]): model_params[m]
                         for m in model_params}
 
-        return model_params
+        return model, model_params
 
 
 class Ensemble(Piece):

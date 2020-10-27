@@ -1170,9 +1170,11 @@ def _preproc_problem_spec(self, problem_spec):
 
     # Check for if default scorer
     if ps.scorer == 'default':
-        default_scorers = {'regression': 'r2',
-                           'binary': 'roc_auc',
-                           'categorical': 'roc_auc_ovr'}
+        default_scorers = {'regression': ['explained_variance_score',
+                                          'r2' 'neg_mean_squared_error'],
+                           'binary': ['matthews', 'roc_auc', 'f1'],
+                           'categorical': ['matthews', 'roc_auc_ovr',
+                                           'f1_macro']}
         ps.scorer = default_scorers[pt]
 
     # Proc subjects to use

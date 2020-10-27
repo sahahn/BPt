@@ -1157,6 +1157,9 @@ def _preproc_problem_spec(self, problem_spec):
         else:
             pt = get_target_type(self.all_data[target_key])
 
+        self._print('problem_spec problem_type ==  default, setting as:',
+                    pt)
+
     elif pt == 'b':
         pt = 'binary'
 
@@ -1176,6 +1179,7 @@ def _preproc_problem_spec(self, problem_spec):
                            'categorical': ['matthews', 'roc_auc_ovr',
                                            'f1_macro']}
         ps.scorer = default_scorers[pt]
+        self._print('problem_spec scorer ==  default, setting as:', ps.scorer)
 
     # Proc subjects to use
     final_subjects = self._get_subjects_to_use(ps.subjects)

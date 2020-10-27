@@ -1175,9 +1175,10 @@ def _preproc_problem_spec(self, problem_spec):
     if ps.scorer == 'default':
         default_scorers = {'regression': ['explained_variance',
                                           'neg_mean_squared_error'],
-                           'binary': ['matthews', 'roc_auc', 'f1'],
+                           'binary': ['matthews', 'roc_auc',
+                                      'balanced_accuracy'],
                            'categorical': ['matthews', 'roc_auc_ovr',
-                                           'f1_macro']}
+                                           'balanced_accuracy']}
         ps.scorer = default_scorers[pt]
         self._print('problem_spec scorer ==  default, setting as:', ps.scorer)
 

@@ -2000,8 +2000,8 @@ class Problem_Spec(Params):
             passed problem type.
 
             - 'regression'  : ['explained_variance', 'neg_mean_squared_error']
-            - 'binary'      : ['matthews', 'roc_auc', 'f1']
-            - 'categorical' : ['matthews', 'roc_auc_ovr', 'f1_macro']
+            - 'binary'      : ['matthews', 'roc_auc', 'balanced_accuracy']
+            - 'categorical' : ['matthews', 'roc_auc_ovr', 'balanced_accuracy']
 
             ::
 

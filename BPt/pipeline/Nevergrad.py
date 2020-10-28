@@ -142,17 +142,17 @@ class NevergradSearchCV(BaseEstimator):
 
         # If using dask client, pre-scatter some big memory fixed params
         else:
-            X_s = client.scatter(X)
-            y_s = client.scatter(y)
-            cv_inds_s = client.scatter(self.cv_inds)
-            cv_subjects_s = client.scatter(self.cv_subjects)
+            #X_s = client.scatter(X)
+            #y_s = client.scatter(y)
+            #cv_inds_s = client.scatter(self.cv_inds)
+            #cv_subjects_s = client.scatter(self.cv_subjects)
 
             instrumentation =\
-                ng.p.Instrumentation(X_s, y_s, self.estimator,
+                ng.p.Instrumentation(X, y, self.estimator,
                                      self.param_search._scorer,
                                      self.param_search.weight_scorer,
-                                     cv_inds_s,
-                                     cv_subjects_s, mapping,
+                                     self.cv_inds,
+                                     self.cv_subjects, mapping,
                                      fit_params, **self.param_distributions)
 
         return instrumentation

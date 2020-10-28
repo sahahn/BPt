@@ -260,6 +260,10 @@ class NevergradSearchCV(BaseEstimator):
         self.fit_best_estimator(recommendation, X, y, mapping,
                                 train_data_index, fit_params)
 
+        # Try restarting the client
+        if client is not None:
+            client.restart()
+
     def fit_best_estimator(self, recommendation,  X, y, mapping,
                            train_data_index, fit_params):
 

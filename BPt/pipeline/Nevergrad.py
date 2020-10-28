@@ -154,9 +154,6 @@ class NevergradSearchCV(BaseEstimator):
                                      cv_inds_s,
                                      cv_subjects_s, mapping,
                                      fit_params, **self.param_distributions)
-            
-            # Temp
-            client.profile(filename="dask-profile.html")
 
         return instrumentation
 
@@ -262,10 +259,6 @@ class NevergradSearchCV(BaseEstimator):
         # Fit best est, w/ best params
         self.fit_best_estimator(recommendation, X, y, mapping,
                                 train_data_index, fit_params)
-
-        # Temp
-        if client is not None:
-            client.profile(filename="dask-profile2.html")
 
 
     def fit_best_estimator(self, recommendation,  X, y, mapping,

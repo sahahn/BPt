@@ -15,6 +15,11 @@ from os.path import dirname, abspath, exists
 from sklearn.base import BaseEstimator
 import warnings
 
+try:
+    from loky import get_reusable_executor
+except ImportError:
+    pass
+
 
 class ProgressLogger():
 
@@ -201,6 +206,19 @@ class NevergradSearchCV(BaseEstimator):
 
         # Otherwise use futures pool executor
         else:
+
+            if self.param_search.mp_context == 'loky':
+
+                try:
+                    executor = get_reusable_executor(
+                        max_workers=self.param_search._n_jobs, timeout=60)
+
+                    recommendation = optimizer.minimize(ng_cv_score,
+                                                        executor=executor,
+                                                        batch_mode=False)
+                except NameError:
+                    raise(ImportError('Make sure loky is installed'))
+
             try:
                 with futures.ProcessPoolExecutor(
                   max_workers=self.param_search._n_jobs,

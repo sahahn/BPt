@@ -469,7 +469,7 @@ def wrap_pipeline_objs(wrapper, objs, inds, random_state,
 
         # Pass attributes
         if hasattr(obj, 'n_jobs'):
-            setattr(obj, n_jobs)
+            setattr(obj, 'n_jobs', n_jobs)
 
         if hasattr(obj, 'random_state'):
             setattr(obj, 'random_state', random_state)

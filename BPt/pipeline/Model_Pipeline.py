@@ -227,7 +227,8 @@ class Model_Pipeline():
                 estimator=base_pipeline,
                 param_search=self.param_search,
                 param_distributions=self.get_all_params(),
-                progress_loc=progress_loc)
+                progress_loc=progress_loc,
+                n_jobs=self.param_search._n_jobs)
 
         return search_model
 

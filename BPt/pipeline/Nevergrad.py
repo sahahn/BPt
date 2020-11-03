@@ -78,12 +78,14 @@ class NevergradSearchCV(BaseEstimator):
 
     def __init__(self, estimator=None, param_search=None,
                  param_distributions=None,
-                 progress_loc=None, verbose=False):
+                 progress_loc=None, n_jobs=1,
+                 verbose=False):
 
         self.estimator = estimator
         self.param_search = param_search
         self.param_distributions = param_distributions
         self.progress_loc = progress_loc
+        self.n_jobs = n_jobs
         self.verbose = verbose
 
     def get_params(self, deep=True):
@@ -174,7 +176,7 @@ class NevergradSearchCV(BaseEstimator):
 
         optimizer = opt(parametrization=instrumentation,
                         budget=self.param_search.n_iter,
-                        num_workers=self.param_search._n_jobs)
+                        num_workers=self.n_jobs)
 
         # Set random state is defined
         if isinstance(self.param_search._random_state, int):
@@ -193,8 +195,8 @@ class NevergradSearchCV(BaseEstimator):
 
     def run_search(self, optimizer, client):
 
-        # _n_jobs 1, always local
-        if self.param_search._n_jobs == 1:
+        # n_jobs 1, always local
+        if self.n_jobs == 1:
             recommendation = optimizer.minimize(ng_cv_score,
                                                 batch_mode=False)
 
@@ -211,7 +213,7 @@ class NevergradSearchCV(BaseEstimator):
 
                 try:
                     executor = get_reusable_executor(
-                        max_workers=self.param_search._n_jobs, timeout=60)
+                        max_workers=self.n_jobs, timeout=10)
 
                     recommendation = optimizer.minimize(ng_cv_score,
                                                         executor=executor,
@@ -221,7 +223,7 @@ class NevergradSearchCV(BaseEstimator):
 
             try:
                 with futures.ProcessPoolExecutor(
-                  max_workers=self.param_search._n_jobs,
+                  max_workers=self.n_jobs,
                   mp_context=mp.get_context(self.param_search.mp_context)) as ex:
 
                     recommendation = optimizer.minimize(ng_cv_score,
@@ -256,7 +258,7 @@ class NevergradSearchCV(BaseEstimator):
 
         # Check if need to make dask client
         # Criteria is greater than 1 job, and passed as dask_ip of non-None
-        if self.param_search._n_jobs > 1 and self.param_search.dask_ip is not None:
+        if self.n_jobs > 1 and self.param_search.dask_ip is not None:
             from dask.distributed import Client
             client = Client(self.param_search.dask_ip)
         else:

@@ -407,7 +407,8 @@ class Models(Type_Pieces):
                                       ensemble_params[i].des_split,
                                       self.spec['random_state'],
                                       ensemble_params[i].single_estimator,
-                                      ensemble_params[i].is_des)
+                                      ensemble_params[i].is_des,
+                                      ensemble_params[i].n_jobs_type)
 
             # And add the params
             ensembled_obj_params.update(wrapper.get_updated_params())
@@ -513,7 +514,8 @@ class Models(Type_Pieces):
         cv_obj = NevergradSearchCV(
             estimator=model_obj[1],
             param_search=param_search,
-            param_distributions=m_params)
+            param_distributions=m_params,
+            n_jobs=param_search._n_jobs)
 
         return (name + '_CV', cv_obj), model_params
 

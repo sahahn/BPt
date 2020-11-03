@@ -251,7 +251,8 @@ class Ensemble_Wrapper():
         return self.model_params
 
     def wrap_ensemble(self, models, ensemble, ensemble_split, random_state,
-                      single_estimator=False, is_des=False):
+                      single_estimator=False, is_des=False,
+                      n_jobs_type='ensemble'):
 
         # If no ensembling is passed, return either the 1 model,
         # or a voting wrapper
@@ -313,11 +314,21 @@ class Ensemble_Wrapper():
 
                 base_estimator = models[0][1]
 
-                # Set base estimator n_jobs to 1
-                try:
-                    base_estimator.n_jobs = 1
-                except AttributeError:
-                    pass
+                # Set base estimator n_jobs to 1, if ensemble n_jobs_type
+                if n_jobs_type == 'ensemble':
+
+                    try:
+                        base_estimator.n_jobs = 1
+                    except AttributeError:
+                        pass
+
+                # Otherwise, set base models n_jobs to passed n_jobs
+                else:
+
+                    try:
+                        base_estimator.n_jobs = self.n_jobs
+                    except AttributeError:
+                        pass
 
                 ensemble = ensemble_obj(base_estimator=base_estimator,
                                         **ensemble_extra_params)
@@ -327,11 +338,21 @@ class Ensemble_Wrapper():
                 except AttributeError:
                     pass
 
-                # Set ensemble n_jobs to n_jobs
-                try:
-                    ensemble.n_jobs = self.n_jobs
-                except AttributeError:
-                    pass
+                # Set ensemble n_jobs to n_jobs, if ensemble type
+                if n_jobs_type == 'ensemble':
+
+                    try:
+                        ensemble.n_jobs = self.n_jobs
+                    except AttributeError:
+                        pass
+
+                # otherwise, try to set to 1
+                else:
+
+                    try:
+                        ensemble.n_jobs = 1
+                    except AttributeError:
+                        pass
 
                 new_ensemble = [(ensemble_name, ensemble)]
 
@@ -356,12 +377,24 @@ class Ensemble_Wrapper():
                 # So, ensemble_extra_params should contain the
                 # final estimator + other params
 
-                # Set base models to n_jobs 1
+                # Set base models to n_jobs 1, if ensemble type
+                if n_jobs_type == 'ensemble':
+
+                    for model in models:
+                        if hasattr(model[1], 'n_jobs'):
+                            setattr(model[1], 'n_jobs', 1)
+
+                # Otherwise, set to n_jobs
+                else:
+
+                    for model in models:
+                        if hasattr(model[1], 'n_jobs'):
+                            setattr(model[1], 'n_jobs', self.n_jobs)
+
+                # Make sure random state is propegated
                 for model in models:
-                    try:
-                        model[1].n_jobs = 1
-                    except AttributeError:
-                        pass
+                    if hasattr(model[1], 'random_state'):
+                        setattr(model[1], 'random_state', random_state)
 
                 ensemble = ensemble_obj(estimators=models,
                                         **ensemble_extra_params)
@@ -371,12 +404,19 @@ class Ensemble_Wrapper():
                 except AttributeError:
                     pass
 
-                # Set ensemble n_jobs to n_jobs
-                try:
-                    ensemble.n_jobs = self.n_jobs
-                except AttributeError:
-                    pass
+                # Set ensemble n_jobs to n_jobs, if ensemble type
+                if n_jobs_type == 'ensemble':
 
+                    if hasattr(ensemble, 'n_jobs'):
+                        setattr(ensemble, 'n_jobs', self.n_jobs)
+
+                # Otherwise, set to 1
+                else:
+
+                    if hasattr(ensemble, 'n_jobs'):
+                        setattr(ensemble, 'n_jobs', 1)
+
+                # Wrap as object
                 new_ensemble = [(ensemble_name, ensemble)]
 
                 # Append ensemble name to all model params

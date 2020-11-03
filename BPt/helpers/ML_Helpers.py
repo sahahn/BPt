@@ -467,16 +467,12 @@ def wrap_pipeline_objs(wrapper, objs, inds, random_state,
 
         name, obj = chunk
 
-        # Try to set attributes
-        try:
-            obj.n_jobs = n_jobs
-        except AttributeError:
-            pass
+        # Pass attributes
+        if hasattr(obj, 'n_jobs'):
+            setattr(obj, n_jobs)
 
-        try:
-            obj.random_state = random_state
-        except AttributeError:
-            pass
+        if hasattr(obj, 'random_state'):
+            setattr(obj, 'random_state')
 
         wrapped_obj = wrapper(obj, ind, cache_loc=cache_loc, **params)
         wrapped_objs.append((name, wrapped_obj))

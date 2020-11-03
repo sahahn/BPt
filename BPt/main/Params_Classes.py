@@ -711,6 +711,7 @@ class Ensemble(Piece):
                  target_scaler=None,
                  is_des=False,
                  single_estimator=False, des_split=.2,
+                 n_jobs_type='ensemble',
                  extra_params=None):
         ''' The Ensemble object is valid base
         :class:`Model_Pipeline` piece, designed
@@ -849,6 +850,13 @@ class Ensemble(Piece):
 
                 default = .2
 
+        n_jobs_type : str, optional
+            Either 'ensemble' or 'models'.
+
+            ::
+
+                default = 'ensemble'
+
         extra_params : :ref`extra params dict<Extra Params>`, optional
 
             See :ref:`Extra Params`
@@ -871,6 +879,7 @@ class Ensemble(Piece):
         self.is_des = is_des
         self.des_split = des_split
         self.single_estimator = single_estimator
+        self.n_jobs_type = n_jobs_type
         self.extra_params = extra_params
         self._is_model = True
 

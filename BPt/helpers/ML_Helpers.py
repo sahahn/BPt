@@ -472,7 +472,7 @@ def wrap_pipeline_objs(wrapper, objs, inds, random_state,
             setattr(obj, n_jobs)
 
         if hasattr(obj, 'random_state'):
-            setattr(obj, 'random_state')
+            setattr(obj, 'random_state', random_state)
 
         wrapped_obj = wrapper(obj, ind, cache_loc=cache_loc, **params)
         wrapped_objs.append((name, wrapped_obj))

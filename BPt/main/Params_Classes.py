@@ -853,6 +853,22 @@ class Ensemble(Piece):
         n_jobs_type : str, optional
             Either 'ensemble' or 'models'.
 
+            This parameter controls how the total n_jobs are distributed, if
+            'ensemble', then the n_jobs will be used all in the ensemble object
+            and every instance within the sub-models set to n_jobs = 1.
+            Alternatively,
+            if passed 'models', then the ensemble object will not
+            be multi-processed, i.e.,
+            will be set to n_jobs = 1, and the n_jobs will
+            be distributed to each base model.
+
+            If you are training a stacking regressor for example
+            with n_jobs = 16, and you have 16+ models, then 'ensemble'
+            is likely a good choice here. If instead you have only
+            3 base models, and one or more of those 3 could benefit from
+            a higher n_jobs, then setting n_jobs_type to 'models' might
+            give a speed-up.
+
             ::
 
                 default = 'ensemble'

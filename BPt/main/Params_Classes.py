@@ -707,6 +707,7 @@ class Model(Piece):
 class Ensemble(Piece):
 
     def __init__(self, obj, models, params=0, scope='all',
+                 param_search=None,
                  target_scaler=None,
                  is_des=False,
                  single_estimator=False, des_split=.2,
@@ -785,6 +786,13 @@ class Ensemble(Piece):
 
                 default = 'all'
 
+        param_search : Param_Search, None, optional
+            Experimental.
+
+            ::
+
+                default = None
+
         target_scaler : Scaler, None, optional
 
             Still somewhat experimental, can pass
@@ -858,6 +866,7 @@ class Ensemble(Piece):
 
         self.params = params
         self.scope = scope
+        self.param_search = param_search
         self.target_scaler = target_scaler
         self.is_des = is_des
         self.des_split = des_split

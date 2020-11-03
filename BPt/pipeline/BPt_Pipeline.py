@@ -23,6 +23,21 @@ class BPt_Pipeline(Pipeline):
 
         super().__init__(steps=steps, memory=memory, verbose=verbose)
 
+    @property
+    def n_jobs(self):
+        return self._n_jobs
+
+    @n_jobs.setter
+    def n_jobs(self, n_jobs):
+
+        # Store ... in self._n_jobs
+        self._n_jobs = n_jobs
+
+        # If set here, try to propegate to all steps
+        for step in self.steps:
+            if hasattr(step[1], 'n_jobs'):
+                setattr(step[1], 'n_jobs', n_jobs)
+
     def get_params(self, deep=True):
         params = super()._get_params('steps', deep=deep)
         return params

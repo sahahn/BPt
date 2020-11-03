@@ -38,6 +38,10 @@ class BPt_Pipeline(Pipeline):
             if hasattr(step[1], 'n_jobs'):
                 setattr(step[1], 'n_jobs', n_jobs)
 
+            # Also check for wrapper n jobs
+            if hasattr(step[1], 'wrapper_n_jobs'):
+                setattr(step[1], 'wrapper_n_jobs', n_jobs)
+
     def get_params(self, deep=True):
         params = super()._get_params('steps', deep=deep)
         return params

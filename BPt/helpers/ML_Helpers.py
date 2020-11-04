@@ -6,7 +6,7 @@ These are non-class functions that are used in _ML.py and Scoring.py
 """
 import numpy as np
 import inspect
-from .Default_Params import get_base_params, proc_params, show
+from .Default_Params import get_base_params, proc_params
 from copy import deepcopy
 import nevergrad as ng
 from ..main.Input_Tools import is_special, Select
@@ -564,7 +564,7 @@ def get_a_by_type(avaliable, in_strs, problem_type):
     avaliable_by_type = avaliable[problem_type]
 
     for s in in_strs:
-        if 'user passed' in s:
+        if 'Custom ' in s:
             avaliable_by_type[s] = s
 
     return avaliable_by_type
@@ -620,9 +620,9 @@ def get_avaliable_run_name(name, model):
             if isinstance(model.obj, str):
                 name = model.obj
             else:
-                name = 'user passed'
+                name = 'Custom'
         else:
-            name = 'user passed'
+            name = 'Custom'
 
     return name
 

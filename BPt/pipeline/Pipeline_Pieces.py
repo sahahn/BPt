@@ -132,7 +132,7 @@ class Pieces():
             else:
                 self.spec = spec.copy()
 
-            if 'user passed' in name:
+            if 'Custom ' in name:
                 objs_and_params.append(
                     self._get_user_passed_obj_params(name, param_str,
                                                      extra_params))

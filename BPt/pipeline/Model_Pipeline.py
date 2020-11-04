@@ -112,9 +112,9 @@ class Model_Pipeline():
                     objs.obj, cnt = self._check_for_user_passed(objs.obj, cnt)
 
                 # Now, we assume any single obj that gets here, if not
-                # a str is user passed obj
+                # a str is user passed custom obj
                 elif not isinstance(objs, str):
-                    save_name = 'user passed' + str(cnt)
+                    save_name = 'Custom ' + str(cnt)
                     cnt += 1
 
                     self.user_passed_objs[save_name] = objs

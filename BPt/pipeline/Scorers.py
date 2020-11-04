@@ -111,7 +111,7 @@ def process_scorers(in_scorers, problem_type):
 
         else:
             scorers.append(wrap_non_picklable_objects(scorer_strs[m]))
-            scorer_strs[m] = 'user passed scorer' + str(cnt)
+            scorer_strs[m] = 'Custom Scorer ' + str(cnt)
             cnt += 1
 
     scorer = scorers[0]

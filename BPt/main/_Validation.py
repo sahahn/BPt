@@ -3,6 +3,7 @@ _Validation.py
 ====================================
 Main class extension file for defining validation and train test splits.
 """
+from deslib.dcs.lca import LCA
 import pandas as pd
 import numpy as np
 import os
@@ -281,9 +282,15 @@ def Define_Validation_Strategy(self, cv=None, groups=None, stratify=None,
                        train_only_loc=train_only_loc,
                        train_only_subjects=train_only_subjects)
 
-    self.cv, df = self._get_cv(passed_cv, show=show,
-                               show_original=show_original,
-                               return_df=return_df)
+    returned = self._get_cv(passed_cv, show=show,
+                            show_original=show_original,
+                            return_df=return_df)
+
+    if return_df:
+        self.cv, df = returned
+    else:
+        self.cv = returned
+        df = None
 
     if return_df:
         return df

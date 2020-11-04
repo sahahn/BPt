@@ -715,11 +715,13 @@ class Ensemble(Piece):
 
     _is_model = True
 
-    def __init__(self, obj, models, params=0, scope='all',
+    def __init__(self, obj, models,
+                 params=0, scope='all',
                  param_search=None,
                  target_scaler=None,
                  is_des=False,
-                 single_estimator=False, des_split=.2,
+                 single_estimator=False,
+                 des_split=.2,
                  n_jobs_type='ensemble',
                  extra_params=None):
         ''' The Ensemble object is valid base

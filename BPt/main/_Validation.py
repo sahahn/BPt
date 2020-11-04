@@ -10,15 +10,15 @@ import os
 from ..helpers.Data_Helpers import get_unique_combo_df, reverse_unique_combo_df
 
 
-def _get_CV(self, CV_params, show=False, show_original=True, return_df=False):
+def _get_cv(self, cv_params, show=False, show_original=True, return_df=False):
 
     from ..helpers.CV import CV
 
-    if isinstance(CV_params, CV):
-        return CV_params
+    if isinstance(cv_params, CV):
+        return cv_params
 
-    train_only_subjects = CV_params.train_only_subjects
-    train_only_loc = CV_params.train_only_loc
+    train_only_subjects = cv_params.train_only_subjects
+    train_only_loc = cv_params.train_only_loc
 
     if self.all_data is None:
         self._print('Calling Prepare_All_Data()',
@@ -40,12 +40,15 @@ def _get_CV(self, CV_params, show=False, show_original=True, return_df=False):
     train_only = self._get_subjects_to_use(subjects_to_use)
     train_only = np.array(list(train_only))
 
-    groups = CV_params.groups
-    stratify = CV_params.stratify
+    groups = cv_params.groups
+    stratify = cv_params.stratify
+
+    df = None
 
     if groups is not None and stratify is not None:
-        print('Warning: BPt does not currently support groups and',
-              'stratify together!')
+        raise RuntimeError('Warning: BPt does not currently ',
+                           'support groups and',
+                           'stratify together!')
 
     if groups is not None:
 
@@ -105,11 +108,9 @@ def _get_CV(self, CV_params, show=False, show_original=True, return_df=False):
     elif len(train_only) > 0:
         cv = CV(train_only=train_only)
         self._print(len(train_only), 'Train only subjects defined.')
-        df = None
 
     else:
         cv = CV()
-        df = None
 
     if return_df:
         return cv, df
@@ -117,15 +118,26 @@ def _get_CV(self, CV_params, show=False, show_original=True, return_df=False):
     return cv
 
 
-def Define_Validation_Strategy(self, groups=None, stratify=None,
+def Define_Validation_Strategy(self, cv=None, groups=None, stratify=None,
                                train_only_loc=None, train_only_subjects=None,
                                show=True, show_original=True, return_df=False):
     '''Define a validation strategy to be used during different train/test
-    splits, in addition to model selection and model hyperparameter CV.
+    splits, in addition to model selection and model hyperparameter
+    cross validation.
     See Notes for more info.
+
+    Note, can also pass a cv params objects here.
 
     Parameters
     ----------
+    cv :  :class:`CV` or None, optional
+        If None, then skip, otherwise can pass a :class:`CV`
+        object here, and the rest of the parameters will be skipped.
+
+        ::
+
+            default = None
+
     groups : str, list or None, optional
         In the case of str input, will assume the str to refer
         to a column key within the loaded strat data,
@@ -135,7 +147,9 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         and they will be combined into all unique
         combinations of the elements of the list.
 
-        (default = None)
+        ::
+
+            default = None
 
     stratify : str, list or None, optional
         In the case of str input, will assume the str to refer
@@ -157,7 +171,9 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         you want to use your loaded strat val with the same name - you have
         to pass 'Sex' + self.self.strat_u_name (by default this is '_Strat').
 
-        (default = None)
+        ::
+
+            default = None
 
     train_only_loc : str, Path or None, optional
         Location of a file to load in train_only subjects,
@@ -170,7 +186,9 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
 
         This parameter is compatible with groups / stratify.
 
-        (default = None)
+        ::
+
+            default = None
 
     train_only_subjects : set, array-like, 'nan', or None, optional
         An explicit list or array-like of train_only subjects, where
@@ -189,20 +207,26 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
 
         This parameter is compatible with groups / stratify.
 
-        (default = None)
+        ::
+
+            default = None
 
     show : bool, optional
         By default, if True, information about the defined validation
         strategy will be shown, including a dataframe if stratify is defined.
 
-        (default = True)
+        ::
+
+            default = True
 
     show_original : bool, optional
         By default when you define stratifying behavior, a dataframe will
         be displayed. This param controls if that dataframe shows original
         names, or if False, then it shows the internally used names.
 
-        (default = True)
+        ::
+
+            default = True
 
     return_df : bool, optional
 
@@ -211,7 +235,9 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
         None in all cases execpt for when stratifying by a variable
         is requested!
 
-        (default = False)
+        ::
+
+            default = False
 
     Notes
     ----------
@@ -246,12 +272,16 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
     the size of the smallest unique group decreases.
     '''
 
-    from .Params_Classes import CV
-    passed_CV = CV(groups=groups, stratify=stratify,
-                   train_only_loc=train_only_loc,
-                   train_only_subjects=train_only_subjects)
+    if cv is not None:
+        passed_cv = cv
 
-    self.CV, df = self._get_CV(passed_CV, show=show,
+    else:
+        from .Params_Classes import CV
+        passed_cv = CV(groups=groups, stratify=stratify,
+                       train_only_loc=train_only_loc,
+                       train_only_subjects=train_only_subjects)
+
+    self.cv, df = self._get_cv(passed_cv, show=show,
                                show_original=show_original,
                                return_df=return_df)
 
@@ -260,8 +290,9 @@ def Define_Validation_Strategy(self, groups=None, stratify=None,
 
 
 def Train_Test_Split(self, test_size=None,
-                     test_subjects=None, CV='default',
-                     random_state='default', test_loc='depreciated'):
+                     test_subjects=None, cv='default',
+                     random_state='default', test_loc='depreciated',
+                     CV='depreciated'):
     '''Define the overarching train / test split, *highly reccomended*.
 
     Parameters
@@ -287,8 +318,8 @@ def Train_Test_Split(self, test_size=None,
 
             default = None
 
-    CV : 'default' or CV params object, optional
-        If left as default 'default', use the class defined CV behavior
+    cv : 'default' or :class:`CV`, optional
+        If left as default 'default', use the class defined CV
         for the train test split, otherwise can pass custom behavior
 
         ::
@@ -313,6 +344,15 @@ def Train_Test_Split(self, test_size=None,
 
             default = 'depreciated'
 
+     CV : 'depreciated'
+        Switching to passing cv parameter as cv instead of CV.
+        For now if CV is passed it will still work as if it were
+        passed as cv.
+
+        ::
+
+            default = 'depreciated'
+
     '''
 
     if test_loc != 'depreciated':
@@ -320,10 +360,17 @@ def Train_Test_Split(self, test_size=None,
               'string to test_subjects.')
         test_subjects = test_loc
 
-    if CV == 'default':
-        CV_obj = self.CV
+    if CV != 'depreciated':
+        print('Warning: Passing CV is depreciated. Please change to',
+              'passing as cv instead.')
+
+        # For now, let it still work
+        cv = CV
+
+    if cv == 'default':
+        cv_obj = self.cv
     else:
-        CV_obj = self._get_CV(CV)
+        cv_obj = self._get_cv(cv)
 
     if test_size is None and test_subjects is None:
         test_size = .2
@@ -339,8 +386,8 @@ def Train_Test_Split(self, test_size=None,
 
     if test_size is not None:
 
-        original_subjects, subjects, train_only =\
-            CV_obj.get_train_only(self.all_data.index)
+        _, subjects, train_only =\
+            cv_obj.get_train_only(self.all_data.index)
 
         self._print('Performing split on', len(subjects), 'subjects', end='')
 
@@ -360,7 +407,7 @@ def Train_Test_Split(self, test_size=None,
             self._print('random_state:', random_state)
             self._print('Test split size:', test_size)
 
-            self.train_subjects, self.test_subjects = CV_obj.train_test_split(
+            self.train_subjects, self.test_subjects = cv_obj.train_test_split(
                                     self.all_data.index, test_size,
                                     random_state)
 

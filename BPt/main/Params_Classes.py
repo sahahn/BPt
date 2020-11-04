@@ -963,15 +963,17 @@ class Ensemble(Piece):
 class Param_Search(Params):
 
     def __init__(self, search_type='RandomSearch',
-                 splits=3, n_repeats=1, n_iter=10, CV='default',
+                 splits=3, n_repeats=1, n_iter=10,
+                 cv='default',
                  scorer='default',
                  weight_scorer=False,
                  mp_context='default',
                  n_jobs='default',
                  dask_ip=None,
+                 CV='depreciated',
                  _random_state=None,
                  _splits_vals=None,
-                 _CV=None,
+                 _cv=None,
                  _scorer=None,
                  _n_jobs=None):
         ''' Param_Search is special input object designed to be
@@ -983,7 +985,7 @@ class Param_Search(Params):
         Specifically, there must be atleast one parameter search
         somewhere in the object Param_Search is passed!
 
-        All backend hyper-parameter searches make use of the 
+        All backend hyper-parameter searches make use of the
         <https://github.com/facebookresearch/nevergrad>`_ library.
 
         Parameters
@@ -1112,7 +1114,7 @@ class Param_Search(Params):
 
                 default = 10
 
-        CV : 'default' or CV params object, optional
+        cv : 'default' or :class:`CV`, optional
             If left as default 'default', use the class defined CV behavior
             for the splits, otherwise can pass custom behavior.
 
@@ -1208,13 +1210,30 @@ class Param_Search(Params):
             ::
 
                 default = None
+
+        CV : 'depreciated'
+            Switching to passing cv parameter as cv instead of CV.
+            For now if CV is passed it will still work as if it were
+            passed as cv.
+
+            ::
+
+                default = 'depreciated'
         '''
 
         self.search_type = search_type
         self.splits = splits
         self.n_repeats = n_repeats
         self.n_iter = n_iter
-        self.CV = CV
+
+        if CV != 'depreciated':
+            print('Warning: Passing CV is depreciated. Please change to',
+                  'passing as cv instead.')
+
+            # For now, let it still work
+            cv = CV
+
+        self.cv = cv
 
         self.scorer = scorer
         self.weight_scorer = weight_scorer
@@ -1224,7 +1243,7 @@ class Param_Search(Params):
 
         self._random_state = _random_state
         self._splits_vals = _splits_vals
-        self._CV = _CV
+        self._cv = _cv
         self._scorer = _scorer
         self._n_jobs = _n_jobs
 
@@ -1245,8 +1264,8 @@ class Param_Search(Params):
             process_scorers(self.scorer,
                             problem_type)[2]
 
-    def set_CV(self, CV):
-        self._CV = CV
+    def set_cv(self, cv):
+        self._cv = cv
 
     def set_split_vals(self, vals):
         self._splits_vals = vals

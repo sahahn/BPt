@@ -202,21 +202,21 @@ class Test_Data(TestCase):
         self.assertTrue(ed_size == 3)
 
         self.ML.Define_Validation_Strategy(groups='education')
-        self.assertTrue(len(self.ML.CV.groups == 6))
+        self.assertTrue(len(self.ML.cv.groups == 6))
 
         self.ML.Load_Strat(loc=loc, col_name='sex', dataset_type='custom',
                            binary_col = True)
         self.assertTrue(self.ML.strat.shape == (5, 2))
 
         self.ML.Define_Validation_Strategy(groups=['education', 'sex'])
-        self.assertTrue(len(self.ML.CV.groups == 5))
+        self.assertTrue(len(self.ML.cv.groups == 5))
 
         self.ML.Define_Validation_Strategy(stratify=['education', 'sex'])
-        self.assertTrue(len(self.ML.CV.stratify == 5))
-        self.assertTrue(len(np.unique(self.ML.CV.stratify)) == 5)
+        self.assertTrue(len(self.ML.cv.stratify == 5))
+        self.assertTrue(len(np.unique(self.ML.cv.stratify)) == 5)
 
         self.ML.Define_Validation_Strategy(stratify='sex')
-        self.assertTrue(len(self.ML.CV.stratify == 5))
+        self.assertTrue(len(self.ML.cv.stratify == 5))
 
         self.ML.Clear_Strat()
         self.assertTrue(len(self.ML.strat) == 0)
@@ -271,7 +271,7 @@ class Test_Data(TestCase):
         self.assertTrue(self.ML.strat.shape == (5, 1))
 
         self.ML.Define_Validation_Strategy(groups='education')
-        self.assertTrue(len(self.ML.CV.groups == 5))
+        self.assertTrue(len(self.ML.cv.groups == 5))
 
         rs = 1
         for x in range(50):
@@ -287,20 +287,20 @@ class Test_Data(TestCase):
         self.assertTrue(self.ML.all_data.shape == (5, 7))
 
         self.ML.Define_Validation_Strategy(stratify=self.ML.targets_keys[0])
-        self.assertTrue(len(self.ML.CV.stratify) == 5)
-        self.assertTrue(len(np.unique(self.ML.CV.stratify)) == 2)
+        self.assertTrue(len(self.ML.cv.stratify) == 5)
+        self.assertTrue(len(np.unique(self.ML.cv.stratify)) == 2)
 
         self.ML.Define_Validation_Strategy(stratify=[self.ML.targets_keys[0],
                                                      'education'])
-        self.assertTrue(len(self.ML.CV.stratify) == 5)
-        self.assertTrue(len(np.unique(self.ML.CV.stratify)) == 5)
+        self.assertTrue(len(self.ML.cv.stratify) == 5)
+        self.assertTrue(len(np.unique(self.ML.cv.stratify)) == 5)
 
         # Load target as categorical
         self.ML.Load_Targets(loc=loc, col_name='sex', data_type='c',
                              dataset_type='custom', clear_existing=True)
         self.ML.Define_Validation_Strategy(
             stratify=self.ML.targets_keys[0])
-        self.assertTrue(len(self.ML.CV.stratify) == 5)
+        self.assertTrue(len(self.ML.cv.stratify) == 5)
 
         self.ML.Train_Test_Split(test_subjects='NDAR_1')
         self.assertTrue(len(self.ML.test_subjects) == 1)

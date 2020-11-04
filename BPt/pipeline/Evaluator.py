@@ -16,14 +16,14 @@ class Evaluator():
     model training, scaling, handling different datatypes ect...
     '''
 
-    def __init__(self, model, problem_spec, CV, all_keys,
+    def __init__(self, model, problem_spec, cv, all_keys,
                  feat_importances, return_raw_preds, return_models,
                  verbosity, _print=print):
 
         # Save passed params
         self.model = model
         self.ps = problem_spec
-        self.CV = CV
+        self.cv = cv
         self.all_keys = all_keys
         self.return_raw_preds = return_raw_preds
         self.return_models = return_models
@@ -223,13 +223,13 @@ class Evaluator():
 
     def _get_eval_splits(self, train_subjects, splits, n_repeats, splits_vals):
 
-        subject_splits = self.CV.get_cv(train_subjects, splits, n_repeats,
+        subject_splits = self.cv.get_cv(train_subjects, splits, n_repeats,
                                         splits_vals, self.ps.random_state,
                                         return_index=False)
 
         # Want to save n_splits by type
         if splits_vals is not None:
-            self.n_splits_ = self.CV.get_num_groups(train_subjects,
+            self.n_splits_ = self.cv.get_num_groups(train_subjects,
                                                     splits_vals)
 
         elif isinstance(splits, int):

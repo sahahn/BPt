@@ -10,7 +10,7 @@ from sklearn.base import clone
 from copy import deepcopy
 
 from .base import _get_est_fit_params
-from ..helpers.CV import CV as Base_CV
+from ..helpers.CV import CV
 from os.path import dirname, abspath, exists
 from sklearn.base import BaseEstimator
 import warnings
@@ -125,11 +125,11 @@ class NevergradSearchCV(BaseEstimator):
     def _set_cv(self, train_data_index):
 
         # If no CV, use random
-        if self.param_search._CV is None:
-            self.param_search._CV = Base_CV()
+        if self.param_search._cv is None:
+            self.param_search._cv = CV()
 
         self.cv_subjects, self.cv_inds =\
-            self.param_search._CV.get_cv(train_data_index,
+            self.param_search._cv.get_cv(train_data_index,
                                          self.param_search.splits,
                                          self.param_search.n_repeats,
                                          self.param_search._splits_vals,
@@ -213,7 +213,7 @@ class NevergradSearchCV(BaseEstimator):
 
                 try:
                     executor = get_reusable_executor(
-                        max_workers=self.n_jobs, timeout=60)
+                        max_workers=self.n_jobs, timeout=120)
 
                     recommendation = optimizer.minimize(ng_cv_score,
                                                         executor=executor,
@@ -330,10 +330,10 @@ def wrap_param_search(param_search, model_obj, model_params):
                 model_params.pop(param)
 
     # Create the wrapper nevergrad CV model
-    cv_obj = NevergradSearchCV(
+    search_obj = NevergradSearchCV(
         estimator=model_obj[1],
         param_search=param_search,
         param_distributions=m_params,
         n_jobs=param_search._n_jobs)
 
-    return (name + '_CV', cv_obj), model_params
+    return (name + '_NGSearchCV', search_obj), model_params

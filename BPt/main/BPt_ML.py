@@ -293,7 +293,7 @@ class BPt_ML():
         self.train_subjects, self.test_subjects = None, None
 
         # CV by default is just random splits
-        self.CV = CV()
+        self.cv = CV()
 
         # Store default dicts as init empty
         self.default_load_params, self.default_ML_verbosity = {}, {}
@@ -491,7 +491,7 @@ class BPt_ML():
         get_new_docstring(Set_Default_Load_Params, Drop_Data_Duplicates)
 
     # Validation / CV funcationality
-    from ._Validation import (_get_CV,
+    from ._Validation import (_get_cv,
                               Define_Validation_Strategy,
                               Train_Test_Split,
                               _add_strat_u_name,

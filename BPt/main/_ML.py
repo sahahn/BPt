@@ -324,12 +324,13 @@ def Evaluate(self,
              problem_spec='default',
              splits=3,
              n_repeats=2,
-             CV='default',
+             cv='default',
              train_subjects='train',
              feat_importances=None,
              return_raw_preds=False,
              return_models=False,
-             run_name='default'):
+             run_name='default',
+             CV='depreciated'):
     ''' The Evaluate function is one of the main interfaces
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
     Specifically, Evaluate is designed to try and estimate the out of sample
@@ -452,7 +453,7 @@ def Evaluate(self,
 
             default = 2
 
-    CV : 'default' or CV params object, optional
+    cv : 'default' or CV params object, optional
         If left as default 'default', use the class defined CV behavior
         for the splits, otherwise can pass custom behavior
 
@@ -558,6 +559,15 @@ def Evaluate(self,
 
             default = 'default'
 
+    CV : 'depreciated'
+        Switching to passing cv parameter as cv instead of CV.
+        For now if CV is passed it will still work as if it were
+        passed as cv.
+
+        ::
+
+            default = 'depreciated'
+
     Returns
     ----------
     results : dict
@@ -616,11 +626,18 @@ def Evaluate(self,
     elif feat_importances == 'default':
         raise RuntimeError('feat_importaces == default is depreciated')
 
+    if CV != 'depreciated':
+        print('Warning: Passing CV is depreciated. Please change to',
+              'passing as cv instead.')
+
+        # For now, let it still work
+        cv = CV
+
     # Proc. CV
-    if CV == 'default':
-        CV_obj = self.CV
+    if cv == 'default':
+        cv_obj = self.cv
     else:
-        CV_obj = self._get_CV(CV)
+        cv_obj = self._get_cv(cv)
 
     # Pre-proc problem spec, set as copy ps, right before print
     ps = self._preproc_problem_spec(problem_spec)
@@ -638,7 +655,7 @@ def Evaluate(self,
         self._print('---------------')
         self._print('splits =', splits)
         self._print('n_repeats =', n_repeats)
-        self._print('CV =', CV)
+        self._print('cv =', cv)
         self._print('train_subjects =', train_subjects)
         self._print('feat_importances =', feat_importances)
         self._print('len(train_subjects) =', len(_train_subjects),
@@ -650,7 +667,7 @@ def Evaluate(self,
     self._init_evaluator(
         model_pipeline=model_pipeline,
         ps=ps,
-        CV=CV_obj,
+        cv=cv_obj,
         feat_importances=feat_importances,
         return_raw_preds=return_raw_preds,
         return_models=return_models)
@@ -958,7 +975,7 @@ def Test(self,
     self._init_evaluator(
         model_pipeline=model_pipeline,
         ps=ps,
-        CV=self.CV,
+        cv=None, # Test doesn't use cv
         feat_importances=feat_importances,
         return_raw_preds=return_raw_preds,
         return_models=return_models)
@@ -1061,13 +1078,13 @@ def _preproc_param_search(self, object, n_jobs,
     if param_search is None:
         return False
 
-    # Set CV
-    if param_search.CV == 'default':
-        search_CV = self.CV
+    # Proc param search cv
+    if param_search.cv == 'default':
+        search_cv = self.cv
     else:
-        search_CV =\
-            self._get_CV(param_search.CV, show=False)
-    param_search.set_CV(search_CV)
+        search_cv =\
+            self._get_cv(param_search.CV, show=False)
+    param_search.set_cv(search_cv)
 
     # Set scorer
     param_search.set_scorer(problem_type)
@@ -1339,7 +1356,7 @@ def get_pipeline(self, model_pipeline, problem_spec,
 
 
 def _init_evaluator(self, model_pipeline, ps,
-                    CV, feat_importances, return_raw_preds, return_models):
+                    cv, feat_importances, return_raw_preds, return_models):
 
     # Make copies of the passed pipeline
     # and only make changes and pass along the copies
@@ -1355,7 +1372,7 @@ def _init_evaluator(self, model_pipeline, ps,
     self.evaluator =\
         Evaluator(model=model,
                   problem_spec=ps,
-                  CV=CV,
+                  cv=cv,
                   all_keys=self.Data_Scopes.all_keys,
                   feat_importances=feat_importances,
                   return_raw_preds=return_raw_preds,

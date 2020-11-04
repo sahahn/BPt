@@ -78,7 +78,7 @@ class BPt_ML():
                  verbose=True, notebook=True,
                  use_abcd_subject_ids=False,
                  low_memory_mode=False, strat_u_name='_Strat',
-                 random_state=534, n_jobs=1, dpi=100, mp_context='spawn'):
+                 random_state=534, n_jobs=1, dpi=100, mp_context='loky'):
         '''Main class used within BPt for interfacing with Data Loading
         and Modeling / Other funcationality.
 
@@ -218,15 +218,27 @@ class BPt_ML():
 
                 default = 1
 
-        mp_context : {None, 'fork', 'spawn'}, optional
+        mp_context : str, optional
+
             When a hyper-parameter search is launched, there are different
             ways through python that the multi-processing can be launched
             (assuming n_jobs > 1). Occassionally some choices can lead to
-            odd errors.
+            unexpected errors.
+
+            Choices are:
+
+            - 'loky': Create and use the python library
+                loky backend.
+
+            - 'fork': Python default fork mp_context
+
+            - 'forkserver': Python default forkserver mp_context
+
+            - 'spawn': Python default spawn mp_context
 
             ::
 
-                default = 'spawn'
+                default = 'loky'
         '''
         # Load logging class params
         self.exp_name = exp_name

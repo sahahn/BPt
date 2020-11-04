@@ -1,5 +1,4 @@
 from copy import deepcopy
-from scipy.sparse.construct import random
 from sklearn.base import BaseEstimator
 import pandas as pd
 from ..helpers.ML_Helpers import conv_to_list, proc_input, proc_type_dep_str
@@ -603,6 +602,8 @@ class Feat_Selector(Piece):
 
 class Model(Piece):
 
+    _is_model = True
+
     def __init__(self, obj, params=0, scope='all', param_search=None,
                  target_scaler=None, extra_params=None):
         ''' Model represents a base components of the :class:`Model_Pipeline`,
@@ -648,8 +649,15 @@ class Model(Piece):
 
                 default = 'all'
 
-        param_search : Param_Search, None, optional
-            Experimental.
+        param_search : :class:`Param_Search`, None, optional
+            If None, by default, this will be a base model.
+            Alternatively, by passing a :class:`Param_Search` instance here,
+            it specifies that this model should be wrapped in a
+            Nevergrad hyper-parameter search object.
+
+            This can be useful to create Model's which have
+            a nested hyper-parameter tuning independent from the
+            other pipeline steps.
 
             ::
 
@@ -686,7 +694,6 @@ class Model(Piece):
         self.param_search = param_search
         self.target_scaler = target_scaler
         self.extra_params = extra_params
-        self._is_model = True
 
         self.check_args()
 
@@ -705,6 +712,8 @@ class Model(Piece):
 
 
 class Ensemble(Piece):
+
+    _is_model = True
 
     def __init__(self, obj, models, params=0, scope='all',
                  param_search=None,
@@ -756,7 +765,8 @@ class Ensemble(Piece):
             requested ensemble object to
             create the requested ensemble.
 
-            See :class:`Model` for how to create a valid base model(s) to pass as input here.
+            See :class:`Model` for how to create a valid base model(s)
+            to pass as input here.
 
         params : int, str or dict of :ref:`params<Params>`, optional
             `params` sets as associated distribution of hyper-parameters
@@ -787,12 +797,15 @@ class Ensemble(Piece):
 
                 default = 'all'
 
-        param_search : Param_Search, None, optional
-            Experimental.
+        param_search : :class:`Param_Search`, None, optional
+            If None, by default, this will be a base ensemble model.
+            Alternatively, by passing a :class:`Param_Search` instance here,
+            it specifies that this model should be wrapped in a
+            Nevergrad hyper-parameter search object.
 
-            ::
-
-                default = None
+            This can be useful to create Model's which have
+            a nested hyper-parameter tuning independent from the
+            other pipeline steps.
 
         target_scaler : Scaler, None, optional
 
@@ -830,11 +843,15 @@ class Ensemble(Piece):
                 default = False
 
         single_estimator : bool, optional
-            The parameter `single_estimator` is used to let the Ensemble object know
-            if the `models` must be a single estimator. This is used for ensemble types
-            that requires an init param `base_estimator`. In the case that multiple models
-            are passed to `models`, but `single_estimator` is True, then the models will automatically
-            be wrapped in a voting ensemble, thus creating one single estimator.
+            The parameter `single_estimator` is used to let the
+            Ensemble object know if the `models` must be a single estimator.
+            This is used for ensemble types
+            that requires an init param `base_estimator`.
+            In the case that multiple models
+            are passed to `models`, but `single_estimator` is True,
+            then the models will automatically
+            be wrapped in a voting ensemble,
+            thus creating one single estimator.
 
             ::
 
@@ -842,23 +859,25 @@ class Ensemble(Piece):
 
         des_split : float, optional
             If `is_des` is True, then the passed ensemble must be
-            fit on a seperate validation set. This parameter determines the size
-            of the further train/val split on initial training set passed to
-            the ensemble. Where the size is comptued as the a percentage of the total size.
+            fit on a seperate validation set.
+            This parameter determines the size
+            of the further train/val split on initial
+            training set passed to
+            the ensemble. Where the size is comptued as
+            the a percentage of the total size.
 
             ::
 
                 default = .2
 
-        n_jobs_type : str, optional
-            Either 'ensemble' or 'models'.
+        n_jobs_type : 'ensemble' or 'models', optional
+            Valid options are either 'ensemble' or 'models'.
 
             This parameter controls how the total n_jobs are distributed, if
             'ensemble', then the n_jobs will be used all in the ensemble object
             and every instance within the sub-models set to n_jobs = 1.
-            Alternatively,
-            if passed 'models', then the ensemble object will not
-            be multi-processed, i.e.,
+            Alternatively, if passed 'models', then the ensemble
+            object will not be multi-processed, i.e.,
             will be set to n_jobs = 1, and the n_jobs will
             be distributed to each base model.
 
@@ -884,6 +903,7 @@ class Ensemble(Piece):
 
         self.obj = obj
 
+        # Force passed models if not a list, into a list
         if not isinstance(models, list):
             models = [models]
         self.models = models
@@ -897,7 +917,6 @@ class Ensemble(Piece):
         self.single_estimator = single_estimator
         self.n_jobs_type = n_jobs_type
         self.extra_params = extra_params
-        self._is_model = True
 
         self.check_args()
 
@@ -907,12 +926,12 @@ class Ensemble(Piece):
             for model in self.models:
                 if not hasattr(model, '_is_model'):
                     raise IOError(
-                        'All models must be valid Model/Ensemble param wrapped!')
+                        'All models must be valid Model/Ensemble !')
 
         else:
             if not hasattr(self.models, '_is_model'):
                 raise IOError(
-                    'Passed model in models must be a valid Model/Ensemble, i.e., param wrapped.')
+                    'Passed model in models must be a valid Model/Ensemble.')
 
 
 class Param_Search(Params):
@@ -1117,14 +1136,24 @@ class Param_Search(Params):
 
                 default = False
 
-        mp_context : {None, 'fork', 'spawn' or 'default'}, optional
+        mp_context : str, optional
             When a hyper-parameter search is launched, there are different
             ways through python that the multi-processing can be launched
             (assuming n_jobs > 1). Occassionally some choices can lead to
             unexpected errors.
 
-            If 'default' use the mp_context defined upon init of BPt
-            object.
+            Choices are:
+            -  'default': If 'default' use the mp_context
+                defined upon init of BPt object.
+
+            - 'loky': Create and use the python library
+                loky backend.
+
+            - 'fork': Python default fork mp_context
+
+            - 'forkserver': Python default forkserver mp_context
+
+            - 'spawn': Python default spawn mp_context
 
             ::
 
@@ -1143,7 +1172,12 @@ class Param_Search(Params):
                 default = 'default'
 
         dask_ip : str or None, optional
+            If None, default, then ignore this parameter..
+
             For experimental Dask support.
+            This should be the ip of a created dask
+            cluster. A dask Client object will be created
+            and passed this ip in order to connect to the cluster.
 
             ::
 
@@ -1399,16 +1433,19 @@ class Feat_Importance(Params):
                  inverse_global=False, inverse_local=False):
         '''
         There are a number of options for creating Feature Importances in BPt.
-        See :ref:`Feat Importances` to learn more about feature importances generally.
-        The way this object works, is that you can a type of feature importance, and then
-        its relevant parameters. This object is designed to passed directly to
+        See :ref:`Feat Importances` to learn more about
+        feature importances generally.
+        The way this object works, is that you can a type
+        of feature importance, and then
+        its relevant parameters. This object is designed
+        to passed directly to
         :class:`Model_Pipeline`.
 
         Parameters
         ----------
         obj : str
-            `obj` is the str indiciator for which feature importance to use. See
-            :ref:`Feat Importances` for what options are avaliable.
+            `obj` is the str indiciator for which feature importance to use.
+            See :ref:`Feat Importances` for what options are avaliable.
 
         scorer : str or 'default', optional
 
@@ -1451,10 +1488,13 @@ class Feat_Importance(Params):
                 default = 10
 
         inverse_global : bool
-            Warning: This feature, along with inverse_local, is still pretty expirimental.
+            Warning: This feature, along with inverse_local, is still
+            expirimental.
 
-            If there are any loaders, or transformers specified in the Model_Pipeline,
-            then feature importance becomes slightly trickier. For example, if you have
+            If there are any loaders, or transformers specified
+            in the Model_Pipeline,
+            then feature importance becomes slightly trickier.
+            For example, if you have
             a PCA transformer, and what to calculate averaged feature importance
             across 3-folds, there is no gaurentee 'pca feature 1' is the same from one
             fold to the next. In this case, if set to True, global feature
@@ -1474,8 +1514,9 @@ class Feat_Importance(Params):
                 default = False
 
         inverse_local : bool
-            Same as inverse_global, but for local feature importances. By default
-            this is set to False, as it is more memory and computationally expensive to
+            Same as inverse_global, but for local feature importances.
+            By default this is set to False, as it is
+            more memory and computationally expensive to
             inverse_transform this case.
 
             ::
@@ -1710,6 +1751,7 @@ class Model_Pipeline(Params):
         if imputers == 'default':
             imputers = [Imputer('mean', scope='float'),
                         Imputer('median', scope='cat')]
+            print('Passed default imputers, setting to:', print(imputers))
         self.imputers = imputers
 
         self.scalers = scalers
@@ -1719,6 +1761,8 @@ class Model_Pipeline(Params):
 
         if model == 'default':
             model = Model('linear')
+            print('Passed default model, setting to:', print(model))
+
         self.model = model
 
         self.param_search = param_search

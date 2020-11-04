@@ -1241,6 +1241,7 @@ class Param_Search(Params):
         self.n_jobs = n_jobs
         self.dask_ip = dask_ip
 
+        self.CV = CV
         self._random_state = _random_state
         self._splits_vals = _splits_vals
         self._cv = _cv

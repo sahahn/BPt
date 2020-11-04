@@ -640,3 +640,19 @@ def get_reverse_mapping(mapping):
             reverse_mapping[key] = m
 
     return reverse_mapping
+
+
+def set_n_jobs(obj, n_jobs):
+
+    # Call recursively for list
+    if isinstance(obj, list) or isinstance(obj, tuple):
+        for o in obj:
+            set_n_jobs(o, n_jobs)
+
+    # Check and set for n_jobs
+    if hasattr(obj, 'n_jobs'):
+        setattr(obj, 'n_jobs', n_jobs)
+
+    # Also check for wrapper_n_jobs
+    if hasattr(obj, 'wrapper_n_jobs'):
+        setattr(obj, 'wrapper_n_jobs', n_jobs)

@@ -1,5 +1,5 @@
 from ..helpers.ML_Helpers import (replace_with_in_params,
-                                  get_obj_and_params)
+                                  get_obj_and_params, set_n_jobs)
 
 from deslib.dcs.a_posteriori import APosteriori
 from deslib.dcs.a_priori import APriori
@@ -258,172 +258,172 @@ class Ensemble_Wrapper():
         # or a voting wrapper
         if ensemble is None or len(ensemble) == 0:
             return self._basic_ensemble(models=models,
-                                        name='default voting wrapper',
+                                        name='Default Voting',
                                         ensemble=True)
 
         # Otherwise special ensembles
         else:
 
-            ensemble_name = ensemble[0]
-            ensemble_obj = ensemble[1][0]
-            ensemble_extra_params = ensemble[1][1]
-
             # If needs a single estimator, but multiple models passed,
             # wrap in ensemble!
             if single_estimator:
-                se_ensemb_name = 'ensemble for single est'
+                se_ensemb_name = 'Single-Estimator Compatible Ensemble'
                 models = self._basic_ensemble(models,
                                               se_ensemb_name,
                                               ensemble=False)
 
             # If DES Ensemble,
             if is_des:
+                return self._wrap_des(models, ensemble,
+                                      random_state, ensemble_split)
 
-                # Init with default params
-                ensemble = ensemble_obj()
-
-                try:
-                    ensemble.random_state = random_state
-                except AttributeError:
-                    pass
-
-                # For base des object, if n_jobs always have as 1
-                try:
-                    ensemble.n_jobs = 1
-                except AttributeError:
-                    pass
-
-                new_ensemble =\
-                    [(ensemble_name, DES_Ensemble(models,
-                                                  ensemble,
-                                                  ensemble_name,
-                                                  ensemble_split,
-                                                  ensemble_extra_params,
-                                                  random_state))]
-                self._update_model_ensemble_params(ensemble_name)
-                return new_ensemble
-
-            # If no split and single estimator, then add the new
-            # ensemble obj W/ passed params.
+            # If no split and single estimator
             elif single_estimator:
-
-                # Models here since single estimator is assumed
-                # to be just a list with
-                # of one tuple as
-                # [(model or ensemble name, model or ensemble)]
-
-                base_estimator = models[0][1]
-
-                # Set base estimator n_jobs to 1, if ensemble n_jobs_type
-                if n_jobs_type == 'ensemble':
-
-                    try:
-                        base_estimator.n_jobs = 1
-                    except AttributeError:
-                        pass
-
-                # Otherwise, set base models n_jobs to passed n_jobs
-                else:
-
-                    try:
-                        base_estimator.n_jobs = self.n_jobs
-                    except AttributeError:
-                        pass
-
-                ensemble = ensemble_obj(base_estimator=base_estimator,
-                                        **ensemble_extra_params)
-
-                try:
-                    ensemble.random_state = random_state
-                except AttributeError:
-                    pass
-
-                # Set ensemble n_jobs to n_jobs, if ensemble type
-                if n_jobs_type == 'ensemble':
-
-                    try:
-                        ensemble.n_jobs = self.n_jobs
-                    except AttributeError:
-                        pass
-
-                # otherwise, try to set to 1
-                else:
-
-                    try:
-                        ensemble.n_jobs = 1
-                    except AttributeError:
-                        pass
-
-                new_ensemble = [(ensemble_name, ensemble)]
-
-                # Have to change model name to base_estimator
-                self.model_params =\
-                    replace_with_in_params(self.model_params, models[0][0],
-                                           'base_estimator')
-
-                # Append ensemble name to all model params
-                self._update_model_ensemble_params(ensemble_name,
-                                                   ensemble=False)
-
-                return new_ensemble
+                return self._wrap_single(models, ensemble,
+                                         random_state, n_jobs_type)
 
             # Last case is, no split/DES ensemble and also
             # not single estimator based
             # e.g., in case of stacking regressor.
             else:
+                return self._wrap_multiple(models, ensemble,
+                                           random_state, n_jobs_type)
 
-                # Models here just self.models a list of tuple of
-                # all models.
-                # So, ensemble_extra_params should contain the
-                # final estimator + other params
+    def _wrap_des(self, models, ensemble_info, random_state, ensemble_split):
 
-                # Set base models to n_jobs 1, if ensemble type
-                if n_jobs_type == 'ensemble':
+        # Unpack ensemble info
+        ensemble_name = ensemble_info[0]
+        ensemble_obj = ensemble_info[1][0]
+        ensemble_extra_params = ensemble_info[1][1]
 
-                    for model in models:
-                        if hasattr(model[1], 'n_jobs'):
-                            setattr(model[1], 'n_jobs', 1)
+        # Init with default params
+        ensemble = ensemble_obj()
 
-                # Otherwise, set to n_jobs
-                else:
+        # Set ensemble random_state
+        if hasattr(ensemble, 'random_state'):
+            setattr(ensemble, 'random_state', random_state)
 
-                    for model in models:
-                        if hasattr(model[1], 'n_jobs'):
-                            setattr(model[1], 'n_jobs', self.n_jobs)
+        # Regardless of n_jobs_type, go with models, as
+        # default des doesn't handle multi-proc well.
+        set_n_jobs(ensemble, 1)
+        set_n_jobs(models, self.n_jobs)
 
-                # Make sure random state is propegated
-                for model in models:
-                    if hasattr(model[1], 'random_state'):
-                        setattr(model[1], 'random_state', random_state)
+        # Create pipeline compatible des ensemble
+        new_ensemble =\
+            [(ensemble_name, DES_Ensemble(models,
+                                          ensemble,
+                                          ensemble_name,
+                                          ensemble_split,
+                                          ensemble_extra_params,
+                                          random_state))]
 
-                ensemble = ensemble_obj(estimators=models,
-                                        **ensemble_extra_params)
+        # Update the params
+        self._update_model_ensemble_params(ensemble_name)
 
-                try:
-                    ensemble.random_state = random_state
-                except AttributeError:
-                    pass
+        return new_ensemble
 
-                # Set ensemble n_jobs to n_jobs, if ensemble type
-                if n_jobs_type == 'ensemble':
+    def _wrap_single(self, models, ensemble_info, random_state, n_jobs_type):
+        '''If passed single_estimator flag'''
 
-                    if hasattr(ensemble, 'n_jobs'):
-                        setattr(ensemble, 'n_jobs', self.n_jobs)
+        # Unpack ensemble info
+        ensemble_name = ensemble_info[0]
+        ensemble_obj = ensemble_info[1][0]
+        ensemble_extra_params = ensemble_info[1][1]
 
-                # Otherwise, set to 1
-                else:
+        # Models here since single estimator is assumed
+        # to be just a list with
+        # of one tuple as
+        # [(model or ensemble name, model or ensemble)]
+        base_estimator = models[0][1]
 
-                    if hasattr(ensemble, 'n_jobs'):
-                        setattr(ensemble, 'n_jobs', 1)
+        # Set n jobs based on passed type
+        if n_jobs_type == 'ensemble':
+            model_n_jobs = 1
+            ensemble_n_jobs = self.n_jobs
+        else:
+            model_n_jobs = self.n_jobs
+            ensemble_n_jobs = 1
 
-                # Wrap as object
-                new_ensemble = [(ensemble_name, ensemble)]
+        # Set model / base_estimator n_jobs
+        set_n_jobs(base_estimator, model_n_jobs)
 
-                # Append ensemble name to all model params
-                self._update_model_ensemble_params(ensemble_name,
-                                                   ensemble=False)
+        # Make sure random_state is set (should be already)
+        if hasattr(base_estimator, 'random_state'):
+            setattr(base_estimator, 'random_state', random_state)
 
-                return new_ensemble
+        # Create the ensemble object
+        ensemble = ensemble_obj(base_estimator=base_estimator,
+                                **ensemble_extra_params)
+
+        # Set ensemble n_jobs
+        set_n_jobs(ensemble, ensemble_n_jobs)
+
+        # Set random state
+        if hasattr(ensemble, 'random_state'):
+            setattr(ensemble, 'random_state', random_state)
+
+        # Wrap as object
+        new_ensemble = [(ensemble_name, ensemble)]
+
+        # Have to change model name to base_estimator
+        self.model_params =\
+            replace_with_in_params(self.model_params, models[0][0],
+                                   'base_estimator')
+
+        # Append ensemble name to all model params
+        self._update_model_ensemble_params(ensemble_name,
+                                           ensemble=False)
+
+        return new_ensemble
+
+    def _wrap_multiple(self, models, ensemble_info, random_state, n_jobs_type):
+        '''In case of no split/DES ensemble, and not single estimator based.'''
+
+        # Unpack ensemble info
+        ensemble_name = ensemble_info[0]
+        ensemble_obj = ensemble_info[1][0]
+        ensemble_extra_params = ensemble_info[1][1]
+
+        # Models here just self.models a list of tuple of
+        # all models.
+        # So, ensemble_extra_params should contain the
+        # final estimator + other params
+
+        # Set model_n_jobs and ensemble n_jobs based on type
+        if n_jobs_type == 'ensemble':
+            model_n_jobs = 1
+            ensemble_n_jobs = self.n_jobs
+        else:
+            model_n_jobs = self.n_jobs
+            ensemble_n_jobs = 1
+
+        # Set the model jobs
+        set_n_jobs(models, model_n_jobs)
+
+        # Make sure random state is propegated
+        for model in models:
+            if hasattr(model[1], 'random_state'):
+                setattr(model[1], 'random_state', random_state)
+
+        # Init the ensemble object
+        ensemble = ensemble_obj(estimators=models,
+                                **ensemble_extra_params)
+
+        # Set ensemble n_jobs
+        set_n_jobs(ensemble, ensemble_n_jobs)
+
+        # Set random state
+        if hasattr(ensemble, 'random_state'):
+            setattr(ensemble, 'random_state', random_state)
+
+        # Wrap as pipeline compatible object
+        new_ensemble = [(ensemble_name, ensemble)]
+
+        # Append ensemble name to all model params
+        self._update_model_ensemble_params(ensemble_name,
+                                           ensemble=False)
+
+        return new_ensemble
 
 
 AVALIABLE = {

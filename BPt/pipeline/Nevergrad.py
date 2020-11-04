@@ -1,4 +1,3 @@
-from nevergrad.parametrization.container import Instrumentation
 import numpy as np
 from numpy.random import RandomState
 import nevergrad as ng
@@ -79,6 +78,7 @@ class NevergradSearchCV(BaseEstimator):
     def __init__(self, estimator=None, param_search=None,
                  param_distributions=None,
                  progress_loc=None, n_jobs=1,
+                 random_state=None,
                  verbose=False):
 
         self.estimator = estimator
@@ -86,6 +86,7 @@ class NevergradSearchCV(BaseEstimator):
         self.param_distributions = param_distributions
         self.progress_loc = progress_loc
         self.n_jobs = n_jobs
+        self.random_state = random_state
         self.verbose = verbose
 
     def get_params(self, deep=True):
@@ -179,13 +180,13 @@ class NevergradSearchCV(BaseEstimator):
                         num_workers=self.n_jobs)
 
         # Set random state is defined
-        if isinstance(self.param_search._random_state, int):
+        if isinstance(self.random_state, int):
             optimizer.parametrization.random_state =\
-                RandomState(self.param_search._random_state)
+                RandomState(self.random_state)
 
-        elif self.param_search._random_state is not None:
+        elif self.random_state is not None:
             optimizer.parametrization.random_state =\
-                self.param_search._random_state
+                self.random_state
 
         if self.progress_loc is not None:
             logger = ProgressLogger(self.progress_loc)
@@ -334,6 +335,7 @@ def wrap_param_search(param_search, model_obj, model_params):
         estimator=model_obj[1],
         param_search=param_search,
         param_distributions=m_params,
-        n_jobs=param_search._n_jobs)
+        n_jobs=param_search._n_jobs,
+        random_state=param_search._random_state)
 
     return (name + '_NGSearchCV', search_obj), model_params

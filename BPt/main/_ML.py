@@ -16,7 +16,7 @@ from ..helpers.Data_Helpers import (get_unique_combo_df,
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Evaluator import Evaluator
-from ..main.Params_Classes import (Feat_Importance, Model_Pipeline,
+from ..main.Params_Classes import (CV_Splits, Feat_Importance, Model_Pipeline,
                                    Model, Problem_Spec)
 from ..pipeline.Model_Pipeline import get_pipe
 import pandas as pd
@@ -1110,6 +1110,21 @@ def _preproc_param_search(self, object, n_jobs,
     return True
 
 
+def _preproc_cv_splits(self, obj, random_state):
+
+    # Proc cv
+    if obj.cv == 'default':
+        cv = self.cv
+    else:
+        cv = self._get_cv(obj.cv, show=False)
+
+    # Set split vals
+    _, split_vals, _ =\
+        self._get_split_vals(obj.splits)
+
+    obj.setup(cv=cv, split_vals=split_vals, random_state=random_state)
+
+
 def _preproc_model_pipeline(self, model_pipeline, n_jobs,
                             problem_type, random_state):
 
@@ -1142,8 +1157,23 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs,
 
         return
 
-    # Run nested check for
+    # Run nested check
     nested_model_check(model_pipeline)
+
+    def nested_cv_splits_check(obj):
+
+        if isinstance(obj, CV_Splits):
+            self._preproc_cv_splits(obj, random_state)
+
+        if isinstance(obj, list):
+            [nested_cv_splits_check(o) for o in obj]
+
+        if hasattr(obj, 'get_params'):
+            for param in obj.get_params(deep=False):
+                nested_cv_splits_check(getattr(obj, param))
+
+    # Run nested check
+    nested_cv_splits_check(model_pipeline)
 
     # Early check to see if imputer could even be needed
     model_pipeline.check_imputer(self.all_data)

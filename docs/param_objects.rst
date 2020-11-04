@@ -47,6 +47,15 @@ Feat_Importance
 *****************
 .. autoclass:: Feat_Importance
 
+CV
+*****************
+.. autoclass:: CV
+
+CV_Splits
+*****************
+.. autoclass:: CV_Splits
+
+
 Input Types
 ============
 

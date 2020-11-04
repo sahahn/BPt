@@ -5,7 +5,7 @@ from .main.Params_Classes import (Loader, Imputer, Scaler, Transformer,
                                   Param_Search, Feat_Importance,
                                   Model_Pipeline,
                                   Problem_Spec, Shap_Params,
-                                  CV)
+                                  CV, CV_Splits)
 
 from .main.Input_Tools import (Select, Duplicate, Pipe, Value_Subset,
                                Values_Subset)
@@ -18,4 +18,4 @@ __all__ = ["BPt_ML", "ABCD_ML", "Load", "Loader",
            "Ensemble", "Param_Search", "Feat_Importance",
            "Model_Pipeline", "Problem_Spec", "Select",
            "Duplicate", "Pipe", "Value_Subset", "Values_Subset",
-           "Shap_Params", "CV"]
+           "Shap_Params", "CV", "CV_Splits"]

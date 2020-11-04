@@ -39,6 +39,7 @@ from sklearn.utils import Bunch
 from sklearn.model_selection import check_cv, cross_val_predict
 import numpy as np
 from .base import _fit_single_estimator, _get_est_fit_params
+from ..main.Params_Classes import CV_Splits
 
 
 def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
@@ -72,11 +73,15 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
 
     # To train the meta-classifier using the most data as possible, we use
     # a cross-validation to obtain the output of the stacked estimators.
+    if isinstance(self.cv, CV_Splits):
+        _, cv_inds = self.cv.get_splits(train_data_index)
+    else:
+        cv_inds = self.cv
 
     # To ensure that the data provided to each estimator are the same, we
     # need to set the random state of the cv if there is one and we need to
     # take a copy.
-    cv = check_cv(self.cv, y=y, classifier=is_classifier(self))
+    cv = check_cv(cv_inds, y=y, classifier=is_classifier(self))
     if hasattr(cv, 'random_state') and cv.random_state is None:
         cv.random_state = np.random.RandomState()
 
@@ -292,7 +297,8 @@ class Ensemble_Wrapper():
                 return self._wrap_multiple(models, ensemble,
                                            final_estimator,
                                            final_estimator_params,
-                                           ensemble_params.n_jobs_type)
+                                           ensemble_params.n_jobs_type,
+                                           ensemble_params.cv_splits)
 
     def _wrap_des(self, models, ensemble_info, ensemble_split):
 
@@ -382,7 +388,8 @@ class Ensemble_Wrapper():
         return new_ensemble
 
     def _wrap_multiple(self, models, ensemble_info,
-                       final_estimator, final_estimator_params, n_jobs_type):
+                       final_estimator, final_estimator_params,
+                       n_jobs_type, cv_splits):
         '''In case of no split/DES ensemble, and not single estimator based.'''
 
         # Unpack ensemble info
@@ -440,6 +447,7 @@ class Ensemble_Wrapper():
         # Init the ensemble object
         ensemble = ensemble_obj(estimators=models,
                                 final_estimator=final_estimator_obj,
+                                cv=cv_splits,
                                 **ensemble_extra_params)
 
         # Set ensemble n_jobs

@@ -505,6 +505,7 @@ class BPt_ML():
                       _premodel_check,
                       _preproc_param_search,
                       _preproc_model_pipeline,
+                      _preproc_cv_splits,
                       _preproc_problem_spec,
                       _get_split_vals,
                       _get_subjects_to_use,

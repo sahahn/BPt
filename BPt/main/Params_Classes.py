@@ -726,6 +726,7 @@ class Ensemble(Piece):
                  param_search=None,
                  target_scaler=None,
                  base_model=None,
+                 cv_splits=None,
                  is_des=False,
                  single_estimator=False,
                  des_split=.2,
@@ -849,6 +850,14 @@ class Ensemble(Piece):
 
                 default = None
 
+        cv_splits : :class:`CV_Splits` or None, optional
+            Used for passing custom CV split behavior to
+            ensembles which employ splits, e.g., stacking.
+
+            ::
+
+                default = None
+
         is_des : bool, optional
             `is_des` refers to if the requested ensemble obj requires
             a further training test split in order to train the base ensemble.
@@ -938,6 +947,7 @@ class Ensemble(Piece):
         self.param_search = param_search
         self.target_scaler = target_scaler
         self.base_model = base_model
+        self.cv_splits = cv_splits
         self.is_des = is_des
         self.des_split = des_split
         self.single_estimator = single_estimator
@@ -963,8 +973,9 @@ class Ensemble(Piece):
 class Param_Search(Params):
 
     def __init__(self, search_type='RandomSearch',
-                 splits=3, n_repeats=1, n_iter=10,
+                 splits=3, n_repeats=1,
                  cv='default',
+                 n_iter=10,
                  scorer='default',
                  weight_scorer=False,
                  mp_context='default',
@@ -992,8 +1003,10 @@ class Param_Search(Params):
         ----------
         search_type : str, optional
             The type of nevergrad hyper-parameter search to conduct. See
-            :ref:`Search Types<Search Types>` for all avaliable options. Also you may further look into
-            nevergrad's experimental varients if you so choose, this parameter can accept
+            :ref:`Search Types<Search Types>` for all avaliable options.
+            Also you may further look into
+            nevergrad's experimental varients if you so choose,
+            this parameter can accept
             those as well.
 
             ::
@@ -1008,10 +1021,6 @@ class Param_Search(Params):
             `splits` allows you to specify the base of what CV strategy
             should be used to evaluate every `n_iter` combination
             of hyper-parameters.
-
-            Notably, the splits defined will respect any special
-            split behavior as defined in
-            :func:`Define_Validation_Strategy<ML.Define_Validation_Strategy>`.
 
             Specifically, options for split are:
 
@@ -1059,13 +1068,20 @@ class Param_Search(Params):
             For example, if `n_repeats` is set to 2, and `splits` is 3,
             then a twice repeated 3-fold CV
             will be performed to evaluate every choice of `n_iter`
-            hyper-params (respecting any special split behavior
-            as defined in
-            :func:`Define_Validation_Strategy<ML.Define_Validation_Strategy>`.)
+            hyper-params.
 
             ::
 
                 default = 1
+
+
+        cv : 'default' or :class:`CV`, optional
+            If left as default 'default', use the class defined CV behavior
+            for the splits, otherwise can pass custom behavior.
+
+            ::
+
+                default = 'default'
 
         n_iter : int, optional
             The number of hyper-parameters to try / budget
@@ -1113,14 +1129,6 @@ class Param_Search(Params):
             ::
 
                 default = 10
-
-        cv : 'default' or :class:`CV`, optional
-            If left as default 'default', use the class defined CV behavior
-            for the splits, otherwise can pass custom behavior.
-
-            ::
-
-                default = 'default'
 
         scorer : str or 'default', optional
             In order for a set of hyper-parameters to be evaluated,
@@ -1222,9 +1230,9 @@ class Param_Search(Params):
         '''
 
         self.search_type = search_type
+
         self.splits = splits
         self.n_repeats = n_repeats
-        self.n_iter = n_iter
 
         if CV != 'depreciated':
             print('Warning: Passing CV is depreciated. Please change to',
@@ -1235,6 +1243,7 @@ class Param_Search(Params):
 
         self.cv = cv
 
+        self.n_iter = n_iter
         self.scorer = scorer
         self.weight_scorer = weight_scorer
         self.mp_context = mp_context
@@ -1242,6 +1251,7 @@ class Param_Search(Params):
         self.dask_ip = dask_ip
 
         self.CV = CV
+
         self._random_state = _random_state
         self._splits_vals = _splits_vals
         self._cv = _cv
@@ -1458,7 +1468,6 @@ class Shap_Params(Params):
             import shap
         except ImportError:
             raise ImportError('You must have shap installed to use shap')
-
 
         self.avg_abs = avg_abs
         self.linear_feature_perturbation = linear_feature_perturbation
@@ -2293,8 +2302,170 @@ class CV(Params):
 
     def __init__(self, groups=None, stratify=None,
                  train_only_loc=None, train_only_subjects=None):
+        ''' This objects is used to encapsulate a set of parameters
+        for a CV strategy.
+
+        Parameters
+        ----------
+        groups : str, list or None, optional
+            In the case of str input, will assume the str to refer
+            to a column key within the loaded strat data,
+            and will assign it as a value to preserve groups by
+            during any train/test or K-fold splits.
+            If a list is passed, then each element should be a str,
+            and they will be combined into all unique
+            combinations of the elements of the list.
+
+        ::
+
+            default = None
+
+        stratify : str, list or None, optional
+            In the case of str input, will assume the str to refer
+            to a column key within the loaded strat data, or a loaded target col.,
+            and will assign it as a value to preserve
+            distribution of groups by during any train/test or K-fold splits.
+            If a list is passed, then each element should be a str,
+            and they will be combined into all unique combinations of
+            the elements of the list.
+
+            Any target_cols passed must be categorical or binary, and cannot be
+            float. Though you can consider loading in a float target as a strat,
+            which will apply a specific k_bins, and then be valid here.
+
+            In the case that you have a loaded strat val with the same name
+            as your target, you can distinguish between the two by passing
+            either the raw name, e.g., if they are both loaded as 'Sex',
+            passing just 'Sex', will try to use the loaded target. If instead
+            you want to use your loaded strat val with the same name - you have
+            to pass 'Sex' + self.self.strat_u_name (by default this is '_Strat').
+
+            ::
+
+                default = None
+
+        train_only_loc : str, Path or None, optional
+            Location of a file to load in train_only subjects,
+            where any subject loaded as train_only will be assigned to
+            every training fold, and never to a testing fold.
+            This file should be formatted as one subject per line.
+
+            You can load from a loc and pass subjects, the subjects
+            from each source will be merged.
+
+            This parameter is compatible with groups / stratify.
+
+            ::
+
+                default = None
+
+        train_only_subjects : set, array-like, 'nan', or None, optional
+            An explicit list or array-like of train_only subjects, where
+            any subject loaded as train_only will be assigned to every training
+            fold, and never to a testing fold.
+
+            You can also optionally specify 'nan' as input, which
+            will add all subjects with any NaN data to train only.
+
+            If you want to add both all the NaN subjects and custom
+            subjects, call :func:`Get_Nan_Subjects` to get all NaN subjects,
+            and then merge them yourself with any you want to pass.
+
+            You can load from a loc and pass subjects, the subjects
+            from each source will be merged.
+
+            This parameter is compatible with groups / stratify.
+
+            ::
+
+                default = None
+        '''
 
         self.groups = groups
         self.stratify = stratify
         self.train_only_loc = train_only_loc
         self.train_only_subjects = train_only_subjects
+
+
+class CV_Splits(Params):
+
+    def __init__(self, cv='default', splits=3, n_repeats=1,
+                 _cv=None, _random_state=None, _splits_vals=None):
+        ''' This object is used to wrap around a CV strategy at a higher level.
+
+        Parameters
+        ----------
+        cv: 'default' or :class:`CV`, optional
+            If left as default 'default', use the class defined CV behavior
+            for the splits, otherwise can pass custom behavior.
+
+        splits : int, float, str or list of str, optional
+            `splits` allows you to specify the base of what CV strategy
+            should be used.
+
+            Specifically, options for split are:
+
+            - int
+                The number of k-fold splits to conduct. (E.g., 3 for
+                3-fold CV split to be conducted at
+                every hyper-param evaluation).
+
+            - float
+                Must be 0 < `splits` < 1, and defines a
+                single train-test like split,
+                with `splits` % of the current training data size used
+                as a validation set.
+
+            - str
+                If a str is passed, then it must correspond to a
+                loaded Strat variable. In
+                this case, a leave-out-group CV will be used according
+                to the value of the
+                indicated Strat variable (E.g., a leave-out-site CV scheme).
+
+            - list of str
+                If multiple str passed, first determine the overlapping
+                unique values from
+                their corresponing loaded Strat variables,
+                and then use this overlapped
+                value to define the leave-out-group CV as described above.
+
+            `n_repeats` is designed to work with any of these choices.
+
+            ::
+
+                default = 3
+
+        n_repeats : int, optional
+            The number of times to repeat the defined strategy
+            as defined in `splits`.
+
+            For example, if `n_repeats` is set to 2, and `splits` is 3,
+            then a twice repeated 3-fold CV will be performed
+
+            ::
+
+                default = 1
+        '''
+
+        self.cv = cv
+        self.splits = splits
+        self.n_repeats = n_repeats
+        self._cv = _cv
+        self._random_state = _random_state
+        self._splits_vals = _splits_vals
+
+    def setup(self, cv, split_vals, random_state):
+
+        self._cv = cv
+        self._splits_vals = split_vals
+        self._random_state = random_state
+
+    def get_splits(self, train_data_index):
+
+        return self._cv.get_cv(train_data_index,
+                               self.splits,
+                               self.n_repeats,
+                               self._splits_vals,
+                               self._random_state,
+                               return_index='both')

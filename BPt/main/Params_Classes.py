@@ -90,11 +90,14 @@ class Check():
         obj = getattr(self, 'obj')
 
         if obj is None:
-            raise IOError('passed obj cannot be None, to ignore the object itself',
-                          'set it within Model_Pipeline to None, not obj here.')
+            raise IOError('passed obj cannot be None, to ignore',
+                          'the object itself',
+                          'set it within Model_Pipeline to None,',
+                          ' not obj here.')
 
         if isinstance(obj, list) and not is_pipe(obj):
-            raise IOError('You may only pass a list of objs with special input',
+            raise IOError('You may only pass a list of objs with ',
+                          'special input',
                           'Pipe()')
 
     def _check_params(self):
@@ -117,8 +120,10 @@ class Check():
                     new_params = [0 for i in range(len(obj))]
                     setattr(self, 'params', new_params)
                 else:
-                    raise IOError('obj is passed as Pipe, but params was not. Make sure',
-                                  'params is either a list or Pipe with the same length as',
+                    raise IOError('obj is passed as Pipe, but params was not.',
+                                  'Make sure',
+                                  'params is either a list or Pipe ',
+                                  'with the same length as',
                                   'self.obj')
 
             elif len(params) != len(obj):
@@ -128,7 +133,8 @@ class Check():
                     setattr(self, 'params', new_params)
                 else:
                     raise IOError('obj is passed as Pipe, Make sure',
-                                  'params is either a list or Pipe with the same length as',
+                                  'params is either a list or Pipe with the ',
+                                  'same length as',
                                   'self.obj')
 
     def _check_scope(self):
@@ -719,6 +725,7 @@ class Ensemble(Piece):
                  params=0, scope='all',
                  param_search=None,
                  target_scaler=None,
+                 base_model=None,
                  is_des=False,
                  single_estimator=False,
                  des_split=.2,
@@ -826,6 +833,22 @@ class Ensemble(Piece):
 
                 default = None
 
+        base_model : :class:`Model`, None, optional
+            In the case that an ensemble is passed which has
+            the parameter `final_estimator` (not base model!),
+            for example in the case of stacking,
+            then you may pass a Model type
+            object here to be used as that final estimator.
+
+            Otherwise, by default this will be left as None,
+            and if the requested ensemble has the final_estimator
+            parameter, then it will pass None to the object
+            (which is typically for setting the default).
+
+            ::
+
+                default = None
+
         is_des : bool, optional
             `is_des` refers to if the requested ensemble obj requires
             a further training test split in order to train the base ensemble.
@@ -914,6 +937,7 @@ class Ensemble(Piece):
         self.scope = scope
         self.param_search = param_search
         self.target_scaler = target_scaler
+        self.base_model = base_model
         self.is_des = is_des
         self.des_split = des_split
         self.single_estimator = single_estimator
@@ -1558,27 +1582,36 @@ class Model_Pipeline(Params):
                  feat_importances='depreciated'):
         ''' Model_Pipeline is defined as essentially a wrapper around
         all of the explicit modelling pipeline parameters. This object is
-        used as input to 
-        :func:`Evaluate <BPt.BPt_ML.Evaluate>` and :func:`Test <BPt.BPt_ML.Test>`
+        used as input to
+        :func:`Evaluate <BPt.BPt_ML.Evaluate>`
+        and :func:`Test <BPt.BPt_ML.Test>`
 
         The ordering of the parameters listed below defines the pre-set
         order in which these Pipeline pieces are composed
         (params up to model, param_search is not an ordered pipeline piece).
-        For more flexibility, one can always use custom defined objects, or even pass custom defined
-        pipelines directly to model (i.e., in the case where you have a specific pipeline you want to use
+        For more flexibility, one can always use custom defined objects,
+        or even pass custom defined
+        pipelines directly to model
+        (i.e., in the case where you have a specific pipeline you want to use
         already defined, but say just want to use the loaders from BPt).
 
         Parameters
         ----------
         loaders : :class:`Loader`, list of or None, optional
-            Each :class:`Loader` refers to transformations which operate on loaded Data_Files
-            (See :func:`Load_Data_Files <BPt.BPt_ML.Load_Data_Files>`). See :class:`Loader`
-            explcitly for more information on how to create a valid object, with relevant params and scope.
+            Each :class:`Loader` refers to transformations
+            which operate on loaded Data_Files
+            (See :func:`Load_Data_Files <BPt.BPt_ML.Load_Data_Files>`).
+            See :class:`Loader`
+            explcitly for more information on how to create a valid object,
+            with relevant params and scope.
 
-            In the case that a list of Loaders is passed to loaders, if a native
-            python list, then passed loaders will be applied sequentially (likely each
-            passed loader given a seperate scope, as the output from one loader cannot be input
-            to another- note to create actual sequential loader steps, look into using the
+            In the case that a list of Loaders is passed to loaders,
+            if a native python list, then passed loaders will
+            be applied sequentially (likely each
+            passed loader given a seperate scope, as the output from
+            one loader cannot be input
+            to another- note to create actual sequential loader steps,
+            look into using the
             :class:`Pipe` wrapper
             argument when creating a single :class:`Loader` obj).
 
@@ -1593,7 +1626,8 @@ class Model_Pipeline(Params):
                 # Or nested
                 loaders = [Loader(...), Select([Loader(...), Loader(...)])]
 
-            In this way, most of the pipeline objects can accept lists, or nested lists with
+            In this way, most of the pipeline objects can accept lists,
+            or nested lists with
             param wrapped, not just loaders!
 
             .. code-block::
@@ -1603,20 +1637,25 @@ class Model_Pipeline(Params):
         imputers : :class:`Imputer`, list of or None, optional
             If there is any missing data (NaN's) that have been kept
             within data or covars, then an imputation strategy must be
-            defined! This param controls what kind of imputation strategy to use.
+            defined! This param controls what kind of
+            imputation strategy to use.
 
-            Each :class:`Imputer` contains information around which imputation
-            strategy to use, what scope it is applied to (in this case only 'float' vs. 'cat'),
-            and other relevant base parameters (i.e., a base model if an iterative imputer is selected).
+            Each :class:`Imputer` contains information
+            around which imputation
+            strategy to use, what scope it is applied
+            to (in this case only 'float' vs. 'cat'),
+            and other relevant base parameters
+            (i.e., a base model if an iterative imputer is selected).
 
             In the case that a list of :class:`Imputer` are passed,
-            they will be applied sequentially, though note that unless custom scopes
+            they will be applied sequentially,
+            though note that unless custom scopes
             are employed, at most passing only an imputer for float data and
             an imputer for categorical data makes sense.
             You may also use input wrapper, like :class:`Select`.
 
-            In the case that no NaN data is passed, but imputers is not None, it will simply be
-            set to None.
+            In the case that no NaN data is passed, but imputers is not None,
+            it will simply be set to None.
 
             ::
 
@@ -1625,17 +1664,24 @@ class Model_Pipeline(Params):
 
         scalers : :class:`Scaler`, list of or None, optional
             Each :class:`Scaler` refers to any potential data scaling where a
-            transformation on the data (without access to the target variable) is
-            computed, and the number of features or data points does not change.
-            Each :class:`Scaler` object contains information about the base object, what
-            scope it should be applied to, and saved param distributions if relevant.
+            transformation on the data
+            (without access to the target variable) is
+            computed, and the number of features or
+            data points does not change.
+            Each :class:`Scaler` object contains information
+            about the base object, what
+            scope it should be applied to, and saved param
+            distributions if relevant.
 
-            As with other pipeline params, scalers can accept a list of :class:`Scaler` objects,
-            in order to apply sequential transformations 
+            As with other pipeline params, scalers can
+            accept a list of :class:`Scaler` objects,
+            in order to apply sequential transformations
             (or again in the case where each object has a seperate scope,
             these are essentially two different streams of transformations,
-            vs. when two Scalers with the same scope are passed, the output from one
-            is passed as input to the next). Likewise, you may also use valid input wrappers,
+            vs. when two Scalers with the same scope are passed,
+            the output from one
+            is passed as input to the next). Likewise,
+            you may also use valid input wrappers,
             e.g., :class:`Select`.
 
             By default no scaler is used, though it is reccomended.

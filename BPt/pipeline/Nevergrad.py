@@ -309,3 +309,31 @@ class NevergradSearchCV(BaseEstimator):
 
     def decision_function(self, X):
         return self.best_estimator_.decision_function(X)
+
+
+def wrap_param_search(param_search, model_obj, model_params):
+
+    if param_search is None:
+        return model_obj, model_params
+
+    name = model_obj[0]
+    prepend = name + '__'
+
+    # Remove the relevant model params
+    # and put in m_params
+    m_params = {}
+    model_param_names = list(model_params)
+    for param in model_param_names:
+
+        if param.startswith(prepend):
+            m_params[param.replace(prepend, '', 1)] =\
+                model_params.pop(param)
+
+    # Create the wrapper nevergrad CV model
+    cv_obj = NevergradSearchCV(
+        estimator=model_obj[1],
+        param_search=param_search,
+        param_distributions=m_params,
+        n_jobs=param_search._n_jobs)
+
+    return (name + '_CV', cv_obj), model_params

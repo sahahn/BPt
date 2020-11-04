@@ -219,4 +219,8 @@ def get_base_model_and_params(model_type, extra_params, model_type_params,
     # Init model, w/ any user passed params + class params
     model = model(**extra_model_params)
 
+    # Set random state on model, better to overset this
+    if hasattr(model, 'random_state'):
+        setattr(model, 'random_state', random_state)
+
     return model, model_type_params

@@ -115,7 +115,8 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
     ]
 
     # Whatever the final estimator is might use train data index,
-    # but I don't see why it would need mapping
+    # but I don't see why it would need mapping - as the final estimator
+    # is being trained on only the predictions from the base models...
     # I guess a future @TODO could be pass the right mapping here
     X_meta = self._concatenate_predictions(X, predictions)
     _fit_single_estimator(self.final_estimator_, X_meta, y,
@@ -210,12 +211,14 @@ class DES_Ensemble(VotingClassifier):
 
 class Ensemble_Wrapper():
 
-    def __init__(self, model_params, ensemble_params, _get_ensembler, n_jobs):
+    def __init__(self, model_params, ensemble_params,
+                 _get_ensembler, n_jobs, random_state):
 
         self.model_params = model_params
         self.ensemble_params = ensemble_params
         self._get_ensembler = _get_ensembler
         self.n_jobs = n_jobs
+        self.random_state = random_state
 
     def _update_model_ensemble_params(self, to_add, model=True, ensemble=True):
 
@@ -250,9 +253,9 @@ class Ensemble_Wrapper():
         self.model_params.update(self.ensemble_params)
         return self.model_params
 
-    def wrap_ensemble(self, models, ensemble, ensemble_split, random_state,
-                      single_estimator=False, is_des=False,
-                      n_jobs_type='ensemble'):
+    def wrap_ensemble(self, models, ensemble, ensemble_params,
+                      final_estimator=None,
+                      final_estimator_params=None):
 
         # If no ensembling is passed, return either the 1 model,
         # or a voting wrapper
@@ -266,30 +269,32 @@ class Ensemble_Wrapper():
 
             # If needs a single estimator, but multiple models passed,
             # wrap in ensemble!
-            if single_estimator:
+            if ensemble_params.single_estimator:
                 se_ensemb_name = 'Single-Estimator Compatible Ensemble'
                 models = self._basic_ensemble(models,
                                               se_ensemb_name,
                                               ensemble=False)
 
             # If DES Ensemble,
-            if is_des:
+            if ensemble_params.is_des:
                 return self._wrap_des(models, ensemble,
-                                      random_state, ensemble_split)
+                                      ensemble_params.ensemble_split)
 
             # If no split and single estimator
-            elif single_estimator:
+            elif ensemble_params.single_estimator:
                 return self._wrap_single(models, ensemble,
-                                         random_state, n_jobs_type)
+                                         ensemble_params.n_jobs_type)
 
             # Last case is, no split/DES ensemble and also
             # not single estimator based
             # e.g., in case of stacking regressor.
             else:
                 return self._wrap_multiple(models, ensemble,
-                                           random_state, n_jobs_type)
+                                           final_estimator,
+                                           final_estimator_params,
+                                           ensemble_params.n_jobs_type)
 
-    def _wrap_des(self, models, ensemble_info, random_state, ensemble_split):
+    def _wrap_des(self, models, ensemble_info, ensemble_split):
 
         # Unpack ensemble info
         ensemble_name = ensemble_info[0]
@@ -301,7 +306,7 @@ class Ensemble_Wrapper():
 
         # Set ensemble random_state
         if hasattr(ensemble, 'random_state'):
-            setattr(ensemble, 'random_state', random_state)
+            setattr(ensemble, 'random_state', self.random_state)
 
         # Regardless of n_jobs_type, go with models, as
         # default des doesn't handle multi-proc well.
@@ -315,14 +320,14 @@ class Ensemble_Wrapper():
                                           ensemble_name,
                                           ensemble_split,
                                           ensemble_extra_params,
-                                          random_state))]
+                                          self.random_state))]
 
         # Update the params
         self._update_model_ensemble_params(ensemble_name)
 
         return new_ensemble
 
-    def _wrap_single(self, models, ensemble_info, random_state, n_jobs_type):
+    def _wrap_single(self, models, ensemble_info, n_jobs_type):
         '''If passed single_estimator flag'''
 
         # Unpack ensemble info
@@ -349,7 +354,7 @@ class Ensemble_Wrapper():
 
         # Make sure random_state is set (should be already)
         if hasattr(base_estimator, 'random_state'):
-            setattr(base_estimator, 'random_state', random_state)
+            setattr(base_estimator, 'random_state', self.random_state)
 
         # Create the ensemble object
         ensemble = ensemble_obj(base_estimator=base_estimator,
@@ -360,7 +365,7 @@ class Ensemble_Wrapper():
 
         # Set random state
         if hasattr(ensemble, 'random_state'):
-            setattr(ensemble, 'random_state', random_state)
+            setattr(ensemble, 'random_state', self.random_state)
 
         # Wrap as object
         new_ensemble = [(ensemble_name, ensemble)]
@@ -376,7 +381,8 @@ class Ensemble_Wrapper():
 
         return new_ensemble
 
-    def _wrap_multiple(self, models, ensemble_info, random_state, n_jobs_type):
+    def _wrap_multiple(self, models, ensemble_info,
+                       final_estimator, final_estimator_params, n_jobs_type):
         '''In case of no split/DES ensemble, and not single estimator based.'''
 
         # Unpack ensemble info
@@ -403,10 +409,37 @@ class Ensemble_Wrapper():
         # Make sure random state is propegated
         for model in models:
             if hasattr(model[1], 'random_state'):
-                setattr(model[1], 'random_state', random_state)
+                setattr(model[1], 'random_state', self.random_state)
+
+        # Process final_estimator if passed
+        if final_estimator is not None:
+
+            # Replace name of final estimator w/ final_estimator in params
+            final_estimator_params =\
+                replace_with_in_params(params=final_estimator_params,
+                                       original=final_estimator[0][0],
+                                       replace='final_estimator')
+
+            # Add final estimator params to model_params - once name changed
+            # to avoid potential overlap.
+            self.model_params.update(final_estimator_params)
+
+            # Unpack actual model obj
+            final_estimator_obj = final_estimator[0][1]
+
+            # Set final estimator n_jobs to model n_jobs
+            set_n_jobs(final_estimator_obj, model_n_jobs)
+
+            # Redundant random state check
+            if hasattr(final_estimator_obj, 'random_state'):
+                setattr(final_estimator_obj, 'random_state', self.random_state)
+
+        else:
+            final_estimator_obj = None
 
         # Init the ensemble object
         ensemble = ensemble_obj(estimators=models,
+                                final_estimator=final_estimator_obj,
                                 **ensemble_extra_params)
 
         # Set ensemble n_jobs
@@ -414,7 +447,7 @@ class Ensemble_Wrapper():
 
         # Set random state
         if hasattr(ensemble, 'random_state'):
-            setattr(ensemble, 'random_state', random_state)
+            setattr(ensemble, 'random_state', self.random_state)
 
         # Wrap as pipeline compatible object
         new_ensemble = [(ensemble_name, ensemble)]

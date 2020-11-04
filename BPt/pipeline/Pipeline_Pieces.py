@@ -15,7 +15,7 @@ from copy import deepcopy
 
 from .Selector import selector_wrapper
 from sklearn.compose import TransformedTargetRegressor
-from .Nevergrad import NevergradSearchCV
+from .Nevergrad import wrap_param_search
 
 import numpy as np
 
@@ -332,116 +332,125 @@ class Models(Type_Pieces):
         # Seperate non-ensemble objs and obj_params
         non_ensemble_params = [i for idx, i in enumerate(params)
                                if not ensemble_mask[idx]]
+
+        # Run initial base type process on the non ensemble models
         non_ensemble_objs, non_ensemble_obj_params =\
             self._base_type_process(non_ensemble_params,
                                     get_base_model_and_params)
 
-        # Check for target_scaler
-        for i in range(len(non_ensemble_params)):
-            target_scaler = non_ensemble_params[i].target_scaler
+        # Perform wrap checks on non_ensembles
+        non_ensemble_objs, non_ensemble_obj_params =\
+            self.check_wraps(non_ensemble_objs,
+                             non_ensemble_obj_params,
+                             non_ensemble_params)
 
-            non_ensemble_objs[i], non_ensemble_obj_params =\
-                self.wrap_target_scaler(target_scaler, non_ensemble_objs[i],
-                                        non_ensemble_obj_params)
-
-        # Check for nested param search
-        for i in range(len(non_ensemble_params)):
-
-            param_search = non_ensemble_params[i].param_search
-
-            non_ensemble_objs[i], non_ensemble_obj_params =\
-                self.wrap_param_search(param_search,
-                                       non_ensemble_objs[i],
-                                       non_ensemble_obj_params)
-
-        # If any non-ensemble models have scope != 'all'
-        for i in range(len(non_ensemble_params)):
-            scope = non_ensemble_params[i].scope
-
-            non_ensemble_objs[i] =\
-                self.wrap_model_scope(scope, non_ensemble_objs[i])
-
-        # If not any ensembles, return the non_ensembles
+        # If just models, i.e., no ensembles to process,
+        # can return here just the non_ensemble_objs + params
         if not ensemble_mask.any():
             return non_ensemble_objs, non_ensemble_obj_params
 
         # Assume ensemble case from here
+        # Process the ensemble objs and params
+        ensembled_objs, ensembled_obj_params =\
+            self._process_ensembles(params, ensemble_mask)
+
+        # In mixed case, merge with non_ensemble
+        ensembled_objs += non_ensemble_objs
+        ensembled_obj_params.update(non_ensemble_obj_params)
+        return ensembled_objs, ensembled_obj_params
+
+    def _process_ensembles(self, params, ensemble_mask):
+
         from .Ensembles import Ensemble_Wrapper
 
-        # Seperate the ensemble params
+        # Seperate the ensemble params from all passed params
         ensemble_params = [i for idx, i in enumerate(params)
                            if ensemble_mask[idx]]
 
-        # Get base ensemble objs. by proc all at once
-        ensembles = Ensembles(self.user_passed_objs, self.Data_Scopes,
-                              self.spec)
+        # Get base ensemble objs. and obj_params
+        ensembles =\
+            Ensembles(self.user_passed_objs, self.Data_Scopes, self.spec)
         ensemble_objs, ensemble_obj_params = ensembles.process(ensemble_params)
 
-        # Get the base models + model_params for each ensemble
-        model_objs_and_params = [self.process(e.models)
-                                 for e in ensemble_params]
-
-        # For each ensemble, wrap the corr. base models
+        # For each ensemble, go through and process
         ensembled_objs, ensembled_obj_params = [], {}
         for i in range(len(ensemble_params)):
 
-            model_objs, model_obj_params = model_objs_and_params[i]
+            # Recursively process the base ensembles models
+            model_objs, model_obj_params =\
+                self.process(ensemble_params[i].models)
+
+            # Check for a base model - process if found
+            if ensemble_params[i].base_model is not None:
+                final_estimator, final_estimator_params =\
+                    self.process(ensemble_params[i].base_model)
+            else:
+                final_estimator, final_estimator_params = None, {}
 
             # If any passed ensemble params, then need to select just the
             # params associated with this ensemble
             this_ensemble_name = ensemble_objs[i][0]
-            this_ensemble_params =\
+            this_ensemble_obj_params =\
                 {key: ensemble_obj_params[key] for key
                  in ensemble_obj_params
                  if this_ensemble_name == key.split('__')[0]}
 
             # Create wrapper object for building the ensemble
             wrapper = Ensemble_Wrapper(model_obj_params,
-                                       this_ensemble_params,
+                                       this_ensemble_obj_params,
                                        ensembles._get_base_ensembler,
-                                       self.spec['n_jobs'])
+                                       n_jobs=self.spec['n_jobs'],
+                                       random_state=self.spec['random_state'])
 
-            # Get the now ensembled_objs
+            # Use the wrapper to get the ensembled_obj
             ensembled_objs +=\
-                wrapper.wrap_ensemble(model_objs, ensemble_objs[i],
-                                      ensemble_params[i].des_split,
-                                      self.spec['random_state'],
-                                      ensemble_params[i].single_estimator,
-                                      ensemble_params[i].is_des,
-                                      ensemble_params[i].n_jobs_type)
+                wrapper.wrap_ensemble(
+                    models=model_objs,
+                    ensemble=ensemble_objs[i],
+                    ensemble_params=ensemble_params[i],
+                    final_estimator=final_estimator,
+                    final_estimator_params=final_estimator_params
+                    )
 
-            # And add the params
+            # The wrapper keeps track of the changes to params,
+            # Add the final updated params to the collective
+            # ensembled_obj_params
             ensembled_obj_params.update(wrapper.get_updated_params())
 
-        # Check ensembled_objs for target_scaler
-        for i in range(len(ensemble_params)):
-            target_scaler = ensemble_params[i].target_scaler
+        # Perform wrap checks on the ensembles
+        ensembled_objs, ensembled_obj_params =\
+            self.check_wraps(ensembled_objs,
+                             ensembled_obj_params,
+                             ensemble_params)
 
-            ensemble_objs[i], ensemble_obj_params =\
-                self.wrap_target_scaler(target_scaler, ensemble_objs[i],
-                                        ensemble_obj_params)
+        return ensembled_objs, ensembled_obj_params
+
+    def check_wraps(self, objs, obj_params, params):
+        '''Check for first target scaler wrap, then nested param search,
+        then scope model wrap.'''
+
+        # Check ensembled_objs for target_scaler
+        for i in range(len(params)):
+            target_scaler = params[i].target_scaler
+
+            objs[i], obj_params =\
+                self.wrap_target_scaler(target_scaler, objs[i], obj_params)
 
         # Check for nested param search
-        for i in range(len(ensemble_params)):
+        for i in range(len(params)):
 
-            param_search = ensemble_params[i].param_search
+            param_search = params[i].param_search
 
-            ensemble_objs[i], ensemble_obj_params =\
-                self.wrap_param_search(param_search,
-                                       ensemble_objs[i],
-                                       ensemble_obj_params)
+            objs[i], obj_params =\
+                wrap_param_search(param_search, objs[i], obj_params)
 
-        # Check ensembled_objs for scope != 'all'
-        for i in range(len(ensemble_params)):
-            scope = ensemble_params[i].scope
+        # For now am wrapping all models in Scope wrap
+        # Could / maybe should change this in the future.
+        for i in range(len(params)):
+            scope = params[i].scope
+            objs[i] = self.wrap_model_scope(scope, objs[i])
 
-            ensembled_objs[i] =\
-                self.wrap_model_scope(scope, ensembled_objs[i])
-
-        # In mixed case, merge with non_ensemble
-        ensembled_objs += non_ensemble_objs
-        ensembled_obj_params.update(non_ensemble_obj_params)
-        return ensembled_objs, ensembled_obj_params
+        return objs, obj_params
 
     def wrap_target_scaler(self, target_scaler, model_obj, model_params):
 
@@ -491,33 +500,6 @@ class Models(Type_Pieces):
                 model_params[new_param_name] = scaler_params[param_name]
 
         return wrapper_model_obj, model_params
-
-    def wrap_param_search(self, param_search, model_obj, model_params):
-
-        if param_search is None:
-            return model_obj, model_params
-
-        name = model_obj[0]
-        prepend = name + '__'
-
-        # Remove the relevant model params
-        # and put in m_params
-        m_params = {}
-        model_param_names = list(model_params)
-        for param in model_param_names:
-
-            if param.startswith(prepend):
-                m_params[param.replace(prepend, '', 1)] =\
-                    model_params.pop(param)
-
-        # Create the wrapper nevergrad CV model
-        cv_obj = NevergradSearchCV(
-            estimator=model_obj[1],
-            param_search=param_search,
-            param_distributions=m_params,
-            n_jobs=param_search._n_jobs)
-
-        return (name + '_CV', cv_obj), model_params
 
     def wrap_model_scope(self, scope, model):
 

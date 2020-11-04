@@ -213,7 +213,7 @@ class NevergradSearchCV(BaseEstimator):
 
                 try:
                     executor = get_reusable_executor(
-                        max_workers=self.n_jobs, timeout=10)
+                        max_workers=self.n_jobs, timeout=60)
 
                     recommendation = optimizer.minimize(ng_cv_score,
                                                         executor=executor,

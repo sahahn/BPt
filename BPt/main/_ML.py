@@ -1083,7 +1083,7 @@ def _preproc_param_search(self, object, n_jobs,
         search_cv = self.cv
     else:
         search_cv =\
-            self._get_cv(param_search.CV, show=False)
+            self._get_cv(param_search.cv, show=False)
     param_search.set_cv(search_cv)
 
     # Set scorer

@@ -1221,8 +1221,7 @@ class Param_Search(Params):
 
         CV : 'depreciated'
             Switching to passing cv parameter as cv instead of CV.
-            For now if CV is passed it will still work as if it were
-            passed as cv.
+            Will raise error if anything is passed here.
 
             ::
 
@@ -1233,16 +1232,7 @@ class Param_Search(Params):
 
         self.splits = splits
         self.n_repeats = n_repeats
-
-        if CV != 'depreciated':
-            print('Warning: Passing CV is depreciated. Please change to',
-                  'passing as cv instead.')
-
-            # For now, let it still work
-            cv = CV
-
         self.cv = cv
-
         self.n_iter = n_iter
         self.scorer = scorer
         self.weight_scorer = weight_scorer
@@ -1250,13 +1240,16 @@ class Param_Search(Params):
         self.n_jobs = n_jobs
         self.dask_ip = dask_ip
 
-        self.CV = CV
-
         self._random_state = _random_state
         self._splits_vals = _splits_vals
         self._cv = _cv
         self._scorer = _scorer
         self._n_jobs = _n_jobs
+
+        if CV != 'depreciated':
+            raise RuntimeError('Pass as cv instead of CV!')
+
+        self.CV = CV
 
         self.check_args()
 

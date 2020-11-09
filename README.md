@@ -11,6 +11,16 @@
 
 
 
+### Install
 
+The easiest way to install the latest stable release of BPt is via pip, just run
+``` 
+pip install brain-pred-toolbox 
+```
 
+You can also clone this respository and and install it locally to get the latest version.
+See: https://bpt.readthedocs.io/en/latest/install.html#pip-installation for more information.
 
+### Changelog
+
+See: https://bpt.readthedocs.io/en/latest/change_log.html

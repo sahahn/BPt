@@ -11,7 +11,7 @@ from .main.Input_Tools import (Select, Duplicate, Pipe, Value_Subset,
                                Values_Subset)
 
 __author__ = "sahahn"
-__version__ = "1.2"
+__version__ = "1.3"
 __all__ = ["BPt_ML", "ABCD_ML", "Load", "Loader",
            "Imputer", "Scaler", "Transformer",
            "Feat_Selector", "Model",

@@ -516,3 +516,99 @@ feat_importances = None
 len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
 run_name = elastic net
 
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.8001875034784605
+Std in Validation score:  0.00719905567611952
+
+Model_Pipeline
+--------------
+imputers=\
+[Imputer(obj='mean', scope='float'),
+ Imputer(obj='median', scope='cat')]
+
+model=\
+Model(obj='ridge', params=1)
+
+param_search=\
+Param_Search(n_iter=50)
+
+
+
+Problem_Spec
+------------
+problem_type = binary
+target = sex
+scorer = ['roc_auc']
+weight_scorer = False
+scope = smri_thick_cort
+subjects = all
+len(subjects) = 11519 (before overlap w/ train/test subjects)
+n_jobs = 8
+random_state = 1
+
+Evaluate Params
+---------------
+splits = 3
+n_repeats = 1
+cv = default
+train_subjects = train
+feat_importances = None
+len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
+run_name = ridge
+
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.8001963566833457
+Std in Validation score:  0.007152269629989391
+
+Model_Pipeline
+--------------
+imputers=\
+[Imputer(obj='mean', scope='float'),
+ Imputer(obj='median', scope='cat')]
+
+scalers=\
+Scaler(obj='robust')
+
+model=\
+Model(obj='ridge', params=1)
+
+param_search=\
+Param_Search(n_iter=50)
+
+
+
+Problem_Spec
+------------
+problem_type = binary
+target = sex
+scorer = ['roc_auc']
+weight_scorer = False
+scope = smri_thick_cort
+subjects = all
+len(subjects) = 11519 (before overlap w/ train/test subjects)
+n_jobs = 8
+random_state = 1
+
+Evaluate Params
+---------------
+splits = 3
+n_repeats = 1
+cv = default
+train_subjects = train
+feat_importances = None
+len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
+run_name = ridge
+
+
+Validation Scores
+_________________
+Scorer:  roc_auc
+Mean Validation score:  0.8003105201714883
+Std in Validation score:  0.006566896503971356
+

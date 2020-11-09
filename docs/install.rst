@@ -1,7 +1,7 @@
 From Scratch
 ================
 
-Don't even have python installed, or anything? It is reccomended to download anaconda first
+Don't have python installed? Or new to python? It is recomended to first download a version of anaconda, though this is optional.
 https://www.anaconda.com/distribution/#download-section
 as that will take care of a number of dependecies right away (and ease cross os difficulties),
 and give you a jupyter notebook environment to optionally work in.
@@ -15,7 +15,7 @@ Run on the command line,
 
 ::
 
-    pip install BPt
+    pip install brain-pred-toolbox
 
 
 Github / Pip Installation

@@ -1,6 +1,5 @@
-from nose.tools import *
 from unittest import TestCase
-from BPt import ML
+from BPt import BPt_ML
 
 import os
 import numpy as np
@@ -21,7 +20,7 @@ class Test_Loaders(TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_Loaders, self).__init__(*args, **kwargs)
 
-        self.ML = ML(log_dr=None)
+        self.ML = BPt_ML(log_dr=None)
 
         # Make sure fake files are there
         self.surf_data = get_file_path('fake_surf_data')
@@ -67,8 +66,7 @@ class Test_Loaders(TestCase):
 
         self.ML.Load_Data_Files(df=df,
                                 load_func=np.load,
-                                drop_keys=['target'],
-                                in_memory=False)
+                                drop_keys=['target'])
 
         self.assertTrue(len(self.ML.file_mapping) == 40)
 

@@ -38,7 +38,7 @@ binary
 
 	0. "base elastic" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: elasticnet
 		class_weight: None
@@ -47,7 +47,7 @@ binary
 
 	1. "elastic classifier" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: elasticnet
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
@@ -57,7 +57,7 @@ binary
 
 	2. "elastic clf v2" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: elasticnet
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
@@ -163,7 +163,7 @@ binary
 
 	0. "base lasso" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: l1
 		class_weight: None
@@ -171,7 +171,7 @@ binary
 
 	1. "lasso C" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: l1
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
@@ -237,11 +237,11 @@ binary
 
 	0. "base linear svc" ::
 
-		max_iter: 5000
+		max_iter: 1000
 
 	1. "linear svc dist" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
@@ -255,7 +255,7 @@ binary
 
 	0. "base logistic" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: none
 		class_weight: None
@@ -379,8 +379,8 @@ binary
 
 		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
 		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		max_features: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
-		min_samples_split: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
+		max_features: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
+		min_samples_split: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
 		bootstrap: True
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
@@ -394,13 +394,13 @@ binary
 
 	0. "base ridge" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		penalty: l2
 		solver: saga
 
 	1. "ridge C" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		solver: saga
 		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
@@ -431,7 +431,7 @@ binary
 		penalty: TransitionChoice(choices=Tuple(l2,l1,elasticnet),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):l1
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		l1_ratio: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
-		max_iter: 5000
+		max_iter: 1000
 		learning_rate: TransitionChoice(choices=Tuple(optimal,invscaling,adaptive,constant),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):adaptive
 		eta0: Log{exp=31.62277660168379,Cl(1e-06,1000)}:0.03162277660168379
 		power_t: Scalar{Cl(0.1,0.9)}[sigma=Log{exp=1.2}]:0.5
@@ -562,11 +562,11 @@ regression
 
 	0. "base elastic net" ::
 
-		max_iter: 5000
+		max_iter: 1000
 
 	1. "elastic regression" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		alpha: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
 		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
 
@@ -653,11 +653,11 @@ regression
 
 	0. "base lasso regressor" ::
 
-		max_iter: 5000
+		max_iter: 1000
 
 	1. "lasso regressor dist" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		alpha: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
 
 
@@ -720,12 +720,12 @@ regression
 	0. "base linear svr" ::
 
 		loss: epsilon_insensitive
-		max_iter: 5000
+		max_iter: 1000
 
 	1. "linear svr dist" ::
 
 		loss: epsilon_insensitive
-		max_iter: 5000
+		max_iter: 1000
 		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
 
 
@@ -834,8 +834,8 @@ regression
 
 		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
 		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		max_features: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
-		min_samples_split: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
+		max_features: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
+		min_samples_split: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
 		bootstrap: True
 
 
@@ -848,12 +848,12 @@ regression
 
 	0. "base ridge regressor" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		solver: lsqr
 
 	1. "ridge regressor dist" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		solver: lsqr
 		alpha: Log{exp=21.544346900318843,Cl(0.001,100000)}:10.0
 
@@ -965,7 +965,7 @@ categorical
 
 	0. "base elastic" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: elasticnet
 		class_weight: None
@@ -974,7 +974,7 @@ categorical
 
 	1. "elastic classifier" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: elasticnet
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
@@ -984,7 +984,7 @@ categorical
 
 	2. "elastic clf v2" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: elasticnet
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
@@ -1090,7 +1090,7 @@ categorical
 
 	0. "base lasso" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: l1
 		class_weight: None
@@ -1098,7 +1098,7 @@ categorical
 
 	1. "lasso C" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: l1
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
@@ -1164,11 +1164,11 @@ categorical
 
 	0. "base linear svc" ::
 
-		max_iter: 5000
+		max_iter: 1000
 
 	1. "linear svc dist" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
@@ -1182,7 +1182,7 @@ categorical
 
 	0. "base logistic" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		multi_class: auto
 		penalty: none
 		class_weight: None
@@ -1306,8 +1306,8 @@ categorical
 
 		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
 		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		max_features: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
-		min_samples_split: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
+		max_features: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
+		min_samples_split: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
 		bootstrap: True
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
 
@@ -1321,13 +1321,13 @@ categorical
 
 	0. "base ridge" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		penalty: l2
 		solver: saga
 
 	1. "ridge C" ::
 
-		max_iter: 5000
+		max_iter: 1000
 		solver: saga
 		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
 		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
@@ -1358,7 +1358,7 @@ categorical
 		penalty: TransitionChoice(choices=Tuple(l2,l1,elasticnet),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):l1
 		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
 		l1_ratio: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
-		max_iter: 5000
+		max_iter: 1000
 		learning_rate: TransitionChoice(choices=Tuple(optimal,invscaling,adaptive,constant),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):adaptive
 		eta0: Log{exp=31.62277660168379,Cl(1e-06,1000)}:0.03162277660168379
 		power_t: Scalar{Cl(0.1,0.9)}[sigma=Log{exp=1.2}]:0.5
@@ -1611,11 +1611,21 @@ binary
 
   Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
 
+"default"
+*********
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
+
 
 regression
 ==========
 "explained_variance"
 ********************
+
+  Base Func Documenation: :func:`sklearn.metrics.explained_variance_score`
+
+"explained_variance score"
+**************************
 
   Base Func Documenation: :func:`sklearn.metrics.explained_variance_score`
 
@@ -1634,8 +1644,18 @@ regression
 
   Base Func Documenation: :func:`sklearn.metrics.median_absolute_error`
 
+"median_absolute_error"
+***********************
+
+  Base Func Documenation: :func:`sklearn.metrics.median_absolute_error`
+
 "neg_mean_absolute_error"
 *************************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_absolute_error`
+
+"mean_absolute_error"
+*********************
 
   Base Func Documenation: :func:`sklearn.metrics.mean_absolute_error`
 
@@ -1644,8 +1664,18 @@ regression
 
   Base Func Documenation: :func:`sklearn.metrics.mean_squared_error`
 
+"mean_squared_error"
+********************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_squared_error`
+
 "neg_mean_squared_log_error"
 ****************************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_squared_log_error`
+
+"mean_squared_log_error"
+************************
 
   Base Func Documenation: :func:`sklearn.metrics.mean_squared_log_error`
 
@@ -1654,8 +1684,18 @@ regression
 
   Base Func Documenation: :func:`sklearn.metrics.mean_squared_error`
 
+"root_mean_squared_error"
+*************************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_squared_error`
+
 "neg_mean_poisson_deviance"
 ***************************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_poisson_deviance`
+
+"mean_poisson_deviance"
+***********************
 
   Base Func Documenation: :func:`sklearn.metrics.mean_poisson_deviance`
 
@@ -1663,6 +1703,16 @@ regression
 *************************
 
   Base Func Documenation: :func:`sklearn.metrics.mean_gamma_deviance`
+
+"mean_gamma_deviance"
+*********************
+
+  Base Func Documenation: :func:`sklearn.metrics.mean_gamma_deviance`
+
+"default"
+*********
+
+  Base Func Documenation: :func:`sklearn.metrics.r2_score`
 
 
 categorical
@@ -1826,6 +1876,11 @@ categorical
 **********
 
   Base Func Documenation: :func:`sklearn.metrics.matthews_corrcoef`
+
+"default"
+*********
+
+  Base Func Documenation: :func:`sklearn.metrics.roc_auc_score`
 
 
 .. _Loaders:
@@ -2456,13 +2511,18 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f48ec1127a0>
+		score_func: <function f_classif at 0x7f0d2d8f1dd0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f48ec1127a0>
+		score_func: <function f_classif at 0x7f0d2d8f1dd0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
+
+	2. "univar fs classifier dist2" ::
+
+		score_func: <function f_classif at 0x7f0d2d8f1dd0>
+		percentile: Scalar{Cl(50,99)}[sigma=Log{exp=1.2}]:75.0
 
 
 "variance threshold"
@@ -2521,13 +2581,18 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f48ec112b90>
+		score_func: <function f_regression at 0x7f0d2d6704d0>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f48ec112b90>
+		score_func: <function f_regression at 0x7f0d2d6704d0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
+
+	2. "univar fs regression dist2" ::
+
+		score_func: <function f_regression at 0x7f0d2d6704d0>
+		percentile: Scalar{Cl(50,99)}[sigma=Log{exp=1.2}]:75.0
 
 
 "variance threshold"
@@ -2586,13 +2651,18 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f48ec1127a0>
+		score_func: <function f_classif at 0x7f0d2d8f1dd0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f48ec1127a0>
+		score_func: <function f_classif at 0x7f0d2d8f1dd0>
 		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
+
+	2. "univar fs classifier dist2" ::
+
+		score_func: <function f_classif at 0x7f0d2d8f1dd0>
+		percentile: Scalar{Cl(50,99)}[sigma=Log{exp=1.2}]:75.0
 
 
 "variance threshold"
@@ -2925,7 +2995,7 @@ binary
 "stacking classifier"
 *********************
 
-  Base Class Documenation: :class:`sklearn.ensemble.StackingClassifier`
+  Base Class Documenation: :class:`BPt.pipeline.Ensembles.BPtStackingClassifier`
 
   Param Distributions
 
@@ -2976,7 +3046,7 @@ regression
 "stacking regressor"
 ********************
 
-  Base Class Documenation: :class:`sklearn.ensemble.StackingRegressor`
+  Base Class Documenation: :class:`BPt.pipeline.Ensembles.BPtStackingRegressor`
 
   Param Distributions
 
@@ -3303,7 +3373,7 @@ categorical
 "stacking classifier"
 *********************
 
-  Base Class Documenation: :class:`sklearn.ensemble.StackingClassifier`
+  Base Class Documenation: :class:`BPt.pipeline.Ensembles.BPtStackingClassifier`
 
   Param Distributions
 

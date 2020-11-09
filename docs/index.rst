@@ -16,6 +16,12 @@ The following documentation includes information about the usage of this toolbox
    user_guide
 
 .. toctree::
+   :maxdepth: 1
+   :caption: Change Logs
+
+   change_log
+
+.. toctree::
    :maxdepth: 2
    :caption: Modeling Params
 

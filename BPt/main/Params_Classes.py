@@ -817,6 +817,10 @@ class Ensemble(Piece):
             a nested hyper-parameter tuning independent from the
             other pipeline steps.
 
+            ::
+
+                default = None
+
         target_scaler : Scaler, None, optional
 
             Still somewhat experimental, can pass
@@ -1074,8 +1078,7 @@ class Param_Search(Params):
 
                 default = 1
 
-
-        cv : 'default' or :class:`CV`, optional
+        cv : :class:`CV` or 'default', optional
             If left as default 'default', use the class defined CV behavior
             for the splits, otherwise can pass custom behavior.
 
@@ -1179,11 +1182,9 @@ class Param_Search(Params):
             unexpected errors.
 
             Choices are:
-            -  'default': If 'default' use the mp_context
-                defined upon init of BPt object.
+            - 'default': If 'default' use the BPt mp_context.
 
-            - 'loky': Create and use the python library
-                loky backend.
+            - 'loky': Create and use the python library loky backend.
 
             - 'fork': Python default fork mp_context
 

@@ -68,7 +68,10 @@ def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
         inds corresponding to which datatype for each loc.
 
         if 'default', and not already defined, set to 'basic'
-        (default = 'default')
+
+        ::
+
+            default = 'default'
 
     subject_id : str, optional
         The name of the column with unique subject ids in different
@@ -79,7 +82,10 @@ def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
         use_abcd_subject_ids to False)
 
         if 'default', and not already defined, set to 'src_subject_id'.
-        (default = 'default')
+
+        ::
+
+            default = 'default'
 
     eventname : value, list of values or None, optional
         Optional value to provide, specifying to optional keep certain rows

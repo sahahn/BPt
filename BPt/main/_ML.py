@@ -1530,12 +1530,16 @@ def model_pipeline_check(model_pipeline):
     # Add checks on Model_Pipeline
     if not isinstance(model_pipeline, Model_Pipeline):
 
+        # Check for if model str first
+        if isinstance(model_pipeline, 'str'):
+            model_pipeline = Model(obj=model_pipeline)
+
         # In case of passed valid single model, wrap in Model_Pipeline
         if hasattr(model_pipeline, '_is_model'):
             model_pipeline = Model_Pipeline(imputers=None,
                                             model=model_pipeline)
         else:
             raise RuntimeError('model_pipeline must be a Model_Pipeline',
-                               ' or Model-like')
+                               ' model str or Model-like')
 
     return model_pipeline

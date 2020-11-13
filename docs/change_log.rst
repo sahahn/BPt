@@ -1,3 +1,13 @@
+Release 1.4
+************
+
+- New Dataset class
+    - The new Dataset class is designed to eventually replace the old system for data loading.
+
+- New AutoGluon option
+    - Can now specify the auto machine learning package AutoGluon as a :class:`BPt.Model`
+
+
 Release 1.3
 ************
 

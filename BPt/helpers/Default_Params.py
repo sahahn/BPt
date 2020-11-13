@@ -326,6 +326,11 @@ P['sgd classifier'] =\
          'n_iter_no_change': "ng.p.TransitionChoice(np.arange(2, 20))",
          'class_weight': cls_weight}
 
+# Auto gluon
+P['pt binary'] = {'problem_type': "'binary'"}
+P['pt multiclass'] = {'problem_type': "'multiclass'"}
+P['pt regression'] = {'problem_type': "'regression'"}
+
 
 # Transformers
 P['pca var search'] =\

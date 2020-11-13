@@ -613,6 +613,9 @@ def Evaluate(self,
     # Perform pre-modeling check
     self._premodel_check()
 
+    # Run initial model pipeline check
+    model_pipeline_check(model_pipeline)
+
     # Should save the params used here*** before any preproc done
     run_name = get_avaliable_run_name(run_name, model_pipeline)
 
@@ -932,6 +935,9 @@ def Test(self,
     # Perform pre-modeling check
     self._premodel_check()
 
+    # Run initial model pipeline check
+    model_pipeline_check(model_pipeline)
+
     # Get a free run name
     run_name = get_avaliable_run_name(run_name, model_pipeline)
 
@@ -973,7 +979,7 @@ def Test(self,
     self._init_evaluator(
         model_pipeline=model_pipeline,
         ps=ps,
-        cv=None, # Test doesn't use cv
+        cv=None,  # Test doesn't use cv
         feat_importances=feat_importances,
         return_raw_preds=return_raw_preds,
         return_models=return_models)
@@ -1126,19 +1132,7 @@ def _preproc_cv_splits(self, obj, random_state):
 def _preproc_model_pipeline(self, model_pipeline, n_jobs,
                             problem_type, random_state):
 
-    # Add checks on Model_Pipeline
-    if not isinstance(model_pipeline, Model_Pipeline):
-
-        # In case of passed valid single model, wrap in Model_Pipeline
-        if hasattr(model_pipeline, '_is_model'):
-            model_pipeline = Model_Pipeline(imputers=None,
-                                            model=model_pipeline)
-            self._print('Model-like passed to model_pipeline',
-                        ' wrapping in Model_Pipeline!')
-
-        else:
-            raise RuntimeError('model_pipeline must be a Model_Pipeline',
-                               ' or Model-like')
+    model_pipeline = model_pipeline_check(model_pipeline)
 
     # Set values across each pipeline pieces params
     model_pipeline.preproc(n_jobs)
@@ -1530,3 +1524,18 @@ def _save_results(self, results, save_name):
         with open(save_spot+append, 'wb') as f:
             pkl.dump(results, f)
 
+
+def model_pipeline_check(model_pipeline):
+
+    # Add checks on Model_Pipeline
+    if not isinstance(model_pipeline, Model_Pipeline):
+
+        # In case of passed valid single model, wrap in Model_Pipeline
+        if hasattr(model_pipeline, '_is_model'):
+            model_pipeline = Model_Pipeline(imputers=None,
+                                            model=model_pipeline)
+        else:
+            raise RuntimeError('model_pipeline must be a Model_Pipeline',
+                               ' or Model-like')
+
+    return model_pipeline

@@ -1531,7 +1531,7 @@ def model_pipeline_check(model_pipeline):
     if not isinstance(model_pipeline, Model_Pipeline):
 
         # Check for if model str first
-        if isinstance(model_pipeline, 'str'):
+        if isinstance(model_pipeline, str):
             model_pipeline = Model(obj=model_pipeline)
 
         # In case of passed valid single model, wrap in Model_Pipeline

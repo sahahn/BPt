@@ -1750,44 +1750,57 @@ class Model_Pipeline(Params):
             model to BPt, and :class:`Ensemble` for information on how
             to build an ensemble of models.
 
-            Note: You must have provide a model, there is no option for None. Instead
-            default behavior is to use a simple linear/logistic regression, which will likely
-            not be a good choice.
+            Note: You must have provide a model, there is
+            no option for None. Instead
+            default behavior is to use a ridge regression.
 
             ::
 
-                default = Model('linear')
+                default = Model('ridge')
 
         param_search : :class:`Param_Search` or None, optional
-            :class:`Param_Search` can be provided in order to speficy a corresponding
-            hyperparameter search for the provided pipeline pieces. When defining each
-            piece, you may set hyperparameter distributions for that piece. If param search
-            is None, these distribution will be essentially ignored, but if :class:`Param_Search`
-            is passed here, then they will be used along with the strategy defined in the passed
+            :class:`Param_Search` can be provided in order
+            to specify a corresponding
+            hyperparameter search for the provided pipeline pieces.
+            When defining each
+            piece, you may set hyperparameter distributions for that piece.
+            If param search
+            is None, these distribution will be essentially ignored,
+            but if :class:`Param_Search`
+            is passed here, then they will be used along with the
+            strategy defined in the passed
             :class:`Param_Search` to conduct a nested hyper-param search.
 
-            Note: If using input wrapper types like :class:`Select`, then a param search
-            must be passed!
+            Note: If using input wrapper types like :class:`Select`,
+            then a param search must be passed!
 
             ::
 
                 default = None
 
         cache : str or None, optional
-            Warning: using cache with a Transformer or Loader is currently broken! 
-         
-            The base scikit-learn Pipeline, upon which the BPt Pipeline extends,
-            allows for the caching of fitted transformers - which in this context means all
+            Warning: using cache with a Transformer or Loader
+            is currently broken!
+
+            The base scikit-learn Pipeline, upon which the
+            BPt Pipeline extends,
+            allows for the caching of fitted transformers -
+            which in this context means all
             steps except for the model. If this behavior is desired
             (in the cases where a non-model step take a long time to fit),
             then a str indicating a directory where
-            the cache should be stored can be passed to cache. If this directory
+            the cache should be stored can be passed to cache.
+            If this directory
             does not aready exist, it will be created.
 
-            Note: cache_dr's are not automatically removed, and while different calls
-            to Evaluate or Test may benefit from overlapping cached steps - the size of the
-            cache can also grow pretty quickly, so you may need to manually monitor the size
-            of the cache and perform manual deletions when it grows too big depending on your
+            Note: cache_dr's are not automatically removed,
+            and while different calls
+            to Evaluate or Test may benefit from overlapping cached steps
+            - the size of the
+            cache can also grow pretty quickly, so you may need
+            to manually monitor the size
+            of the cache and perform manual deletions when it
+            grows too big depending on your
             storage resources.
 
             ::
@@ -1807,9 +1820,11 @@ class Model_Pipeline(Params):
                 default = 'default'
 
         feat_importances : depreciated
-            Feature importances in a past version of BPt were specified via this Model Pipeline object.
+            Feature importances in a past version of BPt were
+            specified via this Model Pipeline object.
             Now they should be provided to either
-            :func:`Evaluate <BPt.BPt_ML.Evaluate>` and :func:`Test <BPt.BPt_ML.Test>`
+            :func:`Evaluate <BPt.BPt_ML.Evaluate>`
+            and :func:`Test <BPt.BPt_ML.Test>`
 
         ::
 
@@ -1817,23 +1832,35 @@ class Model_Pipeline(Params):
 
         '''
 
+        if isinstance(loaders, str):
+            loaders = Loader(loaders)
         self.loaders = loaders
 
         if imputers == 'default':
             imputers = [Imputer('mean', scope='float'),
                         Imputer('median', scope='cat')]
             print('Passed default imputers, setting to:', print(imputers))
+        elif isinstance(imputers, str):
+            imputers = Imputer(imputers)
         self.imputers = imputers
 
+        if isinstance(scalers, str):
+            scalers = Scaler(scalers)
         self.scalers = scalers
+
+        if isinstance(transformers, str):
+            transformers = Transformer(transformers)
         self.transformers = transformers
 
+        if isinstance(feat_selectors, str):
+            feat_selectors = Feat_Selector(feat_selectors)
         self.feat_selectors = feat_selectors
 
         if model == 'default':
-            model = Model('linear')
+            model = Model('ridge')
             print('Passed default model, setting to:', print(model))
-
+        elif isinstance(model, str):
+            model = Model(model)
         self.model = model
 
         self.param_search = param_search
@@ -1841,7 +1868,8 @@ class Model_Pipeline(Params):
         self.n_jobs = n_jobs
 
         if feat_importances != 'depreciated':
-            print('Warning: Passing feature importances have been moved to the Evaluate and Test functions!')
+            print('Warning: Passing feature importances have been moved ',
+                  'to the Evaluate and Test functions!')
 
         # Regardless save the value to avoid sklearn warnings
         self.feat_importances = feat_importances
@@ -1945,31 +1973,37 @@ class Model_Pipeline(Params):
 
         try:
             self.model = self.models
+            print('Passed models, set as model')
         except AttributeError:
             pass
 
         try:
             self.transformers = self.transformer
+            print('Passed transformer, set as transformers')
         except AttributeError:
             pass
 
         try:
             self.imputers = self.imputer
+            print('Passed imputer, set as imputers')
         except AttributeError:
             pass
 
         try:
             self.feat_selectors = self.feat_selector
+            print('Passed feat_selector, set as feat_selectors')
         except AttributeError:
             pass
 
         try:
             self.scalers = self.scaler
+            print('Passed scaler, set as scalers')
         except AttributeError:
             pass
 
         try:
             self.loaders = self.loader
+            print('Passed loader, set as loaders')
         except AttributeError:
             pass
 
@@ -1979,7 +2013,8 @@ class Model_Pipeline(Params):
             if hasattr(self, p):
                 print('Warning: Model_Pipeline user set param', p,
                       ' was set,',
-                      'but will have no effect as it is not a valid parameter!')
+                      'but will have no effect as it is not',
+                      ' a valid parameter!')
 
         # Check for duplicate scopes
         self._proc_all_pieces(self._proc_duplicates)
@@ -1994,7 +2029,7 @@ class Model_Pipeline(Params):
         # Proc param search if not None
         if self.param_search is not None:
             self.param_search.check_args()
-    
+
     def set_n_jobs(self, n_jobs):
 
         if self.n_jobs == 'default':

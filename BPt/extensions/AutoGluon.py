@@ -23,7 +23,7 @@ class AutoGluon(BaseEstimator):
         self.problem_type = problem_type
         self.verbosity = verbosity
         self.n_jobs = n_jobs
-        self.random_state
+        self.random_state = random_state
 
     def _estimator_type(self):
 

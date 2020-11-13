@@ -178,9 +178,11 @@ class Dataset(pd.DataFrame):
 
     def _add_scope(self, col, scope):
 
-        # @TODO Add checks to validate input ???
+        if scope == 'category':
+            self.scopes[col].add(scope)
+            self[col] = self[col].astype('category')
 
-        if isinstance(scope, str):
+        elif isinstance(scope, str):
             self.scopes[col].add(scope)
 
         elif isinstance(scope, int) or isinstance(scope, float):
@@ -449,6 +451,22 @@ class Dataset(pd.DataFrame):
         self.drop(to_drop, axis=1, inplace=True)
         return self
 
+    def _add_new_copy(self, old, new):
+
+        # Copy as new key
+        self[new] = self[old].copy()
+
+        # Try to copy scope and role too
+        try:
+            self.scopes[new] = self.scopes[old].copy()
+        except KeyError:
+            pass
+
+        try:
+            self.roles[new] = self.roles[old]
+        except KeyError:
+            pass
+
     def binarize(self, scope, threshold=None, lower=None,
                  upper=None, replace=True):
 
@@ -487,7 +505,7 @@ class Dataset(pd.DataFrame):
                 new_key += str(cnt)
 
             # Make a copy under the new key
-            self[new_key] = self[col].copy()
+            self._add_new_copy(old=col, new=new_key)
 
             # Change col to new_key
             col = new_key
@@ -543,12 +561,12 @@ class Dataset(pd.DataFrame):
     def add_data_files(self):
         pass
 
-    # Plotting
-    def plot_var(self, scope):
-        pass
+    def rename(self, **kwargs):
+        print('Warning: Renaming might cause errors!')
+        super().rename(**kwargs)
 
-    def plot_vars(self, scope):
-        pass
+    from .Dataset_Plotting import (plot,
+                                   _plot_category)
 
 
 def get_fake_dataset():
@@ -599,6 +617,10 @@ def test_add_scope():
     assert(set(df._get_cols_from_scope('a')) == set(['1']))
     assert(set(df._get_cols_from_scope('b')) == set(['1']))
     assert(set(df._get_cols_from_scope(['a', 'b'])) == set(['1']))
+
+    df = get_fake_dataset()
+    df.add_scope(col='1', scope='category')
+    assert(df['1'].dtype.name == 'category')
 
 
 def test_set_roles():

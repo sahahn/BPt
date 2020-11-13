@@ -16,11 +16,14 @@ def get_dataset(X, y=None):
 class AutoGluon(BaseEstimator):
 
     def __init__(self, presets='best_quality',
-                 problem_type=None, verbosity=0):
+                 problem_type=None, verbosity=0,
+                 n_jobs=None, random_state=None):
 
         self.presets = presets
         self.problem_type = problem_type
         self.verbosity = verbosity
+        self.n_jobs = n_jobs
+        self.random_state
 
     def _estimator_type(self):
 
@@ -41,7 +44,9 @@ class AutoGluon(BaseEstimator):
                                label='target',
                                problem_type=self.problem_type,
                                presets=self.presets,
-                               verbosity=self.verbosity)
+                               verbosity=self.verbosity,
+                               random_seed=self.random_state,
+                               nthreads_per_trial=self.n_jobs)
 
         return self
 

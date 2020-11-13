@@ -197,15 +197,11 @@ class Pieces():
 
     def _check_params(self, obj):
 
-        try:
-            obj.random_state = self.spec['random_state']
-        except AttributeError:
-            pass
+        if hasattr(obj, 'random_state'):
+            setattr(obj, 'random_state', self.spec['random_state'])
 
-        try:
-            obj.n_jobs = self.spec['n_jobs']
-        except AttributeError:
-            pass
+        if hasattr(obj, 'n_jobs'):
+            setattr(obj, 'n_jobs', self.spec['n_jobs'])
 
         return obj
 

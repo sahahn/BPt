@@ -24,7 +24,6 @@ import pandas as pd
 import copy
 
 
-
 def Set_Default_ML_Verbosity(
  self, save_results='default', progress_bar='default',
  progress_loc='default',
@@ -615,9 +614,7 @@ def Evaluate(self,
     self._premodel_check()
 
     # Should save the params used here*** before any preproc done
-    run_name =\
-        get_avaliable_run_name(run_name,
-                               model_pipeline.model)
+    run_name = get_avaliable_run_name(run_name)
 
     # Get the the train subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
@@ -936,8 +933,7 @@ def Test(self,
     self._premodel_check()
 
     # Get a free run name
-    run_name =\
-        get_avaliable_run_name(run_name, model_pipeline.model)
+    run_name = get_avaliable_run_name(run_name)
 
     # Get the the train subjects + test subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)

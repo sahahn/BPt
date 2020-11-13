@@ -608,7 +608,12 @@ def replace_model_name(base_estimator_params):
     return new
 
 
-def get_avaliable_run_name(name, model):
+def get_avaliable_run_name(name, model_pipeline):
+
+    if hasattr(model_pipeline, 'model'):
+        model = model_pipeline.model
+    else:
+        model = model_pipeline
 
     if name is None or name == 'default':
 

@@ -27,6 +27,7 @@ class Selector(_BaseComposition):
 
     @if_delegate_has_method(delegate='example_estimator_')
     def fit(self, *args, **kwargs):
+        self.is_fitted_ = True
         self.estimator_ = self.estimators[self.to_use][1]
         self.estimator_.fit(*args, **kwargs)
         return self

@@ -614,7 +614,7 @@ def Evaluate(self,
     self._premodel_check()
 
     # Run initial model pipeline check
-    model_pipeline_check(model_pipeline)
+    model_pipeline = model_pipeline_check(model_pipeline)
 
     # Should save the params used here*** before any preproc done
     run_name = get_avaliable_run_name(run_name, model_pipeline)
@@ -936,7 +936,7 @@ def Test(self,
     self._premodel_check()
 
     # Run initial model pipeline check
-    model_pipeline_check(model_pipeline)
+    model_pipeline = model_pipeline_check(model_pipeline)
 
     # Get a free run name
     run_name = get_avaliable_run_name(run_name, model_pipeline)

@@ -24,6 +24,7 @@ import pandas as pd
 import copy
 
 
+
 def Set_Default_ML_Verbosity(
  self, save_results='default', progress_bar='default',
  progress_loc='default',
@@ -1128,6 +1129,20 @@ def _preproc_cv_splits(self, obj, random_state):
 
 def _preproc_model_pipeline(self, model_pipeline, n_jobs,
                             problem_type, random_state):
+
+    # Add checks on Model_Pipeline
+    if not isinstance(model_pipeline, Model_Pipeline):
+
+        # In case of passed valid single model, wrap in Model_Pipeline
+        if hasattr(model_pipeline, '_is_model'):
+            model_pipeline = Model_Pipeline(imputers=None,
+                                            model=model_pipeline)
+            self._print('Model-like passed to model_pipeline',
+                        ' wrapping in Model_Pipeline!')
+
+        else:
+            raise RuntimeError('model_pipeline must be a Model_Pipeline',
+                               ' or Model-like')
 
     # Set values across each pipeline pieces params
     model_pipeline.preproc(n_jobs)

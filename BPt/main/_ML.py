@@ -7,7 +7,8 @@ from copy import deepcopy
 import os
 import pickle as pkl
 
-from tqdm import tqdm, tqdm_notebook
+from tqdm import tqdm
+from tqdm.notebook import tqdm as tqdm_notebook
 
 from .Input_Tools import is_value_subset, is_values_subset
 from ..helpers.Data_Helpers import (get_unique_combo_df,
@@ -1210,7 +1211,7 @@ def _preproc_problem_spec(self, problem_spec):
     elif pt == 'b':
         pt = 'binary'
 
-    elif pt == 'c':
+    elif pt == 'c' or 'multiclass':
         pt = 'categorical'
 
     elif pt == 'f' or pt == 'float':

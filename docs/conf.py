@@ -23,7 +23,7 @@ copyright = '2020, sahahn'
 author = 'sahahn'
 
 # The full version, including alpha/beta/rc tags
-release = '1.2'
+release = '1.4'
 
 
 # -- General configuration ---------------------------------------------------

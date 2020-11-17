@@ -7,10 +7,12 @@ Release 1.4
 - New AutoGluon option
     - Can now specify the auto machine learning package AutoGluon as a :class:`BPt.Model`
 
+- New SurfMaps extension loader
+    - Added new extension Loader :class:`BPt.SurfMaps`
+
 
 Release 1.3
 ************
-
 
 - Support for nested parameter searches
     - :class:`BPt.Model` and :class:`BPt.Ensemble` now support a param_search parameter.

@@ -1,6 +1,6 @@
 from .Col_Selector import ColDropStrat, InPlaceColTransformer
 from .Feat_Selectors import RFE_Wrapper, FeatureSelector
-from .Loaders import Identity, SurfLabels
+from .Loaders import Identity, SurfLabels, SurfMaps
 
 try:
     from .Loaders import Connectivity
@@ -22,4 +22,4 @@ __all__ = ['ColDropStrat', 'InPlaceColTransformer', 'RFE_Wrapper',
            'FeatureSelector',
            'Identity', 'SurfLabels', 'Connectivity', 'MLPRegressor_Wrapper',
            'MLPClassifier_Wrapper',
-           'RandomParcels', 'Winsorizer', 'Networks']
+           'RandomParcels', 'Winsorizer', 'Networks', 'SurfMaps']

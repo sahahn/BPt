@@ -1,7 +1,6 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils import check_array
-from sklearn.utils.validation import (check_is_fitted, check_random_state,
-                                      FLOAT_DTYPES)
+from sklearn.utils.validation import FLOAT_DTYPES
 import numpy as np
 
 

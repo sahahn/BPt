@@ -1,13 +1,14 @@
 from joblib import Parallel, delayed
 from copy import deepcopy
 import numpy as np
+import os
 
 
 class Data_File():
 
     def __init__(self, loc, load_func):
 
-        self.loc = loc
+        self.loc = os.path.abspath(loc)
         self.load_func = load_func
 
     def _load(self):

@@ -513,7 +513,12 @@ class SurfMaps(BaseEstimator, TransformerMixin):
 
         # For each map - take weighted average
         for m in range(self.maps_.shape[1]):
-            X_trans.append(np.average(X, axis=0, weights=self.maps_[:, m]))
+
+            try:
+                avg = np.average(X, axis=0, weights=self.maps_[:, m])
+            except ZeroDivisionError:
+                avg = 0
+            X_trans.append(avg)
 
         return np.array(X_trans).T
 

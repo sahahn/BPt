@@ -139,7 +139,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         reverse_inds = proc_mapping(self.wrapper_inds_, self._out_mapping)
 
-        # If no inver_transformer in base transformer, set to 0
+        # If no inverse_transformer in base transformer, set to 0
         try:
             X_trans =\
                 self.wrapper_transformer_.inverse_transform(X[:, reverse_inds])

@@ -333,16 +333,23 @@ class SurfMaps(BaseEstimator, TransformerMixin):
             or the str file location of a numpy or other
             valid surface file format array in which to load.
 
-        strategy : 'ls' or 'average', optional
+        strategy : {'auto', 'ls', 'average'}, optional
             The stratgey in which the maps are used to extract
-            signal. By default, 'ls' is used, which stands for
-            least squares. The least-squares solution will
+            signal. If 'ls' is selected, which stands for
+            least squares, the least-squares solution will
             be used for each region.
 
             Alternatively, if 'average' is passed, then
             the weighted average value for each map
             will be computed.
 
+            By default 'auto' will be selected,
+            which will use 'average' if the passed
+            maps contain only positive weights, and
+            'ls' in the case that there are
+            any negative values in the passed maps.
+
+            Otherwise, you can set a specific strategy.
             In deciding which method to use,
             consider an example. Let's say the
             fit data X, and maps are
@@ -449,9 +456,9 @@ class SurfMaps(BaseEstimator, TransformerMixin):
                                'space as the labels you are using!')
 
         # Make sure strategy exists
-        if self.strategy not in ['ls', 'average']:
+        if self.strategy not in ['auto', 'ls', 'average']:
             raise RuntimeError('strategy must be '
-                               '"ls" or "average"!')
+                               '"ls", "average" or "auto"!')
 
         return self
 
@@ -482,9 +489,17 @@ class SurfMaps(BaseEstimator, TransformerMixin):
         if self.data_dim_ == 1:
             X = X.T
 
-        if self.strategy == 'ls':
+        # Set strategy if auto
+        strategy = self.strategy
+        if strategy == 'auto':
+            strategy = 'ls'
+            if np.all(self.maps_ >= 0):
+                strategy = 'average'
+
+        # Run the correct transform based on strategy
+        if strategy == 'ls':
             X_trans = self._transform_ls(X)
-        elif self.strategy == 'average':
+        elif strategy == 'average':
             X_trans = self._transform_average(X)
         else:
             X_trans = None
@@ -515,10 +530,9 @@ class SurfMaps(BaseEstimator, TransformerMixin):
         for m in range(self.maps_.shape[1]):
 
             try:
-                avg = np.average(X, axis=0, weights=self.maps_[:, m])
+                X_trans.append(np.average(X, axis=0, weights=self.maps_[:, m]))
             except ZeroDivisionError:
-                avg = 0
-            X_trans.append(avg)
+                pass
 
         return np.array(X_trans).T
 
@@ -530,6 +544,10 @@ class SurfMaps(BaseEstimator, TransformerMixin):
 
         # For ls should be something like
         # np.dot(region_signals, maps.T)
+
+        # For inverse transform weighted average,
+        # make sure to include check for sum(weights) == 0
+        # and to fill in that spot with zeros
 
         raise RuntimeError('Not Implemented Yet')
 

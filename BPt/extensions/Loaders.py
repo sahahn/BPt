@@ -312,7 +312,7 @@ class SurfLabels(BaseEstimator, TransformerMixin):
 
 class SurfMaps(BaseEstimator, TransformerMixin):
 
-    def __init__(self, maps, strategy='ls', mask=None, vectorize=True):
+    def __init__(self, maps, strategy='auto', mask=None, vectorize=True):
         '''Simmilar to NiftiMapsMasker from nilearn
         but for surfaces, and designed to work with BPt Loader.
 

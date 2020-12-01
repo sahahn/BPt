@@ -10,6 +10,9 @@ Release 1.4
 - New SurfMaps extension loader
     - Added new extension Loader :class:`BPt.SurfMaps`
 
+- only_fold parameter
+    - New optional parameter in Evalaute for running only one fold.
+
 
 Release 1.3
 ************

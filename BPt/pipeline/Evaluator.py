@@ -95,7 +95,8 @@ class Evaluator():
 
         return results
 
-    def Evaluate(self, data, train_subjects, splits, n_repeats, splits_vals):
+    def Evaluate(self, data, train_subjects, splits,
+                 n_repeats, splits_vals, only_fold=None):
         '''Method to perform a full evaluation
         on a provided model type and training subjects, according to
         class set parameters.
@@ -129,7 +130,8 @@ class Evaluator():
         # Setup the desired eval splits
         subject_splits =\
             self._get_eval_splits(train_subjects, splits,
-                                  n_repeats, splits_vals)
+                                  n_repeats, splits_vals,
+                                  only_fold=only_fold)
 
         all_train_scores, all_scores = [], []
         fold_ind = 0
@@ -221,7 +223,8 @@ class Evaluator():
         results = self._get_results()
         return (np.array(all_train_scores), np.array(all_scores), results)
 
-    def _get_eval_splits(self, train_subjects, splits, n_repeats, splits_vals):
+    def _get_eval_splits(self, train_subjects, splits,
+                         n_repeats, splits_vals, only_fold=None):
 
         subject_splits = self.cv.get_cv(train_subjects, splits, n_repeats,
                                         splits_vals, self.ps.random_state,
@@ -236,6 +239,12 @@ class Evaluator():
             self.n_splits_ = splits
 
         else:
+            self.n_splits_ = 1
+
+        # Check for passed only_fold
+        if only_fold is not None:
+
+            subject_splits = [subject_splits[only_fold]]
             self.n_splits_ = 1
 
         return subject_splits

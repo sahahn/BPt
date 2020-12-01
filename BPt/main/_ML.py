@@ -331,6 +331,7 @@ def Evaluate(self,
              return_raw_preds=False,
              return_models=False,
              run_name='default',
+             only_fold=None,
              CV='depreciated'):
     ''' The Evaluate function is one of the main interfaces
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
@@ -560,6 +561,15 @@ def Evaluate(self,
 
             default = 'default'
 
+    only_fold : int or None, optional
+        This is a special parameter used to only
+        Evaluate a specific fold of the specified runs to
+        evaluate. Keep as None to ignore.
+
+        ::
+
+            default = None
+
     CV : 'depreciated'
         Switching to passing cv parameter as cv instead of CV.
         For now if CV is passed it will still work as if it were
@@ -680,7 +690,12 @@ def Evaluate(self,
     # Evaluate the model
     train_scores, scores, results =\
         self.evaluator.Evaluate(self.all_data, _train_subjects,
-                                splits, n_repeats, splits_vals)
+                                splits, n_repeats, splits_vals,
+                                only_fold=only_fold)
+    
+    # If only fold is not None, set n_repeats = 1
+    if only_fold is not None:
+        n_repeats = 1
 
     if 'FIs' in results:
         for fi in results['FIs']:

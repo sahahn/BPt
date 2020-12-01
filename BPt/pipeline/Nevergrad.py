@@ -12,6 +12,7 @@ from .base import _get_est_fit_params
 from ..helpers.CV import CV
 from os.path import dirname, abspath, exists
 from sklearn.base import BaseEstimator
+from sklearn.utils.metaestimators import if_delegate_has_method
 import warnings
 
 try:
@@ -122,6 +123,14 @@ class NevergradSearchCV(BaseEstimator):
     @property
     def _estimator_type(self):
         return self.estimator._estimator_type
+
+    @property
+    def n_features_in_(self):
+        return self.best_estimator_.n_features_in_
+
+    @property
+    def classes_(self):
+        return self.best_estimator_.classes_
 
     def _set_cv(self, train_data_index):
 
@@ -281,7 +290,6 @@ class NevergradSearchCV(BaseEstimator):
         self.fit_best_estimator(recommendation, X, y, mapping,
                                 train_data_index, fit_params)
 
-
     def fit_best_estimator(self, recommendation,  X, y, mapping,
                            train_data_index, fit_params):
 
@@ -299,17 +307,29 @@ class NevergradSearchCV(BaseEstimator):
         # Fit
         self.best_estimator_.fit(X, y, **f_params)
 
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
     def predict(self, X):
         return self.best_estimator_.predict(X)
-
+    
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
     def predict_log_proba(self, X):
         return self.best_estimator_.predict_log_proba(X)
 
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
     def predict_proba(self, X):
         return self.best_estimator_.predict_proba(X)
 
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
     def decision_function(self, X):
         return self.best_estimator_.decision_function(X)
+
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def transform(self, X):
+        return self.best_estimator_.transform(X)
+
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def inverse_transform(self, Xt):
+        return self.best_estimator_.inverse_transform(Xt)
 
 
 def wrap_param_search(param_search, model_obj, model_params):

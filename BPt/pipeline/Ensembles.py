@@ -41,6 +41,9 @@ import numpy as np
 from .base import _fit_single_estimator, _get_est_fit_params
 from ..main.Params_Classes import CV_Splits
 
+from sklearn.utils.multiclass import check_classification_targets
+from sklearn.preprocessing import LabelEncoder
+
 
 def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
                     train_data_index=None, **kwargs):
@@ -131,6 +134,19 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
 
     return self
 
+def pass_params_classifier_fit(self, X, y,
+                               sample_weight=None, mapping=None,
+                               train_data_index=None, **kwargs):
+
+        check_classification_targets(y)
+        self._le = LabelEncoder().fit(y)
+        self.classes_ = self._le.classes_
+        
+        return self.bpt_fit(X, self._le.transform(y),
+                               sample_weight=sample_weight,
+                               mapping=mapping,
+                               train_data_index=train_data_index,
+                               **kwargs)
 
 class BPtStackingRegressor(StackingRegressor):
     needs_mapping = True
@@ -141,7 +157,8 @@ class BPtStackingRegressor(StackingRegressor):
 class BPtStackingClassifier(StackingClassifier):
     needs_mapping = True
     needs_train_data_index = True
-    fit = pass_params_fit
+    bpt_fit = pass_params_fit
+    fit = pass_params_classifier_fit
 
 
 class DES_Ensemble(VotingClassifier):

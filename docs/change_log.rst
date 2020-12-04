@@ -14,6 +14,10 @@ Release 1.4
     - New optional parameter in Evalaute for running only one fold.
 
 
+Unsorted:
+- Bug fix in CV for if train_subjects was passed as an np.array it would break
+- If nested model pipeline or params w/o param_search still keep track of possible params.
+
 Release 1.3
 ************
 

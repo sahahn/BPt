@@ -18,7 +18,7 @@ from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Evaluator import Evaluator
 from ..main.Params_Classes import (CV_Splits, Feat_Importance, Model_Pipeline,
-                                   Model, Problem_Spec)
+                                   Model, Ensemble, Problem_Spec)
 from ..pipeline.Model_Pipeline import get_pipe
 import pandas as pd
 import copy
@@ -692,7 +692,7 @@ def Evaluate(self,
         self.evaluator.Evaluate(self.all_data, _train_subjects,
                                 splits, n_repeats, splits_vals,
                                 only_fold=only_fold)
-    
+
     # If only fold is not None, set n_repeats = 1
     if only_fold is not None:
         n_repeats = 1
@@ -1164,7 +1164,8 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs,
 
     def nested_model_check(obj):
 
-        if isinstance(obj, Model):
+        # Check for Model or Ensemble
+        if isinstance(obj, Model) or isinstance(obj, Ensemble):
             self._preproc_param_search(obj, n_jobs, problem_type, random_state)
 
         if isinstance(obj, list):
@@ -1368,13 +1369,18 @@ def get_pipeline(self, model_pipeline, problem_spec,
     def nested_check(obj):
 
         if hasattr(obj, 'obj') and isinstance(obj.obj, Model_Pipeline):
-            setattr(obj, 'obj',
-                    self.get_pipeline(
-                        model_pipeline=obj.obj,
-                        problem_spec=nested_ps,
-                        progress_loc=progress_loc,
-                        has_search=has_search))
 
+            nested_pipe, nested_pipe_params =\
+                self.get_pipeline(model_pipeline=obj.obj,
+                                  problem_spec=nested_ps,
+                                  progress_loc=progress_loc,
+                                  has_search=has_search)
+
+            # Set obj as nested pipeline
+            setattr(obj, 'obj', nested_pipe)
+
+            # Set obj's params as the nested_pipe_params
+            setattr(obj, 'params', nested_pipe_params)
             return
 
         if isinstance(obj, list):
@@ -1415,9 +1421,9 @@ def _init_evaluator(self, model_pipeline, ps,
 
     # Calling get pipeline performs preproc on model_pipeline
     # and Data_Scopes
-    model = self.get_pipeline(
-        pipe, ps,
-        progress_loc=self.default_ML_verbosity['progress_loc'])
+    model, _ =\
+        self.get_pipeline(
+            pipe, ps, progress_loc=self.default_ML_verbosity['progress_loc'])
 
     # Set the evaluator obj
     self.evaluator =\

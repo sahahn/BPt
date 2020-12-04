@@ -124,7 +124,6 @@ def proc_extra_params(obj, extra_params, non_search_params, params=None):
 
     # If any of the passed keys in extra_params are valid params to
     # the base classes init, add them to non_search_params
-
     for key in extra_params:
         if key in init_params:
             non_search_params[key] = deepcopy(extra_params[key])
@@ -137,7 +136,7 @@ def proc_extra_params(obj, extra_params, non_search_params, params=None):
     return non_search_params, params
 
 
-def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
+def get_obj_and_params(obj_str, OBJS, extra_params, params):
 
     # First get the object, and process the base params!
     try:
@@ -175,55 +174,50 @@ def get_obj_and_params(obj_str, OBJS, extra_params, params, search_type):
 
     # Process rest of params by search type, and w.r.t to extra params
     non_search_params, params =\
-        process_params_by_type(obj, obj_str, base_params,
-                               extra_params, search_type)
+        process_params_by_type(obj, obj_str, base_params, extra_params)
 
     return obj, non_search_params, params
 
 
 def process_params_by_type(obj, obj_str, base_params,
-                           extra_params, search_type):
+                           extra_params):
+    '''base params is either a dict or 0'''
 
-    # Special case if search type None
-    if search_type is None:
+    non_search_params, params = {}, {}
 
-        if base_params == 0:
-            return {}, {}
+    # Start with params as copy of passed base_params
+    params = deepcopy(base_params)
 
-        elif not isinstance(base_params, dict):
-            raise RuntimeError('params passed with custom obj must be',
-                               'either 0, for None, or a dict')
+    # If params is passed as 0, treat as no search params
+    if params == 0:
+        params = {}
 
-        params = base_params.copy()
-        non_search_params = {}
+    # Extract any non-search params from params
+    param_keys = list(params)
+    for p in param_keys:
 
-        # First, grab any params from the params passed which
-        # are not Nevergrad distributions
-        # These, regardless of search_type of None,
-        # should still be passed to class init.
-        for p in params:
+        try:
+            module = params[p].__module__
 
-            try:
-                module = params[p].__module__
-                if 'nevergrad' not in module:
-                    non_search_params[p] = params[p]
+            # If has a module, but no nevergrad in path, then not a
+            # nevergrad param
+            if 'nevergrad' not in module:
+                non_search_params[p] = params.pop(p)
 
-            except AttributeError:
-                non_search_params[p] = params[p]
+        # If no module, then not a nevergrad param
+        except AttributeError:
+            non_search_params[p] = params.pop(p)
 
-        # process extra params
-        non_search_params, _ =\
-            proc_extra_params(obj, extra_params, non_search_params,
-                              params=None)
+    # Append obj_str to all params still in params
+    # as these are the search params
+    params = proc_params(params, prepend=obj_str)
 
-        return non_search_params, {}
-
-    # Otherwise, prepend obj_str to all keys in base params
-    params = proc_params(base_params, prepend=obj_str)
-
-    # process extra params
+    # Process extra params
     non_search_params, params =\
-        proc_extra_params(obj, extra_params, {}, params=params)
+        proc_extra_params(obj,
+                          extra_params=extra_params,
+                          non_search_params=non_search_params,
+                          params=params)
 
     return non_search_params, params
 

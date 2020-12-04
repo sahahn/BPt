@@ -219,7 +219,7 @@ class Model_Pipeline():
 
         # If no search, just return copy of pipeline
         if not self.is_search():
-            return base_pipeline
+            return base_pipeline, self.get_all_params()
 
         # Create the search object
         search_model =\
@@ -231,7 +231,7 @@ class Model_Pipeline():
                 n_jobs=self.param_search._n_jobs,
                 random_state=self.param_search._random_state)
 
-        return search_model
+        return search_model, {}
 
 
 def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc,
@@ -248,8 +248,8 @@ def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc,
                        verbose=verbose)
 
     # Set the final model // search wrap
-    Model =\
+    Model, pipeline_params =\
         base_model_pipeline.get_search_wrapped_pipeline(
             progress_loc=progress_loc)
 
-    return Model
+    return Model, pipeline_params

@@ -227,8 +227,7 @@ def get_base_model_and_params(model_type, extra_params, model_type_params,
                               num_feat_keys=None):
 
     model, extra_model_params, model_type_params =\
-        get_obj_and_params(model_type, MODELS, extra_params,
-                           model_type_params, search_type)
+        get_obj_and_params(model_type, MODELS, extra_params, model_type_params)
 
     # Init model, w/ any user passed params + class params
     model = model(**extra_model_params)

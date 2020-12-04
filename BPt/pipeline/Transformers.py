@@ -268,7 +268,6 @@ def get_transformer_and_params(transformer_str, extra_params, params,
                                num_feat_keys=None):
 
     transformer, extra_transformer_params, transformer_params =\
-        get_obj_and_params(transformer_str, TRANSFORMERS, extra_params, params,
-                           search_type)
+        get_obj_and_params(transformer_str, TRANSFORMERS, extra_params, params)
 
     return transformer(**extra_transformer_params), transformer_params

@@ -166,12 +166,10 @@ class Pieces():
             process_params_by_type(obj=user_obj,
                                    obj_str=name,
                                    base_params=deepcopy(param),
-                                   extra_params=extra_params,
-                                   search_type=self.spec['search_type'])
+                                   extra_params=extra_params)
 
         # If passing a user object, kind of stupid to pass default, non search
-        # params
-        # via a dict..., but hey give it a try
+        # params, via a dict..., but hey give it a try
         try:
             user_obj.set_params(**extra_user_obj_params)
         except AttributeError:

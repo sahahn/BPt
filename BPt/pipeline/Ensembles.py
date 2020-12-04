@@ -134,19 +134,21 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
 
     return self
 
+
 def pass_params_classifier_fit(self, X, y,
                                sample_weight=None, mapping=None,
                                train_data_index=None, **kwargs):
 
-        check_classification_targets(y)
-        self._le = LabelEncoder().fit(y)
-        self.classes_ = self._le.classes_
-        
-        return self.bpt_fit(X, self._le.transform(y),
-                               sample_weight=sample_weight,
-                               mapping=mapping,
-                               train_data_index=train_data_index,
-                               **kwargs)
+    check_classification_targets(y)
+    self._le = LabelEncoder().fit(y)
+    self.classes_ = self._le.classes_
+
+    return self.bpt_fit(X, self._le.transform(y),
+                        sample_weight=sample_weight,
+                        mapping=mapping,
+                        train_data_index=train_data_index,
+                        **kwargs)
+
 
 class BPtStackingRegressor(StackingRegressor):
     needs_mapping = True
@@ -586,8 +588,7 @@ def get_ensemble_and_params(ensemble_str, extra_params, params, search_type,
         return None, {}
 
     ensemble, extra_ensemble_params, ensemble_params =\
-        get_obj_and_params(ensemble_str, ENSEMBLES, extra_params,
-                           params, search_type)
+        get_obj_and_params(ensemble_str, ENSEMBLES, extra_params, params)
 
     # Slight tweak here, return tuple ensemble, extra_params
     return (ensemble, extra_ensemble_params), ensemble_params

@@ -85,6 +85,9 @@ def voting_fit(self, X, y, sample_weight=None, mapping=None,
 def stacking_fit(self, X, y, sample_weight=None, mapping=None,
                  train_data_index=None, **kwargs):
 
+    # Validate final estimastor
+    self._validate_final_estimator()
+
     # Fit self.estimators_ on all data
     names, all_estimators = self._fit_all_estimators(
         X, y, sample_weight=sample_weight, mapping=mapping,
@@ -473,6 +476,10 @@ class Ensemble_Wrapper():
             if hasattr(model[1], 'random_state'):
                 setattr(model[1], 'random_state', self.random_state)
 
+        # Determine the parameters to init the ensemble
+        pass_params = ensemble_extra_params
+        pass_params['estimators'] = models
+
         # Process final_estimator if passed
         if final_estimator is not None:
 
@@ -496,14 +503,15 @@ class Ensemble_Wrapper():
             if hasattr(final_estimator_obj, 'random_state'):
                 setattr(final_estimator_obj, 'random_state', self.random_state)
 
-        else:
-            final_estimator_obj = None
+            # Add to pass params
+            pass_params['final_estimator'] = final_estimator_obj
+
+        # Check if cv passed
+        if cv_splits is not None:
+            pass_params['cv'] = cv_splits
 
         # Init the ensemble object
-        ensemble = ensemble_obj(estimators=models,
-                                final_estimator=final_estimator_obj,
-                                cv=cv_splits,
-                                **ensemble_extra_params)
+        ensemble = ensemble_obj(**pass_params)
 
         # Set ensemble n_jobs
         set_n_jobs(ensemble, ensemble_n_jobs)

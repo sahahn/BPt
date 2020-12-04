@@ -45,19 +45,13 @@ from sklearn.utils.multiclass import check_classification_targets
 from sklearn.preprocessing import LabelEncoder
 
 
-def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
-                    train_data_index=None, **kwargs):
+def _fit_all_estimators(self, X, y, sample_weight=None, mapping=None,
+                        train_data_index=None):
 
-    # all_estimators contains all estimators, the one to be fitted and the
-    # 'drop' string.
+    # Validate
     names, all_estimators = self._validate_estimators()
-    self._validate_final_estimator()
 
-    stack_method = [self.stack_method] * len(all_estimators)
-
-    # Fit the base estimators on the whole training data. Those
-    # base estimators will be used in transform, predict, and
-    # predict_proba. They are exposed publicly.
+    # Fit all estimators
     self.estimators_ = Parallel(n_jobs=self.n_jobs)(
         delayed(_fit_single_estimator)(clone(est), X, y, sample_weight,
                                        mapping, train_data_index)
@@ -74,6 +68,28 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
         else:
             self.named_estimators_[name_est] = 'drop'
 
+    return names, all_estimators
+
+
+def voting_fit(self, X, y, sample_weight=None, mapping=None,
+               train_data_index=None, **kwargs):
+
+    # Fit self.estimators_ on all data
+    self._fit_all_estimators(
+        X, y, sample_weight=sample_weight, mapping=mapping,
+        train_data_index=train_data_index)
+
+    return self
+
+
+def stacking_fit(self, X, y, sample_weight=None, mapping=None,
+                 train_data_index=None, **kwargs):
+
+    # Fit self.estimators_ on all data
+    names, all_estimators = self._fit_all_estimators(
+        X, y, sample_weight=sample_weight, mapping=mapping,
+        train_data_index=train_data_index)
+
     # To train the meta-classifier using the most data as possible, we use
     # a cross-validation to obtain the output of the stacked estimators.
     if isinstance(self.cv, CV_Splits):
@@ -87,6 +103,9 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
     cv = check_cv(cv_inds, y=y, classifier=is_classifier(self))
     if hasattr(cv, 'random_state') and cv.random_state is None:
         cv.random_state = np.random.RandomState()
+
+    # Proc stack method
+    stack_method = [self.stack_method] * len(all_estimators)
 
     self.stack_method_ = [
         self._method_name(name, est, meth)
@@ -135,9 +154,9 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
     return self
 
 
-def pass_params_classifier_fit(self, X, y,
-                               sample_weight=None, mapping=None,
-                               train_data_index=None, **kwargs):
+def ensemble_classifier_fit(self, X, y,
+                            sample_weight=None, mapping=None,
+                            train_data_index=None, **kwargs):
 
     check_classification_targets(y)
     self._le = LabelEncoder().fit(y)
@@ -153,14 +172,31 @@ def pass_params_classifier_fit(self, X, y,
 class BPtStackingRegressor(StackingRegressor):
     needs_mapping = True
     needs_train_data_index = True
-    fit = pass_params_fit
+    _fit_all_estimators = _fit_all_estimators
+    fit = stacking_fit
 
 
 class BPtStackingClassifier(StackingClassifier):
     needs_mapping = True
     needs_train_data_index = True
-    bpt_fit = pass_params_fit
-    fit = pass_params_classifier_fit
+    _fit_all_estimators = _fit_all_estimators
+    bpt_fit = stacking_fit
+    fit = ensemble_classifier_fit
+
+
+class BPtVotingRegressor(VotingRegressor):
+    needs_mapping = True
+    needs_train_data_index = True
+    _fit_all_estimators = _fit_all_estimators
+    fit = voting_fit
+
+
+class BPtVotingClassifier(VotingClassifier):
+    needs_mapping = True
+    needs_train_data_index = True
+    _fit_all_estimators = _fit_all_estimators
+    bpt_fit = voting_fit
+    fit = ensemble_classifier_fit
 
 
 class DES_Ensemble(VotingClassifier):
@@ -559,9 +595,9 @@ ENSEMBLES = {
                            ['default']),
     'stacking classifier': (BPtStackingClassifier,
                             ['default']),
-    'voting classifier': (VotingClassifier,
+    'voting classifier': (BPtVotingClassifier,
                           ['default']),
-    'voting regressor': (VotingRegressor,
+    'voting regressor': (BPtVotingRegressor,
                          ['default']),
 }
 

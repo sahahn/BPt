@@ -61,6 +61,9 @@ class Scope_Model(BaseEstimator):
         # Set n_features in
         self.n_features_in_ = X.shape[1]
 
+        # Set is fitted
+        self.is_fitted_ = True
+
         # Clear any previous fits
         self.wrapper_model_ = clone(self.wrapper_model)
         self.wrapper_inds_ = np.copy(self.wrapper_inds)

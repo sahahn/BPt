@@ -7,7 +7,8 @@ from copy import deepcopy
 import os
 import pickle as pkl
 
-from tqdm import tqdm, tqdm_notebook
+from tqdm import tqdm
+from tqdm.notebook import tqdm as tqdm_notebook
 
 from .Input_Tools import is_value_subset, is_values_subset
 from ..helpers.Data_Helpers import (get_unique_combo_df,
@@ -17,7 +18,7 @@ from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Evaluator import Evaluator
 from ..main.Params_Classes import (CV_Splits, Feat_Importance, Model_Pipeline,
-                                   Model, Problem_Spec)
+                                   Model, Ensemble, Problem_Spec)
 from ..pipeline.Model_Pipeline import get_pipe
 import pandas as pd
 import copy
@@ -330,6 +331,7 @@ def Evaluate(self,
              return_raw_preds=False,
              return_models=False,
              run_name='default',
+             only_fold=None,
              CV='depreciated'):
     ''' The Evaluate function is one of the main interfaces
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
@@ -559,6 +561,15 @@ def Evaluate(self,
 
             default = 'default'
 
+    only_fold : int or None, optional
+        This is a special parameter used to only
+        Evaluate a specific fold of the specified runs to
+        evaluate. Keep as None to ignore.
+
+        ::
+
+            default = None
+
     CV : 'depreciated'
         Switching to passing cv parameter as cv instead of CV.
         For now if CV is passed it will still work as if it were
@@ -612,10 +623,11 @@ def Evaluate(self,
     # Perform pre-modeling check
     self._premodel_check()
 
+    # Run initial model pipeline check
+    model_pipeline = model_pipeline_check(model_pipeline)
+
     # Should save the params used here*** before any preproc done
-    run_name =\
-        get_avaliable_run_name(run_name,
-                               model_pipeline.model)
+    run_name = get_avaliable_run_name(run_name, model_pipeline)
 
     # Get the the train subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
@@ -678,7 +690,12 @@ def Evaluate(self,
     # Evaluate the model
     train_scores, scores, results =\
         self.evaluator.Evaluate(self.all_data, _train_subjects,
-                                splits, n_repeats, splits_vals)
+                                splits, n_repeats, splits_vals,
+                                only_fold=only_fold)
+
+    # If only fold is not None, set n_repeats = 1
+    if only_fold is not None:
+        n_repeats = 1
 
     if 'FIs' in results:
         for fi in results['FIs']:
@@ -933,9 +950,11 @@ def Test(self,
     # Perform pre-modeling check
     self._premodel_check()
 
+    # Run initial model pipeline check
+    model_pipeline = model_pipeline_check(model_pipeline)
+
     # Get a free run name
-    run_name =\
-        get_avaliable_run_name(run_name, model_pipeline.model)
+    run_name = get_avaliable_run_name(run_name, model_pipeline)
 
     # Get the the train subjects + test subjects to use
     _train_subjects = self._get_subjects_to_use(train_subjects)
@@ -975,7 +994,7 @@ def Test(self,
     self._init_evaluator(
         model_pipeline=model_pipeline,
         ps=ps,
-        cv=None, # Test doesn't use cv
+        cv=None,  # Test doesn't use cv
         feat_importances=feat_importances,
         return_raw_preds=return_raw_preds,
         return_models=return_models)
@@ -1128,6 +1147,8 @@ def _preproc_cv_splits(self, obj, random_state):
 def _preproc_model_pipeline(self, model_pipeline, n_jobs,
                             problem_type, random_state):
 
+    model_pipeline = model_pipeline_check(model_pipeline)
+
     # Set values across each pipeline pieces params
     model_pipeline.preproc(n_jobs)
 
@@ -1143,7 +1164,8 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs,
 
     def nested_model_check(obj):
 
-        if isinstance(obj, Model):
+        # Check for Model or Ensemble
+        if isinstance(obj, Model) or isinstance(obj, Ensemble):
             self._preproc_param_search(obj, n_jobs, problem_type, random_state)
 
         if isinstance(obj, list):
@@ -1210,7 +1232,7 @@ def _preproc_problem_spec(self, problem_spec):
     elif pt == 'b':
         pt = 'binary'
 
-    elif pt == 'c':
+    elif pt == 'c' or 'multiclass':
         pt = 'categorical'
 
     elif pt == 'f' or pt == 'float':
@@ -1347,13 +1369,18 @@ def get_pipeline(self, model_pipeline, problem_spec,
     def nested_check(obj):
 
         if hasattr(obj, 'obj') and isinstance(obj.obj, Model_Pipeline):
-            setattr(obj, 'obj',
-                    self.get_pipeline(
-                        model_pipeline=obj.obj,
-                        problem_spec=nested_ps,
-                        progress_loc=progress_loc,
-                        has_search=has_search))
 
+            nested_pipe, nested_pipe_params =\
+                self.get_pipeline(model_pipeline=obj.obj,
+                                  problem_spec=nested_ps,
+                                  progress_loc=progress_loc,
+                                  has_search=has_search)
+
+            # Set obj as nested pipeline
+            setattr(obj, 'obj', nested_pipe)
+
+            # Set obj's params as the nested_pipe_params
+            setattr(obj, 'params', nested_pipe_params)
             return
 
         if isinstance(obj, list):
@@ -1394,9 +1421,9 @@ def _init_evaluator(self, model_pipeline, ps,
 
     # Calling get pipeline performs preproc on model_pipeline
     # and Data_Scopes
-    model = self.get_pipeline(
-        pipe, ps,
-        progress_loc=self.default_ML_verbosity['progress_loc'])
+    model, _ =\
+        self.get_pipeline(
+            pipe, ps, progress_loc=self.default_ML_verbosity['progress_loc'])
 
     # Set the evaluator obj
     self.evaluator =\
@@ -1518,3 +1545,22 @@ def _save_results(self, results, save_name):
         with open(save_spot+append, 'wb') as f:
             pkl.dump(results, f)
 
+
+def model_pipeline_check(model_pipeline):
+
+    # Add checks on Model_Pipeline
+    if not isinstance(model_pipeline, Model_Pipeline):
+
+        # Check for if model str first
+        if isinstance(model_pipeline, str):
+            model_pipeline = Model(obj=model_pipeline)
+
+        # In case of passed valid single model, wrap in Model_Pipeline
+        if hasattr(model_pipeline, '_is_model'):
+            model_pipeline = Model_Pipeline(imputers=None,
+                                            model=model_pipeline)
+        else:
+            raise RuntimeError('model_pipeline must be a Model_Pipeline',
+                               ' model str or Model-like')
+
+    return model_pipeline

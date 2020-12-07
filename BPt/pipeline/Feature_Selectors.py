@@ -275,8 +275,7 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
     '''
 
     feat_selector, extra_feat_selector_params, feat_selector_params =\
-        get_obj_and_params(feat_selector_str, SELECTORS, extra_params,
-                           params, search_type)
+        get_obj_and_params(feat_selector_str, SELECTORS, extra_params, params)
 
     # Special behavior for selector...
     if feat_selector_str == 'selector':

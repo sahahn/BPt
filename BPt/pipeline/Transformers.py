@@ -64,13 +64,14 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         self._proc_mapping(mapping)
 
         inds = self.wrapper_inds_
-        self.rest_inds_ = [i for i in range(X.shape[1]) if i not in inds]
+        self.rest_inds_ = list(np.setdiff1d(inds, list(range(X.shape[1])),
+                                            assume_unique=True))
 
         # Before fit, need to handle annoying categorical encoders case
         # where there is no default setting to set to all cols
         # It shouldn't hurt to set these for other transformers (hopefully...)
         self.wrapper_transformer_ = clone(self.wrapper_transformer)
-        self.wrapper_transformer_.cols = [i for i in range(len(inds))]
+        self.wrapper_transformer_.cols = list(range(len(inds)))
         self.wrapper_transformer_.return_df = False
 
         if self.cache_loc is not None:
@@ -87,7 +88,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
                 X=X[:, inds],
                 y=y)
 
-        self._X_trans_inds = [i for i in range(X_trans.shape[1])]
+        self._X_trans_inds = list(range(X_trans.shape[1]))
 
         new_mapping = {}
 
@@ -138,7 +139,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         reverse_inds = proc_mapping(self.wrapper_inds_, self._out_mapping)
 
-        # If no inver_transformer in base transformer, set to 0
+        # If no inverse_transformer in base transformer, set to 0
         try:
             X_trans =\
                 self.wrapper_transformer_.inverse_transform(X[:, reverse_inds])
@@ -267,7 +268,6 @@ def get_transformer_and_params(transformer_str, extra_params, params,
                                num_feat_keys=None):
 
     transformer, extra_transformer_params, transformer_params =\
-        get_obj_and_params(transformer_str, TRANSFORMERS, extra_params, params,
-                           search_type)
+        get_obj_and_params(transformer_str, TRANSFORMERS, extra_params, params)
 
     return transformer(**extra_transformer_params), transformer_params

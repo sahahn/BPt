@@ -1,6 +1,34 @@
-Release 1.3
+In Dev
 ************
 
+- New Dataset class
+    - The new Dataset class is designed to eventually replace the old system for data loading.
+
+
+
+Release 1.3.1
+***************
+
+- New AutoGluon option
+    - Can now specify the auto machine learning package AutoGluon as a :class:`BPt.Model`
+
+- New SurfMaps extension loader
+    - Added new extension Loader :class:`BPt.SurfMaps`
+
+- only_fold parameter
+    - New optional parameter in Evalaute for running only one fold.
+
+- Better support for scikit-learns VotingClassifier and VotingRegressor
+    - Simmilar to Stacking update from 1.3, but for voting classifier + regressor.
+
+- More support for nested pipelines
+    - Can now have nested pipelines propegate their parameter distributions to a parameter search in the top level pipeline.
+
+- Bug Fix with CV
+    - Fixed rare bug with CV expecting pandas Series, added support for passing numpy array.
+
+Release 1.3
+************
 
 - Support for nested parameter searches
     - :class:`BPt.Model` and :class:`BPt.Ensemble` now support a param_search parameter.

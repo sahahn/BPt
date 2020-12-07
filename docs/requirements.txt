@@ -12,7 +12,7 @@ sphinx==2.0.1
 deslib
 shap>=0.34
 scikit-image>=0.16
-tqdm>=4
+tqdm>=4.51
 nevergrad==0.4.0
 Ipython
 joblib>=0.14

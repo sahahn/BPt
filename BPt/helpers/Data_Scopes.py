@@ -67,6 +67,7 @@ class Data_Scopes():
                 keys = self.covars_keys.copy()
 
             else:
+                keys = None
                 print('Should never reach here.')
                 pass
 

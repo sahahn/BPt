@@ -41,20 +41,17 @@ import numpy as np
 from .base import _fit_single_estimator, _get_est_fit_params
 from ..main.Params_Classes import CV_Splits
 
+from sklearn.utils.multiclass import check_classification_targets
+from sklearn.preprocessing import LabelEncoder
 
-def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
-                    train_data_index=None, **kwargs):
 
-    # all_estimators contains all estimators, the one to be fitted and the
-    # 'drop' string.
+def _fit_all_estimators(self, X, y, sample_weight=None, mapping=None,
+                        train_data_index=None):
+
+    # Validate
     names, all_estimators = self._validate_estimators()
-    self._validate_final_estimator()
 
-    stack_method = [self.stack_method] * len(all_estimators)
-
-    # Fit the base estimators on the whole training data. Those
-    # base estimators will be used in transform, predict, and
-    # predict_proba. They are exposed publicly.
+    # Fit all estimators
     self.estimators_ = Parallel(n_jobs=self.n_jobs)(
         delayed(_fit_single_estimator)(clone(est), X, y, sample_weight,
                                        mapping, train_data_index)
@@ -71,6 +68,31 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
         else:
             self.named_estimators_[name_est] = 'drop'
 
+    return names, all_estimators
+
+
+def voting_fit(self, X, y, sample_weight=None, mapping=None,
+               train_data_index=None, **kwargs):
+
+    # Fit self.estimators_ on all data
+    self._fit_all_estimators(
+        X, y, sample_weight=sample_weight, mapping=mapping,
+        train_data_index=train_data_index)
+
+    return self
+
+
+def stacking_fit(self, X, y, sample_weight=None, mapping=None,
+                 train_data_index=None, **kwargs):
+
+    # Validate final estimastor
+    self._validate_final_estimator()
+
+    # Fit self.estimators_ on all data
+    names, all_estimators = self._fit_all_estimators(
+        X, y, sample_weight=sample_weight, mapping=mapping,
+        train_data_index=train_data_index)
+
     # To train the meta-classifier using the most data as possible, we use
     # a cross-validation to obtain the output of the stacked estimators.
     if isinstance(self.cv, CV_Splits):
@@ -84,6 +106,9 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
     cv = check_cv(cv_inds, y=y, classifier=is_classifier(self))
     if hasattr(cv, 'random_state') and cv.random_state is None:
         cv.random_state = np.random.RandomState()
+
+    # Proc stack method
+    stack_method = [self.stack_method] * len(all_estimators)
 
     self.stack_method_ = [
         self._method_name(name, est, meth)
@@ -132,16 +157,49 @@ def pass_params_fit(self, X, y, sample_weight=None, mapping=None,
     return self
 
 
+def ensemble_classifier_fit(self, X, y,
+                            sample_weight=None, mapping=None,
+                            train_data_index=None, **kwargs):
+
+    check_classification_targets(y)
+    self._le = LabelEncoder().fit(y)
+    self.classes_ = self._le.classes_
+
+    return self.bpt_fit(X, self._le.transform(y),
+                        sample_weight=sample_weight,
+                        mapping=mapping,
+                        train_data_index=train_data_index,
+                        **kwargs)
+
+
 class BPtStackingRegressor(StackingRegressor):
     needs_mapping = True
     needs_train_data_index = True
-    fit = pass_params_fit
+    _fit_all_estimators = _fit_all_estimators
+    fit = stacking_fit
 
 
 class BPtStackingClassifier(StackingClassifier):
     needs_mapping = True
     needs_train_data_index = True
-    fit = pass_params_fit
+    _fit_all_estimators = _fit_all_estimators
+    bpt_fit = stacking_fit
+    fit = ensemble_classifier_fit
+
+
+class BPtVotingRegressor(VotingRegressor):
+    needs_mapping = True
+    needs_train_data_index = True
+    _fit_all_estimators = _fit_all_estimators
+    fit = voting_fit
+
+
+class BPtVotingClassifier(VotingClassifier):
+    needs_mapping = True
+    needs_train_data_index = True
+    _fit_all_estimators = _fit_all_estimators
+    bpt_fit = voting_fit
+    fit = ensemble_classifier_fit
 
 
 class DES_Ensemble(VotingClassifier):
@@ -418,6 +476,10 @@ class Ensemble_Wrapper():
             if hasattr(model[1], 'random_state'):
                 setattr(model[1], 'random_state', self.random_state)
 
+        # Determine the parameters to init the ensemble
+        pass_params = ensemble_extra_params
+        pass_params['estimators'] = models
+
         # Process final_estimator if passed
         if final_estimator is not None:
 
@@ -441,14 +503,15 @@ class Ensemble_Wrapper():
             if hasattr(final_estimator_obj, 'random_state'):
                 setattr(final_estimator_obj, 'random_state', self.random_state)
 
-        else:
-            final_estimator_obj = None
+            # Add to pass params
+            pass_params['final_estimator'] = final_estimator_obj
+
+        # Check if cv passed
+        if cv_splits is not None:
+            pass_params['cv'] = cv_splits
 
         # Init the ensemble object
-        ensemble = ensemble_obj(estimators=models,
-                                final_estimator=final_estimator_obj,
-                                cv=cv_splits,
-                                **ensemble_extra_params)
+        ensemble = ensemble_obj(**pass_params)
 
         # Set ensemble n_jobs
         set_n_jobs(ensemble, ensemble_n_jobs)
@@ -540,9 +603,9 @@ ENSEMBLES = {
                            ['default']),
     'stacking classifier': (BPtStackingClassifier,
                             ['default']),
-    'voting classifier': (VotingClassifier,
+    'voting classifier': (BPtVotingClassifier,
                           ['default']),
-    'voting regressor': (VotingRegressor,
+    'voting regressor': (BPtVotingRegressor,
                          ['default']),
 }
 
@@ -569,8 +632,7 @@ def get_ensemble_and_params(ensemble_str, extra_params, params, search_type,
         return None, {}
 
     ensemble, extra_ensemble_params, ensemble_params =\
-        get_obj_and_params(ensemble_str, ENSEMBLES, extra_params,
-                           params, search_type)
+        get_obj_and_params(ensemble_str, ENSEMBLES, extra_params, params)
 
     # Slight tweak here, return tuple ensemble, extra_params
     return (ensemble, extra_ensemble_params), ensemble_params

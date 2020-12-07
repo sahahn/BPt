@@ -66,8 +66,7 @@ def get_scaler_and_params(scaler_str, extra_params, params, search_type,
     '''
 
     scaler, extra_scaler_params, scaler_params =\
-        get_obj_and_params(scaler_str, SCALERS, extra_params, params,
-                           search_type)
+        get_obj_and_params(scaler_str, SCALERS, extra_params, params)
 
     return scaler(**extra_scaler_params), scaler_params
 

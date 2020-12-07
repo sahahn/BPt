@@ -302,7 +302,6 @@ def get_loader_and_params(loader_str, extra_params, params, search_type,
                           random_state=None, num_feat_keys=None):
 
     loader, extra_loader_params, loader_params =\
-        get_obj_and_params(loader_str, LOADERS, extra_params, params,
-                           search_type)
+        get_obj_and_params(loader_str, LOADERS, extra_params, params)
 
     return loader(**extra_loader_params), loader_params

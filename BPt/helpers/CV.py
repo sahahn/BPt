@@ -5,6 +5,7 @@ Class for performing train test splits and other cross validation for BPt
 """
 import sklearn.model_selection as MS
 import numpy as np
+import pandas as pd
 from sklearn.base import BaseEstimator
 
 
@@ -82,14 +83,16 @@ class CV(BaseEstimator):
             if random_state is not None:
                 random_state += 1
 
-            subject_splits.append(self.train_test_split(subjects, 
-                                                        test_size=test_size,
-                                                        random_state=random_state,
-                                                        return_index=return_index))
+            subject_splits.append(self.train_test_split(
+                subjects,
+                test_size=test_size,
+                random_state=random_state,
+                return_index=return_index))
 
         return subject_splits
 
-    def train_test_split(self, subjects, test_size=.2, random_state=None, return_index=False):
+    def train_test_split(self, subjects, test_size=.2,
+                         random_state=None, return_index=False):
         '''Define a train test split on input subjects, with a given target
         test size.
 
@@ -146,12 +149,15 @@ class CV(BaseEstimator):
         train_subjects = np.concatenate([train_subjects, train_only])
 
         if return_index:
-            return ([original_subjects.get_loc(name) for name in train_subjects],
-                    [original_subjects.get_loc(name) for name in test_subjects])
+            return ([original_subjects.get_loc(name)
+                     for name in train_subjects],
+                    [original_subjects.get_loc(name)
+                     for name in test_subjects])
 
         return train_subjects, test_subjects
 
-    def repeated_k_fold(self, subjects, n_repeats, n_splits, random_state=None,
+    def repeated_k_fold(self, subjects, n_repeats,
+                        n_splits, random_state=None,
                         return_index=False):
         '''Perform a repeated k-fold with class defined split behavior.
         This function simply calls a repeated version of self.k_fold.
@@ -295,6 +301,10 @@ class CV(BaseEstimator):
     def get_train_only(self, subjects, ignore_by_group=False):
 
         original_subjects = subjects.copy()
+
+        # Make sure original_subjects is pandas index
+        if not isinstance(original_subjects, pd.Index):
+            original_subjects = pd.Index(original_subjects)
 
         if self.train_only is not None:
             train_only = np.intersect1d(subjects, self.train_only,

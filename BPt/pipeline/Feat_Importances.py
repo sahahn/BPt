@@ -588,9 +588,8 @@ IMPORTANCES = {
 def get_feat_importances_and_params(params, problem_type, n_jobs, scorer):
 
     # Search type should always be None
-    imp_info, imp_params, _ =\
-        get_obj_and_params(params.obj, IMPORTANCES,
-                           {}, params.params, search_type=None)
+    imp_info, _, _ =\
+        get_obj_and_params(params.obj, IMPORTANCES, {}, params.params)
 
     problem_types = {'binary': Feat_Importances,
                      'regression': Regression_Feat_Importances,

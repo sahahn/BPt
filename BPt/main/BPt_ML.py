@@ -431,6 +431,7 @@ class BPt_ML():
                         _drop_data_cols,
                         Filter_Data_Cols,
                         Filter_Data_Files_Cols,
+                        Consolidate_Data_Files,
                         Proc_Data_Unique_Cols,
                         _proc_data_unique_cols,
                         Drop_Data_Duplicates,

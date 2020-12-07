@@ -6,6 +6,7 @@ the ML class.
 """
 import pandas as pd
 import numpy as np
+import os
 from joblib import wrap_non_picklable_objects
 
 from ..helpers.VARS import is_f2b
@@ -774,7 +775,6 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
                     'define this function in a seperate file, and then import',
                     'it , otherwise loader caching will be limited',
                     'in utility!')
-
     else:
         wrapped_load_func = load_func
 
@@ -2218,6 +2218,43 @@ def Filter_Data_Files_Cols(self, reduce_func=np.mean,
                               subject_id=self.subject_id,
                               n_jobs=self.n_jobs,
                               _print=self._print)
+
+
+def Consolidate_Data_Files(self, save_dr):
+
+    # Make sure save_dr exists
+    os.makedirs(save_dr, exist_ok=True)
+
+    # Make new df
+    new = pd.DataFrame(index=self.data.index)
+    new['consolidated'] = ''
+
+    for index in self.data.index:
+
+        subj_data = []
+        for key in self.data_file_keys:
+            int_key = self.data.loc[index, key]
+            subj_data.append(self.file_mapping[int_key].load())
+
+        # Stack the subj data with extra columns at last axis
+        subj_data = np.stack(subj_data, axis=-1)
+
+        # Save as name of index in save loc
+        save_loc = os.path.join(save_dr, str(index) + '.npy')
+        np.save(save_loc, subj_data)
+
+        # Add to new df
+        new.loc[index, 'consolidated'] = save_loc
+
+    # Drop the old data_file_keys
+    self.data.drop(self.data_file_keys, axis=1, inplace=True)
+
+    # Reset data file keys and file mapping
+    self.data_file_keys = []
+    self.file_mapping = {}
+
+    # Re-load the consolidated data
+    self.Load_Data_Files(df=new)
 
 
 def Proc_Data_Unique_Cols(self, unique_val_drop=None, unique_val_warn=.05,

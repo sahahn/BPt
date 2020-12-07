@@ -179,8 +179,7 @@ def get_obj_and_params(obj_str, OBJS, extra_params, params):
     return obj, non_search_params, params
 
 
-def process_params_by_type(obj, obj_str, base_params,
-                           extra_params):
+def process_params_by_type(obj, obj_str, base_params, extra_params):
     '''base params is either a dict or 0'''
 
     non_search_params, params = {}, {}

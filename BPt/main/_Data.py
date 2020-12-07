@@ -2220,7 +2220,7 @@ def Filter_Data_Files_Cols(self, reduce_func=np.mean,
                               _print=self._print)
 
 
-def Consolidate_Data_Files(self, save_dr):
+def Consolidate_Data_Files(self, save_dr, cast_to=None):
 
     # Make sure save_dr exists
     os.makedirs(save_dr, exist_ok=True)
@@ -2238,6 +2238,10 @@ def Consolidate_Data_Files(self, save_dr):
 
         # Stack the subj data with extra columns at last axis
         subj_data = np.stack(subj_data, axis=-1)
+
+        # Optional cast to dtype
+        if cast_to is not None:
+            subj_data = subj_data.astype(cast_to)
 
         # Save as name of index in save loc
         save_loc = os.path.join(save_dr, str(index) + '.npy')

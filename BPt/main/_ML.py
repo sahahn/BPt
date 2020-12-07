@@ -332,6 +332,7 @@ def Evaluate(self,
              return_models=False,
              run_name='default',
              only_fold=None,
+             base_dtype='float64',
              CV='depreciated'):
     ''' The Evaluate function is one of the main interfaces
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
@@ -570,6 +571,15 @@ def Evaluate(self,
 
             default = None
 
+    base_dtype : numpy dtype
+        The dataset is cast to a numpy array of float.
+        This parameter can be used to change the default
+        behavior, e.g., if more resolution or less is needed.
+
+        ::
+
+            default = 'float64'
+
     CV : 'depreciated'
         Switching to passing cv parameter as cv instead of CV.
         For now if CV is passed it will still work as if it were
@@ -682,7 +692,8 @@ def Evaluate(self,
         cv=cv_obj,
         feat_importances=feat_importances,
         return_raw_preds=return_raw_preds,
-        return_models=return_models)
+        return_models=return_models,
+        base_dtype=base_dtype)
 
     # Get the Eval splits
     _, splits_vals, _ = self._get_split_vals(splits)
@@ -754,7 +765,8 @@ def Test(self,
          feat_importances=None,
          return_raw_preds=False,
          return_models=False,
-         run_name='default'):
+         run_name='default',
+         base_dtype='float64'):
     ''' The test function is one of the main interfaces for testing a specific
     :class:`Model_Pipeline`. Test is conceptually different from
     :func:`Evaluate<BPt_ML.Evaluate>`
@@ -937,6 +949,15 @@ def Test(self,
 
             default = 'default'
 
+    base_dtype : numpy dtype
+        The dataset is cast to a numpy array of float.
+        This parameter can be used to change the default
+        behavior, e.g., if more resolution or less is needed.
+
+        ::
+
+            default = 'float64'
+
     Returns
     ----------
     results : dict
@@ -997,7 +1018,8 @@ def Test(self,
         cv=None,  # Test doesn't use cv
         feat_importances=feat_importances,
         return_raw_preds=return_raw_preds,
-        return_models=return_models)
+        return_models=return_models,
+        base_dtype=base_dtype)
 
     # Train the model w/ selected parameters and test on test subjects
     train_scores, scores, results =\
@@ -1413,7 +1435,8 @@ def get_pipeline(self, model_pipeline, problem_spec,
 
 
 def _init_evaluator(self, model_pipeline, ps,
-                    cv, feat_importances, return_raw_preds, return_models):
+                    cv, feat_importances, return_raw_preds,
+                    return_models, base_dtype):
 
     # Make copies of the passed pipeline
     # and only make changes and pass along the copies
@@ -1435,6 +1458,7 @@ def _init_evaluator(self, model_pipeline, ps,
                   return_raw_preds=return_raw_preds,
                   return_models=return_models,
                   verbosity=self.default_ML_verbosity,
+                  base_dtype=base_dtype,
                   _print=self._ML_print)
 
 

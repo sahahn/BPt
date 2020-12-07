@@ -18,7 +18,7 @@ class Evaluator():
 
     def __init__(self, model, problem_spec, cv, all_keys,
                  feat_importances, return_raw_preds, return_models,
-                 verbosity, _print=print):
+                 verbosity, base_dtype, _print=print):
 
         # Save passed params
         self.model = model
@@ -30,6 +30,7 @@ class Evaluator():
         self.progress_bar = verbosity['progress_bar']
         self.compute_train_score = verbosity['compute_train_score']
         self.progress_loc = verbosity['progress_loc']
+        self.base_dtype = base_dtype
         self._print = _print
         self.models = []
 
@@ -536,9 +537,9 @@ class Evaluator():
             y = data[self.ps.target]
 
         if not X_as_df:
-            X = np.array(X).astype(float)
+            X = np.array(X).astype(self.base_dtype)
 
-        y = np.array(y).astype(float)
+        y = np.array(y).astype('float64')
 
         return X, y
 

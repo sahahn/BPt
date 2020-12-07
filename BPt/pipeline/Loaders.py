@@ -90,6 +90,7 @@ class Loader_Wrapper(Transformer_Wrapper):
 
         # Update mapping
         update_mapping(mapping, new_mapping)
+
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def get_chunks(self, data_files):

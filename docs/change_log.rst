@@ -18,7 +18,7 @@ Release 1.3.3
     - Changed default data dtype from float64 to float32, should provide general speed ups
 
 
-Release 1.3.2
+Release 1.3.3
 ***************
 
 - New AutoGluon option

@@ -4,7 +4,7 @@ In Dev
 - New Dataset class
     - The new Dataset class is designed to eventually replace the old system for data loading.
 
-Release 1.3.2
+Release 1.3.3
 ***************
 
 - Fixed bug with problem type
@@ -18,7 +18,7 @@ Release 1.3.2
     - Changed default data dtype from float64 to float32, should provide general speed ups
 
 
-Release 1.3.2
+Release 1.3.3
 ***************
 
 - New AutoGluon option

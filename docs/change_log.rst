@@ -14,7 +14,8 @@ Release 1.3.2
     - Effected Transformer.
 
 - Added base_dtype option
-    - Evaluate and Test now have base dtype options, which allow 
+    - Evaluate and Test now have base dtype options, which allow changing dtype of data
+    - Changed default data dtype from float64 to float32, should provide general speed ups
 
 
 Release 1.3.2

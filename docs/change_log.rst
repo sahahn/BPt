@@ -10,6 +10,9 @@ Release 1.3.2
 - Fixed bug with problem type
     - There was an error which was mistakenly setting categorical problem type instead of regression.
 
+- Fixed internal bug with mapping
+    - Effected Transformer.
+
 - Added base_dtype option
     - Evaluate and Test now have base dtype options, which allow 
 

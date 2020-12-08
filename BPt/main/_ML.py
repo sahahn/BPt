@@ -332,7 +332,7 @@ def Evaluate(self,
              return_models=False,
              run_name='default',
              only_fold=None,
-             base_dtype='float64',
+             base_dtype='float32',
              CV='depreciated'):
     ''' The Evaluate function is one of the main interfaces
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
@@ -578,7 +578,7 @@ def Evaluate(self,
 
         ::
 
-            default = 'float64'
+            default = 'float32'
 
     CV : 'depreciated'
         Switching to passing cv parameter as cv instead of CV.
@@ -766,7 +766,7 @@ def Test(self,
          return_raw_preds=False,
          return_models=False,
          run_name='default',
-         base_dtype='float64'):
+         base_dtype='float32'):
     ''' The test function is one of the main interfaces for testing a specific
     :class:`Model_Pipeline`. Test is conceptually different from
     :func:`Evaluate<BPt_ML.Evaluate>`
@@ -956,7 +956,7 @@ def Test(self,
 
         ::
 
-            default = 'float64'
+            default = 'float32'
 
     Returns
     ----------

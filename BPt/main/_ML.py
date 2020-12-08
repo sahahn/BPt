@@ -1254,7 +1254,7 @@ def _preproc_problem_spec(self, problem_spec):
     elif pt == 'b':
         pt = 'binary'
 
-    elif pt == 'c' or 'multiclass':
+    elif pt == 'c' or pt == 'multiclass':
         pt = 'categorical'
 
     elif pt == 'f' or pt == 'float':

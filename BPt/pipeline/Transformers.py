@@ -64,7 +64,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         self._proc_mapping(mapping)
 
         inds = self.wrapper_inds_
-        self.rest_inds_ = list(np.setdiff1d(inds, list(range(X.shape[1])),
+        self.rest_inds_ = list(np.setdiff1d(list(range(X.shape[1])), inds,
                                             assume_unique=True))
 
         # Before fit, need to handle annoying categorical encoders case
@@ -103,7 +103,12 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         # Update mapping
         update_mapping(mapping, new_mapping)
-        return np.hstack([X_trans, X[:, self.rest_inds_]])
+
+        # Save base dtype
+        to_return = np.hstack([X_trans, X[:, self.rest_inds_]])
+        self._base_dtype = to_return.dtype
+
+        return to_return
 
     def transform(self, X):
 
@@ -116,7 +121,7 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         feat_names = list(df)
 
         # Transform data as np array
-        X = np.array(df).astype(float)
+        X = np.array(df).astype(self._base_dtype)
         X_trans = self.transform(X)
 
         # Get new names

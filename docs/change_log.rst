@@ -4,9 +4,21 @@ In Dev
 - New Dataset class
     - The new Dataset class is designed to eventually replace the old system for data loading.
 
+Release 1.3.2
+***************
+
+- Fixed bug with problem type
+    - There was an error which was mistakenly setting categorical problem type instead of regression.
+
+- Fixed internal bug with mapping
+    - Effected Transformer.
+
+- Added base_dtype option
+    - Evaluate and Test now have base dtype options, which allow changing dtype of data
+    - Changed default data dtype from float64 to float32, should provide general speed ups
 
 
-Release 1.3.1
+Release 1.3.2
 ***************
 
 - New AutoGluon option
@@ -16,13 +28,13 @@ Release 1.3.1
     - Added new extension Loader :class:`BPt.SurfMaps`
 
 - only_fold parameter
-    - New optional parameter in Evalaute for running only one fold.
+    - New optional parameter in Evaluate for running only one fold.
 
 - Better support for scikit-learns VotingClassifier and VotingRegressor
-    - Simmilar to Stacking update from 1.3, but for voting classifier + regressor.
+    - Similar to Stacking update from 1.3, but for voting classifier + regressor.
 
 - More support for nested pipelines
-    - Can now have nested pipelines propegate their parameter distributions to a parameter search in the top level pipeline.
+    - Can now have nested pipelines propagate their parameter distributions to a parameter search in the top level pipeline.
 
 - Bug Fix with CV
     - Fixed rare bug with CV expecting pandas Series, added support for passing numpy array.

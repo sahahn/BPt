@@ -78,9 +78,10 @@ class Loader_Wrapper(Transformer_Wrapper):
             ind = self.wrapper_inds_[c]
             new_mapping[ind] = self._X_trans_inds[c]
 
-        # Update rest of inds, as just shifted over
-        self.rest_inds_ = [i for i in range(X.shape[1])
-                           if i not in self.wrapper_inds_]
+        # Set rest inds as any inds not in wrapper inds
+        self.rest_inds_ = list(np.setdiff1d(list(range(X.shape[1])),
+                                            self.wrapper_inds_,
+                                            assume_unique=True))
 
         for c in range(len(self.rest_inds_)):
             ind = self.rest_inds_[c]
@@ -90,6 +91,7 @@ class Loader_Wrapper(Transformer_Wrapper):
 
         # Update mapping
         update_mapping(mapping, new_mapping)
+
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def get_chunks(self, data_files):

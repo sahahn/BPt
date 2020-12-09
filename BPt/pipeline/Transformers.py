@@ -68,26 +68,33 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         self.rest_inds_ = list(np.setdiff1d(list(range(X.shape[1])), inds,
                                             assume_unique=True))
 
-        # Before fit, need to handle annoying categorical encoders case
-        # where there is no default setting to set to all cols
-        # It shouldn't hurt to set these for other transformers (hopefully...)
-        self.wrapper_transformer_ = clone(self.wrapper_transformer)
-        self.wrapper_transformer_.cols = list(range(len(inds)))
-        self.wrapper_transformer_.return_df = False
+        if len(inds) > 0:
 
-        if self.cache_loc is not None:
-            memory = check_memory(self.cache_loc)
-            _fit_transform_single_transformer_c =\
-                memory.cache(_fit_transform_single_transformer)
+            # Before fit, need to handle annoying categorical encoders case
+            # where there is no default setting to set to all cols
+            # It shouldn't hurt to set these for other transformers (hopefully...)
+            self.wrapper_transformer_ = clone(self.wrapper_transformer)
+            self.wrapper_transformer_.cols = list(range(len(inds)))
+            self.wrapper_transformer_.return_df = False
+
+            if self.cache_loc is not None:
+                memory = check_memory(self.cache_loc)
+                _fit_transform_single_transformer_c =\
+                    memory.cache(_fit_transform_single_transformer)
+            else:
+                _fit_transform_single_transformer_c =\
+                    _fit_transform_single_transformer
+
+            self.wrapper_transformer_, X_trans =\
+                _fit_transform_single_transformer_c(
+                    transformer=self.wrapper_transformer_,
+                    X=X[:, inds],
+                    y=y)
+
+        # If out of scope...
         else:
-            _fit_transform_single_transformer_c =\
-                _fit_transform_single_transformer
-
-        self.wrapper_transformer_, X_trans =\
-            _fit_transform_single_transformer_c(
-                transformer=self.wrapper_transformer_,
-                X=X[:, inds],
-                y=y)
+            self.wrapper_transformer_ = None
+            return X
 
         self._X_trans_inds = list(range(X_trans.shape[1]))
 
@@ -113,11 +120,19 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
 
+        # If None, pass along as is
+        if self.wrapper_transformer_ is None:
+            return X
+
         # Transform just wrapper inds
         X_trans = self.wrapper_transformer_.transform(X[:, self.wrapper_inds_])
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def transform_df(self, df, base_name='transformer'):
+
+        # If None, pass along as is
+        if self.wrapper_transformer_ is None:
+            return df
 
         feat_names = list(df)
 
@@ -142,6 +157,10 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         return df[feat_names]
 
     def inverse_transform(self, X, name='base transformer'):
+
+        # If None, pass along as is
+        if self.wrapper_transformer_ is None:
+            return X
 
         reverse_inds = proc_mapping(self.wrapper_inds_, self._out_mapping)
 

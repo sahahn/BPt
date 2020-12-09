@@ -17,6 +17,9 @@ Release 1.3.4
     - Moving from plotting via ML to plotting from the Feature Importance object itself
     - Only fully supports global right now.
 
+- Allow transformers to be skipped if out of scope
+    - Previously would cause error.
+
 Release 1.3.3
 ***************
 

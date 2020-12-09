@@ -28,7 +28,8 @@ from ..helpers.Data_Helpers import (auto_data_type,
                                     filter_data_cols,
                                     filter_data_file_cols,
                                     drop_from_filter,
-                                    proc_file_input)
+                                    proc_file_input,
+                                    fill_df_with)
 
 
 def Set_Default_Load_Params(self, dataset_type='default', subject_id='default',
@@ -1152,11 +1153,7 @@ def _proc_target(self, targets, key, d_type, fop, fos, cdp, fb,
     if targets.shape == non_nan_targets.shape:
         targets = non_nan_targets
     else:
-        targets.loc[non_nan_subjects] = non_nan_targets
-
-        # Update all col's datatypes
-        for dtype, k in zip(non_nan_targets.dtypes, list(targets)):
-            targets[k] = targets[k].astype(dtype.name)
+        targets = fill_df_with(targets, non_nan_subjects, non_nan_targets)
 
     # Keep track of each loaded target in targets_keys
     if key not in self.targets_keys and add_key:
@@ -1558,10 +1555,7 @@ def _proc_covar(self, covars, key, d_type, nac, cdp,
     if covars.shape == non_nan_covars.shape:
         covars = non_nan_covars
     else:
-        covars.loc[non_nan_subjects] = non_nan_covars
-
-        for dtype, k in zip(non_nan_covars.dtypes, list(covars)):
-            covars[k] = covars[k].astype(dtype.name)
+        fill_df_with(covars, non_nan_subjects, non_nan_covars)
 
     # Check for special code nan as categorical case
     if nac and hasattr(self.covars_encoders[key], 'nan_val'):
@@ -2850,7 +2844,7 @@ def _load_user_passed(self, df, na_values):
     if df.index.name is not None:
         df = df.reset_index()
 
-    df = df.replace(na_values, np.nan)
+    df = df.replace(to_replace=na_values, value=np.nan)
     return df
 
 

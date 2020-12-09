@@ -4,6 +4,16 @@ In Dev
 - New Dataset class
     - The new Dataset class is designed to eventually replace the old system for data loading.
 
+Release 1.3.4
+***************
+
+- Added support for pandas >= 1
+    - Previously didn't support latest pandas.
+
+- Added initial support for in-place FIs 
+    - Moving from plotting via ML to plotting from the Feature Importance object itself
+    - Only fully supports global right now.
+
 Release 1.3.3
 ***************
 

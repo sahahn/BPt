@@ -5,7 +5,7 @@ category_encoders
 scikit-learn>=0.23.1
 numpy>=1.18
 scipy>=1.2
-pandas>=0.25
+pandas>=1.1.5
 matplotlib>=3.2.2
 seaborn>=0.9
 sphinx==2.0.1

@@ -50,13 +50,16 @@ def get_non_drop(data, key, drop_val):
     return non_drop_data, non_drop_subjects
 
 
-def put_non_drop_back(data, non_drop_subjects, non_drop_data):
+def fill_df_with(data, subjects, fill_data):
 
-    data.loc[non_drop_subjects] = non_drop_data
+    for key in list(data):
 
-    # Make sure col types are right
-    for dtype, key in zip(non_drop_data.dtypes, list(data)):
-        data[key] = data[key].astype(dtype.name)
+        dtype = fill_data[key].dtype.name
+        o_dtype = data[key].dtype.name
+
+        data.loc[subjects, key] =\
+            fill_data.loc[subjects, key].astype(o_dtype)
+        data[key] = data[key].astype(dtype)
 
     return data
 
@@ -128,7 +131,7 @@ def process_binary_input(data, key, drop_val=np.nan,
         raise ValueError('Binary type, but more than two unique values found '
                          'for input' + repr(key))
 
-    data = put_non_drop_back(data, non_drop_subjects, non_drop_data)
+    data = fill_df_with(data, non_drop_subjects, non_drop_data)
 
     return data, encoder
 
@@ -179,7 +182,7 @@ def process_ordinal_input(data, key, drop_percent=None,
     non_drop_data[key] = non_drop_data[key].astype('category')
 
     # Re-create data
-    data = put_non_drop_back(data, non_drop_subjects, non_drop_data)
+    data = fill_df_with(data, non_drop_subjects, non_drop_data)
 
     # Check if nan was encoded if nac
     if nac:

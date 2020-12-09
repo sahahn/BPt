@@ -28,8 +28,8 @@ Release 1.3.3
     - Changed default data dtype from float64 to float32, should provide general speed ups
 
 
-Release 1.3.1
-***************
+Release 1.3.1 and 1.3.2
+************************
 
 - New AutoGluon option
     - Can now specify the auto machine learning package AutoGluon as a :class:`BPt.Model`

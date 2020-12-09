@@ -337,6 +337,10 @@ P['pca var search'] =\
         {'n_components': "ng.p.Scalar(init=.75, lower=.1, upper=.99)",
          'svd_solver': "'full'"}
 
+P['ohe'] =\
+        {'sparse': "False",
+         'handle_unknown': "'ignore'"}
+
 # Scalers
 P['base standard'] = {'with_mean': "True",
                       'with_std': "True"}

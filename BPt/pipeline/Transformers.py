@@ -12,6 +12,7 @@ from sklearn.decomposition import (PCA, FactorAnalysis,
 import warnings
 from sklearn.utils.validation import check_memory
 from sklearn.base import clone
+from sklearn.preprocessing import OneHotEncoder
 
 
 def _fit_transform_single_transformer(transformer, X, y):
@@ -226,10 +227,11 @@ TRANSFORMERS = {
     'incremental pca': (IncrementalPCA, ['default']),
     'kernel pca': (KernelPCA, ['default']),
     'nmf': (NMF, ['default']),
-    'truncated svd': (TruncatedSVD, ['default'])}
+    'truncated svd': (TruncatedSVD, ['default']),
+    'one hot encoder': (OneHotEncoder, ['ohe'])}
 
 try:
-    from category_encoders import (OneHotEncoder, BackwardDifferenceEncoder,
+    from category_encoders import (BackwardDifferenceEncoder,
                                    BinaryEncoder, CatBoostEncoder,
                                    HelmertEncoder,
                                    JamesSteinEncoder, LeaveOneOutEncoder,
@@ -248,7 +250,6 @@ try:
             return self
 
     extra = {
-     'one hot encoder': (OneHotEncoder, ['default']),
      'backward difference encoder': (BackwardDifferenceEncoder,
                                      ['default']),
      'binary encoder': (BinaryEncoder, ['default']),

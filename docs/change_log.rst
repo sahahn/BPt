@@ -10,6 +10,9 @@ Release 1.3.4
 - Added support for pandas >= 1
     - Previously didn't support latest pandas.
 
+- Add sklearn OneHotEncoder
+    - Previously used category_encoders, use scikit-learn's instead
+
 - Added initial support for in-place FIs 
     - Moving from plotting via ML to plotting from the Feature Importance object itself
     - Only fully supports global right now.

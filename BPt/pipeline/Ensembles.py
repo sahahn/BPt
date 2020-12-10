@@ -162,7 +162,11 @@ def ensemble_classifier_fit(self, X, y,
                             train_data_index=None, **kwargs):
 
     check_classification_targets(y)
+
+    # To make compatible with each Voting and Stacking ...
     self._le = LabelEncoder().fit(y)
+    self.le_ = self._le
+
     self.classes_ = self._le.classes_
 
     return self.bpt_fit(X, self._le.transform(y),

@@ -426,6 +426,9 @@ P['rus binary ratio']['sampling_strategy'] =\
 # Ensemblers
 P['stacking default'] = {'cv': "3"}
 
+P['voting classifier'] = {'voting': "'soft'"},
+
+
 
 # Feat Importances
 P['base shap'] =\

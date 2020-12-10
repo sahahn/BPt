@@ -608,7 +608,7 @@ ENSEMBLES = {
     'stacking classifier': (BPtStackingClassifier,
                             ['default']),
     'voting classifier': (BPtVotingClassifier,
-                          ['default']),
+                          ['voting classifier']),
     'voting regressor': (BPtVotingRegressor,
                          ['default']),
 }

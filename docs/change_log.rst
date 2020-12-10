@@ -4,6 +4,22 @@ In Dev
 - New Dataset class
     - The new Dataset class is designed to eventually replace the old system for data loading.
 
+Release 1.3.4
+***************
+
+- Added support for pandas >= 1
+    - Previously didn't support latest pandas.
+
+- Add sklearn OneHotEncoder
+    - Previously used category_encoders, use scikit-learn's instead
+
+- Added initial support for in-place FIs 
+    - Moving from plotting via ML to plotting from the Feature Importance object itself
+    - Only fully supports global right now.
+
+- Allow transformers to be skipped if out of scope
+    - Previously would cause error.
+
 Release 1.3.3
 ***************
 
@@ -18,8 +34,8 @@ Release 1.3.3
     - Changed default data dtype from float64 to float32, should provide general speed ups
 
 
-Release 1.3.3
-***************
+Release 1.3.1 and 1.3.2
+************************
 
 - New AutoGluon option
     - Can now specify the auto machine learning package AutoGluon as a :class:`BPt.Model`

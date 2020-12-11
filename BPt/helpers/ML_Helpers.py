@@ -532,7 +532,12 @@ def proc_type_dep_str(in_strs, avaliable, problem_type):
 
         if not check_avaliable(in_strs, avaliable, problem_type):
             raise RuntimeError(in_strs, 'are not avaliable for '
-                               'this problem type')
+                               'this problem type.'
+                               'This may be due to the requested object '
+                               'being an optional dependency! Check to make '
+                               'sure you have the relevant python library '
+                               'installed '
+                               'and that the passed str contains no typos!')
 
     avaliable_by_type = get_a_by_type(avaliable, in_strs, problem_type)
     final_strs = [avaliable_by_type[in_str] for in_str in in_strs]

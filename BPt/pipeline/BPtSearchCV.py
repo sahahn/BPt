@@ -417,7 +417,7 @@ class NevergradSearchCV(BPtSearchCV):
         # Save best search search score
         # "optimistic", "pessimistic", "average"
         # and best params
-        self.best_score_ = optimizer.current_bests["pessimistic"].mean
+        self.best_score_ = optimizer.current_bests["optimistic"].mean
         self.best_params_ = recommendation.kwargs
 
         return recommendation

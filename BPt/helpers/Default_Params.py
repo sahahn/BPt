@@ -174,11 +174,26 @@ P['lgbm dist2'] =\
          'n_estimators':
          "ng.p.TransitionChoice([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])"}
 
+P['lgbm dist3'] = {'silent': "True",
+                   'n_estimators': '10000',
+                   'boosting_type': 'gbdt',
+                   'learning_rate':
+                   'ng.p.Log(lower=5e-3, upper=.2, init=.1)',
+                   'colsample_bytree':
+                   'ng.p.Scalar(lower=.75, upper=1, init=1)',
+                   'min_child_samples':
+                   "ng.p.Scalar(lower=2, upper=30, init=20).set_integer_casting()",
+                   'num_leaves':
+                   "ng.p.Scalar(lower=16, upper=96, init=31).set_integer_casting()"}
+
 P['lgbm classifier dist1'] = P['lgbm dist1'].copy()
 P['lgbm classifier dist1']['class_weight'] = cls_weight
 
 P['lgbm classifier dist2'] = P['lgbm dist2'].copy()
 P['lgbm classifier dist2']['class_weight'] = cls_weight
+
+P['lgbm classifier dist3'] = P['lgbm dist3'].copy()
+P['lgbm classifier dist3']['class_weight'] = cls_weight
 
 P['base xgb'] = {'verbosity': "0",
                  'objective': "'reg:squarederror'"}

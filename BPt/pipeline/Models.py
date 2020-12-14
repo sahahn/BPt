@@ -199,11 +199,13 @@ try:
 
     MODELS['light gbm regressor'] = (LGBMRegressor, ['base lgbm',
                                                      'lgbm dist1',
-                                                     'lgbm dist2'])
+                                                     'lgbm dist2',
+                                                     'lgbm dist3'])
     MODELS['light gbm classifier'] = (LGBMClassifier,
                                       ['base lgbm',
                                        'lgbm classifier dist1',
-                                       'lgbm classifier dist2'])
+                                       'lgbm classifier dist2',
+                                       'lgbm classifier dist3'])
 except ImportError:
     pass
 

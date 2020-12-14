@@ -252,11 +252,11 @@ class BPtGridSearchCV(BPtSearchCV):
 
     @property
     def best_score_(self):
-        self.search_obj_.best_score_
+        return self.search_obj_.best_score_
 
     @property
     def best_params_(self):
-        self.search_obj_.best_params_
+        return self.search_obj_.best_params_
 
 
 class ProgressLogger():

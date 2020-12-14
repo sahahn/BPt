@@ -42,8 +42,11 @@ def extract_values(value):
             for c in range(len(value.choices)):
 
                 # Check for nested
-                choice_value = extract_values(value.choices[c].value)
-                choices.append(choice_value)
+                choice_value = extract_values(value.choices[c])
+                if isinstance(choice_value, list):
+                    choices += choice_value
+                else:
+                    choices.append(choice_value)
 
             return choices
 
@@ -67,6 +70,9 @@ def extract_values(value):
 
                 if lower is not None and upper is not None:
                     return list(range(lower, upper+1))
+
+        elif hasattr(value, 'value'):
+            return value.value
 
         # All other cases
         raise RuntimeError('Could not convert nevergrad',

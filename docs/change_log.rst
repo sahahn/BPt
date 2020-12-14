@@ -4,6 +4,14 @@ In Dev
 - New Dataset class
     - The new Dataset class is designed to eventually replace the old system for data loading.
 
+Release 1.3.5
+***************
+
+- GridSearchCV support
+    - Added new abstract BPtSearchCV class.
+    - Added in if search_type = 'grid' will try and convert parameters
+      to grid search compatible, and use on the backend sklearn's GridSearchCV.
+
 Release 1.3.4
 ***************
 

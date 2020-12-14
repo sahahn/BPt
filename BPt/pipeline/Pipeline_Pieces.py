@@ -15,7 +15,7 @@ from copy import deepcopy
 
 from .Selector import selector_wrapper
 from sklearn.compose import TransformedTargetRegressor
-from .Nevergrad import wrap_param_search
+from .BPtSearchCV import wrap_param_search
 
 import numpy as np
 

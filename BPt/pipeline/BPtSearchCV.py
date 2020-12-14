@@ -1,3 +1,11 @@
+from sklearn.base import BaseEstimator
+from ..helpers.CV import CV
+from .base import _get_est_fit_params
+from sklearn.model_selection import GridSearchCV
+from sklearn.utils.metaestimators import if_delegate_has_method
+import warnings
+from os.path import dirname, abspath, exists
+
 import numpy as np
 from numpy.random import RandomState
 import nevergrad as ng
@@ -8,17 +16,241 @@ import multiprocessing as mp
 from sklearn.base import clone
 from copy import deepcopy
 
-from .base import _get_est_fit_params
-from ..helpers.CV import CV
-from os.path import dirname, abspath, exists
-from sklearn.base import BaseEstimator
-from sklearn.utils.metaestimators import if_delegate_has_method
-import warnings
-
 try:
     from loky import get_reusable_executor
 except ImportError:
     pass
+
+
+def is_ng(p):
+
+    try:
+        return 'nevergrad' in p.__module__
+    except AttributeError:
+        return False
+
+
+def extract_values(value):
+
+    if is_ng(value):
+
+        # If a choice obj
+        if hasattr(value, 'choices'):
+
+            # Unpack choices
+            choices = []
+            for c in range(len(value.choices)):
+
+                # Check for nested
+                choice_value = extract_values(value.choices[c].value)
+                choices.append(choice_value)
+
+            return choices
+
+        # if scalar type
+        elif hasattr(value, 'integer'):
+
+            # If cast to integer
+            if value.integer:
+
+                lower = value.bounds[0]
+                if len(lower) == 1:
+                    lower = int(lower[0])
+                else:
+                    lower = None
+
+                upper = value.bounds[1]
+                if len(upper) == 1:
+                    upper = int(upper[0])
+                else:
+                    upper = None
+
+                if lower is not None and upper is not None:
+                    return list(range(lower, upper+1))
+
+        # All other cases
+        raise RuntimeError('Could not convert nevergrad',
+                           value, 'to grid search parameter!')
+
+    else:
+        return value
+
+
+def get_grid_params(params):
+
+    # Set grid params
+    grid_params = {}
+    for p in params:
+        grid_params[p] = extract_values(params[p])
+
+    return grid_params
+
+
+class BPtSearchCV(BaseEstimator):
+
+    needs_mapping = True
+    needs_train_data_index = True
+    name = 'search'
+
+    def __init__(self, estimator=None, param_search=None,
+                 param_distributions=None,
+                 progress_loc=None, n_jobs=1,
+                 random_state=None,
+                 verbose=False):
+
+        self.estimator = estimator
+        self.param_search = param_search
+        self.param_distributions = param_distributions
+        self.progress_loc = progress_loc
+        self.n_jobs = n_jobs
+        self.random_state = random_state
+        self.verbose = verbose
+
+    def get_params(self, deep=True):
+        """
+        Get parameters for this estimator.
+        Parameters
+        ----------
+        deep : bool, default=True
+            If True, will return the parameters for this estimator and
+            contained subobjects that are estimators.
+        Returns
+        -------
+        params : mapping of string to any
+            Parameter names mapped to their values.
+        """
+        out = dict()
+        for key in self._get_param_names():
+            try:
+                value = getattr(self, key)
+            except AttributeError:
+                warnings.warn('From version 0.24, get_params will raise an '
+                              'AttributeError if a parameter cannot be '
+                              'retrieved as an instance attribute. Previously '
+                              'it would return None.',
+                              FutureWarning)
+                value = None
+            if deep and hasattr(value, 'get_params'):
+                deep_items = value.get_params().items()
+                out.update((key + '__' + k, val) for k, val in deep_items)
+            out[key] = value
+        return out
+
+    @property
+    def _estimator_type(self):
+        return self.estimator._estimator_type
+
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def predict(self, X):
+        return self.best_estimator_.predict(X)
+
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def predict_log_proba(self, X):
+        return self.best_estimator_.predict_log_proba(X)
+
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def predict_proba(self, X):
+        return self.best_estimator_.predict_proba(X)
+
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def decision_function(self, X):
+        return self.best_estimator_.decision_function(X)
+
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def transform(self, X):
+        return self.best_estimator_.transform(X)
+
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def inverse_transform(self, Xt):
+        return self.best_estimator_.inverse_transform(Xt)
+
+    def _set_cv(self, train_data_index):
+
+        # If no CV, use random
+        if self.param_search._cv is None:
+            self.param_search._cv = CV()
+
+        self.cv_subjects, self.cv_inds =\
+            self.param_search._cv.get_cv(train_data_index,
+                                         self.param_search.splits,
+                                         self.param_search.n_repeats,
+                                         self.param_search._splits_vals,
+                                         self.param_search._random_state,
+                                         return_index='both')
+
+    def fit(self, X, y=None, mapping=None,
+            train_data_index=None, **fit_params):
+
+        if train_data_index is None:
+            raise RuntimeWarning('SearchCV Object must be passed a ' +
+                                 'train_data_index!')
+
+        if self.verbose:
+            print('Fit Search CV, len(train_data_index) == ',
+                  len(train_data_index),
+                  'has mapping == ', 'mapping' in fit_params,
+                  'X.shape ==', X.shape)
+
+        # Set the search cv passed on passed train_data_index
+        self._set_cv(train_data_index)
+
+        # Run different fit depending on type of search
+        if self.param_search.search_type == 'grid':
+            self.fit_grid(X=X, y=y, mapping=mapping,
+                          train_data_index=train_data_index,
+                          **fit_params)
+        else:
+            self.fit_nevergrad(X=X, y=y, mapping=mapping,
+                               train_data_index=train_data_index,
+                               **fit_params)
+
+
+class BPtGridSearchCV(BPtSearchCV):
+
+    def fit_grid(self, X, y=None, mapping=None,
+                 train_data_index=None, **fit_params):
+
+        # Conv nevergrad to grid compat. param grid
+        param_grid = get_grid_params(self.param_distributions)
+
+        # Fit GridSearchCV object
+        self.search_obj_ = GridSearchCV(estimator=self.estimator,
+                                        param_grid=param_grid,
+                                        scoring=self.param_search._scorer,
+                                        n_jobs=self.n_jobs,
+                                        cv=self.cv_inds,
+                                        refit=True,
+                                        verbose=0)
+
+        # Generate the fit params to pass
+        f_params = _get_est_fit_params(
+            self.estimator,
+            mapping=mapping,
+            train_data_index=train_data_index,
+            other_params=fit_params)
+
+        # Fit search object
+        self.search_obj_.fit(X, y, **f_params)
+
+    @property
+    def n_features_in_(self):
+        return self.search_obj_.n_features_in_
+
+    @property
+    def classes_(self):
+        return self.search_obj_.classes_
+
+    @property
+    def best_estimator_(self):
+        return self.search_obj_.best_estimator_
+
+    @property
+    def best_score_(self):
+        self.search_obj_.best_score_
+
+    @property
+    def best_params_(self):
+        self.search_obj_.best_params_
 
 
 class ProgressLogger():
@@ -70,59 +302,7 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer,
         return np.mean(cv_scores)
 
 
-class NevergradSearchCV(BaseEstimator):
-
-    needs_mapping = True
-    needs_train_data_index = True
-    name = 'nevergrad'
-
-    def __init__(self, estimator=None, param_search=None,
-                 param_distributions=None,
-                 progress_loc=None, n_jobs=1,
-                 random_state=None,
-                 verbose=False):
-
-        self.estimator = estimator
-        self.param_search = param_search
-        self.param_distributions = param_distributions
-        self.progress_loc = progress_loc
-        self.n_jobs = n_jobs
-        self.random_state = random_state
-        self.verbose = verbose
-
-    def get_params(self, deep=True):
-        """
-        Get parameters for this estimator.
-        Parameters
-        ----------
-        deep : bool, default=True
-            If True, will return the parameters for this estimator and
-            contained subobjects that are estimators.
-        Returns
-        -------
-        params : mapping of string to any
-            Parameter names mapped to their values.
-        """
-        out = dict()
-        for key in self._get_param_names():
-            try:
-                value = getattr(self, key)
-            except AttributeError:
-                warnings.warn('From version 0.24, get_params will raise an '
-                              'AttributeError if a parameter cannot be '
-                              'retrieved as an instance attribute. Previously '
-                              'it would return None.',
-                              FutureWarning)
-                value = None
-            if deep and hasattr(value, 'get_params'):
-                deep_items = value.get_params().items()
-                out.update((key + '__' + k, val) for k, val in deep_items)
-            out[key] = value
-        return out
-
-    @property
-    def _estimator_type(self):
-        return self.estimator._estimator_type
+class NevergradSearchCV(BPtSearchCV):
 
     @property
     def n_features_in_(self):
@@ -131,20 +311,6 @@ class NevergradSearchCV(BaseEstimator):
     @property
     def classes_(self):
         return self.best_estimator_.classes_
-
-    def _set_cv(self, train_data_index):
-
-        # If no CV, use random
-        if self.param_search._cv is None:
-            self.param_search._cv = CV()
-
-        self.cv_subjects, self.cv_inds =\
-            self.param_search._cv.get_cv(train_data_index,
-                                         self.param_search.splits,
-                                         self.param_search.n_repeats,
-                                         self.param_search._splits_vals,
-                                         self.param_search._random_state,
-                                         return_index='both')
 
     def get_instrumentation(self, X, y, mapping, fit_params, client):
 
@@ -245,26 +411,13 @@ class NevergradSearchCV(BaseEstimator):
         # Save best search search score
         # "optimistic", "pessimistic", "average"
         # and best params
-        self.best_search_score = optimizer.current_bests["pessimistic"].mean
+        self.best_score_ = optimizer.current_bests["pessimistic"].mean
         self.best_params_ = recommendation.kwargs
 
         return recommendation
 
-    def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
-
-        if train_data_index is None:
-            raise RuntimeWarning('NevergradSearchCV must be passed a ' +
-                                 'train_data_index!')
-
-        if self.verbose:
-            print('Fit Nevergrad CV, len(train_data_index) == ',
-                  len(train_data_index),
-                  'has mapping == ', 'mapping' in fit_params,
-                  'X.shape ==', X.shape)
-
-        # Set the search cv passed on passed train_data_index
-        self._set_cv(train_data_index)
+    def fit_nevergrad(self, X, y=None, mapping=None,
+                      train_data_index=None, **fit_params):
 
         # Check if need to make dask client
         # Criteria is greater than 1 job, and passed as dask_ip of non-None
@@ -307,30 +460,6 @@ class NevergradSearchCV(BaseEstimator):
         # Fit
         self.best_estimator_.fit(X, y, **f_params)
 
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def predict(self, X):
-        return self.best_estimator_.predict(X)
-    
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def predict_log_proba(self, X):
-        return self.best_estimator_.predict_log_proba(X)
-
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def predict_proba(self, X):
-        return self.best_estimator_.predict_proba(X)
-
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def decision_function(self, X):
-        return self.best_estimator_.decision_function(X)
-
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def transform(self, X):
-        return self.best_estimator_.transform(X)
-
-    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def inverse_transform(self, Xt):
-        return self.best_estimator_.inverse_transform(Xt)
-
 
 def wrap_param_search(param_search, model_obj, model_params):
 
@@ -350,12 +479,30 @@ def wrap_param_search(param_search, model_obj, model_params):
             m_params[param.replace(prepend, '', 1)] =\
                 model_params.pop(param)
 
-    # Create the wrapper nevergrad CV model
-    search_obj = NevergradSearchCV(
+    # Get search cv
+    search_obj = get_search_cv(
         estimator=model_obj[1],
         param_search=param_search,
         param_distributions=m_params,
+        progress_loc=None)
+
+    # Create the wrapper nevergrad CV model
+    return (name + '_SearchCV', search_obj), model_params
+
+
+def get_search_cv(estimator, param_search, param_distributions, progress_loc):
+
+    # Determine which CV model to make
+    if param_search.search_type == 'grid':
+        SearchCV = BPtGridSearchCV
+    else:
+        SearchCV = NevergradSearchCV
+
+    search_obj = SearchCV(
+        estimator=estimator,
+        param_search=param_search,
+        param_distributions=param_distributions,
         n_jobs=param_search._n_jobs,
         random_state=param_search._random_state)
 
-    return (name + '_NGSearchCV', search_obj), model_params
+    return search_obj

@@ -355,7 +355,7 @@ class Evaluator():
 
     def _get_base_fitted_pipeline(self):
 
-        if hasattr(self.model_, 'name') and self.model_.name == 'nevergrad':
+        if hasattr(self.model_, 'name') and self.model_.name == 'search':
             return self.model_.best_estimator_
 
         return self.model_
@@ -593,7 +593,7 @@ class Evaluator():
             return None
 
         self._print('Best Params Score:',
-                    self.model_.best_search_score, level='cv_score')
+                    self.model_.best_score_, level='cv_score')
 
     def _show_best_params(self):
 

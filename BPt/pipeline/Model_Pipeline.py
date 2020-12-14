@@ -7,7 +7,7 @@ from ..helpers.VARS import ORDERED_NAMES
 from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
                               Transformers, Feat_Selectors)
 
-from .Nevergrad import NevergradSearchCV
+from .BPtSearchCV import get_search_cv
 
 
 class Model_Pipeline():
@@ -222,14 +222,11 @@ class Model_Pipeline():
             return base_pipeline, self.get_all_params()
 
         # Create the search object
-        search_model =\
-            NevergradSearchCV(
+        search_model = get_search_cv(
                 estimator=base_pipeline,
                 param_search=self.param_search,
                 param_distributions=self.get_all_params(),
-                progress_loc=progress_loc,
-                n_jobs=self.param_search._n_jobs,
-                random_state=self.param_search._random_state)
+                progress_loc=progress_loc)
 
         return search_model, {}
 

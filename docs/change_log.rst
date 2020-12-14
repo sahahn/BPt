@@ -12,6 +12,9 @@ Release 1.3.5
     - Added in if search_type = 'grid' will try and convert parameters
       to grid search compatible, and use on the backend sklearn's GridSearchCV.
 
+- Update Nevergrad version
+    - Update to nevergrad version 0.4.2.post5
+
 Release 1.3.4
 ***************
 

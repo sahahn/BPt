@@ -24,9 +24,9 @@ binary
 
 	1. "dt classifier dist" ::
 
-		max_depth: Scalar{int,Cl(1,30)}[sigma=Log{exp=1.2}]:16
-		min_samples_split: Scalar{int,Cl(2,50)}[sigma=Log{exp=1.2}]:26
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		max_depth: ng.p.Scalar(lower=1, upper=30).set_integer_casting()
+		min_samples_split: ng.p.Scalar(lower=2, upper=50).set_integer_casting()
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "elastic net logistic"
@@ -39,42 +39,42 @@ binary
 	0. "base elastic" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: elasticnet
+		multi_class: 'auto'
+		penalty: 'elasticnet'
 		class_weight: None
-		solver: saga
-		l1_ratio: 0.5
+		solver: 'saga'
+		l1_ratio: .5
 
 	1. "elastic classifier" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: elasticnet
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		solver: saga
-		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
-		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
+		multi_class: 'auto'
+		penalty: 'elasticnet'
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		solver: 'saga'
+		l1_ratio: ng.p.Scalar(lower=.01, upper=1)
+		C: ng.p.Log(lower=1e-5, upper=1e5)
 
 	2. "elastic clf v2" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: elasticnet
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		solver: saga
-		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
-		C: Log{exp=14.677992676220699,Cl(0.01,100000)}:31.622776601683793
+		multi_class: 'auto'
+		penalty: 'elasticnet'
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		solver: 'saga'
+		l1_ratio: ng.p.Scalar(lower=.01, upper=1)
+		C: ng.p.Log(lower=1e-2, upper=1e5)
 
 	3. "elastic classifier extra" ::
 
-		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
-		multi_class: auto
-		penalty: elasticnet
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		solver: saga
-		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
-		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
-		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
+		max_iter: ng.p.Scalar(lower=1000, upper=10000).set_integer_casting()
+		multi_class: 'auto'
+		penalty: 'elasticnet'
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		solver: 'saga'
+		l1_ratio: ng.p.Scalar(lower=.01, upper=1)
+		C: ng.p.Log(lower=1e-5, upper=1e5)
+		tol: ng.p.Log(lower=1e-6, upper=.01)
 
 
 "et classifier"
@@ -98,7 +98,7 @@ binary
 
 	0. "base gnb" ::
 
-		var_smoothing: 1e-09
+		var_smoothing: 1e-9
 
 
 "gb classifier"
@@ -150,8 +150,8 @@ binary
 
 	1. "knn dist" ::
 
-		weights: TransitionChoice(choices=Tuple(uniform,distance),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):uniform
-		n_neighbors: Scalar{int,Cl(2,25)}[sigma=Log{exp=1.2}]:14
+		weights: ng.p.TransitionChoice(['uniform', 'distance'])
+		n_neighbors: ng.p.Scalar(lower=2, upper=25).set_integer_casting()
 
 
 "lasso logistic"
@@ -164,29 +164,29 @@ binary
 	0. "base lasso" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: l1
+		multi_class: 'auto'
+		penalty: 'l1'
 		class_weight: None
-		solver: liblinear
+		solver: 'liblinear'
 
 	1. "lasso C" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: l1
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		solver: liblinear
-		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
+		multi_class: 'auto'
+		penalty: 'l1'
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		solver: 'liblinear'
+		C: ng.p.Log(lower=1e-5, upper=1e3)
 
 	2. "lasso C extra" ::
 
-		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
-		multi_class: auto
-		penalty: l1
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		solver: liblinear
-		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
-		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
+		max_iter: ng.p.Scalar(lower=1000, upper=10000).set_integer_casting()
+		multi_class: 'auto'
+		penalty: 'l1'
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		solver: 'liblinear'
+		C: ng.p.Log(lower=1e-5, upper=1e3)
+		tol: ng.p.Log(lower=1e-6, upper=.01)
 
 
 "light gbm classifier"
@@ -203,29 +203,29 @@ binary
 	1. "lgbm classifier dist1" ::
 
 		silent: True
-		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart,goss),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):dart
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
-		num_leaves: Scalar{int,Cl(6,80)}[sigma=Log{exp=1.2}]:20
-		min_child_samples: Scalar{int,Cl(10,500)}[sigma=Log{exp=1.2}]:255
-		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
-		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
-		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		boosting_type: ng.p.TransitionChoice(['gbdt', 'dart', 'goss'])
+		n_estimators: ng.p.Scalar(init=100, lower=3, upper=500).set_integer_casting()
+		num_leaves: ng.p.Scalar(init=20, lower=6, upper=80).set_integer_casting()
+		min_child_samples: ng.p.Scalar(lower=10, upper=500).set_integer_casting()
+		min_child_weight: ng.p.Log(lower=1e-5, upper=1e4)
+		subsample: ng.p.Scalar(lower=.3, upper=.95)
+		colsample_bytree: ng.p.Scalar(lower=.3, upper=.95)
+		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 	2. "lgbm classifier dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):gbdt
-		min_child_samples: TransitionChoice(choices=Tuple(1,5,7,10,15,20,35,50,100,200,500,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):35
-		num_leaves: TransitionChoice(choices=Tuple(2,4,7,10,15,20,25,30,35,40,50,65,80,100,125,150,200,250),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):40
-		colsample_bytree: TransitionChoice(choices=Tuple(0.7,0.9,1.0),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.9
-		subsample: Scalar{Cl(0.3,1)}[sigma=Log{exp=1.2}]:0.65
-		learning_rate: TransitionChoice(choices=Tuple(0.01,0.05,0.1),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.05
-		n_estimators: TransitionChoice(choices=Tuple(5,20,35,50,75,100,150,200,350,500,750,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):150
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		boosting_type: ng.p.TransitionChoice(['gbdt', 'dart'])
+		min_child_samples: ng.p.TransitionChoice([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
+		num_leaves: ng.p.TransitionChoice([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
+		colsample_bytree: ng.p.TransitionChoice([0.7, 0.9, 1.0])
+		subsample: ng.p.Scalar(lower=.3, upper=1)
+		learning_rate: ng.p.TransitionChoice([0.01, 0.05, 0.1])
+		n_estimators: ng.p.TransitionChoice([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "linear svm classifier"
@@ -242,8 +242,8 @@ binary
 	1. "linear svc dist" ::
 
 		max_iter: 1000
-		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		C: ng.p.Log(lower=1e-4, upper=1e4)
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "logistic"
@@ -256,10 +256,10 @@ binary
 	0. "base logistic" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: none
+		multi_class: 'auto'
+		penalty: 'none'
 		class_weight: None
-		solver: lbfgs
+		solver: 'lbfgs'
 
 
 "mlp classifier"
@@ -275,81 +275,81 @@ binary
 
 	1. "mlp dist 3 layer" ::
 
-		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100 100]
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Array(init=(100, 100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 
 	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+		n_iter_no_change: ng.p.Scalar(lower=5, upper=50)
 
 	3. "mlp dist 2 layer" ::
 
-		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100]
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Array(init=(100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 
 	4. "mlp dist es 2 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+		n_iter_no_change: ng.p.Scalar(lower=5, upper=50)
 
 	5. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 
 	6. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+		n_iter_no_change: ng.p.Scalar(lower=5, upper=50)
 
 
 "pa classifier"
@@ -377,12 +377,12 @@ binary
 
 	1. "rf classifier dist" ::
 
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
-		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		max_features: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
-		min_samples_split: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
+		n_estimators: ng.p.Scalar(init=100, lower=3, upper=500).set_integer_casting()
+		max_depth: ng.p.TransitionChoice([None, ng.p.Scalar(init=25, lower=2, upper=200).set_integer_casting()])
+		max_features: ng.p.Scalar(lower=.1, upper=1.0)
+		min_samples_split: ng.p.Scalar(lower=.1, upper=1.0)
 		bootstrap: True
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "ridge logistic"
@@ -395,23 +395,23 @@ binary
 	0. "base ridge" ::
 
 		max_iter: 1000
-		penalty: l2
-		solver: saga
+		penalty: 'l2'
+		solver: 'saga'
 
 	1. "ridge C" ::
 
 		max_iter: 1000
-		solver: saga
-		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		solver: 'saga'
+		C: ng.p.Log(lower=1e-5, upper=1e3)
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 	2. "ridge C extra" ::
 
-		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
-		solver: saga
-		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
+		max_iter: ng.p.Scalar(lower=1000, upper=10000).set_integer_casting()
+		solver: 'saga'
+		C: ng.p.Log(lower=1e-5, upper=1e3)
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		tol: ng.p.Log(lower=1e-6, upper=.01)
 
 
 "sgd classifier"
@@ -423,22 +423,22 @@ binary
 
 	0. "base sgd" ::
 
-		loss: hinge
+		loss: 'hinge'
 
 	1. "sgd classifier" ::
 
-		loss: TransitionChoice(choices=Tuple(hinge,log,modified_huber,squared_hinge,perceptron),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):modified_huber
-		penalty: TransitionChoice(choices=Tuple(l2,l1,elasticnet),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):l1
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		l1_ratio: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
+		loss: ng.p.TransitionChoice(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'])
+		penalty: ng.p.TransitionChoice(['l2', 'l1', 'elasticnet'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		l1_ratio: ng.p.Scalar(lower=0, upper=1)
 		max_iter: 1000
-		learning_rate: TransitionChoice(choices=Tuple(optimal,invscaling,adaptive,constant),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):adaptive
-		eta0: Log{exp=31.62277660168379,Cl(1e-06,1000)}:0.03162277660168379
-		power_t: Scalar{Cl(0.1,0.9)}[sigma=Log{exp=1.2}]:0.5
-		early_stopping: TransitionChoice(choices=Tuple(False,True),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):False
-		validation_fraction: Scalar{Cl(0.05,0.5)}[sigma=Log{exp=1.2}]:0.275
-		n_iter_no_change: TransitionChoice(choices=Tuple(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):11
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		learning_rate: ng.p.TransitionChoice(['optimal', 'invscaling', 'adaptive', 'constant'])
+		eta0: ng.p.Log(lower=1e-6, upper=1e3)
+		power_t: ng.p.Scalar(lower=.1, upper=.9)
+		early_stopping: ng.p.TransitionChoice([False, True])
+		validation_fraction: ng.p.Scalar(lower=.05, upper=.5)
+		n_iter_no_change: ng.p.TransitionChoice(np.arange(2, 20))
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "svm classifier"
@@ -450,17 +450,17 @@ binary
 
 	0. "base svm classifier" ::
 
-		kernel: rbf
-		gamma: scale
+		kernel: 'rbf'
+		gamma: 'scale'
 		probability: True
 
 	1. "svm classifier dist" ::
 
-		kernel: rbf
-		gamma: Log{exp=9.999999999999998,Cl(1e-06,1)}:0.001
-		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
+		kernel: 'rbf'
+		gamma: ng.p.Log(lower=1e-6, upper=1)
+		C: ng.p.Log(lower=1e-4, upper=1e4)
 		probability: True
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "xgb classifier"
@@ -473,40 +473,40 @@ binary
 	0. "base xgb classifier" ::
 
 		verbosity: 0
-		objective: binary:logistic
+		objective: 'binary:logistic'
 
 	1. "xgb classifier dist1" ::
 
 		verbosity: 0
-		objective: binary:logistic
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
-		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
-		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
-		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		objective: 'binary:logistic'
+		n_estimators: ng.p.Scalar(init=100, lower=3, upper=500).set_integer_casting()
+		min_child_weight: ng.p.Log(lower=1e-5, upper=1e4)
+		subsample: ng.p.Scalar(lower=.3, upper=.95)
+		colsample_bytree: ng.p.Scalar(lower=.3, upper=.95)
+		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
 
 	2. "xgb classifier dist2" ::
 
 		verbosity: 0
-		objective: binary:logistic
-		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		learning_rate: Scalar{Cl(0.01,0.5)}[sigma=Log{exp=1.2}]:0.255
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:252
-		min_child_weight: TransitionChoice(choices=Tuple(1,5,10,50),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):10
-		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
-		colsample_bytree: Scalar{Cl(0.4,0.95)}[sigma=Log{exp=1.2}]:0.675
+		objective: 'binary:logistic'
+		max_depth: ng.p.TransitionChoice([None, ng.p.Scalar(init=25, lower=2, upper=200).set_integer_casting()])
+		learning_rate: ng.p.Scalar(lower=.01, upper=.5)
+		n_estimators: ng.p.Scalar(lower=3, upper=500).set_integer_casting()
+		min_child_weight: ng.p.TransitionChoice([1, 5, 10, 50])
+		subsample: ng.p.Scalar(lower=.5, upper=1)
+		colsample_bytree: ng.p.Scalar(lower=.4, upper=.95)
 
 	3. "xgb classifier dist3" ::
 
 		verbosity: 0
-		objective: binary:logistic
-		learning_rare: Scalar{Cl(0.005,0.3)}[sigma=Log{exp=1.2}]:0.1525
-		min_child_weight: Scalar{Cl(0.5,10)}[sigma=Log{exp=1.2}]:5.25
-		max_depth: TransitionChoice(choices=Tuple(3,4,5,6,7,8,9),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):6
-		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
-		colsample_bytree: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
-		reg_alpha: Log{exp=6.812920690579612,Cl(1e-05,1)}:0.0031622776601683794
+		objective: 'binary:logistic'
+		learning_rare: ng.p.Scalar(lower=.005, upper=.3)
+		min_child_weight: ng.p.Scalar(lower=.5, upper=10)
+		max_depth: ng.p.TransitionChoice(np.arange(3, 10))
+		subsample: ng.p.Scalar(lower=.5, upper=1)
+		colsample_bytree: ng.p.Scalar(lower=.5, upper=1)
+		reg_alpha: ng.p.Log(lower=.00001, upper=1)
 
 
 
@@ -549,8 +549,8 @@ regression
 
 	1. "dt dist" ::
 
-		max_depth: Scalar{int,Cl(1,30)}[sigma=Log{exp=1.2}]:16
-		min_samples_split: Scalar{int,Cl(2,50)}[sigma=Log{exp=1.2}]:26
+		max_depth: ng.p.Scalar(lower=1, upper=30).set_integer_casting()
+		min_samples_split: ng.p.Scalar(lower=2, upper=50).set_integer_casting()
 
 
 "elastic net regressor"
@@ -567,15 +567,15 @@ regression
 	1. "elastic regression" ::
 
 		max_iter: 1000
-		alpha: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
-		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
+		alpha: ng.p.Log(lower=1e-5, upper=1e5)
+		l1_ratio: ng.p.Scalar(lower=.01, upper=1)
 
 	2. "elastic regression extra" ::
 
-		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
-		alpha: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
-		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
-		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
+		max_iter: ng.p.Scalar(lower=1000, upper=10000).set_integer_casting()
+		alpha: ng.p.Log(lower=1e-5, upper=1e5)
+		l1_ratio: ng.p.Scalar(lower=.01, upper=1)
+		tol: ng.p.Log(lower=1e-6, upper=.01)
 
 
 "et regressor"
@@ -640,8 +640,8 @@ regression
 
 	1. "knn dist regression" ::
 
-		weights: TransitionChoice(choices=Tuple(uniform,distance),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):uniform
-		n_neighbors: Scalar{int,Cl(2,25)}[sigma=Log{exp=1.2}]:14
+		weights: ng.p.TransitionChoice(['uniform', 'distance'])
+		n_neighbors: ng.p.Scalar(lower=2, upper=25).set_integer_casting()
 
 
 "lasso regressor"
@@ -658,7 +658,7 @@ regression
 	1. "lasso regressor dist" ::
 
 		max_iter: 1000
-		alpha: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
+		alpha: ng.p.Log(lower=1e-5, upper=1e5)
 
 
 "light gbm regressor"
@@ -675,27 +675,27 @@ regression
 	1. "lgbm dist1" ::
 
 		silent: True
-		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart,goss),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):dart
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
-		num_leaves: Scalar{int,Cl(6,80)}[sigma=Log{exp=1.2}]:20
-		min_child_samples: Scalar{int,Cl(10,500)}[sigma=Log{exp=1.2}]:255
-		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
-		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
-		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		boosting_type: ng.p.TransitionChoice(['gbdt', 'dart', 'goss'])
+		n_estimators: ng.p.Scalar(init=100, lower=3, upper=500).set_integer_casting()
+		num_leaves: ng.p.Scalar(init=20, lower=6, upper=80).set_integer_casting()
+		min_child_samples: ng.p.Scalar(lower=10, upper=500).set_integer_casting()
+		min_child_weight: ng.p.Log(lower=1e-5, upper=1e4)
+		subsample: ng.p.Scalar(lower=.3, upper=.95)
+		colsample_bytree: ng.p.Scalar(lower=.3, upper=.95)
+		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
 
 	2. "lgbm dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):gbdt
-		min_child_samples: TransitionChoice(choices=Tuple(1,5,7,10,15,20,35,50,100,200,500,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):35
-		num_leaves: TransitionChoice(choices=Tuple(2,4,7,10,15,20,25,30,35,40,50,65,80,100,125,150,200,250),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):40
-		colsample_bytree: TransitionChoice(choices=Tuple(0.7,0.9,1.0),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.9
-		subsample: Scalar{Cl(0.3,1)}[sigma=Log{exp=1.2}]:0.65
-		learning_rate: TransitionChoice(choices=Tuple(0.01,0.05,0.1),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.05
-		n_estimators: TransitionChoice(choices=Tuple(5,20,35,50,75,100,150,200,350,500,750,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):150
+		boosting_type: ng.p.TransitionChoice(['gbdt', 'dart'])
+		min_child_samples: ng.p.TransitionChoice([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
+		num_leaves: ng.p.TransitionChoice([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
+		colsample_bytree: ng.p.TransitionChoice([0.7, 0.9, 1.0])
+		subsample: ng.p.Scalar(lower=.3, upper=1)
+		learning_rate: ng.p.TransitionChoice([0.01, 0.05, 0.1])
+		n_estimators: ng.p.TransitionChoice([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
 
 
 "linear regressor"
@@ -719,14 +719,14 @@ regression
 
 	0. "base linear svr" ::
 
-		loss: epsilon_insensitive
+		loss: 'epsilon_insensitive'
 		max_iter: 1000
 
 	1. "linear svr dist" ::
 
-		loss: epsilon_insensitive
+		loss: 'epsilon_insensitive'
 		max_iter: 1000
-		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
+		C: ng.p.Log(lower=1e-4, upper=1e4)
 
 
 "mlp regressor"
@@ -742,81 +742,81 @@ regression
 
 	1. "mlp dist 3 layer" ::
 
-		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100 100]
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Array(init=(100, 100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 
 	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+		n_iter_no_change: ng.p.Scalar(lower=5, upper=50)
 
 	3. "mlp dist 2 layer" ::
 
-		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100]
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Array(init=(100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 
 	4. "mlp dist es 2 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+		n_iter_no_change: ng.p.Scalar(lower=5, upper=50)
 
 	5. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 
 	6. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+		n_iter_no_change: ng.p.Scalar(lower=5, upper=50)
 
 
 "random forest regressor"
@@ -832,10 +832,10 @@ regression
 
 	1. "rf dist" ::
 
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
-		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		max_features: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
-		min_samples_split: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
+		n_estimators: ng.p.Scalar(init=100, lower=3, upper=500).set_integer_casting()
+		max_depth: ng.p.TransitionChoice([None, ng.p.Scalar(init=25, lower=2, upper=200).set_integer_casting()])
+		max_features: ng.p.Scalar(lower=.1, upper=1.0)
+		min_samples_split: ng.p.Scalar(lower=.1, upper=1.0)
 		bootstrap: True
 
 
@@ -849,13 +849,13 @@ regression
 	0. "base ridge regressor" ::
 
 		max_iter: 1000
-		solver: lsqr
+		solver: 'lsqr'
 
 	1. "ridge regressor dist" ::
 
 		max_iter: 1000
-		solver: lsqr
-		alpha: Log{exp=21.544346900318843,Cl(0.001,100000)}:10.0
+		solver: 'lsqr'
+		alpha: ng.p.Log(lower=1e-3, upper=1e5)
 
 
 "svm regressor"
@@ -867,14 +867,14 @@ regression
 
 	0. "base svm" ::
 
-		kernel: rbf
-		gamma: scale
+		kernel: 'rbf'
+		gamma: 'scale'
 
 	1. "svm dist" ::
 
-		kernel: rbf
-		gamma: Log{exp=9.999999999999998,Cl(1e-06,1)}:0.001
-		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
+		kernel: 'rbf'
+		gamma: ng.p.Log(lower=1e-6, upper=1)
+		C: ng.p.Log(lower=1e-4, upper=1e4)
 
 
 "tweedie regressor"
@@ -899,40 +899,40 @@ regression
 	0. "base xgb" ::
 
 		verbosity: 0
-		objective: reg:squarederror
+		objective: 'reg:squarederror'
 
 	1. "xgb dist1" ::
 
 		verbosity: 0
-		objective: reg:squarederror
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
-		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
-		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
-		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		objective: 'reg:squarederror'
+		n_estimators: ng.p.Scalar(init=100, lower=3, upper=500).set_integer_casting()
+		min_child_weight: ng.p.Log(lower=1e-5, upper=1e4)
+		subsample: ng.p.Scalar(lower=.3, upper=.95)
+		colsample_bytree: ng.p.Scalar(lower=.3, upper=.95)
+		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
 
 	2. "xgb dist2" ::
 
 		verbosity: 0
-		objective: reg:squarederror
-		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		learning_rate: Scalar{Cl(0.01,0.5)}[sigma=Log{exp=1.2}]:0.255
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:252
-		min_child_weight: TransitionChoice(choices=Tuple(1,5,10,50),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):10
-		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
-		colsample_bytree: Scalar{Cl(0.4,0.95)}[sigma=Log{exp=1.2}]:0.675
+		objective: 'reg:squarederror'
+		max_depth: ng.p.TransitionChoice([None, ng.p.Scalar(init=25, lower=2, upper=200).set_integer_casting()])
+		learning_rate: ng.p.Scalar(lower=.01, upper=.5)
+		n_estimators: ng.p.Scalar(lower=3, upper=500).set_integer_casting()
+		min_child_weight: ng.p.TransitionChoice([1, 5, 10, 50])
+		subsample: ng.p.Scalar(lower=.5, upper=1)
+		colsample_bytree: ng.p.Scalar(lower=.4, upper=.95)
 
 	3. "xgb dist3" ::
 
 		verbosity: 0
-		objective: reg:squarederror
-		learning_rare: Scalar{Cl(0.005,0.3)}[sigma=Log{exp=1.2}]:0.1525
-		min_child_weight: Scalar{Cl(0.5,10)}[sigma=Log{exp=1.2}]:5.25
-		max_depth: TransitionChoice(choices=Tuple(3,4,5,6,7,8,9),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):6
-		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
-		colsample_bytree: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
-		reg_alpha: Log{exp=6.812920690579612,Cl(1e-05,1)}:0.0031622776601683794
+		objective: 'reg:squarederror'
+		learning_rare: ng.p.Scalar(lower=.005, upper=.3)
+		min_child_weight: ng.p.Scalar(lower=.5, upper=10)
+		max_depth: ng.p.TransitionChoice(np.arange(3, 10))
+		subsample: ng.p.Scalar(lower=.5, upper=1)
+		colsample_bytree: ng.p.Scalar(lower=.5, upper=1)
+		reg_alpha: ng.p.Log(lower=.00001, upper=1)
 
 
 
@@ -951,9 +951,9 @@ categorical
 
 	1. "dt classifier dist" ::
 
-		max_depth: Scalar{int,Cl(1,30)}[sigma=Log{exp=1.2}]:16
-		min_samples_split: Scalar{int,Cl(2,50)}[sigma=Log{exp=1.2}]:26
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		max_depth: ng.p.Scalar(lower=1, upper=30).set_integer_casting()
+		min_samples_split: ng.p.Scalar(lower=2, upper=50).set_integer_casting()
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "elastic net logistic"
@@ -966,42 +966,42 @@ categorical
 	0. "base elastic" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: elasticnet
+		multi_class: 'auto'
+		penalty: 'elasticnet'
 		class_weight: None
-		solver: saga
-		l1_ratio: 0.5
+		solver: 'saga'
+		l1_ratio: .5
 
 	1. "elastic classifier" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: elasticnet
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		solver: saga
-		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
-		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
+		multi_class: 'auto'
+		penalty: 'elasticnet'
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		solver: 'saga'
+		l1_ratio: ng.p.Scalar(lower=.01, upper=1)
+		C: ng.p.Log(lower=1e-5, upper=1e5)
 
 	2. "elastic clf v2" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: elasticnet
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		solver: saga
-		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
-		C: Log{exp=14.677992676220699,Cl(0.01,100000)}:31.622776601683793
+		multi_class: 'auto'
+		penalty: 'elasticnet'
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		solver: 'saga'
+		l1_ratio: ng.p.Scalar(lower=.01, upper=1)
+		C: ng.p.Log(lower=1e-2, upper=1e5)
 
 	3. "elastic classifier extra" ::
 
-		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
-		multi_class: auto
-		penalty: elasticnet
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		solver: saga
-		l1_ratio: Scalar{Cl(0.01,1)}[sigma=Log{exp=1.2}]:0.505
-		C: Log{exp=46.415888336127786,Cl(1e-05,100000)}:1.0
-		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
+		max_iter: ng.p.Scalar(lower=1000, upper=10000).set_integer_casting()
+		multi_class: 'auto'
+		penalty: 'elasticnet'
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		solver: 'saga'
+		l1_ratio: ng.p.Scalar(lower=.01, upper=1)
+		C: ng.p.Log(lower=1e-5, upper=1e5)
+		tol: ng.p.Log(lower=1e-6, upper=.01)
 
 
 "et classifier"
@@ -1025,7 +1025,7 @@ categorical
 
 	0. "base gnb" ::
 
-		var_smoothing: 1e-09
+		var_smoothing: 1e-9
 
 
 "gb classifier"
@@ -1077,8 +1077,8 @@ categorical
 
 	1. "knn dist" ::
 
-		weights: TransitionChoice(choices=Tuple(uniform,distance),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):uniform
-		n_neighbors: Scalar{int,Cl(2,25)}[sigma=Log{exp=1.2}]:14
+		weights: ng.p.TransitionChoice(['uniform', 'distance'])
+		n_neighbors: ng.p.Scalar(lower=2, upper=25).set_integer_casting()
 
 
 "lasso logistic"
@@ -1091,29 +1091,29 @@ categorical
 	0. "base lasso" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: l1
+		multi_class: 'auto'
+		penalty: 'l1'
 		class_weight: None
-		solver: liblinear
+		solver: 'liblinear'
 
 	1. "lasso C" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: l1
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		solver: liblinear
-		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
+		multi_class: 'auto'
+		penalty: 'l1'
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		solver: 'liblinear'
+		C: ng.p.Log(lower=1e-5, upper=1e3)
 
 	2. "lasso C extra" ::
 
-		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
-		multi_class: auto
-		penalty: l1
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		solver: liblinear
-		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
-		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
+		max_iter: ng.p.Scalar(lower=1000, upper=10000).set_integer_casting()
+		multi_class: 'auto'
+		penalty: 'l1'
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		solver: 'liblinear'
+		C: ng.p.Log(lower=1e-5, upper=1e3)
+		tol: ng.p.Log(lower=1e-6, upper=.01)
 
 
 "light gbm classifier"
@@ -1130,29 +1130,29 @@ categorical
 	1. "lgbm classifier dist1" ::
 
 		silent: True
-		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart,goss),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):dart
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
-		num_leaves: Scalar{int,Cl(6,80)}[sigma=Log{exp=1.2}]:20
-		min_child_samples: Scalar{int,Cl(10,500)}[sigma=Log{exp=1.2}]:255
-		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
-		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
-		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		boosting_type: ng.p.TransitionChoice(['gbdt', 'dart', 'goss'])
+		n_estimators: ng.p.Scalar(init=100, lower=3, upper=500).set_integer_casting()
+		num_leaves: ng.p.Scalar(init=20, lower=6, upper=80).set_integer_casting()
+		min_child_samples: ng.p.Scalar(lower=10, upper=500).set_integer_casting()
+		min_child_weight: ng.p.Log(lower=1e-5, upper=1e4)
+		subsample: ng.p.Scalar(lower=.3, upper=.95)
+		colsample_bytree: ng.p.Scalar(lower=.3, upper=.95)
+		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 	2. "lgbm classifier dist2" ::
 
 		silent: True
 		lambda_l2: 0.001
-		boosting_type: TransitionChoice(choices=Tuple(gbdt,dart),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):gbdt
-		min_child_samples: TransitionChoice(choices=Tuple(1,5,7,10,15,20,35,50,100,200,500,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):35
-		num_leaves: TransitionChoice(choices=Tuple(2,4,7,10,15,20,25,30,35,40,50,65,80,100,125,150,200,250),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):40
-		colsample_bytree: TransitionChoice(choices=Tuple(0.7,0.9,1.0),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.9
-		subsample: Scalar{Cl(0.3,1)}[sigma=Log{exp=1.2}]:0.65
-		learning_rate: TransitionChoice(choices=Tuple(0.01,0.05,0.1),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0.05
-		n_estimators: TransitionChoice(choices=Tuple(5,20,35,50,75,100,150,200,350,500,750,1000),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):150
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		boosting_type: ng.p.TransitionChoice(['gbdt', 'dart'])
+		min_child_samples: ng.p.TransitionChoice([1, 5, 7, 10, 15, 20, 35, 50, 100, 200, 500, 1000])
+		num_leaves: ng.p.TransitionChoice([2, 4, 7, 10, 15, 20, 25, 30, 35, 40, 50, 65, 80, 100, 125, 150, 200, 250])
+		colsample_bytree: ng.p.TransitionChoice([0.7, 0.9, 1.0])
+		subsample: ng.p.Scalar(lower=.3, upper=1)
+		learning_rate: ng.p.TransitionChoice([0.01, 0.05, 0.1])
+		n_estimators: ng.p.TransitionChoice([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "linear svm classifier"
@@ -1169,8 +1169,8 @@ categorical
 	1. "linear svc dist" ::
 
 		max_iter: 1000
-		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		C: ng.p.Log(lower=1e-4, upper=1e4)
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "logistic"
@@ -1183,10 +1183,10 @@ categorical
 	0. "base logistic" ::
 
 		max_iter: 1000
-		multi_class: auto
-		penalty: none
+		multi_class: 'auto'
+		penalty: 'none'
 		class_weight: None
-		solver: lbfgs
+		solver: 'lbfgs'
 
 
 "mlp classifier"
@@ -1202,81 +1202,81 @@ categorical
 
 	1. "mlp dist 3 layer" ::
 
-		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100 100]
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Array(init=(100, 100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 
 	2. "mlp dist es 3 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+		n_iter_no_change: ng.p.Scalar(lower=5, upper=50)
 
 	3. "mlp dist 2 layer" ::
 
-		hidden_layer_sizes: Array{int,Cl(1,300)}[sigma=50]:[100 100]
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Array(init=(100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 
 	4. "mlp dist es 2 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+		n_iter_no_change: ng.p.Scalar(lower=5, upper=50)
 
 	5. "mlp dist 1 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 
 	6. "mlp dist es 1 layer" ::
 
-		hidden_layer_sizes: Scalar{int,Cl(2,300)}[sigma=Log{exp=1.2}]:100
-		activation: TransitionChoice(choices=Tuple(identity,logistic,tanh,relu),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):tanh
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		batch_size: TransitionChoice(choices=Tuple(auto,Scalar{int,Cl(50,400)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):auto
-		learning_rate: TransitionChoice(choices=Tuple(constant,invscaling,adaptive),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):invscaling
-		learning_rate_init: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		max_iter: Scalar{int,Cl(100,1000)}[sigma=Log{exp=1.2}]:200
-		beta_1: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.9
-		beta_2: Scalar{Cl(0.1,0.9999)}[sigma=Log{exp=1.2}]:0.999
+		hidden_layer_sizes: ng.p.Scalar(init=100, lower=2, upper=300).set_integer_casting()
+		activation: ng.p.TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		batch_size: ng.p.TransitionChoice(['auto', ng.p.Scalar(init=200, lower=50, upper=400).set_integer_casting()])
+		learning_rate: ng.p.TransitionChoice(['constant', 'invscaling', 'adaptive'])
+		learning_rate_init: ng.p.Log(lower=1e-5, upper=1e2)
+		max_iter: ng.p.Scalar(init=200, lower=100, upper=1000).set_integer_casting()
+		beta_1: ng.p.Scalar(init=.9, lower=.1, upper=.99)
+		beta_2: ng.p.Scalar(init=.999, lower=.1, upper=.9999)
 		early_stopping: True
-		n_iter_no_change: Scalar{Cl(5,50)}[sigma=Log{exp=1.2}]:27.5
+		n_iter_no_change: ng.p.Scalar(lower=5, upper=50)
 
 
 "pa classifier"
@@ -1304,12 +1304,12 @@ categorical
 
 	1. "rf classifier dist" ::
 
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
-		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		max_features: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
-		min_samples_split: Scalar{Cl(0.1,1)}[sigma=Log{exp=1.2}]:0.55
+		n_estimators: ng.p.Scalar(init=100, lower=3, upper=500).set_integer_casting()
+		max_depth: ng.p.TransitionChoice([None, ng.p.Scalar(init=25, lower=2, upper=200).set_integer_casting()])
+		max_features: ng.p.Scalar(lower=.1, upper=1.0)
+		min_samples_split: ng.p.Scalar(lower=.1, upper=1.0)
 		bootstrap: True
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "ridge logistic"
@@ -1322,23 +1322,23 @@ categorical
 	0. "base ridge" ::
 
 		max_iter: 1000
-		penalty: l2
-		solver: saga
+		penalty: 'l2'
+		solver: 'saga'
 
 	1. "ridge C" ::
 
 		max_iter: 1000
-		solver: saga
-		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		solver: 'saga'
+		C: ng.p.Log(lower=1e-5, upper=1e3)
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 	2. "ridge C extra" ::
 
-		max_iter: Scalar{int,Cl(1000,10000)}[sigma=Log{exp=1.2}]:5500
-		solver: saga
-		C: Log{exp=21.544346900318843,Cl(1e-05,1000)}:0.1
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		tol: Log{exp=4.641588833612779,Cl(1e-06,0.01)}:0.0001
+		max_iter: ng.p.Scalar(lower=1000, upper=10000).set_integer_casting()
+		solver: 'saga'
+		C: ng.p.Log(lower=1e-5, upper=1e3)
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
+		tol: ng.p.Log(lower=1e-6, upper=.01)
 
 
 "sgd classifier"
@@ -1350,22 +1350,22 @@ categorical
 
 	0. "base sgd" ::
 
-		loss: hinge
+		loss: 'hinge'
 
 	1. "sgd classifier" ::
 
-		loss: TransitionChoice(choices=Tuple(hinge,log,modified_huber,squared_hinge,perceptron),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):modified_huber
-		penalty: TransitionChoice(choices=Tuple(l2,l1,elasticnet),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):l1
-		alpha: Log{exp=14.677992676220699,Cl(1e-05,100)}:0.03162277660168379
-		l1_ratio: Scalar{Cl(0,1)}[sigma=Log{exp=1.2}]:0.5
+		loss: ng.p.TransitionChoice(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'])
+		penalty: ng.p.TransitionChoice(['l2', 'l1', 'elasticnet'])
+		alpha: ng.p.Log(lower=1e-5, upper=1e2)
+		l1_ratio: ng.p.Scalar(lower=0, upper=1)
 		max_iter: 1000
-		learning_rate: TransitionChoice(choices=Tuple(optimal,invscaling,adaptive,constant),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):adaptive
-		eta0: Log{exp=31.62277660168379,Cl(1e-06,1000)}:0.03162277660168379
-		power_t: Scalar{Cl(0.1,0.9)}[sigma=Log{exp=1.2}]:0.5
-		early_stopping: TransitionChoice(choices=Tuple(False,True),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):False
-		validation_fraction: Scalar{Cl(0.05,0.5)}[sigma=Log{exp=1.2}]:0.275
-		n_iter_no_change: TransitionChoice(choices=Tuple(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):11
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		learning_rate: ng.p.TransitionChoice(['optimal', 'invscaling', 'adaptive', 'constant'])
+		eta0: ng.p.Log(lower=1e-6, upper=1e3)
+		power_t: ng.p.Scalar(lower=.1, upper=.9)
+		early_stopping: ng.p.TransitionChoice([False, True])
+		validation_fraction: ng.p.Scalar(lower=.05, upper=.5)
+		n_iter_no_change: ng.p.TransitionChoice(np.arange(2, 20))
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "svm classifier"
@@ -1377,17 +1377,17 @@ categorical
 
 	0. "base svm classifier" ::
 
-		kernel: rbf
-		gamma: scale
+		kernel: 'rbf'
+		gamma: 'scale'
 		probability: True
 
 	1. "svm classifier dist" ::
 
-		kernel: rbf
-		gamma: Log{exp=9.999999999999998,Cl(1e-06,1)}:0.001
-		C: Log{exp=21.544346900318843,Cl(0.0001,10000)}:1.0
+		kernel: 'rbf'
+		gamma: ng.p.Log(lower=1e-6, upper=1)
+		C: ng.p.Log(lower=1e-4, upper=1e4)
 		probability: True
-		class_weight: TransitionChoice(choices=Tuple(None,balanced),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
+		class_weight: ng.p.TransitionChoice([None, 'balanced'])
 
 
 "xgb classifier"
@@ -1400,40 +1400,40 @@ categorical
 	0. "base xgb classifier" ::
 
 		verbosity: 0
-		objective: binary:logistic
+		objective: 'binary:logistic'
 
 	1. "xgb classifier dist1" ::
 
 		verbosity: 0
-		objective: binary:logistic
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:100
-		min_child_weight: Log{exp=31.62277660168379,Cl(1e-05,10000)}:0.31622776601683794
-		subsample: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		colsample_bytree: Scalar{Cl(0.3,0.95)}[sigma=Log{exp=1.2}]:0.625
-		reg_alpha: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
-		reg_lambda: TransitionChoice(choices=Tuple(0,Log{exp=6.812920690579612,Cl(1e-05,1)}),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):0
+		objective: 'binary:logistic'
+		n_estimators: ng.p.Scalar(init=100, lower=3, upper=500).set_integer_casting()
+		min_child_weight: ng.p.Log(lower=1e-5, upper=1e4)
+		subsample: ng.p.Scalar(lower=.3, upper=.95)
+		colsample_bytree: ng.p.Scalar(lower=.3, upper=.95)
+		reg_alpha: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
+		reg_lambda: ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])
 
 	2. "xgb classifier dist2" ::
 
 		verbosity: 0
-		objective: binary:logistic
-		max_depth: TransitionChoice(choices=Tuple(None,Scalar{int,Cl(2,200)}[sigma=Log{exp=1.2}]),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):None
-		learning_rate: Scalar{Cl(0.01,0.5)}[sigma=Log{exp=1.2}]:0.255
-		n_estimators: Scalar{int,Cl(3,500)}[sigma=Log{exp=1.2}]:252
-		min_child_weight: TransitionChoice(choices=Tuple(1,5,10,50),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):10
-		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
-		colsample_bytree: Scalar{Cl(0.4,0.95)}[sigma=Log{exp=1.2}]:0.675
+		objective: 'binary:logistic'
+		max_depth: ng.p.TransitionChoice([None, ng.p.Scalar(init=25, lower=2, upper=200).set_integer_casting()])
+		learning_rate: ng.p.Scalar(lower=.01, upper=.5)
+		n_estimators: ng.p.Scalar(lower=3, upper=500).set_integer_casting()
+		min_child_weight: ng.p.TransitionChoice([1, 5, 10, 50])
+		subsample: ng.p.Scalar(lower=.5, upper=1)
+		colsample_bytree: ng.p.Scalar(lower=.4, upper=.95)
 
 	3. "xgb classifier dist3" ::
 
 		verbosity: 0
-		objective: binary:logistic
-		learning_rare: Scalar{Cl(0.005,0.3)}[sigma=Log{exp=1.2}]:0.1525
-		min_child_weight: Scalar{Cl(0.5,10)}[sigma=Log{exp=1.2}]:5.25
-		max_depth: TransitionChoice(choices=Tuple(3,4,5,6,7,8,9),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):6
-		subsample: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
-		colsample_bytree: Scalar{Cl(0.5,1)}[sigma=Log{exp=1.2}]:0.75
-		reg_alpha: Log{exp=6.812920690579612,Cl(1e-05,1)}:0.0031622776601683794
+		objective: 'binary:logistic'
+		learning_rare: ng.p.Scalar(lower=.005, upper=.3)
+		min_child_weight: ng.p.Scalar(lower=.5, upper=10)
+		max_depth: ng.p.TransitionChoice(np.arange(3, 10))
+		subsample: ng.p.Scalar(lower=.5, upper=1)
+		colsample_bytree: ng.p.Scalar(lower=.5, upper=1)
+		reg_alpha: ng.p.Log(lower=.00001, upper=1)
 
 
 
@@ -1966,7 +1966,7 @@ All Problem Types
 
 	0. "mean imp" ::
 
-		strategy: mean
+		strategy: 'mean'
 
 
 "median"
@@ -1978,7 +1978,7 @@ All Problem Types
 
 	0. "median imp" ::
 
-		strategy: median
+		strategy: 'median'
 
 
 "most frequent"
@@ -1990,7 +1990,7 @@ All Problem Types
 
 	0. "most freq imp" ::
 
-		strategy: most_frequent
+		strategy: 'most_frequent'
 
 
 "constant"
@@ -2002,7 +2002,7 @@ All Problem Types
 
 	0. "constant imp" ::
 
-		strategy: constant
+		strategy: 'constant'
 
 
 "iterative"
@@ -2014,7 +2014,7 @@ All Problem Types
 
 	0. "iterative imp" ::
 
-		initial_strategy: mean
+		initial_strategy: 'mean'
 		skip_complete: True
 
 
@@ -2081,7 +2081,7 @@ All Problem Types
 
 	1. "robust gs" ::
 
-		quantile_range: TransitionChoice(choices=Tuple((1, 99),(2, 98),(3, 97),(4, 96),(5, 95),(6, 94),(7, 93),(8, 92),(9, 91),(10, 90),(11, 89),(12, 88),(13, 87),(14, 86),(15, 85),(16, 84),(17, 83),(18, 82),(19, 81),(20, 80),(21, 79),(22, 78),(23, 77),(24, 76),(25, 75),(26, 74),(27, 73),(28, 72),(29, 71),(30, 70),(31, 69),(32, 68),(33, 67),(34, 66),(35, 65),(36, 64),(37, 63),(38, 62),(39, 61)),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):(20, 80)
+		quantile_range: ng.p.TransitionChoice([(x, 100-x) for x in np.arange(1, 40)])
 
 
 "yeo"
@@ -2093,7 +2093,7 @@ All Problem Types
 
 	0. "base yeo" ::
 
-		method: yeo-johnson
+		method: 'yeo-johnson'
 		standardize: True
 
 
@@ -2106,7 +2106,7 @@ All Problem Types
 
 	0. "base boxcox" ::
 
-		method: box-cox
+		method: 'box-cox'
 		standardize: True
 
 
@@ -2123,7 +2123,7 @@ All Problem Types
 
 	1. "winsorize gs" ::
 
-		quantile_range: TransitionChoice(choices=Tuple((1, 99),(2, 98),(3, 97),(4, 96),(5, 95),(6, 94),(7, 93),(8, 92),(9, 91),(10, 90),(11, 89),(12, 88),(13, 87),(14, 86),(15, 85),(16, 84),(17, 83),(18, 82),(19, 81),(20, 80),(21, 79),(22, 78),(23, 77),(24, 76),(25, 75),(26, 74),(27, 73),(28, 72),(29, 71),(30, 70),(31, 69),(32, 68),(33, 67),(34, 66),(35, 65),(36, 64),(37, 63),(38, 62),(39, 61)),position=Scalar[sigma=Log{exp=1.2}],transitions=[1. 1.]):(20, 80)
+		quantile_range: ng.p.TransitionChoice([(x, 100-x) for x in np.arange(1, 40)])
 
 
 "quantile norm"
@@ -2135,7 +2135,7 @@ All Problem Types
 
 	0. "base quant norm" ::
 
-		output_distribution: normal
+		output_distribution: 'normal'
 
 
 "quantile uniform"
@@ -2147,7 +2147,7 @@ All Problem Types
 
 	0. "base quant uniform" ::
 
-		output_distribution: uniform
+		output_distribution: 'uniform'
 
 
 "normalize"
@@ -2188,8 +2188,8 @@ All Problem Types
 
 	1. "pca var search" ::
 
-		n_components: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.75
-		svd_solver: full
+		n_components: ng.p.Scalar(init=.75, lower=.1, upper=.99)
+		svd_solver: 'full'
 
 
 "sparse pca"
@@ -2315,13 +2315,14 @@ All Problem Types
 "one hot encoder"
 *****************
 
-  Base Class Documenation: :class:`category_encoders.one_hot.OneHotEncoder`
+  Base Class Documenation: :class:`sklearn.preprocessing.OneHotEncoder`
 
   Param Distributions
 
-	0. "default" ::
+	0. "ohe" ::
 
-		defaults only
+		sparse: False
+		handle_unknown: 'ignore'
 
 
 "backward difference encoder"
@@ -2483,7 +2484,7 @@ binary
 
 	1. "rfe num feats dist" ::
 
-		n_features_to_select: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.5
+		n_features_to_select: ng.p.Scalar(init=.5, lower=.1, upper=.99)
 
 
 "selector"
@@ -2495,11 +2496,11 @@ binary
 
 	0. "random" ::
 
-		mask: sets as random features
+		mask: 'sets as random features'
 
 	1. "searchable" ::
 
-		mask: sets as hyperparameters
+		mask: 'sets as hyperparameters'
 
 
 "univariate selection c"
@@ -2511,18 +2512,18 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f0d2d8f1dd0>
+		score_func: f_classif
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f0d2d8f1dd0>
-		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
+		score_func: f_classif
+		percentile: ng.p.Scalar(init=50, lower=1, upper=99)
 
 	2. "univar fs classifier dist2" ::
 
-		score_func: <function f_classif at 0x7f0d2d8f1dd0>
-		percentile: Scalar{Cl(50,99)}[sigma=Log{exp=1.2}]:75.0
+		score_func: f_classif
+		percentile: ng.p.Scalar(init=75, lower=50, upper=99)
 
 
 "variance threshold"
@@ -2553,7 +2554,7 @@ regression
 
 	1. "rfe num feats dist" ::
 
-		n_features_to_select: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.5
+		n_features_to_select: ng.p.Scalar(init=.5, lower=.1, upper=.99)
 
 
 "selector"
@@ -2565,11 +2566,11 @@ regression
 
 	0. "random" ::
 
-		mask: sets as random features
+		mask: 'sets as random features'
 
 	1. "searchable" ::
 
-		mask: sets as hyperparameters
+		mask: 'sets as hyperparameters'
 
 
 "univariate selection r"
@@ -2581,18 +2582,18 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7f0d2d6704d0>
+		score_func: f_regression
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7f0d2d6704d0>
-		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
+		score_func: f_regression
+		percentile: ng.p.Scalar(init=50, lower=1, upper=99)
 
 	2. "univar fs regression dist2" ::
 
-		score_func: <function f_regression at 0x7f0d2d6704d0>
-		percentile: Scalar{Cl(50,99)}[sigma=Log{exp=1.2}]:75.0
+		score_func: f_regression
+		percentile: ng.p.Scalar(init=75, lower=50, upper=99)
 
 
 "variance threshold"
@@ -2623,7 +2624,7 @@ categorical
 
 	1. "rfe num feats dist" ::
 
-		n_features_to_select: Scalar{Cl(0.1,0.99)}[sigma=Log{exp=1.2}]:0.5
+		n_features_to_select: ng.p.Scalar(init=.5, lower=.1, upper=.99)
 
 
 "selector"
@@ -2635,11 +2636,11 @@ categorical
 
 	0. "random" ::
 
-		mask: sets as random features
+		mask: 'sets as random features'
 
 	1. "searchable" ::
 
-		mask: sets as hyperparameters
+		mask: 'sets as hyperparameters'
 
 
 "univariate selection c"
@@ -2651,18 +2652,18 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7f0d2d8f1dd0>
+		score_func: f_classif
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7f0d2d8f1dd0>
-		percentile: Scalar{Cl(1,99)}[sigma=Log{exp=1.2}]:50.0
+		score_func: f_classif
+		percentile: ng.p.Scalar(init=50, lower=1, upper=99)
 
 	2. "univar fs classifier dist2" ::
 
-		score_func: <function f_classif at 0x7f0d2d8f1dd0>
-		percentile: Scalar{Cl(50,99)}[sigma=Log{exp=1.2}]:75.0
+		score_func: f_classif
+		percentile: ng.p.Scalar(init=75, lower=50, upper=99)
 
 
 "variance threshold"
@@ -3007,13 +3008,13 @@ binary
 "voting classifier"
 *******************
 
-  Base Class Documenation: :class:`sklearn.ensemble.VotingClassifier`
+  Base Class Documenation: :class:`BPt.pipeline.Ensembles.BPtVotingClassifier`
 
   Param Distributions
 
-	0. "default" ::
+	0. "voting classifier" ::
 
-		defaults only
+		voting: 'soft'
 
 
 
@@ -3058,7 +3059,7 @@ regression
 "voting regressor"
 ******************
 
-  Base Class Documenation: :class:`sklearn.ensemble.VotingRegressor`
+  Base Class Documenation: :class:`BPt.pipeline.Ensembles.BPtVotingRegressor`
 
   Param Distributions
 
@@ -3385,13 +3386,13 @@ categorical
 "voting classifier"
 *******************
 
-  Base Class Documenation: :class:`sklearn.ensemble.VotingClassifier`
+  Base Class Documenation: :class:`BPt.pipeline.Ensembles.BPtVotingClassifier`
 
   Param Distributions
 
-	0. "default" ::
+	0. "voting classifier" ::
 
-		defaults only
+		voting: 'soft'
 
 
 

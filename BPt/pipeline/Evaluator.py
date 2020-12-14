@@ -587,7 +587,7 @@ class Evaluator():
 
         try:
             name = self.model_.name
-            if name != 'nevergrad':
+            if name != 'search':
                 return None
         except AttributeError:
             return None
@@ -599,7 +599,7 @@ class Evaluator():
 
         try:
             name = self.model_.name
-            if name != 'nevergrad':
+            if name != 'search':
                 return None
         except AttributeError:
             return None

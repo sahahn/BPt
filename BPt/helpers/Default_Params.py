@@ -176,7 +176,7 @@ P['lgbm dist2'] =\
 
 P['lgbm dist3'] = {'silent': "True",
                    'n_estimators': '10000',
-                   'boosting_type': 'gbdt',
+                   'boosting_type': '"gbdt"',
                    'learning_rate':
                    'ng.p.Log(lower=5e-3, upper=.2, init=.1)',
                    'colsample_bytree':

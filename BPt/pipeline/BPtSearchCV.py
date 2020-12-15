@@ -112,6 +112,22 @@ class BPtSearchCV(BaseEstimator):
         self.random_state = random_state
         self.verbose = verbose
 
+    @property
+    def n_jobs(self):
+        return self.n_jobs
+
+    @n_jobs.setter
+    def n_jobs(self, n_jobs):
+
+        # If n_jobs set for search cv, try to propegate
+        # n_jobs = 1 to estimator
+        if hasattr(self.estimator, 'n_jobs'):
+            setattr(self.estimator, 'n_jobs', n_jobs)
+
+        # Also check for wrapper n jobs
+        if hasattr(self.estimator, 'wrapper_n_jobs'):
+            setattr(self.estimator, 'wrapper_n_jobs', n_jobs)
+
     def get_params(self, deep=True):
         """
         Get parameters for this estimator.

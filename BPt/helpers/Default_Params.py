@@ -142,7 +142,7 @@ reg = "ng.p.TransitionChoice([0, ng.p.Log(lower=1e-5, upper=1)])"
 
 P['lgbm dist1'] =\
         {'silent': "True",
-         'boosting_type': "'gbdt'",
+         'boosting_type': "ng.p.TransitionChoice(['gbdt', 'dart', 'goss'])",
          'n_estimators': n_estimators,
          'num_leaves':
          "ng.p.Scalar(init=20, lower=6, upper=80).set_integer_casting()",

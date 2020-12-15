@@ -117,6 +117,17 @@ def proc_extra_params(obj, extra_params, non_search_params, params=None):
     if extra_params is None or len(extra_params) == 0:
         return non_search_params, params
 
+    for key in extra_params:
+        non_search_params[key] = deepcopy(extra_params[key])
+
+        # Override value w/ extra params if also in params
+        if params is not None and key in params:
+            del params[key]
+
+    return non_search_params, params
+
+
+    '''
     try:
         init_params = get_possible_init_params(obj)
     except AttributeError:
@@ -134,6 +145,7 @@ def proc_extra_params(obj, extra_params, non_search_params, params=None):
                 del params[key]
 
     return non_search_params, params
+    '''
 
 
 def get_obj_and_params(obj_str, OBJS, extra_params, params):
@@ -357,7 +369,7 @@ def type_check(ud):
     def_dist = [ng.p.Log, ng.p.Scalar, ng.p.Choice, ng.p.TransitionChoice]
     for dd in def_dist:
         if isinstance(ud, dd):
-            return True 
+            return True
 
     types_to_check = [int, float, list, tuple, str, bool, dict, set, Constant]
 

@@ -17,7 +17,8 @@ from ..helpers.Data_Helpers import (get_unique_combo_df,
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Evaluator import Evaluator
-from ..main.Params_Classes import (CV_Splits, Feat_Importance, Model_Pipeline,
+from ..main.Params_Classes import (CV_Splits, CV_Split, Feat_Importance,
+                                   Model_Pipeline,
                                    Model, Ensemble, Problem_Spec)
 from ..pipeline.Model_Pipeline import get_pipe
 import pandas as pd
@@ -1194,7 +1195,10 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs,
             [nested_model_check(o) for o in obj]
             return
 
-        if hasattr(obj, 'get_params'):
+        elif isinstance(obj, dict):
+            [nested_model_check(obj[k]) for k in obj]
+
+        elif hasattr(obj, 'get_params'):
             for param in obj.get_params(deep=False):
                 nested_model_check(getattr(obj, param))
             return
@@ -1206,13 +1210,16 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs,
 
     def nested_cv_splits_check(obj):
 
-        if isinstance(obj, CV_Splits):
+        if isinstance(obj, CV_Splits) or isinstance(obj, CV_Split):
             self._preproc_cv_splits(obj, random_state)
 
-        if isinstance(obj, list):
+        elif isinstance(obj, list):
             [nested_cv_splits_check(o) for o in obj]
 
-        if hasattr(obj, 'get_params'):
+        elif isinstance(obj, dict):
+            [nested_cv_splits_check(obj[k]) for k in obj]
+
+        elif hasattr(obj, 'get_params'):
             for param in obj.get_params(deep=False):
                 nested_cv_splits_check(getattr(obj, param))
 
@@ -1407,6 +1414,10 @@ def get_pipeline(self, model_pipeline, problem_spec,
 
         if isinstance(obj, list):
             [nested_check(o) for o in obj]
+            return
+
+        elif isinstance(obj, dict):
+            [nested_check(obj[k]) for k in obj]
             return
 
         if hasattr(obj, 'get_params'):

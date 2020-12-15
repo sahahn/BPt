@@ -97,5 +97,6 @@ class BPtMixIn():
 class BPtLGBMRegressor(BPtMixIn, LGBMRegressor):
     pass
 
+
 class BPtLGBMClassifier(BPtMixIn, LGBMClassifier):
     pass

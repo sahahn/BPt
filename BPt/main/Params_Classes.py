@@ -2416,6 +2416,28 @@ class CV(Params):
         self.train_only_subjects = train_only_subjects
 
 
+class CV_Split(Params):
+
+    def __init__(self, cv='default', split=.2,
+                 _cv=None, _random_state=None):
+
+        self.cv = cv
+        self.split = split
+        self._cv = _cv
+        self._random_state = _random_state
+
+    def setup(self, cv, random_state):
+
+        self._cv = cv
+        self._random_state = random_state
+
+    def get_split(self, train_data_index):
+
+        return self._cv.train_test_split(subjects=train_data_index,
+                                         test_size=self.split,
+                                         random_state=self._random_state,
+                                         return_index=True)
+
 class CV_Splits(Params):
 
     def __init__(self, cv='default', splits=3, n_repeats=1,

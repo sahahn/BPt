@@ -940,7 +940,6 @@ Nevergrad optimizer by competence map., Based on One-Shot options
 *****************
 Nevergrad optimizer by competence map.
 
-
 'CM'
 *****
 Competence map, simplest

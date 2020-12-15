@@ -175,7 +175,9 @@ P['lgbm dist2'] =\
          "ng.p.TransitionChoice([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])"}
 
 P['lgbm dist3'] = {'silent': "True",
-                   'n_estimators': '10000',
+                   'n_estimators': "1000",
+                   'early_stopping_rounds': "150",
+                   'eval_split': ".2",
                    'boosting_type': '"gbdt"',
                    'learning_rate':
                    'ng.p.Log(lower=5e-3, upper=.2, init=.1)',

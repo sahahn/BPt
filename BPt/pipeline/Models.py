@@ -188,7 +188,7 @@ except ImportError:
     pass
 
 try:
-    from lightgbm import LGBMRegressor, LGBMClassifier
+    from ..extensions.BPtLGBM import BPtLGBMRegressor, BPtLGBMClassifier
 
     AVALIABLE['binary']['light gbm'] = 'light gbm classifier'
     AVALIABLE['binary']['lgbm'] = 'light gbm classifier'
@@ -197,11 +197,11 @@ try:
     AVALIABLE['regression']['light gbm'] = 'light gbm regressor'
     AVALIABLE['regression']['lgbm'] = 'light gbm regressor'
 
-    MODELS['light gbm regressor'] = (LGBMRegressor, ['base lgbm',
-                                                     'lgbm dist1',
-                                                     'lgbm dist2',
-                                                     'lgbm dist3'])
-    MODELS['light gbm classifier'] = (LGBMClassifier,
+    MODELS['light gbm regressor'] = (BPtLGBMRegressor, ['base lgbm',
+                                                        'lgbm dist1',
+                                                        'lgbm dist2',
+                                                        'lgbm dist3'])
+    MODELS['light gbm classifier'] = (BPtLGBMClassifier,
                                       ['base lgbm',
                                        'lgbm classifier dist1',
                                        'lgbm classifier dist2',

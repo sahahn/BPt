@@ -201,6 +201,13 @@ class Pieces():
         if hasattr(obj, 'n_jobs'):
             setattr(obj, 'n_jobs', self.spec['n_jobs'])
 
+        if hasattr(obj, 'needs_cat_inds'):
+            if getattr(obj, 'needs_cat_inds'):
+
+                # Get cat inds and set
+                cat_inds = self.Data_Scopes.get_inds_from_scope('categorical')
+                obj.set_params(cat_inds=cat_inds)
+
         return obj
 
     def replace_base_estimator(self, objs, obj_params, params):

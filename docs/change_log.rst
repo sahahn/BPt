@@ -11,9 +11,18 @@ Release 1.3.5
     - Added new abstract BPtSearchCV class.
     - Added in if search_type = 'grid' will try and convert parameters
       to grid search compatible, and use on the backend sklearn's GridSearchCV.
+    - n_jobs will propegate correctly.
+
+- Replace LGBM with BPtLBGM
+    - Replaces LGBMRegressor and Classifier with BPtLGBMRegressor and BPtLGBMClassifier.
+    - These classes are just wrapper which automatically pass categorical features to the LGBM fit.
+    - These classes also allow setting parameters 'early_stopping_rounds' and 'eval_split'.
 
 - Update Nevergrad version
     - Update to nevergrad version 0.4.2.post5
+
+- New CV_Split class
+    - This can be used for passing single splits
 
 Release 1.3.4
 ***************

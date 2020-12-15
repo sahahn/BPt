@@ -1160,11 +1160,18 @@ def _preproc_cv_splits(self, obj, random_state):
     else:
         cv = self._get_cv(obj.cv, show=False)
 
-    # Set split vals
-    _, split_vals, _ =\
-        self._get_split_vals(obj.splits)
+    # If CV_Splits
+    if isinstance(obj, CV_Splits):
 
-    obj.setup(cv=cv, split_vals=split_vals, random_state=random_state)
+        # Set split vals
+        _, split_vals, _ =\
+            self._get_split_vals(obj.splits)
+
+        obj.setup(cv=cv, split_vals=split_vals, random_state=random_state)
+
+    # Otherwise must be CV_Split
+    else:
+        obj.setup(cv=cv, random_state=random_state)
 
 
 def _preproc_model_pipeline(self, model_pipeline, n_jobs,

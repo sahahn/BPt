@@ -122,15 +122,14 @@ class BPtSearchCV(BaseEstimator):
         # Store in self._n_jobs
         self._n_jobs = n_jobs
 
-        # If passed n_jobs is > 1, then propegate
+        # If passed n_jobs, then propegate
         # n_jobs == 1 to base models.
-        if n_jobs > 1:
-            if hasattr(self.estimator, 'n_jobs'):
-                setattr(self.estimator, 'n_jobs', 1)
+        if hasattr(self.estimator, 'n_jobs'):
+            setattr(self.estimator, 'n_jobs', 1)
 
-            # Also check for wrapper n jobs
-            if hasattr(self.estimator, 'wrapper_n_jobs'):
-                setattr(self.estimator, 'wrapper_n_jobs', 1)
+        # Also check for wrapper n jobs
+        if hasattr(self.estimator, 'wrapper_n_jobs'):
+            setattr(self.estimator, 'wrapper_n_jobs', 1)
 
     def get_params(self, deep=True):
         """

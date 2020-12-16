@@ -5,6 +5,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.utils.metaestimators import if_delegate_has_method
 import warnings
 from os.path import dirname, abspath, exists
+import tempfile
 
 import numpy as np
 from numpy.random import RandomState
@@ -15,11 +16,22 @@ import multiprocessing as mp
 
 from sklearn.base import clone
 from copy import deepcopy
+import os
+import random
 
 try:
     from loky import get_reusable_executor
 except ImportError:
     pass
+
+
+def to_memmap(X):
+
+    f = os.path.join(tempfile.gettempdir(), str(random.random()))
+    x = np.memmap(f, dtype=X.dtype, shape=X.shape, mode='w+')
+    x[:] = X
+
+    return f, X.dtype, X.shape
 
 
 def is_ng(p):
@@ -296,6 +308,11 @@ class ProgressLogger():
 def ng_cv_score(X, y, estimator, scoring, weight_scorer,
                 cv_inds, cv_subjects, mapping, fit_params, **kwargs):
 
+    # If passing memmap
+    if isinstance(X, tuple):
+        X_file, X_type, X_shape = X
+        X = np.memmap(X_file, dtype=X_type, shape=X_shape, mode='c')
+
     cv_scores = []
     for i in range(len(cv_inds)):
         tr_inds, test_inds = cv_inds[i]
@@ -339,9 +356,18 @@ class NevergradSearchCV(BPtSearchCV):
 
     def get_instrumentation(self, X, y, mapping, fit_params, client):
 
+        X_file = None
+
         if client is None:
+
+            # Check for memmap X, only if no client
+            if self.param_search.memmap_X:
+                X_mem = to_memmap(X)
+            else:
+                X_mem = X
+
             instrumentation =\
-                ng.p.Instrumentation(X, y, self.estimator,
+                ng.p.Instrumentation(X_mem, y, self.estimator,
                                      self.param_search._scorer,
                                      self.param_search.weight_scorer,
                                      self.cv_inds,
@@ -363,7 +389,7 @@ class NevergradSearchCV(BPtSearchCV):
                                      cv_subjects_s, mapping,
                                      fit_params, **self.param_distributions)
 
-        return instrumentation
+        return instrumentation, X_file
 
     def get_optimizer(self, instrumentation):
 
@@ -453,7 +479,7 @@ class NevergradSearchCV(BPtSearchCV):
             client = None
 
         # Get the instrumentation
-        instrumentation =\
+        instrumentation, X_file =\
             self.get_instrumentation(X, y, mapping=mapping,
                                      fit_params=fit_params,
                                      client=client)
@@ -463,6 +489,10 @@ class NevergradSearchCV(BPtSearchCV):
 
         # Run the search
         recommendation = self.run_search(optimizer, client)
+
+        # If X was mem mapped, unlink here
+        if X_file is not None:
+            os.unlink(X_file)
 
         # Fit best est, w/ best params
         self.fit_best_estimator(recommendation, X, y, mapping,

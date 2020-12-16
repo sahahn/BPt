@@ -1007,6 +1007,7 @@ class Param_Search(Params):
                  mp_context='default',
                  n_jobs='default',
                  dask_ip=None,
+                 memmap_X=False,
                  CV='depreciated',
                  _random_state=None,
                  _splits_vals=None,
@@ -1242,6 +1243,13 @@ class Param_Search(Params):
 
                 default = None
 
+        memmap_X : bool, optional
+            By default False.
+
+            ::
+
+                default = False
+
         CV : 'depreciated'
             Switching to passing cv parameter as cv instead of CV.
             Will raise error if anything is passed here.
@@ -1262,6 +1270,7 @@ class Param_Search(Params):
         self.mp_context = mp_context
         self.n_jobs = n_jobs
         self.dask_ip = dask_ip
+        self.memmap_X = memmap_X
 
         self._random_state = _random_state
         self._splits_vals = _splits_vals

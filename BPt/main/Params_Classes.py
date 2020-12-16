@@ -178,7 +178,8 @@ class Piece(Params, Check):
 class Loader(Piece):
 
     def __init__(self, obj, params=0, scope='data files',
-                 cache_loc=None, extra_params=None):
+                 cache_loc=None, extra_params=None,
+                 fix_n_wrapper_jobs='default'):
         ''' Loader refers to transformations which operate on loaded Data_Files.
         (See :func:`Load_Data_Files`).
         They in essence take in saved file locations, and after some series
@@ -231,11 +232,13 @@ class Loader(Piece):
 
         scope : :ref:`valid scope<Scopes>`, optional
             `scope` determines on which subset of features the specified loader
-            should transform. See :ref:`Scopes` for more information on how scopes can
+            should transform. See :ref:`Scopes` for more information on
+            how scopes can
             be specified.
 
-            You will likely want to use either custom key based scopes, or the 
-            'data files' preset scope, as something like 'covars' won't make much sense,
+            You will likely want to use either custom key based scopes, or the
+            'data files' preset scope, as something like 'covars'
+            won't make much sense,
             when atleast for now, you cannot even load Covars data files.
 
             ::
@@ -252,6 +255,17 @@ class Loader(Piece):
             ::
 
                 default = None
+
+        fix_n_wrapper_jobs : int or 'default', optional
+            Typically this parameter is left as default, but
+            in special cases you may want to set this. It controls
+            the number of jobs fixed for the Loading Wrapper.
+
+            This parameter can be used to set that value.
+
+            ::
+
+                default = 'default'
         '''
 
         self.obj = obj
@@ -259,6 +273,7 @@ class Loader(Piece):
         self.scope = scope
         self.cache_loc = cache_loc
         self.extra_params = extra_params
+        self.fix_n_wrapper_jobs = fix_n_wrapper_jobs
 
         self.check_args()
 
@@ -462,7 +477,7 @@ class Scaler(Piece):
 class Transformer(Piece):
 
     def __init__(self, obj, params=0, scope='float', cache_loc=None,
-                 extra_params=None):
+                 extra_params=None, fix_n_wrapper_jobs='default'):
         ''' The Transformer is base optional component of the
         :class:`Model_Pipeline` class.
         Transformers define any type of transformation to the loaded
@@ -524,6 +539,12 @@ class Transformer(Piece):
 
                 default = None
 
+        fix_n_wrapper_jobs : int or 'default', optional
+            This parameter is ignored right now for Transformers
+
+            ::
+
+                default = 'default'
         '''
 
         self.obj = obj
@@ -531,6 +552,7 @@ class Transformer(Piece):
         self.scope = scope
         self.cache_loc = cache_loc
         self.extra_params = extra_params
+        self.fix_n_wrapper_jobs = fix_n_wrapper_jobs
 
         self.check_args()
 

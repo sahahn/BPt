@@ -25,11 +25,14 @@ def _fit_transform_single_transformer(transformer, X, y):
 class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
     def __init__(self, wrapper_transformer, wrapper_inds,
-                 cache_loc=None, **params):
+                 cache_loc=None, fix_n_wrapper_jobs='default', **params):
 
         self.wrapper_transformer = wrapper_transformer
         self.wrapper_inds = wrapper_inds
         self.cache_loc = cache_loc
+
+        # For compat. right now unused.
+        self.fix_n_wrapper_jobs = fix_n_wrapper_jobs
 
         # Set any remaining params to wrapper transformer
         self.wrapper_transformer.set_params(**params)
@@ -220,6 +223,8 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
             self.wrapper_inds = params.pop('wrapper_inds')
         if 'cache_loc' in params:
             self.cache_loc = params.pop('cache_loc')
+        if 'fix_n_wrapper_jobs' in params:
+            self.fix_n_wrapper_jobs = params.pop('fix_n_wrapper_jobs')
 
         self.wrapper_transformer.set_params(**params)
 
@@ -227,7 +232,8 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         params = {'wrapper_transformer': self.wrapper_transformer,
                   'wrapper_inds': self.wrapper_inds,
-                  'cache_loc': self.cache_loc}
+                  'cache_loc': self.cache_loc,
+                  'fix_n_wrapper_jobs': self.fix_n_wrapper_jobs}
 
         params.update(self.wrapper_transformer.get_params(deep=deep))
 

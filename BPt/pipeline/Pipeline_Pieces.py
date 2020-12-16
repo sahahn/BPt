@@ -257,14 +257,17 @@ class Pieces():
 
         return objs, obj_params
 
-    def _wrap_pipeline_objs(self, wrapper, objs, scopes, **params):
+    def _wrap_pipeline_objs(self, wrapper, objs, scopes,
+                            fix_n_wrapper_jobs, **params):
 
         inds = [self.Data_Scopes.get_inds_from_scope(scope)
                 for scope in scopes]
 
         objs = wrap_pipeline_objs(wrapper, objs, inds,
                                   random_state=self.spec['random_state'],
-                                  n_jobs=self.spec['n_jobs'], **params)
+                                  n_jobs=self.spec['n_jobs'],
+                                  fix_n_wrapper_jobs=fix_n_wrapper_jobs,
+                                  **params)
 
         return objs
 
@@ -581,6 +584,7 @@ class Loaders(Pieces):
         # Extract scopes + cache loc
         passed_loader_scopes = [p.scope for p in params]
         passed_cache_locs = [p.cache_loc for p in params]
+        passed_fix_n_wrapper_jobs = [p.fix_n_wrapper_jobs for p in params]
 
         # Process according to passed tuples or not
         passed_loaders, passed_loader_params =\
@@ -596,6 +600,7 @@ class Loaders(Pieces):
             self._wrap_pipeline_objs(Loader_Wrapper,
                                      passed_loaders,
                                      passed_loader_scopes,
+                                     passed_fix_n_wrapper_jobs,
                                      **pass_params)
 
         return passed_loaders, passed_loader_params
@@ -675,6 +680,7 @@ class Transformers(Pieces):
         # Extract scopes + cache loc
         passed_scopes = [p.scope for p in params]
         passed_cache_locs = [p.cache_loc for p in params]
+        passed_fix_n_wrapper_jobs = [p.fix_n_wrapper_jobs for p in params]
         pass_params = {'cache_locs': passed_cache_locs}
 
         # Then call get objs and params
@@ -686,6 +692,7 @@ class Transformers(Pieces):
             self._wrap_pipeline_objs(Transformer_Wrapper,
                                      objs,
                                      passed_scopes,
+                                     passed_fix_n_wrapper_jobs,
                                      **pass_params)
 
         return transformers, obj_params
@@ -760,6 +767,8 @@ class Ensembles(Type_Pieces):
 
     def _get_base_ensembler(self, models):
 
+        # @TODO Might want to reflect choice of ensemble / model n_jobs here?
+
         # If wrapping in ensemble, set n_jobs for ensemble
         # and each indv model, make sure 1
         for model in models:
@@ -781,5 +790,4 @@ class Ensembles(Type_Pieces):
 
         return VotingClassifier(models, voting='soft',
                                 n_jobs=self.spec['n_jobs'])
-
 

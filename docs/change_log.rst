@@ -24,6 +24,9 @@ Release 1.3.5
 - New CV_Split class
     - This can be used for passing single splits
 
+- New parameter fix_n_wrapper_jobs for Loader
+    - This parameter allows setting a fixed number of jobs for the Loading Wrapper.
+
 Release 1.3.4
 ***************
 

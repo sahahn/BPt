@@ -22,6 +22,7 @@ from sklearn.ensemble import (GradientBoostingClassifier,
 from sklearn.linear_model import (LogisticRegression, ElasticNet,
                                   LinearRegression, HuberRegressor,
                                   Lasso, Ridge, SGDClassifier,
+                                  SGDRegressor,
                                   PassiveAggressiveClassifier,
                                   BayesianRidge, ARDRegression,
                                   TweedieRegressor)
@@ -150,7 +151,9 @@ MODELS = {
     'linear svm regressor': (LinearSVR, ['base linear svr',
                                          'linear svr dist']),
 
-    'sgd classifier': (SGDClassifier, ['base sgd', 'sgd classifier']),
+    'sgd classifier': (SGDClassifier, ['base sgd', 'sgd elastic classifier',
+                                       'sgd classifier big search']),
+    'sgd regressor': (SGDRegressor, ['base sgd', 'sgd elastic']),
 
     'gb classifier': (GradientBoostingClassifier, ['default']),
     'gb regressor': (GradientBoostingRegressor, ['default']),

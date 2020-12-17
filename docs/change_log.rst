@@ -4,6 +4,10 @@ In Dev
 - New Dataset class
     - The new Dataset class is designed to eventually replace the old system for data loading.
 
+- Full refactor of feature importance plotting
+    - The plotting interface will eventually be moved fully to within the feature importance object as return as a result.
+
+
 Release 1.3.5
 ***************
 
@@ -29,6 +33,10 @@ Release 1.3.5
     - This parameter allows setting a fixed number of jobs for the Loading Wrapper.
     - In the future a better system for fixing n_jobs may be added.
 
+- Fix bug with Loader transform_df
+    - Fixed a bug with the transform_df function for Loaders.
+    - This resulted in a error with computing feature importances for data loaded with a Loader.
+
 Release 1.3.4
 ***************
 
@@ -37,6 +45,7 @@ Release 1.3.4
 
 - Add sklearn OneHotEncoder
     - Previously used category_encoders, use scikit-learn's instead for better and more reliable performance.
+    - This object can be accessed as a transformer under 'one hot encoder'.
 
 - Added initial support for in-place FIs 
     - Moving from plotting via ML to plotting from the Feature Importance object itself

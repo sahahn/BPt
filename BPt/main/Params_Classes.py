@@ -1244,7 +1244,17 @@ class Param_Search(Params):
                 default = None
 
         memmap_X : bool, optional
-            By default False.
+            When passing large memory arrays in each parameter search,
+            it can be useful as a memory reduction technique to pass
+            numpy memmap'ed arrays. This solves an issue where
+            the loky backend will not properly pass too large arrays.
+
+            Warning: This can slow down code, and only reduces the actual
+            memory consumption of each job by a little bit.
+
+            Note: If passing a dask_ip, this option will be skipped,
+            as if using the dask backend, then large X's will be
+            pre-scattered instead.
 
             ::
 

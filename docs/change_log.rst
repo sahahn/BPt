@@ -15,17 +15,19 @@ Release 1.3.5
 
 - Replace LGBM with BPtLBGM
     - Replaces LGBMRegressor and Classifier with BPtLGBMRegressor and BPtLGBMClassifier.
-    - These classes are just wrapper which automatically pass categorical features to the LGBM fit.
+    - These classes act as wrappers which automatically pass categorical features to the LGBM fit.
     - These classes also allow setting parameters 'early_stopping_rounds' and 'eval_split'.
 
 - Update Nevergrad version
     - Update to nevergrad version 0.4.2.post5
+    - Warning: The list of avaliable search types may be a little out of date.
 
 - New CV_Split class
     - This can be used for passing single splits
 
 - New parameter fix_n_wrapper_jobs for Loader
     - This parameter allows setting a fixed number of jobs for the Loading Wrapper.
+    - In the future a better system for fixing n_jobs may be added.
 
 Release 1.3.4
 ***************
@@ -34,7 +36,7 @@ Release 1.3.4
     - Previously didn't support latest pandas.
 
 - Add sklearn OneHotEncoder
-    - Previously used category_encoders, use scikit-learn's instead
+    - Previously used category_encoders, use scikit-learn's instead for better and more reliable performance.
 
 - Added initial support for in-place FIs 
     - Moving from plotting via ML to plotting from the Feature Importance object itself

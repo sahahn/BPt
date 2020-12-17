@@ -1,3 +1,4 @@
+from sklearn.base import BaseEstimator
 from ..helpers.ML_Helpers import get_possible_fit_params
 
 
@@ -18,8 +19,8 @@ def _get_est_fit_params(estimator, mapping=None, train_data_index=None,
             fit_params['mapping'] = mapping.copy()
 
         # Otherwise, check for flag
-        elif hasattr(estimator, 'needs_mapping'):
-            if estimator.needs_mapping:
+        elif hasattr(estimator, '_needs_mapping'):
+            if estimator._needs_mapping:
                 fit_params['mapping'] = mapping.copy()
 
     if train_data_index is not None:
@@ -29,8 +30,8 @@ def _get_est_fit_params(estimator, mapping=None, train_data_index=None,
             fit_params['train_data_index'] = train_data_index
 
         # Otherwise, check for flag
-        if hasattr(estimator, 'needs_train_data_index'):
-            if estimator.needs_train_data_index:
+        if hasattr(estimator, '_needs_train_data_index'):
+            if estimator._needs_train_data_index:
                 fit_params['train_data_index'] = train_data_index
 
     return fit_params
@@ -57,3 +58,11 @@ def _fit_single_estimator(estimator, X, y, sample_weight=None,
     else:
         estimator.fit(X, y, **fit_params)
     return estimator
+
+
+class BPtBase(BaseEstimator):
+
+    _required_parameters = ["estimator"]
+
+    def __init__(self, estimator):
+        self.estimator = estimator

@@ -7,8 +7,8 @@ import warnings
 
 class BPtMixIn():
 
-    needs_mapping = True
-    needs_train_data_index = True
+    _needs_mapping = True
+    _needs_train_data_index = True
     needs_cat_inds = True
 
     def _get_categorical_feature(self, mapping):

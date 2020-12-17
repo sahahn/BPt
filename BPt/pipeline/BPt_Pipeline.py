@@ -9,8 +9,8 @@ def f_array(in_array, tp='float32'):
 
 class BPt_Pipeline(Pipeline):
 
-    needs_mapping = True
-    needs_train_data_index = True
+    _needs_mapping = True
+    _needs_train_data_index = True
 
     def __init__(self, steps, memory=None, verbose=False,
                  add_mapping=False, to_map=None, needs_index=None,
@@ -106,11 +106,14 @@ class BPt_Pipeline(Pipeline):
             X_test = loader.transform_df(X_test, base_name=feat_names)
             feat_names = list(X_test)
 
-        # Apply pipeline operations in place
-        for imputer in fitted_objs[ORDERED_NAMES.index('imputers')]:
-            X_test[feat_names] = imputer.transform(f_array(X_test, tp))
-        for scaler in fitted_objs[ORDERED_NAMES.index('scalers')]:
-            X_test[feat_names] = scaler.transform(f_array(X_test, tp))
+        # Imputer and Scaler are Wrapped in ScopeTransformer
+        # so use transform df.
+        for obj in fitted_objs[ORDERED_NAMES.index('imputers')]:
+            X_test = obj.transform_df(X_test)
+            feat_names = list(X_test)
+        for obj in fitted_objs[ORDERED_NAMES.index('scalers')]:
+            X_test = obj.transform_df(X_test)
+            feat_names = list(X_test)
 
         # Handle transformers, w/ simmilar func to loaders
         trans_ind = ORDERED_NAMES.index('transformers')
@@ -160,13 +163,13 @@ class BPt_Pipeline(Pipeline):
         # Note: Loader and Transformer take care of conv to correct
         # np array type.
         for loader in fitted_objs[ORDERED_NAMES.index('loaders')]:
-            X_train = loader.transform(X_train)
+            X_train = loader.transform(f_array(X_train, tp))
         for imputer in fitted_objs[ORDERED_NAMES.index('imputers')]:
             X_train = imputer.transform(f_array(X_train, tp))
         for scaler in fitted_objs[ORDERED_NAMES.index('scalers')]:
             X_train = scaler.transform(f_array(X_train, tp))
         for transformer in fitted_objs[ORDERED_NAMES.index('transformers')]:
-            X_train = transformer.transform(X_train)
+            X_train = transformer.transform(f_array(X_train, tp))
         fs_ind = ORDERED_NAMES.index('feat_selectors')
         for feat_selector in fitted_objs[fs_ind]:
             X_train = feat_selector.transform(f_array(X_train, tp))

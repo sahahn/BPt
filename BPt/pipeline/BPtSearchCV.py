@@ -106,8 +106,8 @@ def get_grid_params(params):
 
 class BPtSearchCV(BaseEstimator):
 
-    needs_mapping = True
-    needs_train_data_index = True
+    _needs_mapping = True
+    _needs_train_data_index = True
     name = 'search'
 
     def __init__(self, estimator=None, param_search=None,

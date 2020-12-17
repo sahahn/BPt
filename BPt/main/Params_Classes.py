@@ -1880,7 +1880,7 @@ class Model_Pipeline(Params):
         if imputers == 'default':
             imputers = [Imputer('mean', scope='float'),
                         Imputer('median', scope='cat')]
-            print('Passed default imputers, setting to:', print(imputers))
+            print('Passed default imputers, setting to:', imputers)
         elif isinstance(imputers, str):
             imputers = Imputer(imputers)
         self.imputers = imputers

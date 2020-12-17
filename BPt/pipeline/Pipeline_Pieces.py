@@ -4,10 +4,9 @@ from ..helpers.ML_Helpers import (check_for_duplicate_names,
                                   wrap_pipeline_objs,
                                   proc_type_dep_str, param_len_check,
                                   conv_to_list,
-                                  process_params_by_type)
+                                  process_params_by_type, replace_model_name)
 
-from ..extensions.Col_Selector import InPlaceColTransformer
-from .Scope_Model import Scope_Model
+from .ScopeObjs import ScopeTransformer, ScopeModel
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 
 from sklearn.pipeline import Pipeline
@@ -25,6 +24,17 @@ def process_input_types(obj_strs, param_strs, scopes):
     # I think want to fill in missing param_strs w/ 0's here
     param_strs = param_len_check(obj_strs, param_strs)
     return obj_strs, param_strs, scopes
+
+
+def get_scope_name(scope):
+
+    scope_name = ' ' + str(repr(scope))
+    if scope_name == ' all':
+        scope_name = ''
+    elif len(scope_name) > 10:
+        scope_name = scope_name[:10] + '...'
+
+    return scope_name
 
 
 class Pieces():
@@ -212,8 +222,6 @@ class Pieces():
 
     def replace_base_estimator(self, objs, obj_params, params):
 
-        from ..helpers.ML_Helpers import replace_model_name
-
         for i in range(len(objs)):
 
             if (hasattr(objs[i][1], 'estimator') and
@@ -273,27 +281,37 @@ class Pieces():
 
     def _make_col_version(self, objs, params, scopes):
 
-        # Make objects first
-        col_objs = []
+        # Make objs + params
+        col_objs, col_params = [], {}
 
         for i in range(len(objs)):
             name, obj = objs[i][0], objs[i][1]
             inds = self.Data_Scopes.get_inds_from_scope(scopes[i])
 
-            col_obj =\
-                ('col_' + name, InPlaceColTransformer([(name, obj, inds)],
-                 remainder='passthrough', sparse_threshold=0))
+            # Get scope name
+            scope_name = get_scope_name(scopes[i])
 
+            # Create the col obj as a ScopeTransformer
+            col_obj = (name + scope_name,
+                       ScopeTransformer(estimator=obj, inds=inds))
             col_objs.append(col_obj)
 
-        # Change params to reflect objs
-        col_params = {}
+            # Change any associated params
+            for key in params:
+                split_key = key.split('__')
 
-        for key in params:
-            name = key.split('__')[0]
-            new_name = 'col_' + name + '__' + key
+                # If this is an associated param w/ this obj
+                if split_key[0] == name + '__':
 
-            col_params[new_name] = params[key]
+                    # Replace name with estimator
+                    name = split_key[0] + scope_name
+                    split_key[0] = 'estimator'
+
+                    # Create new name
+                    new_name = '__'.join([name] + split_key)
+
+                    # Save under new name
+                    col_params[new_name] = params[key]
 
         return col_objs, col_params
 
@@ -452,7 +470,8 @@ class Models(Type_Pieces):
         # Could / maybe should change this in the future.
         for i in range(len(params)):
             scope = params[i].scope
-            objs[i] = self.wrap_model_scope(scope, objs[i])
+            objs[i], obj_params =\
+                self.wrap_model_scope(scope, objs[i], obj_params)
 
         return objs, obj_params
 
@@ -505,17 +524,42 @@ class Models(Type_Pieces):
 
         return wrapper_model_obj, model_params
 
-    def wrap_model_scope(self, scope, model):
+    def wrap_model_scope(self, scope, model, model_params):
 
-        if scope != 'all':
+        # Only wrap if scope is set, i.e., not still default 'all'
+        if scope == 'all':
+            return model, model_params
 
-            inds = self.Data_Scopes.get_inds_from_scope(scope)
-            name = model[0]
-            scoped_model = (name, Scope_Model(model[1], inds))
+        # Get correct inds
+        inds = self.Data_Scopes.get_inds_from_scope(scope)
 
-            return scoped_model
+        # Get scope name
+        scope_name = get_scope_name(scope)
+        name = model[0]
 
-        return model
+        # Get scope model - under same name as model
+        scope_model = (name + scope_name,
+                       ScopeModel(estimator=model[1], inds=inds))
+
+        # Change any associated params with this model obj
+        param_keys = list(model_params)
+        for key in param_keys:
+            split_key = key.split('__')
+
+            # If this is an associated param w/ this obj
+            if split_key[0] == name + '__':
+
+                # Replace name with estimator
+                name = split_key[0] + scope_name
+                split_key[0] = 'estimator'
+
+                # Create new name
+                new_name = '__'.join([name] + split_key)
+
+                # Replace under new name
+                model_params[new_name] = model_params.pop(key)
+
+        return scope_model, model_params
 
 
 class Loaders(Pieces):

@@ -18,7 +18,7 @@ from ..helpers.ML_Helpers import proc_mapping, update_mapping
 
 class FeatureSelectorWrapper(SelectorMixin, BaseEstimator):
 
-    needs_mapping = True
+    _needs_mapping = True
 
     def __init__(self, base_selector, wrapper_inds):
         self.base_selector = base_selector

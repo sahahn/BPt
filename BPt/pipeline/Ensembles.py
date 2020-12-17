@@ -177,30 +177,30 @@ def ensemble_classifier_fit(self, X, y,
 
 
 class BPtStackingRegressor(StackingRegressor):
-    needs_mapping = True
-    needs_train_data_index = True
+    _needs_mapping = True
+    _needs_train_data_index = True
     _fit_all_estimators = _fit_all_estimators
     fit = stacking_fit
 
 
 class BPtStackingClassifier(StackingClassifier):
-    needs_mapping = True
-    needs_train_data_index = True
+    _needs_mapping = True
+    _needs_train_data_index = True
     _fit_all_estimators = _fit_all_estimators
     bpt_fit = stacking_fit
     fit = ensemble_classifier_fit
 
 
 class BPtVotingRegressor(VotingRegressor):
-    needs_mapping = True
-    needs_train_data_index = True
+    _needs_mapping = True
+    _needs_train_data_index = True
     _fit_all_estimators = _fit_all_estimators
     fit = voting_fit
 
 
 class BPtVotingClassifier(VotingClassifier):
-    needs_mapping = True
-    needs_train_data_index = True
+    _needs_mapping = True
+    _needs_train_data_index = True
     _fit_all_estimators = _fit_all_estimators
     bpt_fit = voting_fit
     fit = ensemble_classifier_fit

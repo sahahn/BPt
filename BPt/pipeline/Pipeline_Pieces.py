@@ -28,7 +28,7 @@ def process_input_types(obj_strs, param_strs, scopes):
 
 def get_scope_name(scope):
 
-    scope_name = ' ' + str(repr(scope))
+    scope_name = ' ' + str(scope)
     if scope_name == ' all':
         scope_name = ''
     elif len(scope_name) > 10:

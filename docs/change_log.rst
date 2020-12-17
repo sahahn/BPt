@@ -41,6 +41,9 @@ Release 1.3.5
     - Fixed a bug with the transform_df function for Loaders.
     - This resulted in a error with computing feature importances for data loaded with a Loader.
 
+- Better pipeline names
+    - When using sklearn verbose, or inspecting models, a few names have been changed to look better / be more informative.
+
 Release 1.3.4
 ***************
 

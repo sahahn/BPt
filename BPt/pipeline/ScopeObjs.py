@@ -91,7 +91,7 @@ class ScopeObj(BPtBase):
         return self
 
 
-class ScopeTransformer(TransformerMixin, ScopeObj):
+class ScopeTransformer(ScopeObj, TransformerMixin):
 
     def fit(self, X, y=None, mapping=None,
             train_data_index=None, **fit_params):
@@ -100,6 +100,10 @@ class ScopeTransformer(TransformerMixin, ScopeObj):
         super().fit(X, y=y, mapping=mapping,
                     train_data_index=train_data_index,
                     **fit_params)
+        
+        # If skip
+        if self.estimator_ is None:
+            return self
 
         # Now need to make changes to the original mapping
         # to reflect that the new order is self.inds_ + self.rest_inds_

@@ -17,7 +17,7 @@ Release 1.3.5
       to grid search compatible, and use on the backend sklearn's GridSearchCV.
     - n_jobs will propegate correctly.
 
-- Replace LGBM with BPtLBGM
+- Replaced LGBM with BPtLBGM
     - Replaces LGBMRegressor and Classifier with BPtLGBMRegressor and BPtLGBMClassifier.
     - These classes act as wrappers which automatically pass categorical features to the LGBM fit.
     - These classes also allow setting parameters 'early_stopping_rounds' and 'eval_split'.
@@ -32,6 +32,10 @@ Release 1.3.5
 - New parameter fix_n_wrapper_jobs for Loader
     - This parameter allows setting a fixed number of jobs for the Loading Wrapper.
     - In the future a better system for fixing n_jobs may be added.
+
+- Fix/Change internal representation for Scope Models + Transformers
+    - Introduce new internal classes for ScopeModel + ScopeTransformer.
+    - These classes fixed a few existing bugs, and should make behavior moving forward more consistent.
 
 - Fix bug with Loader transform_df
     - Fixed a bug with the transform_df function for Loaders.

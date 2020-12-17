@@ -355,7 +355,7 @@ class Evaluator():
 
     def _get_base_fitted_pipeline(self):
 
-        if hasattr(self.model_, 'name') and self.model_.name == 'nevergrad':
+        if hasattr(self.model_, 'name') and self.model_.name == 'search':
             return self.model_.best_estimator_
 
         return self.model_
@@ -587,19 +587,19 @@ class Evaluator():
 
         try:
             name = self.model_.name
-            if name != 'nevergrad':
+            if name != 'search':
                 return None
         except AttributeError:
             return None
 
         self._print('Best Params Score:',
-                    self.model_.best_search_score, level='cv_score')
+                    self.model_.best_score_, level='cv_score')
 
     def _show_best_params(self):
 
         try:
             name = self.model_.name
-            if name != 'nevergrad':
+            if name != 'search':
                 return None
         except AttributeError:
             return None
@@ -766,14 +766,15 @@ class Evaluator():
         # Get the base pipeline
         pipeline = self._get_base_fitted_pipeline()
 
-        return pipeline.proc_X_test(X_test, y_test, fs=fs)
+        return pipeline.proc_X_test(X_test, y_test,
+                                    fs=fs, tp=self.base_dtype)
 
     def _proc_X_train(self, train_data):
 
-        # Get X,y train
-        X_train, y_train = self._get_X_y(train_data, copy=True)
+        # Get X train
+        X_train, _ = self._get_X_y(train_data, copy=True)
 
         # Get the base pipeline
         pipeline = self._get_base_fitted_pipeline()
 
-        return pipeline.proc_X_train(X_train, y_train)
+        return pipeline.proc_X_train(X_train, tp=self.base_dtype)

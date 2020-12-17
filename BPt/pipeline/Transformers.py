@@ -25,11 +25,14 @@ def _fit_transform_single_transformer(transformer, X, y):
 class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
     def __init__(self, wrapper_transformer, wrapper_inds,
-                 cache_loc=None, **params):
+                 cache_loc=None, fix_n_wrapper_jobs='default', **params):
 
         self.wrapper_transformer = wrapper_transformer
         self.wrapper_inds = wrapper_inds
         self.cache_loc = cache_loc
+
+        # For compat. right now unused.
+        self.fix_n_wrapper_jobs = fix_n_wrapper_jobs
 
         # Set any remaining params to wrapper transformer
         self.wrapper_transformer.set_params(**params)
@@ -58,6 +61,9 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         return self
 
     def fit_transform(self, X, y=None, mapping=None, **fit_params):
+
+        # Save base dtype of input
+        self._base_dtype = X.dtype
 
         if mapping is None:
             mapping = {}
@@ -112,11 +118,8 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         # Update mapping
         update_mapping(mapping, new_mapping)
 
-        # Save base dtype
-        to_return = np.hstack([X_trans, X[:, self.rest_inds_]])
-        self._base_dtype = to_return.dtype
-
-        return to_return
+        # Return stacked
+        return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def transform(self, X):
 
@@ -136,8 +139,10 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         feat_names = list(df)
 
-        # Transform data as np array
+        # Prepare as numpy array - make sure same as original passed dtype
         X = np.array(df).astype(self._base_dtype)
+
+        # Transform data
         X_trans = self.transform(X)
 
         # Get new names
@@ -220,6 +225,8 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
             self.wrapper_inds = params.pop('wrapper_inds')
         if 'cache_loc' in params:
             self.cache_loc = params.pop('cache_loc')
+        if 'fix_n_wrapper_jobs' in params:
+            self.fix_n_wrapper_jobs = params.pop('fix_n_wrapper_jobs')
 
         self.wrapper_transformer.set_params(**params)
 
@@ -227,7 +234,8 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         params = {'wrapper_transformer': self.wrapper_transformer,
                   'wrapper_inds': self.wrapper_inds,
-                  'cache_loc': self.cache_loc}
+                  'cache_loc': self.cache_loc,
+                  'fix_n_wrapper_jobs': self.fix_n_wrapper_jobs}
 
         params.update(self.wrapper_transformer.get_params(deep=deep))
 

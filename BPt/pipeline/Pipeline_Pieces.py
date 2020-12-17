@@ -4,10 +4,9 @@ from ..helpers.ML_Helpers import (check_for_duplicate_names,
                                   wrap_pipeline_objs,
                                   proc_type_dep_str, param_len_check,
                                   conv_to_list,
-                                  process_params_by_type)
+                                  process_params_by_type, replace_model_name)
 
-from ..extensions.Col_Selector import InPlaceColTransformer
-from .Scope_Model import Scope_Model
+from .ScopeObjs import ScopeTransformer, ScopeModel
 from sklearn.ensemble import VotingClassifier, VotingRegressor
 
 from sklearn.pipeline import Pipeline
@@ -15,7 +14,7 @@ from copy import deepcopy
 
 from .Selector import selector_wrapper
 from sklearn.compose import TransformedTargetRegressor
-from .Nevergrad import wrap_param_search
+from .BPtSearchCV import wrap_param_search
 
 import numpy as np
 
@@ -25,6 +24,17 @@ def process_input_types(obj_strs, param_strs, scopes):
     # I think want to fill in missing param_strs w/ 0's here
     param_strs = param_len_check(obj_strs, param_strs)
     return obj_strs, param_strs, scopes
+
+
+def get_scope_name(scope):
+
+    scope_name = ' ' + str(scope)
+    if scope_name == ' all':
+        scope_name = ''
+    elif len(scope_name) > 10:
+        scope_name = scope_name[:10] + '...'
+
+    return scope_name
 
 
 class Pieces():
@@ -201,11 +211,16 @@ class Pieces():
         if hasattr(obj, 'n_jobs'):
             setattr(obj, 'n_jobs', self.spec['n_jobs'])
 
+        if hasattr(obj, 'needs_cat_inds'):
+            if getattr(obj, 'needs_cat_inds'):
+
+                # Get cat inds and set
+                cat_inds = self.Data_Scopes.get_inds_from_scope('categorical')
+                obj.set_params(cat_inds=cat_inds)
+
         return obj
 
     def replace_base_estimator(self, objs, obj_params, params):
-
-        from ..helpers.ML_Helpers import replace_model_name
 
         for i in range(len(objs)):
 
@@ -250,40 +265,53 @@ class Pieces():
 
         return objs, obj_params
 
-    def _wrap_pipeline_objs(self, wrapper, objs, scopes, **params):
+    def _wrap_pipeline_objs(self, wrapper, objs, scopes,
+                            fix_n_wrapper_jobs, **params):
 
         inds = [self.Data_Scopes.get_inds_from_scope(scope)
                 for scope in scopes]
 
         objs = wrap_pipeline_objs(wrapper, objs, inds,
                                   random_state=self.spec['random_state'],
-                                  n_jobs=self.spec['n_jobs'], **params)
+                                  n_jobs=self.spec['n_jobs'],
+                                  fix_n_wrapper_jobs=fix_n_wrapper_jobs,
+                                  **params)
 
         return objs
 
     def _make_col_version(self, objs, params, scopes):
 
-        # Make objects first
-        col_objs = []
+        # Make objs + params
+        col_objs, col_params = [], {}
 
         for i in range(len(objs)):
             name, obj = objs[i][0], objs[i][1]
             inds = self.Data_Scopes.get_inds_from_scope(scopes[i])
 
-            col_obj =\
-                ('col_' + name, InPlaceColTransformer([(name, obj, inds)],
-                 remainder='passthrough', sparse_threshold=0))
+            # Get scope name
+            scope_name = get_scope_name(scopes[i])
 
+            # Create the col obj as a ScopeTransformer
+            col_obj = (name + scope_name,
+                       ScopeTransformer(estimator=obj, inds=inds))
             col_objs.append(col_obj)
 
-        # Change params to reflect objs
-        col_params = {}
+            # Change any associated params
+            for key in params:
+                split_key = key.split('__')
 
-        for key in params:
-            name = key.split('__')[0]
-            new_name = 'col_' + name + '__' + key
+                # If this is an associated param w/ this obj
+                if split_key[0] == name + '__':
 
-            col_params[new_name] = params[key]
+                    # Replace name with estimator
+                    name = split_key[0] + scope_name
+                    split_key[0] = 'estimator'
+
+                    # Create new name
+                    new_name = '__'.join([name] + split_key)
+
+                    # Save under new name
+                    col_params[new_name] = params[key]
 
         return col_objs, col_params
 
@@ -442,7 +470,8 @@ class Models(Type_Pieces):
         # Could / maybe should change this in the future.
         for i in range(len(params)):
             scope = params[i].scope
-            objs[i] = self.wrap_model_scope(scope, objs[i])
+            objs[i], obj_params =\
+                self.wrap_model_scope(scope, objs[i], obj_params)
 
         return objs, obj_params
 
@@ -495,17 +524,43 @@ class Models(Type_Pieces):
 
         return wrapper_model_obj, model_params
 
-    def wrap_model_scope(self, scope, model):
+    def wrap_model_scope(self, scope, model, model_params):
 
-        if scope != 'all':
+        # Check if scope is 'all' or functionally 'all'
+        # Only wrap if not functionally all
+        inds = self.Data_Scopes.get_inds_from_scope(scope)
+        all_inds = self.Data_Scopes.get_inds_from_scope('all')
 
-            inds = self.Data_Scopes.get_inds_from_scope(scope)
-            name = model[0]
-            scoped_model = (name, Scope_Model(model[1], inds))
+        if len(inds) == len(all_inds):
+            return model, model_params
 
-            return scoped_model
+        # Get scope name
+        scope_name = get_scope_name(scope)
+        name = model[0]
 
-        return model
+        # Get scope model - under same name as model
+        scope_model = (name + scope_name,
+                       ScopeModel(estimator=model[1], inds=inds))
+
+        # Change any associated params with this model obj
+        param_keys = list(model_params)
+        for key in param_keys:
+            split_key = key.split('__')
+
+            # If this is an associated param w/ this obj
+            if split_key[0] == name + '__':
+
+                # Replace name with estimator
+                name = split_key[0] + scope_name
+                split_key[0] = 'estimator'
+
+                # Create new name
+                new_name = '__'.join([name] + split_key)
+
+                # Replace under new name
+                model_params[new_name] = model_params.pop(key)
+
+        return scope_model, model_params
 
 
 class Loaders(Pieces):
@@ -574,6 +629,7 @@ class Loaders(Pieces):
         # Extract scopes + cache loc
         passed_loader_scopes = [p.scope for p in params]
         passed_cache_locs = [p.cache_loc for p in params]
+        passed_fix_n_wrapper_jobs = [p.fix_n_wrapper_jobs for p in params]
 
         # Process according to passed tuples or not
         passed_loaders, passed_loader_params =\
@@ -589,6 +645,7 @@ class Loaders(Pieces):
             self._wrap_pipeline_objs(Loader_Wrapper,
                                      passed_loaders,
                                      passed_loader_scopes,
+                                     passed_fix_n_wrapper_jobs,
                                      **pass_params)
 
         return passed_loaders, passed_loader_params
@@ -668,6 +725,7 @@ class Transformers(Pieces):
         # Extract scopes + cache loc
         passed_scopes = [p.scope for p in params]
         passed_cache_locs = [p.cache_loc for p in params]
+        passed_fix_n_wrapper_jobs = [p.fix_n_wrapper_jobs for p in params]
         pass_params = {'cache_locs': passed_cache_locs}
 
         # Then call get objs and params
@@ -679,6 +737,7 @@ class Transformers(Pieces):
             self._wrap_pipeline_objs(Transformer_Wrapper,
                                      objs,
                                      passed_scopes,
+                                     passed_fix_n_wrapper_jobs,
                                      **pass_params)
 
         return transformers, obj_params
@@ -753,6 +812,8 @@ class Ensembles(Type_Pieces):
 
     def _get_base_ensembler(self, models):
 
+        # @TODO Might want to reflect choice of ensemble / model n_jobs here?
+
         # If wrapping in ensemble, set n_jobs for ensemble
         # and each indv model, make sure 1
         for model in models:
@@ -774,5 +835,4 @@ class Ensembles(Type_Pieces):
 
         return VotingClassifier(models, voting='soft',
                                 n_jobs=self.spec['n_jobs'])
-
 

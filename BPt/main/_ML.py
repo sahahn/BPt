@@ -17,7 +17,8 @@ from ..helpers.Data_Helpers import (get_unique_combo_df,
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Evaluator import Evaluator
-from ..main.Params_Classes import (CV_Splits, Feat_Importance, Model_Pipeline,
+from ..main.Params_Classes import (CV_Splits, CV_Split, Feat_Importance,
+                                   Model_Pipeline,
                                    Model, Ensemble, Problem_Spec)
 from ..pipeline.Model_Pipeline import get_pipe
 import pandas as pd
@@ -634,7 +635,7 @@ def Evaluate(self,
     self._premodel_check()
 
     # Run initial model pipeline check
-    model_pipeline = model_pipeline_check(model_pipeline)
+    model_pipeline = model_pipeline_check(model_pipeline, self.all_data)
 
     # Should save the params used here*** before any preproc done
     run_name = get_avaliable_run_name(run_name, model_pipeline)
@@ -972,7 +973,7 @@ def Test(self,
     self._premodel_check()
 
     # Run initial model pipeline check
-    model_pipeline = model_pipeline_check(model_pipeline)
+    model_pipeline = model_pipeline_check(model_pipeline, self.all_data)
 
     # Get a free run name
     run_name = get_avaliable_run_name(run_name, model_pipeline)
@@ -1159,17 +1160,24 @@ def _preproc_cv_splits(self, obj, random_state):
     else:
         cv = self._get_cv(obj.cv, show=False)
 
-    # Set split vals
-    _, split_vals, _ =\
-        self._get_split_vals(obj.splits)
+    # If CV_Splits
+    if isinstance(obj, CV_Splits):
 
-    obj.setup(cv=cv, split_vals=split_vals, random_state=random_state)
+        # Set split vals
+        _, split_vals, _ =\
+            self._get_split_vals(obj.splits)
+
+        obj.setup(cv=cv, split_vals=split_vals, random_state=random_state)
+
+    # Otherwise must be CV_Split
+    else:
+        obj.setup(cv=cv, random_state=random_state)
 
 
 def _preproc_model_pipeline(self, model_pipeline, n_jobs,
                             problem_type, random_state):
 
-    model_pipeline = model_pipeline_check(model_pipeline)
+    model_pipeline = model_pipeline_check(model_pipeline, self.all_data)
 
     # Set values across each pipeline pieces params
     model_pipeline.preproc(n_jobs)
@@ -1194,7 +1202,10 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs,
             [nested_model_check(o) for o in obj]
             return
 
-        if hasattr(obj, 'get_params'):
+        elif isinstance(obj, dict):
+            [nested_model_check(obj[k]) for k in obj]
+
+        elif hasattr(obj, 'get_params'):
             for param in obj.get_params(deep=False):
                 nested_model_check(getattr(obj, param))
             return
@@ -1206,21 +1217,21 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs,
 
     def nested_cv_splits_check(obj):
 
-        if isinstance(obj, CV_Splits):
+        if isinstance(obj, CV_Splits) or isinstance(obj, CV_Split):
             self._preproc_cv_splits(obj, random_state)
 
-        if isinstance(obj, list):
+        elif isinstance(obj, list):
             [nested_cv_splits_check(o) for o in obj]
 
-        if hasattr(obj, 'get_params'):
+        elif isinstance(obj, dict):
+            [nested_cv_splits_check(obj[k]) for k in obj]
+
+        elif hasattr(obj, 'get_params'):
             for param in obj.get_params(deep=False):
                 nested_cv_splits_check(getattr(obj, param))
 
     # Run nested check
     nested_cv_splits_check(model_pipeline)
-
-    # Early check to see if imputer could even be needed
-    model_pipeline.check_imputer(self.all_data)
 
     return model_pipeline
 
@@ -1409,6 +1420,10 @@ def get_pipeline(self, model_pipeline, problem_spec,
             [nested_check(o) for o in obj]
             return
 
+        elif isinstance(obj, dict):
+            [nested_check(obj[k]) for k in obj]
+            return
+
         if hasattr(obj, 'get_params'):
             for param in obj.get_params(deep=False):
                 nested_check(getattr(obj, param))
@@ -1570,7 +1585,7 @@ def _save_results(self, results, save_name):
             pkl.dump(results, f)
 
 
-def model_pipeline_check(model_pipeline):
+def model_pipeline_check(model_pipeline, data):
 
     # Add checks on Model_Pipeline
     if not isinstance(model_pipeline, Model_Pipeline):
@@ -1586,5 +1601,8 @@ def model_pipeline_check(model_pipeline):
         else:
             raise RuntimeError('model_pipeline must be a Model_Pipeline',
                                ' model str or Model-like')
+
+    # Early check to see if imputer is needed
+    model_pipeline.check_imputer(data)
 
     return model_pipeline

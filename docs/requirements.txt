@@ -13,7 +13,7 @@ deslib
 shap>=0.34
 scikit-image>=0.16
 tqdm>=4.51
-nevergrad==0.4.0
+nevergrad==0.4.2.post5
 Ipython
 joblib>=0.14
 python-docx

@@ -4,6 +4,46 @@ In Dev
 - New Dataset class
     - The new Dataset class is designed to eventually replace the old system for data loading.
 
+- Full refactor of feature importance plotting
+    - The plotting interface will eventually be moved fully to within the feature importance object as return as a result.
+
+
+Release 1.3.5
+***************
+
+- GridSearchCV support
+    - Added new abstract BPtSearchCV class.
+    - Added in if search_type = 'grid' will try and convert parameters
+      to grid search compatible, and use on the backend sklearn's GridSearchCV.
+    - n_jobs will propegate correctly.
+
+- Replaced LGBM with BPtLBGM
+    - Replaces LGBMRegressor and Classifier with BPtLGBMRegressor and BPtLGBMClassifier.
+    - These classes act as wrappers which automatically pass categorical features to the LGBM fit.
+    - These classes also allow setting parameters 'early_stopping_rounds' and 'eval_split'.
+
+- Update Nevergrad version
+    - Update to nevergrad version 0.4.2.post5
+    - Warning: The list of avaliable search types may be a little out of date.
+
+- New CV_Split class
+    - This can be used for passing single splits
+
+- New parameter fix_n_wrapper_jobs for Loader
+    - This parameter allows setting a fixed number of jobs for the Loading Wrapper.
+    - In the future a better system for fixing n_jobs may be added.
+
+- Fix/Change internal representation for Scope Models + Transformers
+    - Introduce new internal classes for ScopeModel + ScopeTransformer.
+    - These classes fixed a few existing bugs, and should make behavior moving forward more consistent.
+
+- Fix bug with Loader transform_df
+    - Fixed a bug with the transform_df function for Loaders.
+    - This resulted in a error with computing feature importances for data loaded with a Loader.
+
+- Better pipeline names
+    - When using sklearn verbose, or inspecting models, a few names have been changed to look better / be more informative.
+
 Release 1.3.4
 ***************
 
@@ -11,7 +51,8 @@ Release 1.3.4
     - Previously didn't support latest pandas.
 
 - Add sklearn OneHotEncoder
-    - Previously used category_encoders, use scikit-learn's instead
+    - Previously used category_encoders, use scikit-learn's instead for better and more reliable performance.
+    - This object can be accessed as a transformer under 'one hot encoder'.
 
 - Added initial support for in-place FIs 
     - Moving from plotting via ML to plotting from the Feature Importance object itself

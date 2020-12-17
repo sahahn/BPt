@@ -178,7 +178,8 @@ class Piece(Params, Check):
 class Loader(Piece):
 
     def __init__(self, obj, params=0, scope='data files',
-                 cache_loc=None, extra_params=None):
+                 cache_loc=None, extra_params=None,
+                 fix_n_wrapper_jobs='default'):
         ''' Loader refers to transformations which operate on loaded Data_Files.
         (See :func:`Load_Data_Files`).
         They in essence take in saved file locations, and after some series
@@ -231,11 +232,13 @@ class Loader(Piece):
 
         scope : :ref:`valid scope<Scopes>`, optional
             `scope` determines on which subset of features the specified loader
-            should transform. See :ref:`Scopes` for more information on how scopes can
+            should transform. See :ref:`Scopes` for more information on
+            how scopes can
             be specified.
 
-            You will likely want to use either custom key based scopes, or the 
-            'data files' preset scope, as something like 'covars' won't make much sense,
+            You will likely want to use either custom key based scopes, or the
+            'data files' preset scope, as something like 'covars'
+            won't make much sense,
             when atleast for now, you cannot even load Covars data files.
 
             ::
@@ -252,6 +255,17 @@ class Loader(Piece):
             ::
 
                 default = None
+
+        fix_n_wrapper_jobs : int or 'default', optional
+            Typically this parameter is left as default, but
+            in special cases you may want to set this. It controls
+            the number of jobs fixed for the Loading Wrapper.
+
+            This parameter can be used to set that value.
+
+            ::
+
+                default = 'default'
         '''
 
         self.obj = obj
@@ -259,6 +273,7 @@ class Loader(Piece):
         self.scope = scope
         self.cache_loc = cache_loc
         self.extra_params = extra_params
+        self.fix_n_wrapper_jobs = fix_n_wrapper_jobs
 
         self.check_args()
 
@@ -462,7 +477,7 @@ class Scaler(Piece):
 class Transformer(Piece):
 
     def __init__(self, obj, params=0, scope='float', cache_loc=None,
-                 extra_params=None):
+                 extra_params=None, fix_n_wrapper_jobs='default'):
         ''' The Transformer is base optional component of the
         :class:`Model_Pipeline` class.
         Transformers define any type of transformation to the loaded
@@ -524,6 +539,12 @@ class Transformer(Piece):
 
                 default = None
 
+        fix_n_wrapper_jobs : int or 'default', optional
+            This parameter is ignored right now for Transformers
+
+            ::
+
+                default = 'default'
         '''
 
         self.obj = obj
@@ -531,6 +552,7 @@ class Transformer(Piece):
         self.scope = scope
         self.cache_loc = cache_loc
         self.extra_params = extra_params
+        self.fix_n_wrapper_jobs = fix_n_wrapper_jobs
 
         self.check_args()
 
@@ -985,6 +1007,7 @@ class Param_Search(Params):
                  mp_context='default',
                  n_jobs='default',
                  dask_ip=None,
+                 memmap_X=False,
                  CV='depreciated',
                  _random_state=None,
                  _splits_vals=None,
@@ -1220,6 +1243,23 @@ class Param_Search(Params):
 
                 default = None
 
+        memmap_X : bool, optional
+            When passing large memory arrays in each parameter search,
+            it can be useful as a memory reduction technique to pass
+            numpy memmap'ed arrays. This solves an issue where
+            the loky backend will not properly pass too large arrays.
+
+            Warning: This can slow down code, and only reduces the actual
+            memory consumption of each job by a little bit.
+
+            Note: If passing a dask_ip, this option will be skipped,
+            as if using the dask backend, then large X's will be
+            pre-scattered instead.
+
+            ::
+
+                default = False
+
         CV : 'depreciated'
             Switching to passing cv parameter as cv instead of CV.
             Will raise error if anything is passed here.
@@ -1240,6 +1280,7 @@ class Param_Search(Params):
         self.mp_context = mp_context
         self.n_jobs = n_jobs
         self.dask_ip = dask_ip
+        self.memmap_X = memmap_X
 
         self._random_state = _random_state
         self._splits_vals = _splits_vals
@@ -1839,7 +1880,7 @@ class Model_Pipeline(Params):
         if imputers == 'default':
             imputers = [Imputer('mean', scope='float'),
                         Imputer('median', scope='cat')]
-            print('Passed default imputers, setting to:', print(imputers))
+            print('Passed default imputers, setting to:', imputers)
         elif isinstance(imputers, str):
             imputers = Imputer(imputers)
         self.imputers = imputers
@@ -2415,6 +2456,28 @@ class CV(Params):
         self.train_only_loc = train_only_loc
         self.train_only_subjects = train_only_subjects
 
+
+class CV_Split(Params):
+
+    def __init__(self, cv='default', split=.2,
+                 _cv=None, _random_state=None):
+
+        self.cv = cv
+        self.split = split
+        self._cv = _cv
+        self._random_state = _random_state
+
+    def setup(self, cv, random_state):
+
+        self._cv = cv
+        self._random_state = random_state
+
+    def get_split(self, train_data_index):
+
+        return self._cv.train_test_split(subjects=train_data_index,
+                                         test_size=self.split,
+                                         random_state=self._random_state,
+                                         return_index=True)
 
 class CV_Splits(Params):
 

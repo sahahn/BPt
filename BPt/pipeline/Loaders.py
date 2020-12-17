@@ -36,14 +36,24 @@ class Loader_Wrapper(Transformer_Wrapper):
     def __init__(self, wrapper_transformer,
                  wrapper_inds, file_mapping,
                  wrapper_n_jobs=1, cache_loc=None,
+                 fix_n_wrapper_jobs='default',
                  **params):
 
         super().__init__(wrapper_transformer=wrapper_transformer,
                          wrapper_inds=wrapper_inds, cache_loc=cache_loc,
+                         fix_n_wrapper_jobs=fix_n_wrapper_jobs,
                          **params)
 
         self.file_mapping = file_mapping
         self.wrapper_n_jobs = wrapper_n_jobs
+
+    @property
+    def _n_jobs(self):
+
+        if self.fix_n_wrapper_jobs == 'default':
+            return self.wrapper_n_jobs
+
+        return self.fix_n_wrapper_jobs
 
     def _fit(self, X, y=None):
 
@@ -56,6 +66,9 @@ class Loader_Wrapper(Transformer_Wrapper):
         return self
 
     def fit_transform(self, X, y=None, mapping=None, **kwargs):
+
+        # Save base dtype of input
+        self._base_dtype = X.dtype
 
         if mapping is None:
             mapping = {}
@@ -96,9 +109,9 @@ class Loader_Wrapper(Transformer_Wrapper):
 
     def get_chunks(self, data_files):
 
-        per_chunk = len(data_files) // self.wrapper_n_jobs
+        per_chunk = len(data_files) // self._n_jobs
         chunks = [list(range(i * per_chunk, (i+1) * per_chunk))
-                  for i in range(self.wrapper_n_jobs)]
+                  for i in range(self._n_jobs)]
 
         last = chunks[-1][-1]
         chunks[-1] += list(range(last+1, len(data_files)))
@@ -119,14 +132,14 @@ class Loader_Wrapper(Transformer_Wrapper):
         else:
             load_and_trans_c = load_and_trans
 
-        if self.wrapper_n_jobs == 1:
+        if self._n_jobs == 1:
             X_trans_cols = get_trans_chunk(cloned_transformer,
                                            data_files, load_and_trans_c)
         else:
             chunks = self.get_chunks(data_files)
 
             X_trans_chunks =\
-                Parallel(n_jobs=self.wrapper_n_jobs)(
+                Parallel(n_jobs=self._n_jobs)(
                     delayed(get_trans_chunk)(
                         transformer=cloned_transformer,
                         data_files=chunk,

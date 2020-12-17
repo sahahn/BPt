@@ -22,6 +22,7 @@ from sklearn.ensemble import (GradientBoostingClassifier,
 from sklearn.linear_model import (LogisticRegression, ElasticNet,
                                   LinearRegression, HuberRegressor,
                                   Lasso, Ridge, SGDClassifier,
+                                  SGDRegressor,
                                   PassiveAggressiveClassifier,
                                   BayesianRidge, ARDRegression,
                                   TweedieRegressor)
@@ -150,7 +151,9 @@ MODELS = {
     'linear svm regressor': (LinearSVR, ['base linear svr',
                                          'linear svr dist']),
 
-    'sgd classifier': (SGDClassifier, ['base sgd', 'sgd classifier']),
+    'sgd classifier': (SGDClassifier, ['base sgd', 'sgd elastic classifier',
+                                       'sgd classifier big search']),
+    'sgd regressor': (SGDRegressor, ['base sgd', 'sgd elastic']),
 
     'gb classifier': (GradientBoostingClassifier, ['default']),
     'gb regressor': (GradientBoostingRegressor, ['default']),
@@ -188,7 +191,7 @@ except ImportError:
     pass
 
 try:
-    from lightgbm import LGBMRegressor, LGBMClassifier
+    from ..extensions.BPtLGBM import BPtLGBMRegressor, BPtLGBMClassifier
 
     AVALIABLE['binary']['light gbm'] = 'light gbm classifier'
     AVALIABLE['binary']['lgbm'] = 'light gbm classifier'
@@ -197,13 +200,15 @@ try:
     AVALIABLE['regression']['light gbm'] = 'light gbm regressor'
     AVALIABLE['regression']['lgbm'] = 'light gbm regressor'
 
-    MODELS['light gbm regressor'] = (LGBMRegressor, ['base lgbm',
-                                                     'lgbm dist1',
-                                                     'lgbm dist2'])
-    MODELS['light gbm classifier'] = (LGBMClassifier,
+    MODELS['light gbm regressor'] = (BPtLGBMRegressor, ['base lgbm',
+                                                        'lgbm dist1',
+                                                        'lgbm dist2',
+                                                        'lgbm dist3'])
+    MODELS['light gbm classifier'] = (BPtLGBMClassifier,
                                       ['base lgbm',
                                        'lgbm classifier dist1',
-                                       'lgbm classifier dist2'])
+                                       'lgbm classifier dist2',
+                                       'lgbm classifier dist3'])
 except ImportError:
     pass
 

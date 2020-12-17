@@ -174,11 +174,28 @@ P['lgbm dist2'] =\
          'n_estimators':
          "ng.p.TransitionChoice([5, 20, 35, 50, 75, 100, 150, 200, 350, 500, 750, 1000])"}
 
+P['lgbm dist3'] = {'silent': "True",
+                   'n_estimators': "1000",
+                   'early_stopping_rounds': "150",
+                   'eval_split': ".2",
+                   'boosting_type': '"gbdt"',
+                   'learning_rate':
+                   'ng.p.Log(lower=5e-3, upper=.2, init=.1)',
+                   'colsample_bytree':
+                   'ng.p.Scalar(lower=.75, upper=1, init=1)',
+                   'min_child_samples':
+                   "ng.p.Scalar(lower=2, upper=30, init=20).set_integer_casting()",
+                   'num_leaves':
+                   "ng.p.Scalar(lower=16, upper=96, init=31).set_integer_casting()"}
+
 P['lgbm classifier dist1'] = P['lgbm dist1'].copy()
 P['lgbm classifier dist1']['class_weight'] = cls_weight
 
 P['lgbm classifier dist2'] = P['lgbm dist2'].copy()
 P['lgbm classifier dist2']['class_weight'] = cls_weight
+
+P['lgbm classifier dist3'] = P['lgbm dist3'].copy()
+P['lgbm classifier dist3']['class_weight'] = cls_weight
 
 P['base xgb'] = {'verbosity': "0",
                  'objective': "'reg:squarederror'"}
@@ -302,8 +319,7 @@ P['base linear svr'] = {'loss': "'epsilon_insensitive'",
 P['linear svr dist'] = P['base linear svr'].copy()
 P['linear svr dist']['C'] = "ng.p.Log(lower=1e-4, upper=1e4)"
 
-P['base sgd'] = {'loss': "'hinge'"}
-
+P['base sgd'] = {'loss': "'squared_loss'"}
 
 loss_choice = "ng.p.TransitionChoice(['hinge', 'log', " +\
               "'modified_huber', 'squared_hinge', 'perceptron'])"
@@ -311,12 +327,11 @@ loss_choice = "ng.p.TransitionChoice(['hinge', 'log', " +\
 lr_choice = "ng.p.TransitionChoice(['optimal', 'invscaling', " +\
             "'adaptive', 'constant'])"
 
-
-P['sgd classifier'] =\
+P['sgd classifier big search'] =\
         {'loss': loss_choice,
          'penalty': "ng.p.TransitionChoice(['l2', 'l1', 'elasticnet'])",
          'alpha': "ng.p.Log(lower=1e-5, upper=1e2)",
-         'l1_ratio': "ng.p.Scalar(lower=0, upper=1)",
+         'l1_ratio': "ng.p.Scalar(lower=.01, upper=1)",
          'max_iter': "1000",
          'learning_rate': lr_choice,
          'eta0': "ng.p.Log(lower=1e-6, upper=1e3)",
@@ -325,6 +340,16 @@ P['sgd classifier'] =\
          'validation_fraction': "ng.p.Scalar(lower=.05, upper=.5)",
          'n_iter_no_change': "ng.p.TransitionChoice(np.arange(2, 20))",
          'class_weight': cls_weight}
+
+# Make elastic net version
+P['sgd elastic'] =\
+        {'loss': "'squared_epsilon_insensitive'",
+         'penalty': "'elasticnet'",
+         'alpha': "ng.p.Log(lower=1e-5, upper=1e5)",
+         'l1_ratio': "ng.p.Scalar(lower=.01, upper=1)"}
+
+P['sgd elastic classifier'] = P['sgd elastic'].copy()
+P['sgd elastic classifier']['class_weight'] = cls_weight
 
 # Auto gluon
 P['pt binary'] = {'problem_type': "'binary'"}
@@ -426,6 +451,7 @@ P['rus binary ratio']['sampling_strategy'] =\
 # Ensemblers
 P['stacking default'] = {'cv': "3"}
 
+P['voting classifier'] = {'voting': "'soft'"}
 
 # Feat Importances
 P['base shap'] =\

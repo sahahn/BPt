@@ -593,6 +593,11 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
         Another alternative for specifying files to load can be done
         by passing a dict to this param.
 
+        Warning: This option right now only works if all files
+        to load are the same across each subject, e.g., no missing
+        data for one modality. This will hopefully be fixed in the future,
+        or atleast provide a better warning!
+
         Specifically, a python dictionary should be passed where
         each key refers to the name of that feature / column of data files
         to load, and the value is a python list, or array-like of

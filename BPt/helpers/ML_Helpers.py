@@ -117,21 +117,12 @@ def proc_extra_params(obj, extra_params, non_search_params, params=None):
     if extra_params is None or len(extra_params) == 0:
         return non_search_params, params
 
-    try:
-        init_params = get_possible_init_params(obj)
-    except AttributeError:
-        return non_search_params, params
-
-    # If any of the passed keys in extra_params are valid params to
-    # the base classes init, add them to non_search_params
     for key in extra_params:
-        if key in init_params:
-            non_search_params[key] = deepcopy(extra_params[key])
+        non_search_params[key] = deepcopy(extra_params[key])
 
-            # Also, if params, and overlapping key from extra_params and init
-            # Remove that param distribution as extra_params takes precendence.
-            if params is not None and key in params:
-                del params[key]
+        # Override value w/ extra params if also in params
+        if params is not None and key in params:
+            del params[key]
 
     return non_search_params, params
 
@@ -357,7 +348,7 @@ def type_check(ud):
     def_dist = [ng.p.Log, ng.p.Scalar, ng.p.Choice, ng.p.TransitionChoice]
     for dd in def_dist:
         if isinstance(ud, dd):
-            return True 
+            return True
 
     types_to_check = [int, float, list, tuple, str, bool, dict, set, Constant]
 
@@ -441,7 +432,7 @@ def update_mapping(mapping, new_mapping):
 
 
 def wrap_pipeline_objs(wrapper, objs, inds, random_state,
-                       n_jobs, **params):
+                       n_jobs, fix_n_wrapper_jobs, **params):
 
     # If passed wrapper n_jobs, and != 1, set base obj jobs to 1
     if 'wrapper_n_jobs' in params:
@@ -455,9 +446,11 @@ def wrap_pipeline_objs(wrapper, objs, inds, random_state,
         cache_locs = [None for i in range(len(objs))]
 
     wrapped_objs = []
-    for chunk, ind, cache_loc in zip(objs, inds,
-                                     cache_locs):
+    for chunk, ind, cache_loc, fix_n_wrapper_job in zip(objs, inds,
+                                                        cache_locs,
+                                                        fix_n_wrapper_jobs):
 
+        # Unpack
         name, obj = chunk
 
         # Pass attributes
@@ -467,7 +460,10 @@ def wrap_pipeline_objs(wrapper, objs, inds, random_state,
         if hasattr(obj, 'random_state'):
             setattr(obj, 'random_state', random_state)
 
-        wrapped_obj = wrapper(obj, ind, cache_loc=cache_loc, **params)
+        wrapped_obj = wrapper(obj, ind,
+                              cache_loc=cache_loc,
+                              fix_n_wrapper_jobs=fix_n_wrapper_job,
+                              **params)
         wrapped_objs.append((name, wrapped_obj))
 
     return wrapped_objs
@@ -532,7 +528,12 @@ def proc_type_dep_str(in_strs, avaliable, problem_type):
 
         if not check_avaliable(in_strs, avaliable, problem_type):
             raise RuntimeError(in_strs, 'are not avaliable for '
-                               'this problem type')
+                               'this problem type.'
+                               'This may be due to the requested object '
+                               'being an optional dependency! Check to make '
+                               'sure you have the relevant python library '
+                               'installed '
+                               'and that the passed str contains no typos!')
 
     avaliable_by_type = get_a_by_type(avaliable, in_strs, problem_type)
     final_strs = [avaliable_by_type[in_str] for in_str in in_strs]

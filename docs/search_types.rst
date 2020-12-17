@@ -244,7 +244,8 @@ opposition_mode
 
 ::
 
-    sampler: 'LHS', cauchy: True
+    sampler: 'LHS'
+    cauchy: True
 
 'MetaRecentering'
 *****************
@@ -254,6 +255,39 @@ opposition_mode
     cauchy: False
     autorescale: True
     sampler: 'Hammersley'
+
+'MetaTuneRecentering'
+**********************
+
+
+::
+
+    cauchy: False
+    autorescale: "autotune"
+    sampler: 'Hammersley'
+    scrambled: True
+
+HAvgMetaRecentering
+**********************
+
+::
+
+    cauchy: False
+    autorescale: True,
+    sampler: "Hammersley"
+    scrambled: True
+    recommendation_rule: "average_of_hull_best"
+
+AvgMetaRecenteringNoHull
+*************************
+
+::
+
+    cauchy: False
+    autorescale: True
+    sampler: "Hammersley"
+    scrambled: True,
+    recommendation_rule: "average_of_exp_best"
 
 
 
@@ -328,6 +362,48 @@ crossover
     
     mutation: 'discrete'
 
+'DiscreteLenglerOnePlusOne'
+*********************************************************
+
+::
+
+    mutation: 'lengler'
+
+'AdaptiveDiscreteOnePlusOne'
+*********************************************************
+
+::
+
+    mutation: "adaptive"
+
+'AnisotropicAdaptiveDiscreteOnePlusOne'
+*********************************************************
+
+::
+
+    mutation: "coordinatewise_adaptive"
+
+'DiscreteBSOOnePlusOne'
+*********************************************************
+
+::
+
+    mutation: "discreteBSO"
+
+'DiscreteDoerrOnePlusOne'
+*********************************************************
+
+::
+
+    mutation: "doerr"
+
+'CauchyOnePlusOne'
+*********************************************************
+
+::
+
+    mutation: "cauchy"
+
 
 'OptimisticDiscreteOnePlusOne'
 *********************************************************
@@ -363,77 +439,6 @@ crossover
     mutation: 'fastga'
 
 
-'DoubleFastGAOptimisticNoisyDiscreteOnePlusOne'
-*********************************************************
-
-::
-    
-    noise_handling: 'optimistic'
-    mutation: 'doublefastga'
-
-
-'FastGAOptimisticNoisyDiscreteOnePlusOne'
-*********************************************************
-
-::
-    
-    noise_handling: 'optimistic'
-    mutation: 'fastga'
-
-
-'FastGANoisyDiscreteOnePlusOne'
-*********************************************************
-
-::
-    
-    noise_handling: 'random'
-    mutation: 'fastga'
-
-
-'PortfolioDiscreteOnePlusOne'
-*********************************************************
-
-::
-    
-    mutation: 'portfolio'
-
-
-'PortfolioOptimisticNoisyDiscreteOnePlusOne'
-*********************************************************
-
-::
-    
-    noise_handling: 'optimistic'
-    mutation: 'portfolio'
-
-
-'PortfolioNoisyDiscreteOnePlusOne'
-*********************************************************
-
-::
-    
-    noise_handling: 'random'
-    mutation: 'portfolio'
-
-
-'CauchyOnePlusOne'
-*********************************************************
-
-::
-    
-    mutation: 'cauchy'
-
-
-'RecombiningOptimisticNoisyDiscreteOnePlusOne'
-*********************************************************
-
-::
-    
-    crossover: True
-    mutation: 'discrete'
-    noise_handling: 'optimistic'
-
-
 'RecombiningPortfolioOptimisticNoisyDiscreteOnePlusOne'
 *********************************************************
 
@@ -449,7 +454,7 @@ CMA
 This refers to the covariance matrix adaptation evolutionary optimzation strategy
 Background: https://en.wikipedia.org/wiki/CMA-ES
 
-The following parameter is changed
+The following parameters are changed
 
 diagonal
     To use the diagonal version of CMA (advised in large dimensions)
@@ -457,12 +462,18 @@ diagonal
     - True : Use diagonal
     - False : Don't use diagonal
 
+fcmaes
+    To use fast implementation, doesn't support diagonal=True.
+    produces equivalent results, preferable for high dimensions or
+    if objective function evaluation is fast.
+
 'CMA'
 *****
 
 ::
 
-    Defaults Only
+    diagonal: False
+    fcmaes: False
 
 'DiagonalCMA'
 *************
@@ -470,6 +481,15 @@ diagonal
 ::
 
     diagonal: True
+    fcmaes: False
+
+'FCMA'
+********
+
+::
+
+    diagonal: False
+    fcmaes: True
 
 
 Further variants of CMA include CMA with test based population size adaption.
@@ -551,6 +571,9 @@ only_offsprings
 
     (default = False)
 
+ranker
+    Either 'simple' or 'nsga2'
+
 
 'ES'
 ************
@@ -561,6 +584,7 @@ only_offsprings
     popsize: 40
     offsprings: 60
     only_offsprings: True
+    ranker: 'simple'
 
 
 'RecES'
@@ -572,6 +596,7 @@ only_offsprings
     popsize: 40
     offsprings: 60
     only_offsprings: True
+    ranker: 'simple'
 
 
 'RecMixES'
@@ -583,6 +608,7 @@ only_offsprings
     popsize: 40
     offsprings: 20
     only_offsprings: False
+    ranker: 'simple'
 
 
 'RecMutDE'
@@ -594,6 +620,7 @@ only_offsprings
     popsize: 40
     offsprings: None
     only_offsprings: False
+    ranker: 'simple'
 
 
 'MixES'
@@ -605,6 +632,7 @@ only_offsprings
     popsize: 40
     offsprings: 20
     only_offsprings: False
+    ranker: 'simple'
 
 
 'MutDE'
@@ -616,6 +644,18 @@ only_offsprings
     popsize: 40
     offsprings: None
     only_offsprings: False
+    ranker: 'simple'
+
+'NSGAIIES'
+************
+
+::
+
+    recombination_ratio: 0
+    popsize: 40
+    offsprings: 60
+    only_offsprings: True
+    ranker: "nsga2"
  
 
 Differential Evolution
@@ -896,6 +936,9 @@ passed, the number of workers, the budget, ect...
 *****************
 Nevergrad optimizer by competence map., Based on One-Shot options
 
+'NGOpt'
+*****************
+Nevergrad optimizer by competence map.
 
 'CM'
 *****

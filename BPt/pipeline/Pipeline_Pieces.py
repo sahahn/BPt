@@ -526,12 +526,13 @@ class Models(Type_Pieces):
 
     def wrap_model_scope(self, scope, model, model_params):
 
-        # Only wrap if scope is set, i.e., not still default 'all'
-        if scope == 'all':
-            return model, model_params
-
-        # Get correct inds
+        # Check if scope is 'all' or functionally 'all'
+        # Only wrap if not functionally all
         inds = self.Data_Scopes.get_inds_from_scope(scope)
+        all_inds = self.Data_Scopes.get_inds_from_scope('all')
+
+        if len(inds) == len(all_inds):
+            return model, model_params
 
         # Get scope name
         scope_name = get_scope_name(scope)

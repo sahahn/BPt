@@ -100,7 +100,7 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         super().fit(X, y=y, mapping=mapping,
                     train_data_index=train_data_index,
                     **fit_params)
-        
+
         # If skip
         if self.estimator_ is None:
             return self

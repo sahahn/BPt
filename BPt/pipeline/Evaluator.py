@@ -766,14 +766,15 @@ class Evaluator():
         # Get the base pipeline
         pipeline = self._get_base_fitted_pipeline()
 
-        return pipeline.proc_X_test(X_test, y_test, fs=fs)
+        return pipeline.proc_X_test(X_test, y_test,
+                                    fs=fs, tp=self.base_dtype)
 
     def _proc_X_train(self, train_data):
 
-        # Get X,y train
-        X_train, y_train = self._get_X_y(train_data, copy=True)
+        # Get X train
+        X_train, _ = self._get_X_y(train_data, copy=True)
 
         # Get the base pipeline
         pipeline = self._get_base_fitted_pipeline()
 
-        return pipeline.proc_X_train(X_train, y_train)
+        return pipeline.proc_X_train(X_train, tp=self.base_dtype)

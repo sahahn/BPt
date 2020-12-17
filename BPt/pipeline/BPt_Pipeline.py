@@ -3,8 +3,8 @@ import numpy as np
 from ..helpers.VARS import ORDERED_NAMES
 
 
-def f_array(in_array):
-    return np.array(in_array).astype(float)
+def f_array(in_array, tp='float32'):
+    return np.array(in_array).astype(tp)
 
 
 class BPt_Pipeline(Pipeline):
@@ -92,7 +92,7 @@ class BPt_Pipeline(Pipeline):
             return True
         return False
 
-    def proc_X_test(self, X_test, y_test, fs=True):
+    def proc_X_test(self, X_test, y_test, fs=True, tp='float32'):
 
         # Load all base objects and corresponding fitted objs
         fitted_objs = self._get_objs_by_name()
@@ -108,9 +108,9 @@ class BPt_Pipeline(Pipeline):
 
         # Apply pipeline operations in place
         for imputer in fitted_objs[ORDERED_NAMES.index('imputers')]:
-            X_test[feat_names] = imputer.transform(f_array(X_test))
+            X_test[feat_names] = imputer.transform(f_array(X_test, tp))
         for scaler in fitted_objs[ORDERED_NAMES.index('scalers')]:
-            X_test[feat_names] = scaler.transform(f_array(X_test))
+            X_test[feat_names] = scaler.transform(f_array(X_test, tp))
 
         # Handle transformers, w/ simmilar func to loaders
         trans_ind = ORDERED_NAMES.index('transformers')
@@ -145,28 +145,31 @@ class BPt_Pipeline(Pipeline):
                 feat_names = np.array(out_feat_names)[feat_mask]
 
                 # Now set within X_test, the results of the transformation
-                X_test[feat_names] = feat_selector.transform(np.array(X_test))
+                X_test[feat_names] =\
+                    feat_selector.transform(f_array(X_test, tp))
                 X_test = X_test[feat_names].copy()
 
         return X_test, y_test
 
-    def proc_X_train(self, X_train, y_train):
+    def proc_X_train(self, X_train, tp='float32'):
 
         # Load all base objects
         fitted_objs = self._get_objs_by_name()
 
         # No need to proc in place, so the transformations are pretty easy
+        # Note: Loader and Transformer take care of conv to correct
+        # np array type.
         for loader in fitted_objs[ORDERED_NAMES.index('loaders')]:
-            X_train = loader.transform(f_array(X_train))
+            X_train = loader.transform(X_train)
         for imputer in fitted_objs[ORDERED_NAMES.index('imputers')]:
-            X_train = imputer.transform(f_array(X_train))
+            X_train = imputer.transform(f_array(X_train, tp))
         for scaler in fitted_objs[ORDERED_NAMES.index('scalers')]:
-            X_train = scaler.transform(X_train)
+            X_train = scaler.transform(f_array(X_train, tp))
         for transformer in fitted_objs[ORDERED_NAMES.index('transformers')]:
             X_train = transformer.transform(X_train)
         fs_ind = ORDERED_NAMES.index('feat_selectors')
         for feat_selector in fitted_objs[fs_ind]:
-            X_train = feat_selector.transform(np.array(X_train))
+            X_train = feat_selector.transform(f_array(X_train, tp))
 
         return X_train
 

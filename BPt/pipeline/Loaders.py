@@ -67,6 +67,9 @@ class Loader_Wrapper(Transformer_Wrapper):
 
     def fit_transform(self, X, y=None, mapping=None, **kwargs):
 
+        # Save base dtype of input
+        self._base_dtype = X.dtype
+
         if mapping is None:
             mapping = {}
 

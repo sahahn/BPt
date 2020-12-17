@@ -62,6 +62,9 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
     def fit_transform(self, X, y=None, mapping=None, **fit_params):
 
+        # Save base dtype of input
+        self._base_dtype = X.dtype
+
         if mapping is None:
             mapping = {}
 
@@ -115,11 +118,8 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
         # Update mapping
         update_mapping(mapping, new_mapping)
 
-        # Save base dtype
-        to_return = np.hstack([X_trans, X[:, self.rest_inds_]])
-        self._base_dtype = to_return.dtype
-
-        return to_return
+        # Return stacked
+        return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def transform(self, X):
 
@@ -139,8 +139,10 @@ class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
         feat_names = list(df)
 
-        # Transform data as np array
+        # Prepare as numpy array - make sure same as original passed dtype
         X = np.array(df).astype(self._base_dtype)
+
+        # Transform data
         X_trans = self.transform(X)
 
         # Get new names

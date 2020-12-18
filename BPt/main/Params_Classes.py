@@ -1008,6 +1008,7 @@ class Param_Search(Params):
                  n_jobs='default',
                  dask_ip=None,
                  memmap_X=False,
+                 search_only_params=None,
                  CV='depreciated',
                  _random_state=None,
                  _splits_vals=None,
@@ -1035,6 +1036,12 @@ class Param_Search(Params):
             nevergrad's experimental varients if you so choose,
             this parameter can accept
             those as well.
+
+            New: You may pass 'grid' here in addition to the
+            supported nevergrad searches. This will use sklearn's
+            GridSearch. Note in this case some of the other parameters
+            are ignored, these are: weight_scorer, mp_context, dask_ip,
+            memmap_X, search_only_params
 
             ::
 
@@ -1260,6 +1267,35 @@ class Param_Search(Params):
 
                 default = False
 
+        search_only_params : dict or None, optional
+            In some rare cases, it may be the case that you want
+            to specify that certain parameters be passed only during
+            the nested parameter searches. A dict of parameters
+            can be passed here to accomplish that. For example,
+            if passing:
+
+            search_only_params = {'svm classifier__probability': False}
+
+            And assuming that the default / selecting parameter for this svm
+            classifier for probaility is True by default,
+            then only when exploring
+            nested hyper-parameter options will
+            probability be set to False, but
+            when fitting the final model with the best
+            parameters found from the search,
+            it will revert back to the default,
+            i.e., in this case probability = True.
+
+            Note: this may be a little bit tricky to use as
+            you need to know how to represent the parameters correctly!
+
+            To ignore this parameter / option.
+            simply keep the default value of None
+
+            ::
+
+                default = None
+
         CV : 'depreciated'
             Switching to passing cv parameter as cv instead of CV.
             Will raise error if anything is passed here.
@@ -1281,6 +1317,10 @@ class Param_Search(Params):
         self.n_jobs = n_jobs
         self.dask_ip = dask_ip
         self.memmap_X = memmap_X
+
+        if search_only_params is None:
+            search_only_params = {}
+        self.search_only_params = search_only_params
 
         self._random_state = _random_state
         self._splits_vals = _splits_vals
@@ -1341,29 +1381,41 @@ class Shap_Params(Params):
         '''
         There are a number of parameters associated
         with using shap to determine
-        feature importance. The best way to understand Shap is almost certainly through
+        feature importance. The best way to understand Shap
+        is almost certainly through
         their documentation directly, `Shap Docs <https://shap.readthedocs.io/en/latest/>`_
-        Just note when using Shap within BPt to pay attention to the version on the shap
+        Just note when using Shap within BPt to pay attention
+        to the version on the shap
         documentation vs. what is currently supported within BPt.
 
-        Broadly, shap feature importance params are split up into if they are used
-        to explain linear models, tree based models or an abitrary model (kernel).
+        Broadly, shap feature importance params are
+        split up into if they are used
+        to explain linear models, tree based models
+        or an abitrary model (kernel).
         Be warned, kernel shap generally takes a long time to run.
 
-        The type of shap to use will be automatically computed based on the Model to
-        explain, but the parameter below are still split up by type, i.e., with the 
+        The type of shap to use will be automatically
+        computed based on the Model to
+        explain, but the parameter below are still
+        split up by type, i.e., with the
         type prended before the parameter name.
 
-        (A number of the params below are copy-pasting from the relevant Shap description)
+        (A number of the params below are copy-pasting from the
+        relevant Shap description)
 
         Parameters
         ----------
-        avg_abs : bool, optional 
-            This parameter is considered regardless of the underlying shap model. If
-            set to True, then when computing global feature importance from the
-            initially computed local shap feature importance the average of the absolute value 
-            will be taken! When set to False, the average value will be taken. One might want to
-            set this to True if only concerned with the magnitude of feature importance, rather
+        avg_abs : bool, optional
+            This parameter is considered regardless of
+            the underlying shap model. If
+            set to True, then when computing global feature
+            importance from the
+            initially computed local shap feature importance
+            the average of the absolute value
+            will be taken! When set to False, the average value will be taken.
+            One might want to
+            set this to True if only concerned with the magnitude
+            of feature importance, rather
             than the sign.
 
             ::
@@ -1372,10 +1424,14 @@ class Shap_Params(Params):
 
         linear_feature_perturbation : {"interventional", "correlation_dependent"}, optional
             Only used with linear base models.
-            There are two ways we might want to compute SHAP values, either the full conditional SHAP
-            values or the interventional SHAP values. For interventional SHAP values we break any
-            dependence structure between features in the model and so uncover how the model would behave if we
-            intervened and changed some of the inputs. For the full conditional SHAP values we respect
+            There are two ways we might want to compute SHAP values,
+            either the full conditional SHAP
+            values or the interventional SHAP values.
+            For interventional SHAP values we break any
+            dependence structure between features in the model and
+            so uncover how the model would behave if we
+            intervened and changed some of the inputs. For the full
+            conditional SHAP values we respect
             the correlations among the input features, so if the model depends on one input but that
             input is correlated with another input, then both get some credit for the model's behavior. The
             interventional option stays "true to the model" meaning it will only give credit to features that are
@@ -1485,7 +1541,8 @@ class Shap_Params(Params):
 
         kernel_l1_reg : "num_features(int)", "auto", "aic", "bic", or float, optional
             Used when the underlying model is not linear or tree based.
-            The l1 regularization to use for feature selection (the estimation procedure is based on
+            The l1 regularization to use for feature selection
+            (the estimation procedure is based on
             a debiased lasso). The auto option currently uses "aic" when less that 20% of the possible sample
             space is enumerated, otherwise it uses no regularization. THE BEHAVIOR OF "auto" WILL CHANGE
             in a future version to be based on num_features instead of AIC.
@@ -1756,8 +1813,10 @@ class Model_Pipeline(Params):
 
         transformers : :class:`Transformer`, list of or None, optional
             Each :class:`Transformer` defines a type of transformation to
-            the data that changes the number of features in perhaps non-deterministic
-            or not simply removal (i.e., different from feat_selectors), for example
+            the data that changes the number of
+            features in perhaps non-deterministic
+            or not simply removal
+            (i.e., different from feat_selectors), for example
             applying a PCA, where both the number of features change, but
             also the new features do not 1:1 correspond to the original
             features. See :class:`Transformer` for more information.
@@ -1770,7 +1829,8 @@ class Model_Pipeline(Params):
                 default = None
 
         feat_selectors : :class:`Feat_Selector`, list of or None, optional
-            Each :class:`Feat_Selector` refers to an optional feature selection stage
+            Each :class:`Feat_Selector` refers to an optional
+            feature selection stage
             of the Pipeline. See :class:`Feat_Selector` for specific options.
 
             Input can be composed in a list, to apply feature selection sequentially,
@@ -2216,10 +2276,12 @@ class Problem_Spec(Params):
             all of the requested scorers will be calculated and returned.
 
             Note: If using a Param_Search, the Param_Search object has a
-            scorer parameter as well. This scorer describes the scorer optimized
+            scorer parameter as well. This scorer describes
+            the scorer optimized
             in a parameter search.
 
-            For a full list of supported scorers please view the scikit-learn docs at:
+            For a full list of supported scorers please view the
+            scikit-learn docs at:
             https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
 
             If left as 'default', assign a reasonable scorer based on the
@@ -2235,15 +2297,21 @@ class Problem_Spec(Params):
 
         weight_scorer : bool, list of, optional
             If True, then the scorer of interest will be weighted within
-            each repeated fold by the number of subjects in that validation set.
-            This parameter only typically makes sense for custom split behavior where 
+            each repeated fold by the number of subjects in that
+            validation set.
+            This parameter only typically makes sense for
+            custom split behavior where
             validation folds may end up with differing sizes.
-            When default CV schemes are employed, there is likely no point in
-            applying this weighting, as the validation folds will have simmilar sizes.
+            When default CV schemes are employed,
+            there is likely no point in
+            applying this weighting, as the validation
+            folds will have simmilar sizes.
 
             If you are passing mutiple scorers, then you can also pass a 
-            list of values for weight_scorer, with each value set as boolean True or False,
-            specifying if the corresponding scorer by index should be weighted or not.
+            list of values for weight_scorer, with each value
+            set as boolean True or False,
+            specifying if the corresponding scorer by index
+            should be weighted or not.
 
             ::
 
@@ -2281,7 +2349,8 @@ class Problem_Spec(Params):
             or even a loc of a text file (formatted one subject per line) in
             which to read from.
 
-            A special wrapper, Value_Subset, can also be used to specify more specific,
+            A special wrapper, Value_Subset,
+            can also be used to specify more specific,
             specifically value specific, subsets of subjects to use.
             See :class:`Value_Subset` for how this input wrapper can be used.
 
@@ -2290,15 +2359,19 @@ class Problem_Spec(Params):
                 default = 'all'
 
         n_jobs : int, or 'default'
-            n_jobs are employed witin the context of a call to Evaluate or Test. 
+            n_jobs are employed witin the context
+            of a call to Evaluate or Test.
             If left as default, the class wide BPt value will be used.
 
             In general, the way n_jobs are propegated to the different pipeline
-            pieces on the backend is that, if there is a parameter search, the base
-            ML pipeline will all be set to use 1 job, and the n_jobs budget will be used
-            to train pipelines in parellel to explore different params. Otherwise, if no
-            param search, n_jobs will be used for each piece individually, though some
-            might not support it.
+            pieces on the backend is that,
+            if there is a parameter search, the base
+            ML pipeline will all be set to use 1 job,
+            and the n_jobs budget will be used
+            to train pipelines in parellel to explore different params.
+            Otherwise, if no param search,
+            n_jobs will be used for each piece individually,
+            though some might not support it.
 
             ::
 
@@ -2308,10 +2381,14 @@ class Problem_Spec(Params):
             Random state, either as int for a specific seed, or if None then
             the random seed is set by np.random.
 
-            This parameter is used to ensure replicability of expirements (wherever possible!).
-            In some cases even with a random seed, depending on the pipeline pieces being used,
-            if any have a component that occassionally yields different results, even with the same
-            random seed, e.g., some model optimizations, then you might still not get
+            This parameter is used to ensure replicability
+            of expirements (wherever possible!).
+            In some cases even with a random seed, depending on
+            the pipeline pieces being used,
+            if any have a component that occassionally yields
+            different results, even with the same
+            random seed, e.g., some model optimizations,
+            then you might still not get
             exact replicicability.
 
             If 'default', use the saved class value.
@@ -2359,7 +2436,7 @@ class Problem_Spec(Params):
 
         if is_value_subset(self.subjects) or len(self.subjects) < 50:
             _print('subjects =', self.subjects)
-    
+
         if self._final_subjects is not None:
             _print('len(subjects) =', len(self._final_subjects),
                    '(before overlap w/ train/test subjects)')
@@ -2399,16 +2476,20 @@ class CV(Params):
             and they will be combined into all unique combinations of
             the elements of the list.
 
-            Any target_cols passed must be categorical or binary, and cannot be
-            float. Though you can consider loading in a float target as a strat,
+            Any target_cols passed must be categorical
+            or binary, and cannot be
+            float. Though you can consider loading in a
+            float target as a strat,
             which will apply a specific k_bins, and then be valid here.
 
             In the case that you have a loaded strat val with the same name
             as your target, you can distinguish between the two by passing
             either the raw name, e.g., if they are both loaded as 'Sex',
             passing just 'Sex', will try to use the loaded target. If instead
-            you want to use your loaded strat val with the same name - you have
-            to pass 'Sex' + self.self.strat_u_name (by default this is '_Strat').
+            you want to use your loaded strat val
+            with the same name - you have
+            to pass 'Sex' + self.self.strat_u_name
+            (by default this is '_Strat').
 
             ::
 

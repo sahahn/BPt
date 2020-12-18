@@ -305,8 +305,8 @@ class ProgressLogger():
             f.write('params,')
 
 
-def ng_cv_score(X, y, estimator, scoring, weight_scorer,
-                cv_inds, cv_subjects, mapping, fit_params, **kwargs):
+def ng_cv_score(X, y, estimator, scoring, weight_scorer, cv_inds, cv_subjects,
+                mapping, fit_params, search_only_params, **search_params):
 
     # If passing memmap
     if isinstance(X, tuple):
@@ -319,7 +319,14 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer,
 
         # Clone estimator & set search params
         estimator = clone(estimator)
-        estimator.set_params(**kwargs)
+        estimator.set_params(**search_params)
+
+        # For each search only param, try to update, if invalid, just skip
+        for key in search_only_params:
+            try:
+                estimator.set_params(**{key: search_only_params[key]})
+            except ValueError:
+                pass
 
         # Adds mapping / train data index if needed
         f_params = _get_est_fit_params(
@@ -372,7 +379,9 @@ class NevergradSearchCV(BPtSearchCV):
                                      self.param_search.weight_scorer,
                                      self.cv_inds,
                                      self.cv_subjects, mapping,
-                                     fit_params, **self.param_distributions)
+                                     fit_params,
+                                     self.param_search.search_only_params,
+                                     **self.param_distributions)
 
         # If using dask client, pre-scatter some big memory fixed params
         else:
@@ -545,7 +554,8 @@ def wrap_param_search(param_search, model_obj, model_params):
     return (name + '_SearchCV', search_obj), model_params
 
 
-def get_search_cv(estimator, param_search, param_distributions, progress_loc):
+def get_search_cv(estimator, param_search,
+                  param_distributions, progress_loc):
 
     # Determine which CV model to make
     if param_search.search_type == 'grid':
@@ -558,6 +568,7 @@ def get_search_cv(estimator, param_search, param_distributions, progress_loc):
         param_search=param_search,
         param_distributions=param_distributions,
         n_jobs=param_search._n_jobs,
-        random_state=param_search._random_state)
+        random_state=param_search._random_state,
+        progress_loc=progress_loc)
 
     return search_obj

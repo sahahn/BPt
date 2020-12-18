@@ -18,6 +18,7 @@ Data/*
 Autogluon*
 
 logs.txt*
+*logs.*
 
 Examples/Full_Examples/Sex*
 
@@ -121,3 +122,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+Examples/Full_Examples/test.py
+Examples/Full_Examples/Sex/logs.txt
+.gitignore
+docs/conf.py

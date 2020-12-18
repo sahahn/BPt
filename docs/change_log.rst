@@ -7,6 +7,13 @@ In Dev
 - Full refactor of feature importance plotting
     - The plotting interface will eventually be moved fully to within the feature importance object as return as a result.
 
+Release 1.3.6
+***************
+
+- New search_only_params param
+    - In the Param_Search object, there is now a parameter for search_only_params.
+    - This parameter allows some advanced behavior, w.r.t. to only passing params when searching for params.
+
 
 Release 1.3.5
 ***************

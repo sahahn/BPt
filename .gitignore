@@ -11,6 +11,8 @@ cover/*
 Examples/Test_Samplers.ipynb
 Examples/Full_Examples/philips.txt
 Examples/fake_*
+test_data/*
+fake_surf_data
 
 .vscode
 Data/*

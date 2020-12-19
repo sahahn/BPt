@@ -66,3 +66,7 @@ class BPtBase(BaseEstimator):
 
     def __init__(self, estimator):
         self.estimator = estimator
+
+    def transform_df(self, X_df, base_name=None):
+        '''Override this class in child classes'''
+        pass

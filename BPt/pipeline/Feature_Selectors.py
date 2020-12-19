@@ -72,14 +72,6 @@ class FeatureSelectorWrapper(SelectorMixin, BaseEstimator):
 
             cnt += 1
 
-        # pass_mapping = mapping.copy()
-        # new_pass_mapping = {i: None for i in pass_mapping}
-        # cnt = 0
-        # for i in self.wrapper_inds_:
-        #     new_pass_mapping[i] = cnt
-        #     cnt += 1
-        # update_mapping(pass_mapping, new_pass_mapping)
-
         # Attempt fit w/ passing mapping on
         try:
             self.base_selector_.fit(X=X[:, self.wrapper_inds_],

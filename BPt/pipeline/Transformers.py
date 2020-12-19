@@ -24,6 +24,8 @@ def _fit_transform_single_transformer(transformer, X, y):
 
 class Transformer_Wrapper(BaseEstimator, TransformerMixin):
 
+    _needs_mapping = True
+
     def __init__(self, wrapper_transformer, wrapper_inds,
                  cache_loc=None, fix_n_wrapper_jobs='default', **params):
 

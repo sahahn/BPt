@@ -33,6 +33,8 @@ def get_trans_chunk(transformer, data_files, func):
 
 class Loader_Wrapper(Transformer_Wrapper):
 
+    _needs_mapping = True
+
     def __init__(self, wrapper_transformer,
                  wrapper_inds, file_mapping,
                  wrapper_n_jobs=1, cache_loc=None,

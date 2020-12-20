@@ -179,7 +179,7 @@ class Loader(Piece):
 
     def __init__(self, obj, params=0, scope='data files',
                  cache_loc=None, extra_params=None,
-                 fix_n_wrapper_jobs='default'):
+                 fix_n_wrapper_jobs=False):
         ''' Loader refers to transformations which operate on loaded Data_Files.
         (See :func:`Load_Data_Files`).
         They in essence take in saved file locations, and after some series
@@ -256,7 +256,7 @@ class Loader(Piece):
 
                 default = None
 
-        fix_n_wrapper_jobs : int or 'default', optional
+        fix_n_wrapper_jobs : int or False, optional
             Typically this parameter is left as default, but
             in special cases you may want to set this. It controls
             the number of jobs fixed for the Loading Wrapper.
@@ -265,7 +265,7 @@ class Loader(Piece):
 
             ::
 
-                default = 'default'
+                default = False
         '''
 
         self.obj = obj

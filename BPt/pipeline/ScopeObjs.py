@@ -1,9 +1,16 @@
 from sklearn.base import TransformerMixin, clone
 from ..helpers.ML_Helpers import proc_mapping, update_mapping
 from sklearn.utils.metaestimators import if_delegate_has_method
+from sklearn.utils.validation import check_memory
 import numpy as np
 
 from .base import BPtBase, _get_est_fit_params
+
+
+def _fit_estimator(estimator, X, y=None, **fit_params):
+
+    estimator.fit(X=X, y=y, **fit_params)
+    return estimator
 
 
 class ScopeObj(BPtBase):
@@ -14,13 +21,16 @@ class ScopeObj(BPtBase):
     # Override
     _required_parameters = ["estimator", "inds"]
 
-    def __init__(self, estimator, inds):
+    def __init__(self, estimator, inds, cache_loc=None):
 
         # Set estimator
         super().__init__(estimator=estimator)
 
         # These are the index to restrict scope to
         self.inds = inds
+
+        # This is the optional cache_loc for memory
+        self.cache_loc = cache_loc
 
     def _proc_mapping(self, mapping):
 
@@ -82,8 +92,18 @@ class ScopeObj(BPtBase):
                                          train_data_index=train_data_index,
                                          other_params=fit_params)
 
-        # Fit the base estimator
-        self.estimator_.fit(X=X[:, self.inds_], y=y, **fit_params)
+        # Get correct fit function as either with memory
+        # caching, or just as is, if no cache loc passed.
+        if self.cache_loc is not None:
+            memory = check_memory(self.cache_loc)
+            _fit_estimator_c = memory.cache(_fit_estimator)
+        else:
+            _fit_estimator_c = _fit_estimator
+
+        # Fit the estimator
+        self.estimator_ = _fit_estimator_c(estimator=self.estimator_,
+                                           X=X[:, self.inds_],
+                                           y=y, **fit_params)
 
         # Set as fitted
         self.is_fitted_ = True
@@ -130,10 +150,13 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         # Get X_trans
         X_trans = self.estimator_.transform(X=X[:, self.inds_])
 
+        # Save number of output features after X_trans
+        self.n_trans_feats_ = X_trans.shape[1]
+
         # Return stacked X_trans with rest inds
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
-    def transform_df(self, df):
+    def transform_df(self, df, base_name=None):
 
         # If None, pass along as is
         if self.estimator_ is None:

@@ -57,6 +57,7 @@ def _fit_single_estimator(estimator, X, y, sample_weight=None,
             raise
     else:
         estimator.fit(X, y, **fit_params)
+
     return estimator
 
 

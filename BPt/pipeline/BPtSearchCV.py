@@ -316,7 +316,9 @@ class NevergradSearchCV(BPtSearchCV):
                                      self.param_search.weight_scorer,
                                      cv_inds_s,
                                      cv_subjects_s, mapping,
-                                     fit_params, **self.param_distributions)
+                                     fit_params,
+                                     self.param_search.search_only_params,
+                                     **self.param_distributions)
 
         return instrumentation, X_file
 

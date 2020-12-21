@@ -44,13 +44,6 @@ class BPtPipeline(Pipeline):
     def fit(self, X, y=None, mapping=None,
             train_data_index=None, **fit_params):
 
-        if self.to_map is None:
-            self.to_map = []
-        if self.needs_index is None:
-            self.needs_index = []
-        if self.names is None:
-            self.names = []
-
         # Add mapping to fit params if already passed, e.g., in nested context
         # Or init new
         if mapping is not None:
@@ -115,97 +108,6 @@ class BPtPipeline(Pipeline):
             X_df = obj.transform_df(X_df, base_name=base_name)
 
         return X_df
-
-    def has_transforms(self):
-        fitted_objs = self._get_objs_by_name()
-
-        if len(fitted_objs[0]) > 0 or len(fitted_objs[3]) > 0:
-            return True
-        return False
-
-    def proc_X_test(self, X_test, y_test, fs=True, tp='float32'):
-
-        # Load all base objects and corresponding fitted objs
-        fitted_objs = self._get_objs_by_name()
-
-        feat_names = list(X_test)
-
-        # Process the loaders, while keeping track of feature names
-        for loader in fitted_objs[ORDERED_NAMES.index('loaders')]:
-
-            # Use special transform in place df func
-            X_test = loader.transform_df(X_test, base_name=feat_names)
-            feat_names = list(X_test)
-
-        # Imputer and Scaler are Wrapped in ScopeTransformer
-        # so use transform df.
-        for obj in fitted_objs[ORDERED_NAMES.index('imputers')]:
-            X_test = obj.transform_df(X_test)
-            feat_names = list(X_test)
-        for obj in fitted_objs[ORDERED_NAMES.index('scalers')]:
-            X_test = obj.transform_df(X_test)
-            feat_names = list(X_test)
-
-        # Handle transformers, w/ simmilar func to loaders
-        trans_ind = ORDERED_NAMES.index('transformers')
-        for i in range(len(fitted_objs[trans_ind])):
-
-            # Grab transformer and base name
-            transformer = fitted_objs[trans_ind][i]
-            base_name = self.names[trans_ind][i]
-
-            # Use special transform in place df func
-            X_test = transformer.transform_df(X_test, base_name=base_name)
-            feat_names = list(X_test)
-
-        # Drop features according to feat_selectors, keeping track of changes
-        # only if passed param fs is True
-        if fs:
-            fs_ind = ORDERED_NAMES.index('feat_selectors')
-            for feat_selector in fitted_objs[fs_ind]:
-
-                # This feat mask corresponds to the already transformed feats
-                feat_mask = feat_selector.get_support()
-
-                # So we first need to compute the right order of new
-                # names that X gets transformed into, as concat wrapper_inds
-                # + rest inds
-                out_feat_names =\
-                    [feat_names[i] for i in feat_selector.wrapper_inds_] +\
-                    [feat_names[i] for i in feat_selector.rest_inds_]
-
-                # Then we can apply the computed mask, and get the actually
-                # selected features
-                feat_names = np.array(out_feat_names)[feat_mask]
-
-                # Now set within X_test, the results of the transformation
-                X_test[feat_names] =\
-                    feat_selector.transform(f_array(X_test, tp))
-                X_test = X_test[feat_names].copy()
-
-        return X_test, y_test
-
-    def proc_X_train(self, X_train, tp='float32'):
-
-        # Load all base objects
-        fitted_objs = self._get_objs_by_name()
-
-        # No need to proc in place, so the transformations are pretty easy
-        # Note: Loader and Transformer take care of conv to correct
-        # np array type.
-        for loader in fitted_objs[ORDERED_NAMES.index('loaders')]:
-            X_train = loader.transform(f_array(X_train, tp))
-        for imputer in fitted_objs[ORDERED_NAMES.index('imputers')]:
-            X_train = imputer.transform(f_array(X_train, tp))
-        for scaler in fitted_objs[ORDERED_NAMES.index('scalers')]:
-            X_train = scaler.transform(f_array(X_train, tp))
-        for transformer in fitted_objs[ORDERED_NAMES.index('transformers')]:
-            X_train = transformer.transform(f_array(X_train, tp))
-        fs_ind = ORDERED_NAMES.index('feat_selectors')
-        for feat_selector in fitted_objs[fs_ind]:
-            X_train = feat_selector.transform(f_array(X_train, tp))
-
-        return X_train
 
     def inverse_transform_FIs(self, fis, feat_names):
 

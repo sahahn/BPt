@@ -24,9 +24,6 @@ class Model_Pipeline():
 
         # Set n_jobs in model spec
         spec['n_jobs'] = pipeline_params.n_jobs
-
-        # Save cache param
-        self.cache = pipeline_params.cache
         self.verbose = verbose
 
         # Extract ordered
@@ -163,12 +160,7 @@ class Model_Pipeline():
         steps = self._get_objs(ORDERED_NAMES)
         names = self._get_names(ORDERED_NAMES)
 
-        # If caching passed, create directory
-        if self.cache is not None and not os.path.isdir(self.cache):
-            os.makedirs(self.cache, exist_ok=True)
-
-        model_pipeline = BPtPipeline(steps, memory=self.cache,
-                                     verbose=self.verbose,
+        model_pipeline = BPtPipeline(steps, verbose=self.verbose,
                                      names=names)
 
         return model_pipeline

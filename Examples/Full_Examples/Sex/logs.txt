@@ -83,27 +83,27 @@ There are: 284244 total missing values
 4 columns found with 39 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 's.'])
 3 columns found with 7 missing values (column name overlap: ['_cort.destrieux_mean.lh', 'smri_t1w.'])
 3 columns found with 6 missing values (column name overlap: ['_cort.destrieux_s.interm.prim.jensen.lh', 'smri_t1w.'])
-3 columns found with 11 missing values (column name overlap: ['_cort.destrieux_', 'smri_', '.l', 'rh', 'at'])
+3 columns found with 11 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'at', '.l', 'rh'])
 3 columns found with 14 missing values (column name overlap: ['smri_vol_cort.destrieux_', 'al.', 's.', 'an'])
 3 columns found with 22 missing values (column name overlap: ['_cort.destrieux_', 'smri_'])
 3 columns found with 27 missing values (column name overlap: ['_cort.destrieux_s.', 'smri_', '.lh', 'ol'])
-3 columns found with 29 missing values (column name overlap: ['_cort.destrieux_', 'smri_', '.rh', '.su'])
+3 columns found with 29 missing values (column name overlap: ['_cort.destrieux_', 'smri_', '.su', '.rh'])
 3 columns found with 624 missing values (column name overlap: ['_cort.destrieux_mean', 'smri_t2w.'])
 3 columns found with 620 missing values (column name overlap: ['_cort.destrieux_mean.lh', 'smri_t2w.'])
 3 columns found with 619 missing values (column name overlap: ['_cort.destrieux_s.interm.prim.jensen.lh', 'smri_t2w.'])
 3 columns found with 618 missing values (column name overlap: ['_cort.destrieux_s.temporal.transverse.lh', 'smri_t2w.'])
 3 columns found with 38 missing values (column name overlap: ['smri_area_cort.destrieux_', '.s'])
 3 columns found with 42 missing values (column name overlap: ['smri_area_cort.destrieux_', '.lh', 's.'])
-3 columns found with 46 missing values (column name overlap: ['smri_area_cort.destrieux_', 'd.', 's.'])
+3 columns found with 46 missing values (column name overlap: ['smri_area_cort.destrieux_', 's.', 'd.'])
 3 columns found with 45 missing values (column name overlap: ['smri_area_cort.destrieux_'])
-2 columns found with 36 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'ral.', 'rh', 'in', 'po'])
-2 columns found with 19 missing values (column name overlap: ['_cort.destrieux_', 'ital.', 'smri_', 'nt.', '.o'])
+2 columns found with 36 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'ral.', 'in', 'rh', 'po'])
+2 columns found with 19 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'ital.', 'nt.', '.o'])
 2 columns found with 49 missing values (column name overlap: ['smri_area_cort.destrieux_', '.lh', '.p'])
 2 columns found with 13 missing values (column name overlap: ['_cort.destrieux_', 'smri_', '.rh', 'la'])
 2 columns found with 15 missing values (column name overlap: ['smri_area_cort.destrieux_', 's.', '.r', 'ct'])
 2 columns found with 34 missing values (column name overlap: ['_cort.destrieux_', 'ral.rh', 'smri_', 's.'])
 2 columns found with 18 missing values (column name overlap: ['smri_area_cort.destrieux_', 'le.'])
-2 columns found with 30 missing values (column name overlap: ['_cort.destrieux_s.', 'smri_', '.lh', 'ra', 'po', 'at', 'l.'])
+2 columns found with 30 missing values (column name overlap: ['_cort.destrieux_s.', 'smri_', '.lh', 'at', 'l.', 'ra', 'po'])
 2 columns found with 20 missing values (column name overlap: ['smri_area_cort.destrieux_g.and.s.', 'in', 'l.'])
 2 columns found with 33 missing values (column name overlap: ['smri_vol_cort.destrieux_g.', 'tra', 't.', 'sv'])
 2 columns found with 24 missing values (column name overlap: ['smri_vol_cort.destrieux_'])
@@ -135,28 +135,28 @@ There are: 4680 total missing values
 5 columns found with 35 missing values (column name overlap: ['_cort.destrieux_', 'smri_'])
 4 columns found with 39 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 's.'])
 3 columns found with 7 missing values (column name overlap: ['_cort.destrieux_mean.lh', 'smri_t1w.'])
-3 columns found with 11 missing values (column name overlap: ['_cort.destrieux_', 'smri_', '.l', 'rh', 'at'])
+3 columns found with 11 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'at', '.l', 'rh'])
 3 columns found with 22 missing values (column name overlap: ['_cort.destrieux_', 'smri_'])
 3 columns found with 27 missing values (column name overlap: ['_cort.destrieux_s.', 'smri_', '.lh', 'ol'])
-3 columns found with 29 missing values (column name overlap: ['_cort.destrieux_', 'smri_', '.rh', '.su'])
+3 columns found with 29 missing values (column name overlap: ['_cort.destrieux_', 'smri_', '.su', '.rh'])
 3 columns found with 14 missing values (column name overlap: ['smri_vol_cort.destrieux_', 'al.', 's.', 'an'])
 3 columns found with 6 missing values (column name overlap: ['_cort.destrieux_s.interm.prim.jensen.lh', 'smri_t1w.'])
 3 columns found with 38 missing values (column name overlap: ['smri_area_cort.destrieux_', '.s'])
 3 columns found with 42 missing values (column name overlap: ['smri_area_cort.destrieux_', '.lh', 's.'])
-3 columns found with 46 missing values (column name overlap: ['smri_area_cort.destrieux_', 'd.', 's.'])
+3 columns found with 46 missing values (column name overlap: ['smri_area_cort.destrieux_', 's.', 'd.'])
 3 columns found with 45 missing values (column name overlap: ['smri_area_cort.destrieux_'])
 2 columns found with 13 missing values (column name overlap: ['_cort.destrieux_', 'smri_', '.rh', 'la'])
 2 columns found with 20 missing values (column name overlap: ['smri_area_cort.destrieux_g.and.s.', 'in', 'l.'])
 2 columns found with 15 missing values (column name overlap: ['smri_area_cort.destrieux_', 's.', '.r', 'ct'])
 2 columns found with 49 missing values (column name overlap: ['smri_area_cort.destrieux_', '.lh', '.p'])
 2 columns found with 18 missing values (column name overlap: ['smri_area_cort.destrieux_', 'le.'])
-2 columns found with 19 missing values (column name overlap: ['_cort.destrieux_', 'ital.', 'smri_', 'nt.', '.o'])
+2 columns found with 19 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'ital.', 'nt.', '.o'])
 2 columns found with 23 missing values (column name overlap: ['_cort.destrieux_s.', 'smri_', 't.lh', '.in', 'ar'])
 2 columns found with 34 missing values (column name overlap: ['_cort.destrieux_', 'ral.rh', 'smri_', 's.'])
 2 columns found with 24 missing values (column name overlap: ['smri_vol_cort.destrieux_'])
 2 columns found with 25 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'al.'])
-2 columns found with 30 missing values (column name overlap: ['_cort.destrieux_s.', 'smri_', '.lh', 'ra', 'po', 'at', 'l.'])
-2 columns found with 36 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'ral.', 'rh', 'in', 'po'])
+2 columns found with 30 missing values (column name overlap: ['_cort.destrieux_s.', 'smri_', '.lh', 'at', 'l.', 'ra', 'po'])
+2 columns found with 36 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'ral.', 'in', 'rh', 'po'])
 2 columns found with 33 missing values (column name overlap: ['smri_vol_cort.destrieux_g.', 'tra', 't.', 'sv'])
 
 Loaded Shape: (11534, 1057)
@@ -183,7 +183,7 @@ There are: 2697 total missing values
 4 columns found with 45 missing values (column name overlap: ['smri_area_cort.destrieux_'])
 4 columns found with 39 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 's.'])
 3 columns found with 8 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 's.', 't.'])
-3 columns found with 11 missing values (column name overlap: ['_cort.destrieux_', 'smri_', '.l', 'rh', 'at'])
+3 columns found with 11 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'at', '.l', 'rh'])
 3 columns found with 12 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 't.lh', 's.', 'ol'])
 3 columns found with 14 missing values (column name overlap: ['smri_vol_cort.destrieux_', 'al.', 's.', 'an'])
 3 columns found with 15 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 's.'])
@@ -192,19 +192,19 @@ There are: 2697 total missing values
 3 columns found with 42 missing values (column name overlap: ['smri_area_cort.destrieux_', '.lh', 's.'])
 2 columns found with 34 missing values (column name overlap: ['_cort.destrieux_', 'ral.rh', 'smri_', 's.'])
 2 columns found with 20 missing values (column name overlap: ['smri_area_cort.destrieux_g.and.s.', 'in', 'l.'])
-2 columns found with 4 missing values (column name overlap: ['smri_vol_cort.destrieux_', '.rh', 'd.', 's.'])
+2 columns found with 4 missing values (column name overlap: ['smri_vol_cort.destrieux_', '.rh', 's.', 'd.'])
 2 columns found with 5 missing values (column name overlap: ['smri_area_cort.destrieux_', 's.'])
 2 columns found with 49 missing values (column name overlap: ['smri_area_cort.destrieux_', '.lh', '.p'])
-2 columns found with 46 missing values (column name overlap: ['smri_area_cort.destrieux_', 'd.', 's.'])
+2 columns found with 46 missing values (column name overlap: ['smri_area_cort.destrieux_', 's.', 'd.'])
 2 columns found with 13 missing values (column name overlap: ['_cort.destrieux_', 'smri_', '.rh', 'la'])
 2 columns found with 38 missing values (column name overlap: ['smri_area_cort.destrieux_', '.s'])
 2 columns found with 33 missing values (column name overlap: ['smri_vol_cort.destrieux_g.', 'tra', 't.', 'sv'])
-2 columns found with 19 missing values (column name overlap: ['_cort.destrieux_', 'ital.', 'smri_', 'nt.', '.o'])
+2 columns found with 19 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'ital.', 'nt.', '.o'])
 2 columns found with 18 missing values (column name overlap: ['smri_area_cort.destrieux_', 'le.'])
-2 columns found with 37 missing values (column name overlap: ['smri_area_cort.destrieux_', '.lh', 'in', '.f', 'ar', '.s'])
-2 columns found with 36 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'ral.', 'rh', 'in', 'po'])
+2 columns found with 37 missing values (column name overlap: ['smri_area_cort.destrieux_', '.lh', 's.', 'in', 'ar', '.f'])
+2 columns found with 36 missing values (column name overlap: ['_cort.destrieux_', 'smri_', 'ral.', 'in', 'rh', 'po'])
 2 columns found with 29 missing values (column name overlap: ['smri_area_cort.destrieux_', '.sup.p', '.rh', 'la'])
-2 columns found with 30 missing values (column name overlap: ['_cort.destrieux_s.', 'smri_', '.lh', 'ra', 'po', 'at', 'l.'])
+2 columns found with 30 missing values (column name overlap: ['_cort.destrieux_s.', 'smri_', '.lh', 'at', 'l.', 'ra', 'po'])
 
 Loaded Shape: (11522, 1057)
 Loading /home/sage/work/ABCDFixRelease2p0p1/abcd_mrisdp101.txt  with dataset type: basic
@@ -391,8 +391,8 @@ run_name = linear
 Validation Scores
 _________________
 Scorer:  roc_auc
-Mean Validation score:  0.7998745217131921
-Std in Validation score:  0.007873193864826935
+Mean Validation score:  0.7998188682448987
+Std in Validation score:  0.007876747893598619
 
 Model_Pipeline
 --------------
@@ -434,8 +434,8 @@ run_name = light gbm
 Validation Scores
 _________________
 Scorer:  roc_auc
-Mean Validation score:  0.7612701798094732
-Std in Validation score:  0.003135695377129868
+Mean Validation score:  0.7612709545132265
+Std in Validation score:  0.0031364710693656127
 
 Model_Pipeline
 --------------
@@ -447,7 +447,7 @@ model=\
 Model(obj='light gbm', params=1)
 
 param_search=\
-Param_Search(n_iter=50)
+Param_Search(n_iter=50, search_only_params={})
 
 
 
@@ -477,8 +477,8 @@ run_name = light gbm
 Validation Scores
 _________________
 Scorer:  roc_auc
-Mean Validation score:  0.7799146550485391
-Std in Validation score:  0.003770966068173124
+Mean Validation score:  0.7799166031081418
+Std in Validation score:  0.0037694488900812772
 
 Model_Pipeline
 --------------
@@ -490,7 +490,7 @@ model=\
 Model(obj='elastic net', params=1)
 
 param_search=\
-Param_Search(n_iter=50)
+Param_Search(n_iter=50, search_only_params={})
 
 
 
@@ -515,100 +515,4 @@ train_subjects = train
 feat_importances = None
 len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
 run_name = elastic net
-
-
-Validation Scores
-_________________
-Scorer:  roc_auc
-Mean Validation score:  0.8001875034784605
-Std in Validation score:  0.00719905567611952
-
-Model_Pipeline
---------------
-imputers=\
-[Imputer(obj='mean', scope='float'),
- Imputer(obj='median', scope='cat')]
-
-model=\
-Model(obj='ridge', params=1)
-
-param_search=\
-Param_Search(n_iter=50)
-
-
-
-Problem_Spec
-------------
-problem_type = binary
-target = sex
-scorer = ['roc_auc']
-weight_scorer = False
-scope = smri_thick_cort
-subjects = all
-len(subjects) = 11519 (before overlap w/ train/test subjects)
-n_jobs = 8
-random_state = 1
-
-Evaluate Params
----------------
-splits = 3
-n_repeats = 1
-cv = default
-train_subjects = train
-feat_importances = None
-len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
-run_name = ridge
-
-
-Validation Scores
-_________________
-Scorer:  roc_auc
-Mean Validation score:  0.8001963566833457
-Std in Validation score:  0.007152269629989391
-
-Model_Pipeline
---------------
-imputers=\
-[Imputer(obj='mean', scope='float'),
- Imputer(obj='median', scope='cat')]
-
-scalers=\
-Scaler(obj='robust')
-
-model=\
-Model(obj='ridge', params=1)
-
-param_search=\
-Param_Search(n_iter=50)
-
-
-
-Problem_Spec
-------------
-problem_type = binary
-target = sex
-scorer = ['roc_auc']
-weight_scorer = False
-scope = smri_thick_cort
-subjects = all
-len(subjects) = 11519 (before overlap w/ train/test subjects)
-n_jobs = 8
-random_state = 1
-
-Evaluate Params
----------------
-splits = 3
-n_repeats = 1
-cv = default
-train_subjects = train
-feat_importances = None
-len(train_subjects) = 8549 (before overlap w/ problem_spec.subjects)
-run_name = ridge
-
-
-Validation Scores
-_________________
-Scorer:  roc_auc
-Mean Validation score:  0.8003105201714883
-Std in Validation score:  0.006566896503971356
 

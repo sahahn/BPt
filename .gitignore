@@ -13,6 +13,8 @@ Examples/Full_Examples/philips.txt
 Examples/fake_*
 test_data/*
 fake_surf_data
+test_data
+BPt/tests/test_data/*
 
 .vscode
 Data/*

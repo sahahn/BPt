@@ -1699,7 +1699,7 @@ class Model_Pipeline(Params):
                  feat_selectors=None,
                  model='default',
                  param_search=None,
-                 cache=None, n_jobs='default',
+                 n_jobs='default',
                  feat_importances='depreciated'):
         ''' Model_Pipeline is defined as essentially a wrapper around
         all of the explicit modelling pipeline parameters. This object is
@@ -1879,35 +1879,6 @@ class Model_Pipeline(Params):
 
                 default = None
 
-        cache : str or None, optional
-            Warning: using cache with a Transformer or Loader
-            is currently broken!
-
-            The base scikit-learn Pipeline, upon which the
-            BPt Pipeline extends,
-            allows for the caching of fitted transformers -
-            which in this context means all
-            steps except for the model. If this behavior is desired
-            (in the cases where a non-model step take a long time to fit),
-            then a str indicating a directory where
-            the cache should be stored can be passed to cache.
-            If this directory
-            does not aready exist, it will be created.
-
-            Note: cache_dr's are not automatically removed,
-            and while different calls
-            to Evaluate or Test may benefit from overlapping cached steps
-            - the size of the
-            cache can also grow pretty quickly, so you may need
-            to manually monitor the size
-            of the cache and perform manual deletions when it
-            grows too big depending on your
-            storage resources.
-
-            ::
-
-                default = None
-
         n_jobs : int or 'default', optional
             The number of cores to be used with this pipeline.
             In general, this parameter
@@ -1965,7 +1936,6 @@ class Model_Pipeline(Params):
         self.model = model
 
         self.param_search = param_search
-        self.cache = cache
         self.n_jobs = n_jobs
 
         if feat_importances != 'depreciated':

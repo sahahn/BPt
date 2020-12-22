@@ -3,6 +3,5 @@ from ..BPtPipeline import BPtPipeline
 
 def test_BPtPipeline():
 
-    pipe = BPtPipeline(steps)
-
+    # pipe = BPtPipeline(steps)
     pass

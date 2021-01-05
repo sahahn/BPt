@@ -1700,6 +1700,7 @@ class Model_Pipeline(Params):
                  model='default',
                  param_search=None,
                  n_jobs='default',
+                 cache='depreciated',
                  feat_importances='depreciated'):
         ''' Model_Pipeline is defined as essentially a wrapper around
         all of the explicit modelling pipeline parameters. This object is
@@ -1891,6 +1892,15 @@ class Model_Pipeline(Params):
 
                 default = 'default'
 
+        cache : depreciated
+            The cache parameter has been depreciated,
+            use the cache_loc params within individual pieces instead.
+
+            ::
+
+                default = 'depreciated'
+
+
         feat_importances : depreciated
             Feature importances in a past version of BPt were
             specified via this Model Pipeline object.
@@ -1937,6 +1947,10 @@ class Model_Pipeline(Params):
 
         self.param_search = param_search
         self.n_jobs = n_jobs
+
+        if cache != 'depreciated':
+            print('Warning: Passing cache is depreciated.')
+        self.cache = cache
 
         if feat_importances != 'depreciated':
             print('Warning: Passing feature importances have been moved ',

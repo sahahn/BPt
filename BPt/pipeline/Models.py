@@ -167,7 +167,7 @@ MODELS = {
     'pa classifier': (PassiveAggressiveClassifier, ['default']),
 
     'bayesian ridge regressor': (BayesianRidge, ['default']),
-    
+
     'ard regressor': (ARDRegression, ['default']),
 
     'tweedie regressor': (TweedieRegressor, ['default']),

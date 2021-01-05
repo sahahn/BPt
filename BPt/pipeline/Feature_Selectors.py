@@ -84,7 +84,6 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
         return support
 
 
-
 AVALIABLE = {
         'binary': {
                 'univariate selection c':

@@ -165,7 +165,7 @@ except ImportError:
 
 
 def get_transformer_and_params(transformer_str, extra_params, params,
-                               search_type, random_state=None,
+                               random_state=None,
                                num_feat_keys=None):
 
     transformer, extra_transformer_params, transformer_params =\

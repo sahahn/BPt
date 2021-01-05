@@ -17,11 +17,6 @@ class Model_Pipeline():
         # Save param search here
         self.param_search = pipeline_params.param_search
 
-        if self.param_search is None:
-            spec['search_type'] = None
-        else:
-            spec['search_type'] = self.param_search.search_type
-
         # Set n_jobs in model spec
         spec['n_jobs'] = pipeline_params.n_jobs
         self.verbose = verbose

@@ -228,8 +228,7 @@ except ImportError:
 
 
 def get_base_model_and_params(model_type, extra_params, model_type_params,
-                              search_type, random_state=None,
-                              num_feat_keys=None):
+                              random_state=None, num_feat_keys=None):
 
     model, extra_model_params, model_type_params =\
         get_obj_and_params(model_type, MODELS, extra_params, model_type_params)

@@ -59,7 +59,7 @@ def add_estimator_to_params(passed_params):
 class Pieces():
 
     def __init__(self, user_passed_objs, Data_Scopes, spec):
-        # problem_type, random_state, n_jobs, search_type are stored in spec
+        # problem_type, random_state, n_jobs are stored in spec
 
         # Class values
         self.user_passed_objs = user_passed_objs
@@ -153,14 +153,6 @@ class Pieces():
             name, param_str = param.obj, param.params
             extra_params = param.extra_params
 
-            # If this param has an associated param search of non None,
-            # set class to that search type.
-            # Otherwise, set spec to copy of the original class
-            if hasattr(param, 'param_search') and param.param_search is not None:
-                self.spec['search_type'] = param.param_search.search_type
-            else:
-                self.spec = spec.copy()
-
             if 'Custom ' in name:
                 objs_and_params.append(
                     self._get_user_passed_obj_params(name, param_str,
@@ -175,8 +167,7 @@ class Pieces():
 
                 objs_and_params.append(
                     (name, get_func(name, extra_params,
-                                    param_str, self.spec['search_type'],
-                                    self.spec['random_state'],
+                                    param_str, self.spec['random_state'],
                                     num_feat_keys)
                      ))
 

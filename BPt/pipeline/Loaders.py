@@ -317,7 +317,7 @@ except ImportError:
     pass
 
 
-def get_loader_and_params(loader_str, extra_params, params, search_type,
+def get_loader_and_params(loader_str, extra_params, params,
                           random_state=None, num_feat_keys=None):
 
     loader, extra_loader_params, loader_params =\

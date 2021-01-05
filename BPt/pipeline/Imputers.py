@@ -14,7 +14,7 @@ IMPUTERS = {
 }
 
 
-def get_imputer_and_params(imputer_str, extra_params, params, search_type,
+def get_imputer_and_params(imputer_str, extra_params, params,
                            random_state=None, num_feat_keys=None):
 
     imputer, extra_imputer_params, imputer_params =\

@@ -2,6 +2,8 @@ import os
 import tempfile
 import numpy as np
 from ...helpers.Data_File import Data_File
+from ...helpers.Data_Scopes import Data_Scopes
+from ...main.Params_Classes import Problem_Spec
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection._base import SelectorMixin
 
@@ -59,3 +61,26 @@ def clean_fake_mapping(n):
     locs = get_temp_files(n)
     for loc in locs:
         os.unlink(loc)
+
+
+def get_fake_data_scopes(data_keys=None,
+                         cat_keys=None):
+
+    if data_keys is None:
+        data_keys = []
+
+    if cat_keys is None:
+        cat_keys = []
+
+    data_scopes =\
+        Data_Scopes(data_keys=data_keys,
+                    data_file_keys=[],
+                    cat_keys=[],
+                    strat_keys=[],
+                    covars_keys=[],
+                    file_mapping=None)
+
+    fake_ps = Problem_Spec(target='target', scope='all')
+    data_scopes.set_all_keys(fake_ps)
+
+    return data_scopes

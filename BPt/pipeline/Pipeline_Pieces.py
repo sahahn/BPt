@@ -324,7 +324,7 @@ class Pieces():
                 split_key = key.split('__')
 
                 # If this is an associated param w/ this obj
-                if split_key[0] == name + '__':
+                if split_key[0] == name:
 
                     # Replace name with estimator
                     name = split_key[0] + scope_name
@@ -571,7 +571,7 @@ class Models(Type_Pieces):
             split_key = key.split('__')
 
             # If this is an associated param w/ this obj
-            if split_key[0] == name + '__':
+            if split_key[0] == name:
 
                 # Replace name with estimator
                 name = split_key[0] + scope_name

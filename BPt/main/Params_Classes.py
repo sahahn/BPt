@@ -2184,12 +2184,6 @@ class Model_Pipeline(Params):
         _print('param_search=\\')
         _print(self.param_search)
         _print()
-        _print()
-
-        if self.cache is not None:
-            _print('cache =', self.cache)
-        _print()
-
 
 class Problem_Spec(Params):
 

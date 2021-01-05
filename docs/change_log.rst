@@ -10,6 +10,9 @@ In Dev
 Release 1.3.6
 ***************
 
+- Removed cache option from Model_Pipeline
+    - Use cache_loc parameter instead in each individual piece for more flexibility.
+
 - New search_only_params param
     - In the Param_Search object, there is now a parameter for search_only_params.
     - This parameter allows some advanced behavior, w.r.t. to only passing params when searching for params.

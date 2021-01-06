@@ -11,9 +11,8 @@ import numpy as np
 from numpy.random import RandomState
 import nevergrad as ng
 
-from sklearn.base import BaseEstimator, clone
 from sklearn.feature_selection._base import SelectorMixin
-from ..helpers.ML_Helpers import proc_mapping, update_mapping
+from ..helpers.ML_Helpers import update_mapping
 from .ScopeObjs import ScopeTransformer
 
 

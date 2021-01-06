@@ -50,6 +50,15 @@ class BPtLoader(ScopeTransformer):
         self.fix_n_jobs = fix_n_jobs
         self.n_jobs = n_jobs
 
+    # Override inherieted n_jobs propegate behavior
+    @property
+    def n_jobs(self):
+        return self.n_jobs_proxy
+
+    @n_jobs.setter
+    def n_jobs(self, n_jobs):
+        self.n_jobs_proxy = n_jobs
+
     @property
     def _n_jobs(self):
 

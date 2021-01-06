@@ -613,7 +613,3 @@ def set_n_jobs(obj, n_jobs):
     # Check and set for n_jobs
     if hasattr(obj, 'n_jobs'):
         setattr(obj, 'n_jobs', n_jobs)
-
-    # Also check for wrapper_n_jobs
-    if hasattr(obj, 'wrapper_n_jobs'):
-        setattr(obj, 'wrapper_n_jobs', n_jobs)

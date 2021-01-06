@@ -50,10 +50,10 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
 
     def _proc_mapping(self, mapping):
 
-        if hasattr(self, '_mapping'):
+        if hasattr(self, 'mapping_'):
             return
         else:
-            self._mapping = mapping
+            self.mapping_ = mapping
 
         if len(mapping) > 0:
 

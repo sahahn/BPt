@@ -96,13 +96,6 @@ class BPtTransformer(ScopeTransformer):
         return all_names
 
 
-def _fit_transform_single_transformer(transformer, X, y):
-
-    transformer.fit(X=X, y=y)
-    X_trans = transformer.transform(X=X)
-    return transformer, X_trans
-
-
 TRANSFORMERS = {
     'pca': (PCA, ['default', 'pca var search']),
     'sparse pca': (SparsePCA, ['default']),
@@ -118,55 +111,9 @@ TRANSFORMERS = {
     'truncated svd': (TruncatedSVD, ['default']),
     'one hot encoder': (OneHotEncoder, ['ohe'])}
 
-# category_encoders below, disable for now, as taking out compatibility
-#     self.wrapper_transformer_.cols = list(range(len(inds)))
-#     self.wrapper_transformer_.return_df = False
-# and because base library isn't up to data - could think about new way
-# to re-introduce in the future if needed.
-'''
-try:
-    from category_encoders import (BackwardDifferenceEncoder,
-                                   BinaryEncoder, CatBoostEncoder,
-                                   HelmertEncoder,
-                                   JamesSteinEncoder, LeaveOneOutEncoder,
-                                   MEstimateEncoder,
-                                   PolynomialEncoder, SumEncoder,
-                                   TargetEncoder, WOEEncoder)
 
-    class OneHotEncoderWrapper(OneHotEncoder):
-
-        def fit(self, X, y=None, **kwargs):
-
-            self.return_df = False
-            self.cols = [i for i in range(X.shape[1])]
-
-            super().fit(X, y, **kwargs)
-            return self
-
-    extra = {
-     'backward difference encoder': (BackwardDifferenceEncoder,
-                                     ['default']),
-     'binary encoder': (BinaryEncoder, ['default']),
-     'cat boost encoder': (CatBoostEncoder, ['default']),
-     'helmert encoder': (HelmertEncoder, ['default']),
-     'james stein encoder': (JamesSteinEncoder, ['default']),
-     'leave one out encoder': (LeaveOneOutEncoder, ['default']),
-     'm estimate encoder': (MEstimateEncoder, ['default']),
-     'polynomial encoder': (PolynomialEncoder, ['default']),
-     'sum encoder': (SumEncoder, ['default']),
-     'target encoder': (TargetEncoder, ['default']),
-     'woe encoder': (WOEEncoder, ['default'])}
-
-    TRANSFORMERS.update(extra)
-
-except ImportError:
-    pass
-'''
-
-
-def get_transformer_and_params(transformer_str, extra_params, params,
-                               random_state=None,
-                               num_feat_keys=None):
+def get_transformer_and_params(transformer_str, extra_params,
+                               params, **kwargs):
 
     transformer, extra_transformer_params, transformer_params =\
         get_obj_and_params(transformer_str, TRANSFORMERS, extra_params, params)

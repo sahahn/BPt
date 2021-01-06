@@ -10,8 +10,9 @@ from sklearn.feature_selection._base import SelectorMixin
 
 class ToFixedTransformer(BaseEstimator, TransformerMixin):
 
-    def __init__(self, to):
+    def __init__(self, to, n_jobs=1):
         self.to = to
+        self.n_jobs = n_jobs
 
     def fit(self, X, y):
         return self

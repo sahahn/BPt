@@ -60,10 +60,6 @@ class BPtSearchCV(BaseEstimator):
         if hasattr(self.estimator, 'n_jobs'):
             setattr(self.estimator, 'n_jobs', 1)
 
-        # Also check for wrapper n jobs
-        if hasattr(self.estimator, 'wrapper_n_jobs'):
-            setattr(self.estimator, 'wrapper_n_jobs', 1)
-
     def get_params(self, deep=True):
         """
         Get parameters for this estimator.

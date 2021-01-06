@@ -1,7 +1,6 @@
 from sklearn.pipeline import Pipeline
 import numpy as np
 from ..helpers.VARS import ORDERED_NAMES
-from .helpers import f_array
 
 
 class BPtPipeline(Pipeline):
@@ -29,10 +28,6 @@ class BPtPipeline(Pipeline):
             if hasattr(step[1], 'n_jobs'):
                 setattr(step[1], 'n_jobs', n_jobs)
 
-            # Also check for wrapper n jobs
-            if hasattr(step[1], 'wrapper_n_jobs'):
-                setattr(step[1], 'wrapper_n_jobs', n_jobs)
-
     def get_params(self, deep=True):
         params = super()._get_params('steps', deep=deep)
         return params
@@ -47,16 +42,16 @@ class BPtPipeline(Pipeline):
         # Add mapping to fit params if already passed, e.g., in nested context
         # Or init new
         if mapping is not None:
-            self._mapping = mapping.copy()
+            self.mapping_ = mapping.copy()
         else:
-            self._mapping = {i: i for i in range(X.shape[1])}
+            self.mapping_ = {i: i for i in range(X.shape[1])}
 
         # Add to the fit parameters according to estimator tags
         # adding mapping + needs_train_index info
         for step in self.steps:
             name, estimator = step[0], step[1]
             if hasattr(estimator, '_needs_mapping'):
-                fit_params[name + '__mapping'] = self._mapping
+                fit_params[name + '__mapping'] = self.mapping_
             if hasattr(estimator, '_needs_train_data_index'):
                 fit_params[name + '__train_data_index'] = train_data_index
 

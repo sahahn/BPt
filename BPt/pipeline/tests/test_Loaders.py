@@ -1,4 +1,4 @@
-from ..Loaders import BPtLoader
+from ..BPtLoader import BPtLoader
 from ...extensions import Identity
 import numpy as np
 from .helpers import get_fake_mapping, clean_fake_mapping

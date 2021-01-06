@@ -167,8 +167,9 @@ class Pieces():
 
                 objs_and_params.append(
                     (name, get_func(name, extra_params,
-                                    param_str, self.spec['random_state'],
-                                    num_feat_keys)
+                                    param_str,
+                                    random_state=self.spec['random_state'],
+                                    num_feat_keys=num_feat_keys)
                      ))
 
         # Perform extra proc, to split into objs and merged param dict
@@ -638,7 +639,7 @@ class Loaders(Pieces):
 
     def _process(self, params):
 
-        from .Loaders import BPtLoader
+        from .BPtLoader import BPtLoader
 
         # Process according to passed tuples or not
         passed_loaders, passed_loader_params =\
@@ -741,8 +742,8 @@ class Transformers(Pieces):
 
     def _process(self, params):
 
-        from .Transformers import (get_transformer_and_params,
-                                   BPtTransformer)
+        from .Transformers import get_transformer_and_params
+        from .BPtTransformer import BPtTransformer
 
         # Then call get objs and params
         objs, obj_params =\

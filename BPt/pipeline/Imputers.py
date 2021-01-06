@@ -14,8 +14,7 @@ IMPUTERS = {
 }
 
 
-def get_imputer_and_params(imputer_str, extra_params, params,
-                           random_state=None, num_feat_keys=None):
+def get_imputer_and_params(imputer_str, extra_params, params, **kwargs):
 
     imputer, extra_imputer_params, imputer_params =\
         get_obj_and_params(imputer_str, IMPUTERS, extra_params, params)

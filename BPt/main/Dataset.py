@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from itertools import combinations
+import warnings
+from sklearn.preprocessing import LabelEncoder
 
 
 def proc_fop(fop):
@@ -46,7 +48,7 @@ class Dataset(pd.DataFrame):
     RESERVED_SCOPES = set(['all', 'float', 'category',
                            'data', 'data file',
                            'non input', 'target'])
-    _metadata = ['roles', 'scopes', 'name_map']
+    _metadata = ['roles', 'scopes', 'encoders']
 
     @property
     def _constructor(self):
@@ -56,10 +58,10 @@ class Dataset(pd.DataFrame):
     def _constructor_sliced(self):
         return pd.Series
 
-    def _check_name_map(self):
+    def _check_encoders(self):
 
-        if not hasattr(self, 'name_map'):
-            self.name_map = {}
+        if not hasattr(self, 'encoders'):
+            self.encoders = {}
 
     def apply_inclusions(self, subjects):
 
@@ -213,6 +215,13 @@ class Dataset(pd.DataFrame):
 
         try:
             self.scopes[col].remove(scope)
+
+            # If removing category and currently pandas dtype is category,
+            # change to float32.
+            if scope == 'category' and \
+               self.scopes[col].dtype.name == 'category':
+                self[col] = self[col].astype('float32')
+
         except KeyError:
             pass
 
@@ -280,8 +289,100 @@ class Dataset(pd.DataFrame):
 
         return sorted(list(set(cols)))
 
-    def auto_detect_categorical(self):
-        pass
+    def _get_non_nan_values(self, col):
+
+        # Extract values / series
+        values = self[col]
+
+        # Determine nan and non nan subjects
+        nan_subjects = values[values.isna()].index
+        non_nan_subjects = values[~values.isna()].index
+
+        return values.loc[non_nan_subjects], nan_subjects
+
+    def get_category_cols(self):
+        '''Return all categorical columns (sorted for reproducible behavior)'''
+
+        scopes = self.get_scopes()
+
+        category_cols = []
+        for col in list(self.columns):
+            if 'category' in scopes[col]:
+                category_cols.append(col)
+
+        return sorted(category_cols)
+
+    def auto_detect_categorical(self, scope='all', obj_thresh=30,
+                                all_thresh=None):
+        '''This function will attempt to automatically add scope "category" to
+        any loaded categorical variables. Note that any columns with pandas
+        data type category should already be detected without
+        calling this function.
+
+        Default heuristic threshold settings are used by default, by
+        they can be changed.
+
+        Note: if any of the conditions are
+        met the column will be set to categorical, it is not the case
+        that if a single condition is not met, then it won't be categorical.
+
+        Fixed behavior is that any column with only two unique non-nan values
+        is considered binary and therefore categorical.
+
+        Parameters
+        -----------
+        scope : :ref:`Scopes`
+            A valid BPt style scope used to select which columns this
+            function should operate on.
+
+        obj_thresh : int or None, optional
+            This threshold is used for any columns of pandas
+            datatype object. If the number of unique non-nan values in
+            this object datatype column is less than this threshold,
+            this column will be set to categorical.
+
+            To ignore this condition, you may pass None.
+
+            ::
+
+                default = 30
+
+        all_thresh : int or None, optional
+            Simmilar to obj_thresh, except that this condition is
+            for any column regardless of datatype, this threshold
+            is set such that if the number of unique non-nan values
+            in this column is less than the passed value, this column
+            will be set to categorical.
+
+            To ignore this condition, you may pass None.
+
+            ::
+
+                default = None
+
+        '''
+
+        # Get cols from scope
+        cols = self._get_cols_from_scope(scope)
+
+        for col in cols:
+
+            # Get non-nan values to check
+            values, _ = self._get_non_nan_values(col)
+
+            # First check for binary by unique number of columns
+            n_unique = len(values.unique())
+            if n_unique == 2:
+                self.add_scope(col, 'category')
+
+            # Check object threshold
+            if obj_thresh is not None and values.dtype.name == 'object':
+                if n_unique < obj_thresh:
+                    self.add_scope(col, 'category')
+
+            # Check all threshold
+            if all_thresh is not None and n_unique < all_thresh:
+                self.add_scope(col, 'category')
 
     def filter_outliers_by_percent(self, fop=1, scope='float', drop=True):
 
@@ -373,12 +474,57 @@ class Dataset(pd.DataFrame):
 
         return self
 
-    def filter_categorical_by_percent(self, scope):
+    def filter_categorical_by_percent(self, drop_percent=1, scope='category',
+                                      drop=True):
+        '''This function is designed to allow performing outlier filting
+        on categorical type variables. Note that this function assume
+        all columns passed are of type 'category', and they if not already
+        will be cast first to pandas data type 'category'.
+
+        Note: NaN values will be skipped. If desired to treat them as a class,
+        use nan_to_class to first.
+        '''
+
+        # Get cols from scope
+        cols = self._get_cols_from_scope(scope)
+
+        # For if to drop
+        all_to_drop = set()
+
+        # Divide drop percent by 100
+        dp = drop_percent / 100
+
+        for col in cols:
+
+            # Make sure categorical
+            self.add_scope(col, 'category')
+
+            # Extract non-nan values and subjects
+            values, nan_subjects = self._get_non_nan_values(col)
+
+            # Get to drop subjects
+            unique_vals, counts = np.unique(values, return_counts=True)
+            drop_inds = np.where((counts / len(values)) < dp)
+
+            drop_vals = unique_vals[drop_inds]
+            to_drop = values.index[values.isin(drop_vals)]
+
+            # If drop, add to drop list at end
+            if drop:
+                all_to_drop.update(set(to_drop))
+
+            # Otherwise, set to NaN in place
+            else:
+                self.loc[to_drop, col] = np.nan
+
+            # Make sure nan subjects nan
+            self.loc[nan_subjects, col] = np.nan
+
+        # Drop now, if to drop
+        if drop:
+            self.drop(list(all_to_drop), inplace=True)
 
         return self
-
-        # Add cast to categorical
-        pass
 
     def drop_non_unique(self, scope='all'):
         '''This method will drop any columns with only one unique value.'''
@@ -467,33 +613,85 @@ class Dataset(pd.DataFrame):
         except KeyError:
             pass
 
-    def binarize(self, scope, threshold=None, lower=None,
-                 upper=None, replace=True):
+    def binarize(self, scope, base=False, threshold=None, lower=None,
+                 upper=None, replace=True, drop=True):
+        '''
+        Note: drop is only relevant if using upper and lower.
 
-        if threshold is None and lower is None and upper is None:
-            raise RuntimeError('Some value must be set.')
-        if lower is not None and upper is None:
-            raise RuntimeError('Upper must be set.')
-        if upper is not None and lower is None:
-            raise RuntimeError('Lower must be set.')
+        Parameters:
 
-        # Make sure name_map init'ed
-        self._check_name_map()
+        replace : bool, optional
+
+            Note: Ignored if base == True.
+
+        '''
+
+        # Input checks
+        if base is False:
+            if threshold is None and lower is None and upper is None:
+                raise RuntimeError('Some value must be set.')
+            if lower is not None and upper is None:
+                raise RuntimeError('Upper must be set.')
+            if upper is not None and lower is None:
+                raise RuntimeError('Lower must be set.')
+
+        # Make sure encoders init'ed
+        self._check_encoders()
 
         # Get cols from scope
         cols = self._get_cols_from_scope(scope)
 
-        # Binarize each column
+        # Binarize each column individually
         for col in cols:
-            self._binarize(col, threshold, lower, upper, replace)
+
+            # Choose which binarize behavior
+            if base:
+                self._base_binarize(col=col, drop=drop)
+            else:
+                self._binarize(col=col, threshold=threshold, lower=lower,
+                               upper=upper, replace=replace, drop=drop)
 
         return self
 
-    def _binarize(self, col, threshold, lower, upper, replace):
+    def _base_binarize(self, col, drop):
 
-        # Extract values / series
-        values = self[col]
+        # Extract non-nan values / series
+        values, _ = self._get_non_nan_values(col)
 
+        # Get non-nan counts
+        unique_vals, counts = np.unique(values, return_counts=True)
+
+        # If only 1 values
+        if len(unique_vals) == 1:
+            warnings.warn('binarize base=True ' + repr(col) + ' was '
+                          'passed with only 1 unique value.')
+
+        # Assuming should be binary, so 2 unique values
+        if len(unique_vals) > 2:
+
+            # Select top two scores by count
+            keep_inds = np.argpartition(counts, -2)[-2:]
+            keep_vals = unique_vals[keep_inds]
+            keep_vals.sort()
+
+            # Get to drop
+            to_drop = values.index[~values.isin(keep_vals)]
+
+            # Drop or NaN
+            if drop:
+                self.drop(list(to_drop), inplace=True)
+            else:
+                self.loc[to_drop, col] = np.nan
+
+        # Ordinalize
+        self._ordinalize(col)
+
+    def _binarize(self, col, threshold, lower, upper, replace, drop):
+
+        # Extract non-nan values / series
+        values, nan_subjects = self._get_non_nan_values(col)
+
+        # Add new column
         if not replace:
             new_key = col + '_binary'
 
@@ -513,17 +711,24 @@ class Dataset(pd.DataFrame):
         # If upper and lower passed instead of threshold
         if threshold is None:
 
-            # Drop between the values
+            # Determine subjects that are between the values
             to_drop = values[(values <= upper) &
                              (values >= lower)].index
-            self.drop(to_drop, axis=0, inplace=True)
+
+            # If drop
+            if drop:
+                self.drop(to_drop, axis=0, inplace=True)
 
             # Binarize
             self[col] = self[col].where(self[col] > lower, 0)
             self[col] = self[col].where(self[col] < upper, 1)
 
+            # If not dropping, replace as NaN here
+            if not drop:
+                self.loc[to_drop, col] = np.nan
+
             # Add to name map
-            self.name_map[col] =\
+            self.encoders[col] =\
                 {0: '<' + str(lower), 1: '>' + str(upper)}
 
         # If a single threshold
@@ -534,22 +739,108 @@ class Dataset(pd.DataFrame):
             self[col] = self[col].where(self[col] < threshold, 1)
 
             # Add to name map
-            self.name_map[col] =\
+            self.encoders[col] =\
                 {0: '<' + str(threshold), 1: '>=' + str(threshold)}
+
+        # Make sure NaN's are filled in
+        self.loc[nan_subjects, col] = np.nan
 
         # Make sure category scope
         self.add_scope(col, 'category')
+
+        return self
 
     def k_bin(self, scope):
         pass
 
     def ordinalize(self, scope):
-        pass
 
-    def nan_to_class(self, scope):
+        # Make sure encoders init'ed
+        self._check_encoders()
 
-        # Have checks s.t., only works if all columns are categorical
-        pass
+        # Get cols from scope
+        cols = self._get_cols_from_scope(scope)
+
+        # Ordinalize each column individually
+        for col in cols:
+            self._ordinalize(col)
+
+    def _ordinalize(self, col):
+
+        # Get non-nan values
+        all_values = self[col]
+        non_nan_subjects = all_values[~all_values.isna()].index
+        values = all_values.loc[non_nan_subjects]
+
+        # Perform actual encoding
+        label_encoder = LabelEncoder()
+        self.loc[non_nan_subjects, col] =\
+            label_encoder.fit_transform(np.array(values))
+
+        # Convert label encoder to encoder
+        encoder = {}
+        for i, c in enumerate(label_encoder.classes_):
+            encoder[i] = c
+
+        # Save in encoders
+        self.encoders[col] = encoder
+
+        # Make sure col is category type
+        self.add_scope(col, 'category')
+
+    def _replace_values(self, col, values):
+
+        try:
+            encoder = self.encoders[col]
+
+        # If no encoder, return values as is
+        except KeyError:
+            return values
+
+        # If dict style encoder
+        if isinstance(encoder, dict):
+            return values.replace(encoder)
+
+        # Any other cases?
+        return values
+
+    def nan_to_class(self, scope='category'):
+        '''This method will cast any columns that were not categorical that are
+        passed here to categorical. Will also ordinally encode them if
+        they have not already been encoded
+        (i.e., by either via ordinalize, binarize, or a simmilar function...).
+        '''
+
+        cols = self._get_cols_from_scope(scope)
+
+        for col in cols:
+
+            # If this column hasn't been encoded yet, ordinalize
+            if col not in self.encoders:
+                self._ordinalize(col)
+
+            # Get nan subjects
+            all_values = self[col]
+            nan_subjects = all_values[all_values.isna()].index
+
+            # If no nan subjects, skip
+            if len(nan_subjects) == 0:
+                continue
+
+            # Get non-nan values
+            non_nan_subjects = all_values[~all_values.isna()].index
+            values = all_values.loc[non_nan_subjects]
+
+            # Add nan class as next avaliable
+            nan_class = np.max(values.astype(int)) + 1
+            if nan_class not in self[col].dtype.categories:
+                self[col].cat.add_categories(nan_class, inplace=True)
+            self.loc[nan_subjects, col] = nan_class
+
+            # Update encoder entry
+            self.encoders[col][nan_class] = np.nan
+
+        return self
 
     def drop_by_unique_val(self, scope):
         pass
@@ -562,212 +853,9 @@ class Dataset(pd.DataFrame):
         pass
 
     def rename(self, **kwargs):
-        print('Warning: Renaming might cause errors!')
-        super().rename(**kwargs)
+        print('Warning: rename might cause errors!')
+        print('Until this is supported, re-name before casting to a Dataset.')
+        return super().rename(**kwargs)
 
     from .Dataset_Plotting import (plot,
                                    _plot_category)
-
-
-def get_fake_dataset():
-
-    fake = Dataset()
-    fake['1'] = [1, 2, 3]
-    fake['2'] = ['6', '7', '8']
-    fake['2'] = fake['2'].astype('category')
-    fake['3'] = [np.nan, 2, 3]
-
-    return fake
-
-
-def get_fake_dataset2():
-
-    fake = Dataset()
-    fake['1'] = [1, 1, 1]
-    fake['2'] = [1, 2, 3]
-    fake['3'] = ['1', '2', '3']
-
-    return fake
-
-
-def get_fake_dataset3():
-
-    fake = Dataset()
-    fake['1'] = [1, 1, 1]
-    fake['2'] = [1, 1, 1]
-    fake['3'] = ['2', '2', '2']
-    fake['4'] = ['2', '2', '2']
-    fake['5'] = ['2', 1, '2']
-
-    return fake
-
-
-def test_add_scope():
-
-    df = get_fake_dataset()
-
-    df.add_scope(col='1', scope='a')
-    assert df.scopes['1'] == set(['a'])
-
-    df.add_scope(col='1', scope='b')
-    assert df.scopes['1'] != set(['a'])
-    assert df.scopes['1'] == set(['a', 'b'])
-
-    # Test some get cols from scope
-    assert(set(df._get_cols_from_scope('a')) == set(['1']))
-    assert(set(df._get_cols_from_scope('b')) == set(['1']))
-    assert(set(df._get_cols_from_scope(['a', 'b'])) == set(['1']))
-
-    df = get_fake_dataset()
-    df.add_scope(col='1', scope='category')
-    assert(df['1'].dtype.name == 'category')
-
-
-def test_set_roles():
-
-    df = get_fake_dataset()
-    df.set_role('1', 'target')
-    df.set_role('2', 'non input')
-
-    assert(set(df._get_cols_from_scope('target')) == set(['1']))
-    assert(set(df._get_cols_from_scope('non input')) == set(['2']))
-
-
-def test_get_cols_from_scope():
-
-    df = get_fake_dataset()
-    assert(set(df._get_cols_from_scope('all')) == set(['1', '2', '3']))
-    assert(set(df._get_cols_from_scope('data')) == set(['1', '2', '3']))
-    assert(set(df._get_cols_from_scope('1')) == set(['1']))
-    assert(set(df._get_cols_from_scope('category')) == set(['2']))
-
-
-def test_filter_outliers():
-
-    df = get_fake_dataset()
-    df.filter_outliers_by_percent(20, scope='3', drop=False)
-    assert pd.isnull(df['3']).all()
-
-
-def test_drop_non_unique():
-
-    df = get_fake_dataset2()
-    df.drop_non_unique()
-
-    assert '1' not in df
-    assert '2' in df
-    assert '3' in df
-
-
-def test_drop_id_cols():
-
-    df = get_fake_dataset2()
-    df.drop_id_cols()
-
-    assert '1' in df
-    assert '2' in df
-    assert '3' not in df
-
-
-def test_drop_duplicate_cols():
-
-    df = get_fake_dataset3()
-    df.drop_duplicate_cols()
-
-    assert '5' in df
-    assert df.shape == (3, 3)
-
-
-def test_apply_inclusions():
-
-    df = get_fake_dataset3()
-    df.apply_inclusions([0])
-    assert len(df) == 1
-
-
-def test_apply_exclusions():
-
-    df = get_fake_dataset()
-    df.apply_exclusions([0, 1])
-    assert len(df) == 1
-
-    df = get_fake_dataset()
-    df.apply_exclusions([0])
-    assert len(df) == 2
-
-
-def test_drop_cols_inclusions():
-
-    df = get_fake_dataset()
-    df.drop_cols(inclusions='1')
-    assert '1' in df
-    assert df.shape[1] == 1
-
-    df = get_fake_dataset()
-    df.drop_cols(inclusions='category')
-    assert '2' in df
-
-    df = get_fake_dataset()
-    df.drop_cols(inclusions=['1', '2'])
-    assert df.shape[1] == 2
-
-    df = Dataset(columns=['xxx1', 'xxx2', 'xxx3', '4'])
-    df.drop_cols(inclusions=['xxx'])
-    assert '4' not in df
-    assert df.shape[1] == 3
-
-
-def test_drop_cols_exclusions():
-
-    df = get_fake_dataset()
-    df.drop_cols(exclusions='1')
-    assert '1' not in df
-    assert df.shape[1] == 2
-
-    df = get_fake_dataset()
-    df.drop_cols(exclusions=['1', '2'])
-    assert '3' in df
-    assert df.shape[1] == 1
-
-    df = Dataset(columns=['xxx1', 'xxx2', 'xxx3', '4'])
-    df.drop_cols(exclusions=['xxx'])
-    assert '4' in df
-    assert df.shape[1] == 1
-
-
-def test_binarize_threshold():
-
-    df = get_fake_dataset()
-    df.binarize('1', threshold=1.5)
-
-    assert df.loc[0, '1'] == 0
-    assert df.loc[1, '1'] == 1
-    assert 'category' in df.scopes['1']
-    assert df.name_map['1'] == {0: '<1.5', 1: '>=1.5'}
-
-
-def test_binarize_upper_lower():
-
-    df = get_fake_dataset()
-    df.binarize('1', lower=2, upper=2)
-
-    assert len(df) == 2
-    assert df.loc[0, '1'] == 0
-    assert df.loc[2, '1'] == 1
-    assert 'category' in df.scopes['1']
-    assert df.name_map['1'] == {0: '<2', 1: '>2'}
-
-
-test_add_scope()
-test_set_roles()
-test_get_cols_from_scope()
-test_filter_outliers()
-test_drop_non_unique()
-test_drop_id_cols()
-test_drop_duplicate_cols()
-test_apply_inclusions()
-test_apply_exclusions()
-test_drop_cols_inclusions()
-test_drop_cols_exclusions()
-test_binarize_threshold()
-test_binarize_upper_lower()

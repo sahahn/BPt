@@ -144,15 +144,14 @@ def stacking_fit(self, X, y, sample_weight=None, mapping=None,
         if est != 'drop'
     ]
 
-    # Whatever the final estimator is might use train data index,
-    # but I don't see why it would need mapping - as the final estimator
-    # is being trained on only the predictions from the base models...
-    # I guess a future @TODO could be pass the right mapping here
+    # Whatever the final estimator is might use train data index
+    # But might need to update train_data_index according to how
+    # the predictions are made
     X_meta = self._concatenate_predictions(X, predictions)
     _fit_single_estimator(self.final_estimator_, X_meta, y,
                           sample_weight=sample_weight,
                           mapping=None,
-                          train_data_index=train_data_index)
+                          train_data_index=None)
 
     return self
 

@@ -430,3 +430,24 @@ def test_filter_categorical_by_percent():
     assert len(df['2'].unique()) == 2
     assert 'category' not in df.scopes['1']
     assert 'category' in df.scopes['2']
+
+
+def test_add_data_files():
+
+    df = get_fake_dataset()
+
+    def file_to_subject(i):
+        return int(i.split('_')[-1])
+
+    files = {'q': ['a_0', 'b_1', 'c_2']}
+
+    df.add_data_files(files=files,
+                      file_to_subject=file_to_subject,
+                      load_func=np.load)
+
+    assert len(df['q']) == 3
+    assert df.loc[2, 'q'] == 2
+
+    assert 'a_0' in df.file_mapping[0].loc
+    assert 'b_1' in df.file_mapping[1].loc
+    assert 'c_2' in df.file_mapping[2].loc

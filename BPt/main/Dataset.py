@@ -3,6 +3,8 @@ import numpy as np
 from itertools import combinations
 import warnings
 from sklearn.preprocessing import LabelEncoder
+from joblib import wrap_non_picklable_objects
+from ..helpers.Data_File import Data_File
 
 
 def proc_fop(fop):
@@ -19,6 +21,37 @@ def proc_fop(fop):
         return tuple([fop[0] / 100, None])
 
     return tuple([fop[0]/100, 1-(fop[1] / 100)])
+
+
+def proc_file_input(files, file_to_subject):
+
+    if not isinstance(files, dict):
+        raise ValueError('files must be passed as a python dict')
+
+    if file_to_subject is None:
+        raise RuntimeError('file_to_subject must be specified!')
+
+    # If not passed as dict, convert to dict
+    if not isinstance(file_to_subject, dict):
+        file_to_subject = {key: file_to_subject for key in files}
+
+    # Check
+    for key in files:
+        if key not in file_to_subject:
+            raise ValueError('If passing file_to_subject as a dict '
+                             'then a value must be passed for all '
+                             'keys in files. ' + repr(key) + 'was '
+                             'not passed in this case.')
+
+    # Compute pd series
+    files_series = dict()
+    for key in files:
+
+        file_paths = files[key]
+        subjects = [file_to_subject[key](fp) for fp in file_paths]
+        files_series[key] = pd.Series(file_paths, index=subjects)
+
+    return files_series
 
 
 def load_subjects(subjects):
@@ -48,7 +81,7 @@ class Dataset(pd.DataFrame):
     RESERVED_SCOPES = set(['all', 'float', 'category',
                            'data', 'data file',
                            'non input', 'target'])
-    _metadata = ['roles', 'scopes', 'encoders']
+    _metadata = ['roles', 'scopes', 'encoders', 'file_mapping']
 
     @property
     def _constructor(self):
@@ -57,6 +90,11 @@ class Dataset(pd.DataFrame):
     @property
     def _constructor_sliced(self):
         return pd.Series
+
+    def _check_file_mapping(self):
+
+        if not hasattr(self, 'file_mapping'):
+            self.file_mapping = {}
 
     def _check_encoders(self):
 
@@ -848,9 +886,53 @@ class Dataset(pd.DataFrame):
     def print_nan_info(self, scope):
         pass
 
-    # need to handle data files still***
-    def add_data_files(self):
-        pass
+    def add_data_files(self, files, file_to_subject, load_func):
+
+        # Wrap load_func here if needed.
+        if load_func.__module__ == '__main__':
+            wrapped_load_func = wrap_non_picklable_objects(load_func)
+            print('Warning: Passed load_func was defined within the',
+                  '__main__ namespace and therefore has been cloud wrapped.',
+                  'The function will still work, but it is reccomended to',
+                  'define this function in a seperate file, and then import',
+                  'it , otherwise loader caching will be limited',
+                  'in utility!')
+        else:
+            wrapped_load_func = load_func
+
+        # Init if needed
+        self._check_file_mapping()
+
+        # Get dict of key to files
+        file_series = proc_file_input(files, file_to_subject)
+
+        # Get next file mapping ind
+        cnt = self._get_next_ind()
+
+        # For each column
+        for file in file_series:
+
+            # For each subject, fill in with Data File
+            series = file_series[file]
+
+            for subject in series.index:
+
+                # Create data file and add to file mapping
+                data_file = Data_File(series.loc[subject], wrapped_load_func)
+                self.file_mapping[cnt] = data_file
+
+                # Replace cnt index in data
+                self.at[subject, file] = cnt
+
+                # Increment
+                cnt += 1
+
+    def _get_next_ind(self):
+
+        if len(self.file_mapping) > 0:
+            return max(self.file_mapping.keys()) + 1
+        else:
+            return 0
 
     def rename(self, **kwargs):
         print('Warning: rename might cause errors!')

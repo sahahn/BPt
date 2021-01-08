@@ -278,7 +278,7 @@ def _make_load_params(self, args):
 def _get_data_file_cnt(self):
 
     if len(self.file_mapping) > 0:
-        return max(self.file_mapping.keys())
+        return max(self.file_mapping.keys()) + 1
     else:
         return 0
 

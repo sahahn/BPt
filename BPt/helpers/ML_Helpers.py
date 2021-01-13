@@ -431,44 +431,6 @@ def update_mapping(mapping, new_mapping):
                 mapping[key] = new_mapping[val]
 
 
-def wrap_pipeline_objs(wrapper, objs, inds, random_state,
-                       n_jobs, fix_n_wrapper_jobs, **params):
-
-    # If passed wrapper n_jobs, and != 1, set base obj jobs to 1
-    if 'wrapper_n_jobs' in params:
-        if params['wrapper_n_jobs'] != 1:
-            n_jobs = 1
-
-    # If passed cache locs
-    if 'cache_locs' in params:
-        cache_locs = params.pop('cache_locs')
-    else:
-        cache_locs = [None for i in range(len(objs))]
-
-    wrapped_objs = []
-    for chunk, ind, cache_loc, fix_n_wrapper_job in zip(objs, inds,
-                                                        cache_locs,
-                                                        fix_n_wrapper_jobs):
-
-        # Unpack
-        name, obj = chunk
-
-        # Pass attributes
-        if hasattr(obj, 'n_jobs'):
-            setattr(obj, 'n_jobs', n_jobs)
-
-        if hasattr(obj, 'random_state'):
-            setattr(obj, 'random_state', random_state)
-
-        wrapped_obj = wrapper(obj, ind,
-                              cache_loc=cache_loc,
-                              fix_n_wrapper_jobs=fix_n_wrapper_job,
-                              **params)
-        wrapped_objs.append((name, wrapped_obj))
-
-    return wrapped_objs
-
-
 def check_for_duplicate_names(objs_and_params):
     '''Checks for duplicate names within an objs_and_params type obj'''
 

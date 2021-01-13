@@ -629,7 +629,7 @@ except ImportError:
 AVALIABLE['categorical'] = AVALIABLE['binary'].copy()
 
 
-def get_ensemble_and_params(ensemble_str, extra_params, params, search_type,
+def get_ensemble_and_params(ensemble_str, extra_params, params,
                             random_state=None, num_feat_keys=None):
 
     if ensemble_str == 'basic ensemble' or ensemble_str is None:

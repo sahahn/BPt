@@ -1,12 +1,12 @@
 from ..helpers.ML_Helpers import (get_obj_and_params, update_mapping,
                                   proc_mapping, get_reverse_mapping)
 import numpy as np
-from .Transformers import Transformer_Wrapper
 from ..extensions.Loaders import Identity, SurfLabels
 from joblib import Parallel, delayed
 import warnings
 from sklearn.utils.validation import check_memory
 from sklearn.base import clone
+from .ScopeObjs import ScopeTransformer
 
 
 def load_and_trans(transformer, load_func, loc):
@@ -31,80 +31,129 @@ def get_trans_chunk(transformer, data_files, func):
     return X_trans_chunk
 
 
-class Loader_Wrapper(Transformer_Wrapper):
+class BPtLoader(ScopeTransformer):
 
-    def __init__(self, wrapper_transformer,
-                 wrapper_inds, file_mapping,
-                 wrapper_n_jobs=1, cache_loc=None,
-                 fix_n_wrapper_jobs='default',
-                 **params):
+    # Override
+    _required_parameters = ["estimator", "inds", "file_mapping"]
 
-        super().__init__(wrapper_transformer=wrapper_transformer,
-                         wrapper_inds=wrapper_inds, cache_loc=cache_loc,
-                         fix_n_wrapper_jobs=fix_n_wrapper_jobs,
-                         **params)
+    def __init__(self, estimator, inds, file_mapping,
+                 n_jobs=1, fix_n_jobs=False,
+                 cache_loc=None):
 
+        # Set Super params
+        super().__init__(estimator=estimator, inds=inds, cache_loc=cache_loc)
+
+        # Set rest of params
         self.file_mapping = file_mapping
-        self.wrapper_n_jobs = wrapper_n_jobs
+
+        # Make sure to set fix n jobs before n_jobs
+        self.fix_n_jobs = fix_n_jobs
+        self.n_jobs = n_jobs
 
     @property
     def _n_jobs(self):
 
-        if self.fix_n_wrapper_jobs == 'default':
-            return self.wrapper_n_jobs
+        if self.fix_n_jobs is False:
+            return self.n_jobs
 
-        return self.fix_n_wrapper_jobs
+        return self.fix_n_jobs
 
-    def _fit(self, X, y=None):
+    def fit(self, X, y=None, mapping=None,
+            train_data_index=None, **fit_params):
 
-        fit_fm_key = X[0, self.wrapper_inds_[0]]
-        fit_data = self.file_mapping[int(fit_fm_key)].load()
-
-        self.wrapper_transformer_ = clone(self.wrapper_transformer)
-        self.wrapper_transformer_.fit(fit_data, y)
+        # Need the output from a transform to full fit,
+        # so when fit is called, call fit_transform instead
+        self.fit_transform(X=X, y=y, mapping=mapping,
+                           train_data_index=train_data_index,
+                           **fit_params)
 
         return self
 
-    def fit_transform(self, X, y=None, mapping=None, **kwargs):
+    def _fit(self, X, y=None, **fit_params):
+        '''Special fit for loader, only concerned with
+        fitting first data point for e.g., use of reverse
+        transform
+        '''
 
-        # Save base dtype of input
-        self._base_dtype = X.dtype
+        # Get the first data point
+        fit_fm_key = X[0, self.inds_[0]]
+        fit_X = self.file_mapping[int(fit_fm_key)].load()
+
+        # Fit the first data point
+        self.estimator_.fit(fit_X, y=y, **fit_params)
+
+    def fit_transform(self, X, y=None, mapping=None,
+                      train_data_index=None, **fit_params):
 
         if mapping is None:
             mapping = {}
 
-        # If any changes to mapping, update
-        self._proc_mapping(mapping)
+        # Call parent fit but passing only the first data point
+        super().fit(X, y=y, mapping=mapping,
+                    train_data_index=train_data_index,
+                    **fit_params)
 
-        # Fit a copy on the first data-point only
-        # this is used for say reverse transformations
-        self._fit(X, y)
+        # The parent fit takes care of, in addition to
+        # fitting the loader on one
+        # data point, sets base_dtype, processes the mapping,
+        # sets rest inds, etc...
 
-        # Transform X
-        X_trans, self._X_trans_inds = self._get_X_trans(X)
+        # Now transform X - this sets self.X_trans_inds_
+        X_trans = self.transform(X)
 
-        # Then create new mapping
-        new_mapping = {}
+        # Need to set out_mapping_ and update mapping
+        self.out_mapping_ = {}
 
         # Add changed X_trans by col
-        for c in range(len(self.wrapper_inds_)):
-            ind = self.wrapper_inds_[c]
-            new_mapping[ind] = self._X_trans_inds[c]
+        for c in range(len(self.inds_)):
+            ind = self.inds_[c]
+            self.out_mapping_[ind] = self.X_trans_inds_[c]
 
-        # Set rest inds as any inds not in wrapper inds
-        self.rest_inds_ = list(np.setdiff1d(list(range(X.shape[1])),
-                                            self.wrapper_inds_,
-                                            assume_unique=True))
-
+        # Fill the remaining spots sequentially,
+        # for each of the rest inds.
         for c in range(len(self.rest_inds_)):
             ind = self.rest_inds_[c]
-            new_mapping[ind] = X_trans.shape[1] + c
+            self.out_mapping_[ind] = self.n_trans_feats_ + c
 
-        self._out_mapping = new_mapping.copy()
+        # Update the original mapping, this is the mapping which
+        # will be passed to the next piece of the pipeline
+        update_mapping(mapping, self.out_mapping_)
 
-        # Update mapping
-        update_mapping(mapping, new_mapping)
+        # Now return X_trans
+        return X_trans
 
+    def transform(self, X):
+
+        # Init lists + mappings
+        X_trans, self.X_trans_inds_ = [], []
+        cnt = 0
+
+        # For each column to fit_transform
+        for col in self.inds_:
+
+            # Get transformer column
+            fm_keys = [key for key in X[:, col]]
+            X_trans_cols = self._get_trans_col(fm_keys)
+
+            # Stack + append new features
+            X_trans_cols = np.stack(X_trans_cols)
+            X_trans.append(X_trans_cols)
+
+            # Add + append inds
+            X_trans_cols_inds =\
+                [i for i in range(cnt, X_trans_cols.shape[1] + cnt)]
+            self.X_trans_inds_.append(X_trans_cols_inds)
+
+            # Update cnt
+            cnt = X_trans_cols.shape[1] + cnt
+
+        # Stack final
+        X_trans = np.hstack(X_trans)
+
+        # Save number of output features after X_trans
+        self.n_trans_feats_ = X_trans.shape[1]
+
+        # Return stacked X_trans with rest inds
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
     def get_chunks(self, data_files):
@@ -122,10 +171,10 @@ class Loader_Wrapper(Transformer_Wrapper):
         # Grab the right data files from the file mapping (casting to int!)
         data_files = [self.file_mapping[int(fm_key)] for fm_key in fm_keys]
 
-        # Clone the base loader transformer
-        cloned_transformer = clone(self.wrapper_transformer)
+        # Clone the base loader
+        cloned_estimator = clone(self.estimator)
 
-        # If a caching location is passed, create new load_cand_trans_c func
+        # If a caching location is passed, create new load_and_trans_c func
         if self.cache_loc is not None:
             memory = check_memory(self.cache_loc)
             load_and_trans_c = memory.cache(load_and_trans)
@@ -133,7 +182,7 @@ class Loader_Wrapper(Transformer_Wrapper):
             load_and_trans_c = load_and_trans
 
         if self._n_jobs == 1:
-            X_trans_cols = get_trans_chunk(cloned_transformer,
+            X_trans_cols = get_trans_chunk(cloned_estimator,
                                            data_files, load_and_trans_c)
         else:
             chunks = self.get_chunks(data_files)
@@ -141,7 +190,7 @@ class Loader_Wrapper(Transformer_Wrapper):
             X_trans_chunks =\
                 Parallel(n_jobs=self._n_jobs)(
                     delayed(get_trans_chunk)(
-                        transformer=cloned_transformer,
+                        transformer=cloned_estimator,
                         data_files=chunk,
                         func=load_and_trans_c)
                     for chunk in chunks)
@@ -152,56 +201,30 @@ class Loader_Wrapper(Transformer_Wrapper):
 
         return X_trans_cols
 
-    def _get_X_trans(self, X):
+    def transform_df(self, df, base_name='loader'):
 
-        # Init lists + mappings
-        X_trans, X_trans_inds = [], []
-        cnt = 0
+        return super().transform_df(df, base_name=base_name)
 
-        # For each column to fit_transform
-        for col in self.wrapper_inds_:
+    def _proc_new_names(self, feat_names, base_name):
 
-            # Get transformer column
-            fm_keys = [key for key in X[:, col]]
-            X_trans_cols = self._get_trans_col(fm_keys)
-
-            # Stack + append new features
-            X_trans_cols = np.stack(X_trans_cols)
-            X_trans.append(X_trans_cols)
-
-            # Add + append inds
-            X_trans_cols_inds =\
-                [i for i in range(cnt, X_trans_cols.shape[1] + cnt)]
-            X_trans_inds.append(X_trans_cols_inds)
-
-            # Update cnt
-            cnt = X_trans_cols.shape[1] + cnt
-
-        # Stack final
-        X_trans = np.hstack(X_trans)
-        return X_trans, X_trans_inds
-
-    def transform(self, X):
-
-        # Transform X
-        X_trans, _ = self._get_X_trans(X)
-        return np.hstack([X_trans, X[:, self.rest_inds_]])
-
-    def _get_new_df_names(self, base_name=None, feat_names=None):
-        '''Create new feature names for the transformed features,
-        in loaders this is done per feature/column'''
-
+        # Get new names
         new_names = []
-        for c in range(len(self.wrapper_inds_)):
+        for c in range(len(self.inds_)):
 
-            ind = self.wrapper_inds_[c]
+            ind = self.inds_[c]
             base_name = feat_names[ind]
 
-            new_inds = self._X_trans_inds[c]
+            new_inds = self.X_trans_inds_[c]
             new_names += [base_name + '_' + str(i)
                           for i in range(len(new_inds))]
 
-        return new_names
+        # Remove old names - using parent method
+        feat_names = self._remove_old_names(feat_names)
+
+        # New names come first, then rest of names
+        all_names = new_names + feat_names
+
+        return all_names
 
     def inverse_transform(self, X, name='base loader'):
 
@@ -212,18 +235,18 @@ class Loader_Wrapper(Transformer_Wrapper):
         no_it_warns = set()
         other_warns = set()
 
-        for col_ind in self.wrapper_inds_:
-            reverse_inds = proc_mapping([col_ind], self._out_mapping)
+        for col_ind in self.inds_:
+            reverse_inds = proc_mapping([col_ind], self.out_mapping_)
 
             # for each subject
             X_trans = []
             for subject_X in X[:, reverse_inds]:
 
                 # If pipeline
-                if hasattr(self.wrapper_transformer_, 'steps'):
-                    for step in self.wrapper_transformer_.steps[::-1]:
+                if hasattr(self.estimator_, 'steps'):
+                    for step in self.estimator_.steps[::-1]:
                         s_name = step[0]
-                        pipe_piece = self.wrapper_transformer_[s_name]
+                        pipe_piece = self.estimator_[s_name]
 
                         try:
                             subject_X = pipe_piece.inverse_transform(subject_X)
@@ -235,7 +258,7 @@ class Loader_Wrapper(Transformer_Wrapper):
                 else:
                     try:
                         subject_X =\
-                            self.wrapper_transformer_.inverse_transform(
+                            self.estimator_.inverse_transform(
                                 subject_X)
                     except AttributeError:
                         no_it_warns.add(name)
@@ -267,34 +290,15 @@ class Loader_Wrapper(Transformer_Wrapper):
         # cannot be put in a standard X array, but also
         # in the case with multiple loaders, we still need to return
         # An otherwise inversed X, we will just set values to 0 in this version
-        reverse_rest_inds = proc_mapping(self.rest_inds_, self._out_mapping)
+        reverse_rest_inds = proc_mapping(self.rest_inds_, self.out_mapping_)
 
-        all_inds_len = len(self.wrapper_inds_) + len(self.rest_inds_)
+        all_inds_len = len(self.inds_) + len(self.rest_inds_)
         Xt = np.zeros((X.shape[0], all_inds_len), dtype=X.dtype)
 
-        Xt[:, self.wrapper_inds_] = 0
+        Xt[:, self.inds_] = 0
         Xt[:, self.rest_inds_] = X[:, reverse_rest_inds]
 
         return Xt, inverse_X
-
-    def set_params(self, **params):
-
-        if 'file_mapping' in params:
-            self.file_mapping = params.pop('file_mapping')
-        if 'wrapper_n_jobs' in params:
-            self.wrapper_n_jobs = params.pop('wrapper_n_jobs')
-
-        return super().set_params(**params)
-
-    def get_params(self, deep=False):
-
-        params = super().get_params(deep=deep)
-
-        # Passing file_mapping as just a reference *should* be okay
-        params['file_mapping'] = self.file_mapping
-        params['wrapper_n_jobs'] = self.wrapper_n_jobs
-
-        return params
 
 
 LOADERS = {
@@ -313,7 +317,7 @@ except ImportError:
     pass
 
 
-def get_loader_and_params(loader_str, extra_params, params, search_type,
+def get_loader_and_params(loader_str, extra_params, params,
                           random_state=None, num_feat_keys=None):
 
     loader, extra_loader_params, loader_params =\

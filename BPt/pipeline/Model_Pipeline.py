@@ -1,4 +1,4 @@
-from .BPt_Pipeline import BPt_Pipeline
+from .BPtPipeline import BPtPipeline
 from ..helpers.ML_Helpers import is_array_like
 import os
 
@@ -17,16 +17,8 @@ class Model_Pipeline():
         # Save param search here
         self.param_search = pipeline_params.param_search
 
-        if self.param_search is None:
-            spec['search_type'] = None
-        else:
-            spec['search_type'] = self.param_search.search_type
-
         # Set n_jobs in model spec
         spec['n_jobs'] = pipeline_params.n_jobs
-
-        # Save cache param
-        self.cache = pipeline_params.cache
         self.verbose = verbose
 
         # Extract ordered
@@ -73,10 +65,6 @@ class Model_Pipeline():
 
             self.named_objs[name] = objs
             self.named_params[name] = params
-
-        # Set mapping to map
-        self._set_mapping_to_map()
-        self._set_needs_index()
 
     def _check_for_user_passed(self, objs, cnt):
 
@@ -167,44 +155,10 @@ class Model_Pipeline():
         steps = self._get_objs(ORDERED_NAMES)
         names = self._get_names(ORDERED_NAMES)
 
-        # If caching passed, create directory
-        if self.cache is not None and not os.path.isdir(self.cache):
-            os.makedirs(self.cache, exist_ok=True)
-
-        model_pipeline = BPt_Pipeline(steps, memory=self.cache,
-                                      verbose=self.verbose,
-                                      add_mapping=self.add_mapping,
-                                      to_map=self.to_map,
-                                      needs_index=self.needs_index,
-                                      names=names)
+        model_pipeline = BPtPipeline(steps, verbose=self.verbose,
+                                     names=names)
 
         return model_pipeline
-
-    def _set_mapping_to_map(self):
-
-        mapping, to_map = True, []
-
-        # Add every step that needs a mapping
-        for valid in self._get_sep_objs(set(ORDERED_NAMES) - set(['model'])):
-            for step in valid:
-                to_map.append(step[0])
-
-        # Handle model special
-        for step in self.named_objs['model']:
-            if hasattr(step[1], '_needs_mapping'):
-                if step[1]._needs_mapping:
-                    to_map.append(step[0])
-
-        self.add_mapping = mapping
-        self.to_map = to_map
-
-    def _set_needs_index(self):
-
-        self.needs_index = []
-        for step in self.named_objs['model']:
-            if hasattr(step[1], '_needs_train_data_index'):
-                if step[1]._needs_train_data_index:
-                    self.needs_index.append(step[0])
 
     def is_search(self):
 

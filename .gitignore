@@ -11,6 +11,10 @@ cover/*
 Examples/Test_Samplers.ipynb
 Examples/Full_Examples/philips.txt
 Examples/fake_*
+test_data/*
+fake_surf_data
+test_data
+BPt/tests/test_data/*
 
 .vscode
 Data/*
@@ -18,6 +22,7 @@ Data/*
 Autogluon*
 
 logs.txt*
+*logs.*
 
 Examples/Full_Examples/Sex*
 
@@ -121,3 +126,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+Examples/Full_Examples/test.py
+Examples/Full_Examples/Sex/logs.txt
+.gitignore
+docs/conf.py

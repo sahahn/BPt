@@ -485,12 +485,6 @@ class Evaluator():
         global_fi, local_fi = fis
         pipeline = self._get_base_fitted_pipeline()
 
-        # Only compute the inverse transform FI's if there
-        # are either transformers or loaders in the base pipeline
-        if not pipeline.has_transforms():
-            feat_imp.warning = False
-            return
-
         if feat_imp.inverse_global and global_fi is not None:
             feat_imp.inverse_global_fis.append(
                 pipeline.inverse_transform_FIs(global_fi, feat_names))
@@ -766,8 +760,10 @@ class Evaluator():
         # Get the base pipeline
         pipeline = self._get_base_fitted_pipeline()
 
-        return pipeline.proc_X_test(X_test, y_test,
-                                    fs=fs, tp=self.base_dtype)
+        # Transform X as df
+        X_trans_df = pipeline.transform_df(X_test, fs=fs)
+
+        return X_trans_df, y_test
 
     def _proc_X_train(self, train_data):
 
@@ -777,4 +773,5 @@ class Evaluator():
         # Get the base pipeline
         pipeline = self._get_base_fitted_pipeline()
 
-        return pipeline.proc_X_train(X_train, tp=self.base_dtype)
+        # Transform X
+        return pipeline.transform(X_train)

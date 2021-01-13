@@ -1,7 +1,7 @@
+from BPt.pipeline.Feature_Selectors import BPtFeatureSelector
 from ..main.Input_Tools import is_pipe, is_select
 
 from ..helpers.ML_Helpers import (check_for_duplicate_names,
-                                  wrap_pipeline_objs,
                                   proc_type_dep_str, param_len_check,
                                   conv_to_list,
                                   process_params_by_type, replace_model_name)
@@ -37,10 +37,29 @@ def get_scope_name(scope):
     return scope_name
 
 
+def add_estimator_to_params(passed_params):
+    '''Process the params, all have the same base name, but now need estimator
+    to correspond to changing the correct params, e.g. if
+    my_loader__some_param becomes my_loader__estimator__some_param
+    '''
+
+    params = {}
+    for key in passed_params:
+
+        split_key = key.split('__')
+        new_split_key = [split_key[0], 'estimator'] + split_key[1:]
+        new_key = '__'.join(new_split_key)
+
+        # Add to new under new name
+        params[new_key] = passed_params[key]
+
+    return params
+
+
 class Pieces():
 
     def __init__(self, user_passed_objs, Data_Scopes, spec):
-        # problem_type, random_state, n_jobs, search_type are stored in spec
+        # problem_type, random_state, n_jobs are stored in spec
 
         # Class values
         self.user_passed_objs = user_passed_objs
@@ -134,14 +153,6 @@ class Pieces():
             name, param_str = param.obj, param.params
             extra_params = param.extra_params
 
-            # If this param has an associated param search of non None,
-            # set class to that search type.
-            # Otherwise, set spec to copy of the original class
-            if hasattr(param, 'param_search') and param.param_search is not None:
-                self.spec['search_type'] = param.param_search.search_type
-            else:
-                self.spec = spec.copy()
-
             if 'Custom ' in name:
                 objs_and_params.append(
                     self._get_user_passed_obj_params(name, param_str,
@@ -156,8 +167,7 @@ class Pieces():
 
                 objs_and_params.append(
                     (name, get_func(name, extra_params,
-                                    param_str, self.spec['search_type'],
-                                    self.spec['random_state'],
+                                    param_str, self.spec['random_state'],
                                     num_feat_keys)
                      ))
 
@@ -265,35 +275,39 @@ class Pieces():
 
         return objs, obj_params
 
-    def _wrap_pipeline_objs(self, wrapper, objs, scopes,
-                            fix_n_wrapper_jobs, **params):
-
-        inds = [self.Data_Scopes.get_inds_from_scope(scope)
-                for scope in scopes]
-
-        objs = wrap_pipeline_objs(wrapper, objs, inds,
-                                  random_state=self.spec['random_state'],
-                                  n_jobs=self.spec['n_jobs'],
-                                  fix_n_wrapper_jobs=fix_n_wrapper_jobs,
-                                  **params)
-
-        return objs
-
-    def _make_col_version(self, objs, params, scopes):
+    def _make_col_version(self, objs, params, input_params, Wrapper):
 
         # Make objs + params
         col_objs, col_params = [], {}
 
         for i in range(len(objs)):
+
+            # Unpack name and obj
             name, obj = objs[i][0], objs[i][1]
-            inds = self.Data_Scopes.get_inds_from_scope(scopes[i])
+
+            # Make sure n_jobs and random_state are set in the base object
+            if hasattr(obj, 'n_jobs'):
+                setattr(obj, 'n_jobs', self.spec['n_jobs'])
+            if hasattr(obj, 'random_state'):
+                setattr(obj, 'random_state', self.spec['random_state'])
+
+            # Proc scope
+            scope = input_params[i].scope
+            inds = self.Data_Scopes.get_inds_from_scope(scope)
 
             # Get scope name
-            scope_name = get_scope_name(scopes[i])
+            scope_name = get_scope_name(scope)
 
-            # Create the col obj as a ScopeTransformer
+            if hasattr(input_params[i], 'cache_loc'):
+                cache_loc = getattr(input_params[i], 'cache_loc')
+            else:
+                cache_loc = None
+
+            # Create the col obj as a the passed Wrapper
             col_obj = (name + scope_name,
-                       ScopeTransformer(estimator=obj, inds=inds))
+                       Wrapper(estimator=obj,
+                               inds=inds,
+                               cache_loc=cache_loc))
             col_objs.append(col_obj)
 
             # Change any associated params
@@ -301,7 +315,7 @@ class Pieces():
                 split_key = key.split('__')
 
                 # If this is an associated param w/ this obj
-                if split_key[0] == name + '__':
+                if split_key[0] == name:
 
                     # Replace name with estimator
                     name = split_key[0] + scope_name
@@ -548,7 +562,7 @@ class Models(Type_Pieces):
             split_key = key.split('__')
 
             # If this is an associated param w/ this obj
-            if split_key[0] == name + '__':
+            if split_key[0] == name:
 
                 # Replace name with estimator
                 name = split_key[0] + scope_name
@@ -624,31 +638,45 @@ class Loaders(Pieces):
 
     def _process(self, params):
 
-        from .Loaders import Loader_Wrapper
-
-        # Extract scopes + cache loc
-        passed_loader_scopes = [p.scope for p in params]
-        passed_cache_locs = [p.cache_loc for p in params]
-        passed_fix_n_wrapper_jobs = [p.fix_n_wrapper_jobs for p in params]
+        from .Loaders import BPtLoader
 
         # Process according to passed tuples or not
         passed_loaders, passed_loader_params =\
             self._process_base(params)
 
-        # The base objects have been created, but they need to be wrapped
-        # in the loader wrapper.
-        pass_params = {'file_mapping': self.Data_Scopes.file_mapping,
-                       'wrapper_n_jobs': self.spec['n_jobs'],
-                       'cache_locs': passed_cache_locs}
+        loaders = []
+        for named_obj, param in zip(passed_loaders, params):
 
-        passed_loaders =\
-            self._wrap_pipeline_objs(Loader_Wrapper,
-                                     passed_loaders,
-                                     passed_loader_scopes,
-                                     passed_fix_n_wrapper_jobs,
-                                     **pass_params)
+            # Get inds from scope
+            inds = self.Data_Scopes.get_inds_from_scope(param.scope)
 
-        return passed_loaders, passed_loader_params
+            # Unpack to name and object
+            name, obj = named_obj
+
+            # For Loader, prioritize wrapper n_jobs
+            # so set base obj to 1 if there
+            if hasattr(obj, 'n_jobs'):
+                setattr(obj, 'n_jobs', 1)
+
+            # Propegate random state
+            if hasattr(obj, 'random_state'):
+                setattr(obj, 'random_state', self.spec['random_state'])
+
+            # Wrap in BPtLoader
+            wrapped_obj = BPtLoader(estimator=obj,
+                                    inds=inds,
+                                    file_mapping=self.Data_Scopes.file_mapping,
+                                    n_jobs=self.spec['n_jobs'],
+                                    fix_n_jobs=param.fix_n_wrapper_jobs,
+                                    cache_loc=param.cache_loc)
+
+            # Add to loaders, use same as base name
+            loaders.append((name, wrapped_obj))
+
+        # Process the params, by adding estimator
+        loader_params = add_estimator_to_params(passed_loader_params)
+
+        return loaders, loader_params
 
 
 class Imputers(Pieces):
@@ -669,11 +697,8 @@ class Imputers(Pieces):
             self.replace_base_estimator(objs, obj_params, params)
 
         # Wrap in col_transformer for scope
-        col_imputers, col_imputer_params =\
-            self._make_col_version(objs, obj_params,
-                                   [p.scope for p in params])
-
-        return col_imputers, col_imputer_params
+        return self._make_col_version(objs, obj_params, params,
+                                      Wrapper=ScopeTransformer)
 
 
 class Target_Scalers(Pieces):
@@ -706,11 +731,8 @@ class Scalers(Pieces):
                                       params)
 
         # Wrap in col_transformer for scope
-        col_scalers, col_scaler_params =\
-            self._make_col_version(objs, obj_params,
-                                   [p.scope for p in params])
-
-        return col_scalers, col_scaler_params
+        return self._make_col_version(objs, obj_params, params,
+                                      Wrapper=ScopeTransformer)
 
 
 class Transformers(Pieces):
@@ -720,27 +742,15 @@ class Transformers(Pieces):
     def _process(self, params):
 
         from .Transformers import (get_transformer_and_params,
-                                   Transformer_Wrapper)
-
-        # Extract scopes + cache loc
-        passed_scopes = [p.scope for p in params]
-        passed_cache_locs = [p.cache_loc for p in params]
-        passed_fix_n_wrapper_jobs = [p.fix_n_wrapper_jobs for p in params]
-        pass_params = {'cache_locs': passed_cache_locs}
+                                   BPtTransformer)
 
         # Then call get objs and params
         objs, obj_params =\
             self._get_objs_and_params(get_transformer_and_params,
                                       params)
 
-        transformers =\
-            self._wrap_pipeline_objs(Transformer_Wrapper,
-                                     objs,
-                                     passed_scopes,
-                                     passed_fix_n_wrapper_jobs,
-                                     **pass_params)
-
-        return transformers, obj_params
+        return self._make_col_version(self, objs, obj_params,
+                                      params, Wrapper=BPtTransformer)
 
 
 class Feat_Selectors(Type_Pieces):
@@ -760,42 +770,9 @@ class Feat_Selectors(Type_Pieces):
         objs, obj_params =\
             self.replace_base_estimator(objs, obj_params, params)
 
-        # Wrap in feat select wrapper
-        feat_objs, feat_params =\
-            self._wrap_feat_select(objs, obj_params,
-                                   [p.scope for p in params])
-
-        return feat_objs, feat_params
-
-    def _wrap_feat_select(self, objs, params, scopes):
-        from .Feature_Selectors import FeatureSelectorWrapper
-
-        # Make wrapped objs
-        feat_objs = []
-        for i in range(len(objs)):
-
-            # Unpack name + obj
-            name, obj = objs[i][0], objs[i][1]
-
-            # Get wrapper inds from scope
-            wrapper_inds = self.Data_Scopes.get_inds_from_scope(scopes[i])
-
-            # Wrap in feat selector wrapper, which handles scope +
-            # keeping track of updating mapping
-            feat_obj = ('feat_' + name,
-                        FeatureSelectorWrapper(base_selector=obj,
-                                               wrapper_inds=wrapper_inds))
-            feat_objs.append(feat_obj)
-
-        # Update params
-        feat_params = {}
-        for key in params:
-            name = key.split('__')[0]
-            new_key = key.replace(name, 'base_selector', 1)
-            new_name = 'feat_' + name + '__' + new_key
-            feat_params[new_name] = params[key]
-
-        return feat_objs, feat_params
+        # Wrap in BPtFeatureSelector
+        return self._make_col_version(objs, obj_params, params,
+                                      Wrapper=BPtFeatureSelector)
 
 
 class Ensembles(Type_Pieces):

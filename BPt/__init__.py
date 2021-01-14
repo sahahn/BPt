@@ -1,5 +1,6 @@
 from .main.BPt_ML import BPt_ML, Load
 from .main.BPt_ML import BPt_ML as ABCD_ML
+from .main.Dataset import Dataset
 from .main.Params_Classes import (Loader, Imputer, Scaler, Transformer,
                                   Feat_Selector, Model, Ensemble,
                                   Param_Search, Feat_Importance,
@@ -7,15 +8,14 @@ from .main.Params_Classes import (Loader, Imputer, Scaler, Transformer,
                                   Problem_Spec, Shap_Params,
                                   CV, CV_Split, CV_Splits)
 
-from .main.Input_Tools import (Select, Duplicate, Pipe, Value_Subset,
-                               Values_Subset)
+from .main.Input_Tools import (Select, Duplicate, Pipe, Value_Subset)
 
 __author__ = "sahahn"
-__version__ = "1.3.6"
-__all__ = ["BPt_ML", "ABCD_ML", "Load", "Loader",
+__version__ = "2"
+__all__ = ["Dataset", "BPt_ML", "ABCD_ML", "Load", "Loader",
            "Imputer", "Scaler", "Transformer",
            "Feat_Selector", "Model",
            "Ensemble", "Param_Search", "Feat_Importance",
            "Model_Pipeline", "Problem_Spec", "Select",
-           "Duplicate", "Pipe", "Value_Subset", "Values_Subset",
+           "Duplicate", "Pipe", "Value_Subset",
            "Shap_Params", "CV", "CV_Split", "CV_Splits"]

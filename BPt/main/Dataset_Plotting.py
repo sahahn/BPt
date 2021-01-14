@@ -15,19 +15,16 @@ def plot_vars(self, scope):
     pass
 
 
-def plot(self, scope, subjects=None, original_values=True,
+def plot(self, scope, subjects=None, encoded_values=True,
          cat_types='Counts'):
 
-    # Run check name map
-    self._check_encoders()
-
     # Grab cols to plot
-    cols = self._get_cols_from_scope(scope)
+    cols = self.get_cols(scope)
 
     for col in cols:
         if 'category' in self.scopes[col]:
             if len(self[col].unique()) < 50:
-                self._plot_category(col=col, original_values=original_values)
+                self._plot_category(col=col, encoded_values=encoded_values)
             else:
                 warnings.warn('Skipping plot: ' + str(col) +
                               ' too many categories!')
@@ -35,14 +32,13 @@ def plot(self, scope, subjects=None, original_values=True,
             pass
 
 
-def _plot_category(self, col, original_values=True):
-
-    # Get a copy of the values
-    values = self[col].copy()
+def _plot_category(self, col, encoded_values=True):
 
     # Check for show_original_names
-    if original_values:
-        values = self._replace_values(col=col, values=values)
+    if encoded_values:
+        values = self.get_encoded_values(col)
+    else:
+        values = self[col].copy()
 
     # Plot
     sns.countplot(values, orient='h')

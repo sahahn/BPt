@@ -1,0 +1,203 @@
+import numpy as np
+from ..Dataset import Dataset
+from nose.tools import assert_raises
+from ..Params_Classes import CV
+import os
+import tempfile
+
+
+def get_fake_dataset():
+
+    fake = Dataset()
+    fake['1'] = [1, 1, 1]
+    fake['2'] = [1, 1, 1]
+    fake['3'] = ['2', '2', '2']
+    fake['4'] = ['2', '2', '2']
+    fake['5'] = ['2', '1', '2']
+
+    fake.set_roles({'1': 'data',
+                    '2': 'target',
+                    '3': 'non input',
+                    '4': 'non input',
+                    '5': 'non input'})
+
+    fake.ordinalize(scope='all')
+
+    return fake
+
+
+def test_proc_cv_base():
+
+    df = get_fake_dataset()
+
+    cv_params = CV()
+
+    cv = df._proc_cv(cv_params)
+    assert cv.groups is None
+    assert cv.stratify is None
+    assert cv.train_only is None
+
+    cv = df._proc_cv(cv_params=None)
+    assert cv.groups is None
+    assert cv.stratify is None
+    assert cv.train_only is None
+
+
+def test_proc_cv_train_only():
+
+    df = get_fake_dataset()
+
+    cv_params = CV(train_only_subjects=[0, 1])
+    cv = df._proc_cv(cv_params)
+
+    assert cv.groups is None
+    assert cv.stratify is None
+    assert np.array_equal(cv.train_only, np.array([0, 1]))
+
+    # Make sure sorts for repeatable behavior
+    cv_params = CV(train_only_subjects=[0, 1])
+    cv = df._proc_cv(cv_params)
+
+    assert cv.groups is None
+    assert cv.stratify is None
+    assert np.array_equal(cv.train_only, np.array([0, 1]))
+
+
+def test_proc_cv_groups():
+
+    df = get_fake_dataset()
+
+    with assert_raises(RuntimeError):
+        cv_params = CV(groups=['1', '2'])
+
+    cv_params = CV(groups='1')
+    with assert_raises(RuntimeError):
+        cv = df._proc_cv(cv_params)
+
+    cv_params = CV(groups='doesnt exist')
+    with assert_raises(IndexError):
+        cv = df._proc_cv(cv_params)
+
+    cv_params = CV(groups='2')
+    with assert_raises(RuntimeError):
+        cv = df._proc_cv(cv_params)
+
+    cv_params = CV(groups='3')
+    cv = df._proc_cv(cv_params)
+    assert len(cv.groups) == 3
+    assert cv.groups.nunique() == 1
+
+
+def test_proc_cv_stratify():
+
+    df = get_fake_dataset()
+
+    with assert_raises(RuntimeError):
+        cv_params = CV(stratify=['1', '2'])
+
+    cv_params = CV(stratify='1')
+    with assert_raises(RuntimeError):
+        cv = df._proc_cv(cv_params)
+
+    cv_params = CV(stratify='doesnt exist')
+    with assert_raises(IndexError):
+        cv = df._proc_cv(cv_params)
+
+    cv_params = CV(stratify='2')
+    cv = df._proc_cv(cv_params)
+    assert len(cv.stratify) == 3
+    assert cv.stratify.nunique() == 1
+
+    cv_params = CV(stratify='3')
+    cv = df._proc_cv(cv_params)
+    assert len(cv.stratify) == 3
+    assert cv.stratify.nunique() == 1
+
+
+def test_set_test_split():
+
+    df = get_fake_dataset()
+
+    with assert_raises(TypeError):
+        df.set_test_split()
+
+    with assert_raises(TypeError):
+        df.set_test_split(size=.2, subjects=[1, 2])
+
+    df.set_test_split(size=1, cv=None, random_state=None)
+
+    assert len(df.test_subjects) == 1
+    assert len(df.train_subjects) == 2
+
+    df.set_test_split(size=.3, cv=None, random_state=None)
+
+    assert len(df.test_subjects) == 1
+    assert len(df.train_subjects) == 2
+
+    df.set_test_split(size=.5, cv=CV(train_only_subjects=[0]),
+                      random_state=1)
+ 
+    assert len(df.test_subjects) == 1
+    assert len(df.train_subjects) == 2
+    assert 0 in df.train_subjects
+
+    df.set_test_split(size=1, cv=CV(train_only_subjects=[0]),
+                      random_state=1)
+
+    assert len(df.test_subjects) == 1
+    assert len(df.train_subjects) == 2
+    assert 0 in df.train_subjects
+
+    temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
+    df.save_test_subjects(temp_loc)
+    df.set_test_split(subjects=temp_loc)
+    os.remove(temp_loc)
+
+    assert len(df.test_subjects) == 1
+    assert len(df.train_subjects) == 2
+    assert 0 in df.train_subjects
+
+
+def test_set_train_split():
+
+    df = get_fake_dataset()
+
+    with assert_raises(TypeError):
+        df.set_train_split()
+
+    with assert_raises(TypeError):
+        df.set_train_split(size=.2, subjects=[1, 2])
+
+    df.set_train_split(size=1, cv=None, random_state=None)
+    assert len(df.test_subjects) == 2
+    assert len(df.train_subjects) == 1
+
+    df.set_train_split(size=.4, cv=None, random_state=None)
+    assert len(df.test_subjects) == 2
+    assert len(df.train_subjects) == 1
+
+    df.set_train_split(size=.5, cv=CV(train_only_subjects=[0]),
+                       random_state=1)
+    assert len(df.test_subjects) == 1
+    assert len(df.train_subjects) == 2
+    assert 0 in df.train_subjects
+
+    df.set_train_split(size=1, cv=CV(train_only_subjects=[0]),
+                       random_state=1)
+    assert len(df.test_subjects) == 1
+    assert len(df.train_subjects) == 2
+    assert 0 in df.train_subjects
+
+    # Test save and load
+    temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
+    df.save_train_subjects(temp_loc)
+    df.set_train_split(subjects=temp_loc)
+    os.remove(temp_loc)
+
+    assert len(df.test_subjects) == 1
+    assert len(df.train_subjects) == 2
+    assert 0 in df.train_subjects
+
+    with assert_raises(ValueError):
+        df.set_train_split(size=1, cv=CV(train_only_subjects=[0, 1]),
+                           random_state=1)

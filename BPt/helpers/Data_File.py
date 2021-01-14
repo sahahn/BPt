@@ -34,9 +34,53 @@ def mp_load(files, reduce_funcs):
 
     proxy = np.zeros((len(files), len(reduce_funcs)))
     for f in range(len(files)):
+
         data = files[f].load()
         for r in range(len(reduce_funcs)):
             proxy[f, r] = reduce_funcs[r](data)
+
+    return proxy
+
+
+def mp_single_load(files, reduce_func):
+
+    # Create proxy to fill with values
+    proxy = np.zeros(shape=(len(files)))
+
+    for f in range(len(files)):
+
+        # Load file
+        data = files[f].load()
+
+        # Reduce and add to proxy
+        proxy[f] = reduce_func(data)
+
+    return proxy
+
+
+def load_data_file_proxy(values, reduce_func, file_mapping, n_jobs=1):
+
+    # Create proxy to fill in
+    proxy = values.copy()
+
+    # Generate splits based on n_jobs
+    splits = np.array_split(np.array(values), n_jobs)
+
+    # Nested func for multi-proc, to vectorize
+    def change_to_map(x):
+        return file_mapping[x]
+    v_func = np.vectorize(change_to_map)
+
+    # Apply v_func to each split
+    file_splits = [v_func(split) for split in splits]
+
+    # Load w/ joblib Parallel
+    output = Parallel(n_jobs=n_jobs)(delayed(mp_single_load)(
+                      files=files, reduce_func=reduce_func)
+                      for files in file_splits)
+
+    # Fill proxy with the concatenated output
+    proxy[:] = np.concatenate(output)
 
     return proxy
 
@@ -49,6 +93,7 @@ def load_data_file_proxies(data, reduce_funcs,
                          for _ in range(len(reduce_funcs))]
     data_files = data[data_file_keys]
 
+    # Single core version
     if n_jobs == 1:
 
         for col in data_files:
@@ -61,6 +106,7 @@ def load_data_file_proxies(data, reduce_funcs,
                     data_file_proxies[r].at[subject, col] =\
                         reduce_funcs[r](data)
 
+    # Multi-core version
     else:
 
         col_names = list(data_files)

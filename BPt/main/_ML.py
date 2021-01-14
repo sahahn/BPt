@@ -10,7 +10,7 @@ import pickle as pkl
 from tqdm import tqdm
 from tqdm.notebook import tqdm as tqdm_notebook
 
-from .Input_Tools import is_value_subset, is_values_subset
+from .Input_Tools import is_value_subset
 from ..helpers.Data_Helpers import (get_unique_combo_df,
                                     reverse_unique_combo_df,
                                     get_target_type)
@@ -1352,25 +1352,6 @@ def _get_subjects_to_use(self, subjects_to_use):
         self._print('subjects set to: ',
                     last_subjects_names)
         self._print()
-
-    # Can also be values subset
-    elif is_values_subset(subjects_to_use):
-
-        # Add strat u name to name if not already added
-        name = self._add_strat_u_name(subjects_to_use.name)
-
-        # Extract the values as list
-        values = conv_to_list(subjects_to_use.values)
-
-        # Check name to make sure loaded
-        if name not in self.all_data:
-            raise ValueError(name, 'is not a valid loaded Strat feature!')
-
-        # Get by value
-        subjects = self.all_data[self.all_data[name].isin(values)].index
-
-        # Make sure subjects is set-like
-        subjects = set(list(subjects))
 
     # Lastly, if not the above, assume it is an array-like of subjects
     else:

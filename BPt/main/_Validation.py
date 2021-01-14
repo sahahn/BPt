@@ -3,7 +3,6 @@ _Validation.py
 ====================================
 Main class extension file for defining validation and train test splits.
 """
-from deslib.dcs.lca import LCA
 import pandas as pd
 import numpy as np
 import os

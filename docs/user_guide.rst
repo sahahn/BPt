@@ -1,7 +1,3 @@
-
-
-
-
 **********
 New Users
 **********
@@ -16,8 +12,6 @@ flexibility and integration with the rest of the python data science environment
 A few general introductory resources for learning python, jupyter notebooks and machine learning are provided below:
 
 - Introduction to python: https://jakevdp.github.io/WhirlwindTourOfPython/
-
-- Intro to Jupyter-notebook: https://www.dataquest.io/blog/jupyter-notebook-tutorial/
 
 - Brief intro to Machine Learning in python / jupyter environment: https://www.kaggle.com/learn/intro-to-machine-learning
 
@@ -139,6 +133,195 @@ This section is devoted as a placeholder with more detailed information about di
 In particular, you will often find within other sections of the documentation links to sub-sections within the sections as a way
 of referring to a more detailed explanation around a concept when warranted. 
 
+.. _Scopes:
+
+Scopes
+=======
+
+Scopes represent a key concept within BPt, that are present when preparing data with
+the :ref:`Dataset` class, and during ML. The `scope` argument can also be
+found across different :class:`Model_Pipeline <BPt.Model_Pipeline>` pieces
+and within :class:`Problem_Spec <BPt.Problem_Spec>`. The fundamental idea is
+that during loading, plotting, ML, etc... it is often desirable to specify
+a subset of the total loaded columns/features. This is accomplished within BPt via the
+concept of 'scope' and the 'scope' parameter.
+
+The concept of scopes extends beyond the :ref:`Dataset` class to the rest of
+BPt. The fundamental idea is that it provides a utility for more easily selecting different
+subsets of columns from the full dataset. This is accomplished by providing different functions
+and methods with a `scope` argument, which accepts any BPt style :ref:`Scopes` inputs, and then
+operates just on that subset of columns. For example consider the example below
+with the function :func:`get_cols <Dataset.get_cols>`.
+
+::
+    
+    # Empty Dataset with 3 columns
+    data = Dataset(columns=['1', '2', '3'])
+    
+    # scope of 'all' will return all columns
+    cols = data.get_cols(scope='all')
+
+    # cols == ['1', '2', '3']
+
+
+In this example, we pass a fixed input str scope: 'all'. This is a special reserved scope
+which will always return all columns. In addition to 'all' there are a number of other
+reserved special scopes which cannot be set, and have their own fixed behavior. These are:
+
+- 'all'
+    All loaded columns
+
+- 'float'
+    All loaded columns of type 'float', i.e.,
+    a continuous variable and not a categorical variable or a data file,
+    see: :ref:`data_types`
+
+- 'category'
+    All loaded columns of type / scope 'category', see :ref:`data_types`.
+
+- 'data file'
+    All loaded columns of type / scope 'data file', see :ref:`data_types`.
+
+- 'data'
+    All loaded columns with role 'data', see :ref:`role`.
+
+- 'target'
+    All loaded columns with role 'target', see :ref:`role`.
+
+- 'non input'
+    All loaded columns with role 'non input', see :ref:`role`.
+
+- 'data float'
+    All loaded columns of type 'float' with role 'data'.
+
+- 'data category'
+    All loaded columns of type 'float' with role 'data'.
+
+- 'target float'
+    All loaded columns of type 'float' with role 'target'.
+
+- 'target category'
+    All loaded columns of type 'float' with role 'target'.
+
+
+Those enumerated, the scope system also passing other strings, which are not one of the above,
+reserved scopes. In the case that a string is passed, the following options are possible
+and are checked in this order:
+
+1. Passing the name of a column directly. In this case that column will be returned by name.
+E.g., with the variable data from before:
+
+::
+
+    cols = data.get_cols(scope='1')
+
+This will specify just the column '1'.
+
+2. Passing the name of a scope. What this refers to is the ability to add
+custom scopes to columns with :func:`add_scope <Dataset.add_scope>` or
+:func:`add_scopes <Dataset.add_scopes>`. This acts as a tagging system, where
+you can create custom subsets. For example if we wanted the subset of '1' and '3',
+we can pass scope=['1', '3'], but if we were using this same set many times, we can also
+set the scopes of each of these columns to a custom scope, e.g.,
+
+::
+
+    data.set_scopes({'1': 'custom', '3': 'custom'})
+
+    cols = data.get_cols(scope='custom')
+
+In this case, cols would return us the scope 'custom'. Likewise, you may remove
+scopes with :func:`remove_scope <Dataset.remove_scope>` or
+:func:`remove_scopes <Dataset.remove_scopes>`.
+
+3. Passing a stub. This functionality allows us to pass a common substring present
+across a number of columns, and lets us select all columns with that substring. For example,
+let's say we have columns 'my_col1', 'my_col2' and 'target' loaded. By passing scope='my_col'
+we can select both 'my_col1' and 'my_col2, but not 'target'.
+
+In addition to the 4 different ways scopes can be used enemurated above, we can also
+compose any combination by passing a list of scopes. For example:
+
+::
+
+    cols = data.get_cols(scope=['1', '2'])
+
+Returns columns '1' and '2'. We can also combine across methods. E.g.,
+
+::
+
+    cols = data.get_cols(scope=['1', 'category', 'custom', 'non input'])
+
+In this example, we are requesting the union (NOT the overlap) of column '1', any 
+category columns, any columns with the scope 'custom' and any 'non input' columns.
+
+Scopes can also be associated 1:1 with their corresponding base Model_Pipeline objects (except for the Problem_Spec scope).
+One useful function designed specifically for objects with Scope is the :class:`Duplicate<BPt.Duplicate>` Input Wrapper, which
+allows us to conviently replicate pipeline objects across a number of scopes. This functionality is especially useful with
+:class:`Transformer<BPt.Transformer>` objects, (though still usable with other pipeline pieces, though other pieces
+tend to work on each feature independenly, ruining some of the benefit). For example consider a case where you would like to
+run a PCA tranformer on different groups of variables seperately, or say you wanted to use a categorical encoder on 15 different
+categorical variables. Rather then having to manually type out every combination or write a for loop, you can use :class:`Duplicate<BPt.Duplicate>`.
+
+See :class:`Duplicate<BPt.Duplicate>` for more information on how to use this funcationality.
+
+
+.. _Subjects:
+
+Subjects
+=========
+
+Various functions within BPt, and :ref:`Dataset` can accept subjects or some variation on this
+name as an argument. The parameter can accept a few different values. These are explained below:
+
+1. You may pass any array-like (e.g., list, set, pandas Index, etc...) of subjects directly.
+For example:
+
+::
+
+  subjects = ['subj1', 'subj2', 'subj3']
+
+Would select those three subjects.
+
+2. You may pass the location of a text file were subject's names are stored as one subject's
+name per line. For example if subjects.txt contained:
+
+::
+
+  subj1
+  subj2
+  subj3
+
+We could pass:
+
+::
+
+  subjects = 'subjects.txt'
+
+To select those three subjects.
+
+3. A reserved key word may be passed. These include:
+
+- 'all'
+  Operate on all subjects
+
+- 'nan'
+  Select any subjects with any missing values in any of their loaded columns,
+  regardless of scope or role.
+
+- 'train'
+  Select the set of train subjects as defined by a split in the Dataset, e.g.,
+  :func:`set_train_split <BPt.Dataset.set_train_split>`.
+
+- 'test'
+  Select the set of test subjects as defined by a split in the Dataset, e.g.,
+  :func:`set_test_split <BPt.Dataset.set_test_split>`.
+
+4. You can pass the special input wrapper :class:`Value_Subset`. This can be
+used to select subsets of subject by a column's value or values. See :class:`Value_Subset` for more
+information on how this input class is used.
+
+
 .. _Pipeline Objects:
 
 Pipeline Objects
@@ -223,115 +406,6 @@ The special input wrapper :class:`Select<BPt.Select>` can also be used to implic
 into the :class:`Model_Pipeline <BPt.Model_Pipeline>`. 
 
 
-.. _Scopes:
-
-Scopes
-=======
-
-During the modeling and testing phases, it is often desirable to specify a subset of the total loaded columns/features.
-Within BPt the way subsets of columns can be specifed to different functions is through scope parameters.
-
-The `scope` argument can be found across different :class:`Model_Pipeline <BPt.Model_Pipeline>` pieces and within Problem_Spec.
-
-The base preset str options that can be passed to scope are:
-
-    - 'all'
-        To specify all features, everything, regardless of data type.
-    
-    - 'float'
-        To apply to all non-categorical columns, in both
-        loaded data and covars.
-
-    - 'data'
-        To apply to all loaded data columns only.
-
-    - 'data files'
-        To apply to just columns which were originally loaded as data files.
-
-    - 'float covars' or 'fc'
-        To apply to all non-categorical, float covars columns only.
-
-    - 'cat' or 'categorical'
-        To apply to just loaded categorical data.
-
-    - 'covars'
-        To apply to all loaded covar columns only.
-
-Beyond these base options, their exists a system for passing in either an array-like or tuple
-of keys to_use, wildcard stub strs for selecting which columns to use, or a combination.
-We will discuss these options in more detail below:
-
-In the case that you would like to select a custom array-like of column names, you could
-simply pass: (where selected columns are the features that would be selected by that scope)
-
-::
-    
-    # As tuple
-    scope = ('name1', 'name2', 'name3')
-
-    # This is the hypothetical output, not what you pass
-    selected_columns = ['name1', 'name2', 'name3']
-
-
-    # Or as array
-    scope = np.array(['some long list of specific keys'])
-
-    selected_columns = ['some long list of specific keys']
-
-In this case, we are assuming the column/feature names passed correspond exactly to loaded
-column/ feature names. In this case, if all items within the array-like scope are specific keys,
-the columns used by that scope will be just those keys.
-
-The way the wildcard systems works is similar to the custom array option above, but instead
-of passing an array of specific column names, you can pass one or more wildcard strs where in order
-for a column/feature to be included that column/feature must contain as a sub-string ALL of the passed
-substrings. For example: if the loaded data had columns 'name1', 'name2', 'name3' and 'somethingelse3'.
-By passing different scopes, you can see the corresponding selected columns:
-
-::
-
-    # Single wild card
-    scope = '3'
-
-    selected_columns = ['name3', 'somethingelse3']
-
-    # Array-like of wild cards
-    scope =  ['3', 'name']
-
-    selected_columns = ['name3']
-
-You can further provide a composition of different choices also as an array-like list. The way this
-composition works is that every entry in the passed list can be either: one of the base preset
-str options, a specific column name, or a substring wildcard.
-
-The selected columns can then be thought of as a combination of these three types, where the output will be
-the same as if took the union from any of the preset keys, specific key names and the columns selected by the wildcard.
-For example, assuming we have the same loaded columns as above, and that 'name2' is the only loaded feature with datatype 'float':
-
-::
-
-    scope = ['float', 'name1', 'something']
-
-    # 'float' selects 'name2', 'name1' selects 'name1', and wildcard something selects 'somethingelse3'
-    # The union of these is
-    selected_columns = ['name2', 'name1', 'somethingelse3']
-
-    # Likewise, if you pass multiple wildcard sub-strs, only the overlap will be taken as before
-    scope = ['float', '3', 'name']
-
-    selected_columns = ['name2', 'name3']
-
-Scopes more generally are associated 1:1 with their corresponding base Model_Pipeline objects (except for the Problem_Spec scope).
-One useful function designed specifically for objects with Scope is the :class:`Duplicate<BPt.Duplicate>` Inute Wrapper, which
-allows us to conviently replicate pipeline objects across a number of scopes. This functionality is especially useful with
-:class:`Transformer<BPt.Transformer>` objects, (though still usable with other pipeline pieces, though other pieces
-tend to work on each feature independenly, ruining some of the benefit). For example consider a case where you would like to
-run a PCA tranformer on different groups of variables seperately, or say you wanted to use a categorical encoder on 15 different
-categorical variables. Rather then having to manually type out every combination or write a for loop, you can use :class:`Duplicate<BPt.Duplicate>`.
-
-See :class:`Duplicate<BPt.Duplicate>` for more information on how to use this funcationality.
-
-
 .. _Extra Params:
 
 Extra Params
@@ -362,29 +436,3 @@ Custom input objects can be passed to the `obj` parameter for a number of base :
 
 There are though, depending on which base piece is being passed, different considerations you may have to make. More information will be
 provided here soon.
-
-
-.. _Subjects:
-
-Subjects
-=========
-
-Various functions within BPt can accept subjects as an argument. The parameter can
-accept a range of values.
-
-First, you may pass the location to a text file with subject names seperated one on each line.
-
-Secondly, you can pass any array-like (e.g., list, set, pandas Index, etc...), to pass an 
-explicit list of subjects.
-
-There are also a few reserved str key words which specify pre-defining groups of subjects.
-These are: 'all' to select all valid loaded subjects, 'train' and 'test' which
-specifies that the full set of globally defined training subjects, or testing subjects be used.
-See :func:`Define_Train_Test_Split <BPt.Define_Train_Test_Split>`.
-
-Lastly, you can consider passing special input wrappers.
-
-These are :class:`Value_Subset` and :class:`Values_Subset`. See each for more details
-on how they can be used.
-
-

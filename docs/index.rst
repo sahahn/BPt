@@ -17,6 +17,12 @@ The following documentation includes information about the usage of this toolbox
 
 .. toctree::
    :maxdepth: 1
+   :caption: Preparing Data
+
+   dataset
+
+.. toctree::
+   :maxdepth: 1
    :caption: Change Logs
 
    change_log

@@ -1,11 +1,25 @@
 In Dev
-************
-
-- New Dataset class
-    - The new Dataset class is designed to eventually replace the old system for data loading.
+*******
 
 - Full refactor of feature importance plotting
     - The plotting interface will eventually be moved fully to within the feature importance object as return as a result.
+
+
+Release 2.0
+************
+
+- Big Change: New :ref:`Dataset` class
+    - This new Dataset class is designed to fully replace the old system of loading via the BPt_ML class.
+    - This new system is designed to be more flexible than the old system.
+    - Most of the old functionality is ported over, and various new functionality added.
+
+- Updates to the project documentation
+    - With replacing the BPt_ML class, large amounts of the documentation was replaced and updated.
+
+- Removed Values_Subset class
+    - Now the Value_Subset class replaces this functionality, and more generally the
+    feature of creating overlaps of column values on the fly is depreciated.
+
 
 Release 1.3.6
 ***************

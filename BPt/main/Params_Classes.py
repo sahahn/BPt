@@ -1,7 +1,8 @@
 from copy import deepcopy
 from sklearn.base import BaseEstimator
 import pandas as pd
-from ..helpers.ML_Helpers import conv_to_list, proc_input, proc_type_dep_str
+from ..helpers.ML_Helpers import (conv_to_list, proc_input,
+                                  proc_type_dep_str, is_array_like)
 
 from ..helpers.VARS import ORDERED_NAMES
 from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
@@ -2425,64 +2426,38 @@ class Problem_Spec(Params):
 
 class CV(Params):
 
-    def __init__(self, groups=None, stratify=None,
-                 train_only_loc=None, train_only_subjects=None):
+    # @TODO add support for test_only ?
+    def __init__(self, groups=None, stratify=None, train_only_subjects=None,
+                 train_only_loc=None):
         ''' This objects is used to encapsulate a set of parameters
         for a CV strategy.
 
         Parameters
         ----------
-        groups : str, list or None, optional
-            In the case of str input, will assume the str to refer
-            to a column key within the loaded strat data,
-            and will assign it as a value to preserve groups by
-            during any train/test or K-fold splits.
-            If a list is passed, then each element should be a str,
-            and they will be combined into all unique
-            combinations of the elements of the list.
+        groups : str or None, optional
+            The str should refer to the column key in which
+            to preserve groups by during any train/test or K-fold splits.
+            To create a combination of unique values, see the
+            add_unique_overlap function in the Dataset Class.
+
+            Note: the passed column must be of type category as well.
 
         ::
 
             default = None
 
-        stratify : str, list or None, optional
-            In the case of str input, will assume the str to refer
-            to a column key within the loaded strat data, or a loaded target col.,
-            and will assign it as a value to preserve
+        stratify : str or None, optional
+            The str input should refer
+            to a loaded column key, either non input / strat or target.
+            It will assign it as a value to preserve
             distribution of groups by during any train/test or K-fold splits.
-            If a list is passed, then each element should be a str,
-            and they will be combined into all unique combinations of
-            the elements of the list.
+            
+            Note: the passed column must be of type category as well.
 
             Any target_cols passed must be categorical
             or binary, and cannot be
-            float. Though you can consider loading in a
-            float target as a strat,
-            which will apply a specific k_bins, and then be valid here.
-
-            In the case that you have a loaded strat val with the same name
-            as your target, you can distinguish between the two by passing
-            either the raw name, e.g., if they are both loaded as 'Sex',
-            passing just 'Sex', will try to use the loaded target. If instead
-            you want to use your loaded strat val
-            with the same name - you have
-            to pass 'Sex' + self.self.strat_u_name
-            (by default this is '_Strat').
-
-            ::
-
-                default = None
-
-        train_only_loc : str, Path or None, optional
-            Location of a file to load in train_only subjects,
-            where any subject loaded as train_only will be assigned to
-            every training fold, and never to a testing fold.
-            This file should be formatted as one subject per line.
-
-            You can load from a loc and pass subjects, the subjects
-            from each source will be merged.
-
-            This parameter is compatible with groups / stratify.
+            float. Though you may consider creating a binary / k bin copy
+            of a float / cont. type target variable.
 
             ::
 
@@ -2508,12 +2483,47 @@ class CV(Params):
             ::
 
                 default = None
+
+        train_only_loc : str, Path or None, optional
+            This parameter is depreciated for working with Dataset!
+
+            Location of a file to load in train_only subjects,
+            where any subject loaded as train_only will be assigned to
+            every training fold, and never to a testing fold.
+            This file should be formatted as one subject per line.
+
+            You can load from a loc and pass subjects, the subjects
+            from each source will be merged.
+
+            This parameter is compatible with groups / stratify.
+
+            ::
+
+                default = None
         '''
 
         self.groups = groups
         self.stratify = stratify
         self.train_only_loc = train_only_loc
         self.train_only_subjects = train_only_subjects
+
+        if groups is not None and stratify is not None:
+            raise RuntimeError('Warning: BPt does not currently '
+                               'support groups and'
+                               'stratify together!'
+                               'Please use only one.')
+
+        if not isinstance(groups, str) and groups is not None:
+            raise RuntimeError('Passing non str for groups is depreciated. '
+                               ' Instead, first use the function'
+                               ' add_unique_overlap(cols=..., new_cols=...) to'
+                               ' create explicitly the specified new values.')
+
+        if not isinstance(stratify, str) and stratify is not None:
+            raise RuntimeError('Passing non str for stratify is depreciated. '
+                               ' Instead, first use the function'
+                               ' add_unique_overlap(cols=..., new_cols=...) to'
+                               ' create explicitly the specified new values.')
 
 
 class CV_Split(Params):
@@ -2537,6 +2547,7 @@ class CV_Split(Params):
                                          test_size=self.split,
                                          random_state=self._random_state,
                                          return_index=True)
+
 
 class CV_Splits(Params):
 

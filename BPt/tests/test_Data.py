@@ -258,11 +258,6 @@ class Test_Data(TestCase):
         self.assertTrue(len(self.ML.cv.stratify) == 5)
         self.assertTrue(len(np.unique(self.ML.cv.stratify)) == 2)
 
-        self.ML.Define_Validation_Strategy(stratify=[self.ML.targets_keys[0],
-                                                     'education'])
-        self.assertTrue(len(self.ML.cv.stratify) == 5)
-        self.assertTrue(len(np.unique(self.ML.cv.stratify)) == 5)
-
         # Load target as categorical
         self.ML.Load_Targets(loc=loc, col_name='sex', data_type='c',
                              dataset_type='custom', clear_existing=True)

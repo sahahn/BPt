@@ -1,3 +1,5 @@
+
+
 class Select(list):
     '''The Select object is an BPt specific Input Wrapper designed
     to allow hyper-parameter searches to include not
@@ -225,7 +227,7 @@ class Value_Subset():
 
      ::
 
-        Value_Subset(name, value)
+        Value_Subset(name, values)
 
     Where name is the name of a loaded Strat column / feature,
     and value is the subset of values from that column to select subjects by.
@@ -239,36 +241,46 @@ class Value_Subset():
         subjects = Value_Subset('sex', 0)
 
     Which would specify only subjects with 'sex' equal to 0.
-    You may also pass a list-like set of multiple columns to the name param.
-    In this case, the overlap
-    across all passed names will be computed, for example:
+    You may also optionally pass more than one value to values, E.g.,
 
     ::
 
-        subjects = Value_Subset(['sex', 'race'], 0)
+        subjects = Values_Subset(name='site', values=[0, 1, 5])
 
-    Where 'race' is another valid loaded Strat, would select
-    only subjects with a value of 0 in the computed unique
-    overlap across 'sex' and 'race'.
+    Would select the subset of subjects from sites 0, 1 and 5.
 
-    Note it might be hard to tell what a value of 0 actually means,
-    especially when you compose
-    across multiple variables. With that in mind, as long as verbose
-    is set to True, upon computation
-    of the subset of subjects a message with be printed indicating
-    what the passed value corresponds to
-    in all of the combined variables, e.g., in the example above
-    you would get the print out 'sex' = 0, 'race' = 0.
+    There is one more parameter which represents if encoded values should be
+    used or not. What this asks is that should the actual ordinal post encoded
+    value be specified, or the should the value be set based on the original
+    encoded name. For example, let's say sex originally had values 'M' and 'F'
+    and then binarize was used to set it to 0 and 1. If encoded_values is set
+    as the default value of False, then you must pass value = 0 or 1, but
+    if encoded_values = True, then you must pass value = 'M' or 'F'. E.g.,
+
+    ::
+
+        subjects = Value_Subset('sex', 'M', encoded_values=True)
+
     '''
+
     input_type = 'value_subset'
 
-    def __init__(self, name, value):
+    def __init__(self, name, values, encoded_values=False):
+
         self.name = name
-        self.value = value
+        self.values = values
+        self.encoded_values = encoded_values
+
+        if isinstance(self.name, list):
+            raise ValueError('name cannot be list / array-like!')
+
+        if not isinstance(self.encoded_values, bool):
+            raise ValueError('encoded_values must be a bool')
 
     def __repr__(self):
         return 'Value_Subset(name=' + str(self.name) + ', value=' + \
-          str(self.value) + ')'
+          str(self.value) + ', encoded_values=' + \
+          str(self.encoded_values) + ')'
 
     def __str__(self):
         return self.__repr__()
@@ -278,61 +290,6 @@ def is_value_subset(obj):
 
     try:
         if obj.input_type == 'value_subset':
-            return True
-        return False
-
-    except AttributeError:
-        return False
-
-
-class Values_Subset():
-    '''Value_Subsets is special wrapper class for BPt designed to work with
-    :ref:`Subjects` style input.
-
-    This wrapper is very similar to :class:`Value_Subject`, and will actually
-    function the same in the case that one value for name and one value
-    for values is selected, e.g. the below are equivilent.
-
-    ::
-
-        subjects = Value_Subset(name='sex', value=0)
-        subjects = Values_Subset(name='sex', values=0)
-
-    That said, where Value_Subset, allows passing multiple values for name,
-    but only allows one value for value, Values_Subset only allows one
-    value for name, and multiple values for values.
-
-    Values_Subset therefore lets you select the subset of subjects via
-    one or more values in a loaded Strat variable. E.g.,
-
-    ::
-
-        subjects = Values_Subset(name='site', values=[0,1,5])
-
-    Would select the subset of subjects from sites 0, 1 and 5.
-    '''
-
-    input_type = 'values_subset'
-
-    def __init__(self, name, values):
-        self.name = name
-        self.values = values
-
-        if not isinstance(self.name, str):
-            raise ValueError('name must be a string!')
-
-    def __repr__(self):
-        return 'Values_Subset(name=' + str(self.name) + ', values=' + \
-          str(self.values) + ')'
-
-    def __str__(self):
-        return self.__repr__()
-
-
-def is_values_subset(obj):
-
-    try:
-        if obj.input_type == 'values_subset':
             return True
         return False
 

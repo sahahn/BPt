@@ -295,6 +295,16 @@ class Dataset(pd.DataFrame):
             loaded_subjects =\
                 self._apply_only_level(self.index, only_level)
 
+        elif isinstance(subjects, str) and subjects == 'train':
+            if not hasattr(self, 'train_subjects'):
+                raise RuntimeError('Train subjects undefined')
+            loaded_subjects = self.train_subjects
+
+        elif isinstance(subjects, str) and subjects == 'test':
+            if not hasattr(self, 'test_subjects'):
+                raise RuntimeError('Test subjects undefined')
+            loaded_subjects = self.test_subjects
+
         # Check for Value Subset or Values Subset
         elif isinstance(subjects, Value_Subset):
             loaded_subjects =\
@@ -1007,6 +1017,8 @@ class Dataset(pd.DataFrame):
             if all_thresh is not None and n_unique < all_thresh:
                 self.add_scope(col, 'category')
 
+        return self
+
     def _drop_or_nan(self, col, to_drop_index, all_to_drop, drop):
         '''Internal helper function for commonly re-used drop or
         nan function.'''
@@ -1564,10 +1576,23 @@ class Dataset(pd.DataFrame):
         except KeyError:
             pass
 
-    
     def get_encoded_values(self, col):
         '''Returns a copy of the column with values replaced, if any
-        valid encoders.'''
+        valid encoders. This function is typically used internally, but
+        may be useful if you are doing custom plotting.
+
+        Parameters
+        -----------
+        col : str
+            A loaded column name in which to return the
+            encoded values as a Series.
+
+        Returns
+        -----------
+        values : Series
+            Returns a Series with values as the encoded values.
+
+        '''
 
         # Check encoders init'ed
         self._check_encoders()
@@ -1807,8 +1832,15 @@ class Dataset(pd.DataFrame):
     from ._plotting import (plot,
                             show,
                             info,
+                            plot_bivar,
+                            _plot_cat_cat,
+                            _plot_cat_float,
+                            _plot_float_float,
                             plot_vars,
-                            _plot_category)
+                            _get_plot_values,
+                            _plot_float,
+                            _plot_category,
+                            _print_plot_info)
 
     from ._encoding import (binarize,
                             _base_binarize,

@@ -1,6 +1,6 @@
 from .main.BPt_ML import BPt_ML, Load
 from .main.BPt_ML import BPt_ML as ABCD_ML
-from .main.Dataset import Dataset
+from .dataset.Dataset import Dataset
 from .main.Params_Classes import (Loader, Imputer, Scaler, Transformer,
                                   Feat_Selector, Model, Ensemble,
                                   Param_Search, Feat_Importance,

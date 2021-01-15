@@ -133,12 +133,12 @@ This section is devoted as a placeholder with more detailed information about di
 In particular, you will often find within other sections of the documentation links to sub-sections within the sections as a way
 of referring to a more detailed explanation around a concept when warranted. 
 
-.. _Scopes:
+.. _Scope:
 
-Scopes
+Scope
 =======
 
-Scopes represent a key concept within BPt, that are present when preparing data with
+Scope's represent a key concept within BPt, that are present when preparing data with
 the :ref:`Dataset` class, and during ML. The `scope` argument can also be
 found across different :class:`Model_Pipeline <BPt.Model_Pipeline>` pieces
 and within :class:`Problem_Spec <BPt.Problem_Spec>`. The fundamental idea is
@@ -149,7 +149,7 @@ concept of 'scope' and the 'scope' parameter.
 The concept of scopes extends beyond the :ref:`Dataset` class to the rest of
 BPt. The fundamental idea is that it provides a utility for more easily selecting different
 subsets of columns from the full dataset. This is accomplished by providing different functions
-and methods with a `scope` argument, which accepts any BPt style :ref:`Scopes` inputs, and then
+and methods with a `scope` argument, which accepts any BPt style :ref:`Scope` input, and then
 operates just on that subset of columns. For example consider the example below
 with the function :func:`get_cols <Dataset.get_cols>`.
 
@@ -275,6 +275,8 @@ Various functions within BPt, and :ref:`Dataset` can accept subjects or some var
 name as an argument. The parameter can accept a few different values. These are explained below:
 
 1. You may pass any array-like (e.g., list, set, pandas Index, etc...) of subjects directly.
+Warning: Passing a python tuple is reserved for a special MultiIndex case!
+
 For example:
 
 ::
@@ -284,13 +286,15 @@ For example:
 Would select those three subjects.
 
 2. You may pass the location of a text file were subject's names are stored as one subject's
-name per line. For example if subjects.txt contained:
+name per line. Names should be saved with python style types, e.g., quotes around str's, but
+if they are not, it should in most cases still be able to figure out the correct type.
+For example if subjects.txt contained:
 
 ::
 
-  subj1
-  subj2
-  subj3
+  'subj1'
+  'subj2'
+  'subj3'
 
 We could pass:
 
@@ -320,6 +324,66 @@ To select those three subjects.
 4. You can pass the special input wrapper :class:`Value_Subset`. This can be
 used to select subsets of subject by a column's value or values. See :class:`Value_Subset` for more
 information on how this input class is used.
+
+There also exists the case where you may wish for the underlying index of subjects to be a MultiIndex.
+In this case, there is some extra functionality to discuss. Say for example we have a Dataset multiindex'ed
+by subject and eventname, e.g.,
+
+::
+
+  data.set_index(['subject', 'eventname'], inplace=True)
+
+We now have more options for how we might want to index this dataset, and therefore more options
+for valid arguments to pass to a subjects argument. Consider first all of the examples from above,
+where we are just specifying a subject-like index. In this case, all of those arguments will still work,
+and will just return all subjects with all of their eventnames. E.g., assuming there were two eventname values
+for each subjects 'e1' and 'e2':
+
+::
+
+  subjects = ['subj1', 'subj2']
+
+Would select subject eventname pairs:
+('subj1', 'e1'), ('subj1', 'e2'), ('subj2', 'e1'), ('subj2', 'e2')
+and likewise with loading from a text file which just specified 'subj1' and 'subj2'.
+
+Note that if we pass arguments in this manner, BPt will assume they refer to whatever
+index is first, in this case 'subject', and not 'eventname'. If we wish to also select
+explicitly by eventname, we have two options.
+
+1. Pass fully index'ed tuples in an array-like manner, the same as 1. from before, e.g.:
+
+::
+
+  subjects = ('subj1', 'e1'), ('subj2', 'e2')
+
+To just keep 'subj1' at event 'e1' and 'subj2' at 'e2'. Likewise, we
+could select this same subset if subjects.txt was formatted as:
+
+::
+
+  ('subj1', 'e1')
+  ('subj2', 'e2')
+
+2. Our second option is to use the special tuple reserved input. In this case,
+we must pass a python tuple with the same length at the number of levels in the
+underlying MultiIndex, e.g., in the example before, of length two. Each index in the
+tuple will then be used to specify the BPt subjects compatible argument for just that
+level of the index. For example:
+
+::
+
+  subjects = ('all', ['e1'])
+
+Would select all subjects, and then note the array-like list in the second index of the tuple,
+would filter that to include only subject eventname pairs with an eventname of 'e1'. Consider another example:
+
+::
+
+  subjects = ('subjects.txt', 'events.txt')
+
+In this case, the subjects to select would be loaded from 'subjects.txt' and the corresponding eventnames from
+'events.txt'.
 
 
 .. _Pipeline Objects:

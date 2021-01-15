@@ -1,10 +1,9 @@
 import numpy as np
 from ..Dataset import Dataset
 from nose.tools import assert_raises
-from ..Params_Classes import CV
 import os
 import tempfile
-
+from ...main.Params_Classes import CV
 
 def get_fake_dataset():
 
@@ -136,7 +135,7 @@ def test_set_test_split():
 
     df.set_test_split(size=.5, cv=CV(train_only_subjects=[0]),
                       random_state=1)
- 
+
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
     assert 0 in df.train_subjects
@@ -201,3 +200,117 @@ def test_set_train_split():
     with assert_raises(ValueError):
         df.set_train_split(size=1, cv=CV(train_only_subjects=[0, 1]),
                            random_state=1)
+
+    with assert_raises(RuntimeError):
+        df.set_train_split(size=0)
+
+
+def get_fake_multi_index_dataset():
+
+    fake = Dataset()
+    fake['0'] = [1, 2, 3, 4, 5, 6]
+    fake['1'] = [1, 2, 3, 4, 5, 6]
+    fake['2'] = [1, 2, 3, 4, 5, np.nan]
+    fake['subj'] = ['s1', 's2', 's3', 's1', 's2', 's3']
+    fake['event'] = ['e1', 'e1', 'e1', 'e2', 'e2', 'e2']
+    fake.set_index(['subj', 'event'], inplace=True)
+
+    return fake
+
+
+def test_multi_index_proc_cv():
+
+    df = get_fake_multi_index_dataset()
+
+    cv_params = CV(train_only_subjects=['s1'])
+    cv = df._proc_cv(cv_params)
+
+    assert len(cv.train_only) == 2
+    assert df.loc[cv.train_only].shape == (2, 3)
+
+    subjects = df.get_subjects('all', return_as='flat index')
+    assert len(subjects) == 6
+
+    # Make sure flat index works for train only internally
+    _, subjects, train_only = cv.get_train_only(subjects)
+
+    assert len(subjects) == 4
+    assert len(train_only) == 2
+
+
+def test_multi_index_proc_cv_groups():
+
+    df = get_fake_multi_index_dataset()
+    df.copy_as_non_input('0', 'zero')
+
+    cv_params = CV(groups='zero')
+    cv = df._proc_cv(cv_params)
+
+    assert len(cv.groups) == 6
+    assert cv.groups.nunique() == 6
+
+
+def test_multi_index_set_test_split():
+
+    df = get_fake_multi_index_dataset()
+
+    df.set_test_split(size=1, cv=None, random_state=None)
+    assert len(df.test_subjects) == 1
+    assert len(df.train_subjects) == 5
+
+    df.set_test_split(size=0, cv=None, random_state=None)
+    assert len(df.test_subjects) == 0
+    assert len(df.train_subjects) == 6
+
+    df.set_test_split(size=.3, cv=None, random_state=None)
+    assert len(df.test_subjects) == 2
+    assert len(df.train_subjects) == 4
+
+    df.set_test_split(size=.5, cv=CV(train_only_subjects=['s1']),
+                      random_state=1)
+
+    assert len(df.test_subjects) == 2
+    assert len(df.train_subjects) == 4
+    assert df.loc[df.train_subjects].shape == (4, 3)
+    assert ('s1', 'e1') in df.train_subjects
+
+    temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
+    df.save_test_subjects(temp_loc)
+    df.set_test_split(subjects=temp_loc)
+    os.remove(temp_loc)
+
+    assert len(df.test_subjects) == 2
+    assert len(df.train_subjects) == 4
+    assert df.loc[df.train_subjects].shape == (4, 3)
+    assert ('s1', 'e1') in df.train_subjects
+
+
+def test_multi_index_set_train_split():
+
+    df = get_fake_multi_index_dataset()
+
+    df.set_train_split(size=1, cv=None, random_state=None)
+    assert len(df.test_subjects) == 5
+    assert len(df.train_subjects) == 1
+
+    df.set_train_split(size=.2, cv=None, random_state=None)
+    assert len(df.test_subjects) == 5
+    assert len(df.train_subjects) == 1
+
+    df.set_train_split(size=2, cv=CV(train_only_subjects=['s1']),
+                       random_state=1)
+
+    assert len(df.test_subjects) == 2
+    assert len(df.train_subjects) == 4
+    assert df.loc[df.train_subjects].shape == (4, 3)
+    assert ('s1', 'e1') in df.train_subjects
+
+    temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
+    df.save_train_subjects(temp_loc)
+    df.set_train_split(subjects=temp_loc)
+    os.remove(temp_loc)
+
+    assert len(df.test_subjects) == 2
+    assert len(df.train_subjects) == 4
+    assert df.loc[df.train_subjects].shape == (4, 3)
+    assert ('s1', 'e1') in df.train_subjects

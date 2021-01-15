@@ -59,12 +59,25 @@ def base_load_subjects(subjects):
 
             for line in lines:
                 subject = line.rstrip()
+
+                try:
+                    subject = eval(subject)
+                except NameError:
+                    subject = subject
+
                 loaded_subjects.add(subject)
 
     else:
         loaded_subjects = set([s for s in subjects])
 
     return loaded_subjects
+
+
+def save_subjects(loc, subjects):
+
+    with open(loc, 'w') as f:
+        for subject in subjects:
+            f.write(repr(subject) + '\n')
 
 
 def add_new_categories(existing, new_values):
@@ -80,3 +93,11 @@ def add_new_categories(existing, new_values):
 
     # Add in place
     existing.cat.add_categories(list(to_add), inplace=True)
+
+
+def get_str_round(val, places=3):
+
+    if isinstance(val, int):
+        return val
+
+    return str(np.round(float(val), places))

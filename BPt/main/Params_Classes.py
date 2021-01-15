@@ -233,7 +233,7 @@ class Loader(Piece):
 
         scope : :ref:`valid scope<Scopes>`, optional
             `scope` determines on which subset of features the specified loader
-            should transform. See :ref:`Scopes` for more information on
+            should transform. See :ref:`Scope` for more information on
             how scopes can
             be specified.
 
@@ -344,7 +344,7 @@ class Imputer(Piece):
             will try to replace any NaN value present in its input
             features.
 
-            See :ref:`Scopes` for more information on how scopes can
+            See :ref:`Scope` for more information on how scopes can
             be specified.
 
             ::
@@ -355,7 +355,7 @@ class Imputer(Piece):
             `scope` determines on which subset of features
             the imputer should act on.
 
-            :ref:`Scopes`.
+            :ref:`Scope`.
 
             ::
 
@@ -449,7 +449,7 @@ class Scaler(Piece):
 
         scope : :ref:`valid scope<Scopes>`, optional
             `scope` determines on which subset of features the specified scaler
-            should transform. See :ref:`Scopes` for more
+            should transform. See :ref:`Scope` for more
             information on how scopes can
             be specified.
 
@@ -521,7 +521,7 @@ class Transformer(Piece):
         scope : :ref:`valid scope<Scopes>`, optional
             `scope` determines on which subset of features
             the specified transformer
-            should transform. See :ref:`Scopes` for more information
+            should transform. See :ref:`Scope` for more information
             on how scopes can
             be specified.
 
@@ -592,7 +592,7 @@ class Feat_Selector(Piece):
         scope : :ref:`valid scope<Scopes>`, optional
             `scope` determines on which subset of features the specified
             feature selector will have access to.
-            See :ref:`Scopes` for more information on how scopes can
+            See :ref:`Scope` for more information on how scopes can
             be specified.
 
             ::
@@ -670,7 +670,7 @@ class Model(Piece):
 
         scope : :ref:`valid scope<Scopes>`, optional
             `scope` determines on which subset of features the specified model
-            should work on. See :ref:`Scopes` for more
+            should work on. See :ref:`Scope` for more
             information on how scopes can
             be specified.
 
@@ -822,7 +822,7 @@ class Ensemble(Piece):
         scope : :ref:`valid scope<Scopes>`, optional
             `scope` determines on which subset of features the specified
             ensemble model
-            should work on. See :ref:`Scopes` for more
+            should work on. See :ref:`Scope` for more
             information on how scopes can
             be specified.
 
@@ -2301,7 +2301,7 @@ class Problem_Spec(Params):
             run an expiriment with just a subset of the loaded features
             / columns.
 
-            See :ref:`Scopes` for a more detailed explained / guide on how scopes
+            See :ref:`Scope` for a more detailed explained / guide on how scopes
             are defined and used within BPt.
 
             ::

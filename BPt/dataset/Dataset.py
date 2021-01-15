@@ -1,18 +1,15 @@
-from operator import add
-from functools import reduce
 import pandas as pd
 import numpy as np
-from itertools import combinations
-import warnings
-from sklearn.preprocessing import LabelEncoder
+from itertools import combinations, product
+
 from joblib import wrap_non_picklable_objects
 from ..helpers.Data_File import Data_File, load_data_file_proxy
 from copy import copy as shallow_copy
 from copy import deepcopy
 from ..helpers.ML_Helpers import conv_to_list
-from .Dataset_helpers import (base_load_subjects, proc_file_input,
-                              proc_fop, add_new_categories)
-from .Input_Tools import Value_Subset
+from .helpers import (base_load_subjects, proc_file_input,
+                      proc_fop)
+from ..main.Input_Tools import Value_Subset
 
 
 class Dataset(pd.DataFrame):
@@ -116,8 +113,109 @@ class Dataset(pd.DataFrame):
 
         if not hasattr(self, 'encoders'):
             self.encoders = {}
+        elif getattr(self, 'encoders') is None:
+            self.encoders = {}
 
-    def get_subjects(self, subjects, return_as='set'):
+    def _apply_only_level(self, subjects, only_level):
+
+        # If only level not None and MultiIndex - only keep
+        if isinstance(self.index, pd.MultiIndex) and only_level is not None:
+            drop_names = list(self.index.names)
+            drop_names.remove(self.index.names[only_level])
+            subjects = subjects.droplevel(drop_names)
+
+        return set(list(subjects))
+
+    def _get_nan_loaded_subjects(self, only_level):
+
+        # Get nan subjects
+        nan_subjects = self[pd.isnull(self[:]).any(axis=1)].index
+
+        # Apply only level + convert to sat
+        nan_subjects = self._apply_only_level(nan_subjects, only_level)
+
+        return nan_subjects
+
+    def _get_value_subset_loaded_subjects(self, subjects, only_level):
+
+        if subjects.name not in list(self):
+            raise KeyError('Passed Value_Subset name: ' +
+                           repr(subjects.name) +
+                           ' is not loaded')
+
+        # Get the relevant series
+        if subjects.encoded_values:
+            data = self.get_encoded_values(subjects.name)
+        else:
+            data = self[subjects.name]
+
+        # Extract the values as list
+        values = conv_to_list(subjects.values)
+
+        # Get subjects by values
+        loaded_subjects = data[data.isin(values)].index
+
+        # Apply only level + convert to set
+        loaded_subjects =\
+            self._apply_only_level(loaded_subjects, only_level)
+
+        return loaded_subjects
+
+    def _get_base_loaded_subjects(self, subjects, only_level):
+
+        loaded_subjects = base_load_subjects(subjects)
+
+        # In multi-index case
+        if isinstance(self.index, pd.MultiIndex):
+
+            # If want multi-index returned
+            if only_level is None:
+                loaded_subjects = set(self.loc[loaded_subjects].index)
+
+        # Non multi-index case try to cast to correct type
+        else:
+
+            dtype = self.index.dtype.name
+            if 'int' in dtype:
+                loaded_subjects = {int(s) for s in loaded_subjects}
+            elif 'float' in dtype:
+                loaded_subjects = {float(s) for s in loaded_subjects}
+            elif dtype == 'object':
+                loaded_subjects = {str(s) for s in loaded_subjects}
+            else:
+                raise RuntimeError('Index data type:' + dtype + ' '
+                                   'is not currently supported!')
+
+        return loaded_subjects
+
+    def _return_subjects_as(self, subjects, return_as, only_level):
+
+        if return_as == 'set':
+            return subjects
+
+        # If not set, treat as pandas index or flat index case
+        subjects = sorted(list(subjects))
+
+        # If not multi index, just cast and return
+        if not isinstance(self.index, pd.MultiIndex):
+            return pd.Index(data=subjects, name=self.index.name)
+
+        # Multi index case, with only level
+        if only_level is not None:
+            return pd.Index(data=subjects,
+                            name=self.index.names[only_level])
+
+        # RConvert to multi index
+        subjects = list(map(tuple, subjects))
+        multi_index = pd.MultiIndex.from_tuples(
+            subjects, names=self.index.names)
+
+        if return_as == 'flat index':
+            return multi_index.to_flat_index()
+        else:
+            return multi_index
+
+    def get_subjects(self, subjects, return_as='set', only_level=None):
         '''Method to get a set of subjects, from
         a set of already loaded ones, or from a saved location.
 
@@ -133,82 +231,92 @@ class Dataset(pd.DataFrame):
 
             See :ref:`Subjects` for all options.
 
-        return_as : {'set', 'array', 'index'}, optional
+        return_as : {'set', 'index', 'flat index'}, optional
             - If 'set', return as set of subjects.
-            - If 'array', return as sorted numpy array.
             - If 'index', return as sorted pandas index.
+            - If 'flat index', will return as sorted pandas index
+                i.e., the same output as index, when not MultiIndex,
+                but when MultiIndex, will return the index as a flat
+                Index of tuples.
+
+        only_level : int or None, optional
+            This parameter is only relevant when the
+            underlying index is a MultiIndex.
+
+            Note: this param is not relevant
+            when using special tuple style input for subjects.
+
+            ::
+
+                default = None
+
+        Returns
+        ----------
+        subjects : {set, np.array, pd.Index}
+            Based on value of return_as, returns as
+            a set of subjects, sorted numpy array or
+            sorted pandas Index.
         '''
+
+        # input validation
+        if return_as not in ['set', 'index', 'flat index']:
+            raise TypeError('Invalid parameter passed to return as!')
+
+        if isinstance(subjects, tuple):
+
+            if len(subjects) != len(self.index.names):
+                raise RuntimeError('Passed special tuple must match the '
+                                   'number of MultiIndex levels.')
+
+            # Proc each ind seperately
+            inds = []
+            for i, subject_arg in enumerate(subjects):
+                inds.append(self.get_subjects(subject_arg,
+                                              return_as='set',
+                                              only_level=i))
+            # Create set of sets
+            loaded_subjects = set(product(*inds))
+
+            # Return as requested, note only_level fixed as None
+            return self._return_subjects_as(loaded_subjects,
+                                            return_as=return_as,
+                                            only_level=None)
 
         # Check if None
         if subjects is None:
             loaded_subjects = set()
 
-        # Check for special nan keyword
+        # Check for special keywords
         elif isinstance(subjects, str) and subjects == 'nan':
-            nan_subjects = self[pd.isnull(self[:]).any(axis=1)].index
-            loaded_subjects = set(list(nan_subjects))
+            loaded_subjects =\
+                self._get_nan_loaded_subjects(only_level=only_level)
+
+        elif isinstance(subjects, str) and subjects == 'all':
+            loaded_subjects =\
+                self._apply_only_level(self.index, only_level)
 
         # Check for Value Subset or Values Subset
         elif isinstance(subjects, Value_Subset):
-
-            if subjects.name not in list(self):
-                raise KeyError('Passed Value_Subset name: ' +
-                               repr(subjects.name) +
-                               ' is not loaded')
-
-            # Get the relevant series
-            if subjects.encoded_values:
-                data = self.get_encoded_values(subjects.name)
-            else:
-                data = self[subjects.name]
-
-            # Extract the values as list
-            values = conv_to_list(subjects.values)
-
-            # Get subjects by values
-            loaded_subjects = data[data.isin(values)].index
-
-            # Make sure subjects is set-like
-            loaded_subjects = set(list(loaded_subjects))
-
+            loaded_subjects =\
+                self._get_value_subset_loaded_subjects(subjects,
+                                                       only_level=only_level)
         else:
-            loaded_subjects = base_load_subjects(subjects)
+            loaded_subjects =\
+                self._get_base_loaded_subjects(subjects, only_level=only_level)
 
-        # Cast to correct type
-        dtype = self.index.dtype.name
-        if 'int' in dtype:
-            loaded_subjects = {int(s) for s in loaded_subjects}
-        elif 'float' in dtype:
-            loaded_subjects = {float(s) for s in loaded_subjects}
-        elif dtype == 'object':
-            loaded_subjects = {str(s) for s in loaded_subjects}
-        else:
-            raise RuntimeError('Index data type:' + dtype + ' '
-                               'is not currently supported!')
+        # Return based on return as value
+        return self._return_subjects_as(loaded_subjects, return_as,
+                                        only_level=only_level)
 
-        if return_as == 'set':
-            return loaded_subjects
-
-        # Array or index
-        else:
-
-            # Sort and cast to array
-            loaded_subjects = np.array(sorted(list(loaded_subjects)))
-
-            if return_as == 'array':
-                return loaded_subjects
-            elif return_as == 'index':
-                return pd.Index(data=loaded_subjects, name=self.index.name)
-
-        raise TypeError('Invalid parameter passed to as!')
-
-    def apply_inclusions(self, subjects):
+    def apply_inclusions(self, subjects, only_level=None):
         '''This method will drop all subjects
         that do not overlap with the passed subjects to
         this function. In this sense, this method acts
         like a whitelist, where you could pass for example
         only valid subjects that passed some QC, and all
         other's loaded will be dropped.
+
+        This method operates in place.
 
         Parameters
         -----------
@@ -220,7 +328,6 @@ class Dataset(pd.DataFrame):
             array-like of subjects, to name some options.
 
             See :ref:`Subjects` for all options.
-
         '''
 
         # Load inclusions
@@ -233,6 +340,23 @@ class Dataset(pd.DataFrame):
         return self
 
     def apply_exclusions(self, subjects):
+        '''This method will drop all subjects
+        that overlap with the passed subjects to
+        this function.
+
+        This method operates in place.
+
+        Parameters
+        -----------
+        subjects : :ref:`Subjects`
+            This argument can be any of the BPt accepted
+            subject style inputs. E.g., None, 'nan' for subjects
+            with any nan data, the str location of a file
+            formatted with one subject per line, or directly an
+            array-like of subjects, to name some options.
+
+            See :ref:`Subjects` for all options.
+        '''
 
         # Load exclusions
         exclusions = self.get_subjects(subjects, return_as='set')
@@ -270,6 +394,8 @@ class Dataset(pd.DataFrame):
         self._check_cols_type()
 
         if not hasattr(self, 'roles'):
+            self.roles = {}
+        elif getattr(self, 'roles') is None:
             self.roles = {}
 
         # Fill in any column without a role.
@@ -320,10 +446,16 @@ class Dataset(pd.DataFrame):
         return self
 
     def drop_nan_subjects(self, scope):
-        '''This method is a quick helper for
-        dropping all of the subject's which have NaN
-        values for just a given scope.
+        '''This method is used for
+        dropping all of the subjects which have NaN
+        values for a given scope / column.
 
+        Parameters
+        ----------
+        scope : :ref:`Scope`
+            The BPt style :ref:`Scope` input that will be
+            used to determine which column names to drop
+            subjects with missing values by.
         '''
 
         cols = self.get_cols(scope)
@@ -338,6 +470,10 @@ class Dataset(pd.DataFrame):
 
         # If doesnt exist, create scopes
         if not hasattr(self, 'scopes'):
+            self.scopes = {}
+
+        # Or is set to None
+        elif getattr(self, 'scopes') is None:
             self.scopes = {}
 
         # Make sure each col is init'ed with a scope
@@ -364,50 +500,124 @@ class Dataset(pd.DataFrame):
         self._check_scopes()
         return self.scopes
 
-    def add_scope(self, col, scope):
+    def add_scope(self, col, scope_val):
         '''This method is used for adding scopes
         to an existing column.
+
+        See :ref:`Scope` for more information
+        on how scope's are used in BPt. This
+        function specifically is for adding
+        custom, tag-like, scopes to certain columns.
 
         Note: All passed scopes if not a str are
         cast to a str! This means that if a scope of
         say 1 is set, and a scope of "1", they will
-        be equivilent.
+        be equivelent.
+
+        This method is applied in place. Also,
+        see related methods :func:`add_scopes <Dataset.add_scopes>`
+        and :func:`remove_scope <Dataset.remove_scope>`
+
+        Parameters
+        -----------
+        col : str
+            The name of the column in which the scope_val
+            parameter should be added as a scope.
+
+        scope_val : str or array-like of str
+            A single string scope value to add
+            to the column, or an array-like of
+            scope values to all add to the selected
+            col. E.g.,
+
+            ::
+
+                scope_val = '1'
+
+            Would add '1' as a scope
+
+            ::
+
+                scope_val = ['1', '2']
+
+            Would add '1' and '2' as scopes.
         '''
 
         self._check_scopes()
-        self._add_scope(col, scope)
+        self._add_scope(col, scope_val)
 
         return self
 
-    def add_scopes(self, col_to_scopes):
+    def add_scopes(self, scope, scope_val):
+        '''This method is designed as helper for adding a new scope val
+        to a number of columns at once, using the existing scope system.
+        Don't be confused about the arguments, the scope parameter is used
+        to select the columns in which the scope_val should be added as a
+        scope to those columns.
+
+        See :ref:`Scope` for more information
+        on how scope's are used in BPt. This
+        function specifically is for adding
+        custom, tag-like, scopes to certain columns.
+
+        This method is applied in place. Also,
+        see related methods :func:`add_scope <Dataset.add_scope>`
+        and :func:`remove_scopes <Dataset.remove_scopes>`
+
+        Parameters
+        -----------
+        scope : :ref:`Scope`
+            A BPt style :ref:`Scope` used to select a subset of
+            column in which to add new scopes (scope_val) to.
+
+        scope_val : str or array-like of str
+            A single string scope value to add
+            to the columns select by scope, or an array-like of
+            scope values to all add to the selected
+            col. E.g.,
+
+            ::
+
+                scope_val = '1'
+
+            Would add '1' as a scope
+
+            ::
+
+                scope_val = ['1', '2']
+
+            Would add '1' and '2' as scopes.
+        '''
 
         self._check_scopes()
-        for col, scope in zip(col_to_scopes, col_to_scopes.values()):
-            self._add_scope(col, scope)
+
+        cols = self.get_cols(scope)
+        for col in cols:
+            self._add_scope(col, scope_val)
 
         return self
 
-    def _add_scope(self, col, scope):
+    def _add_scope(self, col, scope_val):
 
         # Check if category
-        if scope == 'category':
-            self.scopes[col].add(scope)
+        if scope_val == 'category':
+            self.scopes[col].add(scope_val)
             self[col] = self[col].astype('category')
 
             return self
 
         # If a int or float
-        if isinstance(scope, int) or isinstance(scope, float):
-            scope = str(scope)
+        if isinstance(scope_val, int) or isinstance(scope_val, float):
+            scope_val = str(scope_val)
 
             # @TODO Add a verbose here saying cast to str?
 
         # If str
-        if isinstance(scope, str):
+        if isinstance(scope_val, str):
 
             # Make sure doesn't overlap with loaded column
-            if scope in list(self):
-                raise RuntimeError('Warning scope of: ' + scope + ' '
+            if scope_val in list(self):
+                raise RuntimeError('Warning scope of: ' + scope_val + ' '
                                    'overlaps with a loaded column. This '
                                    'can cause index errors, as if this '
                                    'scope is '
@@ -416,38 +626,91 @@ class Dataset(pd.DataFrame):
                                    'instead of this scope!')
 
             # Add
-            self.scopes[col].add(scope)
+            self.scopes[col].add(scope_val)
 
         # Or assume array-like
         else:
-            for s in set(list(scope)):
+            for s in set(list(scope_val)):
                 self._add_scope(col, s)
 
         return self
 
-    def remove_scope(self, col, scope):
+    def remove_scope(self, col, scope_val):
+        '''This method is used for removing scopes
+        from an existing column.
+
+        See :ref:`Scope` for more information
+        on how scope's are used in BPt. This
+        function specifically is for removing
+        custom, tag-like, scopes to certain columns.
+
+        This method is applied in place.
+
+        See related methods :func:`add_scope <Dataset.add_scope>`
+        and :func:`remove_scopes <Dataset.remove_scopes>`
+
+        Parameters
+        -----------
+        col : str
+            The name of the column in which the scope_val
+            parameter should be removed as a scope.
+
+        scope_val : str or array-like of str
+            A single string scope value to remove
+            from the column, or an array-like of
+            scope values to all remove from the selected
+            column.
+        '''
 
         self._check_scopes()
-        self._remove_scope(col, scope)
+        self._remove_scope(col, scope_val)
 
         return self
 
-    def remove_scopes(self, col_to_scopes):
+    def remove_scopes(self, scope, scope_val):
+        '''This method is used for removing scopes
+        from an existing subset of columns, as selected by
+        the scope parameter.
+
+        See :ref:`Scope` for more information
+        on how scope's are used in BPt. This
+        function specifically is for removing
+        custom, tag-like, scopes to certain columns.
+
+        This method is applied in place.
+
+        See related methods :func:`add_scopes <Dataset.add_scopes>`
+        and :func:`remove_scope <Dataset.remove_scope>`
+
+        Parameters
+        -----------
+        scope : :ref:`Scope`
+            A BPt style :ref:`Scope` used to select a subset of
+            column in which to remove scopes (scope_val).
+
+        scope_val : str or array-like of str
+            A single string scope value to remove
+            from the column(s), or an array-like of
+            scope values to all remove from the selected
+            column(s).
+        '''
 
         self._check_scopes()
-        for col, scope in zip(col_to_scopes, col_to_scopes.values()):
-            self._remove_scope(col, scope)
+
+        cols = self.get_cols(scope)
+        for col in cols:
+            self._remove_scope(col, scope_val)
 
         return self
 
-    def _remove_scope(self, col, scope):
+    def _remove_scope(self, col, scope_val):
 
         try:
-            self.scopes[col].remove(scope)
+            self.scopes[col].remove(scope_val)
 
             # If removing category and currently pandas dtype is category,
             # change to float32.
-            if scope == 'category' and \
+            if scope_val == 'category' and \
                self.scopes[col].dtype.name == 'category':
                 self[col] = self[col].astype('float32')
 
@@ -567,17 +830,19 @@ class Dataset(pd.DataFrame):
         return sorted(list(set(cols)))
 
     def get_values(self, col, dropna=True, reduce_func=np.mean, n_jobs=1):
-        '''Returns either normal values or data file proxy values, e.g.,
-        (pandas Series) for the passed column, with or without NaN values
+        '''This method is used to obtain the either normally loaded and
+        stored values from a passed column, or in the case of a data file
+        column, the data file proxy values will be loaded. There is likewise
+        an option to return these values with and without missing values
         included.
 
         Parameters
         -----------
         col : str
-            The name of the column in which to load values for.
+            The name of the column in which to load/extract values for.
 
         dropna : bool, optional
-            Boolean, if True, return only non-nan values.
+            Boolean argument, if True, return only non-nan values.
             If False, return everything regardless of if NaN.
 
             ::
@@ -609,7 +874,18 @@ class Dataset(pd.DataFrame):
 
                 default = 1
 
+        Returns
+        ---------
+        values : pandas Series
+            This method returns a single Series with the extracted
+            values for the requested column, which either include or
+            exclude missing values and may be data file proxy values
+            depending on the nature of the requested column.
+
         '''
+
+        # Check scopes
+        self._check_scopes()
 
         # Extract base series depending on if dropna
         if dropna:
@@ -652,8 +928,9 @@ class Dataset(pd.DataFrame):
         met the column will be set to categorical, it is not the case
         that if a single condition is not met, then it won't be categorical.
 
-        Fixed behavior is that any column with only two unique non-nan values
-        is considered binary and therefore categorical.
+        Any column with only two unique non-nan values
+        is considered binary- and therefore categorical. This is a
+        fixed behavior of this function.
 
         If any data file's within scope, will always treat as not categorical,
         and further will make sure it is not categorical if for some reason
@@ -661,9 +938,17 @@ class Dataset(pd.DataFrame):
 
         Parameters
         -----------
-        scope : :ref:`Scopes`
-            A valid BPt style scope used to select which columns this
-            function should operate on.
+        scope : :ref:`Scope`, optional
+            Any valid BPt style scope used to select which columns this
+            function should operate on. E.g., if known that only
+            a subset of columns might be categorical, you could
+            specify only this subset to work on.
+
+            By default this is set to 'all', which will check all columns.
+
+            ::
+
+                default = 'all'
 
         obj_thresh : int or None, optional
             This threshold is used for any columns of pandas
@@ -723,6 +1008,8 @@ class Dataset(pd.DataFrame):
                 self.add_scope(col, 'category')
 
     def _drop_or_nan(self, col, to_drop_index, all_to_drop, drop):
+        '''Internal helper function for commonly re-used drop or
+        nan function.'''
 
         # If drop, add to drop list at end
         if drop:
@@ -735,10 +1022,70 @@ class Dataset(pd.DataFrame):
     def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
                                    reduce_func=np.mean, n_jobs=1):
         '''This method is designed to allow dropping a fixed percent of outliers
-        from the requested columns.
+        from the requested columns. This method is designed to work
+        on float type / cont. variables.
+
+        Note: This method operates on each of the columns specified by scope
+        independently. In the case that multiple columns are passed, then the
+        overlap of all outliers from each column will dropped after all
+        have been calculated (therefore the order won't matter).
+
+        This method can be used with data file's as well, the
+        reduce_func and n_jobs parameters are specific to this case.
 
         Parameters
         -----------
+        fop : float, tuple, optional
+            This parameter represents the percent of outliers to drop.
+            It should be passed as a percent, e.g., therefore 1 for
+            one percent, or 5 for five percent.
+
+            This can also be passed as a tuple with two elements, where
+            the first entry represents the percent to filter from the lower
+            part of the distribution and the second element the percent from
+            the upper half of the distribution. For example,
+
+            ::
+
+                filter_outlier_percent = (5, 1)
+
+            This set of parameters with drop 5 percent from the lower part
+            of the distribution and only 1 percent from the top portion.
+            Likewise, you can use None on one side to skip dropping from
+            one half, for example:
+
+            ::
+
+                filter_outlier_percent = (5, None)
+
+            Would drop only five percent from the bottom half, and not drop
+            any from the top half.
+
+            ::
+
+                default = 1
+
+        scope : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to percent this outlier filtering by.
+
+            By default this is set to only the 'float' style data.
+
+            ::
+
+                default = 'float'
+
+        drop : bool, optional
+            By default this function will drop any subject's that are
+            determined as outliers. On the otherhand, you
+            may instead set specific outlier values as NaN values instead.
+            To do this, you can pass drop=False here, and now those specific
+            values identified as outliers will be replaced with NaN.
+
+            ::
+
+                default = True
+
         reduce_func : python function, optional
             The passed python function will be applied only if
             the requested col/column is a 'data file'. In the case
@@ -763,7 +1110,6 @@ class Dataset(pd.DataFrame):
             ::
 
                 default = 1
-
         '''
 
         # Get cols from scope
@@ -818,8 +1164,60 @@ class Dataset(pd.DataFrame):
         from the requested columns based on comparisons with that columns
         standard deviation.
 
+        Note: This method operates on each of the columns specified by scope
+        independently. In the case that multiple columns are passed, then the
+        overlap of all outliers from each column will dropped after all
+        have been calculated (therefore the order won't matter).
+
+        This method can be used with data file's as well, the
+        reduce_func and n_jobs parameters are specific to this case.
+
         Parameters
         -----------
+        n_std : float, tuple, optional
+            This value is used to set an outlier threshold by
+            standrad deviation. For example if passed n_std = 10,
+            then it will be converted internally to (10, 10).
+            This parameter determines outliers as
+            data points within each
+            relevant column (as determined by the scope argument) where their
+            value is less than the mean of the
+            column - n_std[0] * the standard deviation of the column,
+             and greater than the mean of the column + `n_std[1]`
+            * the standard deviation of the column.
+
+            If a single number is passed, that number is applied to
+            both the lower
+            and upper range.
+            If a tuple with None on one side is passed, e.g.
+            (None, 3), then nothing will be taken off
+            that lower or upper bound.
+
+            ::
+
+                default = 10
+
+        scope : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to percent this outlier filtering by.
+
+            By default this is set to only the 'float' style data.
+
+            ::
+
+                default = 'float'
+
+        drop : bool, optional
+            By default this function will drop any subject's that are
+            determined as outliers. On the otherhand, you
+            may instead set specific outlier values as NaN values instead.
+            To do this, you can pass drop=False here, and now those specific
+            values identified as outliers will be replaced with NaN.
+
+            ::
+
+                default = True
+
         reduce_func : python function, optional
             The passed python function will be applied only if
             the requested col/column is a 'data file'. In the case
@@ -844,7 +1242,6 @@ class Dataset(pd.DataFrame):
             ::
 
                 default = 1
-
         '''
 
         # Get cols from scope
@@ -903,18 +1300,59 @@ class Dataset(pd.DataFrame):
 
     def filter_categorical_by_percent(self, drop_percent=1, scope='category',
                                       drop=True):
-        '''This function is designed to allow performing outlier filting
-        on categorical type variables. Note that this function assume
+        '''This method is designed to allow performing outlier filting
+        on categorical type variables. Note that this method assume
         all columns passed are of type 'category', and they if not already
         will be cast first to pandas data type 'category'.
 
         Note: NaN values will be skipped. If desired to treat them as a class,
-        use the method nan_to_class to first.
+        use the method nan_to_class to first. It is worth noting further that
+        this method will not work on data files.
 
-        It is worth noting that this function will not work on data files.
+        This method operates on each of the columns specified by scope
+        independently. In the case that multiple columns are passed, then the
+        overlap of all outliers from each column will dropped after all
+        have been calculated (therefore the order won't matter).
 
         Parameters
         -----------
+        drop_percent : float, optional
+            This parameter acts as a percentage threshold for dropping
+            categories when loading categorical data. This parameter
+            should be passed as a percent, such that a category
+            will be dropped if it makes up less than that % of the data points.
+            For example:
+
+            ::
+
+                drop_percent = 1
+
+            In this case any data points within the
+            relevant categories as specified by scope
+            with a category constituing less than 1% of total
+            vali data points will be dropped (or set to NaN if drop=False).
+
+        scope : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to percent this outlier filtering by.
+
+            By default this is set to only the 'category' style data.
+
+            ::
+
+                default = 'category'
+
+        drop : bool, optional
+            By default this function will drop any subject's that are
+            determined as outliers. On the otherhand, you
+            may instead set specific outlier values as NaN values instead.
+            To do this, you can pass drop=False here, and now those specific
+            values identified as outliers will be replaced with NaN.
+
+            ::
+
+                default = True
+
         '''
 
         # Get cols from scope
@@ -955,7 +1393,25 @@ class Dataset(pd.DataFrame):
         return self
 
     def drop_non_unique(self, scope='all'):
-        '''This method will drop any columns with only one unique value.'''
+        '''This method will drop any columns with only one unique value.
+        This is simply a coarse filtering method for removing fully
+        uninformative variables which may have been
+        loaded or included with a dataset.
+
+        Parameters
+        -----------
+        scope : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to check for only one unique value.
+
+            By default this is set to 'all' and will check all
+            loaded columns
+
+            ::
+
+                default = 'all'
+
+        '''
 
         # Get cols from scope
         cols = self.get_cols(scope)
@@ -971,7 +1427,20 @@ class Dataset(pd.DataFrame):
     def drop_id_cols(self, scope='all'):
         '''This method will drop any str-type / object type columns
         where the number of unique columns is equal
-        to the length of the dataframe.'''
+        to the length of the dataframe.
+
+         scope : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to check.
+
+            By default this is set to 'all' and will check all
+            loaded columns
+
+            ::
+
+                default = 'all'
+
+        '''
 
         # Get cols from scope
         cols = self.get_cols(scope)
@@ -987,6 +1456,21 @@ class Dataset(pd.DataFrame):
         return self
 
     def drop_duplicate_cols(self, scope='all'):
+        '''This method is used for checking to see if there are
+        any columns loaded with duplicate values. If there is, then
+        one of the duplicates will be dropped.
+
+        scope : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to check.
+
+            By default this is set to 'all' and will check all
+            loaded columns
+
+            ::
+
+                default = 'all'
+        '''
 
         # Get cols from scope
         cols = self.get_cols(scope)
@@ -1003,6 +1487,45 @@ class Dataset(pd.DataFrame):
                   exclusions=None,
                   inclusions=None,
                   scope='all'):
+        '''This method is designed to allow
+        dropping columns based on some flexible arguments.
+        Essentially, exclusions, inclusions and scope are
+        all scope style arguments for selecting subsets of columns,
+        and the way they are composed to specify dropping a column
+        is as follows:
+
+        For any given column, if within the columns selected
+        by scope and EITHER in the passed exclusions columns or
+        not in the passed inclusions columns, drop that column.
+
+        inclusions : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which if a column is not in the selected
+            subset of columns, it will be dropped (though if scope is
+            set, then only those columns within scope will be checked to
+            see if outside of the passed inclusions here.)
+
+        exclusions : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which if a column is in the selected
+            subset of columns, it will be dropped (though if scope is
+            set, then only those columns within scope will be checked to
+            see if inside of the passed inclusions here.)
+
+        scope : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to apply the combination of exclusions
+            and inclusions to. This is allows for performing inclusions
+            or exclusions on a subset of columns.
+
+            By default this is set to 'all' and will consider all
+            loaded columns.
+
+            ::
+
+                default = 'all'
+
+        '''
 
         # Get cols from scope
         cols = self.get_cols(scope)
@@ -1041,202 +1564,7 @@ class Dataset(pd.DataFrame):
         except KeyError:
             pass
 
-    def binarize(self, scope, base=False, threshold=None, lower=None,
-                 upper=None, replace=True, drop=True):
-        '''This method contains a few different common utilities
-        for binarizing a variable. These range from simply cleaning
-        up an existing binary variable, to dichatomizing an existing one,
-        to dichatomizing an existing one with two thresholds
-        (essentially chopping out the middle of the distribution).
-
-        Note: This function will not work on data files.
-
-        Parameters
-        -----------
-
-        replace : bool, optional
-
-            Note: Ignored if base == True.
-
-        drop : bool, optional
-            Note: This parameter is only relevant if using
-            the configuration with parameter's upper and lower.
-
-        '''
-
-        # Input checks
-        if base is False:
-            if threshold is None and lower is None and upper is None:
-                raise RuntimeError('Some value must be set.')
-            if lower is not None and upper is None:
-                raise RuntimeError('Upper must be set.')
-            if upper is not None and lower is None:
-                raise RuntimeError('Lower must be set.')
-
-        # Make sure encoders init'ed
-        self._check_encoders()
-
-        # Get cols from scope
-        cols = self.get_cols(scope)
-
-        # Check for data files
-        self._data_file_fail_check(cols)
-
-        # Binarize each column individually
-        for col in cols:
-
-            # Choose which binarize behavior
-            if base:
-                self._base_binarize(col=col, drop=drop)
-            else:
-                self._binarize(col=col, threshold=threshold, lower=lower,
-                               upper=upper, replace=replace, drop=drop)
-
-        return self
-
-    def _base_binarize(self, col, drop):
-
-        # Extract non-nan values / series
-        values = self.get_values(col, dropna=True)
-
-        # Get non-nan counts
-        unique_vals, counts = np.unique(values, return_counts=True)
-
-        # If only 1 values
-        if len(unique_vals) == 1:
-            warnings.warn('binarize base=True ' + repr(col) + ' was '
-                          'passed with only 1 unique value.')
-
-        # Assuming should be binary, so 2 unique values
-        if len(unique_vals) > 2:
-
-            # Select top two scores by count
-            keep_inds = np.argpartition(counts, -2)[-2:]
-            keep_vals = unique_vals[keep_inds]
-            keep_vals.sort()
-
-            # Get to drop
-            to_drop = values.index[~values.isin(keep_vals)]
-
-            # Drop or NaN
-            if drop:
-                self.drop(list(to_drop), inplace=True)
-            else:
-                self.loc[to_drop, col] = np.nan
-
-        # Ordinalize
-        self._ordinalize(col)
-
-    def _binarize(self, col, threshold, lower, upper, replace, drop):
-
-        # Keep track of initial NaN subjects
-        nan_subjects = self._get_nan_subjects(col)
-
-        # Extract non-nan values / series
-        values = self.get_values(col, dropna=True)
-
-        # Add new column
-        if not replace:
-            new_key = col + '_binary'
-
-            if new_key in self.columns:
-                cnt = 1
-                while new_key + str(cnt) in self.columns:
-                    cnt += 1
-
-                new_key += str(cnt)
-
-            # Make a copy under the new key
-            self._add_new_copy(old=col, new=new_key)
-
-            # Change col to new_key
-            col = new_key
-
-        # If upper and lower passed instead of threshold
-        if threshold is None:
-
-            # Determine subjects that are between the values
-            to_drop = values[(values <= upper) &
-                             (values >= lower)].index
-
-            # If drop
-            if drop:
-                self.drop(to_drop, axis=0, inplace=True)
-
-            # Binarize
-            self[col] = self[col].where(self[col] > lower, 0)
-            self[col] = self[col].where(self[col] < upper, 1)
-
-            # If not dropping, replace as NaN here
-            if not drop:
-                self.loc[to_drop, col] = np.nan
-
-            # Add to name map
-            self.encoders[col] =\
-                {0: '<' + str(lower), 1: '>' + str(upper)}
-
-        # If a single threshold
-        else:
-
-            # Binarize
-            self[col] = self[col].where(self[col] >= threshold, 0)
-            self[col] = self[col].where(self[col] < threshold, 1)
-
-            # Add to name map
-            self.encoders[col] =\
-                {0: '<' + str(threshold), 1: '>=' + str(threshold)}
-
-        # Make sure NaN's are filled in
-        self.loc[nan_subjects, col] = np.nan
-
-        # Make sure category scope
-        self.add_scope(col, 'category')
-
-        return self
-
-    def k_bin(self, scope):
-        pass
-
-    def ordinalize(self, scope):
-
-        # Get cols from scope
-        cols = self.get_cols(scope)
-
-        # Ordinalize each column individually
-        for col in cols:
-            self._ordinalize(col)
-
-    def _ordinalize(self, col):
-
-        # Check encoders init'ed
-        self._check_encoders()
-
-        # Get non-nan values
-        all_values = self[col]
-        non_nan_subjects = all_values[~all_values.isna()].index
-        values = all_values.loc[non_nan_subjects]
-
-        # Perform actual encoding
-        label_encoder = LabelEncoder()
-        new_values = label_encoder.fit_transform(np.array(values))
-
-        # Add any needed new categories to the column
-        add_new_categories(self[col], new_values)
-
-        # Replace values in place
-        self.loc[non_nan_subjects, col] = new_values
-
-        # Convert label encoder to encoder
-        encoder = {}
-        for i, c in enumerate(label_encoder.classes_):
-            encoder[i] = c
-
-        # Save in encoders
-        self.encoders[col] = encoder
-
-        # Make sure col is category type
-        self.add_scope(col, 'category')
-
+    
     def get_encoded_values(self, col):
         '''Returns a copy of the column with values replaced, if any
         valid encoders.'''
@@ -1261,86 +1589,136 @@ class Dataset(pd.DataFrame):
         # Any other cases?
         return values
 
-    def nan_to_class(self, scope='category'):
-        '''This method will cast any columns that were not categorical that are
-        passed here to categorical. Will also ordinally encode them if
-        they have not already been encoded
-        (i.e., by either via ordinalize, binarize, or a simmilar function...).
-        '''
-
-        cols = self.get_cols(scope)
-
-        for col in cols:
-
-            # If this column hasn't been encoded yet, ordinalize
-            if col not in self.encoders:
-                self._ordinalize(col)
-
-            # Get nan subjects
-            all_values = self[col]
-            nan_subjects = all_values[all_values.isna()].index
-
-            # If no nan subjects, skip
-            if len(nan_subjects) == 0:
-                continue
-
-            # Get non-nan values
-            non_nan_subjects = all_values[~all_values.isna()].index
-            values = all_values.loc[non_nan_subjects]
-
-            # Add nan class as next avaliable
-            nan_class = np.max(values.astype(int)) + 1
-            add_new_categories(self[col], [nan_class])
-            self.loc[nan_subjects, col] = nan_class
-
-            # Update encoder entry
-            self.encoders[col][nan_class] = np.nan
-
-        return self
-
     def drop_by_unique_val(self, scope):
         pass
 
     def print_nan_info(self, scope):
         pass
 
-    def copy_as_non_input(self, col, new_col, copy_scopes=False):
-        '''This method is a used for making a copy of an
-        existing column, ordinalizing it and then setting it
-        to have role == non input.
+    def add_data_files(self, files, file_to_subject, load_func=np.load):
+        '''This method is the main way of adding columns of type
+        'data file' to the Dataset class.
 
         Parameters
         ----------
-        col : str
-            The name of the loaded column to make a copy of.
+        files : dict
+            This argument must be passed as a python dict.
+            Specifically, a python dictionary should be passed where
+            each key refers to the name of that feature / column of data files
+            to load, and the value is a python list, or array-like of
+            str file paths.
 
-        new_col : str
-            The new name of the non input column
+            In addition to this parameter, you must also pass a
+            python function to the file_to_subject param,
+            which specifies how to convert from passed
+            file path, to a subject name.
 
-        copy_scopes : bool, optional
-            If the associated scopes with the original column should be copied
-            over as well.
+            E.g., consider the example below, where 2 subjects files are
+            loaded for 'feat1' and feat2':
 
             ::
 
-                default = False
+                files = {'feat1': ['f1/subj_0.npy', 'f1/subj_1.npy'],
+                         'feat2': ['f2/subj_0.npy', 'f2/subj_1.npy']}
+
+                def file_to_subject_func(file):
+                    subject = file.split('/')[1].replace('.npy', '')
+                    return subject
+
+                file_to_subject = file_to_subject_func
+                # or
+                file_to_subject = {'feat1': file_to_subject_func,
+                                   'feat2': file_to_subject_func}
+
+            In this example, subjects are loaded as 'subj_0' and 'subj_1',
+            and they have associated loaded data files 'feat1' and 'feat2'.
+
+        file_to_subject : python function or dict of
+            If files is passed, then you also need to specify a function
+            which takes in a file path, and returns the relevant subject for
+            that file path. If just one function is passed, it will be used
+            for to load all dictionary entries, alternatively you can pass
+            a matching dictionary of funcs, allowing for different funcs
+            for each feature to load.
+
+            See the example in files, e.g.,
+
+            ::
+
+                file_to_subject = file_to_subject_func
+                # or
+                file_to_subject = {'feat1': file_to_subject_func,
+                                   'feat2': file_to_subject_func}
+
+            In the case that the underlying index is a MultiIndex, this
+            function should be designed to return the subject in correct
+            tuple form. E.g.,
+
+            ::
+
+                # The underlying dataset is indexed by subject and event
+                data.set_index(['subject', 'event'], inplace=True)
+
+                # Only one feature
+                files = {'feat1': ['f1/s0_e0.npy',
+                                   'f1/s0_e1.npy',
+                                   'f1/s1_e0.npy',
+                                   'f1/s1_e1.npy']}
+
+                def file_to_subject_func(file):
+
+                    # This selects the substring
+                    # at the last part seperated by the '/'
+                    # so e.g. the stub, 's0_e0.npy', 's0_e1.npy', etc...
+                    subj_split = file.split('/')[-1]
+
+                    # This removes the .npy from the end, so
+                    # stubs == 's0_e0', 's0_e1', etc...
+                    subj_split = subj_split.replace('.npy', '')
+
+                    # Set the subject name as the first part
+                    # and the eventname as the second part
+                    subj_name = subj_split.split('_')[0]
+                    event_name = subj_split.split('_')[1]
+
+                    # Lastly put it into the correct return style
+                    # This is tuple style e.g., ('s0', 'e0'), ('s0', 'e1')
+                    ind = (subj_name, eventname)
+
+                    return ind
+
+            While this is a bit longer than the previous case, it is flexible.
+
+        load_func : python function, optional
+            Fundamentally columns of type 'data file' represent
+            a path to a saved file, which means you must
+            also provide some information on how to load the saved file.
+            This parameter is where that loading function should be passed.
+            The passed `load_func` will be called on each file individually
+            and whatever the output of the function is will be passed to
+            the different loading functions.
+
+            You might need to pass a user defined custom function
+            in some cases, e.g., you want to use np.load,
+            but then also np.stack. Just wrap those two functions in one,
+            and pass the new function.
+
+            ::
+
+                def my_wrapper(x):
+                    return np.stack(np.load(x))
+
+            In this case though, it is reccomended that
+            you define this function in a seperate file from
+            where the main script will be run (for ease of caching)
+
+            By default this function assumes data files are passed
+            as numpy arrays.
+
+            ::
+
+                default = np.load
         '''
-
-        # Copy as new col
-        self[new_col] = self[col].copy()
-
-        # Only copy scopes if requested, and do before
-        # ordinalize call
-        if copy_scopes:
-            self.scopes[new_col] = self.scopes[col].copy()
-
-        # Ordinalize
-        self._ordinalize(new_col)
-
-        # Set new role
-        self.set_role(new_col, 'non input')
-
-    def add_data_files(self, files, file_to_subject, load_func):
 
         # Wrap load_func here if needed.
         if load_func.__module__ == '__main__':
@@ -1372,7 +1750,7 @@ class Dataset(pd.DataFrame):
             for subject in series.index:
 
                 # Create data file and add to file mapping
-                data_file = Data_File(series.loc[subject], wrapped_load_func)
+                data_file = Data_File(series[subject], wrapped_load_func)
                 self.file_mapping[cnt] = data_file
 
                 # Replace cnt index in data
@@ -1397,6 +1775,19 @@ class Dataset(pd.DataFrame):
         return super().rename(**kwargs)
 
     def copy(self, deep=True):
+        '''Creates and returns a dopy of this dataset, either
+        a deep copy or shallow.
+
+        Parameters
+        ----------
+        deep : bool, optional
+            If the returned copy should be
+            a deep copy (True), or a shallow copy (False).
+
+            ::
+
+                default == True
+        '''
 
         # Base parent pandas behavior
         dataset = super().copy(deep=deep)
@@ -1413,118 +1804,28 @@ class Dataset(pd.DataFrame):
 
         return dataset
 
-    def add_unique_overlap(self, cols, new_col, encoded_values=True):
-        '''This function is designed to add a new column
-        with the overlapped unique values from passed two or more columns.
-        For example, say you had two binary columns, A and B. This function
-        would compute a new column with 4 possible values, where:
+    from ._plotting import (plot,
+                            show,
+                            info,
+                            plot_vars,
+                            _plot_category)
 
-        ::
+    from ._encoding import (binarize,
+                            _base_binarize,
+                            _binarize,
+                            k_bin,
+                            _k_bin,
+                            ordinalize,
+                            _ordinalize,
+                            nan_to_class,
+                            copy_as_non_input,
+                            add_unique_overlap)
 
-            A == 0 and B == 0, A == 0 and B == 1,
-            A == 1 and B == 0 and A == 1 and B == 1
-
-            0    A=0 B=0
-            1    A=0 B=1
-            2    A=1 B=1
-            3    A=0 B=0
-            ...
-
-        The new added column will be default be added with role data,
-        except if all of the passed cols have a different role. In the
-        case that all of the passed cols have the same role, the new
-        col will share that role.
-
-        Simmilar to role, the scope of the new column will be the overlap
-        of shared scopes from all of the passed new_col. If no overlap,
-        then no scope.
-
-        Parameters
-        -----------
-        cols : list of str
-            The names of the columns to compute the overlap with.
-            E.g., in the example above, cols = ['A', 'B'].
-
-            Note: You must pass atleast two columns here.
-
-        new_col : str
-            The name of the new column where these values will be stored.
-
-        encoded_values : bool, optional
-            This is an optional parameter, which is set to True
-            will when creating the overlapping values will try to
-            replace values with the encoded value (if any). For example
-            if a variable being added had an originally encoded values of
-            'cat' and 'dog', then the replace value before ordinalization
-            would be col_name=cat and col_name=dog, vs. if set to False
-            would have values of col_name=0 and col_name=1.
-
-            ::
-
-                default = True
-
-        '''
-
-        # Some input validation, make sure str
-        if isinstance(cols, str):
-            raise RuntimeError('You must pass cols as a list or array-like.')
-
-        # Make sure 2 or more cols
-        if len(cols) < 2:
-            raise RuntimeError('cols must be of length 2 or more.')
-
-        # Make sure passed cols exist
-        for col in cols:
-            if col not in list(self):
-                raise KeyError('Passed col: ' + col + ' is not a valid '
-                               'loaded column.')
-
-        # Make sure new col doesn't exist
-        if new_col in list(self):
-            raise KeyError('Passed new col: ' + new_col + ' already exists!')
-
-        # Generate a list of modified series
-        combo = []
-        for col in cols:
-
-            if encoded_values:
-                vals = self.get_encoded_values(col)
-            else:
-                vals = self[col]
-
-            combo.append(col + '=' + vals.astype(str) + ' ')
-
-        # Combine
-        combo = reduce(add, combo)
-
-        # Add as new column
-        self[new_col] = combo
-
-        # If all roles agree, set new col as
-        roles = set([self.roles[col] for col in cols])
-        if len(roles) == 1:
-            self.set_role(new_col, roles.pop())
-
-        # Add scope if in all passed
-        scopes = [self.scopes[col] for col in cols]
-        for scope in scopes[0]:
-            in_rest = [scope in other for other in scopes[1:]]
-            if all(in_rest):
-                self.add_scope(new_col, scope)
-
-        # Lastly, ordinalize
-        self._ordinalize(new_col)
-
-    from .Dataset_Plotting import (plot,
-                                   show,
-                                   info,
-                                   plot_vars,
-                                   _plot_category)
-
-    from .Dataset_Validation import (_validate_cv_key,
-                                     _proc_cv,
-                                     _validate_split,
-                                     set_test_split,
-                                     set_train_split,
-                                     save_test_subjects,
-                                     save_train_subjects)
+    from ._validation import (_validate_cv_key,
+                              _proc_cv,
+                              _validate_split,
+                              _finish_split,
+                              set_test_split,
+                              set_train_split,
+                              save_test_subjects,
+                              save_train_subjects)

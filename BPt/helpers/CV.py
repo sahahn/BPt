@@ -72,7 +72,7 @@ class CV(BaseEstimator):
     def __str__(self):
         return self.__repr__()
 
-    def repeated_train_test_split(self, subjects, n_repeats, test_size=.2, 
+    def repeated_train_test_split(self, subjects, n_repeats, test_size=.2,
                                   random_state=None, return_index=False):
 
         subject_splits = []
@@ -307,8 +307,9 @@ class CV(BaseEstimator):
             original_subjects = pd.Index(original_subjects)
 
         if self.train_only is not None:
-            train_only = np.intersect1d(subjects, self.train_only,
-                                        assume_unique=True)
+
+            # Calculate train only
+            train_only = subjects.intersection(self.train_only)
 
             # If groups, then train only also includes any subjects
             # with the same group ID. Though don't apply for e.g.
@@ -323,11 +324,11 @@ class CV(BaseEstimator):
                 train_only =\
                     groups[groups.isin(train_only_unique_groups)].index
 
-            subjects = np.setdiff1d(subjects, train_only,
-                                    assume_unique=True)
+            # Set subjects as the difference between subjects and train only
+            subjects = subjects.difference(train_only)
 
         else:
-            train_only = np.array([])
+            train_only = pd.Index(data=[])
 
         return original_subjects, subjects, train_only
 
@@ -406,7 +407,3 @@ class CV(BaseEstimator):
                                                   test_size=splits,
                                                   random_state=random_state,
                                                   return_index=return_index)
-
-
-                                
-

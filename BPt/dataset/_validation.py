@@ -1,4 +1,5 @@
 from ..helpers.CV import CV
+from .helpers import save_subjects
 import pandas as pd
 
 
@@ -30,6 +31,10 @@ def _proc_cv(self, cv_params):
     '''This function accepts cv_params and returns
     a CV object.'''
 
+    # Check scopes and roles
+    self._check_scopes()
+    self._check_roles()
+
     # If None, return base
     if cv_params is None:
         return CV()
@@ -42,7 +47,7 @@ def _proc_cv(self, cv_params):
 
     # Load train_only_subjects as sorted numpy array
     train_only_subjects = self.get_subjects(cv_params.train_only_subjects,
-                                             return_as='array')
+                                            return_as='flat index')
 
     # @TODO verbose statement saying X number of train_only_subjects loaded,
     # and also how many of those actually overlap with loaded subjects, and
@@ -105,6 +110,19 @@ def _validate_split(self, size, subjects):
         raise TypeError('Either size or subjects must be non-null.')
     elif size is not None and subjects is not None:
         raise TypeError('Only size or subjects can be passed, not both.')
+
+
+def _finish_split(self):
+
+    # Save in class, pd.Index style
+    self.train_subjects = pd.Index(self.train_subjects,
+                                   name=self.index.name)
+    self.test_subjects = pd.Index(self.test_subjects,
+                                  name=self.index.name)
+
+    self._print('Performed train/test split', level=1)
+    self._print('Train size:', len(self.train_subjects), level=1)
+    self._print('Test size: ', len(self.test_subjects), level=1)
 
 
 def set_test_split(self, size=None, subjects=None,
@@ -185,8 +203,15 @@ def set_test_split(self, size=None, subjects=None,
 
         # Check for if size 0
         if size == 0:
-            self.test_subjects = self.get_subjects(None, return_as='index')
-            self.train_subjects = self.index
+            self.test_subjects =\
+                self.get_subjects(None, return_as='index')
+
+            # If multi index, set as flat index
+            if isinstance(self.index, pd.MultiIndex):
+                self.train_subjects = self.index.to_flat_index()
+            else:
+                self.train_subjects = self.index
+
             self._print('Warning: Test size of 0 passed, all subjects will be',
                         'considered train subjects.', level=0)
 
@@ -222,26 +247,17 @@ def set_test_split(self, size=None, subjects=None,
     else:
 
         # Load all test subjects
-        test_subjects = self.get_subjects(subjects, return_as='set')
+        self.test_subjects = self.get_subjects(subjects, return_as='set')
 
         # Take only the overlap of the passed subjects with what is loaded
-        test_subjects = [subject for subject in test_subjects
-                         if subject in self.index]
+        self.test_subjects = [subject for subject in self.test_subjects
+                              if subject in self.index]
 
         # Set remaining subjects to train subjects
-        train_subjects = [subject for subject in self.index
-                          if subject not in test_subjects]
+        self.train_subjects = [subject for subject in self.index
+                               if subject not in self.test_subjects]
 
-        # Save in class, pd.Index style
-        self.train_subjects = pd.Index(train_subjects,
-                                       name=self.index.name)
-        self.test_subjects = pd.Index(test_subjects,
-                                      name=self.index.name)
-
-    self._print('Performed train test split', level=1)
-    self._print('Train size:', len(self.train_subjects), level=1)
-    self._print('Test size: ', len(self.test_subjects), level=1)
-
+    self._finish_split()
     return self
 
 
@@ -328,10 +344,7 @@ def set_train_split(self, size=None, subjects=None,
 
         # Check for if size 0
         if size == 0:
-            self.train_subjects = self.get_subjects(None, return_as='index')
-            self.test_subjects = self.index
-            self._print('Warning: Train size of 0 passed, all subjects will',
-                        'be considered test subjects.', level=0)
+            raise RuntimeError('Train size of 0 not allowed!')
 
         # Otherwise perform split according to size, cv and random_state
         else:
@@ -371,26 +384,17 @@ def set_train_split(self, size=None, subjects=None,
     else:
 
         # Load all train subjects
-        train_subjects = self.get_subjects(subjects, return_as='set')
+        self.train_subjects = self.get_subjects(subjects, return_as='set')
 
         # Take only the overlap of the passed subjects with what is loaded
-        train_subjects = [subject for subject in train_subjects
-                          if subject in self.index]
+        self.train_subjects = [subject for subject in self.train_subjects
+                               if subject in self.index]
 
         # Set remaining subjects to test subjects
-        test_subjects = [subject for subject in self.index
-                         if subject not in train_subjects]
+        self.test_subjects = [subject for subject in self.index
+                              if subject not in self.train_subjects]
 
-        # Save in class, pd.Index style
-        self.train_subjects = pd.Index(train_subjects,
-                                       name=self.index.name)
-        self.test_subjects = pd.Index(test_subjects,
-                                      name=self.index.name)
-
-    self._print('Performed train test split', level=1)
-    self._print('Train size:', len(self.train_subjects), level=1)
-    self._print('Test size: ', len(self.test_subjects), level=1)
-
+    self._finish_split()
     return self
 
 
@@ -401,9 +405,7 @@ def save_test_subjects(self, loc):
     if self.test_subjects is None:
         raise RuntimeError('No train test split defined')
 
-    with open(loc, 'w') as f:
-        for subject in self.test_subjects:
-            f.write(str(subject) + '\n')
+    save_subjects(loc, self.test_subjects)
 
 
 def save_train_subjects(self, loc):
@@ -413,6 +415,4 @@ def save_train_subjects(self, loc):
     if self.train_subjects is None:
         raise RuntimeError('No train test split defined')
 
-    with open(loc, 'w') as f:
-        for subject in self.train_subjects:
-            f.write(str(subject) + '\n')
+    save_subjects(loc, self.train_subjects)

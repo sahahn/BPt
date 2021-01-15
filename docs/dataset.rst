@@ -41,7 +41,7 @@ There are three roles in the :ref:`Dataset` class / BPt. These are
 Scope
 ======
 
-See concept :ref:`Scopes`. In particular, with respect to the
+See concept :ref:`Scope`. In particular, with respect to the
 :ref:`Dataset` class is the option for passing the name of a scope.
 Functions: :func:`add_scope <Dataset.add_scope>`,
 :func:`add_scopes <Dataset.add_scopes>`, :func:`remove_scope <Dataset.remove_scope>`
@@ -102,6 +102,8 @@ been cast as a :ref:`Dataset`. While a great deal will continue to work, their a
 certain types of operations which can end up either re-casting the result back to
 a DataFrame (therefore losing all of the Dataset's metadata), or renaming columns,
 which may cause internal errors and metadata loss.
+
+Safe original pandas functions to use are typically ones that you can call inplace = True!
 
 
 .. _Dataset:

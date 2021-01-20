@@ -64,6 +64,8 @@ class Dataset(pd.DataFrame):
 
         if not hasattr(self, 'verbose'):
             self.verbose = 0
+        elif getattr(self, 'verbose') is None:
+            self.verbose = 0
 
     def _check_test_subjects(self):
 
@@ -78,6 +80,8 @@ class Dataset(pd.DataFrame):
     def _check_file_mapping(self):
 
         if not hasattr(self, 'file_mapping'):
+            self.file_mapping = {}
+        elif getattr(self, 'file_mapping') is None:
             self.file_mapping = {}
 
         # Check to remove any non relevant file mappings
@@ -395,7 +399,7 @@ class Dataset(pd.DataFrame):
             rename = {c: str(c) for c in non_str}
             super().rename(mapper=rename, index='columns')
 
-            self._print('Warning: the columns: ', repr(non_str),
+            self._print('Warning: the columns:', repr(non_str),
                         'were cast to str', level=0)
 
     def _check_roles(self):
@@ -455,6 +459,15 @@ class Dataset(pd.DataFrame):
 
         return self
 
+    def _drop_subjects(self, subjects):
+
+        if len(subjects) > 0:
+
+            self.drop(subjects, axis=0, inplace=True)
+            self._print('Dropped:', len(subjects), level=1)
+
+        return self
+
     def drop_nan_subjects(self, scope):
         '''This method is used for
         dropping all of the subjects which have NaN
@@ -471,7 +484,9 @@ class Dataset(pd.DataFrame):
         cols = self.get_cols(scope)
         for col in cols:
             nan_subjects = self._get_nan_subjects(col)
-            self.drop(nan_subjects, inplace=True)
+            self._drop_subjects(nan_subjects)
+
+        return self
 
     def _check_scopes(self):
 
@@ -1017,6 +1032,11 @@ class Dataset(pd.DataFrame):
             if all_thresh is not None and n_unique < all_thresh:
                 self.add_scope(col, 'category')
 
+        self._print('Num. categorical variables in dataset:',
+                    len(self.get_cols(scope='category')), level=1)
+        self._print('Categorical variables in dataset:',
+                    self.get_cols(scope='category'), level=2)
+
         return self
 
     def _drop_or_nan(self, col, to_drop_index, all_to_drop, drop):
@@ -1163,7 +1183,7 @@ class Dataset(pd.DataFrame):
 
         # Drop now, if to drop
         if drop:
-            self.drop(list(all_to_drop), inplace=True)
+            self.drop(list(all_to_drop), axis=0, inplace=True)
 
         # Update file mapping if needed
         self._check_file_mapping()
@@ -1296,7 +1316,7 @@ class Dataset(pd.DataFrame):
 
         # Drop now, if to drop
         if drop:
-            self.drop(list(all_to_drop), inplace=True)
+            self._drop_subjects(all_to_drop)
 
         # Update file mapping if needed
         self._check_file_mapping()
@@ -1400,40 +1420,18 @@ class Dataset(pd.DataFrame):
 
         # Drop now, if to drop
         if drop:
-            self.drop(list(all_to_drop), inplace=True)
+            self._drop_subjects(all_to_drop)
 
         return self
 
-    def drop_non_unique(self, scope='all'):
-        '''This method will drop any columns with only one unique value.
-        This is simply a coarse filtering method for removing fully
-        uninformative variables which may have been
-        loaded or included with a dataset.
+    def _drop_cols(self, to_drop):
 
-        Parameters
-        -----------
-        scope : :ref:`Scope`, optional
-            A BPt style :ref:`Scope` used to select a subset of
-            columns in which to check for only one unique value.
+        if len(to_drop) > 0:
 
-            By default this is set to 'all' and will check all
-            loaded columns
+            self.drop(to_drop, axis=1, inplace=True)
+            self._print('Dropped:', len(to_drop), 'columns', level=1)
+            self._print('Dropped:', to_drop, level=2)
 
-            ::
-
-                default = 'all'
-
-        '''
-
-        # Get cols from scope
-        cols = self.get_cols(scope)
-
-        to_drop = []
-        for col in cols:
-            if len(self[col].unique()) == 1:
-                to_drop.append(col)
-
-        self.drop(to_drop, axis=1, inplace=True)
         return self
 
     def drop_id_cols(self, scope='all'):
@@ -1464,7 +1462,8 @@ class Dataset(pd.DataFrame):
                 if len(self[col].unique()) == len(self):
                     to_drop.append(col)
 
-        self.drop(to_drop, axis=1, inplace=True)
+        self._drop_cols(to_drop)
+
         return self
 
     def drop_duplicate_cols(self, scope='all'):
@@ -1492,7 +1491,7 @@ class Dataset(pd.DataFrame):
             if np.array_equal(self[col1], self[col2]):
                 to_drop.append(col2)
 
-        self.drop(to_drop, axis=1, inplace=True)
+        self._drop_cols(to_drop)
         return self
 
     def drop_cols(self,
@@ -1510,6 +1509,14 @@ class Dataset(pd.DataFrame):
         by scope and EITHER in the passed exclusions columns or
         not in the passed inclusions columns, drop that column.
 
+        exclusions : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which if a column is in the selected
+            subset of columns, it will be dropped (though if scope is
+            set, then only those columns within scope will be checked to
+            see if inside of the passed inclusions here.)
+
+
         inclusions : :ref:`Scope`, optional
             A BPt style :ref:`Scope` used to select a subset of
             columns in which if a column is not in the selected
@@ -1517,12 +1524,6 @@ class Dataset(pd.DataFrame):
             set, then only those columns within scope will be checked to
             see if outside of the passed inclusions here.)
 
-        exclusions : :ref:`Scope`, optional
-            A BPt style :ref:`Scope` used to select a subset of
-            columns in which if a column is in the selected
-            subset of columns, it will be dropped (though if scope is
-            set, then only those columns within scope will be checked to
-            see if inside of the passed inclusions here.)
 
         scope : :ref:`Scope`, optional
             A BPt style :ref:`Scope` used to select a subset of
@@ -1557,7 +1558,8 @@ class Dataset(pd.DataFrame):
             if col in exclusions or col not in inclusions:
                 to_drop.append(col)
 
-        self.drop(to_drop, axis=1, inplace=True)
+        self._drop_cols(to_drop)
+
         return self
 
     def _add_new_copy(self, old, new):
@@ -1614,8 +1616,174 @@ class Dataset(pd.DataFrame):
         # Any other cases?
         return values
 
-    def drop_by_unique_val(self, scope):
-        pass
+    def drop_cols_by_unique_val(self, threshold=1, scope='all', dropna=True):
+        '''This method will drop any columns with less than or equal to
+        the number of unique values.
+        This is a coarse filtering method for removing
+        uninformative variables which may have been
+        loaded or included with a dataset.
+
+        Parameters
+        -----------
+        threshold : int, optional
+            The threshold in which a column should be dropped
+            if it has less than or equal to this number of
+            unique values.
+
+            For example, the default value of 1, will
+            only drop column with only 1 unique value.
+
+            ::
+
+                default = 1
+
+        scope : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to check for under the unique value threshold.
+
+            By default this is set to 'all' and will check all
+            loaded columns
+
+            ::
+
+                default = 'all'
+
+        dropna : bool, optional
+            This parameter controls if NaN values are
+            ignored when determining how many unique values there
+            are, when set to True, and if set to False will
+            count NaN as a unique value.
+
+            ::
+
+                default = True
+
+        '''
+
+        # Get cols from scope
+        cols = self.get_cols(scope)
+
+        to_drop = []
+        for col in cols:
+            values = self.get_values(col, dropna=dropna)
+            if len(values.unique()) <= threshold:
+                to_drop.append(col)
+
+        self._drop_cols(to_drop)
+
+        return self
+
+    def drop_cols_by_nan(self, threshold=.5, scope='all'):
+        '''This method is used for dropping columns based on
+        the amount of missing values found across all subjects.
+        Each column is dropped if it has greater than or equal
+        to the passed threshold of NaN values.
+
+        Parameters
+        -----------
+        threshold : float or int, optional
+            Passed as a float between 0 and 1, or
+            as an int. If greater than 0 or less than 1,
+            this parameter represents the threshold in which
+            a column should be dropped if it has greater than or
+            equal to this percent of its columns as NaN values.
+
+            If greater than 1, then this threshold represents the
+            absolute value in which if a column has that number
+            of subjects or greater with NaN, it will be dropped.
+
+            For example, if a column has 3 values and 7 NaN values,
+            passing .7 or lower here would drop this column, but passing
+            anything above .7, e.g., .8 would not.
+
+            ::
+
+                default = .5
+
+        scope : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to check for under the NaN value threshold.
+
+            By default this is set to 'all' and will check all
+            loaded columns
+
+            ::
+
+                default = 'all'
+        '''
+
+        # Get cols from scope
+        cols = self.get_cols(scope)
+
+        # Change threshold from percent to abs
+        if threshold > 0 and threshold < 1:
+            threshold = threshold * self.shape[0]
+            self._print('Setting NaN threshold to:', threshold)
+
+        to_drop = []
+        for col in cols:
+            values = self.get_values(col, dropna=False)
+            nan_percent = values.isnull().sum()
+
+            if nan_percent >= threshold:
+                to_drop.append(col)
+
+        self._drop_cols(to_drop)
+
+        return self
+
+    def drop_subjects_by_nan(self, threshold=.5, scope='all'):
+        '''This method is used for dropping subjects based on
+        the amount of missing values found across a subset of
+        columns as selected by scope. Each subject is dropped
+        if it has greater than or equal to the passed threshold
+        of NaN values.
+
+        Parameters
+        -----------
+        threshold : float or int, optional
+            Passed as a float between 0 and 1, or
+            as an int. If greater than 0 or less than 1,
+            this threshold represents the percent of columns
+            a subject needs to have missing for it to be dropped.
+            If 1 or over, then it represents an absolute number of
+            columns that a subject needs to have greater than or equal
+            to that value in order to drop.
+
+            ::
+
+                default = .5
+
+        scope : :ref:`Scope`, optional
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to check for if a subject should be dropped
+            or not.
+
+            By default this is set to 'all' and will check across
+            all loaded subjects.
+
+            ::
+
+                default = 'all'
+        '''
+
+        # Get cols from scope
+        cols = self.get_cols(scope)
+
+        # Get nan counts by column
+        col_nan_cnts = self[cols].isnull().sum(axis=1)
+
+        # If between 0 and 1
+        if threshold > 0 and threshold < 1:
+
+            # Change threshold from percent to abs
+            threshold = threshold * len(cols)
+            self._print('Setting NaN threshold to:', threshold)
+
+        # Calculate subjects to drop if greater than or equal to threshold
+        to_drop = self.loc[col_nan_cnts >= threshold].index
+
+        self._drop_subjects(to_drop)
 
     def print_nan_info(self, scope):
         pass

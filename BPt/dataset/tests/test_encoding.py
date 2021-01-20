@@ -54,6 +54,21 @@ def test_add_unique_overlap():
         df.add_unique_overlap(cols=['1', '2'], new_col='1')
 
 
+def test_binarize_base_object():
+
+    df = get_fake_dataset()
+    df.binarize('2', base=True)
+    assert len(df['2'].unique() == 2)
+
+    df = get_fake_dataset7()
+    df['2'] = [' ', 1, 1, 1, 2, 2, 2]
+    df.binarize('2', base=True)
+    assert len(df['2'].unique() == 2)
+    assert 0 not in df.index
+    assert 1 in df.index
+    assert df.shape == (6, 2)
+
+
 def test_binarize_base():
 
     df = get_fake_dataset7()

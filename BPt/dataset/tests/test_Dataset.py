@@ -181,14 +181,20 @@ def test_filter_outliers_by_std():
     assert pd.isnull(df.loc[5, '2'])
 
 
-def test_drop_non_unique():
+def test_drop_cols_by_unique_val():
 
     df = get_fake_dataset2()
-    df.drop_non_unique()
+    df.drop_cols_by_unique_val()
 
     assert '1' not in df
     assert '2' in df
     assert '3' in df
+
+    df = get_fake_dataset2()
+    df.drop_cols_by_unique_val(threshold=3)
+    assert '1' not in df
+    assert '2' not in df
+    assert '3' not in df
 
 
 def test_drop_id_cols():
@@ -688,7 +694,8 @@ def test_multi_index_add_data_files():
         return (subj, event)
 
     # Leave c_s3_e2' as NaN
-    files = {'files': ['a_s1_e1', 'a_s1_e2', 'b_s2_e1', 'b_s2_e2', 'c_s3_e1']}
+    files = {'files': ['a_s1_e1', 'a_s1_e2',
+                       'b_s2_e1', 'b_s2_e2', 'c_s3_e1']}
 
     df.add_data_files(files=files,
                       file_to_subject=file_to_subject,
@@ -697,3 +704,78 @@ def test_multi_index_add_data_files():
     assert len(df['files']) == 6
     assert 'a_s1_e1' in df.file_mapping[0].loc
 
+
+def get_nans_dataset():
+
+    fake = Dataset()
+    fake['1'] = [np.nan, np.nan, np.nan, 1]
+    fake['2'] = [np.nan, np.nan, 1, 1]
+    fake['3'] = [np.nan, 1, 1, 1]
+    fake['4'] = [1, 1, 1, 1]
+    return fake
+
+
+def test_drop_subjects_by_nan():
+
+    df = get_nans_dataset()
+    df.drop_subjects_by_nan(threshold=1, scope='all')
+    assert df.shape == (1, 4)
+
+    df = get_nans_dataset()
+    df.drop_subjects_by_nan(threshold=.25, scope='all')
+    assert df.shape == (1, 4)
+
+    df = get_nans_dataset()
+    df.drop_subjects_by_nan(threshold=2, scope='all')
+    assert df.shape == (2, 4)
+
+    df = get_nans_dataset()
+    df.drop_subjects_by_nan(threshold=.5, scope='all')
+    assert df.shape == (2, 4)
+
+    df = get_nans_dataset()
+    df.drop_subjects_by_nan(threshold=3, scope='all')
+    assert df.shape == (3, 4)
+
+    df = get_nans_dataset()
+    df.drop_subjects_by_nan(threshold=.75, scope='all')
+    assert df.shape == (3, 4)
+
+    df = get_nans_dataset()
+    df.drop_subjects_by_nan(threshold=4, scope='all')
+    assert df.shape == (4, 4)
+
+    df = get_nans_dataset()
+    df.drop_subjects_by_nan(threshold=.9, scope='all')
+    assert df.shape == (4, 4)
+
+
+def test_drop_cols_by_nan():
+
+    df = get_nans_dataset()
+    df.drop_cols_by_nan(threshold=1, scope='all')
+    assert df.shape == (4, 1)
+
+    df = get_nans_dataset()
+    df.drop_cols_by_nan(threshold=.25, scope='all')
+    assert df.shape == (4, 1)
+
+    df = get_nans_dataset()
+    df.drop_cols_by_nan(threshold=2, scope='all')
+    assert df.shape == (4, 2)
+
+    df = get_nans_dataset()
+    df.drop_cols_by_nan(threshold=.5, scope='all')
+    assert df.shape == (4, 2)
+
+    df = get_nans_dataset()
+    df.drop_cols_by_nan(threshold=3, scope='all')
+    assert df.shape == (4, 3)
+
+    df = get_nans_dataset()
+    df.drop_cols_by_nan(threshold=4, scope='all')
+    assert df.shape == (4, 4)
+
+    df = get_nans_dataset()
+    df.drop_cols_by_nan(threshold=.9, scope='all')
+    assert df.shape == (4, 4)

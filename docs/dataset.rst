@@ -103,8 +103,6 @@ certain types of operations which can end up either re-casting the result back t
 a DataFrame (therefore losing all of the Dataset's metadata), or renaming columns,
 which may cause internal errors and metadata loss.
 
-Safe original pandas functions to use are typically ones that you can call inplace = True!
-
 
 .. _Dataset:
 
@@ -252,9 +250,19 @@ drop_nan_subjects
 .. automethod:: Dataset.drop_nan_subjects
 
 
-drop_non_unique
+drop_subjects_by_nan
 =====================
-.. automethod:: Dataset.drop_non_unique
+.. automethod:: Dataset.drop_subjects_by_nan
+
+
+drop_cols_by_unique_val
+=====================
+.. automethod:: Dataset.drop_cols_by_unique_val
+
+
+drop_cols_by_nan
+=================
+.. automethod:: Dataset.drop_cols_by_nan
 
 
 drop_id_cols
@@ -265,11 +273,6 @@ drop_id_cols
 drop_duplicate_cols
 =====================
 .. automethod:: Dataset.drop_duplicate_cols
-
-
-drop_by_unique_val
-=====================
-.. automethod:: Dataset.drop_by_unique_val
 
 
 apply_inclusions

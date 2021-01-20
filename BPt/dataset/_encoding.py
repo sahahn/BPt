@@ -64,24 +64,22 @@ def _base_binarize(self, col, drop):
     # Extract non-nan values / series
     values = self.get_values(col, dropna=True)
 
-    # Get non-nan counts
-    unique_vals, counts = np.unique(values, return_counts=True)
+    # Get value counts
+    value_counts = values.value_counts()
 
     # If only 1 values
-    if len(unique_vals) == 1:
-        self._print('binarize base=True ' + repr(col) + ' was '
+    if len(value_counts) == 1:
+        self._print('Warning: binarize base=True ' + repr(col) + ' was '
                     'passed with only 1 unique value.')
 
     # Assuming should be binary, so 2 unique values
-    if len(unique_vals) > 2:
+    if len(value_counts) > 2:
 
-        # Select top two scores by count
-        keep_inds = np.argpartition(counts, -2)[-2:]
-        keep_vals = unique_vals[keep_inds]
-        keep_vals.sort()
+        # Select all but top two by count to drop
+        drop_vals = value_counts.sort_values(ascending=False).index[2:]
 
         # Get to drop
-        to_drop = values.index[~values.isin(keep_vals)]
+        to_drop = values.index[values.isin(drop_vals)]
 
         # Drop or NaN
         if drop:

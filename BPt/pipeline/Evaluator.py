@@ -372,17 +372,13 @@ class Evaluator():
 
         base_model = self._get_base_fitted_model()
 
-        try:
-            base_model.coef_
-            self.flags['linear'] = True
-        except AttributeError:
-            pass
+        if hasattr(base_model, 'coef_'):
+            if getattr(base_model, 'coef_') is not None:
+                self.flags['linear'] = True
 
-        try:
-            base_model.feature_importances_
-            self.flags['tree'] = True
-        except AttributeError:
-            pass
+        if hasattr(base_model, 'feature_importances_'):
+            if getattr(base_model, 'feature_importances_') is not None:
+                self.flags['tree'] = True
 
     def _proc_feat_importance(self, train_data, test_data, fold_ind):
 

@@ -94,6 +94,18 @@ class BPtSearchCV(BaseEstimator):
     def _estimator_type(self):
         return self.estimator._estimator_type
 
+    @property
+    def feature_importances_(self):
+        if hasattr(self.best_estimator_, 'feature_importances_'):
+            return getattr(self.best_estimator_, 'feature_importances_')
+        return None
+
+    @property
+    def coef_(self):
+        if hasattr(self.best_estimator_, 'coef_'):
+            return getattr(self.best_estimator_, 'coef_')
+        return None
+
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
     def predict(self, X):
         return self.best_estimator_.predict(X)

@@ -28,6 +28,18 @@ class BPtPipeline(Pipeline):
             if hasattr(step[1], 'n_jobs'):
                 setattr(step[1], 'n_jobs', n_jobs)
 
+    @property
+    def feature_importances_(self):
+        if hasattr(self.__getitem__(-1), 'feature_importances_'):
+            return getattr(self.__getitem__(-1), 'feature_importances_')
+        return None
+
+    @property
+    def coef_(self):
+        if hasattr(self.__getitem__(-1), 'coef_'):
+            return getattr(self.__getitem__(-1), 'coef_')
+        return None
+
     def get_params(self, deep=True):
         params = super()._get_params('steps', deep=deep)
         return params

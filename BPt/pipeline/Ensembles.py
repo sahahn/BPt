@@ -69,7 +69,7 @@ def get_fis(estimators, prop):
         return None
 
     # Return as mean
-    return fis.mean(axis=0)
+    return np.mean(np.array(fis), axis=0)
 
 
 def _fit_all_estimators(self, X, y, sample_weight=None, mapping=None,

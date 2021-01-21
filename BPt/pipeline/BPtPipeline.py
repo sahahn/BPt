@@ -36,8 +36,8 @@ class BPtPipeline(Pipeline):
 
     @property
     def coef_(self):
-        if hasattr(self.__getitem__(-1), 'coef_'):
-            return getattr(self.__getitem__(-1), 'coef_')
+        if hasattr(self[-1], 'coef_'):
+            return getattr(self[-1], 'coef_')
         return None
 
     def get_params(self, deep=True):

@@ -2,6 +2,10 @@ from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.utils.metaestimators import if_delegate_has_method
 import nevergrad as ng
 
+# @TODO Figure out best way to make selector work with
+# downstream objects which might need special fit arguments,
+# e.g., should this class use the bpt fit and have all tags?
+
 
 class Selector(_BaseComposition):
 

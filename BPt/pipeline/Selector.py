@@ -77,7 +77,20 @@ class Selector(_BaseComposition):
 
     @property
     def _estimator_type(self):
+        '''This should remain static across all passed estimators'''
         return self.example_estimator_._estimator_type
+
+    @property
+    def feature_importances_(self):
+        if hasattr(self.estimator_, 'feature_importances_'):
+            return getattr(self.estimator_, 'feature_importances_')
+        return None
+
+    @property
+    def coef_(self):
+        if hasattr(self.estimator_, 'coef_'):
+            return getattr(self.estimator_, 'coef_')
+        return None
 
 
 def selector_wrapper(objs, params, name):

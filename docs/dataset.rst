@@ -190,6 +190,11 @@ auto_detect_categorical
 Dataset - Encoding Methods
 ********************************
 
+to_binary
+==========
+.. automethod:: Dataset.to_binary
+
+
 binarize
 ==================================
 .. automethod:: Dataset.binarize

@@ -6,11 +6,13 @@ These are non-class functions that are used in _ML.py and Scoring.py
 """
 import numpy as np
 import inspect
+
 from .Default_Params import get_base_params, proc_params
 from copy import deepcopy
 import nevergrad as ng
 from ..main.Input_Tools import is_special, Select
 from nevergrad.parametrization.core import Constant
+from joblib import hash as joblib_hash
 
 
 def compute_micro_macro(scores, n_repeats, n_splits, weights=None):
@@ -342,21 +344,65 @@ def replace_with_in_params(params, original, replace):
     return new_params
 
 
-def type_check(ud):
+def is_nevergrad_dist(ud):
     '''Check if a nevergrad dist'''
 
-    def_dist = [ng.p.Log, ng.p.Scalar, ng.p.Choice, ng.p.TransitionChoice]
-    for dd in def_dist:
-        if isinstance(ud, dd):
+    try:
+        # If nevergrad in module return True
+        if 'nevergrad' in ud.__module__:
             return True
 
-    types_to_check = [int, float, list, tuple, str, bool, dict, set, Constant]
+    # If no module, then not a nevergrad param
+    except AttributeError:
+        return False
 
-    for ttc in types_to_check:
-        if isinstance(ud, ttc):
-            return False
+    return False
 
-    return True
+
+def check_replace(objs):
+
+    if isinstance(objs, list):
+        return [check_replace(o) for o in objs]
+
+    if isinstance(objs, set):
+        new_set = set()
+        for o in objs:
+            new_set.add(check_replace(o))
+        return new_set
+
+    if isinstance(objs, tuple):
+        return tuple([check_replace(o) for o in objs])
+
+    if isinstance(objs, dict):
+        return {k: check_replace(objs[k]) for k in objs}
+
+    if hasattr(objs, 'get_params'):
+        for param in objs.get_params(deep=False):
+            new_value = check_replace(getattr(objs, param))
+            setattr(objs, param, new_value)
+
+        # Return objs as changed in place
+        return objs
+
+    # If nevergrad convert to repr
+    if is_nevergrad_dist(objs):
+        return repr(objs)
+
+    # Return identity otherwise
+    return objs
+
+
+def hash(objs, steps):
+    '''Expects a list'''
+
+    # Make copy with nevergrad dists replaced by repr
+    hash_steps = check_replace(deepcopy(steps))
+
+    # Hash steps and objs seperate, then combine
+    hash_str1 = joblib_hash(objs, hash_name='md5')
+    hash_str2 = joblib_hash(hash_steps, hash_name='md5')
+
+    return hash_str1 + hash_str2
 
 
 def proc_mapping(indx, mapping):

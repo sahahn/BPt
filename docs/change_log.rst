@@ -20,6 +20,8 @@ Release 2.0
     - Now the Value_Subset class replaces this functionality, and more generally the
     feature of creating overlaps of column values on the fly is depreciated.
 
+- cache_fit_dr
+
 
 Release 1.3.6
 ***************

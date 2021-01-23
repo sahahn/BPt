@@ -1,8 +1,9 @@
 from sklearn.pipeline import Pipeline
 import numpy as np
 from ..helpers.VARS import ORDERED_NAMES
-from joblib import hash as joblib_hash
+from ..helpers.ML_Helpers import hash
 from joblib import load, dump
+from joblib import hash as joblib_hash
 import os
 
 
@@ -62,9 +63,9 @@ class BPtPipeline(Pipeline):
 
             # Compute the hash for this fit
             # Store as an attribute
-            self.hash_ = joblib_hash([X, y, self.steps, mapping,
-                                      train_data_index, fit_params],
-                                     hash_name='md5')
+            self.hash_ = hash([X, y, mapping,
+                               train_data_index, fit_params],
+                              self.steps)
 
             # Check if hash exists - if it does load
             if os.path.exists(self._get_hash_loc()):

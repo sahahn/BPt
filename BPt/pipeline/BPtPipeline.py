@@ -1,6 +1,9 @@
 from sklearn.pipeline import Pipeline
 import numpy as np
 from ..helpers.VARS import ORDERED_NAMES
+from joblib import hash as joblib_hash
+from joblib import load, dump
+import os
 
 
 class BPtPipeline(Pipeline):
@@ -8,8 +11,12 @@ class BPtPipeline(Pipeline):
     _needs_mapping = True
     _needs_train_data_index = True
 
-    def __init__(self, steps, memory=None, verbose=False, names=None):
+    def __init__(self, steps, memory=None,
+                 verbose=False, names=None,
+                 cache_fit_dr=None):
+
         self.names = names
+        self.cache_fit_dr = cache_fit_dr
 
         super().__init__(steps=steps, memory=memory, verbose=verbose)
 
@@ -51,6 +58,23 @@ class BPtPipeline(Pipeline):
     def fit(self, X, y=None, mapping=None,
             train_data_index=None, **fit_params):
 
+        if self.cache_fit_dr is not None:
+
+            # Compute the hash for this fit
+            # Store as an attribute
+            self.hash_ = joblib_hash([X, y, self.steps, mapping,
+                                      train_data_index, fit_params],
+                                     hash_name='md5')
+
+            # Check if hash exists - if it does load
+            if os.path.exists(self._get_hash_loc()):
+                self._load_from_hash()
+
+                # end / return!
+                return self
+
+            # Otherwise, continue to fit as normal
+
         # Add mapping to fit params if already passed, e.g., in nested context
         # Or init new
         if mapping is not None:
@@ -69,6 +93,50 @@ class BPtPipeline(Pipeline):
 
         # Call parent fit
         super().fit(X, y, **fit_params)
+
+        # If cache fit enabled, hash fitted pipe here
+        if self.cache_fit_dr is not None:
+            self._hash_fit()
+
+        return self
+
+    def _get_hash_loc(self):
+
+        # Make sure directory exists
+        os.makedirs(self.cache_fit_dr, exist_ok=True)
+
+        # Set hash loc as directory + hash of fit args
+        hash_loc = os.path.join(self.cache_fit_dr, self.hash_)
+
+        return hash_loc
+
+    def _hash_fit(self):
+
+        # Just save full fitted pipeline
+        dump(self, self._get_hash_loc())
+        return self
+
+    def _load_from_hash(self):
+
+        # Load from saved hash, by
+        # loading the fitted object
+        # and then copying over
+        # each relevant saved fitted parameter
+        fitted_pipe = load(self._get_hash_loc())
+
+        # Copy mapping
+        self.mapping_ = fitted_pipe.mapping_
+
+        # Copy each step with the fitted version
+        for (step_idx,
+             name,
+             fitted_piece) in fitted_pipe._iter(with_final=True,
+                                                filter_passthrough=False):
+            self.steps[step_idx] = (name, fitted_piece)
+
+        # Set flag for testing
+        self.loaded_ = True
+
         return self
 
     def _get_objs_by_name(self):

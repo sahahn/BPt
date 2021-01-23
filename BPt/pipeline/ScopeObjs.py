@@ -188,11 +188,11 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
 
         # Fill in the new values directly to the passed df
         for i, feat_name in enumerate(new_names):
-            df[feat_name] = X_trans[:, i]
+            df.loc[:, feat_name] = X_trans[:, i]
 
         # Return by re-ordering the df so that it matches
         # the order of new_names, and only with those included in new_names
-        return df[new_names]
+        return df.loc[:, new_names]
 
     def _proc_new_names(self, feat_names, base_name=None):
 

@@ -813,4 +813,3 @@ class Ensembles(Type_Pieces):
 
         return VotingClassifier(models, voting='soft',
                                 n_jobs=self.spec['n_jobs'])
-

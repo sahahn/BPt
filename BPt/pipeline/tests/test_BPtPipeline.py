@@ -1,9 +1,15 @@
 from ..BPtPipeline import BPtPipeline
-from .helpers import ToFixedTransformer
+from .helpers import ToFixedTransformer, get_fake_mapping, clean_fake_mapping
 from ..ScopeObjs import ScopeTransformer, ScopeModel
+from ..BPtLoader import BPtLoader
+from ...extensions import Identity
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import pandas as pd
+import os
+import tempfile
+import shutil
+from joblib import hash as joblib_hash
 
 
 def test_BPtPipeline():
@@ -54,3 +60,122 @@ def test_BPtPipeline():
     assert X_trans[0].sum() == 0
     assert X_trans[1].sum() == 3
     assert X_trans[2].sum() == 3
+
+
+def test_file_mapping_hash():
+
+    # Make sure that regardless of DataFile position
+    # in memory, that it hashes correctly.
+    mapping = get_fake_mapping(10)
+    h1 = joblib_hash(mapping)
+    clean_fake_mapping(10)
+
+    mapping = get_fake_mapping(10)
+    h2 = joblib_hash(mapping)
+    clean_fake_mapping(10)
+    assert h1 == h2
+
+
+def run_pipe_with_loader_ts(cache_fit_dr=None):
+
+    steps = []
+
+    # Loader - transform (5, 2) to (5, 8)
+    # as each data_file contains np.zeros((2, 2))
+    file_mapping = get_fake_mapping(10)
+    loader = BPtLoader(estimator=Identity(),
+                       inds=[0, 1],
+                       file_mapping=file_mapping,
+                       n_jobs=1,
+                       fix_n_jobs=False,
+                       cache_loc=None)
+    steps.append(('loader', loader))
+
+    # Add transformer to ones
+    # input here should be (5, 8) of real val, original
+    # inds of 0 should work on half
+    to_ones = ToFixedTransformer(to=1)
+    st = ScopeTransformer(estimator=to_ones, inds=[0])
+    steps.append(('to_ones', st))
+
+    # Add basic linear regression model
+    # Original inds should work on all
+    model = ScopeModel(estimator=LinearRegression(), inds=[0, 1])
+    steps.append(('model', model))
+
+    # Create pipe
+    names = [['loader'], [], ['to_ones'], [], [], ['model']]
+    pipe = BPtPipeline(steps=steps, names=names,
+                       cache_fit_dr=cache_fit_dr)
+
+    X = np.arange(10).reshape((5, 2))
+    y = np.ones(5)
+
+    pipe.fit(X, y)
+
+    # Make sure fit worked correctly
+    assert pipe[0].n_features_in_ == 2
+    assert pipe[1].n_features_in_ == 8
+    assert pipe[1].estimator_.n_features_in_ == 4
+    assert len(pipe.mapping_[0]) == 4
+    assert len(pipe.mapping_[1]) == 4
+    assert 7 in pipe.mapping_[1]
+
+    # Make sure reverse transform works
+    X_df = pd.DataFrame(X)
+
+    X_trans = pipe.transform_df(X_df, fs=False)
+    assert X_trans.shape == (5, 8)
+    assert X_trans.loc[4, '1_3'] == 9
+    assert X_trans.loc[1, '1_2'] == 3
+    assert X_trans.loc[4, '0_0'] == 1
+    assert X_trans.loc[0, '0_0'] == 1
+
+    # Make sure predict works,
+    # seems safe to assume model
+    # can learn to predict 1's
+    # as all targets are 1's.
+    # but may need to change?
+    preds = pipe.predict(X)
+    assert np.all(preds == 1)
+
+    # Check bpt pipeline coef attribute
+    assert np.array_equal(pipe[-1].estimator_.coef_,
+                          pipe.coef_)
+
+    # Clean fake file mapping
+    clean_fake_mapping(10)
+
+    return pipe
+
+
+def test_pipeline_with_loader():
+
+    # Base pipeline with loader tests
+    run_pipe_with_loader_ts(cache_fit_dr=None)
+
+
+def test_pipeline_fit_caching():
+
+    # Run with cache fit dr
+    cache_fit_dr =\
+        os.path.join(tempfile.gettempdir(), 'test_cache')
+    pipe = run_pipe_with_loader_ts(cache_fit_dr=cache_fit_dr)
+
+    # Make sure computed hash + saved copy
+    assert hasattr(pipe, 'hash_')
+    assert os.path.exists(pipe._get_hash_loc())
+
+    # Shouldn't load from cache
+    assert not hasattr(pipe, 'loaded_')
+
+    # Delete existing pipe
+    del pipe
+
+    # Run again to make sure loading from cache worked
+    pipe = run_pipe_with_loader_ts(cache_fit_dr=cache_fit_dr)
+    assert hasattr(pipe, 'hash_')
+    assert pipe.loaded_ is True
+
+    # Removed cached once done
+    shutil.rmtree(cache_fit_dr)

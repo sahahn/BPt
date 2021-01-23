@@ -1,6 +1,5 @@
 from .BPtPipeline import BPtPipeline
 from ..helpers.ML_Helpers import is_array_like
-import os
 
 from ..helpers.VARS import ORDERED_NAMES
 
@@ -12,13 +11,15 @@ from .BPtSearchCV import get_search_cv
 
 class Model_Pipeline():
 
-    def __init__(self, pipeline_params, spec, Data_Scopes, verbose=False):
+    def __init__(self, pipeline_params, spec, Data_Scopes,
+                 verbose=False):
 
         # Save param search here
         self.param_search = pipeline_params.param_search
 
         # Set n_jobs in model spec
         spec['n_jobs'] = pipeline_params.n_jobs
+        self.cache_fit_dr = pipeline_params.cache_fit_dr
         self.verbose = verbose
 
         # Extract ordered
@@ -156,7 +157,8 @@ class Model_Pipeline():
         names = self._get_names(ORDERED_NAMES)
 
         model_pipeline = BPtPipeline(steps, verbose=self.verbose,
-                                     names=names)
+                                     names=names,
+                                     cache_fit_dr=self.cache_fit_dr)
 
         return model_pipeline
 

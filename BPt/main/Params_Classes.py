@@ -1701,6 +1701,7 @@ class Model_Pipeline(Params):
                  model='default',
                  param_search=None,
                  n_jobs='default',
+                 cache_fit_dr=None,
                  cache='depreciated',
                  feat_importances='depreciated'):
         ''' Model_Pipeline is defined as essentially a wrapper around
@@ -1835,7 +1836,8 @@ class Model_Pipeline(Params):
             feature selection stage
             of the Pipeline. See :class:`Feat_Selector` for specific options.
 
-            Input can be composed in a list, to apply feature selection sequentially,
+            Input can be composed in a list, to apply
+            feature selection sequentially,
             or with special Input Type wrapper, e.g., :class:`Select`.
 
             ::
@@ -1893,6 +1895,18 @@ class Model_Pipeline(Params):
 
                 default = 'default'
 
+        cache_fit_dr : Path str or None, optional
+            Optional parameter specifying a directory
+            in which full BPt pipeline's should
+            be cached after fitting. This may be useful
+            in some contexts. If desired,
+            passed the location of the directory in
+            which to store this cache.
+
+            ::
+
+                default = None
+
         cache : depreciated
             The cache parameter has been depreciated,
             use the cache_loc params within individual pieces instead.
@@ -1948,6 +1962,7 @@ class Model_Pipeline(Params):
 
         self.param_search = param_search
         self.n_jobs = n_jobs
+        self.cache_fit_dr = cache_fit_dr
 
         if cache != 'depreciated':
             print('Warning: Passing cache is depreciated.')
@@ -2199,6 +2214,7 @@ class Model_Pipeline(Params):
         _print('param_search=\\')
         _print(self.param_search)
         _print()
+
 
 class Problem_Spec(Params):
 

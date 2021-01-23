@@ -15,6 +15,7 @@ class ToFixedTransformer(BaseEstimator, TransformerMixin):
         self.n_jobs = n_jobs
 
     def fit(self, X, y):
+        self.n_features_in_ = X.shape[1]
         return self
 
     def transform(self, X):

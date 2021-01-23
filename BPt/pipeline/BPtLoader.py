@@ -223,7 +223,7 @@ class BPtLoader(ScopeTransformer):
             base_name = feat_names[ind]
 
             new_inds = self.X_trans_inds_[c]
-            new_names += [base_name + '_' + str(i)
+            new_names += [str(base_name) + '_' + str(i)
                           for i in range(len(new_inds))]
 
         # Remove old names - using parent method

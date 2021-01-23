@@ -5,37 +5,18 @@ from operator import add
 from functools import reduce
 
 
-def binarize(self, scope, base=False, threshold=None, lower=None,
-             upper=None, replace=True, drop=True):
-    '''This method contains a few different common utilities
-    for binarizing a variable. These range from simply cleaning
-    up an existing binary variable, to dichatomizing an existing one,
-    to dichatomizing an existing one with two thresholds
-    (essentially chopping out the middle of the distribution).
+def to_binary(self, scope, drop=True):
+    '''This method works by setting all
+    columns within scope to just two binary
+    categories. This works by setting the two values
+    as the top two categories, any others will have
+    their subjects either dropped or replaced with NaN.
 
     Note: This function will not work on data files.
 
-    Parameters
-    -----------
-
-    replace : bool, optional
-
-        Note: Ignored if base == True.
-
-    drop : bool, optional
-        Note: This parameter is only relevant if using
-        the configuration with parameter's upper and lower.
-
+    See: :func:`binarize <Dataset.binarize>` for converting
+    float style columns to binary.
     '''
-
-    # Input checks
-    if base is False:
-        if threshold is None and lower is None and upper is None:
-            raise RuntimeError('Some value must be set.')
-        if lower is not None and upper is None:
-            raise RuntimeError('Upper must be set.')
-        if upper is not None and lower is None:
-            raise RuntimeError('Lower must be set.')
 
     # Make sure encoders init'ed
     self._check_encoders()
@@ -46,15 +27,9 @@ def binarize(self, scope, base=False, threshold=None, lower=None,
     # Check for data files
     self._data_file_fail_check(cols)
 
-    # Binarize each column individually
+    # Binarize each
     for col in cols:
-
-        # Choose which binarize behavior
-        if base:
-            self._base_binarize(col=col, drop=drop)
-        else:
-            self._binarize(col=col, threshold=threshold, lower=lower,
-                           upper=upper, replace=replace, drop=drop)
+        self._base_binarize(col=col, drop=drop)
 
     return self
 
@@ -69,7 +44,7 @@ def _base_binarize(self, col, drop):
 
     # If only 1 values
     if len(value_counts) == 1:
-        self._print('Warning: binarize base=True ' + repr(col) + ' was '
+        self._print('Warning: to_binary ' + repr(col) + ' was '
                     'passed with only 1 unique value.')
 
     # Assuming should be binary, so 2 unique values
@@ -89,6 +64,56 @@ def _base_binarize(self, col, drop):
 
     # Ordinalize
     self._ordinalize(col)
+
+    return self
+
+
+def binarize(self, scope, threshold=None, lower=None,
+             upper=None, replace=True, drop=True):
+    '''This method contains a utilities for binarizing a variable.
+    These are dichatomizing an existing variable with parameter
+    threshold, and applying binarization via two thresholds
+    (essentially chopping out the middle of the distribution).
+
+    Note: This function will not work on data files.
+
+    See Related: :func:`to_binary <Dataset.to_binary>`
+
+    Parameters
+    ----------
+    replace : bool, optional
+
+        Note: Ignored if base == True.
+
+    drop : bool, optional
+        Note: This parameter is only relevant if using
+        the configuration with parameter's upper and lower.
+
+    '''
+
+    # Input checks
+    if threshold is None and lower is None and upper is None:
+        raise RuntimeError('Some value must be set.')
+    if lower is not None and upper is None:
+        raise RuntimeError('Upper must be set.')
+    if upper is not None and lower is None:
+        raise RuntimeError('Lower must be set.')
+
+    # Make sure encoders init'ed
+    self._check_encoders()
+
+    # Get cols from scope
+    cols = self.get_cols(scope)
+
+    # Check for data files
+    self._data_file_fail_check(cols)
+
+    # Binarize each column individually
+    for col in cols:
+        self._binarize(col=col, threshold=threshold, lower=lower,
+                       upper=upper, replace=replace, drop=drop)
+
+    return self
 
 
 def _binarize(self, col, threshold, lower, upper, replace, drop):

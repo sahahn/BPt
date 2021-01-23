@@ -57,42 +57,47 @@ def test_add_unique_overlap():
 def test_binarize_base_object():
 
     df = get_fake_dataset()
-    df.binarize('2', base=True)
+    df.to_binary('2')
     assert len(df['2'].unique() == 2)
 
     df = get_fake_dataset7()
     df['2'] = [' ', 1, 1, 1, 2, 2, 2]
-    df.binarize('2', base=True)
+    df.to_binary('2')
     assert len(df['2'].unique() == 2)
     assert 0 not in df.index
     assert 1 in df.index
     assert df.shape == (6, 2)
 
 
-def test_binarize_base():
+def test_to_binary():
 
     df = get_fake_dataset7()
     assert len(df) == 7
 
-    df.binarize(scope='1', base=True)
+    df.to_binary(scope='1')
     assert len(df) == 6
     assert 0 in df['1'].unique()
     assert 1 in df['1'].unique()
     assert len(df['1'].unique()) == 2
 
     df = get_fake_dataset7()
-    df.binarize(scope='2', base=True, drop=False)
+    df.to_binary(scope='2', drop=False)
     assert df['2'].dtype.name == 'category'
     assert pd.isnull(df.loc[0, '2'])
     assert len(df) == 7
     assert df.encoders['2'][0] == 1
     assert df.encoders['2'][1] == 2
 
+    df = get_fake_dataset7()
+    df['2'] = [1, 1, 1, 1, 1, 1, 1]
+    assert len(df['2'].unique() == 1)
+
 
 def test_nan_to_class():
 
     df = get_fake_dataset7()
-    df.binarize(scope='1', base=True, drop=False)
+
+    df.to_binary(scope='1', drop=False)
     assert len(df) == 7
     assert pd.isnull(df.loc[0, '1'])
 
@@ -101,7 +106,7 @@ def test_nan_to_class():
 
     df = get_fake_dataset7()
     df.loc[6, '2'] = np.nan
-    df.binarize(scope='2', base=True, drop=False)
+    df.to_binary(scope='2', drop=False)
     df.nan_to_class(scope='2')
 
     assert df.loc[6, '2'] == 2

@@ -126,7 +126,7 @@ def _plot_category(self, col, subjs, encoded_values, count, show):
         return self
 
     # Get counts
-    counts = pd.DataFrame(values.value_counts(normalize=count))
+    counts = pd.DataFrame(values.value_counts(normalize=not count))
 
     # Reset index
     counts = counts.reset_index()

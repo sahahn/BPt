@@ -2010,7 +2010,8 @@ class Dataset(pd.DataFrame):
                             _plot_category,
                             _print_plot_info)
 
-    from ._encoding import (binarize,
+    from ._encoding import (to_binary,
+                            binarize,
                             _base_binarize,
                             _binarize,
                             k_bin,

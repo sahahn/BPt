@@ -4,11 +4,17 @@ from ..helpers.ML_Helpers import get_possible_fit_params
 
 def _get_est_fit_params(estimator, mapping=None, train_data_index=None,
                         other_params=None):
-
+    
     if other_params is None:
         fit_params = {}
     else:
         fit_params = other_params.copy()
+
+    if 'mapping' in fit_params and mapping is None:
+        mapping = fit_params.pop('mapping')
+
+    if 'train_data_index' in fit_params and train_data_index is None:
+        train_data_index = fit_params.pop('train_data_index')
 
     possible_f_params = get_possible_fit_params(estimator)
 

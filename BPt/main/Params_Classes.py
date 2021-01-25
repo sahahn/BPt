@@ -1478,8 +1478,10 @@ class Shap_Params(Params):
 
         tree_model_output : {"raw", "probability", "log_loss"} optional
             Only used with tree based models.
-            What output of the model should be explained. If "raw" then we explain the raw output of the
-            trees, which varies by model. For regression models "raw" is the standard output, for binary
+            What output of the model should be explained. If "raw"
+            then we explain the raw output of the
+            trees, which varies by model. For regression models "raw" is
+            the standard output, for binary
             classification in XGBoost this is the log odds ratio. If model_output is the name of a supported
             prediction method on the model object then we explain the output of that model method name.
             For example model_output="predict_proba" explains the result of calling model.predict_proba.

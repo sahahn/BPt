@@ -251,12 +251,16 @@ class ScopeModel(ScopeObj):
         return self.estimator._estimator_type
 
     @property
-    def coef_(self):
-        return self.estimator_.coef_
+    def feature_importances_(self):
+        if hasattr(self.estimator_, 'feature_importances_'):
+            return getattr(self.estimator_, 'feature_importances_')
+        return None
 
     @property
-    def feature_importances_(self):
-        return self.estimator_.feature_importances_
+    def coef_(self):
+        if hasattr(self.estimator_, 'coef_'):
+            return getattr(self.estimator_, 'coef_')
+        return None
 
     def predict(self, X, *args, **kwargs):
         return self.estimator_.predict(X[:, self.inds_], *args, **kwargs)

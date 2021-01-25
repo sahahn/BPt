@@ -1,9 +1,12 @@
 import pandas as pd
 import numpy as np
 
-from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_ALIGN_VERTICAL
+try:
+    from docx import Document
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_ALIGN_VERTICAL
+except ImportError:
+    pass
 
 
 def get_split_df(subject_id, train_subjects, test_subjects):

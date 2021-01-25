@@ -1,6 +1,7 @@
 from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.utils.metaestimators import if_delegate_has_method
 import nevergrad as ng
+from .base import _get_est_fit_params
 
 # @TODO Figure out best way to make selector work with
 # downstream objects which might need special fit arguments,
@@ -8,6 +9,9 @@ import nevergrad as ng
 
 
 class Selector(_BaseComposition):
+
+    _needs_mapping = True
+    _needs_train_data_index = True
 
     def __init__(self, estimators, to_use=0):
         self.estimators = estimators
@@ -31,13 +35,22 @@ class Selector(_BaseComposition):
 
     @if_delegate_has_method(delegate='example_estimator_')
     def fit(self, *args, **kwargs):
-        self.is_fitted_ = True
+
+        # Select correct estimator
         self.estimator_ = self.estimators[self.to_use][1]
-        self.estimator_.fit(*args, **kwargs)
+
+        # Set correct fit params based on chosen estimator
+        fit_params = _get_est_fit_params(self.estimator_, other_params=kwargs)
+
+        # Fit
+        self.estimator_.fit(*args, **fit_params)
+        self.is_fitted_ = True
+
         return self
 
     @if_delegate_has_method(delegate='example_estimator_')
     def fit_transform(self, *args, **kwargs):
+
         self.estimator_ = self.estimators[self.to_use][1]
         return self.estimator_.fit_transform(*args, **kwargs)
 

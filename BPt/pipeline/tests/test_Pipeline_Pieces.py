@@ -1,7 +1,7 @@
 from ..Pipeline_Pieces import add_estimator_to_params, Feat_Selectors
 from ...main.Params_Classes import Feat_Selector, Model
 from ..Feature_Selectors import BPtFeatureSelector
-from .helpers import get_fake_data_scopes
+from .helpers import get_fake_data_dataset
 
 
 def test_add_estimator_to_params():
@@ -16,13 +16,14 @@ def test_add_estimator_to_params():
 def test_feature_selectors():
 
     data_keys = [0, 1]
-    data_scopes = get_fake_data_scopes(data_keys=data_keys)
+    dataset = get_fake_data_dataset(data_keys=data_keys)
 
     spec = {'problem_type': 'binary',
             'random_state': None,
-            'n_jobs': 1}
+            'n_jobs': 1,
+            'scope': 'all'}
 
-    fs = Feat_Selectors(Data_Scopes=data_scopes, spec=spec,
+    fs = Feat_Selectors(dataset=dataset, spec=spec,
                         user_passed_objs={})
 
     in_params = Feat_Selector('univariate selection')
@@ -46,20 +47,22 @@ def test_feature_selectors():
     for key in params:
         assert 'univariate selection' in key
 
-    in_params = Feat_Selector('univariate selection', scope='cat')
+    in_params = Feat_Selector('univariate selection', scope='category')
     objs, params = fs.process(in_params)
     name, obj = objs[0]
+
+
 
     assert 'univariate selection' in name
     assert len(obj.inds) == 0
     assert len(params) == 0
     assert isinstance(obj, BPtFeatureSelector)
 
-    data_scopes = get_fake_data_scopes(data_keys=data_keys, cat_keys=[1])
-    fs = Feat_Selectors(Data_Scopes=data_scopes, spec=spec,
+    dataset = get_fake_data_dataset(data_keys=data_keys, cat_keys=[1])
+    fs = Feat_Selectors(dataset=dataset, spec=spec,
                         user_passed_objs={})
 
-    in_params = Feat_Selector('univariate selection', scope='cat')
+    in_params = Feat_Selector('univariate selection', scope='category')
     objs, params = fs.process(in_params)
     name, obj = objs[0]
 
@@ -72,10 +75,11 @@ def test_feature_selectors():
 def test_feature_selectors_submodel():
 
     data_keys = [0, 1]
-    data_scopes = get_fake_data_scopes(data_keys=data_keys)
-    spec = {'problem_type': 'binary', 'random_state': None, 'n_jobs': 1}
+    dataset = get_fake_data_dataset(data_keys=data_keys)
+    spec = {'problem_type': 'binary', 'random_state': None,
+            'n_jobs': 1, 'scope': 'all'}
 
-    fs = Feat_Selectors(Data_Scopes=data_scopes, spec=spec,
+    fs = Feat_Selectors(dataset=dataset, spec=spec,
                         user_passed_objs={})
 
     in_params = Feat_Selector('rfe')

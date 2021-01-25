@@ -1,4 +1,4 @@
-from ..helpers.CV import CV
+from ..main.CV import CV_Strategy
 from .helpers import save_subjects
 import pandas as pd
 
@@ -27,7 +27,7 @@ def _validate_cv_key(self, cv_key, name):
                            ' It cannot have any!')
 
 
-def _proc_cv(self, cv_params):
+def _proc_cv_strategy(self, cv_params):
     '''This function accepts cv_params and returns
     a CV object.'''
 
@@ -37,12 +37,12 @@ def _proc_cv(self, cv_params):
 
     # If None, return base
     if cv_params is None:
-        return CV()
+        return CV_Strategy()
 
     # @TODO Support scikit-learn style CV directly.
 
     # If already a CV object, return as is
-    if isinstance(cv_params, CV):
+    if isinstance(cv_params, CV_Strategy):
         return cv_params
 
     # Load train_only_subjects as sorted numpy array
@@ -74,7 +74,8 @@ def _proc_cv(self, cv_params):
                                'set_role(...)')
 
         # Return CV
-        return CV(groups=self[group_key], train_only=train_only_subjects)
+        return CV_Strategy(groups=self[group_key],
+                           train_only=train_only_subjects)
 
     # If stratify
     elif strat_key is not None:
@@ -91,11 +92,12 @@ def _proc_cv(self, cv_params):
                                'with set_role(...)')
 
         # Return CV
-        return CV(stratify=self[strat_key], train_only=train_only_subjects)
+        return CV_Strategy(stratify=self[strat_key],
+                           train_only=train_only_subjects)
 
     # If None
     else:
-        return CV(train_only=train_only_subjects)
+        return CV_Strategy(train_only=train_only_subjects)
 
 
 def _validate_split(self, size, subjects):
@@ -126,7 +128,7 @@ def _finish_split(self):
 
 
 def set_test_split(self, size=None, subjects=None,
-                   cv=None, random_state=None):
+                   cv_strategy=None, random_state=None):
     '''Defines a set of subjects to be reserved as test subjects. This
     method includes utilities for either defining a new test split, or loading
     an existing one. See related :func:`save_train_split` and
@@ -170,7 +172,7 @@ def set_test_split(self, size=None, subjects=None,
 
             default = None
 
-    cv : 'default' or :class:`CV`, optional
+    cv_strategy : None or :class:`CV_Strategy`, optional
         This parameter is only relevant when size is not None,
         and you are defining a new test split. In this case, it
         defines any validation criteria in which the test split should
@@ -219,7 +221,7 @@ def set_test_split(self, size=None, subjects=None,
         else:
 
             # Process the passed cv params
-            cv_obj = self._proc_cv(cv)
+            cv_obj = self._proc_cv_strategy(cv_strategy)
 
             # Get the overlap of train only subjects from loaded data
             _, valid_subjects, train_only_subjects =\
@@ -262,7 +264,7 @@ def set_test_split(self, size=None, subjects=None,
 
 
 def set_train_split(self, size=None, subjects=None,
-                    cv=None, random_state=None):
+                    cv_strategy=None, random_state=None):
     '''Defines a set of subjects to be reserved as train subjects.
     This is a variation on function :func:`save_test_split`, where
     both set train and test subjects, but vary on if parameters
@@ -311,7 +313,7 @@ def set_train_split(self, size=None, subjects=None,
 
             default = None
 
-    cv : 'default' or :class:`CV`, optional
+    cv_strategy : None or :class:`CV_Strategy`, optional
         This parameter is only relevant when size is not None,
         and you are defining a new train split. In this case, it
         defines any validation criteria in which the test split should
@@ -350,7 +352,7 @@ def set_train_split(self, size=None, subjects=None,
         else:
 
             # Process the passed cv params
-            cv_obj = self._proc_cv(cv)
+            cv_obj = self._proc_cv_strategy(cv_strategy)
 
             # Get the overlap of train only subjects from loaded data
             _, valid_subjects, train_only_subjects =\

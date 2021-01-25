@@ -20,7 +20,7 @@ from ..pipeline.Evaluator import Evaluator
 from ..main.Params_Classes import (CV_Splits, CV_Split, Feat_Importance,
                                    Model_Pipeline,
                                    Model, Ensemble, Problem_Spec)
-from ..pipeline.Model_Pipeline import get_pipe
+from ..pipeline.BPtPipelineConstructor import get_pipe
 import pandas as pd
 import copy
 

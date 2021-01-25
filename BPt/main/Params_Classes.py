@@ -8,6 +8,7 @@ from ..helpers.VARS import ORDERED_NAMES
 from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
                                 is_special, is_value_subset)
 from ..pipeline.Scorers import process_scorers
+from .CV import get_bpt_cv
 
 
 def proc_all(base_obj):
@@ -999,23 +1000,12 @@ class Ensemble(Piece):
 
 class Param_Search(Params):
 
-    def __init__(self, search_type='RandomSearch',
-                 splits=3, n_repeats=1,
-                 cv='default',
-                 n_iter=10,
-                 scorer='default',
-                 weight_scorer=False,
-                 mp_context='default',
-                 n_jobs='default',
-                 dask_ip=None,
-                 memmap_X=False,
-                 search_only_params=None,
-                 CV='depreciated',
-                 _random_state=None,
-                 _splits_vals=None,
-                 _cv=None,
-                 _scorer=None,
-                 _n_jobs=None):
+    def __init__(self, search_type='RandomSearch', cv='default',
+                 n_iter=10, scorer='default', weight_scorer=False,
+                 mp_context='loky', n_jobs='default',
+                 random_state='default',
+                 dask_ip=None, memmap_X=False,
+                 search_only_params=None, progress_loc=None):
         ''' Param_Search is special input object designed to be
         used with :class:`Model_Pipeline`.
         Param_Search defines a hyperparameter search strategy.
@@ -1048,70 +1038,10 @@ class Param_Search(Params):
 
                 default = 'RandomSearch'
 
-        splits : int, float, str or list of str, optional
-            In order to optimize hyper-parameters, some sort of
-            internal cross validation must be specified,
-            such that combinations of hyper-parameters can be evaluated
-            on different data then they were trained on.
-            `splits` allows you to specify the base of what CV strategy
-            should be used to evaluate every `n_iter` combination
-            of hyper-parameters.
-
-            Specifically, options for split are:
-
-            - int
-                The number of k-fold splits to conduct. (E.g., 3 for
-                3-fold CV split to be conducted at
-                every hyper-param evaluation).
-
-            - float
-                Must be 0 < `splits` < 1, and defines a
-                single train-test like split,
-                with `splits` % of the current training data size used
-                as a validation set.
-
-            - str
-                If a str is passed, then it must correspond to a
-                loaded Strat variable. In
-                this case, a leave-out-group CV will be used according
-                to the value of the
-                indicated Strat variable (E.g., a leave-out-site CV scheme).
-
-            - list of str
-                If multiple str passed, first determine the overlapping
-                unique values from
-                their corresponing loaded Strat variables,
-                and then use this overlapped
-                value to define the leave-out-group CV as described above.
-
-            Also note that `n_repeats` will work with any of these options,
-            but say in the case of
-            a leave out group CV, would be awfully redundant,
-            versus, with a passed float value, very reasonable.
-
-            ::
-
-                default = 3
-
-        n_repeats : int, optional
-            Given the base hyper-param search CV defined /
-            described in the `splits` param, this
-            parameter further controls if the defined train/val splits
-            should be repeated (w/ different random
-            splits in all cases but the leave-out-group passed str option).
-
-            For example, if `n_repeats` is set to 2, and `splits` is 3,
-            then a twice repeated 3-fold CV
-            will be performed to evaluate every choice of `n_iter`
-            hyper-params.
-
-            ::
-
-                default = 1
-
         cv : :class:`CV` or 'default', optional
-            If left as default 'default', use the class defined CV behavior
-            for the splits, otherwise can pass custom behavior.
+            This parameter defines the splits to be used
+            internally
+            @TODO finish writing this doc
 
             ::
 
@@ -1213,7 +1143,6 @@ class Param_Search(Params):
             unexpected errors.
 
             Choices are:
-            - 'default': If 'default' use the BPt mp_context.
 
             - 'loky': Create and use the python library loky backend.
 
@@ -1225,7 +1154,7 @@ class Param_Search(Params):
 
             ::
 
-                default = 'default'
+                default = 'loky'
 
         n_jobs : int or 'default', optional
             The number of cores to be used for the
@@ -1238,6 +1167,16 @@ class Param_Search(Params):
             ::
 
                 default = 'default'
+
+        random_state : int or 'default', optional
+            If left as 'default' will set to the value
+            set in the Problem_Spec. Otherwise, can
+            set a specific value here.
+
+            ::
+
+                default = 'default'
+
 
         dask_ip : str or None, optional
             If None, default, then ignore this parameter..
@@ -1297,65 +1236,54 @@ class Param_Search(Params):
 
                 default = None
 
-        CV : 'depreciated'
-            Switching to passing cv parameter as cv instead of CV.
-            Will raise error if anything is passed here.
+        progress_loc : None or str, optional
+            Optional parameter, will append to a text file
+            after every completed tested parameter.
 
             ::
 
-                default = 'depreciated'
+                default = None
         '''
 
         self.search_type = search_type
 
-        self.splits = splits
-        self.n_repeats = n_repeats
+        if cv == 'default':
+            cv = CV()
         self.cv = cv
+
+        # @TODO allow passing single arguments, e.g. splits
+        # as param and have it set within cv
+
         self.n_iter = n_iter
         self.scorer = scorer
         self.weight_scorer = weight_scorer
         self.mp_context = mp_context
         self.n_jobs = n_jobs
+        self.random_state = random_state
         self.dask_ip = dask_ip
         self.memmap_X = memmap_X
-
-        if search_only_params is None:
-            search_only_params = {}
+        self.progress_loc = progress_loc
         self.search_only_params = search_only_params
-
-        self._random_state = _random_state
-        self._splits_vals = _splits_vals
-        self._cv = _cv
-        self._scorer = _scorer
-        self._n_jobs = _n_jobs
-
-        if CV != 'depreciated':
-            raise RuntimeError('Pass as cv instead of CV!')
-
-        self.CV = CV
 
         self.check_args()
 
-    def set_random_state(self, random_state):
-        self._random_state = random_state
+    def as_dict(self, ps):
 
-    def set_n_jobs(self, n_jobs):
+        params = self.get_params()
+
+        if self.random_state == 'default':
+            params['random_state'] = ps.random_state
 
         if self.n_jobs == 'default':
-            self._n_jobs = n_jobs
-        else:
-            self._n_jobs = self.n_jobs
+            params['n_jobs'] = ps.n_jobs
 
-    def set_scorer(self, problem_type):
-        self._scorer =\
-            process_scorers(self.scorer,
-                            problem_type)[2]
+        params['scorer'] = process_scorers(self.scorer,
+                                           ps.problem_type)[2]
 
-    def set_cv(self, cv):
-        self._cv = cv
+        if self.search_only_params is None:
+            params['search_only_params'] = {}
 
-    def set_split_vals(self, vals):
-        self._splits_vals = vals
+        return params
 
     def check_args(self):
 
@@ -1704,6 +1632,7 @@ class Model_Pipeline(Params):
                  param_search=None,
                  n_jobs='default',
                  cache_fit_dr=None,
+                 verbose=0,
                  cache='depreciated',
                  feat_importances='depreciated'):
         ''' Model_Pipeline is defined as essentially a wrapper around
@@ -1909,6 +1838,13 @@ class Model_Pipeline(Params):
 
                 default = None
 
+        verbose : int, optional
+            If greater than 0, use pipelin verbosity.
+
+            ::
+
+                default = 0
+
         cache : depreciated
             The cache parameter has been depreciated,
             use the cache_loc params within individual pieces instead.
@@ -1965,6 +1901,7 @@ class Model_Pipeline(Params):
         self.param_search = param_search
         self.n_jobs = n_jobs
         self.cache_fit_dr = cache_fit_dr
+        self.verbose = verbose
 
         if cache != 'depreciated':
             print('Warning: Passing cache is depreciated.')
@@ -2223,8 +2160,8 @@ class Problem_Spec(Params):
     def __init__(self, problem_type='default',
                  target=0, scorer='default', weight_scorer=False,
                  scope='all', subjects='all',
-                 n_jobs='default',
-                 random_state='default'):
+                 n_jobs=1,
+                 random_state=1):
         '''Problem Spec is defined as an object of params encapsulating the set of
         parameters shared by modelling class functions
         :func:`Evaluate <BPt.BPt_ML.Evaluate>` and :func:`Test <BPt.BPt_ML.Test>`
@@ -2256,9 +2193,9 @@ class Problem_Spec(Params):
 
         target : int or str, optional
             The loaded target in which to use during modelling.
-            This can be the int index (as assigned by order loaded in,
-            e.g., first target loaded is 0, then the next is 1),
-            or the name of the target column.
+            This should be passed as the name of the target column.
+            This can also be set as the int index
+            (in alphabetical order)
             If only one target is loaded, just leave as default of 0.
 
             ::
@@ -2355,10 +2292,9 @@ class Problem_Spec(Params):
 
                 default = 'all'
 
-        n_jobs : int, or 'default'
+        n_jobs : int
             n_jobs are employed witin the context
             of a call to Evaluate or Test.
-            If left as default, the class wide BPt value will be used.
 
             In general, the way n_jobs are propegated to the different pipeline
             pieces on the backend is that,
@@ -2372,9 +2308,9 @@ class Problem_Spec(Params):
 
             ::
 
-                default = 'default'
+                default = 1
 
-        random_state : int, RandomState instance, None or 'default', optional
+        random_state : int, RandomState instance or None, optional
             Random state, either as int for a specific seed, or if None then
             the random seed is set by np.random.
 
@@ -2388,12 +2324,9 @@ class Problem_Spec(Params):
             then you might still not get
             exact replicicability.
 
-            If 'default', use the saved class value.
-            (Defined in :class:`ML <BPt.BPt_ML>`)
-
             ::
 
-                default = 'default'
+                default = 1
 
         '''
 
@@ -2442,11 +2375,11 @@ class Problem_Spec(Params):
         _print()
 
 
-class CV(Params):
+class CV_Strategy(Params):
 
     # @TODO add support for test_only ?
-    def __init__(self, groups=None, stratify=None, train_only_subjects=None,
-                 train_only_loc=None):
+    def __init__(self, groups=None, stratify=None,
+                 train_only_subjects=None):
         ''' This objects is used to encapsulate a set of parameters
         for a CV strategy.
 
@@ -2454,7 +2387,7 @@ class CV(Params):
         ----------
         groups : str or None, optional
             The str should refer to the column key in which
-            to preserve groups by during any train/test or K-fold splits.
+            to preserve groups by during any CV splits.
             To create a combination of unique values, see the
             add_unique_overlap function in the Dataset Class.
 
@@ -2468,8 +2401,8 @@ class CV(Params):
             The str input should refer
             to a loaded column key, either non input / strat or target.
             It will assign it as a value to preserve
-            distribution of groups by during any train/test or K-fold splits.
-            
+            distribution of groups by during any during any CV splits.
+
             Note: the passed column must be of type category as well.
 
             Any target_cols passed must be categorical
@@ -2501,28 +2434,10 @@ class CV(Params):
             ::
 
                 default = None
-
-        train_only_loc : str, Path or None, optional
-            This parameter is depreciated for working with Dataset!
-
-            Location of a file to load in train_only subjects,
-            where any subject loaded as train_only will be assigned to
-            every training fold, and never to a testing fold.
-            This file should be formatted as one subject per line.
-
-            You can load from a loc and pass subjects, the subjects
-            from each source will be merged.
-
-            This parameter is compatible with groups / stratify.
-
-            ::
-
-                default = None
         '''
 
         self.groups = groups
         self.stratify = stratify
-        self.train_only_loc = train_only_loc
         self.train_only_subjects = train_only_subjects
 
         if groups is not None and stratify is not None:
@@ -2542,6 +2457,83 @@ class CV(Params):
                                ' Instead, first use the function'
                                ' add_unique_overlap(cols=..., new_cols=...) to'
                                ' create explicitly the specified new values.')
+
+
+class CV(Params):
+
+    def __init__(self, splits=3, n_repeats=1,
+                 cv_strategy=None, **cv_strategy_args):
+        ''' This object is used to define a BPt style custom
+        CV strategy, e.g., as KFold
+
+        Parameters
+        ----------
+        splits : int, float, str or list of str, optional
+            `splits` allows you to specify the base of what CV strategy
+            should be used.
+
+            Specifically, options for split are:
+
+            - int
+                The number of k-fold splits to conduct. (E.g., 3 for
+                3-fold CV split to be conducted at
+                every hyper-param evaluation).
+
+            - float
+                Must be 0 < `splits` < 1, and defines a
+                single train-test like split,
+                with `splits` % of the current training data size used
+                as a validation set.
+
+            - str
+                If a str is passed, then it must correspond to a
+                loaded Strat variable. In
+                this case, a leave-out-group CV will be used according
+                to the value of the
+                indicated Strat variable (E.g., a leave-out-site CV scheme).
+
+            `n_repeats` is designed to work with any of these choices.
+
+            ::
+
+                default = 3
+
+        n_repeats : int, optional
+            The number of times to repeat the defined strategy
+            as defined in `splits`.
+
+            For example, if `n_repeats` is set to 2, and `splits` is 3,
+            then a twice repeated 3-fold CV will be performed
+
+            ::
+
+                default = 1
+
+        cv_strategy: None or :class:`CV_Strategy`, optional
+            Optional cv_strategy to employ for calculating splits.
+            If passed None, use no strategy.
+
+            Can also pass valid cv_strategy args seperately.
+            If any passed, they will override any values
+            set in the pass cv_strategy if any.
+
+            ::
+
+                default = None
+        '''
+
+        self.splits = splits
+        self.n_repeats = n_repeats
+        self.cv_strategy = cv_strategy
+
+        if self.cv_strategy is None:
+            self.cv_strategy = CV_Strategy()
+
+        self.cv_strategy.set_params(**cv_strategy_args)
+
+    def apply_dataset(self, dataset):
+
+        return get_bpt_cv(self, dataset)
 
 
 class CV_Split(Params):

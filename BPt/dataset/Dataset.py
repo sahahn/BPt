@@ -397,7 +397,7 @@ class Dataset(pd.DataFrame):
         if len(non_str) > 0:
 
             rename = {c: str(c) for c in non_str}
-            super().rename(mapper=rename, index='columns')
+            super().rename(rename, axis=1, inplace=True)
 
             self._print('Warning: the columns:', repr(non_str),
                         'were cast to str', level=0)
@@ -449,6 +449,10 @@ class Dataset(pd.DataFrame):
             raise AttributeError(
                 'Passed role "' + str(role) + '" must be one of ' +
                 str(self.ROLES))
+
+        # If col is int or float, cast
+        if isinstance(col, int) or isinstance(col, float):
+            col = str(col)
 
         # Set as role
         self.roles[col] = role
@@ -513,10 +517,14 @@ class Dataset(pd.DataFrame):
 
         # Make sure scopes includes if categorical or not
         for col in self.columns:
-            if self[col].dtype.name == 'category':
-                self._add_scope(col, 'category')
-            else:
-                self._remove_scope(col, 'category')
+
+            try:
+                if self[col].dtype.name == 'category':
+                    self._add_scope(col, 'category')
+                else:
+                    self._remove_scope(col, 'category')
+            except AttributeError:
+                pass
 
         return self
 
@@ -623,6 +631,10 @@ class Dataset(pd.DataFrame):
         return self
 
     def _add_scope(self, col, scope_val):
+
+        # If col is int or float, cast
+        if isinstance(col, int) or isinstance(col, float):
+            col = str(col)
 
         # Check if category
         if scope_val == 'category':
@@ -744,7 +756,7 @@ class Dataset(pd.DataFrame):
 
         return self
 
-    def get_cols(self, scope):
+    def get_cols(self, scope, columns='all'):
         '''This method is the main internal and external
         facing way of getting the names of columns which match a
         passed scope from the Dataset. For example this
@@ -757,6 +769,15 @@ class Dataset(pd.DataFrame):
             The BPt style :ref:`Scope` input that will be
             used to determine which column names from the Dataset
             to return.
+
+        columns : :ref:`Scope` or None, optional
+            Can optionally limit the columns
+            to search over with another scope.
+            If None, then will use 'all'.
+
+            ::
+
+                default = None
 
         Returns
         ----------
@@ -771,8 +792,13 @@ class Dataset(pd.DataFrame):
         self._check_scopes()
         self._check_roles()
 
+        if columns is None:
+            columns = self.columns
+        else:
+            columns = self.get_cols(columns, None)
+
         saved_scopes = set()
-        for col in self.columns:
+        for col in columns:
             saved_scopes.update(self.scopes[col])
 
         # If int or flot, cast to str.
@@ -784,68 +810,68 @@ class Dataset(pd.DataFrame):
             if scope in self.RESERVED_SCOPES:
 
                 if scope == 'all':
-                    return list(self.columns)
+                    return list(columns)
 
                 # Float refers to essentially not category and not data file
                 elif scope == 'data float':
-                    return [col for col in self.columns if
+                    return [col for col in columns if
                             'category' not in self.scopes[col] and
                             'data file' not in self.scopes[col] and
                             self.roles['col'] == 'data']
 
                 elif scope == 'target float':
-                    return [col for col in self.columns if
+                    return [col for col in columns if
                             'category' not in self.scopes[col] and
                             'data file' not in self.scopes[col] and
                             self.roles['col'] == 'target']
 
                 elif scope == 'float':
-                    return [col for col in self.columns if
+                    return [col for col in columns if
                             'category' not in self.scopes[col] and
                             'data file' not in self.scopes[col]]
 
                 elif scope == 'category':
-                    return [col for col in self.columns if
+                    return [col for col in columns if
                             'category' in self.scopes[col]]
 
                 elif scope == 'data category':
-                    return [col for col in self.columns if
+                    return [col for col in columns if
                             'category' in self.scopes[col] and
                             self.roles['col'] == 'data']
 
                 elif scope == 'target category':
-                    return [col for col in self.columns if
+                    return [col for col in columns if
                             'category' in self.scopes[col] and
                             self.roles['col'] == 'target']
 
                 elif scope == 'data':
-                    return [col for col in self.columns if
+                    return [col for col in columns if
                             self.roles[col] == 'data']
 
                 elif scope == 'target':
-                    return [col for col in self.columns if
+                    return [col for col in columns if
                             self.roles[col] == 'target']
 
                 elif scope == 'non input':
-                    return [col for col in self.columns if
+                    return [col for col in columns if
                             self.roles[col] == 'non input']
 
                 elif scope == 'data file':
-                    return [col for col in self.columns if
+                    return [col for col in columns if
                             'data file' in self.scopes[col]]
 
             # Check if passed scope is a loaded column
-            elif scope in self.columns:
+            elif scope in columns:
                 return [scope]
 
             # Check if a saved scope
             elif scope in saved_scopes:
-                return [col for col in self.columns if
+                return [col for col in columns if
                         scope in self.scopes[col]]
 
             # Do a search, see if passed scope is a stub of any strings
             else:
-                return [col for col in self.columns if
+                return [col for col in columns if
                         scope in col]
 
         cols = []
@@ -853,6 +879,18 @@ class Dataset(pd.DataFrame):
             cols += self.get_cols(scp)
 
         return sorted(list(set(cols)))
+
+    def _get_data_inds(self, ps_scope, scope='all'):
+        '''This function always limits first by the data cols,
+        then ps_scope refers to the problem_spec scope, and
+        lastly scope can be used to specify of subset of those columns'''
+
+        data_cols = self.get_cols('data', columns=ps_scope)
+
+        inds = [data_cols.index(k) for k in
+                self.get_cols(scope, columns=data_cols)]
+
+        return inds
 
     def get_values(self, col, dropna=True, reduce_func=np.mean, n_jobs=1):
         '''This method is used to obtain the either normally loaded and
@@ -1189,6 +1227,11 @@ class Dataset(pd.DataFrame):
         self._check_file_mapping()
 
         return self
+
+    def _get_file_mapping(self):
+
+        self._check_file_mapping()
+        return self.file_mapping
 
     def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
                                reduce_func=np.mean, n_jobs=1):
@@ -1962,6 +2005,17 @@ class Dataset(pd.DataFrame):
         else:
             return 0
 
+    def _get_problem_type(self, col):
+        '''Return the default problem type for a given column.'''
+
+        self._check_scopes()
+
+        if 'category' in self.scopes[col]:
+            if self[col].nunique(dropna=True) == 2:
+                return 'binary'
+            return 'categorical'
+        return 'regression'
+
     def rename(self, **kwargs):
         print('Warning: rename might cause errors!')
         print('Until this is supported, re-name before casting to a Dataset.')
@@ -2023,7 +2077,7 @@ class Dataset(pd.DataFrame):
                             add_unique_overlap)
 
     from ._validation import (_validate_cv_key,
-                              _proc_cv,
+                              _proc_cv_strategy,
                               _validate_split,
                               _finish_split,
                               set_test_split,

@@ -58,14 +58,14 @@ def test_get_search_cv():
     # Make sure get params works
     params = search_model.get_params()
     assert params['estimator'] == 'fake_estimator'
-    assert params['param_search___n_jobs'] == 2
-    assert params['param_search___random_state'] == 1
+    assert params['param_search']['n_jobs'] == 2
+    assert params['param_search']['random_state'] == 1
 
 
 def test_get_grid_search():
 
     param_search = get_param_search()
-    param_search.search_type = 'grid'
+    param_search['search_type'] = 'grid'
     estimator = 'fake_estimator'
     param_distributions = {'param1': 5}
     progress_loc = 'nowhere'

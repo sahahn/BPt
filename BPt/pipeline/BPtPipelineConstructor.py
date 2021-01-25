@@ -9,18 +9,22 @@ from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
 from .BPtSearchCV import get_search_cv
 
 
-class Model_Pipeline():
+class BPtPipelineConstructor():
 
-    def __init__(self, pipeline_params, spec, Data_Scopes,
-                 verbose=False):
+    def __init__(self, pipeline_params, problem_spec, dataset):
 
-        # Save param search here
+        # Save param search here - should be None or dict
         self.param_search = pipeline_params.param_search
 
-        # Set n_jobs in model spec
-        spec['n_jobs'] = pipeline_params.n_jobs
+        # Extract params for BPtPipeline
         self.cache_fit_dr = pipeline_params.cache_fit_dr
-        self.verbose = verbose
+        self.verbose = pipeline_params.verbose
+
+        # Save some params to pass around when building the steps
+        spec = {'n_jobs': pipeline_params.n_jobs,
+                'random_state': problem_spec.random_state,
+                'problem_type': problem_spec.problem_type,
+                'scope': problem_spec.scope}
 
         # Extract ordered
         ordered_pipeline_params = pipeline_params.get_ordered_pipeline_params()
@@ -28,10 +32,10 @@ class Model_Pipeline():
         # Create the pipeline pieces
         self._create_pipeline_pieces(
             ordered_pipeline_params=ordered_pipeline_params,
-            Data_Scopes=Data_Scopes, spec=spec)
+            dataset=dataset, spec=spec)
 
     def _create_pipeline_pieces(self, ordered_pipeline_params,
-                                Data_Scopes, spec):
+                                dataset, spec):
 
         # Order is:
         # ['loaders', 'imputers',
@@ -60,8 +64,7 @@ class Model_Pipeline():
                                              pieces_classes, ORDERED_NAMES):
 
             piece = piece_class(user_passed_objs=self.user_passed_objs,
-                                Data_Scopes=Data_Scopes,
-                                spec=spec)
+                                dataset=dataset, spec=spec)
             objs, params = piece.process(params)
 
             self.named_objs[name] = objs
@@ -168,7 +171,7 @@ class Model_Pipeline():
             return False
         return True
 
-    def get_search_wrapped_pipeline(self, progress_loc=None):
+    def get_search_wrapped_pipeline(self):
 
         # Grab the base pipeline
         base_pipeline = self.get_pipeline()
@@ -181,28 +184,21 @@ class Model_Pipeline():
         search_model = get_search_cv(
                 estimator=base_pipeline,
                 param_search=self.param_search,
-                param_distributions=self.get_all_params(),
-                progress_loc=progress_loc)
+                param_distributions=self.get_all_params()
+                )
 
         return search_model, {}
 
 
-def get_pipe(pipeline_params, problem_spec, Data_Scopes, progress_loc,
-             verbose=False):
-
-    # Get the model specs from problem_spec
-    model_spec = problem_spec.get_model_spec()
+def get_pipe(pipeline_params, problem_spec, dataset):
 
     # Init the Model_Pipeline, which creates the pipeline pieces
-    base_model_pipeline =\
-        Model_Pipeline(pipeline_params=pipeline_params,
-                       spec=model_spec,
-                       Data_Scopes=Data_Scopes,
-                       verbose=verbose)
-
+    pipeline_constructor =\
+        BPtPipelineConstructor(pipeline_params=pipeline_params,
+                               problem_spec=problem_spec,
+                               dataset=dataset)
     # Set the final model // search wrap
     Model, pipeline_params =\
-        base_model_pipeline.get_search_wrapped_pipeline(
-            progress_loc=progress_loc)
+        pipeline_constructor.get_search_wrapped_pipeline()
 
     return Model, pipeline_params

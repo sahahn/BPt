@@ -3,7 +3,7 @@ from ..Dataset import Dataset
 from nose.tools import assert_raises
 import os
 import tempfile
-from ...main.Params_Classes import CV
+from ...main.Params_Classes import CV_Strategy
 
 
 def get_fake_dataset():
@@ -26,90 +26,90 @@ def get_fake_dataset():
     return fake
 
 
-def test_proc_cv_base():
+def test_proc_cv_strategy_base():
 
     df = get_fake_dataset()
 
-    cv_params = CV()
+    cv_params = CV_Strategy()
 
-    cv = df._proc_cv(cv_params)
+    cv = df._proc_cv_strategy(cv_params)
     assert cv.groups is None
     assert cv.stratify is None
     assert cv.train_only is None
 
-    cv = df._proc_cv(cv_params=None)
+    cv = df._proc_cv_strategy(cv_params=None)
     assert cv.groups is None
     assert cv.stratify is None
     assert cv.train_only is None
 
 
-def test_proc_cv_train_only():
+def test_proc_cv_strategy_train_only():
 
     df = get_fake_dataset()
 
-    cv_params = CV(train_only_subjects=[0, 1])
-    cv = df._proc_cv(cv_params)
+    cv_params = CV_Strategy(train_only_subjects=[0, 1])
+    cv = df._proc_cv_strategy(cv_params)
 
     assert cv.groups is None
     assert cv.stratify is None
     assert np.array_equal(cv.train_only, np.array([0, 1]))
 
     # Make sure sorts for repeatable behavior
-    cv_params = CV(train_only_subjects=[0, 1])
-    cv = df._proc_cv(cv_params)
+    cv_params = CV_Strategy(train_only_subjects=[0, 1])
+    cv = df._proc_cv_strategy(cv_params)
 
     assert cv.groups is None
     assert cv.stratify is None
     assert np.array_equal(cv.train_only, np.array([0, 1]))
 
 
-def test_proc_cv_groups():
+def test_proc_cv_strategy_groups():
 
     df = get_fake_dataset()
 
     with assert_raises(RuntimeError):
-        cv_params = CV(groups=['1', '2'])
+        cv_params = CV_Strategy(groups=['1', '2'])
 
-    cv_params = CV(groups='1')
+    cv_params = CV_Strategy(groups='1')
     with assert_raises(RuntimeError):
-        cv = df._proc_cv(cv_params)
+        cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CV(groups='doesnt exist')
+    cv_params = CV_Strategy(groups='doesnt exist')
     with assert_raises(IndexError):
-        cv = df._proc_cv(cv_params)
+        cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CV(groups='2')
+    cv_params = CV_Strategy(groups='2')
     with assert_raises(RuntimeError):
-        cv = df._proc_cv(cv_params)
+        cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CV(groups='3')
-    cv = df._proc_cv(cv_params)
+    cv_params = CV_Strategy(groups='3')
+    cv = df._proc_cv_strategy(cv_params)
     assert len(cv.groups) == 3
     assert cv.groups.nunique() == 1
 
 
-def test_proc_cv_stratify():
+def test_proc_cv_strategy_stratify():
 
     df = get_fake_dataset()
 
     with assert_raises(RuntimeError):
-        cv_params = CV(stratify=['1', '2'])
+        cv_params = CV_Strategy(stratify=['1', '2'])
 
-    cv_params = CV(stratify='1')
+    cv_params = CV_Strategy(stratify='1')
     with assert_raises(RuntimeError):
-        cv = df._proc_cv(cv_params)
+        cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CV(stratify='doesnt exist')
+    cv_params = CV_Strategy(stratify='doesnt exist')
     with assert_raises(IndexError):
-        cv = df._proc_cv(cv_params)
+        cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CV(stratify='2')
-    cv = df._proc_cv(cv_params)
+    cv_params = CV_Strategy(stratify='2')
+    cv = df._proc_cv_strategy(cv_params)
     assert len(cv.stratify) == 3
     assert cv.stratify.nunique() == 1
 
-    cv_params = CV(stratify='3')
-    cv = df._proc_cv(cv_params)
+    cv_params = CV_Strategy(stratify='3')
+    cv = df._proc_cv_strategy(cv_params)
     assert len(cv.stratify) == 3
     assert cv.stratify.nunique() == 1
 
@@ -124,24 +124,24 @@ def test_set_test_split():
     with assert_raises(TypeError):
         df.set_test_split(size=.2, subjects=[1, 2])
 
-    df.set_test_split(size=1, cv=None, random_state=None)
+    df.set_test_split(size=1, cv_strategy=None, random_state=None)
 
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
 
-    df.set_test_split(size=.3, cv=None, random_state=None)
+    df.set_test_split(size=.3, cv_strategy=None, random_state=None)
 
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
 
-    df.set_test_split(size=.5, cv=CV(train_only_subjects=[0]),
+    df.set_test_split(size=.5, cv_strategy=CV_Strategy(train_only_subjects=[0]),
                       random_state=1)
 
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
     assert 0 in df.train_subjects
 
-    df.set_test_split(size=1, cv=CV(train_only_subjects=[0]),
+    df.set_test_split(size=1, cv_strategy=CV_Strategy(train_only_subjects=[0]),
                       random_state=1)
 
     assert len(df.test_subjects) == 1
@@ -168,21 +168,21 @@ def test_set_train_split():
     with assert_raises(TypeError):
         df.set_train_split(size=.2, subjects=[1, 2])
 
-    df.set_train_split(size=1, cv=None, random_state=None)
+    df.set_train_split(size=1, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 2
     assert len(df.train_subjects) == 1
 
-    df.set_train_split(size=.4, cv=None, random_state=None)
+    df.set_train_split(size=.4, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 2
     assert len(df.train_subjects) == 1
 
-    df.set_train_split(size=.5, cv=CV(train_only_subjects=[0]),
+    df.set_train_split(size=.5, cv_strategy=CV_Strategy(train_only_subjects=[0]),
                        random_state=1)
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
     assert 0 in df.train_subjects
 
-    df.set_train_split(size=1, cv=CV(train_only_subjects=[0]),
+    df.set_train_split(size=1, cv_strategy=CV_Strategy(train_only_subjects=[0]),
                        random_state=1)
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
@@ -199,7 +199,7 @@ def test_set_train_split():
     assert 0 in df.train_subjects
 
     with assert_raises(ValueError):
-        df.set_train_split(size=1, cv=CV(train_only_subjects=[0, 1]),
+        df.set_train_split(size=1, cv_strategy=CV_Strategy(train_only_subjects=[0, 1]),
                            random_state=1)
 
     with assert_raises(RuntimeError):
@@ -219,12 +219,12 @@ def get_fake_multi_index_dataset():
     return fake
 
 
-def test_multi_index_proc_cv():
+def test_multi_index_proc_cv_strategy():
 
     df = get_fake_multi_index_dataset()
 
-    cv_params = CV(train_only_subjects=['s1'])
-    cv = df._proc_cv(cv_params)
+    cv_params = CV_Strategy(train_only_subjects=['s1'])
+    cv = df._proc_cv_strategy(cv_params)
 
     assert len(cv.train_only) == 2
     assert df.loc[cv.train_only].shape == (2, 3)
@@ -239,13 +239,13 @@ def test_multi_index_proc_cv():
     assert len(train_only) == 2
 
 
-def test_multi_index_proc_cv_groups():
+def test_multi_index_proc_cv_strategy_groups():
 
     df = get_fake_multi_index_dataset()
     df.copy_as_non_input('0', 'zero')
 
-    cv_params = CV(groups='zero')
-    cv = df._proc_cv(cv_params)
+    cv_params = CV_Strategy(groups='zero')
+    cv = df._proc_cv_strategy(cv_params)
 
     assert len(cv.groups) == 6
     assert cv.groups.nunique() == 6
@@ -255,19 +255,19 @@ def test_multi_index_set_test_split():
 
     df = get_fake_multi_index_dataset()
 
-    df.set_test_split(size=1, cv=None, random_state=None)
+    df.set_test_split(size=1, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 5
 
-    df.set_test_split(size=0, cv=None, random_state=None)
+    df.set_test_split(size=0, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 0
     assert len(df.train_subjects) == 6
 
-    df.set_test_split(size=.3, cv=None, random_state=None)
+    df.set_test_split(size=.3, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 2
     assert len(df.train_subjects) == 4
 
-    df.set_test_split(size=.5, cv=CV(train_only_subjects=['s1']),
+    df.set_test_split(size=.5, cv_strategy=CV_Strategy(train_only_subjects=['s1']),
                       random_state=1)
 
     assert len(df.test_subjects) == 2
@@ -290,15 +290,16 @@ def test_multi_index_set_train_split():
 
     df = get_fake_multi_index_dataset()
 
-    df.set_train_split(size=1, cv=None, random_state=None)
+    df.set_train_split(size=1, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 5
     assert len(df.train_subjects) == 1
 
-    df.set_train_split(size=.2, cv=None, random_state=None)
+    df.set_train_split(size=.2, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 5
     assert len(df.train_subjects) == 1
 
-    df.set_train_split(size=2, cv=CV(train_only_subjects=['s1']),
+    df.set_train_split(size=2,
+                       cv_strategy=CV_Strategy(train_only_subjects=['s1']),
                        random_state=1)
 
     assert len(df.test_subjects) == 2

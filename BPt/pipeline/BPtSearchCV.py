@@ -132,17 +132,11 @@ class BPtSearchCV(BaseEstimator):
 
     def _set_cv(self, train_data_index):
 
-        # If no CV, use random
-        if self.param_search._cv is None:
-            self.param_search._cv = CV()
-
+        # Set cv based on train_data_index
         self.cv_subjects, self.cv_inds =\
-            self.param_search._cv.get_cv(train_data_index,
-                                         self.param_search.splits,
-                                         self.param_search.n_repeats,
-                                         self.param_search._splits_vals,
-                                         self.param_search._random_state,
-                                         return_index='both')
+            self.param_search['cv'].get_cv(train_data_index,
+                                           self.param_search['random_state'],
+                                           return_index='both')
 
     def fit(self, X, y=None, mapping=None,
             train_data_index=None, **fit_params):
@@ -161,7 +155,7 @@ class BPtSearchCV(BaseEstimator):
         self._set_cv(train_data_index)
 
         # Run different fit depending on type of search
-        if self.param_search.search_type == 'grid':
+        if self.param_search['search_type'] == 'grid':
             self.fit_grid(X=X, y=y, mapping=mapping,
                           train_data_index=train_data_index,
                           **fit_params)
@@ -182,7 +176,7 @@ class BPtGridSearchCV(BPtSearchCV):
         # Fit GridSearchCV object
         self.search_obj_ = GridSearchCV(estimator=self.estimator,
                                         param_grid=param_grid,
-                                        scoring=self.param_search._scorer,
+                                        scoring=self.param_search['scorer'],
                                         n_jobs=self.n_jobs,
                                         cv=self.cv_inds,
                                         refit=True,
@@ -296,19 +290,19 @@ class NevergradSearchCV(BPtSearchCV):
         if client is None:
 
             # Check for memmap X, only if no client
-            if self.param_search.memmap_X:
+            if self.param_search['memmap_X']:
                 X_mem = to_memmap(X)
             else:
                 X_mem = X
 
             instrumentation =\
                 ng.p.Instrumentation(X_mem, y, self.estimator,
-                                     self.param_search._scorer,
-                                     self.param_search.weight_scorer,
+                                     self.param_search['scorer'],
+                                     self.param_search['weight_scorer'],
                                      self.cv_inds,
                                      self.cv_subjects, mapping,
                                      fit_params,
-                                     self.param_search.search_only_params,
+                                     self.param_search['search_only_params'],
                                      **self.param_distributions)
 
         # If using dask client, pre-scatter some big memory fixed params
@@ -320,12 +314,12 @@ class NevergradSearchCV(BPtSearchCV):
 
             instrumentation =\
                 ng.p.Instrumentation(X_s, y_s, self.estimator,
-                                     self.param_search._scorer,
-                                     self.param_search.weight_scorer,
+                                     self.param_search['scorer'],
+                                     self.param_search['weight_scorer'],
                                      cv_inds_s,
                                      cv_subjects_s, mapping,
                                      fit_params,
-                                     self.param_search.search_only_params,
+                                     self.param_search['search_only_params'],
                                      **self.param_distributions)
 
         return instrumentation, X_file
@@ -333,15 +327,15 @@ class NevergradSearchCV(BPtSearchCV):
     def get_optimizer(self, instrumentation):
 
         try:
-            opt = ng.optimizers.registry[self.param_search.search_type]
+            opt = ng.optimizers.registry[self.param_search['search_type']]
 
         # If not found, look for in expirimental variants
         except KeyError:
             import nevergrad.optimization.experimentalvariants
-            opt = ng.optimizers.registry[self.param_search.search_type]
+            opt = ng.optimizers.registry[self.param_search['search_type']]
 
         optimizer = opt(parametrization=instrumentation,
-                        budget=self.param_search.n_iter,
+                        budget=self.param_search['n_iter'],
                         num_workers=self.n_jobs)
 
         # Set random state is defined
@@ -375,7 +369,7 @@ class NevergradSearchCV(BPtSearchCV):
         # Otherwise use futures pool executor
         else:
 
-            if self.param_search.mp_context == 'loky':
+            if self.param_search['mp_context'] == 'loky':
 
                 try:
                     executor = get_reusable_executor(
@@ -390,7 +384,7 @@ class NevergradSearchCV(BPtSearchCV):
             try:
                 with futures.ProcessPoolExecutor(
                   max_workers=self.n_jobs,
-                  mp_context=mp.get_context(self.param_search.mp_context)) as ex:
+                  mp_context=mp.get_context(self.param_search['mp_context'])) as ex:
 
                     recommendation = optimizer.minimize(ng_cv_score,
                                                         executor=ex,
@@ -411,9 +405,9 @@ class NevergradSearchCV(BPtSearchCV):
 
         # Check if need to make dask client
         # Criteria is greater than 1 job, and passed as dask_ip of non-None
-        if self.n_jobs > 1 and self.param_search.dask_ip is not None:
+        if self.n_jobs > 1 and self.param_search['dask_ip'] is not None:
             from dask.distributed import Client
-            client = Client(self.param_search.dask_ip)
+            client = Client(self.param_search['dask_ip'])
         else:
             client = None
 
@@ -488,7 +482,7 @@ def get_search_cv(estimator, param_search,
                   param_distributions, progress_loc):
 
     # Determine which CV model to make
-    if param_search.search_type == 'grid':
+    if param_search['search_type'] == 'grid':
         SearchCV = BPtGridSearchCV
     else:
         SearchCV = NevergradSearchCV
@@ -497,8 +491,8 @@ def get_search_cv(estimator, param_search,
         estimator=estimator,
         param_search=param_search,
         param_distributions=param_distributions,
-        n_jobs=param_search._n_jobs,
-        random_state=param_search._random_state,
+        n_jobs=param_search['n_jobs'],
+        random_state=param_search['random_state'],
         progress_loc=progress_loc)
 
     return search_obj

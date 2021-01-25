@@ -58,16 +58,19 @@ def add_estimator_to_params(passed_params):
 
 class Pieces():
 
-    def __init__(self, user_passed_objs, Data_Scopes, spec):
+    def __init__(self, user_passed_objs, dataset, spec):
         # problem_type, random_state, n_jobs are stored in spec
 
         # Class values
         self.user_passed_objs = user_passed_objs
-        self.Data_Scopes = Data_Scopes
+        self.dataset = dataset
         self.spec = spec.copy()
 
         # This value with be replaced in child classes
         self.AVAILABLE = None
+
+    def get_inds(self, scope):
+        return self.dataset._get_data_inds(self.spec['scope'], scope)
 
     def process(self, params):
         '''params is a list of Param piece classes, or potentially a list
@@ -162,8 +165,7 @@ class Pieces():
 
                 # Set the original number of feat keys based on the
                 # original scope
-                num_feat_keys =\
-                    len(self.Data_Scopes.get_inds_from_scope(param.scope))
+                num_feat_keys = len(self.get_inds(param.scope))
 
                 objs_and_params.append(
                     (name, get_func(name, extra_params,
@@ -224,10 +226,7 @@ class Pieces():
 
         if hasattr(obj, 'needs_cat_inds'):
             if getattr(obj, 'needs_cat_inds'):
-
-                # Get cat inds and set
-                cat_inds = self.Data_Scopes.get_inds_from_scope('categorical')
-                obj.set_params(cat_inds=cat_inds)
+                obj.set_params(cat_inds=self.get_inds('category'))
 
         return obj
 
@@ -257,7 +256,7 @@ class Pieces():
 
                 # Grab the base estimator
                 base_model_obj = Models(self.user_passed_objs,
-                                        self.Data_Scopes,
+                                        self.dataset,
                                         model_spec)
                 base_objs, base_params =\
                     base_model_obj.process(params[i].base_model)
@@ -294,7 +293,7 @@ class Pieces():
 
             # Proc scope
             scope = input_params[i].scope
-            inds = self.Data_Scopes.get_inds_from_scope(scope)
+            inds = self.get_inds(scope)
 
             # Get scope name
             scope_name = get_scope_name(scope)
@@ -406,7 +405,7 @@ class Models(Type_Pieces):
 
         # Get base ensemble objs. and obj_params
         ensembles =\
-            Ensembles(self.user_passed_objs, self.Data_Scopes, self.spec)
+            Ensembles(self.user_passed_objs, self.dataset, self.spec)
         ensemble_objs, ensemble_obj_params = ensembles.process(ensemble_params)
 
         # For each ensemble, go through and process
@@ -499,7 +498,7 @@ class Models(Type_Pieces):
 
         # Process and get the base scaler_obj + params
         base_scaler_obj = Target_Scalers(self.user_passed_objs,
-                                         self.Data_Scopes,
+                                         self.dataset,
                                          self.spec)
         scaler_objs, scaler_params =\
             base_scaler_obj.process(target_scaler)
@@ -543,8 +542,8 @@ class Models(Type_Pieces):
 
         # Check if scope is 'all' or functionally 'all'
         # Only wrap if not functionally all
-        inds = self.Data_Scopes.get_inds_from_scope(scope)
-        all_inds = self.Data_Scopes.get_inds_from_scope('all')
+        inds = self.get_inds(scope)
+        all_inds = self.get_inds('all')
 
         if len(inds) == len(all_inds):
             return model, model_params
@@ -649,7 +648,7 @@ class Loaders(Pieces):
         for named_obj, param in zip(passed_loaders, params):
 
             # Get inds from scope
-            inds = self.Data_Scopes.get_inds_from_scope(param.scope)
+            inds = self.get_inds(param.scope)
 
             # Unpack to name and object
             name, obj = named_obj
@@ -664,12 +663,12 @@ class Loaders(Pieces):
                 setattr(obj, 'random_state', self.spec['random_state'])
 
             # Wrap in BPtLoader
-            wrapped_obj = BPtLoader(estimator=obj,
-                                    inds=inds,
-                                    file_mapping=self.Data_Scopes.file_mapping,
-                                    n_jobs=self.spec['n_jobs'],
-                                    fix_n_jobs=param.fix_n_wrapper_jobs,
-                                    cache_loc=param.cache_loc)
+            wrapped_obj =\
+                BPtLoader(estimator=obj, inds=inds,
+                          file_mapping=self.dataset._get_file_mapping(),
+                          n_jobs=self.spec['n_jobs'],
+                          fix_n_jobs=param.fix_n_wrapper_jobs,
+                          cache_loc=param.cache_loc)
 
             # Add to loaders, use same as base name
             loaders.append((name, wrapped_obj))

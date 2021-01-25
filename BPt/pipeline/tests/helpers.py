@@ -2,12 +2,12 @@ import os
 import tempfile
 import numpy as np
 from ...helpers.Data_File import Data_File
-from ...helpers.Data_Scopes import Data_Scopes
 from ...main.Params_Classes import Problem_Spec
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection._base import SelectorMixin
 from ...main.Params_Classes import Param_Search
-from ...helpers.CV import CV
+from ...main.CV import BPtCV, CV_Strategy
+from ...dataset.Dataset import Dataset
 
 
 class ToFixedTransformer(BaseEstimator, TransformerMixin):
@@ -41,8 +41,6 @@ class FakeSelector(SelectorMixin, BaseEstimator):
 def get_param_search():
 
     param_search = Param_Search(search_type='RandomSearch',
-                                splits=3,
-                                n_repeats=1,
                                 cv='default',
                                 n_iter=10,
                                 scorer='default',
@@ -53,13 +51,15 @@ def get_param_search():
                                 memmap_X=False,
                                 search_only_params=None)
 
-    param_search.set_random_state(1)
-    param_search.set_n_jobs(2)
-    param_search.set_scorer('regression')
-    param_search.set_cv(CV())
-    param_search.set_split_vals(None)
+    ps = Problem_Spec(random_state=1,
+                      n_jobs=2,
+                      problem_type='regression')
 
-    return param_search
+    ps_dict = param_search.as_dict(ps)
+    ps_dict['cv'] = BPtCV(splits=3, n_repeats=1,
+                          cv_strategy=CV_Strategy(), splits_vals=None)
+
+    return ps_dict
 
 
 def get_temp_files(n):
@@ -91,8 +91,8 @@ def clean_fake_mapping(n):
         os.unlink(loc)
 
 
-def get_fake_data_scopes(data_keys=None,
-                         cat_keys=None):
+def get_fake_data_dataset(data_keys=None,
+                          cat_keys=None):
 
     if data_keys is None:
         data_keys = []
@@ -100,15 +100,17 @@ def get_fake_data_scopes(data_keys=None,
     if cat_keys is None:
         cat_keys = []
 
-    data_scopes =\
-        Data_Scopes(data_keys=data_keys,
-                    data_file_keys=[],
-                    cat_keys=cat_keys,
-                    strat_keys=[],
-                    covars_keys=[],
-                    file_mapping=None)
+    dataset = Dataset()
 
-    fake_ps = Problem_Spec(target='target', scope='all')
-    data_scopes.set_all_keys(fake_ps)
+    for key in data_keys:
+        dataset[key] = []
+        dataset.set_role(key, 'data')
 
-    return data_scopes
+    for key in cat_keys:
+        dataset[key] = []
+        dataset.set_role(key, 'data')
+        dataset.add_scope(key, 'category')
+
+    dataset._check_scopes()
+
+    return dataset

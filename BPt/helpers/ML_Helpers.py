@@ -418,8 +418,6 @@ def hash(objs, steps):
     hash_str1 = joblib_hash(objs, hash_name='md5')
     hash_str2 = joblib_hash(hash_steps, hash_name='md5')
 
-    print(hash_str2, hash_steps)
-
     return hash_str1 + hash_str2
 
 

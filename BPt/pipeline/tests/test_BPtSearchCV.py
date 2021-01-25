@@ -1,32 +1,8 @@
 from ..BPtSearchCV import (wrap_param_search, get_search_cv,
                            NevergradSearchCV, BPtGridSearchCV)
-from ...main.Params_Classes import Param_Search, CV
 import nevergrad as ng
 from ..helpers import is_ng
-
-
-def get_param_search():
-
-    param_search = Param_Search(search_type='RandomSearch',
-                                splits=3,
-                                n_repeats=1,
-                                cv='default',
-                                n_iter=10,
-                                scorer='default',
-                                weight_scorer=False,
-                                mp_context='loky',
-                                n_jobs='default',
-                                dask_ip=None,
-                                memmap_X=False,
-                                search_only_params=None)
-
-    param_search.set_random_state(1)
-    param_search.set_n_jobs(2)
-    param_search.set_scorer('regression')
-    param_search.set_cv(CV())
-    param_search.set_split_vals(None)
-
-    return param_search
+from .helpers import get_param_search
 
 
 def test_wrap_param_search():

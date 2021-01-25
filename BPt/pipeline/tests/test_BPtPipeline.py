@@ -8,6 +8,9 @@ import numpy as np
 import pandas as pd
 import os
 import tempfile
+import nevergrad as ng
+from .helpers import get_param_search
+from ..BPtSearchCV import NevergradSearchCV
 import shutil
 from joblib import hash as joblib_hash
 
@@ -82,7 +85,7 @@ def run_pipe_with_loader_ts(cache_fit_dr=None):
 
     # Loader - transform (5, 2) to (5, 8)
     # as each data_file contains np.zeros((2, 2))
-    file_mapping = get_fake_mapping(10)
+    file_mapping = get_fake_mapping(100)
     loader = BPtLoader(estimator=Identity(),
                        inds=[0, 1],
                        file_mapping=file_mapping,
@@ -101,17 +104,24 @@ def run_pipe_with_loader_ts(cache_fit_dr=None):
     # Add basic linear regression model
     # Original inds should work on all
     model = ScopeModel(estimator=LinearRegression(), inds=[0, 1])
-    steps.append(('model', model))
+    param_dists = {'estimator__fit_intercept': ng.p.Choice([True, False]),
+                   'estimator__normalize':
+                   ng.p.TransitionChoice([True, False])}
+    search_model = NevergradSearchCV(estimator=model,
+                                     param_search=get_param_search(),
+                                     param_distributions=param_dists)
+
+    steps.append(('model', search_model))
 
     # Create pipe
     names = [['loader'], [], ['to_ones'], [], [], ['model']]
     pipe = BPtPipeline(steps=steps, names=names,
                        cache_fit_dr=cache_fit_dr)
 
-    X = np.arange(10).reshape((5, 2))
-    y = np.ones(5)
+    X = np.arange(100).reshape((50, 2))
+    y = np.ones(50)
 
-    pipe.fit(X, y)
+    pipe.fit(X, y, train_data_index=np.arange(50))
 
     # Make sure fit worked correctly
     assert pipe[0].n_features_in_ == 2
@@ -125,7 +135,7 @@ def run_pipe_with_loader_ts(cache_fit_dr=None):
     X_df = pd.DataFrame(X)
 
     X_trans = pipe.transform_df(X_df, fs=False)
-    assert X_trans.shape == (5, 8)
+    assert X_trans.shape == (50, 8)
     assert X_trans.loc[4, '1_3'] == 9
     assert X_trans.loc[1, '1_2'] == 3
     assert X_trans.loc[4, '0_0'] == 1
@@ -137,14 +147,14 @@ def run_pipe_with_loader_ts(cache_fit_dr=None):
     # as all targets are 1's.
     # but may need to change?
     preds = pipe.predict(X)
-    assert np.all(preds == 1)
+    assert np.all(preds > .99)
 
     # Check bpt pipeline coef attribute
-    assert np.array_equal(pipe[-1].estimator_.coef_,
+    assert np.array_equal(pipe[-1].best_estimator_.coef_,
                           pipe.coef_)
 
     # Clean fake file mapping
-    clean_fake_mapping(10)
+    clean_fake_mapping(100)
 
     return pipe
 

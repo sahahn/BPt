@@ -6,6 +6,8 @@ from ...helpers.Data_Scopes import Data_Scopes
 from ...main.Params_Classes import Problem_Spec
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection._base import SelectorMixin
+from ...main.Params_Classes import Param_Search
+from ...helpers.CV import CV
 
 
 class ToFixedTransformer(BaseEstimator, TransformerMixin):
@@ -34,6 +36,30 @@ class FakeSelector(SelectorMixin, BaseEstimator):
 
     def _get_support_mask(self):
         return self.mask
+
+
+def get_param_search():
+
+    param_search = Param_Search(search_type='RandomSearch',
+                                splits=3,
+                                n_repeats=1,
+                                cv='default',
+                                n_iter=10,
+                                scorer='default',
+                                weight_scorer=False,
+                                mp_context='loky',
+                                n_jobs='default',
+                                dask_ip=None,
+                                memmap_X=False,
+                                search_only_params=None)
+
+    param_search.set_random_state(1)
+    param_search.set_n_jobs(2)
+    param_search.set_scorer('regression')
+    param_search.set_cv(CV())
+    param_search.set_split_vals(None)
+
+    return param_search
 
 
 def get_temp_files(n):

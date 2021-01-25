@@ -381,6 +381,22 @@ def check_replace(objs):
             new_value = check_replace(getattr(objs, param))
             setattr(objs, param, new_value)
 
+        # Also if has n_jobs replace all with fixed 1
+        if hasattr(objs, 'n_jobs'):
+            setattr(objs, 'n_jobs', 1)
+        if hasattr(objs, 'fix_n_jobs'):
+            setattr(objs, 'fix_n_jobs', 1)
+        if hasattr(objs, '_n_jobs'):
+            try:
+                setattr(objs, '_n_jobs', 1)
+            except AttributeError:
+                pass
+        if hasattr(objs, 'n_jobs_'):
+            try:
+                setattr(objs, 'n_jobs_', 1)
+            except AttributeError:
+                pass
+
         # Return objs as changed in place
         return objs
 
@@ -401,6 +417,8 @@ def hash(objs, steps):
     # Hash steps and objs seperate, then combine
     hash_str1 = joblib_hash(objs, hash_name='md5')
     hash_str2 = joblib_hash(hash_steps, hash_name='md5')
+
+    print(hash_str2, hash_steps)
 
     return hash_str1 + hash_str2
 

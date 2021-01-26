@@ -19,6 +19,13 @@ def get_bpt_cv(cv, dataset):
     # Check for is split corresponds to a leave-out-group
     if isinstance(cv.splits, str):
 
+        if not dataset._is_category(cv.splits):
+            raise RuntimeError('Passed splits col must have scope category.')
+
+        dataset._check_roles()
+        if dataset.roles[cv.splits] != 'non input':
+            raise RuntimeError('Passed splits col must be role == non input.')
+
         # @TODO input validation on choice of leave out variable
         splits_vals = dataset[cv.splits]
 

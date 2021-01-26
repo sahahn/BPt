@@ -22,13 +22,22 @@ class BPtPipeline(Pipeline):
 
     @property
     def n_jobs(self):
-        return self._n_jobs
+        '''Return the first n jobs found in steps.
+        This function is just meant to be a check to
+        see if any of the pipeline steps have n_jobs to set.'''
+
+        for step in self.steps:
+            if hasattr(step[1], 'n_jobs'):
+                return getattr(step[1], 'n_jobs')
+
+        # Otherwise, return a step we know
+        # doesn't have n_jobs
+        return self.steps[0][1].n_jobs
 
     @n_jobs.setter
     def n_jobs(self, n_jobs):
 
-        # Store ... in self._n_jobs
-        self._n_jobs = n_jobs
+        print('set n jobs', n_jobs)
 
         # If set here, try to propegate to all steps
         for step in self.steps:

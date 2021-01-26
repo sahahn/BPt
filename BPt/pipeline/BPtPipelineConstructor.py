@@ -21,7 +21,7 @@ class BPtPipelineConstructor():
         self.verbose = pipeline_params.verbose
 
         # Save some params to pass around when building the steps
-        spec = {'n_jobs': pipeline_params.n_jobs,
+        spec = {'n_jobs': problem_spec.n_jobs,
                 'random_state': problem_spec.random_state,
                 'problem_type': problem_spec.problem_type,
                 'scope': problem_spec.scope}

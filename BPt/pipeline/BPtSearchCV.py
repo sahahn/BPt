@@ -52,6 +52,9 @@ class BPtSearchCV(BaseEstimator):
     @n_jobs.setter
     def n_jobs(self, n_jobs):
 
+        print(hasattr(self.estimator, 'n_jobs'), '?')
+        print(self.estimator)
+
         # Store in self._n_jobs
         self._n_jobs = n_jobs
 
@@ -471,15 +474,14 @@ def wrap_param_search(param_search, model_obj, model_params):
     search_obj = get_search_cv(
         estimator=model_obj[1],
         param_search=param_search,
-        param_distributions=m_params,
-        progress_loc=None)
+        param_distributions=m_params)
 
     # Create the wrapper nevergrad CV model
     return (name + '_SearchCV', search_obj), model_params
 
 
 def get_search_cv(estimator, param_search,
-                  param_distributions, progress_loc):
+                  param_distributions):
 
     # Determine which CV model to make
     if param_search['search_type'] == 'grid':
@@ -492,7 +494,6 @@ def get_search_cv(estimator, param_search,
         param_search=param_search,
         param_distributions=param_distributions,
         n_jobs=param_search['n_jobs'],
-        random_state=param_search['random_state'],
-        progress_loc=progress_loc)
+        random_state=param_search['random_state'])
 
     return search_obj

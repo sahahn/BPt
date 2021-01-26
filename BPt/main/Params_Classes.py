@@ -1630,7 +1630,6 @@ class Model_Pipeline(Params):
                  feat_selectors=None,
                  model='default',
                  param_search=None,
-                 n_jobs='default',
                  cache_fit_dr=None,
                  verbose=0,
                  cache='depreciated',
@@ -1814,18 +1813,6 @@ class Model_Pipeline(Params):
 
                 default = None
 
-        n_jobs : int or 'default', optional
-            The number of cores to be used with this pipeline.
-            In general, this parameter
-            should be left as 'default', which will set it
-            based on the n_jobs as set in the problem spec-
-            and will attempt to automatically change this
-            value if say in the context of nesting.
-
-            ::
-
-                default = 'default'
-
         cache_fit_dr : Path str or None, optional
             Optional parameter specifying a directory
             in which full BPt pipeline's should
@@ -1844,6 +1831,7 @@ class Model_Pipeline(Params):
             ::
 
                 default = 0
+
 
         cache : depreciated
             The cache parameter has been depreciated,
@@ -1872,9 +1860,7 @@ class Model_Pipeline(Params):
         self.loaders = loaders
 
         if imputers == 'default':
-            imputers = [Imputer('mean', scope='float'),
-                        Imputer('median', scope='cat')]
-            print('Passed default imputers, setting to:', imputers)
+            imputers = Imputer('default')
         elif isinstance(imputers, str):
             imputers = Imputer(imputers)
         self.imputers = imputers
@@ -1899,7 +1885,6 @@ class Model_Pipeline(Params):
         self.model = model
 
         self.param_search = param_search
-        self.n_jobs = n_jobs
         self.cache_fit_dr = cache_fit_dr
         self.verbose = verbose
 
@@ -1987,27 +1972,17 @@ class Model_Pipeline(Params):
 
         return params
 
-    def check_imputer(self, data):
+    def check_imputers(self, is_na):
 
-        # If no NaN, no imputer
-        if not pd.isnull(data).any().any():
+        # If no NaN set to none
+        if not is_na:
             self.imputers = None
 
-    def check_samplers(self, func):
-        if self.samplers is not None:
-            if isinstance(self.samplers, list):
-                for s in self.samplers:
-                    s.add_strat_u_name(func)
-            else:
-                self.samplers.add_strat_u_name(func)
+        elif isinstance(self.imputers, Imputer) and self.imputers.obj == 'default':
+            self.imputers = [Imputer('mean', scope='float'),
+                             Imputer('median', scope='cat')]
 
-    def preproc(self, n_jobs):
-
-        # Base proc checks
-        self._proc_checks()
-
-        # Store n_jobs
-        self.set_n_jobs(n_jobs)
+        return
 
     def _proc_checks(self):
 
@@ -2069,19 +2044,6 @@ class Model_Pipeline(Params):
         # Proc param search if not None
         if self.param_search is not None:
             self.param_search.check_args()
-
-    def set_n_jobs(self, n_jobs):
-
-        if self.n_jobs == 'default':
-
-            # If no param search, each objs base n_jobs is
-            # the passed n_jobs
-            if self.param_search is None:
-                self.n_jobs = n_jobs
-
-            # Otherwise, base jobs are 1
-            else:
-                self.n_jobs = 1
 
     def get_ordered_pipeline_params(self):
 
@@ -2532,7 +2494,6 @@ class CV(Params):
         self.cv_strategy.set_params(**cv_strategy_args)
 
     def apply_dataset(self, dataset):
-
         return get_bpt_cv(self, dataset)
 
 

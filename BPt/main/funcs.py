@@ -81,14 +81,12 @@ def problem_spec_check(problem_spec, dataset):
     return ps
 
 
-def get_model_pipeline(model_pipeline, dataset,
-                       problem_spec):
+def get_estimator(model_pipeline, dataset, problem_spec):
     '''Get from input parameter style model_pipeline, a sklearn compatible
     estimator. This also requires a Dataset, and Problem_Spec.
     '''
 
     # @TODO add verbose option?
-    # @TODO figure out progress_loc arg, skipping for now.
 
     # Check passed input - note: returns deep copies
     pipe = model_pipeline_check(model_pipeline)
@@ -97,6 +95,8 @@ def get_model_pipeline(model_pipeline, dataset,
     # Get the actual pipeline
     model, _ = _get_pipeline(pipe, ps, dataset)
 
+    return model
+
 
 def _get_pipeline(model_pipeline, problem_spec, dataset,
                   has_search=False):
@@ -104,19 +104,17 @@ def _get_pipeline(model_pipeline, problem_spec, dataset,
     # If has search is False, means this is the top level
     # or the top level didnt have a search
     if not has_search:
+        has_search = True
         if model_pipeline.param_search is None:
             has_search = False
-        else:
-            has_search = True
 
     # If either this set of model_pipeline params or the parent
     # params had search params, then a copy of problem spec with n_jobs set
     # to 1 should be passed to children get pipelines,
+    nested_ps = problem_spec
     if has_search:
         nested_ps = deepcopy(problem_spec)
         nested_ps.n_jobs = 1
-    else:
-        nested_ps = problem_spec
 
     # Define a nested check, that iterates through searching for
     # nested model pipeline's
@@ -140,12 +138,12 @@ def _get_pipeline(model_pipeline, problem_spec, dataset,
             [nested_check(o) for o in obj]
             return
 
+        elif isinstance(obj, tuple):
+            (nested_check(o) for o in obj)
+
         elif isinstance(obj, dict):
             [nested_check(obj[k]) for k in obj]
             return
-
-        elif isinstance(obj, tuple):
-            (nested_check(o) for o in obj)
 
         if hasattr(obj, 'get_params'):
             for param in obj.get_params(deep=False):
@@ -167,8 +165,11 @@ def _get_pipeline(model_pipeline, problem_spec, dataset,
 
 def _preproc_model_pipeline(pipe, ps, dataset):
 
-    # Set pipeline n_jobs, if default
-    pipe.preproc(ps.n_jobs)
+    # Check imputers default case
+    # Check if any NaN in data
+    data_cols = dataset.get_cols(scope='data', columns=ps.scope)
+    is_na = dataset[data_cols].isna().any().any()
+    pipe.check_imputers(is_na)
 
     # Pre-proc param search
     has_param_search = _preproc_param_search(pipe, ps)
@@ -183,7 +184,7 @@ def _preproc_model_pipeline(pipe, ps, dataset):
 
         # Check for Model or Ensemble
         if isinstance(obj, Model) or isinstance(obj, Ensemble):
-            _preproc_param_search(obj, nested_ps, dataset)
+            _preproc_param_search(obj, nested_ps)
 
         if isinstance(obj, list):
             [nested_model_check(o) for o in obj]
@@ -208,15 +209,21 @@ def _preproc_model_pipeline(pipe, ps, dataset):
     def nested_cv_check(obj):
 
         # If has cv object, try applying dataset
+        # can be either in object or in dict
         if hasattr(obj, 'cv') and isinstance(obj.cv, CV):
             setattr(obj, 'cv', obj.cv.apply_dataset(dataset))
+
+        elif isinstance(obj, dict):
+            for k in obj:
+                if k == 'cv' and isinstance(obj[k], CV):
+                    obj[k] = obj[k].apply_dataset(dataset)
+                else:
+                    nested_cv_check(obj[k])
 
         elif isinstance(obj, list):
             [nested_cv_check(o) for o in obj]
         elif isinstance(obj, tuple):
             (nested_cv_check(o) for o in obj)
-        elif isinstance(obj, dict):
-            [nested_cv_check(obj[k]) for k in obj]
         elif hasattr(obj, 'get_params'):
             for param in obj.get_params(deep=False):
                 nested_cv_check(getattr(obj, param))
@@ -237,7 +244,7 @@ def _preproc_param_search(object, ps):
         return False
 
     # If a param search, apply ps and dataset + convert to dict
-    as_dict = param_search.to_dict(ps=ps)
+    as_dict = param_search.as_dict(ps=ps)
 
     # Set new proc'ed
     setattr(object, 'param_search', as_dict)

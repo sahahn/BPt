@@ -6,13 +6,8 @@ import pandas as pd
 def _validate_cv_key(self, cv_key, name):
     '''Various input validation. '''
 
-    # Make sure exists
-    if cv_key not in list(self):
-        raise IndexError('Passed ' + name + ': ' + cv_key + ' is not a '
-                         'loaded column.')
-
     # Make sure categorical
-    if 'category' not in self.scopes[cv_key]:
+    if not self._is_category(cv_key):
         raise RuntimeError('Passed ' + name + ': ' + cv_key + ' must '
                            'be of type category! This can be set '
                            'in a number of ways, e.g., via '

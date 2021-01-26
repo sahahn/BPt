@@ -7,13 +7,14 @@ from .main.Params_Classes import (Loader, Imputer, Scaler, Transformer,
                                   Model_Pipeline,
                                   Problem_Spec, Shap_Params,
                                   CV, CV_Split, CV_Splits)
+from .main.funcs import get_estimator
 
 from .main.Input_Tools import (Select, Duplicate, Pipe, Value_Subset)
 
 __author__ = "sahahn"
 __version__ = "2"
 __all__ = ["Dataset", "BPt_ML", "ABCD_ML", "Load", "Loader",
-           "Imputer", "Scaler", "Transformer",
+           "Imputer", "Scaler", "Transformer", 'get_estimator',
            "Feat_Selector", "Model",
            "Ensemble", "Param_Search", "Feat_Importance",
            "Model_Pipeline", "Problem_Spec", "Select",

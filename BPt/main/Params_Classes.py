@@ -1005,7 +1005,7 @@ class Param_Search(Params):
                  mp_context='loky', n_jobs='default',
                  random_state='default',
                  dask_ip=None, memmap_X=False,
-                 search_only_params=None, progress_loc=None):
+                 search_only_params=None, verbose=0, progress_loc=None):
         ''' Param_Search is special input object designed to be
         used with :class:`Model_Pipeline`.
         Param_Search defines a hyperparameter search strategy.
@@ -1236,6 +1236,14 @@ class Param_Search(Params):
 
                 default = None
 
+        verbose : int, optional
+            Controls the verbosity: the higher, the more messages.
+            By default, no verbosity, i.e., 0.
+
+            ::
+
+                default = 0
+
         progress_loc : None or str, optional
             Optional parameter, will append to a text file
             after every completed tested parameter.
@@ -1262,6 +1270,7 @@ class Param_Search(Params):
         self.random_state = random_state
         self.dask_ip = dask_ip
         self.memmap_X = memmap_X
+        self.verbose = verbose
         self.progress_loc = progress_loc
         self.search_only_params = search_only_params
 

@@ -146,9 +146,6 @@ class Pieces():
         '''Helper function to grab scaler / feat_selectors and
         their relevant parameter grids'''
 
-        # Save copy of the original spec
-        spec = self.spec.copy()
-
         # Make the object + params based on passed settings
         objs_and_params = []
         for param in params:

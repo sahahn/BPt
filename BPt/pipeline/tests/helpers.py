@@ -49,7 +49,8 @@ def get_param_search():
                                 n_jobs='default',
                                 dask_ip=None,
                                 memmap_X=False,
-                                search_only_params=None)
+                                search_only_params=None,
+                                progress_loc=None)
 
     ps = Problem_Spec(random_state=1,
                       n_jobs=2,

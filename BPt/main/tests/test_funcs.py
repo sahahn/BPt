@@ -261,7 +261,7 @@ def test_get_estimator_with_ng_search():
     assert isinstance(est, BPtPipeline)
     assert isinstance(est.steps[-1][1], Ridge)
 
-    param_search = search_est.param_search
+    param_search = search_est.ps
     assert isinstance(param_search['cv'], BPtCV)
     assert param_search['search_type'] == 'RandomSearch'
 
@@ -327,3 +327,31 @@ def test_get_estimator_with_scope():
     assert isinstance(model, ScopeModel)
     assert isinstance(model.estimator, Ridge)
     assert model.inds == [0]
+
+
+def test_get_param_wrapped_model():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+    pipe = Model('random forest', params=1,
+                 param_search=Param_Search('RandomSearch'))
+    est = get_estimator(model_pipeline=pipe, dataset=data,
+                        problem_spec=ps)
+
+    assert isinstance(est, BPtPipeline)
+    assert len(est.steps) == 1
+
+    search_est = est.steps[0][1]
+    assert isinstance(search_est, NevergradSearchCV)
+
+    param_search = search_est.ps
+    assert isinstance(param_search['cv'], BPtCV)
+    assert param_search['search_type'] == 'RandomSearch'
+
+    e = search_est.estimator
+    assert isinstance(e, RandomForestRegressor)
+    assert e.random_state == 1
+
+    param_dists = search_est.param_distributions
+    assert isinstance(param_dists, dict)
+    assert len(param_dists) > 0

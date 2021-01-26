@@ -108,7 +108,7 @@ def run_pipe_with_loader_ts(cache_fit_dr=None):
                    'estimator__normalize':
                    ng.p.TransitionChoice([True, False])}
     search_model = NevergradSearchCV(estimator=model,
-                                     param_search=get_param_search(),
+                                     ps=get_param_search(),
                                      param_distributions=param_dists)
 
     steps.append(('model', search_model))

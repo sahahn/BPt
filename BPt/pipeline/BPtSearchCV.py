@@ -1,5 +1,4 @@
 from sklearn.base import BaseEstimator
-from ..helpers.CV import CV
 from .base import _get_est_fit_params
 from sklearn.model_selection import GridSearchCV
 from sklearn.utils.metaestimators import if_delegate_has_method
@@ -31,18 +30,16 @@ class BPtSearchCV(BaseEstimator):
     _needs_train_data_index = True
     name = 'search'
 
-    def __init__(self, estimator=None, param_search=None,
+    def __init__(self, estimator=None, ps=None,
                  param_distributions=None,
                  n_jobs=1,
-                 random_state=None,
-                 verbose=False):
+                 random_state=None):
 
         self.estimator = estimator
-        self.ps = param_search
+        self.ps = ps
         self.param_distributions = param_distributions
         self.n_jobs = n_jobs
         self.random_state = random_state
-        self.verbose = verbose
 
     @property
     def n_jobs(self):
@@ -148,8 +145,8 @@ class BPtSearchCV(BaseEstimator):
         # Set cv based on train_data_index
         self.cv_subjects, self.cv_inds =\
             self.ps['cv'].get_cv(train_data_index,
-                                           self.ps['random_state'],
-                                           return_index='both')
+                                 self.ps['random_state'],
+                                 return_index='both')
 
     def fit(self, X, y=None, mapping=None,
             train_data_index=None, **fit_params):
@@ -158,7 +155,7 @@ class BPtSearchCV(BaseEstimator):
             raise RuntimeWarning('SearchCV Object must be passed a ' +
                                  'train_data_index!')
 
-        if self.verbose:
+        if self.ps['verbose'] > 1:
             print('Fit Search CV, len(train_data_index) == ',
                   len(train_data_index),
                   'has mapping == ', 'mapping' in fit_params,
@@ -193,7 +190,7 @@ class BPtGridSearchCV(BPtSearchCV):
                                         n_jobs=self.n_jobs,
                                         cv=self.cv_inds,
                                         refit=True,
-                                        verbose=0)
+                                        verbose=self.ps['verbose'])
 
         # Generate the fit params to pass
         f_params = _get_est_fit_params(
@@ -287,6 +284,8 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer, cv_inds, cv_subjects,
 
 
 class NevergradSearchCV(BPtSearchCV):
+
+    # @TODO add more info from verbose!
 
     @property
     def n_features_in_(self):
@@ -501,7 +500,7 @@ def get_search_cv(estimator, param_search,
 
     search_obj = SearchCV(
         estimator=estimator,
-        param_search=param_search,
+        ps=param_search,
         param_distributions=param_distributions,
         n_jobs=param_search['n_jobs'],
         random_state=param_search['random_state'])

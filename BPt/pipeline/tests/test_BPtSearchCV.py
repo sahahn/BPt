@@ -44,22 +44,22 @@ def test_get_search_cv():
     param_search = get_param_search()
     estimator = 'fake_estimator'
     param_distributions = {'param1': 5}
-    progress_loc = 'nowhere'
+    param_search['progress_loc'] = 'nowhere'
 
     search_model = get_search_cv(estimator, param_search,
-                                 param_distributions, progress_loc)
+                                 param_distributions)
 
     assert isinstance(search_model, NevergradSearchCV)
     assert(search_model.estimator == 'fake_estimator')
     assert search_model.n_jobs == 2
     assert search_model.param_distributions['param1'] == 5
-    assert search_model.progress_loc == progress_loc
+    assert search_model.ps['progress_loc'] == 'nowhere'
 
     # Make sure get params works
     params = search_model.get_params()
     assert params['estimator'] == 'fake_estimator'
-    assert params['param_search']['n_jobs'] == 2
-    assert params['param_search']['random_state'] == 1
+    assert params['ps']['n_jobs'] == 2
+    assert params['ps']['random_state'] == 1
 
 
 def test_get_grid_search():
@@ -68,9 +68,9 @@ def test_get_grid_search():
     param_search['search_type'] = 'grid'
     estimator = 'fake_estimator'
     param_distributions = {'param1': 5}
-    progress_loc = 'nowhere'
+    param_search['progress_loc'] = 'nowhere'
 
     search_model = get_search_cv(estimator, param_search,
-                                 param_distributions, progress_loc)
+                                 param_distributions)
 
     assert isinstance(search_model, BPtGridSearchCV)

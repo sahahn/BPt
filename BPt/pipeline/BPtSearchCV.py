@@ -33,14 +33,13 @@ class BPtSearchCV(BaseEstimator):
 
     def __init__(self, estimator=None, param_search=None,
                  param_distributions=None,
-                 progress_loc=None, n_jobs=1,
+                 n_jobs=1,
                  random_state=None,
                  verbose=False):
 
         self.estimator = estimator
-        self.param_search = param_search
+        self.ps = param_search
         self.param_distributions = param_distributions
-        self.progress_loc = progress_loc
         self.n_jobs = n_jobs
         self.random_state = random_state
         self.verbose = verbose
@@ -52,9 +51,6 @@ class BPtSearchCV(BaseEstimator):
     @n_jobs.setter
     def n_jobs(self, n_jobs):
 
-        print(hasattr(self.estimator, 'n_jobs'), '?')
-        print(self.estimator)
-
         # Store in self._n_jobs
         self._n_jobs = n_jobs
 
@@ -62,6 +58,20 @@ class BPtSearchCV(BaseEstimator):
         # n_jobs == 1 to base models.
         if hasattr(self.estimator, 'n_jobs'):
             setattr(self.estimator, 'n_jobs', 1)
+
+    @property
+    def random_state(self):
+        return self._random_state
+
+    @random_state.setter
+    def random_state(self, random_state):
+
+        # Store
+        self._random_state = random_state
+
+        # Propegate
+        if hasattr(self.estimator, 'random_state'):
+            setattr(self.estimator, 'random_state', random_state)
 
     def get_params(self, deep=True):
         """
@@ -137,8 +147,8 @@ class BPtSearchCV(BaseEstimator):
 
         # Set cv based on train_data_index
         self.cv_subjects, self.cv_inds =\
-            self.param_search['cv'].get_cv(train_data_index,
-                                           self.param_search['random_state'],
+            self.ps['cv'].get_cv(train_data_index,
+                                           self.ps['random_state'],
                                            return_index='both')
 
     def fit(self, X, y=None, mapping=None,
@@ -158,7 +168,7 @@ class BPtSearchCV(BaseEstimator):
         self._set_cv(train_data_index)
 
         # Run different fit depending on type of search
-        if self.param_search['search_type'] == 'grid':
+        if self.ps['search_type'] == 'grid':
             self.fit_grid(X=X, y=y, mapping=mapping,
                           train_data_index=train_data_index,
                           **fit_params)
@@ -179,7 +189,7 @@ class BPtGridSearchCV(BPtSearchCV):
         # Fit GridSearchCV object
         self.search_obj_ = GridSearchCV(estimator=self.estimator,
                                         param_grid=param_grid,
-                                        scoring=self.param_search['scorer'],
+                                        scoring=self.ps['scorer'],
                                         n_jobs=self.n_jobs,
                                         cv=self.cv_inds,
                                         refit=True,
@@ -293,19 +303,19 @@ class NevergradSearchCV(BPtSearchCV):
         if client is None:
 
             # Check for memmap X, only if no client
-            if self.param_search['memmap_X']:
+            if self.ps['memmap_X']:
                 X_mem = to_memmap(X)
             else:
                 X_mem = X
 
             instrumentation =\
                 ng.p.Instrumentation(X_mem, y, self.estimator,
-                                     self.param_search['scorer'],
-                                     self.param_search['weight_scorer'],
+                                     self.ps['scorer'],
+                                     self.ps['weight_scorer'],
                                      self.cv_inds,
                                      self.cv_subjects, mapping,
                                      fit_params,
-                                     self.param_search['search_only_params'],
+                                     self.ps['search_only_params'],
                                      **self.param_distributions)
 
         # If using dask client, pre-scatter some big memory fixed params
@@ -317,12 +327,12 @@ class NevergradSearchCV(BPtSearchCV):
 
             instrumentation =\
                 ng.p.Instrumentation(X_s, y_s, self.estimator,
-                                     self.param_search['scorer'],
-                                     self.param_search['weight_scorer'],
+                                     self.ps['scorer'],
+                                     self.ps['weight_scorer'],
                                      cv_inds_s,
                                      cv_subjects_s, mapping,
                                      fit_params,
-                                     self.param_search['search_only_params'],
+                                     self.ps['search_only_params'],
                                      **self.param_distributions)
 
         return instrumentation, X_file
@@ -330,15 +340,15 @@ class NevergradSearchCV(BPtSearchCV):
     def get_optimizer(self, instrumentation):
 
         try:
-            opt = ng.optimizers.registry[self.param_search['search_type']]
+            opt = ng.optimizers.registry[self.ps['search_type']]
 
         # If not found, look for in expirimental variants
         except KeyError:
             import nevergrad.optimization.experimentalvariants
-            opt = ng.optimizers.registry[self.param_search['search_type']]
+            opt = ng.optimizers.registry[self.ps['search_type']]
 
         optimizer = opt(parametrization=instrumentation,
-                        budget=self.param_search['n_iter'],
+                        budget=self.ps['n_iter'],
                         num_workers=self.n_jobs)
 
         # Set random state is defined
@@ -350,8 +360,8 @@ class NevergradSearchCV(BPtSearchCV):
             optimizer.parametrization.random_state =\
                 self.random_state
 
-        if self.progress_loc is not None:
-            logger = ProgressLogger(self.progress_loc)
+        if self.ps['progress_loc'] is not None:
+            logger = ProgressLogger(self.ps['progress_loc'])
             optimizer.register_callback('tell', logger)
 
         return optimizer
@@ -372,7 +382,7 @@ class NevergradSearchCV(BPtSearchCV):
         # Otherwise use futures pool executor
         else:
 
-            if self.param_search['mp_context'] == 'loky':
+            if self.ps['mp_context'] == 'loky':
 
                 try:
                     executor = get_reusable_executor(
@@ -387,7 +397,7 @@ class NevergradSearchCV(BPtSearchCV):
             try:
                 with futures.ProcessPoolExecutor(
                   max_workers=self.n_jobs,
-                  mp_context=mp.get_context(self.param_search['mp_context'])) as ex:
+                  mp_context=mp.get_context(self.ps['mp_context'])) as ex:
 
                     recommendation = optimizer.minimize(ng_cv_score,
                                                         executor=ex,
@@ -408,9 +418,9 @@ class NevergradSearchCV(BPtSearchCV):
 
         # Check if need to make dask client
         # Criteria is greater than 1 job, and passed as dask_ip of non-None
-        if self.n_jobs > 1 and self.param_search['dask_ip'] is not None:
+        if self.n_jobs > 1 and self.ps['dask_ip'] is not None:
             from dask.distributed import Client
-            client = Client(self.param_search['dask_ip'])
+            client = Client(self.ps['dask_ip'])
         else:
             client = None
 

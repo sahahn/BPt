@@ -402,6 +402,12 @@ def check_replace(objs):
 
     # If nevergrad convert to repr
     if is_nevergrad_dist(objs):
+
+        # In bool case, don't return value with str name
+        if hasattr(objs, 'value') and hasattr(objs, 'name'):
+            if isinstance(getattr(objs, 'value'), bool):
+                return getattr(objs, 'name')
+
         return repr(objs)
 
     # Return identity otherwise

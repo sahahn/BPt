@@ -51,8 +51,6 @@ def test_feature_selectors():
     objs, params = fs.process(in_params)
     name, obj = objs[0]
 
-
-
     assert 'univariate selection' in name
     assert len(obj.inds) == 0
     assert len(params) == 0

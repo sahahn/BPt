@@ -170,22 +170,22 @@ def test_pipeline_fit_caching():
     # Run with cache fit dr
     cache_fit_dr =\
         os.path.join(tempfile.gettempdir(), 'test_cache')
+
     pipe = run_pipe_with_loader_ts(cache_fit_dr=cache_fit_dr)
-    print(pipe._get_hash_loc())
 
     # Make sure computed hash + saved copy
-    assert hasattr(pipe, 'hash_')
+    assert hasattr(pipe, 'hash_',)
     assert os.path.exists(pipe._get_hash_loc())
 
     # Delete existing pipe
     del pipe
 
-    # Run again to make sure loading from cache worked
-    pipe = run_pipe_with_loader_ts(cache_fit_dr=cache_fit_dr)
-    print(pipe._get_hash_loc())
-
-    assert hasattr(pipe, 'hash_')
-    assert pipe.loaded_ is True
+    # Run again a few times to make sure loading from cache works
+    for i in range(5):
+        pipe = run_pipe_with_loader_ts(cache_fit_dr=cache_fit_dr)
+        assert hasattr(pipe, 'hash_')
+        assert pipe.loaded_ is True
+        del pipe
 
     # Removed cached once done
     shutil.rmtree(cache_fit_dr)

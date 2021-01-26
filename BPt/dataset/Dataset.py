@@ -748,7 +748,7 @@ class Dataset(pd.DataFrame):
             # If removing category and currently pandas dtype is category,
             # change to float32.
             if scope_val == 'category' and \
-               self.scopes[col].dtype.name == 'category':
+               self[col].dtype.name == 'category':
                 self[col] = self[col].astype('float32')
 
         except KeyError:
@@ -2020,6 +2020,22 @@ class Dataset(pd.DataFrame):
         print('Warning: rename might cause errors!')
         print('Until this is supported, re-name before casting to a Dataset.')
         return super().rename(**kwargs)
+
+    def _is_category(self, col):
+        '''Tests if a column is categorical'''
+
+        self._check_scopes()
+
+        # Make sure valid column
+        if col not in self.columns:
+            raise KeyError('Passed: ' + repr(col) + ' not a valid loaded col.')
+
+        # Only check is there is a scope for this col
+        if col in self.scopes:
+            return 'category' in self.scopes[col]
+
+        # If no scope, assume isn't category
+        return False
 
     def copy(self, deep=True):
         '''Creates and returns a dopy of this dataset, either

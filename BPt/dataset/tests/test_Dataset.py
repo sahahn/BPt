@@ -827,6 +827,20 @@ def test_get_Xy_base():
                           np.array([14, 15]).astype('float32'))
     assert np.array_equal(y, np.array([.4, .5]).astype('float64'))
 
+    X, y = df.get_train_Xy(ps)
+    assert X.shape == (3, 3)
+    assert np.array_equal(X[:, 0], np.array([1, 2, 3]).astype('float32'))
+    assert np.array_equal(X[:, 2],
+                          np.array([11, 12, 13]).astype('float32'))
+    assert np.array_equal(y, np.array([.1, .2, .3]).astype('float64'))
+
+    X, y = df.get_test_Xy(ps)
+    assert X.shape == (2, 3)
+    assert np.array_equal(X[:, 0], np.array([4, 5]).astype('float32'))
+    assert np.array_equal(X[:, 2],
+                          np.array([14, 15]).astype('float32'))
+    assert np.array_equal(y, np.array([.4, .5]).astype('float64'))
+
 
 def test_get_Xy_alt():
 

@@ -1,6 +1,5 @@
 from joblib import dump, load, Parallel, delayed
 import os
-import copy
 import numpy as np
 
 

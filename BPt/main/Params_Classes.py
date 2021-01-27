@@ -2130,18 +2130,19 @@ class Problem_Spec(Params):
     def __init__(self, problem_type='default',
                  target=0, scorer='default', weight_scorer=False,
                  scope='all', subjects='all',
-                 n_jobs=1,
-                 random_state=1):
+                 n_jobs=1, random_state=1, base_dtype='float32'):
         '''Problem Spec is defined as an object of params encapsulating the set of
         parameters shared by modelling class functions
-        :func:`Evaluate <BPt.BPt_ML.Evaluate>` and :func:`Test <BPt.BPt_ML.Test>`
+        :func:`Evaluate <BPt.BPt_ML.Evaluate>`
+        and :func:`Test <BPt.BPt_ML.Test>`
 
         Parameters
         ----------
         problem_type : str or 'default', optional
             This parameter controls what type of machine learning
             should be conducted. As either a regression, or classification
-            where 'categorical' represents a special case of binary classification,
+            where 'categorical' represents a special case of
+            binary classification,
             where typically a binary classifier is trained on each class.
 
             - 'default'
@@ -2226,8 +2227,8 @@ class Problem_Spec(Params):
             run an expiriment with just a subset of the loaded features
             / columns.
 
-            See :ref:`Scope` for a more detailed explained / guide on how scopes
-            are defined and used within BPt.
+            See :ref:`Scope` for a more detailed explained / guide
+            on how scopes are defined and used within BPt.
 
             ::
 
@@ -2238,13 +2239,14 @@ class Problem_Spec(Params):
             with just a subset of the loaded subjects. It is notably distinct
             from the `train_subjects`, and `test_subjects` parameters directly
             avaliable to Evaluate and Test, as those parameters typically refer
-            to train/test splits. Specifically, any value specified for this 
-            subjects parameter will be applied AFTER selecting the relevant train
-            or test subset.
+            to train/test splits. Specifically, any value specified
+            for this  subjects parameter will be applied
+            AFTER selecting the relevant train or test subset.
 
-            One use case for this parameter might be specifying subjects of just one
-            sex, where you would still want the same training set for example, but just want
-            to test sex specific models.
+            One use case for this parameter might be specifying
+            subjects of just one
+            sex, where you would still want the same training set for example,
+            but just want to test sex specific models.
 
             If set to 'all' (as is by default), all avaliable subjects will be
             used.
@@ -2298,6 +2300,15 @@ class Problem_Spec(Params):
 
                 default = 1
 
+        base_dtype : numpy dtype
+            The dataset is cast to a numpy array of float.
+            This parameter can be used to change the default
+            behavior, e.g., if more resolution or less is needed.
+
+            ::
+
+                default = 'float32'
+
         '''
 
         self.problem_type = problem_type
@@ -2308,6 +2319,7 @@ class Problem_Spec(Params):
         self.subjects = subjects
         self.n_jobs = n_jobs
         self.random_state = random_state
+        self.base_dtype = base_dtype
 
         self._final_subjects = None
 

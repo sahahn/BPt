@@ -2073,6 +2073,41 @@ class Dataset(pd.DataFrame):
 
         return dataset
 
+    def get_Xy(self, problem_spec, subjects='all'):
+        from ..main.funcs import problem_spec_check
+
+        # Get proc'ed problem spec
+        ps = problem_spec_check(problem_spec, dataset=self)
+
+        # Get subjects as intersection between problem spec subjects
+        # and passed subjects.
+        ps_subjects =\
+            self.get_subjects(ps.subjects, return_as='set')
+        subjects = self.get_subjects(subjects, return_as='set')
+        overlap = ps_subjects.intersection(subjects)
+
+        # Sort subjects for reproducibility
+        overlap = sorted(list(overlap))
+
+        # Get X cols
+        X_cols = self.get_cols('data', columns=ps.scope)
+
+        # Get as np arrays
+        X = np.array(self.loc[overlap, X_cols])
+        y = np.array(self.loc[overlap, ps.target])
+
+        # Cast to types
+        X = X.astype(ps.base_dtype)
+        y = y.astype('float64')
+
+        return X, y
+
+    def get_train_Xy(self, problem_spec):
+        return self.get_Xy(problem_spec, subjects='train')
+
+    def get_test_Xy(self, problem_spec):
+        return self.get_Xy(problem_spec, subjects='test')
+
     from ._plotting import (plot,
                             show,
                             info,

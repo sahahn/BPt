@@ -5,6 +5,7 @@ import tempfile
 import os
 from nose.tools import assert_raises
 from ...main.Input_Tools import Value_Subset
+from ...main.Params_Classes import Problem_Spec
 from ..helpers import base_load_subjects, save_subjects
 
 
@@ -779,3 +780,70 @@ def test_drop_cols_by_nan():
     df = get_nans_dataset()
     df.drop_cols_by_nan(threshold=.9, scope='all')
     assert df.shape == (4, 4)
+
+
+def get_full_dataset():
+
+    fake = Dataset()
+    fake['1'] = [1, 2, 3, 4, 5]
+    fake['2'] = [6, 7, 8, 9, 10]
+    fake['3'] = [11, 12, 13, 14, 15]
+    fake.add_scope('3', 'category')
+
+    fake['subj'] = ['s1', 's2', 's3', 's4', 's5']
+    fake.set_index('subj', inplace=True)
+
+    fake['target'] = [.1, .2, .3, .4, .5]
+    fake.set_role('target', 'target')
+
+    fake.set_test_split(subjects=['s4', 's5'])
+
+    return fake
+
+
+def test_get_Xy_base():
+
+    df = get_full_dataset()
+    ps = Problem_Spec()
+
+    X, y = df.get_Xy(ps)
+    assert X.shape == (5, 3)
+    assert np.array_equal(X[:, 0], np.array([1, 2, 3, 4, 5]).astype('float32'))
+    assert np.array_equal(X[:, 2],
+                          np.array([11, 12, 13, 14, 15]).astype('float32'))
+    assert np.array_equal(y, np.array([.1, .2, .3, .4, .5]).astype('float64'))
+
+    X, y = df.get_Xy(ps, subjects='train')
+    assert X.shape == (3, 3)
+    assert np.array_equal(X[:, 0], np.array([1, 2, 3]).astype('float32'))
+    assert np.array_equal(X[:, 2],
+                          np.array([11, 12, 13]).astype('float32'))
+    assert np.array_equal(y, np.array([.1, .2, .3]).astype('float64'))
+
+    X, y = df.get_Xy(ps, subjects='test')
+    assert X.shape == (2, 3)
+    assert np.array_equal(X[:, 0], np.array([4, 5]).astype('float32'))
+    assert np.array_equal(X[:, 2],
+                          np.array([14, 15]).astype('float32'))
+    assert np.array_equal(y, np.array([.4, .5]).astype('float64'))
+
+
+def test_get_Xy_alt():
+
+    df = get_full_dataset()
+    ps = Problem_Spec(subjects=['s2', 's3', 's4'], scope=['1', '3'])
+
+    X, y = df.get_Xy(ps)
+
+    assert X.shape == (3, 2)
+    assert np.array_equal(X[:, 0], np.array([2, 3, 4]).astype('float32'))
+    assert np.array_equal(X[:, 1],
+                          np.array([12, 13, 14]).astype('float32'))
+    assert np.array_equal(y, np.array([.2, .3, .4]).astype('float64'))
+
+    X, y = df.get_Xy(ps, subjects='train')
+    assert X.shape == (2, 2)
+    assert np.array_equal(X[:, 0], np.array([2, 3]).astype('float32'))
+    assert np.array_equal(X[:, 1],
+                          np.array([12, 13]).astype('float32'))
+    assert np.array_equal(y, np.array([.2, .3]).astype('float64'))

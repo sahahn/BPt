@@ -1,8 +1,9 @@
 from ..helpers import to_memmap, from_memmap, get_grid_params, is_ng
 import numpy as np
 import os
-import nevergrad as ng
+from ...default.Params import Choice, TransitionChoice, Scalar
 from nose.tools import raises
+import nevergrad as ng
 
 
 def test_to_memmap():
@@ -34,12 +35,13 @@ def test_from_memmap():
 
 def test_get_grid_params():
 
-    params = {'1': ng.p.Choice([1, 2, 3]),
-              '2': ng.p.TransitionChoice([1, 2]),
+    params = {'1': Choice([1, 2, 3]),
+              '2': TransitionChoice([1, 2]),
               '3': 3,
-              '4': ng.p.Scalar(lower=1, upper=2).set_integer_casting()}
+              '4': Scalar(lower=1, upper=2).set_integer_casting()}
 
     grid_params = get_grid_params(params)
+    print(grid_params)
 
     assert grid_params['1'] == [1, 2, 3]
     assert grid_params['2'] == [1, 2]

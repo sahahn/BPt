@@ -1,7 +1,6 @@
 from ..BPtSearchCV import (wrap_param_search, get_search_cv,
                            NevergradSearchCV, BPtGridSearchCV)
-import nevergrad as ng
-from ..helpers import is_ng
+from ...default.Params import Choice
 from .helpers import get_param_search
 
 
@@ -10,7 +9,7 @@ def test_wrap_param_search():
     param_search = get_param_search()
     model_obj = ('fake_name', 'fake_model')
     model_params = {'fake_name__param1': 1,
-                    'fake_name__param2': ng.p.Choice([1, 2]),
+                    'fake_name__param2': Choice([1, 2]),
                     'other_model__param1': 1}
 
     search_obj, search_params =\
@@ -34,7 +33,6 @@ def test_wrap_param_search():
     params = search_model.param_distributions
     assert params['param1'] == 1
     assert len(params['param2']) == 2
-    assert is_ng(params['param2'])
 
     assert search_model.n_jobs == 2
 

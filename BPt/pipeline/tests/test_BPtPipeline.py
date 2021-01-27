@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import os
 import tempfile
-import nevergrad as ng
+from ...default.Params import Choice, TransitionChoice
 from .helpers import get_param_search
 from ..BPtSearchCV import NevergradSearchCV
 import shutil
@@ -104,9 +104,9 @@ def run_pipe_with_loader_ts(cache_fit_dr=None):
     # Add basic linear regression model
     # Original inds should work on all
     model = ScopeModel(estimator=LinearRegression(), inds=[0, 1])
-    param_dists = {'estimator__fit_intercept': ng.p.Choice([True, False]),
+    param_dists = {'estimator__fit_intercept': Choice([True, False]),
                    'estimator__normalize':
-                   ng.p.TransitionChoice([True, False])}
+                   TransitionChoice([True, False])}
     search_model = NevergradSearchCV(estimator=model,
                                      ps=get_param_search(),
                                      param_distributions=param_dists)

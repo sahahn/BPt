@@ -11,6 +11,12 @@ from .helpers import (base_load_subjects, proc_file_input,
                       proc_fop)
 from ..main.Input_Tools import Value_Subset
 
+# @TODO Loook into pandas finalize
+# https://github.com/pandas-dev/pandas/blob/ce3e57b44932e7131968b9bcca97c1391cb6b532/pandas/core/generic.py#L5422
+
+# @TODO Customize the appearence of Dataset class, e.g.
+# add to repr and to_html, etc...
+
 
 class Dataset(pd.DataFrame):
     '''The BPt Dataset class is the main class used for preparing data

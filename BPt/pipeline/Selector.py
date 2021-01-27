@@ -1,6 +1,7 @@
 from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.utils.metaestimators import if_delegate_has_method
 import nevergrad as ng
+from ..default.Params import Dict, Choice
 from .base import _get_est_fit_params
 
 # @TODO Figure out best way to make selector work with
@@ -121,10 +122,10 @@ def selector_wrapper(objs, params, name):
             {p: params[p] for p in params if p.split('__')[0] == obj_name}
         rel_params['to_use'] = i
 
-        p_dict = ng.p.Dict(**rel_params)
+        p_dict = Dict(**rel_params)
         p_dicts.append(p_dict)
 
-    select = ng.p.Choice(p_dicts, deterministic=True)
+    select = Choice(p_dicts, deterministic=True)
     select_params = {name + '__select': select}
 
     return selector, select_params

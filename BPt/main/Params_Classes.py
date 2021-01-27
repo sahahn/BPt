@@ -1,8 +1,7 @@
 from copy import deepcopy
 from sklearn.base import BaseEstimator
-import pandas as pd
 from ..helpers.ML_Helpers import (conv_to_list, proc_input,
-                                  proc_type_dep_str, is_array_like)
+                                  proc_type_dep_str)
 
 from ..helpers.VARS import ORDERED_NAMES
 from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,

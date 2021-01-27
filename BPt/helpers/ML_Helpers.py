@@ -7,11 +7,10 @@ These are non-class functions that are used in _ML.py and Scoring.py
 import numpy as np
 import inspect
 
-from .Default_Params import get_base_params, proc_params
+from ..default.default_params import get_base_params, proc_params
+from ..default.Params import Params
 from copy import deepcopy
-import nevergrad as ng
 from ..main.Input_Tools import is_special, Select
-from nevergrad.parametrization.core import Constant
 from joblib import hash as joblib_hash
 
 
@@ -188,16 +187,8 @@ def process_params_by_type(obj, obj_str, base_params, extra_params):
     param_keys = list(params)
     for p in param_keys:
 
-        try:
-            module = params[p].__module__
-
-            # If has a module, but no nevergrad in path, then not a
-            # nevergrad param
-            if 'nevergrad' not in module:
-                non_search_params[p] = params.pop(p)
-
-        # If no module, then not a nevergrad param
-        except AttributeError:
+        # If not a special search param
+        if not isinstance(params[p], Params):
             non_search_params[p] = params.pop(p)
 
     # Append obj_str to all params still in params
@@ -344,21 +335,6 @@ def replace_with_in_params(params, original, replace):
     return new_params
 
 
-def is_nevergrad_dist(ud):
-    '''Check if a nevergrad dist'''
-
-    try:
-        # If nevergrad in module return True
-        if 'nevergrad' in ud.__module__:
-            return True
-
-    # If no module, then not a nevergrad param
-    except AttributeError:
-        return False
-
-    return False
-
-
 def check_replace(objs):
 
     if isinstance(objs, list):
@@ -400,14 +376,8 @@ def check_replace(objs):
         # Return objs as changed in place
         return objs
 
-    # If nevergrad convert to repr
-    if is_nevergrad_dist(objs):
-
-        # In bool case, don't return value with str name
-        if hasattr(objs, 'value') and hasattr(objs, 'name'):
-            if isinstance(getattr(objs, 'value'), bool):
-                return getattr(objs, 'name')
-
+    # If nevergrad / params convert to repr
+    if isinstance(objs, Params):
         return repr(objs)
 
     # Return identity otherwise
@@ -417,7 +387,7 @@ def check_replace(objs):
 def hash(objs, steps):
     '''Expects a list'''
 
-    # Make copy with nevergrad dists replaced by repr
+    # Make copy with nevergrad / params dists replaced by repr
     hash_steps = check_replace(deepcopy(steps))
 
     # Hash steps and objs seperate, then combine

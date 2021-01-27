@@ -20,7 +20,7 @@ from BPt.pipeline.Ensembles import ENSEMBLES
 
 from BPt.pipeline.Feat_Importances import IMPORTANCES
 
-from BPt.helpers.Default_Params import P
+from BPt.default.default_params import PARAMS
 from BPt.helpers.Docstring_Helpers import get_name, get_scorer_name
 
 
@@ -112,7 +112,7 @@ def add_params(lines, obj_params):
         lines.append('')
 
         # Show info on the params
-        params = P[params_name]
+        params = PARAMS[params_name]
         if len(params) > 0:
             lines = add_param(lines, params)
         else:
@@ -129,7 +129,7 @@ def add_param(lines, params):
 
         line = '\t\t' + key + ': '
         value = params[key]
-        line += str(value)
+        line += repr(value)
         lines.append(line)
 
     return lines

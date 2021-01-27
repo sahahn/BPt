@@ -9,7 +9,7 @@ from sklearn.feature_selection import SelectPercentile, VarianceThreshold
 from ..extensions.Feat_Selectors import RFE_Wrapper, FeatureSelector
 import numpy as np
 from numpy.random import RandomState
-import nevergrad as ng
+from ..default.Params import Array
 
 from sklearn.feature_selection._base import SelectorMixin
 from ..helpers.ML_Helpers import update_mapping
@@ -146,7 +146,7 @@ def get_special_selector(feat_selector, feat_selector_params, random_state,
         # If set to searchable, set to searchable...
         if feat_selector_params[p_name] == 'sets as hyperparameters':
 
-            feat_array = ng.p.Array(init=[.5 for i in range(num_feat_keys)])
+            feat_array = Array(init=[.5 for i in range(num_feat_keys)])
             feat_array.set_mutation(sigma=1/6).set_bounds(lower=0, upper=1)
             feat_selector_params[p_name] = feat_array
 

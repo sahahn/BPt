@@ -441,10 +441,12 @@ class Dataset(pd.DataFrame):
 
         return self
 
-    def set_roles(self, col_to_roles):
+    def set_roles(self, scope, role):
 
         self._check_roles()
-        for col, role in zip(col_to_roles, col_to_roles.values()):
+
+        cols = self.get_cols(scope)
+        for col in cols:
             self._set_role(col, role)
 
         return self
@@ -521,16 +523,27 @@ class Dataset(pd.DataFrame):
             if col not in self.columns:
                 del self.scopes[col]
 
-        # Make sure scopes includes if categorical or not
-        for col in self.columns:
+        # @TODO maybe optimize with self.dtypes ?
 
-            try:
-                if self[col].dtype.name == 'category':
-                    self._add_scope(col, 'category')
-                else:
-                    self._remove_scope(col, 'category')
-            except AttributeError:
-                pass
+        # Compute columns which are categorical + columns with scope category
+        dtype_category = set(self.select_dtypes('category'))
+        scope_category = set([col for col in self.columns if
+                             'category' in self.scopes[col]])
+
+        # End if equal
+        if dtype_category == scope_category:
+            return self
+
+        # Add scope to columns which have dtype category but not scope category
+        needs_scope = dtype_category - scope_category
+        for col in needs_scope:
+            self._add_scope(col, 'category')
+
+        # For any columns which have scope category, but the dtype isn't
+        # assume that the scope should be removed
+        remove_scope = scope_category - dtype_category
+        for col in remove_scope:
+            self._remove_scope(col, 'category')
 
         return self
 
@@ -823,13 +836,13 @@ class Dataset(pd.DataFrame):
                     return [col for col in columns if
                             'category' not in self.scopes[col] and
                             'data file' not in self.scopes[col] and
-                            self.roles['col'] == 'data']
+                            self.roles[col] == 'data']
 
                 elif scope == 'target float':
                     return [col for col in columns if
                             'category' not in self.scopes[col] and
                             'data file' not in self.scopes[col] and
-                            self.roles['col'] == 'target']
+                            self.roles[col] == 'target']
 
                 elif scope == 'float':
                     return [col for col in columns if
@@ -843,12 +856,12 @@ class Dataset(pd.DataFrame):
                 elif scope == 'data category':
                     return [col for col in columns if
                             'category' in self.scopes[col] and
-                            self.roles['col'] == 'data']
+                            self.roles[col] == 'data']
 
                 elif scope == 'target category':
                     return [col for col in columns if
                             'category' in self.scopes[col] and
-                            self.roles['col'] == 'target']
+                            self.roles[col] == 'target']
 
                 elif scope == 'data':
                     return [col for col in columns if
@@ -2073,7 +2086,7 @@ class Dataset(pd.DataFrame):
 
         return dataset
 
-    def get_Xy(self, problem_spec, subjects='all'):
+    def get_Xy(self, problem_spec, subjects='all', as_np=True):
         from ..main.funcs import problem_spec_check
 
         # Get proc'ed problem spec
@@ -2092,13 +2105,14 @@ class Dataset(pd.DataFrame):
         # Get X cols
         X_cols = self.get_cols('data', columns=ps.scope)
 
-        # Get as np arrays
-        X = np.array(self.loc[overlap, X_cols])
-        y = np.array(self.loc[overlap, ps.target])
+        # Get X as pandas df subset, y as Series
+        X = pd.DataFrame(self.loc[overlap, X_cols]).astype(ps.base_dtype)
+        y = self.loc[overlap, ps.target].astype('float64')
 
-        # Cast to types
-        X = X.astype(ps.base_dtype)
-        y = y.astype('float64')
+        # Get as np arrays
+        if as_np:
+            X = np.array(X)
+            y = np.array(y)
 
         return X, y
 

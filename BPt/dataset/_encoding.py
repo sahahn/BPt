@@ -5,6 +5,23 @@ from operator import add
 from functools import reduce
 
 
+def _add_new_copy(self, old, new):
+
+    # Copy as new key
+    self[new] = self[old].copy()
+
+    # Try to copy scope and role too
+    try:
+        self.scopes[new] = self.scopes[old].copy()
+    except KeyError:
+        pass
+
+    try:
+        self.roles[new] = self.roles[old]
+    except KeyError:
+        pass
+
+
 def to_binary(self, scope, drop=True):
     '''This method works by setting all
     columns within scope to just two binary

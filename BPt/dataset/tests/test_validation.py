@@ -15,11 +15,9 @@ def get_fake_dataset():
     fake['4'] = ['2', '2', '2']
     fake['5'] = ['2', '1', '2']
 
-    fake.set_roles({'1': 'data',
-                    '2': 'target',
-                    '3': 'non input',
-                    '4': 'non input',
-                    '5': 'non input'})
+    fake.set_role('1', 'data')
+    fake.set_role('2', 'target')
+    fake.set_roles(['3', '4', '5'], 'non input')
 
     fake.ordinalize(scope='all')
 
@@ -134,7 +132,8 @@ def test_set_test_split():
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
 
-    df.set_test_split(size=.5, cv_strategy=CV_Strategy(train_only_subjects=[0]),
+    df.set_test_split(size=.5,
+                      cv_strategy=CV_Strategy(train_only_subjects=[0]),
                       random_state=1)
 
     assert len(df.test_subjects) == 1
@@ -176,13 +175,15 @@ def test_set_train_split():
     assert len(df.test_subjects) == 2
     assert len(df.train_subjects) == 1
 
-    df.set_train_split(size=.5, cv_strategy=CV_Strategy(train_only_subjects=[0]),
+    df.set_train_split(size=.5,
+                       cv_strategy=CV_Strategy(train_only_subjects=[0]),
                        random_state=1)
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
     assert 0 in df.train_subjects
 
-    df.set_train_split(size=1, cv_strategy=CV_Strategy(train_only_subjects=[0]),
+    df.set_train_split(size=1,
+                       cv_strategy=CV_Strategy(train_only_subjects=[0]),
                        random_state=1)
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
@@ -199,7 +200,8 @@ def test_set_train_split():
     assert 0 in df.train_subjects
 
     with assert_raises(ValueError):
-        df.set_train_split(size=1, cv_strategy=CV_Strategy(train_only_subjects=[0, 1]),
+        df.set_train_split(size=1,
+                           cv_strategy=CV_Strategy(train_only_subjects=[0, 1]),
                            random_state=1)
 
     with assert_raises(RuntimeError):
@@ -267,7 +269,8 @@ def test_multi_index_set_test_split():
     assert len(df.test_subjects) == 2
     assert len(df.train_subjects) == 4
 
-    df.set_test_split(size=.5, cv_strategy=CV_Strategy(train_only_subjects=['s1']),
+    df.set_test_split(size=.5,
+                      cv_strategy=CV_Strategy(train_only_subjects=['s1']),
                       random_state=1)
 
     assert len(df.test_subjects) == 2

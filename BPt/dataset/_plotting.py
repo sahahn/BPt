@@ -7,6 +7,10 @@ def show(self, scope):
     pass
 
 
+def show_nan_info(self, scope):
+    pass
+
+
 def info(self, scope):
     pass
 

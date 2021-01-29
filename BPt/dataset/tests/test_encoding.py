@@ -1,29 +1,8 @@
 import numpy as np
-from ..Dataset import Dataset
 import pandas as pd
 from nose.tools import assert_raises
-
-
-def get_fake_dataset():
-
-    fake = Dataset()
-    fake['1'] = [1, 2, 3]
-    fake['2'] = ['6', '7', '8']
-    fake['2'] = fake['2'].astype('category')
-    fake['3'] = [np.nan, 2, 3]
-
-    return fake
-
-
-def get_fake_dataset7():
-
-    df = Dataset()
-    df['1'] = [0, 1, 1, 1, 2, 2, 2]
-    df['1'] = df['1'].astype('category')
-
-    df['2'] = [0, 1, 1, 1, 2, 2, 2]
-
-    return df
+from .datasets import (get_fake_dataset, get_fake_dataset7,
+                       get_fake_multi_index_dataset)
 
 
 def test_add_unique_overlap():
@@ -52,6 +31,15 @@ def test_add_unique_overlap():
 
     with assert_raises(KeyError):
         df.add_unique_overlap(cols=['1', '2'], new_col='1')
+
+
+def test_multi_index_add_unique_overlap():
+
+    df = get_fake_multi_index_dataset()
+    df.add_unique_overlap(cols=['0', '1'],
+                          new_col='new',
+                          encoded_values=True)
+    assert df['new'].nunique() == 6
 
 
 def test_binarize_base_object():

@@ -1,5 +1,4 @@
 import numpy as np
-from ..Dataset import Dataset
 import pandas as pd
 import tempfile
 import os
@@ -7,67 +6,9 @@ from nose.tools import assert_raises
 from ...main.Input_Tools import Value_Subset
 from ...main.Params_Classes import Problem_Spec
 from ..helpers import base_load_subjects, save_subjects
-
-
-def get_fake_dataset():
-
-    fake = Dataset()
-    fake['1'] = [1, 2, 3]
-    fake['2'] = ['6', '7', '8']
-    fake['2'] = fake['2'].astype('category')
-    fake['3'] = [np.nan, 2, 3]
-
-    return fake
-
-
-def get_fake_dataset2():
-
-    fake = Dataset()
-    fake['1'] = [1, 1, 1]
-    fake['2'] = [1, 2, 3]
-    fake['3'] = ['1', '2', '3']
-
-    return fake
-
-
-def get_fake_dataset3():
-
-    fake = Dataset()
-    fake['1'] = [1, 1, 1]
-    fake['2'] = [1, 1, 1]
-    fake['3'] = ['2', '2', '2']
-    fake['4'] = ['2', '2', '2']
-    fake['5'] = ['2', 1, '2']
-
-    return fake
-
-
-def get_fake_dataset4():
-
-    fake = Dataset()
-    fake['1'] = [1, 2, 3, 4, 5, 6]
-    fake['2'] = [1, 2, 3, 4, 5, np.nan]
-
-    return fake
-
-
-def get_fake_dataset5():
-
-    df = Dataset()
-    df['1'] = [1, 2, 3, 4, 5]
-    df['2'] = [1, 1, 1, 1, 2]
-    df['3'] = [np.nan, np.nan, 1, 1, 2]
-    df['4'] = [1, 2, 2, 3, 3]
-    df['4'] = df['4'].astype('object')
-    return df
-
-
-def get_fake_dataset6():
-
-    df = Dataset()
-    df['1'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-    df['2'] = [0, 0, 0, 0, 0, 0, 0, 0, np.nan, 1]
-    return df
+from .datasets import (get_fake_dataset, get_fake_dataset2,
+                       get_fake_multi_index_dataset,
+                       get_fake_dataset5, get_full_dataset)
 
 
 def test_add_scope():
@@ -102,7 +43,21 @@ def test_add_scope():
     assert(df['1'].dtype.name == 'category')
 
 
-def test_set_roles():
+def test_check_scopes():
+
+    df = get_fake_dataset()
+
+    df._check_scopes()
+    assert 'category' in df.scopes['2']
+    assert df._is_category('2')
+
+    df['2'] = df['2'].astype(float)
+    df._check_scopes()
+    assert 'category' not in df.scopes['2']
+    assert not df._is_category('2')
+
+
+def test_set_role():
 
     df = get_fake_dataset()
     df.set_role('1', 'target')
@@ -119,159 +74,6 @@ def test_get_cols():
     assert(set(df.get_cols('data')) == set(['1', '2', '3']))
     assert(set(df.get_cols('1')) == set(['1']))
     assert(set(df.get_cols('category')) == set(['2']))
-
-
-def test_filter_outliers():
-
-    df = get_fake_dataset()
-    df.filter_outliers_by_percent(20, scope='3', drop=False)
-    assert pd.isnull(df['3']).all()
-
-
-def test_filter_outliers_by_percent():
-
-    df = get_fake_dataset4()
-    df.filter_outliers_by_percent(20, scope='1', drop=True)
-    assert len(df) == 4
-
-    # Make sure works with NaNs
-    df = get_fake_dataset4()
-    df.filter_outliers_by_percent(20, scope='2', drop=True)
-    assert len(df) == 4
-    assert pd.isnull(df.loc[5, '2'])
-
-    # Make sure range works
-    df = get_fake_dataset4()
-    df.filter_outliers_by_percent((20, None), scope='2', drop=True)
-    assert len(df) == 5
-    assert pd.isnull(df.loc[5, '2'])
-
-    # Make sure drop false works
-    df = get_fake_dataset4()
-    df.filter_outliers_by_percent((20, None), scope='2', drop=False)
-    assert len(df) == 6
-    assert pd.isnull(df.loc[0, '2'])
-    assert pd.isnull(df.loc[5, '2'])
-
-
-def test_filter_outliers_by_std():
-
-    df = get_fake_dataset4()
-
-    # Mean is 3.5, std of 1 is ~1.7 for col 1
-    df.filter_outliers_by_std(1, scope='1', drop=True)
-    assert len(df) == 4
-
-    # Make sure works with NaNs - mean is 3, std is ~1.4
-    df = get_fake_dataset4()
-    df.filter_outliers_by_std(1, scope='2', drop=True)
-    assert len(df) == 4
-    assert pd.isnull(df.loc[5, '2'])
-
-    # Make sure range works
-    df = get_fake_dataset4()
-    df.filter_outliers_by_std((1, None), scope='2', drop=True)
-    assert len(df) == 5
-    assert pd.isnull(df.loc[5, '2'])
-
-    # Make sure drop false works
-    df = get_fake_dataset4()
-    df.filter_outliers_by_std((1, None), scope='2', drop=False)
-    assert len(df) == 6
-    assert pd.isnull(df.loc[0, '2'])
-    assert pd.isnull(df.loc[5, '2'])
-
-
-def test_drop_cols_by_unique_val():
-
-    df = get_fake_dataset2()
-    df.drop_cols_by_unique_val()
-
-    assert '1' not in df
-    assert '2' in df
-    assert '3' in df
-
-    df = get_fake_dataset2()
-    df.drop_cols_by_unique_val(threshold=3)
-    assert '1' not in df
-    assert '2' not in df
-    assert '3' not in df
-
-
-def test_drop_id_cols():
-
-    df = get_fake_dataset2()
-    df.drop_id_cols()
-
-    assert '1' in df
-    assert '2' in df
-    assert '3' not in df
-
-
-def test_drop_duplicate_cols():
-
-    df = get_fake_dataset3()
-    df.drop_duplicate_cols()
-
-    assert '5' in df
-    assert df.shape == (3, 3)
-
-
-def test_apply_inclusions():
-
-    df = get_fake_dataset3()
-    df.apply_inclusions([0])
-    assert len(df) == 1
-
-
-def test_apply_exclusions():
-
-    df = get_fake_dataset()
-    df.apply_exclusions([0, 1])
-    assert len(df) == 1
-
-    df = get_fake_dataset()
-    df.apply_exclusions([0])
-    assert len(df) == 2
-
-
-def test_drop_cols_inclusions():
-
-    df = get_fake_dataset()
-    df.drop_cols(inclusions='1')
-    assert '1' in df
-    assert df.shape[1] == 1
-
-    df = get_fake_dataset()
-    df.drop_cols(inclusions='category')
-    assert '2' in df
-
-    df = get_fake_dataset()
-    df.drop_cols(inclusions=['1', '2'])
-    assert df.shape[1] == 2
-
-    df = Dataset(columns=['xxx1', 'xxx2', 'xxx3', '4'])
-    df.drop_cols(inclusions=['xxx'])
-    assert '4' not in df
-    assert df.shape[1] == 3
-
-
-def test_drop_cols_exclusions():
-
-    df = get_fake_dataset()
-    df.drop_cols(exclusions='1')
-    assert '1' not in df
-    assert df.shape[1] == 2
-
-    df = get_fake_dataset()
-    df.drop_cols(exclusions=['1', '2'])
-    assert '3' in df
-    assert df.shape[1] == 1
-
-    df = Dataset(columns=['xxx1', 'xxx2', 'xxx3', '4'])
-    df.drop_cols(exclusions=['xxx'])
-    assert '4' in df
-    assert df.shape[1] == 1
 
 
 def test_auto_detect_categorical():
@@ -295,42 +97,6 @@ def test_auto_detect_categorical():
     df.auto_detect_categorical(scope='all', obj_thresh=None, all_thresh=10)
     cat_cols = df.get_cols(scope='category')
     assert cat_cols == ['1', '2', '3', '4']
-
-
-def test_filter_categorical_by_percent():
-
-    df = get_fake_dataset6()
-    df.filter_categorical_by_percent(drop_percent=1, scope='all',
-                                     drop=True)
-    assert len(df) == 10
-    assert len(df['2'].unique()) == 3
-    assert 'category' in df.scopes['1']
-    assert 'category' in df.scopes['2']
-
-    df = get_fake_dataset6()
-    df.filter_categorical_by_percent(drop_percent=11, scope='all',
-                                     drop=True)
-    assert len(df) == 9
-    assert len(df['2'].unique()) == 2
-
-    df = get_fake_dataset6()
-    df.filter_categorical_by_percent(drop_percent=11, scope='2',
-                                     drop=True)
-    assert len(df) == 10
-
-    df = get_fake_dataset6()
-    df.filter_categorical_by_percent(drop_percent=20, scope='2',
-                                     drop=True)
-    assert len(df) == 9
-    assert len(df['2'].unique()) == 2
-
-    df = get_fake_dataset6()
-    df.filter_categorical_by_percent(drop_percent=20, scope='2',
-                                     drop=False)
-    assert len(df) == 10
-    assert len(df['2'].unique()) == 2
-    assert 'category' not in df.scopes['1']
-    assert 'category' in df.scopes['2']
 
 
 def test_add_data_files():
@@ -579,19 +345,6 @@ def test_get_subjects_base_file():
     assert df.loc[subjects].shape == (2, 3)
 
 
-def get_fake_multi_index_dataset():
-
-    fake = Dataset()
-    fake['0'] = [1, 2, 3, 4, 5, 6]
-    fake['1'] = [1, 2, 3, 4, 5, 6]
-    fake['2'] = [1, 2, 3, 4, 5, np.nan]
-    fake['subj'] = ['s1', 's2', 's3', 's1', 's2', 's3']
-    fake['event'] = ['e1', 'e1', 'e1', 'e2', 'e2', 'e2']
-    fake.set_index(['subj', 'event'], inplace=True)
-
-    return fake
-
-
 def test_multi_index_load_save():
 
     df = get_fake_multi_index_dataset()
@@ -644,45 +397,6 @@ def test_multi_index_get_subjects():
     assert df.loc[subjs].shape == (3, 3)
 
 
-def test_multi_index_apply_inclusions():
-
-    df = get_fake_multi_index_dataset()
-    df.apply_inclusions(subjects=['s1'])
-    assert df.shape == (2, 3)
-
-    df = get_fake_multi_index_dataset()
-    df.apply_inclusions(subjects='all')
-    assert df.shape == (6, 3)
-
-    df = get_fake_multi_index_dataset()
-    df.apply_inclusions(subjects=(['s1', 's2'], ['e1']))
-    assert df.shape == (2, 3)
-
-
-def test_multi_index_apply_exclusions():
-
-    df = get_fake_multi_index_dataset()
-    df.apply_exclusions(subjects=['s1'])
-    assert df.shape == (4, 3)
-
-    df = get_fake_multi_index_dataset()
-    df.apply_exclusions(subjects='all')
-    assert df.shape == (0, 3)
-
-    df = get_fake_multi_index_dataset()
-    df.apply_exclusions(subjects=(['s1', 's2'], ['e1']))
-    assert df.shape == (4, 3)
-
-
-def test_multi_index_add_unique_overlap():
-
-    df = get_fake_multi_index_dataset()
-    df.add_unique_overlap(cols=['0', '1'],
-                          new_col='new',
-                          encoded_values=True)
-    assert df['new'].nunique() == 6
-
-
 def test_multi_index_add_data_files():
 
     df = get_fake_multi_index_dataset()
@@ -704,101 +418,6 @@ def test_multi_index_add_data_files():
 
     assert len(df['files']) == 6
     assert 'a_s1_e1' in df.file_mapping[0].loc
-
-
-def get_nans_dataset():
-
-    fake = Dataset()
-    fake['1'] = [np.nan, np.nan, np.nan, 1]
-    fake['2'] = [np.nan, np.nan, 1, 1]
-    fake['3'] = [np.nan, 1, 1, 1]
-    fake['4'] = [1, 1, 1, 1]
-    return fake
-
-
-def test_drop_subjects_by_nan():
-
-    df = get_nans_dataset()
-    df.drop_subjects_by_nan(threshold=1, scope='all')
-    assert df.shape == (1, 4)
-
-    df = get_nans_dataset()
-    df.drop_subjects_by_nan(threshold=.25, scope='all')
-    assert df.shape == (1, 4)
-
-    df = get_nans_dataset()
-    df.drop_subjects_by_nan(threshold=2, scope='all')
-    assert df.shape == (2, 4)
-
-    df = get_nans_dataset()
-    df.drop_subjects_by_nan(threshold=.5, scope='all')
-    assert df.shape == (2, 4)
-
-    df = get_nans_dataset()
-    df.drop_subjects_by_nan(threshold=3, scope='all')
-    assert df.shape == (3, 4)
-
-    df = get_nans_dataset()
-    df.drop_subjects_by_nan(threshold=.75, scope='all')
-    assert df.shape == (3, 4)
-
-    df = get_nans_dataset()
-    df.drop_subjects_by_nan(threshold=4, scope='all')
-    assert df.shape == (4, 4)
-
-    df = get_nans_dataset()
-    df.drop_subjects_by_nan(threshold=.9, scope='all')
-    assert df.shape == (4, 4)
-
-
-def test_drop_cols_by_nan():
-
-    df = get_nans_dataset()
-    df.drop_cols_by_nan(threshold=1, scope='all')
-    assert df.shape == (4, 1)
-
-    df = get_nans_dataset()
-    df.drop_cols_by_nan(threshold=.25, scope='all')
-    assert df.shape == (4, 1)
-
-    df = get_nans_dataset()
-    df.drop_cols_by_nan(threshold=2, scope='all')
-    assert df.shape == (4, 2)
-
-    df = get_nans_dataset()
-    df.drop_cols_by_nan(threshold=.5, scope='all')
-    assert df.shape == (4, 2)
-
-    df = get_nans_dataset()
-    df.drop_cols_by_nan(threshold=3, scope='all')
-    assert df.shape == (4, 3)
-
-    df = get_nans_dataset()
-    df.drop_cols_by_nan(threshold=4, scope='all')
-    assert df.shape == (4, 4)
-
-    df = get_nans_dataset()
-    df.drop_cols_by_nan(threshold=.9, scope='all')
-    assert df.shape == (4, 4)
-
-
-def get_full_dataset():
-
-    fake = Dataset()
-    fake['1'] = [1, 2, 3, 4, 5]
-    fake['2'] = [6, 7, 8, 9, 10]
-    fake['3'] = [11, 12, 13, 14, 15]
-    fake.add_scope('3', 'category')
-
-    fake['subj'] = ['s1', 's2', 's3', 's4', 's5']
-    fake.set_index('subj', inplace=True)
-
-    fake['target'] = [.1, .2, .3, .4, .5]
-    fake.set_role('target', 'target')
-
-    fake.set_test_split(subjects=['s4', 's5'])
-
-    return fake
 
 
 def test_get_Xy_base():

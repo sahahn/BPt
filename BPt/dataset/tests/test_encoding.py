@@ -78,7 +78,17 @@ def test_to_binary():
 
     df = get_fake_dataset7()
     df['2'] = [1, 1, 1, 1, 1, 1, 1]
+    df.to_binary(scope='2')
     assert len(df['2'].unique() == 1)
+
+
+def test_to_binary_inplace():
+
+    df = get_fake_dataset7()
+
+    df_copy = df.to_binary(scope='1', inplace=False)
+    assert len(df) == 7
+    assert len(df_copy) == 6
 
 
 def test_nan_to_class():
@@ -151,7 +161,7 @@ def test_binarize_with_nans():
 def test_binarize_upper_lower():
 
     df = get_fake_dataset()
-    df.binarize('1', lower=2, upper=2)
+    df.binarize('1', threshold=(2, 2))
 
     assert len(df) == 2
     assert df.loc[0, '1'] == 0
@@ -164,7 +174,7 @@ def test_binarize_upper_lower_drop():
 
     # Test with drop True
     df = get_fake_dataset()
-    df.binarize('1', lower=1.1, upper=2.2, drop=True)
+    df.binarize('1', threshold=(1.1, 2.2), drop=True)
     assert len(df) == 2
     assert pd.isnull(df.loc[0, '3'])
     assert df.loc[0, '1'] == 0
@@ -172,7 +182,7 @@ def test_binarize_upper_lower_drop():
 
     # With drop False
     df = get_fake_dataset()
-    df.binarize('1', lower=1.1, upper=2.2, drop=False)
+    df.binarize('1', threshold=(1.1, 2.2), drop=False)
 
     assert len(df) == 3
     assert df.loc[0, '1'] == 0

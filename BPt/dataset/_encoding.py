@@ -22,7 +22,7 @@ def _add_new_copy(self, old, new):
         pass
 
 
-def to_binary(self, scope, drop=True):
+def to_binary(self, scope, drop=True, inplace=True):
     '''This method works by setting all
     columns within scope to just two binary
     categories. This works by setting the two values
@@ -33,7 +33,45 @@ def to_binary(self, scope, drop=True):
 
     See: :func:`binarize <Dataset.binarize>` for converting
     float style columns to binary.
+
+    Parameters
+    ----------
+    scope : :ref:`Scope`
+        A BPt style :ref:`Scope` used to select a subset of
+        columns in which to apply to_binary on.
+
+    drop : bool, optional
+        If set to True, default, then if more
+        than two categories are found when converting
+        a column to binary, then the subjects / rows
+        with these extra values will be dropped from
+        the Dataset. If False, then these values will
+        be set to NaN and no rows dropped.
+
+        ::
+
+            default = True
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.to_binary(scope=scope, drop=drop, inplace=True)
+        return df_copy
 
     # Make sure encoders init'ed
     self._check_encoders()
@@ -47,8 +85,6 @@ def to_binary(self, scope, drop=True):
     # Binarize each
     for col in cols:
         self._base_binarize(col=col, drop=drop)
-
-    return self
 
 
 def _base_binarize(self, col, drop):
@@ -85,8 +121,7 @@ def _base_binarize(self, col, drop):
     return self
 
 
-def binarize(self, scope, threshold=None, lower=None,
-             upper=None, replace=True, drop=True):
+def binarize(self, scope, threshold, replace=True, drop=True, inplace=True):
     '''This method contains a utilities for binarizing a variable.
     These are dichatomizing an existing variable with parameter
     threshold, and applying binarization via two thresholds
@@ -98,23 +133,84 @@ def binarize(self, scope, threshold=None, lower=None,
 
     Parameters
     ----------
-    replace : bool, optional
+    scope : :ref:`Scope`
+        A BPt style :ref:`Scope` used to select a subset of
+        columns in which to apply binarize on.
 
-        Note: Ignored if base == True.
+    threshold : float or (float, float)
+        This parameter can be used to either set a single threshold
+        where any values less than or equal (>=) to the threshold
+        will be set to 0, and any values greater (<) than the threshold
+        will be set to 1.
+
+        Alternatively, in the case that a tuple with two
+        values is passed, e.g., (5, 10), then this requests
+        that a lower and upper threshold be set, with any
+        values in the middle either dropped or set to NaN
+        (as dependent on the drop parameter). The first
+        value of the tuple represents the lower threshold,
+        where any values less than this threshold will be set to
+        0. The second element of the tuple represents the upper
+        threshold where any values greater than this threshold will
+        be set to 1. Note these equalities are strictly less than
+        or greater than, e.g., not less than or equal to.
+
+    replace : bool, optional
+        This parameter controls if the original columns
+        should be replaced with their binarized version, when
+        set to True, and if set to False will add a new
+        binarized column as well as leave the original column.
+        The new columns will share the name of the original
+        columns but with '_binary' appended.
+
+        ::
+
+            default = True
 
     drop : bool, optional
+        If set to True, then any values between lower and upper
+        will be dropped. If False, they will be set to NaN.
+
         Note: This parameter is only relevant if using
         the configuration with parameter's upper and lower.
 
+        ::
+
+            default = True
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
 
-    # Input checks
-    if threshold is None and lower is None and upper is None:
-        raise RuntimeError('Some value must be set.')
-    if lower is not None and upper is None:
-        raise RuntimeError('Upper must be set.')
-    if upper is not None and lower is None:
-        raise RuntimeError('Lower must be set.')
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.binarize(scope=scope, threshold=threshold,
+                         replace=replace, drop=drop, inplace=True)
+
+    # Proc if tuple or not
+    if isinstance(threshold, tuple):
+        if len(threshold) != 2:
+            raise RuntimeError('If a tuple passed for threshold it '
+                               'must be of length 2!')
+
+        lower, upper = threshold
+        threshold = None
+
+    # Not tuple case
+    else:
+        lower, upper = None, None
 
     # Make sure encoders init'ed
     self._check_encoders()
@@ -129,8 +225,6 @@ def binarize(self, scope, threshold=None, lower=None,
     for col in cols:
         self._binarize(col=col, threshold=threshold, lower=lower,
                        upper=upper, replace=replace, drop=drop)
-
-    return self
 
 
 def _binarize(self, col, threshold, lower, upper, replace, drop):
@@ -201,7 +295,7 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
     return self
 
 
-def k_bin(self, scope, n_bins=5, strategy='uniform'):
+def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=True):
     '''This method is used to apply k binning to
     a column, or columns. On the backend
     this function used the scikit-learn
@@ -239,7 +333,28 @@ def k_bin(self, scope, n_bins=5, strategy='uniform'):
         ::
 
             default = 'uniform'
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.k_bin(scope=scope, n_bins=n_bins,
+                      strategy=strategy, inplace=True)
+        return df_copy
 
     # Get cols from scope
     cols = self.get_cols(scope)
@@ -247,8 +362,6 @@ def k_bin(self, scope, n_bins=5, strategy='uniform'):
     # K bin each requested column individually
     for col in cols:
         self._k_bin(col, n_bins, strategy)
-
-    return self
 
 
 def _k_bin(self, col, n_bins, strategy):
@@ -302,7 +415,59 @@ def _k_bin(self, col, n_bins, strategy):
     return self
 
 
-def ordinalize(self, scope):
+def ordinalize(self, scope, nan_to_class=False, inplace=True):
+    '''This method is used to ordinalize
+    a group of columns. Ordinalization is
+    performed by setting all n unique
+    categories present in each column to
+    values 0 to n-1.
+
+    The LabelEncoder from sklearn is used
+    on the backend for this operation.
+
+    Parameters
+    -----------
+    scope : :ref:`Scope`
+        A BPt style :ref:`Scope` used to select a subset of
+        columns in which to apply ordinalize to.
+
+    nan_to_class : bool, optional
+        If set to True, then treat NaN values as
+        as a unique class, otherwise if False then
+        ordinalization will be applied on just non-NaN
+        values, and any NaN values will remain NaN.
+
+        See: :func:`nan_to_class <Dataset.nan_to_class>`
+        for more generally adding NaN values as a new
+        category to any arbitrary categorical column.
+        All this parameter does is if True calls
+        self.nan_to_class after normal ordinalization.
+
+        ::
+
+            default = False
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
+    '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.ordinalize(scope=scope, nan_to_class=nan_to_class,
+                           inplace=True)
+        return df_copy
 
     # Get cols from scope
     cols = self.get_cols(scope)
@@ -311,7 +476,9 @@ def ordinalize(self, scope):
     for col in cols:
         self._ordinalize(col)
 
-    return self
+    # Optionally add NaN as class
+    if nan_to_class:
+        self.nan_to_class(scope=scope)
 
 
 def _ordinalize(self, col):
@@ -348,16 +515,46 @@ def _ordinalize(self, col):
     return self
 
 
-def nan_to_class(self, scope='category'):
+def nan_to_class(self, scope='category', inplace=True):
     '''This method will cast any columns that were not categorical that are
     passed here to categorical. Will also ordinally encode them if
     they have not already been encoded
-    (i.e., by either via ordinalize, binarize, or a simmilar function...).
+    (e.g., by either via ordinalize, binarize, or a similar function...).
+
+    scope : :ref:`Scope`
+        A BPt style :ref:`Scope` used to select a subset of
+        columns in which to apply nan_to_class.
+
+        ::
+
+            default = 'category'
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
 
-    self._check_encoders()
-    cols = self.get_cols(scope)
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.nan_to_class(scope=scope, inplace=False)
+        return df_copy
 
+    # Make sure encoders are up init'ed
+    self._check_encoders()
+
+    # For each col in scope
+    cols = self.get_cols(scope)
     for col in cols:
 
         # If this column hasn't been encoded yet, ordinalize
@@ -384,13 +581,11 @@ def nan_to_class(self, scope='category'):
         # Update encoder entry with NaN
         self.encoders[col][nan_class] = np.nan
 
-    return self
 
-
-def copy_as_non_input(self, col, new_col, copy_scopes=False):
+def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=True):
     '''This method is a used for making a copy of an
     existing column, ordinalizing it and then setting it
-    to have role == non input.
+    to have role = non input.
 
     Parameters
     ----------
@@ -398,16 +593,42 @@ def copy_as_non_input(self, col, new_col, copy_scopes=False):
         The name of the loaded column to make a copy of.
 
     new_col : str
-        The new name of the non input column
+        The new name of the non input and ordinalized column.
 
     copy_scopes : bool, optional
         If the associated scopes with the original column should be copied
-        over as well.
+        over as well. If False, then the new col will
+        only have scope 'category'.
+
+        Note: The scopes will be copied before ordinalizing,
+        s.t., the new copy will have the scope 'category'
+        regardless of if that was a scope of the original variable.
 
         ::
 
-            default = False
+            default = True
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.copy_as_non_input(col=col, new_col=new_col,
+                                  copy_scopes=copy_scopes, inplace=True)
+        return df_copy
 
     # Copy as new col
     self[new_col] = self[col].copy()
@@ -415,6 +636,7 @@ def copy_as_non_input(self, col, new_col, copy_scopes=False):
     # Only copy scopes if requested, and do before
     # ordinalize call
     if copy_scopes:
+        self._check_scopes()
         self.scopes[new_col] = self.scopes[col].copy()
 
     # Ordinalize

@@ -394,14 +394,14 @@ class Dataset(pd.DataFrame):
                 self._apply_only_level(self.index, only_level)
 
         elif isinstance(subjects, str) and subjects == 'train':
-            if not hasattr(self, 'train_subjects'):
+            if not hasattr(self, 'train_subjects') or self.train_subjects is None:
                 raise RuntimeError('Train subjects undefined')
-            loaded_subjects = self.train_subjects
+            loaded_subjects = set(self.train_subjects)
 
         elif isinstance(subjects, str) and subjects == 'test':
-            if not hasattr(self, 'test_subjects'):
+            if not hasattr(self, 'test_subjects') or self.test_subjects is None:
                 raise RuntimeError('Test subjects undefined')
-            loaded_subjects = self.test_subjects
+            loaded_subjects = set(self.test_subjects)
 
         # Check for Value Subset or Values Subset
         elif isinstance(subjects, Value_Subset):
@@ -1349,10 +1349,7 @@ class Dataset(pd.DataFrame):
 
     def _repr_html_(self):
 
-        template = """
-        <div style="float: left; padding: 10px;">
-        <h3>{0}</h3>{1}
-        </div>"""
+        template = """<div style="float: left; padding: 10px;"><h3>{0}</h3>{1}</div>"""
 
         html = ''
         for scope in ['data', 'target', 'non input']:
@@ -1365,7 +1362,55 @@ class Dataset(pd.DataFrame):
         return html
 
     def _base_repr_html_(self):
-        return super()._repr_html_()
+
+        html = super()._repr_html_()
+
+        try:
+            train_subjects = self.get_subjects('train', return_as='set')
+            test_subjects = self.get_subjects('test', return_as='set')
+        except RuntimeError:
+            return html
+
+        train_color = 'RGBA(176, 224, 230, .3)'
+        test_color = 'RGBA(249, 121, 93, .3)'
+
+        train_subjects = set(['>' + str(s) for s in train_subjects])
+        test_subjects = set(['>' + str(s) for s in test_subjects])
+
+        # Generate splits 1
+        start = html.index('</thead>')
+        s1 = html[start:].split('<th')
+        for i in range(len(s1)):
+            s2 = s1[i].split('</th>')
+
+            for j in range(len(s2)):
+                if s2[j] in train_subjects:
+                    s2[j] = ' style="background: ' + train_color + '"' + s2[j]
+                elif s2[j] in test_subjects:
+                    s2[j] = ' style="background: ' + test_color + '"' + s2[j]
+
+            s1[i] = '</th>'.join(s2)
+
+        # Set as re-joined html str
+        s1_post = '<th'.join(s1)
+        html = html[:start] + s1_post
+
+        n_cols = str(len(self.columns))
+
+        train_info = '<p style="background: ' + train_color + '>'
+        train_info += str(len(train_subjects)) + " rows × "
+        train_info += n_cols + " columns</p>"
+
+        test_info = '<p style="background: ' + test_color + '>'
+        test_info += str(len(test_subjects)) + " rows × "
+        test_info += n_cols + " columns</p>"
+
+        extra_info = train_info + '\n' + test_info
+
+        # Add before end
+        html = html[:-6] + extra_info + html[-6:]
+
+        return html
 
     from ._plotting import (plot,
                             show,

@@ -1,3 +1,4 @@
+from functools import reduce
 import numpy as np
 from itertools import combinations
 from .helpers import proc_fop
@@ -13,7 +14,7 @@ def _drop_subjects(self, subjects):
     return self
 
 
-def drop_nan_subjects(self, scope):
+def drop_nan_subjects(self, scope, inplace=True):
     '''This method is used for
     dropping all of the subjects which have NaN
     values for a given scope / column.
@@ -24,25 +25,41 @@ def drop_nan_subjects(self, scope):
         The BPt style :ref:`Scope` input that will be
         used to determine which column names to drop
         subjects with missing values by.
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.drop_nan_subjects(scope=scope, inplace=True)
+        return df_copy
 
     cols = self.get_cols(scope)
     for col in cols:
         nan_subjects = self._get_nan_subjects(col)
         self._drop_subjects(nan_subjects)
 
-    return self
 
-
-def apply_inclusions(self, subjects):
+def apply_inclusions(self, subjects, inplace=True):
     '''This method will drop all subjects
     that do not overlap with the passed subjects to
     this function. In this sense, this method acts
     like a whitelist, where you could pass for example
     only valid subjects that passed some QC, and all
     other's loaded will be dropped.
-
-    This method operates in place.
 
     Parameters
     -----------
@@ -54,7 +71,28 @@ def apply_inclusions(self, subjects):
         array-like of subjects, to name some options.
 
         See :ref:`Subjects` for all options.
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.apply_inclusions(subjects=subjects, inplace=True)
+
+        return df_copy
 
     # Load inclusions
     inclusions = self.get_subjects(subjects, return_as='set')
@@ -63,15 +101,11 @@ def apply_inclusions(self, subjects):
         to_drop = set(self.index) - inclusions
         self.drop(list(to_drop), axis=0, inplace=True)
 
-    return self
 
-
-def apply_exclusions(self, subjects):
+def apply_exclusions(self, subjects, inplace=True):
     '''This method will drop all subjects
     that overlap with the passed subjects to
     this function.
-
-    This method operates in place.
 
     Parameters
     -----------
@@ -83,7 +117,27 @@ def apply_exclusions(self, subjects):
         array-like of subjects, to name some options.
 
         See :ref:`Subjects` for all options.
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.apply_exclusions(subjects=subjects, inplace=True)
+        return df_copy
 
     # Load exclusions
     exclusions = self.get_subjects(subjects, return_as='set')
@@ -92,10 +146,8 @@ def apply_exclusions(self, subjects):
         to_drop = set(self.index).intersection(exclusions)
         self.drop(list(to_drop), axis=0, inplace=True)
 
-    return self
 
-
-def drop_subjects_by_nan(self, threshold=.5, scope='all'):
+def drop_subjects_by_nan(self, threshold=.5, scope='all', inplace=True):
     '''This method is used for dropping subjects based on
     the amount of missing values found across a subset of
     columns as selected by scope. Each subject is dropped
@@ -128,7 +180,28 @@ def drop_subjects_by_nan(self, threshold=.5, scope='all'):
         ::
 
             default = 'all'
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.drop_subjects_by_nan(threshold=threshold,
+                                     scope=scope, inplace=True)
+        return df_copy
 
     # Get cols from scope
     cols = self.get_cols(scope)
@@ -182,7 +255,7 @@ def _drop_cols(self, to_drop):
 
 
 def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
-                               reduce_func=np.mean, n_jobs=1):
+                               reduce_func=np.mean, n_jobs=1, inplace=True):
     '''This method is designed to allow dropping a fixed percent of outliers
     from the requested columns. This method is designed to work
     on float type / cont. variables.
@@ -272,7 +345,29 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
         ::
 
             default = 1
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.filter_outliers_by_percent(fop=fop, scope=scope, drop=drop,
+                                           reduce_func=reduce_func,
+                                           n_jobs=n_jobs, inplace=True)
+        return df_copy
 
     # Get cols from scope
     cols = self.get_cols(scope)
@@ -318,11 +413,9 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
     # Update file mapping if needed
     self._check_file_mapping()
 
-    return self
-
 
 def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
-                           reduce_func=np.mean, n_jobs=1):
+                           reduce_func=np.mean, n_jobs=1, inplace=True):
     '''This method is designed to allow dropping outliers
     from the requested columns based on comparisons with that columns
     standard deviation.
@@ -405,7 +498,29 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
         ::
 
             default = 1
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.filter_outliers_by_std(n_std=n_std, scope=scope, drop=drop,
+                                       reduce_func=reduce_func, n_jobs=n_jobs,
+                                       inplace=True)
+        return df_copy
 
     # Get cols from scope
     cols = self.get_cols(scope)
@@ -452,11 +567,9 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
     # Update file mapping if needed
     self._check_file_mapping()
 
-    return self
-
 
 def filter_categorical_by_percent(self, drop_percent=1, scope='category',
-                                  drop=True):
+                                  drop=True, inplace=True):
     '''This method is designed to allow performing outlier filting
     on categorical type variables. Note that this method assume
     all columns passed are of type 'category', and they if not already
@@ -510,7 +623,29 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
 
             default = True
 
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
+
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.filter_categorical_by_percent(drop_percent=drop_percent,
+                                              scope=scope, drop=drop,
+                                              inplace=True)
+        return df_copy
 
     # Get cols from scope
     cols = self.get_cols(scope)
@@ -547,15 +682,15 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
     if drop:
         self._drop_subjects(all_to_drop)
 
-    return self
 
-
-def drop_id_cols(self, scope='all'):
+def drop_id_cols(self, scope='all', inplace=True):
     '''This method will drop any str-type / object type columns
     where the number of unique columns is equal
     to the length of the dataframe.
 
-        scope : :ref:`Scope`, optional
+    Parameters
+    ----------
+    scope : :ref:`Scope`, optional
         A BPt style :ref:`Scope` used to select a subset of
         columns in which to check.
 
@@ -566,7 +701,26 @@ def drop_id_cols(self, scope='all'):
 
             default = 'all'
 
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.drop_id_cols(scope=scope, inplace=True)
+        return df_copy
 
     # Get cols from scope
     cols = self.get_cols(scope)
@@ -580,10 +734,8 @@ def drop_id_cols(self, scope='all'):
 
     self._drop_cols(to_drop)
 
-    return self
 
-
-def drop_duplicate_cols(self, scope='all'):
+def drop_duplicate_cols(self, scope='all', inplace=True):
     '''This method is used for checking to see if there are
     any columns loaded with duplicate values. If there is, then
     one of the duplicates will be dropped.
@@ -598,7 +750,27 @@ def drop_duplicate_cols(self, scope='all'):
         ::
 
             default = 'all'
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.drop_duplicate_cols(scope=scope, inplace=True)
+        return df_copy
 
     # Get cols from scope
     cols = self.get_cols(scope)
@@ -609,7 +781,6 @@ def drop_duplicate_cols(self, scope='all'):
             to_drop.append(col2)
 
     self._drop_cols(to_drop)
-    return self
 
 
 def drop_cols(self, exclusions=None,
@@ -669,7 +840,6 @@ def drop_cols(self, exclusions=None,
         ::
 
             default = True
-
     '''
 
     if not inplace:
@@ -700,7 +870,8 @@ def drop_cols(self, exclusions=None,
     self._drop_cols(to_drop)
 
 
-def drop_cols_by_unique_val(self, threshold=1, scope='all', dropna=True):
+def drop_cols_by_unique_val(self, threshold=1, scope='all',
+                            dropna=True, inplace=True):
     '''This method will drop any columns with less than or equal to
     the number of unique values.
     This is a coarse filtering method for removing
@@ -742,7 +913,27 @@ def drop_cols_by_unique_val(self, threshold=1, scope='all', dropna=True):
 
             default = True
 
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.drop_cols_by_unique_val(threshold=threshold, scope=scope,
+                                        dropna=dropna, inplace=True)
+        return df_copy
 
     # Get cols from scope
     cols = self.get_cols(scope)
@@ -755,10 +946,8 @@ def drop_cols_by_unique_val(self, threshold=1, scope='all', dropna=True):
 
     self._drop_cols(to_drop)
 
-    return self
 
-
-def drop_cols_by_nan(self, threshold=.5, scope='all'):
+def drop_cols_by_nan(self, threshold=.5, scope='all', inplace=True):
     '''This method is used for dropping columns based on
     the amount of missing values found across all subjects.
     Each column is dropped if it has greater than or equal
@@ -795,7 +984,28 @@ def drop_cols_by_nan(self, threshold=.5, scope='all'):
         ::
 
             default = 'all'
+
+    inplace : bool, optional
+        If this operation should take place on
+        the original object (inplace = True),
+        or if it should be done on a copy of the Dataset
+        object (inplace = False).
+
+        If done inplace, then None will be returned.
+        If done with inplace = False, then a copy
+        of the Dataset with the operation applied
+        will be returned.
+
+        ::
+
+            default = True
     '''
+
+    if not inplace:
+        df_copy = self.copy(deep=False)
+        df_copy.drop_cols_by_nan(threshold=threshold,
+                                 scope=scope, inplace=True)
+        return df_copy
 
     # Get cols from scope
     cols = self.get_cols(scope)
@@ -814,5 +1024,3 @@ def drop_cols_by_nan(self, threshold=.5, scope='all'):
             to_drop.append(col)
 
     self._drop_cols(to_drop)
-
-    return self

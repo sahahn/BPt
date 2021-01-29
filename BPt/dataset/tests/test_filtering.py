@@ -13,6 +13,14 @@ def test_filter_outliers():
     assert pd.isnull(df['3']).all()
 
 
+def test_filter_outliers_inplace():
+
+    df = get_fake_dataset()
+    df = df.filter_outliers_by_percent(20, scope='3',
+                                       drop=False, inplace=False)
+    assert pd.isnull(df['3']).all()
+
+
 def test_filter_outliers_by_percent():
 
     df = get_fake_dataset4()
@@ -34,6 +42,34 @@ def test_filter_outliers_by_percent():
     # Make sure drop false works
     df = get_fake_dataset4()
     df.filter_outliers_by_percent((20, None), scope='2', drop=False)
+    assert len(df) == 6
+    assert pd.isnull(df.loc[0, '2'])
+    assert pd.isnull(df.loc[5, '2'])
+
+
+def test_filter_outliers_by_percent_inplace():
+
+    df = get_fake_dataset4()
+    df = df.filter_outliers_by_percent(20, scope='1', drop=True, inplace=False)
+    assert len(df) == 4
+
+    # Make sure works with NaNs
+    df = get_fake_dataset4()
+    df = df.filter_outliers_by_percent(20, scope='2', drop=True, inplace=False)
+    assert len(df) == 4
+    assert pd.isnull(df.loc[5, '2'])
+
+    # Make sure range works
+    df = get_fake_dataset4()
+    df = df.filter_outliers_by_percent((20, None), scope='2',
+                                       drop=True, inplace=False)
+    assert len(df) == 5
+    assert pd.isnull(df.loc[5, '2'])
+
+    # Make sure drop false works
+    df = get_fake_dataset4()
+    df = df.filter_outliers_by_percent((20, None), scope='2',
+                                       drop=False, inplace=False)
     assert len(df) == 6
     assert pd.isnull(df.loc[0, '2'])
     assert pd.isnull(df.loc[5, '2'])
@@ -86,7 +122,15 @@ def test_drop_cols_by_unique_val():
 def test_drop_id_cols():
 
     df = get_fake_dataset2()
-    df.drop_id_cols()
+    df.drop_id_cols(scope='all')
+
+    assert '1' in df
+    assert '2' in df
+    assert '3' not in df
+
+    # Inplace = false case
+    df = get_fake_dataset2()
+    df = df.drop_id_cols(scope='all', inplace=False)
 
     assert '1' in df
     assert '2' in df
@@ -96,8 +140,12 @@ def test_drop_id_cols():
 def test_drop_duplicate_cols():
 
     df = get_fake_dataset3()
-    df.drop_duplicate_cols()
+    df.drop_duplicate_cols(scope='all')
+    assert '5' in df
+    assert df.shape == (3, 3)
 
+    df = get_fake_dataset3()
+    df = df.drop_duplicate_cols(scope='all', inplace=False)
     assert '5' in df
     assert df.shape == (3, 3)
 

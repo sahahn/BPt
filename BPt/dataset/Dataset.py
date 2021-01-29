@@ -1397,11 +1397,11 @@ class Dataset(pd.DataFrame):
 
         n_cols = str(len(self.columns))
 
-        train_info = '<p><span style="background: ' + train_color + '">'
+        train_info = '<p style="margin-top: .5em"><span style="background: ' + train_color + '">'
         train_info += str(len(train_subjects)) + " rows × "
         train_info += n_cols + " columns - Train Set </span></p>"
 
-        test_info = '<p><span style="background: ' + test_color + '">'
+        test_info = '<p style="margin-top: .5em"><span style="background: ' + test_color + '">'
         test_info += str(len(test_subjects)) + " rows × "
         test_info += n_cols + " columns - Test Set </span></p>"
 

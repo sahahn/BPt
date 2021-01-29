@@ -699,8 +699,6 @@ def drop_cols(self, exclusions=None,
 
     self._drop_cols(to_drop)
 
-    return self
-
 
 def drop_cols_by_unique_val(self, threshold=1, scope='all', dropna=True):
     '''This method will drop any columns with less than or equal to

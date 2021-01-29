@@ -42,7 +42,7 @@ def test_multi_index_add_unique_overlap():
     assert df['new'].nunique() == 6
 
 
-def test_binarize_base_object():
+def test_to_binary_object():
 
     df = get_fake_dataset()
     df.to_binary('2')
@@ -195,6 +195,7 @@ def test_copy_as_non_input():
     df = get_fake_dataset()
     df.add_scope('1', 'bleh')
     df.copy_as_non_input(col='1', new_col='1_copy', copy_scopes=False)
+    df._check_scopes()
 
     assert df.shape == ((3, 4))
     assert df.roles['1_copy'] == 'non input'
@@ -208,3 +209,21 @@ def test_copy_as_non_input():
     df.copy_as_non_input(col='1', new_col='1_copy', copy_scopes=True)
     assert df.shape == ((3, 4))
     assert 'bleh' in df.scopes['1_copy']
+
+
+def test_copy_as_non_input_inplace():
+
+    df = get_fake_dataset()
+    df.add_scope('1', 'bleh')
+    df_copy = df.copy_as_non_input(col='1', new_col='1_copy',
+                                   copy_scopes=True, inplace=False)
+
+    df._check_scopes()
+    df_copy._check_scopes()
+
+    assert df.shape == ((3, 3))
+    assert df_copy.shape == ((3, 4))
+    assert '1_copy' not in df
+    assert '1_copy' in df_copy
+    assert 'bleh' in df_copy.scopes['1_copy']
+    assert '1_copy' not in df.scopes

@@ -126,7 +126,7 @@ def _plot_category(self, col, subjs, encoded_values, count, show):
     # Don't plot if more than 50 categories
     if len(values.unique()) >= 50:
         self._print('Skipping plot: ' + str(col) +
-              ' too many categories!', level=0)
+                    ' as >= categories!', level=0)
         return self
 
     # Get counts

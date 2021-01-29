@@ -176,6 +176,10 @@ add_data_files
 .. automethod:: Dataset.add_data_files
 
 
+get_file_mapping
+===============================
+.. automethod:: Dataset.get_file_mapping
+
 copy
 =============
 .. automethod:: Dataset.copy
@@ -308,6 +312,11 @@ plot_vars
 show
 =====================
 .. automethod:: Dataset.show
+
+
+show_nan_info
+=====================
+.. automethod:: Dataset.show_nan_info
 
 
 info

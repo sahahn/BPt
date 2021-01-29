@@ -167,7 +167,7 @@ def _preproc_model_pipeline(pipe, ps, dataset):
 
     # Check imputers default case
     # Check if any NaN in data
-    data_cols = dataset.get_cols(scope='data', columns=ps.scope)
+    data_cols = dataset.get_cols(scope='data', limit_to=ps.scope)
     is_na = dataset[data_cols].isna().any().any()
     pipe.check_imputers(is_na)
 

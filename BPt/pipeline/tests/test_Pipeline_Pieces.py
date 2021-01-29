@@ -15,7 +15,7 @@ def test_add_estimator_to_params():
 
 def test_feature_selectors():
 
-    data_keys = [0, 1]
+    data_keys = ['0', '1']
     dataset = get_fake_data_dataset(data_keys=data_keys)
 
     spec = {'problem_type': 'binary',
@@ -31,7 +31,7 @@ def test_feature_selectors():
     name, obj = objs[0]
 
     assert 'univariate selection' in name
-    assert obj.inds == data_keys
+    assert obj.inds == [0, 1]
     assert len(params) == 0
     assert isinstance(obj, BPtFeatureSelector)
 
@@ -40,7 +40,7 @@ def test_feature_selectors():
     name, obj = objs[0]
 
     assert 'univariate selection' in name
-    assert obj.inds == data_keys
+    assert obj.inds == [0, 1]
     assert len(params) > 0
     assert isinstance(obj, BPtFeatureSelector)
 
@@ -56,7 +56,7 @@ def test_feature_selectors():
     assert len(params) == 0
     assert isinstance(obj, BPtFeatureSelector)
 
-    dataset = get_fake_data_dataset(data_keys=data_keys, cat_keys=[1])
+    dataset = get_fake_data_dataset(data_keys=data_keys, cat_keys=['1'])
     fs = Feat_Selectors(dataset=dataset, spec=spec,
                         user_passed_objs={})
 
@@ -72,7 +72,7 @@ def test_feature_selectors():
 
 def test_feature_selectors_submodel():
 
-    data_keys = [0, 1]
+    data_keys = ['0', '1']
     dataset = get_fake_data_dataset(data_keys=data_keys)
     spec = {'problem_type': 'binary', 'random_state': None,
             'n_jobs': 1, 'scope': 'all'}
@@ -86,7 +86,7 @@ def test_feature_selectors_submodel():
 
     assert 'rfe' in name
     assert len(params) == 0
-    assert obj.inds == data_keys
+    assert obj.inds == [0, 1]
     assert obj.estimator.estimator is None
     assert isinstance(obj, BPtFeatureSelector)
 
@@ -96,7 +96,7 @@ def test_feature_selectors_submodel():
     name, obj = objs[0]
 
     assert 'rfe' in name
-    assert obj.inds == data_keys
+    assert obj.inds == [0, 1]
     assert obj.estimator.estimator is not None
     assert len(params) > 1
     assert isinstance(obj, BPtFeatureSelector)

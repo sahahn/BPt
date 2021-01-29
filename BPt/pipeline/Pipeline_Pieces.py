@@ -662,7 +662,7 @@ class Loaders(Pieces):
             # Wrap in BPtLoader
             wrapped_obj =\
                 BPtLoader(estimator=obj, inds=inds,
-                          file_mapping=self.dataset._get_file_mapping(),
+                          file_mapping=self.dataset.get_file_mapping(),
                           n_jobs=self.spec['n_jobs'],
                           fix_n_jobs=param.fix_n_wrapper_jobs,
                           cache_loc=param.cache_loc)

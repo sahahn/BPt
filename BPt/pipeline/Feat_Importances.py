@@ -343,7 +343,7 @@ class Feat_Importances():
             raise ImportError('You must have shap installed to use shap')
 
         if link == 'default':
-            link = 'logic'
+            link = 'logit'
 
         explainer = shap.KernelExplainer(model.predict_proba, X_train_summary,
                                          link=link)

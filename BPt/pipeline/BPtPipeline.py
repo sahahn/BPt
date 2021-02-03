@@ -3,6 +3,7 @@ import numpy as np
 from ..helpers.VARS import ORDERED_NAMES
 from ..helpers.ML_Helpers import hash
 from joblib import load, dump
+import pandas as pd
 import os
 
 
@@ -66,6 +67,19 @@ class BPtPipeline(Pipeline):
 
     def fit(self, X, y=None, mapping=None,
             train_data_index=None, **fit_params):
+
+        if isinstance(X, pd.DataFrame):
+
+            # Set train data index
+            train_data_index = X.index
+
+            # Cast to np array
+            X = np.array(X)
+
+        if isinstance(y, pd.DataFrame):
+
+            # Cast to np array
+            y = np.array(y)
 
         if self.cache_fit_dr is not None:
 

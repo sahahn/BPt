@@ -132,11 +132,6 @@ get_values
 .. automethod:: Dataset.get_values
 
 
-get_encoded_values
-===========================
-.. automethod:: Dataset.get_encoded_values
-
-
 add_scope
 =============
 .. automethod:: Dataset.add_scope

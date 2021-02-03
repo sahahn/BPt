@@ -27,8 +27,7 @@ def _proc_cv_strategy(self, cv_params):
     a CV object.'''
 
     # Check scopes and roles
-    self._check_scopes()
-    self._check_roles()
+    self._check_sr()
 
     # If None, return base
     if cv_params is None:

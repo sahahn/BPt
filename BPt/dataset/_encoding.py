@@ -76,8 +76,11 @@ def to_binary(self, scope, drop=True, inplace=True):
     # Make sure encoders init'ed
     self._check_encoders()
 
+    # Check scope and role
+    self._check_sr()
+
     # Get cols from scope
-    cols = self.get_cols(scope)
+    cols = self._get_cols(scope)
 
     # Check for data files
     self._data_file_fail_check(cols)
@@ -86,11 +89,14 @@ def to_binary(self, scope, drop=True, inplace=True):
     for col in cols:
         self._base_binarize(col=col, drop=drop)
 
+    # Update scopes
+    self._check_scopes()
+
 
 def _base_binarize(self, col, drop):
 
     # Extract non-nan values / series
-    values = self.get_values(col, dropna=True)
+    values = self._get_values(col, dropna=True)
 
     # Get value counts
     value_counts = values.value_counts()
@@ -215,8 +221,11 @@ def binarize(self, scope, threshold, replace=True, drop=True, inplace=True):
     # Make sure encoders init'ed
     self._check_encoders()
 
+    # Check scope and role
+    self._check_sr()
+
     # Get cols from scope
-    cols = self.get_cols(scope)
+    cols = self._get_cols(scope)
 
     # Check for data files
     self._data_file_fail_check(cols)
@@ -226,6 +235,9 @@ def binarize(self, scope, threshold, replace=True, drop=True, inplace=True):
         self._binarize(col=col, threshold=threshold, lower=lower,
                        upper=upper, replace=replace, drop=drop)
 
+    # Finalize scope
+    self._check_scopes()
+
 
 def _binarize(self, col, threshold, lower, upper, replace, drop):
 
@@ -233,7 +245,7 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
     nan_subjects = self._get_nan_subjects(col)
 
     # Extract non-nan values / series
-    values = self.get_values(col, dropna=True)
+    values = self._get_values(col, dropna=True)
 
     # Add new column
     if not replace:
@@ -290,7 +302,7 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
     self.loc[nan_subjects, col] = np.nan
 
     # Make sure category scope
-    self.add_scope(col, 'category')
+    self._add_scope(col, 'category')
 
     return self
 
@@ -356,12 +368,18 @@ def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=True):
                       strategy=strategy, inplace=True)
         return df_copy
 
+    # Check scope and role
+    self._check_sr()
+
     # Get cols from scope
-    cols = self.get_cols(scope)
+    cols = self._get_cols(scope)
 
     # K bin each requested column individually
     for col in cols:
         self._k_bin(col, n_bins, strategy)
+
+    # Make sure scope updated
+    self._check_scopes()
 
 
 def _k_bin(self, col, n_bins, strategy):
@@ -410,7 +428,7 @@ def _k_bin(self, col, n_bins, strategy):
     self.encoders[col] = encoder
 
     # Make sure col is category type
-    self.add_scope(col, 'category')
+    self._add_scope(col, 'category')
 
     return self
 
@@ -463,6 +481,9 @@ def ordinalize(self, scope, nan_to_class=False, inplace=True):
             default = True
     '''
 
+    # Check scope and role
+    self._check_sr()
+
     if not inplace:
         df_copy = self.copy(deep=False)
         df_copy.ordinalize(scope=scope, nan_to_class=nan_to_class,
@@ -470,7 +491,7 @@ def ordinalize(self, scope, nan_to_class=False, inplace=True):
         return df_copy
 
     # Get cols from scope
-    cols = self.get_cols(scope)
+    cols = self._get_cols(scope)
 
     # Ordinalize each column individually
     for col in cols:
@@ -479,6 +500,9 @@ def ordinalize(self, scope, nan_to_class=False, inplace=True):
     # Optionally add NaN as class
     if nan_to_class:
         self.nan_to_class(scope=scope)
+
+    # Make sure scope updated
+    self._check_scopes()
 
 
 def _ordinalize(self, col):
@@ -510,7 +534,7 @@ def _ordinalize(self, col):
     self.encoders[col] = encoder
 
     # Make sure col is category type
-    self.add_scope(col, 'category')
+    self._add_scope(col, 'category')
 
     return self
 
@@ -545,6 +569,9 @@ def nan_to_class(self, scope='category', inplace=True):
             default = True
     '''
 
+    # Check scope and roles
+    self._check_sr()
+
     if not inplace:
         df_copy = self.copy(deep=False)
         df_copy.nan_to_class(scope=scope, inplace=False)
@@ -554,7 +581,7 @@ def nan_to_class(self, scope='category', inplace=True):
     self._check_encoders()
 
     # For each col in scope
-    cols = self.get_cols(scope)
+    cols = self._get_cols(scope)
     for col in cols:
 
         # If this column hasn't been encoded yet, ordinalize
@@ -580,6 +607,9 @@ def nan_to_class(self, scope='category', inplace=True):
 
         # Update encoder entry with NaN
         self.encoders[col][nan_class] = np.nan
+
+    # Make sure scopes updated
+    self._check_scopes()
 
 
 def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=True):
@@ -633,10 +663,12 @@ def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=True):
     # Copy as new col
     self[new_col] = self[col].copy()
 
+    # Update scope and role
+    self._check_sr()
+
     # Only copy scopes if requested, and do before
     # ordinalize call
     if copy_scopes:
-        self._check_scopes()
         self.scopes[new_col] = self.scopes[col].copy()
 
     # Ordinalize
@@ -644,6 +676,9 @@ def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=True):
 
     # Set new role
     self.set_role(new_col, 'non input')
+
+    # Make sure scopes updated
+    self._check_scopes()
 
 
 def add_unique_overlap(self, cols, new_col, encoded_values=True):
@@ -713,8 +748,7 @@ def add_unique_overlap(self, cols, new_col, encoded_values=True):
     '''
 
     # Make sure up to date
-    self._check_roles()
-    self._check_scopes()
+    self._check_sr()
 
     # Some input validation, make sure str
     if isinstance(cols, str):
@@ -738,8 +772,8 @@ def add_unique_overlap(self, cols, new_col, encoded_values=True):
     combo = []
     for col in cols:
 
-        vals = self.get_values(col, dropna=False,
-                               decode_values=encoded_values)
+        vals = self._get_values(col, dropna=False,
+                                decode_values=encoded_values)
         combo.append(col + '=' + vals.astype(str) + ' ')
 
     # Combine
@@ -748,17 +782,23 @@ def add_unique_overlap(self, cols, new_col, encoded_values=True):
     # Add as new column
     self[new_col] = combo
 
+    # Update scope and role
+    self._check_sr()
+
     # If all roles agree, set new col as
     roles = set([self.roles[col] for col in cols])
     if len(roles) == 1:
-        self.set_role(new_col, roles.pop())
+        self._set_role(new_col, roles.pop())
 
     # Add scope if in all passed
     scopes = [self.scopes[col] for col in cols]
     for scope in scopes[0]:
         in_rest = [scope in other for other in scopes[1:]]
         if all(in_rest):
-            self.add_scope(new_col, scope)
+            self._add_scope(new_col, scope)
 
     # Lastly, ordinalize
     self._ordinalize(new_col)
+
+    # Make sure scopes updated
+    self._check_scopes()

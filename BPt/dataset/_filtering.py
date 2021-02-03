@@ -1,4 +1,3 @@
-from functools import reduce
 import numpy as np
 from itertools import combinations
 from .helpers import proc_fop
@@ -362,6 +361,9 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
             default = True
     '''
 
+    # Check scope and role
+    self._check_sr()
+
     if not inplace:
         df_copy = self.copy(deep=False)
         df_copy.filter_outliers_by_percent(fop=fop, scope=scope, drop=drop,
@@ -370,7 +372,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
         return df_copy
 
     # Get cols from scope
-    cols = self.get_cols(scope)
+    cols = self._get_cols(scope)
 
     # For if to drop
     all_to_drop = set()
@@ -382,9 +384,9 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
     for col in cols:
 
         # Extract non-nan values
-        values = self.get_values(col, dropna=True,
-                                 reduce_func=reduce_func,
-                                 n_jobs=n_jobs)
+        values = self._get_values(col, dropna=True,
+                                  reduce_func=reduce_func,
+                                  n_jobs=n_jobs)
 
         if lower is not None:
 
@@ -515,6 +517,9 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
             default = True
     '''
 
+    # Check scope and role
+    self._check_sr()
+
     if not inplace:
         df_copy = self.copy(deep=False)
         df_copy.filter_outliers_by_std(n_std=n_std, scope=scope, drop=drop,
@@ -523,7 +528,7 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
         return df_copy
 
     # Get cols from scope
-    cols = self.get_cols(scope)
+    cols = self._get_cols(scope)
 
     # For if to drop
     all_to_drop = set()
@@ -535,9 +540,9 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
     for col in cols:
 
         # Extract non-nan values
-        values = self.get_values(col, dropna=True,
-                                 reduce_func=reduce_func,
-                                 n_jobs=n_jobs)
+        values = self._get_values(col, dropna=True,
+                                  reduce_func=reduce_func,
+                                  n_jobs=n_jobs)
 
         mean = values.mean()
         std = values.std()
@@ -640,6 +645,9 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
 
     '''
 
+    # Check scope and role
+    self._check_sr()
+
     if not inplace:
         df_copy = self.copy(deep=False)
         df_copy.filter_categorical_by_percent(drop_percent=drop_percent,
@@ -648,7 +656,7 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
         return df_copy
 
     # Get cols from scope
-    cols = self.get_cols(scope)
+    cols = self._get_cols(scope)
 
     # Check for data files
     self._data_file_fail_check(cols)
@@ -662,10 +670,10 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
     for col in cols:
 
         # Make sure categorical
-        self.add_scope(col, 'category')
+        self._add_scope(col, 'category')
 
         # Extract non-nan values
-        values = self.get_values(col, dropna=True)
+        values = self._get_values(col, dropna=True)
 
         # Get to drop subjects
         unique_vals, counts = np.unique(values, return_counts=True)
@@ -929,6 +937,9 @@ def drop_cols_by_unique_val(self, threshold=1, scope='all',
             default = True
     '''
 
+    # Check scope and role
+    self._check_sr()
+
     if not inplace:
         df_copy = self.copy(deep=False)
         df_copy.drop_cols_by_unique_val(threshold=threshold, scope=scope,
@@ -936,11 +947,11 @@ def drop_cols_by_unique_val(self, threshold=1, scope='all',
         return df_copy
 
     # Get cols from scope
-    cols = self.get_cols(scope)
+    cols = self._get_cols(scope)
 
     to_drop = []
     for col in cols:
-        values = self.get_values(col, dropna=dropna)
+        values = self._get_values(col, dropna=dropna)
         if len(values.unique()) <= threshold:
             to_drop.append(col)
 
@@ -1001,6 +1012,9 @@ def drop_cols_by_nan(self, threshold=.5, scope='all', inplace=True):
             default = True
     '''
 
+    # Check scope and role
+    self._check_sr()
+
     if not inplace:
         df_copy = self.copy(deep=False)
         df_copy.drop_cols_by_nan(threshold=threshold,
@@ -1008,7 +1022,7 @@ def drop_cols_by_nan(self, threshold=.5, scope='all', inplace=True):
         return df_copy
 
     # Get cols from scope
-    cols = self.get_cols(scope)
+    cols = self._get_cols(scope)
 
     # Change threshold from percent to abs
     if threshold > 0 and threshold < 1:
@@ -1017,7 +1031,7 @@ def drop_cols_by_nan(self, threshold=.5, scope='all', inplace=True):
 
     to_drop = []
     for col in cols:
-        values = self.get_values(col, dropna=False)
+        values = self._get_values(col, dropna=False)
         nan_percent = values.isnull().sum()
 
         if nan_percent >= threshold:

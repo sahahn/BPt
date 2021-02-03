@@ -33,6 +33,13 @@ class ScopeObj(BPtBase):
         # This is the optional cache_loc for memory
         self.cache_loc = cache_loc
 
+    def __repr__(self):
+        temp_inds = self.inds
+        self.inds = 'len(' + str(len(self.inds)) + ')'
+        rep = super().__repr__()
+        self.inds = temp_inds
+        return rep
+
     def _proc_mapping(self, mapping):
 
         # Save a copy of the passed mapping

@@ -62,6 +62,7 @@ def get_test_ps():
 def get_checked_ps():
 
     dataset = get_fake_dataset()
+
     p = get_test_ps()
     ps = problem_spec_check(p, dataset)
 
@@ -71,6 +72,7 @@ def get_checked_ps():
 def test_problem_spec_check():
 
     dataset = get_fake_dataset()
+    dataset._check_sr()
 
     # Test some cases
     p = get_test_ps()
@@ -161,6 +163,7 @@ def test_preproc_model_pipeline():
 
     ps = get_checked_ps()
     data = get_fake_dataset()
+    data._check_sr()
 
     # Test imputers first
     pipe = Model_Pipeline(model='ridge', imputers='default')

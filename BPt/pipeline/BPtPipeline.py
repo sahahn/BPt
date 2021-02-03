@@ -38,8 +38,6 @@ class BPtPipeline(Pipeline):
     @n_jobs.setter
     def n_jobs(self, n_jobs):
 
-        print('set n jobs', n_jobs)
-
         # If set here, try to propegate to all steps
         for step in self.steps:
             if hasattr(step[1], 'n_jobs'):

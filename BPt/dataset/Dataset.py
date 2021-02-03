@@ -146,10 +146,11 @@ class Dataset(pd.DataFrame):
             self._print('Warning: the columns:', repr(non_str),
                         'were cast to str', level=0)
 
-    def _check_roles(self):
+    def _check_roles(self, check_type=True):
 
         # Make sure cols type str
-        self._check_cols_type()
+        if check_type:
+            self._check_cols_type()
 
         if not hasattr(self, 'roles'):
             self.roles = {}
@@ -167,10 +168,25 @@ class Dataset(pd.DataFrame):
             if col not in self.columns:
                 del self.roles[col]
 
-    def _check_scopes(self):
+    def _check_sr(self):
+        '''Helper to check scopes and roles'''
+
+        # Only check once when both being checked
+        self._check_cols_type()
+
+        # Check scopes and roles
+        self._check_scopes(check_type=False)
+        self._check_roles(check_type=False)
+
+        return self
+
+    def _check_scopes(self, check_type=True):
+
+        print('check scopes')
 
         # Make sure cols type str
-        self._check_cols_type()
+        if check_type:
+            self._check_cols_type()
 
         # If doesnt exist, create scopes
         if not hasattr(self, 'scopes'):
@@ -244,7 +260,7 @@ class Dataset(pd.DataFrame):
         # Get the relevant series
         data = self.get_values(subjects.name, dropna=False,
                                decode_values=subjects.encoded_values)
-            
+
         # Extract the values as list
         values = conv_to_list(subjects.values)
 
@@ -428,9 +444,9 @@ class Dataset(pd.DataFrame):
 
     def set_roles(self, scope, role):
 
-        self._check_roles()
+        self._check_sr()
 
-        cols = self.get_cols(scope)
+        cols = self._get_cols(scope)
         for col in cols:
             self._set_role(col, role)
 
@@ -561,10 +577,9 @@ class Dataset(pd.DataFrame):
 
             Would add '1' and '2' as scopes.
         '''
+        self._check_sr()
 
-        self._check_scopes()
-
-        cols = self.get_cols(scope)
+        cols = self._get_cols(scope)
         for col in cols:
             self._add_scope(col, scope_val)
 
@@ -673,9 +688,9 @@ class Dataset(pd.DataFrame):
             column(s).
         '''
 
-        self._check_scopes()
+        self._check_sr()
 
-        cols = self.get_cols(scope)
+        cols = self._get_cols(scope)
         for col in cols:
             self._remove_scope(col, scope_val)
 
@@ -697,46 +712,12 @@ class Dataset(pd.DataFrame):
 
         return self
 
-    def get_cols(self, scope, limit_to=None):
-        '''This method is the main internal and external
-        facing way of getting the names of columns which match a
-        passed scope from the Dataset. For example this
-        method may be useful for user's when they want to ensure
-        that a scope returns exactly the subset of columns they expect.
-
-        Parameters
-        -----------
-        scope : :ref:`Scope`
-            The BPt style :ref:`Scope` input that will be
-            used to determine which column names from the Dataset
-            to return.
-
-        limit_to : :ref:`Scope` or None, optional
-            Can optionally limit the columns
-            to search over with another scope.
-            If None, then will use 'all'.
-
-            ::
-
-                default = None
-
-        Returns
-        ----------
-        cols : list
-            This method returns the columns specified by
-            the input `scope` argument as a sorted python
-            list
-
-        '''
-
-        # Perform checks first
-        self._check_scopes()
-        self._check_roles()
+    def _get_cols(self, scope, limit_to=None):
 
         if limit_to is None:
             columns = self.columns
         else:
-            columns = self.get_cols(limit_to, limit_to=None)
+            columns = self._get_cols(limit_to, limit_to=None)
 
         saved_scopes = set()
         for col in columns:
@@ -817,19 +798,56 @@ class Dataset(pd.DataFrame):
 
         cols = []
         for scp in scope:
-            cols += self.get_cols(scp)
+            cols += self._get_cols(scp)
 
         return sorted(list(set(cols)))
+
+    def get_cols(self, scope, limit_to=None):
+        '''This method is the main internal and external
+        facing way of getting the names of columns which match a
+        passed scope from the Dataset. For example this
+        method may be useful for user's when they want to ensure
+        that a scope returns exactly the subset of columns they expect.
+
+        Parameters
+        -----------
+        scope : :ref:`Scope`
+            The BPt style :ref:`Scope` input that will be
+            used to determine which column names from the Dataset
+            to return.
+
+        limit_to : :ref:`Scope` or None, optional
+            Can optionally limit the columns
+            to search over with another scope.
+            If None, then will use 'all'.
+
+            ::
+
+                default = None
+
+        Returns
+        ----------
+        cols : list
+            This method returns the columns specified by
+            the input `scope` argument as a sorted python
+            list
+
+        '''
+
+        # Perform checks first
+        self._check_sr()
+
+        return self._get_cols(scope=scope, limit_to=limit_to)
 
     def _get_data_inds(self, ps_scope, scope='all'):
         '''This function always limits first by the data cols,
         then ps_scope refers to the problem_spec scope, and
         lastly scope can be used to specify of subset of those columns'''
 
-        data_cols = self.get_cols('data', limit_to=ps_scope)
+        data_cols = self._get_cols('data', limit_to=ps_scope)
 
         inds = [data_cols.index(k) for k in
-                self.get_cols(scope, limit_to=data_cols)]
+                self._get_cols(scope, limit_to=data_cols)]
 
         return inds
 
@@ -899,8 +917,15 @@ class Dataset(pd.DataFrame):
 
         '''
 
-        # Check scopes
-        self._check_scopes()
+        # Check scopes and roles
+        self._check_sr()
+
+        return self._get_values(col=col, dropna=dropna,
+                                decode_values=decode_values,
+                                reduce_func=reduce_func, n_jobs=n_jobs)
+
+    def _get_values(self, col, dropna=True, decode_values=False,
+                    reduce_func=np.mean, n_jobs=1):
 
         # Extract base series depending on if dropna
         if dropna:
@@ -1014,8 +1039,11 @@ class Dataset(pd.DataFrame):
 
         '''
 
+        # Check scope and role
+        self._check_sr()
+
         # Get cols from scope
-        cols = self.get_cols(scope)
+        cols = self._get_cols(scope)
 
         for col in cols:
 
@@ -1024,30 +1052,30 @@ class Dataset(pd.DataFrame):
 
                 # Make sure not categorical then skip rest of
                 # checks.
-                self.remove_scope(col, 'category')
+                self._remove_scope(col, 'category')
                 continue
 
             # Get non-nan values to check
-            values = self.get_values(col, dropna=True)
+            values = self._get_values(col, dropna=True)
 
             # First check for binary by unique number of columns
             n_unique = len(values.unique())
             if n_unique == 2:
-                self.add_scope(col, 'category')
+                self._add_scope(col, 'category')
 
             # Check object threshold
             if obj_thresh is not None and values.dtype.name == 'object':
                 if n_unique < obj_thresh:
-                    self.add_scope(col, 'category')
+                    self._add_scope(col, 'category')
 
             # Check all threshold
             if all_thresh is not None and n_unique < all_thresh:
-                self.add_scope(col, 'category')
+                self._add_scope(col, 'category')
 
         self._print('Num. categorical variables in dataset:',
-                    len(self.get_cols(scope='category')), level=1)
+                    len(self._get_cols(scope='category')), level=1)
         self._print('Categorical variables in dataset:',
-                    self.get_cols(scope='category'), level=2)
+                    self._get_cols(scope='category'), level=2)
 
         return self
 
@@ -1322,7 +1350,7 @@ class Dataset(pd.DataFrame):
         overlap = sorted(list(overlap))
 
         # Get X cols
-        X_cols = self.get_cols('data', limit_to=ps.scope)
+        X_cols = self._get_cols('data', limit_to=ps.scope)
 
         # Get X as pandas df subset, y as Series
         X = pd.DataFrame(self.loc[overlap, X_cols]).astype(ps.base_dtype)
@@ -1343,11 +1371,14 @@ class Dataset(pd.DataFrame):
 
     def _repr_html_(self):
 
+        # Checks
+        self._check_sr()
+
         template = """<div style="float: left; padding: 10px;"><h3>{0}</h3>{1}</div>"""
 
         html = ''
         for scope in ['data', 'target', 'non input']:
-            cols = self.get_cols(scope)
+            cols = self._get_cols(scope)
             if len(cols) > 0:
                 html += template.format(scope,
                                         self[cols]._base_repr_html_())

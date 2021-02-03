@@ -182,8 +182,6 @@ class Dataset(pd.DataFrame):
 
     def _check_scopes(self, check_type=True):
 
-        print('check scopes')
-
         # Make sure cols type str
         if check_type:
             self._check_cols_type()

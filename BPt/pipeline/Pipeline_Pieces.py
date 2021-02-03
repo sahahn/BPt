@@ -746,7 +746,7 @@ class Transformers(Pieces):
             self._get_objs_and_params(get_transformer_and_params,
                                       params)
 
-        return self._make_col_version(self, objs, obj_params,
+        return self._make_col_version(objs, obj_params,
                                       params, Wrapper=BPtTransformer)
 
 

@@ -253,34 +253,34 @@ class Value_Subset():
     used or not. What this asks is that should the actual ordinal post encoded
     value be specified, or the should the value be set based on the original
     encoded name. For example, let's say sex originally had values 'M' and 'F'
-    and then binarize was used to set it to 0 and 1. If encoded_values is set
+    and then binarize was used to set it to 0 and 1. If decode_values is set
     as the default value of False, then you must pass value = 0 or 1, but
-    if encoded_values = True, then you must pass value = 'M' or 'F'. E.g.,
+    if decode_values = True, then you must pass value = 'M' or 'F'. E.g.,
 
     ::
 
-        subjects = Value_Subset('sex', 'M', encoded_values=True)
+        subjects = Value_Subset('sex', 'M', decode_values=True)
 
     '''
 
     input_type = 'value_subset'
 
-    def __init__(self, name, values, encoded_values=False):
+    def __init__(self, name, values, decode_values=False):
 
         self.name = name
         self.values = values
-        self.encoded_values = encoded_values
+        self.decode_values = decode_values
 
         if isinstance(self.name, list):
             raise ValueError('name cannot be list / array-like!')
 
-        if not isinstance(self.encoded_values, bool):
-            raise ValueError('encoded_values must be a bool')
+        if not isinstance(self.decode_values, bool):
+            raise ValueError('decode_values must be a bool')
 
     def __repr__(self):
         return 'Value_Subset(name=' + str(self.name) + ', value=' + \
-          str(self.value) + ', encoded_values=' + \
-          str(self.encoded_values) + ')'
+          str(self.value) + ', decode_values=' + \
+          str(self.decode_values) + ')'
 
     def __str__(self):
         return self.__repr__()

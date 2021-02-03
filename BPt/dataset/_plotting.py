@@ -23,7 +23,7 @@ def plot(self, scope,
          subjects='all',
          show=True,
          cut=0,
-         encoded_values=True,
+         decode_values=True,
          count=True):
     '''This function creates plots for each of the passed
     columns (as specified by scope) seperately.
@@ -77,7 +77,7 @@ def plot(self, scope,
         if 'category' in self.scopes[col]:
             self._plot_category(col=col,
                                 subjs=subjs,
-                                encoded_values=encoded_values,
+                                decode_values=decode_values,
                                 count=count,
                                 show=show)
 
@@ -89,7 +89,7 @@ def plot(self, scope,
 def _plot_float(self, col, subjs, cut, show):
 
     # Get values to plot
-    values = self._get_plot_values(col, subjs, encoded_values=False)
+    values = self._get_plot_values(col, subjs, decode_values=False)
 
     # Plot values
     sns.kdeplot(values, cut=cut)
@@ -100,11 +100,11 @@ def _plot_float(self, col, subjs, cut, show):
         plt.show()
 
 
-def _get_plot_values(self, col, subjs, encoded_values):
+def _get_plot_values(self, col, subjs, decode_values):
 
     # Get values
     values = self.get_values(col, dropna=True,
-                             decode_values=encoded_values)
+                             decode_values=decode_values)
 
     # Get subset of subjects
     overlap_subjs = subjs.intersection(values.index)
@@ -116,16 +116,16 @@ def _get_plot_values(self, col, subjs, encoded_values):
     return values
 
 
-def _plot_category(self, col, subjs, encoded_values, count, show):
+def _plot_category(self, col, subjs, decode_values, count, show):
 
     # Get plot values
-    values = self._get_plot_values(col, subjs, encoded_values)
+    values = self._get_plot_values(col, subjs, decode_values)
 
     # Don't plot if more than 50 categories
     if len(values.unique()) >= 50:
         self._print('Skipping plot: ' + str(col) +
                     ' as >= categories!', level=0)
-        return self
+        return
 
     # Get counts
     counts = pd.DataFrame(values.value_counts(normalize=not count))
@@ -149,8 +149,6 @@ def _plot_category(self, col, subjs, encoded_values, count, show):
     if show:
         plt.show()
 
-    return self
-
 
 def _print_plot_info(self, col, values, subjs):
 
@@ -163,11 +161,9 @@ def _print_plot_info(self, col, values, subjs):
 
     self._print(level=1)
 
-    return self
-
 
 def plot_bivar(self, col1, col2, subjects='all',
-               encoded_values=True, show=True):
+               decode_values=True, show=True):
 
     self._check_scopes()
 
@@ -180,14 +176,14 @@ def plot_bivar(self, col1, col2, subjects='all',
         # Cat x Cat
         if 'category' in self.scopes[col2]:
             self._plot_cat_cat(col1, col2, subjs=subjs,
-                               encoded_values=encoded_values)
+                               decode_values=decode_values)
 
         # Cat x Float
         else:
             self._plot_cat_float(cat_col=col1,
                                  float_col=col2,
                                  subjs=subjs,
-                                 encoded_values=encoded_values)
+                                 decode_values=decode_values)
 
     # Float
     else:
@@ -197,7 +193,7 @@ def plot_bivar(self, col1, col2, subjects='all',
             self._plot_cat_float(cat_col=col2,
                                  float_col=col1,
                                  subjs=subjs,
-                                 encoded_values=encoded_values)
+                                 decode_values=decode_values)
 
         # Float x Float
         else:
@@ -207,10 +203,10 @@ def plot_bivar(self, col1, col2, subjects='all',
         plt.show()
 
 
-def _plot_cat_cat(self, col1, col2, subjs, encoded_values):
+def _plot_cat_cat(self, col1, col2, subjs, decode_values):
 
-    values1 = self._get_plot_values(col1, subjs, encoded_values)
-    values2 = self._get_plot_values(col2, subjs, encoded_values)
+    values1 = self._get_plot_values(col1, subjs, decode_values)
+    values2 = self._get_plot_values(col2, subjs, decode_values)
 
     # Get overlap
     overlap = values1.index.intersection(values2.index)
@@ -230,13 +226,11 @@ def _plot_cat_cat(self, col1, col2, subjs, encoded_values):
 
     sns.heatmap(ct_counts, annot=True, cmap="YlGnBu")
 
-    return self
-
 
 def _plot_float_float(self, col1, col2, subjs):
 
-    values1 = self._get_plot_values(col1, subjs, encoded_values=False)
-    values2 = self._get_plot_values(col2, subjs, encoded_values=False)
+    values1 = self._get_plot_values(col1, subjs, decode_values=False)
+    values2 = self._get_plot_values(col2, subjs, decode_values=False)
 
     # Get overlap
     overlap = values1.index.intersection(values2.index)
@@ -247,15 +241,13 @@ def _plot_float_float(self, col1, col2, subjs):
 
     sns.jointplot(x=values1, y=values2, kind="reg")
 
-    return self
 
-
-def _plot_cat_float(self, cat_col, float_col, subjs, encoded_values):
+def _plot_cat_float(self, cat_col, float_col, subjs, decode_values):
 
     cat_values = self._get_plot_values(cat_col, subjs,
-                                       encoded_values=encoded_values)
+                                       decode_values=decode_values)
     float_values = self._get_plot_values(float_col, subjs,
-                                         encoded_values=False)
+                                         decode_values=False)
 
     # Get overlap
     overlap = cat_values.index.intersection(float_values.index)
@@ -263,5 +255,3 @@ def _plot_cat_float(self, cat_col, float_col, subjs, encoded_values):
 
     sns.displot(x=float_values.loc[overlap], hue=cat_values.loc[overlap],
                 kind="kde")
-
-    return self

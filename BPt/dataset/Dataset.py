@@ -178,8 +178,6 @@ class Dataset(pd.DataFrame):
         self._check_scopes(check_type=False)
         self._check_roles(check_type=False)
 
-        return self
-
     def _check_scopes(self, check_type=True):
 
         # Make sure cols type str
@@ -213,7 +211,7 @@ class Dataset(pd.DataFrame):
 
         # End if equal
         if dtype_category == scope_category:
-            return self
+            return
 
         # Add scope to columns which have dtype category but not scope category
         needs_scope = dtype_category - scope_category
@@ -225,8 +223,6 @@ class Dataset(pd.DataFrame):
         remove_scope = scope_category - dtype_category
         for col in remove_scope:
             self._remove_scope(col, 'category')
-
-        return self
 
     def _apply_only_level(self, subjects, only_level):
 
@@ -257,7 +253,7 @@ class Dataset(pd.DataFrame):
 
         # Get the relevant series
         data = self.get_values(subjects.name, dropna=False,
-                               decode_values=subjects.encoded_values)
+                               decode_values=subjects.decode_values)
 
         # Extract the values as list
         values = conv_to_list(subjects.values)
@@ -438,8 +434,6 @@ class Dataset(pd.DataFrame):
         self._check_roles()
         self._set_role(col, role)
 
-        return self
-
     def set_roles(self, scope, role):
 
         self._check_sr()
@@ -447,8 +441,6 @@ class Dataset(pd.DataFrame):
         cols = self._get_cols(scope)
         for col in cols:
             self._set_role(col, role)
-
-        return self
 
     def _set_role(self, col, role):
 
@@ -467,8 +459,6 @@ class Dataset(pd.DataFrame):
         # If role is non input, can't have any NaN
         if role == 'non input':
             self.drop_nan_subjects(scope=col)
-
-        return self
 
     def get_scopes(self):
         '''This returns the up to date scopes for the
@@ -533,8 +523,6 @@ class Dataset(pd.DataFrame):
         self._check_scopes()
         self._add_scope(col, scope_val)
 
-        return self
-
     def add_scopes(self, scope, scope_val):
         '''This method is designed as helper for adding a new scope val
         to a number of columns at once, using the existing scope system.
@@ -581,8 +569,6 @@ class Dataset(pd.DataFrame):
         for col in cols:
             self._add_scope(col, scope_val)
 
-        return self
-
     def _add_scope(self, col, scope_val):
 
         # If col is int or float, cast
@@ -595,7 +581,7 @@ class Dataset(pd.DataFrame):
             self[col] = self[col].astype('category')
             self[col].cat.as_ordered(inplace=True)
 
-            return self
+            return
 
         # If a int or float
         if isinstance(scope_val, int) or isinstance(scope_val, float):
@@ -623,8 +609,6 @@ class Dataset(pd.DataFrame):
         else:
             for s in set(list(scope_val)):
                 self._add_scope(col, s)
-
-        return self
 
     def remove_scope(self, col, scope_val):
         '''This method is used for removing scopes
@@ -655,8 +639,6 @@ class Dataset(pd.DataFrame):
 
         self._check_scopes()
         self._remove_scope(col, scope_val)
-
-        return self
 
     def remove_scopes(self, scope, scope_val):
         '''This method is used for removing scopes
@@ -692,8 +674,6 @@ class Dataset(pd.DataFrame):
         for col in cols:
             self._remove_scope(col, scope_val)
 
-        return self
-
     def _remove_scope(self, col, scope_val):
 
         try:
@@ -707,8 +687,6 @@ class Dataset(pd.DataFrame):
 
         except KeyError:
             pass
-
-        return self
 
     def _get_cols(self, scope, limit_to=None):
 
@@ -1074,8 +1052,6 @@ class Dataset(pd.DataFrame):
                     len(self._get_cols(scope='category')), level=1)
         self._print('Categorical variables in dataset:',
                     self._get_cols(scope='category'), level=2)
-
-        return self
 
     def get_file_mapping(self):
         '''This function is used to access the

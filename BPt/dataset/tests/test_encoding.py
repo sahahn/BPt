@@ -13,7 +13,7 @@ def test_add_unique_overlap():
     df.add_scope('2', 'q')
     df.ordinalize(scope='2')
     df.add_unique_overlap(cols=['1', '2'], new_col='combo',
-                          encoded_values=True)
+                          decode_values=True)
     assert df['combo'].nunique() == 3
     assert 'category' in df.scopes['combo']
     assert 'q' in df.scopes['combo']
@@ -38,7 +38,7 @@ def test_multi_index_add_unique_overlap():
     df = get_fake_multi_index_dataset()
     df.add_unique_overlap(cols=['0', '1'],
                           new_col='new',
-                          encoded_values=True)
+                          decode_values=True)
     assert df['new'].nunique() == 6
 
 

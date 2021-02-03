@@ -10,8 +10,6 @@ def _drop_subjects(self, subjects):
         self._print('Dropped', len(subjects), 'Rows', level=1)
         self._print('Dropped Rows:', subjects, level=2)
 
-    return self
-
 
 def drop_nan_subjects(self, scope, inplace=True):
     '''This method is used for
@@ -249,8 +247,6 @@ def _drop_cols(self, to_drop):
         self.drop(to_drop, axis=1, inplace=True)
         self._print('Dropped', len(to_drop), 'Columns', level=1)
         self._print('Dropped Columns:', to_drop, level=2)
-
-    return self
 
 
 def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,

@@ -124,8 +124,6 @@ def _base_binarize(self, col, drop):
     # Ordinalize
     self._ordinalize(col)
 
-    return self
-
 
 def binarize(self, scope, threshold, replace=True, drop=True, inplace=True):
     '''This method contains a utilities for binarizing a variable.
@@ -304,8 +302,6 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
     # Make sure category scope
     self._add_scope(col, 'category')
 
-    return self
-
 
 def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=True):
     '''This method is used to apply k binning to
@@ -430,8 +426,6 @@ def _k_bin(self, col, n_bins, strategy):
     # Make sure col is category type
     self._add_scope(col, 'category')
 
-    return self
-
 
 def ordinalize(self, scope, nan_to_class=False, inplace=True):
     '''This method is used to ordinalize
@@ -535,8 +529,6 @@ def _ordinalize(self, col):
 
     # Make sure col is category type
     self._add_scope(col, 'category')
-
-    return self
 
 
 def nan_to_class(self, scope='category', inplace=True):
@@ -681,7 +673,7 @@ def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=True):
     self._check_scopes()
 
 
-def add_unique_overlap(self, cols, new_col, encoded_values=True):
+def add_unique_overlap(self, cols, new_col, decode_values=True):
     '''This function is designed to add a new column
     with the overlapped unique values from passed two or more columns.
     For example, say you had two binary columns, A and B. This function
@@ -732,7 +724,7 @@ def add_unique_overlap(self, cols, new_col, encoded_values=True):
     new_col : str
         The name of the new column where these values will be stored.
 
-    encoded_values : bool, optional
+    decode_values : bool, optional
         This is an optional parameter, which is set to True
         will when creating the overlapping values will try to
         replace values with the encoded value (if any). For example
@@ -773,7 +765,7 @@ def add_unique_overlap(self, cols, new_col, encoded_values=True):
     for col in cols:
 
         vals = self._get_values(col, dropna=False,
-                                decode_values=encoded_values)
+                                decode_values=decode_values)
         combo.append(col + '=' + vals.astype(str) + ' ')
 
     # Combine

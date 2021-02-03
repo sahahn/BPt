@@ -254,7 +254,6 @@ def set_test_split(self, size=None, subjects=None,
                                if subject not in self.test_subjects]
 
     self._finish_split()
-    return self
 
 
 def set_train_split(self, size=None, subjects=None,
@@ -391,7 +390,6 @@ def set_train_split(self, size=None, subjects=None,
                               if subject not in self.train_subjects]
 
     self._finish_split()
-    return self
 
 
 def save_test_subjects(self, loc):

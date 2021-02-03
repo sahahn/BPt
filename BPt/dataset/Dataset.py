@@ -242,11 +242,9 @@ class Dataset(pd.DataFrame):
                            ' is not loaded')
 
         # Get the relevant series
-        if subjects.encoded_values:
-            data = self.get_encoded_values(subjects.name)
-        else:
-            data = self[subjects.name]
-
+        data = self.get_values(subjects.name, dropna=False,
+                               decode_values=subjects.encoded_values)
+            
         # Extract the values as list
         values = conv_to_list(subjects.values)
 
@@ -582,6 +580,7 @@ class Dataset(pd.DataFrame):
         if scope_val == 'category':
             self.scopes[col].add(scope_val)
             self[col] = self[col].astype('category')
+            self[col].cat.as_ordered(inplace=True)
 
             return self
 
@@ -834,7 +833,8 @@ class Dataset(pd.DataFrame):
 
         return inds
 
-    def get_values(self, col, dropna=True, reduce_func=np.mean, n_jobs=1):
+    def get_values(self, col, dropna=True, decode_values=False,
+                   reduce_func=np.mean, n_jobs=1):
         '''This method is used to obtain the either normally loaded and
         stored values from a passed column, or in the case of a data file
         column, the data file proxy values will be loaded. There is likewise
@@ -853,6 +853,16 @@ class Dataset(pd.DataFrame):
             ::
 
                 default = True
+
+        decode_values : bool, optional
+            Boolean argument, if True, then try to
+            return the original values before any encoding,
+            otherwise default of False will return the current
+            loaded values.
+
+            ::
+
+                default = False
 
         reduce_func : python function, optional
             The passed python function will be applied only if
@@ -910,6 +920,28 @@ class Dataset(pd.DataFrame):
                                         reduce_func=reduce_func,
                                         file_mapping=self.file_mapping,
                                         n_jobs=n_jobs)
+
+        if not decode_values:
+            return values
+
+        # Check for if to try and de-code
+        # Note that we will assume data files can't be de-coded
+        # Check encoders init'ed
+        self._check_encoders()
+
+        # Make copy of values
+        values = values.copy()
+
+        try:
+            encoder = self.encoders[col]
+
+        # If no encoder, return values as is
+        except KeyError:
+            return values
+
+        # If dict style encoder - any other cases?
+        if isinstance(encoder, dict):
+            return values.replace(encoder)
 
         return values
 
@@ -1018,44 +1050,6 @@ class Dataset(pd.DataFrame):
                     self.get_cols(scope='category'), level=2)
 
         return self
-
-    def get_encoded_values(self, col):
-        '''Returns a copy of the column with values replaced, if any
-        valid encoders. This function is typically used internally, but
-        may be useful if you are doing custom plotting.
-
-        Parameters
-        -----------
-        col : str
-            A loaded column name in which to return the
-            encoded values as a Series.
-
-        Returns
-        -----------
-        values : Series
-            Returns a Series with values as the encoded values.
-
-        '''
-
-        # Check encoders init'ed
-        self._check_encoders()
-
-        # Make copy of values
-        values = self[col].copy()
-
-        try:
-            encoder = self.encoders[col]
-
-        # If no encoder, return values as is
-        except KeyError:
-            return values
-
-        # If dict style encoder
-        if isinstance(encoder, dict):
-            return values.replace(encoder)
-
-        # Any other cases?
-        return values
 
     def get_file_mapping(self):
         '''This function is used to access the
@@ -1371,8 +1365,8 @@ class Dataset(pd.DataFrame):
         except RuntimeError:
             return html
 
-        train_color = 'RGBA(176, 224, 230, .3)'
-        test_color = 'RGBA(249, 121, 93, .3)'
+        train_color = 'RGBA(176, 224, 230, .25)'
+        test_color = 'RGBA(249, 121, 93, .25)'
 
         train_subjects = set(['>' + str(s) for s in train_subjects])
         test_subjects = set(['>' + str(s) for s in test_subjects])
@@ -1397,11 +1391,13 @@ class Dataset(pd.DataFrame):
 
         n_cols = str(len(self.columns))
 
-        train_info = '<p style="margin-top: .5em"><span style="background: ' + train_color + '">'
+        train_info = '<p style="margin-top: .35em"><span style="background: '
+        train_info += train_color + '">'
         train_info += str(len(train_subjects)) + " rows × "
         train_info += n_cols + " columns - Train Set </span></p>"
 
-        test_info = '<p style="margin-top: .5em"><span style="background: ' + test_color + '">'
+        test_info = '<p style="margin-top: .35em"><span style="background: '
+        test_info += test_color + '">'
         test_info += str(len(test_subjects)) + " rows × "
         test_info += n_cols + " columns - Test Set </span></p>"
 

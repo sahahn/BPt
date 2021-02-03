@@ -738,11 +738,8 @@ def add_unique_overlap(self, cols, new_col, encoded_values=True):
     combo = []
     for col in cols:
 
-        if encoded_values:
-            vals = self.get_encoded_values(col)
-        else:
-            vals = self[col]
-
+        vals = self.get_values(col, dropna=False,
+                               decode_values=encoded_values)
         combo.append(col + '=' + vals.astype(str) + ' ')
 
     # Combine

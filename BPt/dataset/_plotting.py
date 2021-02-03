@@ -102,11 +102,9 @@ def _plot_float(self, col, subjs, cut, show):
 
 def _get_plot_values(self, col, subjs, encoded_values):
 
-    # Check for encoded values
-    if encoded_values:
-        values = self.get_encoded_values(col)
-    else:
-        values = self.get_values(col)
+    # Get values
+    values = self.get_values(col, dropna=True,
+                             decode_values=encoded_values)
 
     # Get subset of subjects
     overlap_subjs = subjs.intersection(values.index)

@@ -7,7 +7,7 @@ from ..helpers.Data_File import Data_File, load_data_file_proxy
 from copy import copy, deepcopy
 from ..helpers.ML_Helpers import conv_to_list
 from .helpers import (base_load_subjects, proc_file_input)
-from ..main.Input_Tools import Value_Subset
+from ..main.Input_Tools import Intersection, Value_Subset
 
 # @TODO Loook into pandas finalize
 # https://github.com/pandas-dev/pandas/blob/ce3e57b44932e7131968b9bcca97c1391cb6b532/pandas/core/generic.py#L5422
@@ -367,6 +367,20 @@ class Dataset(pd.DataFrame):
         # input validation
         if return_as not in ['set', 'index', 'flat index']:
             raise TypeError('Invalid parameter passed to return as!')
+
+        # Check for passed intersection case
+        if isinstance(subjects, Intersection):
+
+            subjects_list =\
+                [self.get_subjects(s, return_as='set', only_level=only_level)
+                 for s in subjects]
+
+            loaded_subjects = set.intersection(*subjects_list)
+
+            # Return as requested
+            return self._return_subjects_as(loaded_subjects,
+                                            return_as=return_as,
+                                            only_level=only_level)
 
         if isinstance(subjects, tuple):
 
@@ -1307,48 +1321,233 @@ class Dataset(pd.DataFrame):
 
         return dataset
 
-    def get_Xy(self, problem_spec, subjects='all', as_np=True):
+    def get_Xy(self, problem_spec='default', **problem_spec_params):
+        '''This function is used to get a sklearn-style
+        grouping of input data (X) and target data (y)
+        from the Dataset as according to a passed problem_spec.
+
+        Note: X and y are returned as pandas DataFrames not Datasets,
+        so none of the Dataset meta data is accessible through the
+        returned X, y here.
+
+        To use this function to get the training set for example,
+        either you can either pass the subjects parameter in problem
+        spec with :class:`Intersection` or see related function
+        Dataset :func:`Dataset.get_train_Xy` and :func:`Dataset.get_test_Xy`.
+
+        Parameters
+        -----------
+        problem_spec : :class:`Problem_Spec` or 'default', optional
+            This argument accepts an instance of the
+            params class :class:`Problem_Spec`.
+            This object is essentially a wrapper around commonly used
+            parameters needs to define the context
+            the model pipeline should be evaluated in.
+            It includes parameters like problem_type, scorer, n_jobs,
+            random_state, etc...
+            See :class:`Problem_Spec` for more information
+            and for how to create an instance of this object.
+
+            If left as 'default', then will initialize a
+            Problem_Spec with default params.
+
+            ::
+
+                default = 'default'
+
+        problem_spec_params : :class:`Problem_Spec` params, optional
+            You may also pass any valid parameter value pairs here,
+            e.g.
+
+            ::
+
+                get_Xy(problem_spec=problem_spec, problem_type 'binary')
+
+            Any parameters passed here will override the original
+            value in problem spec. This can be useful when using all default
+            values for problem spec except for one, e.g., you just want
+            to change random_state.
+
+            ::
+
+                get_Xy(random_state=5)
+
+        Returns
+        --------
+        X : pandas DataFrame
+            DataFrame with the input data and columns as
+            specified by the passed problem_spec.
+
+        y : pandas Series
+            Series with the the target values as requested
+            by the passed problem_spec.
+        '''
         from ..main.funcs import problem_spec_check
 
         # Get proc'ed problem spec
-        ps = problem_spec_check(problem_spec, dataset=self)
+        ps = problem_spec_check(problem_spec, dataset=self,
+                                **problem_spec_params)
 
-        # Get subjects as intersection between problem spec subjects
-        # and passed subjects.
-        ps_subjects =\
-            self.get_subjects(ps.subjects, return_as='set')
-        subjects = self.get_subjects(subjects, return_as='set')
-        overlap = ps_subjects.intersection(subjects)
-
-        # Sort subjects for reproducibility
-        overlap = sorted(list(overlap))
+        # Get sorted subjects from problem spec
+        subjects = sorted(self.get_subjects(ps.subjects, return_as='set'))
 
         # Get X cols
         X_cols = self._get_cols('data', limit_to=ps.scope)
 
         # Get X as pandas df subset, y as Series
-        X = pd.DataFrame(self.loc[overlap, X_cols]).astype(ps.base_dtype)
-        y = self.loc[overlap, ps.target].astype('float64')
-
-        # Get as np arrays
-        if as_np:
-            X = np.array(X)
-            y = np.array(y)
+        X = pd.DataFrame(self.loc[subjects, X_cols]).astype(ps.base_dtype)
+        y = self.loc[subjects, ps.target].astype('float64')
 
         return X, y
 
-    def get_train_Xy(self, problem_spec):
-        return self.get_Xy(problem_spec, subjects='train')
+    def get_train_Xy(self, problem_spec='default',
+                     subjects='train', **problem_spec_params):
+        '''This function is used to get a sklearn-style
+        grouping of input data (X) and target data (y)
+        from the Dataset for just the defined train set.
+        This function is a helper utility around :func:`Dataset.get_Xy`.
 
-    def get_test_Xy(self, problem_spec):
-        return self.get_Xy(problem_spec, subjects='test')
+        Parameters
+        -----------
+        problem_spec : :class:`Problem_Spec` or 'default', optional
+            This argument accepts an instance of the
+            params class :class:`Problem_Spec`.
+            This object is essentially a wrapper around commonly used
+            parameters needs to define the context
+            the model pipeline should be evaluated in.
+            It includes parameters like problem_type, scorer, n_jobs,
+            random_state, etc...
+
+            See :class:`Problem_Spec` for more information
+            and for how to create an instance of this object.
+
+            If left as 'default', then will initialize a
+            Problem_Spec with default params.
+
+            ::
+
+                default = 'default'
+
+        subjects : :ref:`Subjects`, optional
+            This function creates a wrapper around the problem spec
+            subjects as:
+
+            ::
+
+                subjects=Intersection([subjects, problem_spec.subjects])
+
+            Therefore this parameter should almost always be left
+            as 'train', otherwise it would deviate from the
+            meaning implied by the function name.
+
+            ::
+
+                default = 'train'
+
+        problem_spec_params : :class:`Problem_Spec` params, optional
+            You may also pass any valid parameter value pairs here,
+            e.g.
+
+            ::
+
+                get_train_Xy(problem_type='binary')
+
+            Note: you may not specify `subjects` within the
+            the problem spec through this parameter!
+
+        Returns
+        --------
+        X : pandas DataFrame
+            DataFrame with the train input data and columns as
+            specified by the passed problem_spec.
+
+        y : pandas Series
+            Series with the the train target values as requested
+            by the passed problem_spec.
+        '''
+
+        return self.get_Xy(problem_spec,
+                           subjects=Intersection([subjects,
+                                                  problem_spec.subjects]),
+                           **problem_spec_params)
+
+    def get_test_Xy(self, problem_spec='default', subjects='test',
+                    **problem_spec_params):
+        '''This function is used to get a sklearn-style
+        grouping of input data (X) and target data (y)
+        from the Dataset for just the defined test set.
+        This function is a helper utility around :func:`Dataset.get_Xy`.
+
+        Parameters
+        -----------
+        problem_spec : :class:`Problem_Spec` or 'default', optional
+            This argument accepts an instance of the
+            params class :class:`Problem_Spec`.
+            This object is essentially a wrapper around commonly used
+            parameters needs to define the context
+            the model pipeline should be evaluated in.
+            It includes parameters like problem_type, scorer, n_jobs,
+            random_state, etc...
+
+            See :class:`Problem_Spec` for more information
+            and for how to create an instance of this object.
+
+            If left as 'default', then will initialize a
+            Problem_Spec with default params.
+
+            ::
+
+                default = 'default'
+
+        subjects : :ref:`Subjects`, optional
+            This function creates a wrapper around
+            the problem spec subjects as:
+
+            ::
+
+                subjects=Intersection([subjects, problem_spec.subjects])
+
+            Therefore this parameter should almost always be left
+            as 'test', otherwise it would deviate from the
+            meaning implied by the function name.
+
+            ::
+
+                default = 'test'
+
+        problem_spec_params : :class:`Problem_Spec` params, optional
+            You may also pass any valid parameter value pairs here,
+            e.g.
+
+            ::
+
+                get_test_Xy(problem_type='binary')
+
+            Note: you may not specify `subjects` within the
+            the problem spec through this parameter!
+
+        Returns
+        --------
+        X : pandas DataFrame
+            DataFrame with the test input data and columns as
+            specified by the passed problem_spec.
+
+        y : pandas Series
+            Series with the the test target values as requested
+            by the passed problem_spec.
+        '''
+        return self.get_Xy(problem_spec,
+                           subjects=Intersection([subjects,
+                                                  problem_spec.subjects]),
+                           **problem_spec_params)
 
     def _repr_html_(self):
 
         # Checks
         self._check_sr()
 
-        template = """<div style="float: left; padding: 10px;"><h3>{0}</h3>{1}</div>"""
+        template = """<div style="float: left; padding: 10px;">
+        <h3>{0}</h3>{1}</div>"""
 
         html = ''
         for scope in ['data', 'target', 'non input']:

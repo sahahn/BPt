@@ -116,3 +116,14 @@ def process_scorers(in_scorers, problem_type):
 
     scorer = scorers[0]
     return scorer_strs, scorers, scorer
+
+
+def process_scorer(scorer_str, problem_type):
+
+    # If passed as str
+    if isinstance(scorer_str, str):
+        scorer_str = proc_type_dep_str(scorer_str, AVALIABLE, problem_type)
+        return get_scorer_from_str(scorer_str)
+
+    # Otherwise assume function and wrap
+    return wrap_non_picklable_objects(scorer_str)

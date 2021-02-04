@@ -15,6 +15,7 @@ import multiprocessing as mp
 from sklearn.base import clone
 from copy import deepcopy
 import os
+import pandas as pd
 
 from .helpers import to_memmap, from_memmap, get_grid_params
 
@@ -140,6 +141,15 @@ class BPtSearchCV(BaseEstimator):
     def inverse_transform(self, Xt):
         return self.best_estimator_.inverse_transform(Xt)
 
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def score(self, X, y=None, sample_weight=None):
+        return self.best_estimator_.score(X=X, y=y,
+                                          sample_weight=sample_weight)
+
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def transform_df(self, X_df, fs=True):
+        return self.best_estimator_.transform_df(X_df, fs)
+
     def _set_cv(self, train_data_index):
 
         # Set cv based on train_data_index
@@ -151,9 +161,18 @@ class BPtSearchCV(BaseEstimator):
     def fit(self, X, y=None, mapping=None,
             train_data_index=None, **fit_params):
 
+        # Conv from dataframe if necc.
+        if isinstance(X, pd.DataFrame):
+            train_data_index = X.index
+            X = np.array(X)
+        if isinstance(y, pd.DataFrame):
+            y = np.array(y)
+
+        # Make sure train data index is passed
         if train_data_index is None:
-            raise RuntimeWarning('SearchCV Object must be passed a ' +
-                                 'train_data_index!')
+            raise RuntimeWarning('SearchCV Object must be passed a '
+                                 'train_data_index! Or passed X as '
+                                 'a DataFrame.')
 
         if self.ps['verbose'] > 1:
             print('Fit Search CV, len(train_data_index) == ',

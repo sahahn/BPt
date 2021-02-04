@@ -297,5 +297,30 @@ def is_value_subset(obj):
         return False
 
 
+class Intersection(list):
+    '''The Intersection class is a special
+    wrapper class used to request the intersection
+    of two valid arguments for :ref:`Subjects`.
+
+    For example:
+
+    ::
+
+        subjects = Intersection(['train',
+                                [1, 2, 3]])
+
+    Would specify subjects as the intersection of the loaded
+    train subjects and subjects 1, 2 and 3.
+    '''
+
+    input_type = 'intersection'
+
+    def __repr__(self):
+        return 'Intersection(' + super().__repr__() + ')'
+
+    def __str__(self):
+        return self.__repr__()
+
+
 def is_special(obj):
     return hasattr(obj, 'input_type')

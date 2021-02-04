@@ -74,3 +74,9 @@ Pipe
 Value_Subset
 *************
 .. autoclass:: Value_Subset
+
+
+Intersection
+*************
+.. autoclass:: Intersection
+

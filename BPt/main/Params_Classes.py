@@ -6,7 +6,7 @@ from ..helpers.ML_Helpers import (conv_to_list, proc_input,
 from ..helpers.VARS import ORDERED_NAMES
 from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
                                 is_special, is_value_subset)
-from ..pipeline.Scorers import process_scorers
+from ..pipeline.Scorers import process_scorer
 from .CV import get_bpt_cv
 
 
@@ -1285,8 +1285,8 @@ class Param_Search(Params):
         if self.n_jobs == 'default':
             params['n_jobs'] = ps.n_jobs
 
-        params['scorer'] = process_scorers(self.scorer,
-                                           ps.problem_type)[2]
+        params['scorer'] = process_scorer(self.scorer,
+                                          ps.problem_type)
 
         if self.search_only_params is None:
             params['search_only_params'] = {}
@@ -1535,10 +1535,11 @@ class Feat_Importance(Params):
 
         scorer : str or 'default', optional
 
-            If a permutation based feature importance is being used, then a scorer is
-            required.
+            If a permutation based feature importance is being used,
+            then a scorer is required.
 
-            For a full list of supported scorers please view the scikit-learn docs at:
+            For a full list of supported scorers please view the
+            scikit-learn docs at:
             https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
 
             If left as 'default', assign a reasonable scorer based on the
@@ -1553,8 +1554,9 @@ class Feat_Importance(Params):
                 default = 'default'
 
         shap_params : :class:`Shap_Params` or 'default', optional
-            If a shap based feature importance is used, it is neccicary to define
-            a number of relevant parameters for how the importances should be calculated.
+            If a shap based feature importance is used, it is necc. to define
+            a number of relevant parameters for how the importances
+            should be calculated.
             See :class:`Shap_Params` for what these parameters are.
 
             If 'default' is passed, then shap_params will be set to either the default values of
@@ -2128,7 +2130,8 @@ class Model_Pipeline(Params):
 class Problem_Spec(Params):
 
     def __init__(self, problem_type='default',
-                 target=0, scorer='default', weight_scorer=False,
+                 target=0, scorer='default',
+                 weight_scorer=False,
                  scope='all', subjects='all',
                  n_jobs=1, random_state=1, base_dtype='float32'):
         '''Problem Spec is defined as an object of params encapsulating the set of
@@ -2181,9 +2184,7 @@ class Problem_Spec(Params):
             all of the requested scorers will be calculated and returned.
 
             Note: If using a Param_Search, the Param_Search object has a
-            scorer parameter as well. This scorer describes
-            the scorer optimized
-            in a parameter search.
+            seperate scorer parameter.
 
             For a full list of supported scorers please view the
             scikit-learn docs at:
@@ -2217,6 +2218,9 @@ class Problem_Spec(Params):
             set as boolean True or False,
             specifying if the corresponding scorer by index
             should be weighted or not.
+
+            Warning: This parameter is ignored when using sklearn
+            compatible functions.
 
             ::
 

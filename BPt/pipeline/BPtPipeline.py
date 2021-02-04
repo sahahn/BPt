@@ -4,6 +4,7 @@ from ..helpers.VARS import ORDERED_NAMES
 from ..helpers.ML_Helpers import hash
 from joblib import load, dump
 import pandas as pd
+from sklearn.utils.metaestimators import if_delegate_has_method
 import os
 
 
@@ -243,3 +244,42 @@ class BPtPipeline(Pipeline):
                 feat_imp_dict[feat_names[i]] = fis[:, i]
 
         return feat_imp_dict
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def predict(self, X, **predict_params):
+        if isinstance(X, pd.DataFrame):
+            X = np.array(X)
+        return super().predict(X, **predict_params)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def predict_proba(self, X):
+        if isinstance(X, pd.DataFrame):
+            X = np.array(X)
+        return super().predict_proba(X)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def decision_function(self, X):
+        if isinstance(X, pd.DataFrame):
+            X = np.array(X)
+        return super().decision_function(X)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def score_samples(self, X):
+        if isinstance(X, pd.DataFrame):
+            X = np.array(X)
+        return super().score_samples(X)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def predict_log_proba(self, X):
+        if isinstance(X, pd.DataFrame):
+            X = np.array(X)
+        return super().predict_log_proba(X)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def score(self, X, y=None, sample_weight=None):
+        if isinstance(X, pd.DataFrame):
+            X = np.array(X)
+        if isinstance(y, pd.DataFrame):
+            y = np.array(y)
+
+        return super().score(X=X, y=y, sample_weight=sample_weight)

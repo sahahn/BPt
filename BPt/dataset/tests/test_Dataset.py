@@ -3,11 +3,11 @@ import pandas as pd
 import tempfile
 import os
 from nose.tools import assert_raises
-from ...main.Input_Tools import Value_Subset
+from ...main.Input_Tools import Value_Subset, Intersection
 from ...main.Params_Classes import Problem_Spec
 from ..helpers import base_load_subjects, save_subjects
 from .datasets import (get_fake_dataset, get_fake_dataset2,
-                       get_fake_multi_index_dataset,
+                       get_fake_multi_index_dataset, get_fake_dataset4,
                        get_fake_dataset5, get_full_dataset)
 
 
@@ -201,6 +201,25 @@ def test_get_subjects_None():
 
     subjects = df.get_subjects(None, return_as='flat index')
     assert len(subjects) == 0
+
+
+def test_get_subjects_intersection():
+
+    df = get_fake_dataset4()
+    assert len(df.get_subjects('all')) == 6
+    assert len(df.get_subjects([1, 2])) == 2
+
+    subjs = df.get_subjects(Intersection([[1, 2]]))
+    assert len(subjs) == 2
+
+    subjs = df.get_subjects(Intersection([[1, 2], [2, 3]]))
+    assert len(subjs) == 1
+
+    subjs = df.get_subjects(Intersection([[1, 2], [2, 3], [4, 5]]))
+    assert len(subjs) == 0
+
+    subjs = df.get_subjects(Intersection([[1, 2], [2, 3], [2, 3]]))
+    assert len(subjs) == 1
 
 
 def test_get_subjects_nan():
@@ -426,6 +445,7 @@ def test_get_Xy_base():
     ps = Problem_Spec()
 
     X, y = df.get_Xy(ps)
+    X, y = np.array(X), np.array(y)
     assert X.shape == (5, 3)
     assert np.array_equal(X[:, 0], np.array([1, 2, 3, 4, 5]).astype('float32'))
     assert np.array_equal(X[:, 2],
@@ -433,6 +453,7 @@ def test_get_Xy_base():
     assert np.array_equal(y, np.array([.1, .2, .3, .4, .5]).astype('float64'))
 
     X, y = df.get_Xy(ps, subjects='train')
+    X, y = np.array(X), np.array(y)
     assert X.shape == (3, 3)
     assert np.array_equal(X[:, 0], np.array([1, 2, 3]).astype('float32'))
     assert np.array_equal(X[:, 2],
@@ -440,6 +461,7 @@ def test_get_Xy_base():
     assert np.array_equal(y, np.array([.1, .2, .3]).astype('float64'))
 
     X, y = df.get_Xy(ps, subjects='test')
+    X, y = np.array(X), np.array(y)
     assert X.shape == (2, 3)
     assert np.array_equal(X[:, 0], np.array([4, 5]).astype('float32'))
     assert np.array_equal(X[:, 2],
@@ -447,6 +469,10 @@ def test_get_Xy_base():
     assert np.array_equal(y, np.array([.4, .5]).astype('float64'))
 
     X, y = df.get_train_Xy(ps)
+    assert isinstance(X, pd.DataFrame)
+    assert isinstance(y, pd.Series)
+
+    X, y = np.array(X), np.array(y)
     assert X.shape == (3, 3)
     assert np.array_equal(X[:, 0], np.array([1, 2, 3]).astype('float32'))
     assert np.array_equal(X[:, 2],
@@ -454,6 +480,7 @@ def test_get_Xy_base():
     assert np.array_equal(y, np.array([.1, .2, .3]).astype('float64'))
 
     X, y = df.get_test_Xy(ps)
+    X, y = np.array(X), np.array(y)
     assert X.shape == (2, 3)
     assert np.array_equal(X[:, 0], np.array([4, 5]).astype('float32'))
     assert np.array_equal(X[:, 2],
@@ -467,6 +494,7 @@ def test_get_Xy_alt():
     ps = Problem_Spec(subjects=['s2', 's3', 's4'], scope=['1', '3'])
 
     X, y = df.get_Xy(ps)
+    X, y = np.array(X), np.array(y)
 
     assert X.shape == (3, 2)
     assert np.array_equal(X[:, 0], np.array([2, 3, 4]).astype('float32'))
@@ -474,7 +502,9 @@ def test_get_Xy_alt():
                           np.array([12, 13, 14]).astype('float32'))
     assert np.array_equal(y, np.array([.2, .3, .4]).astype('float64'))
 
-    X, y = df.get_Xy(ps, subjects='train')
+    X, y = df.get_Xy(ps, subjects=Intersection(['train', ['s2', 's3', 's4']]),
+                     ignore_me='ignore ignore')
+    X, y = np.array(X), np.array(y)
     assert X.shape == (2, 2)
     assert np.array_equal(X[:, 0], np.array([2, 3]).astype('float32'))
     assert np.array_equal(X[:, 1],

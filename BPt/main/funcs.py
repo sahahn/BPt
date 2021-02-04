@@ -1,6 +1,7 @@
 from .Params_Classes import Model, Model_Pipeline, Problem_Spec, Ensemble, CV
 from copy import deepcopy
 from ..pipeline.BPtPipelineConstructor import get_pipe
+from ..pipeline.Scorers import process_scorers
 
 
 def model_pipeline_check(model_pipeline):
@@ -28,7 +29,7 @@ def model_pipeline_check(model_pipeline):
     return pipe
 
 
-def problem_spec_check(problem_spec, dataset):
+def problem_spec_check(problem_spec, dataset, **extra_params):
 
     # Check if problem_spec is left as default
     if problem_spec == 'default':
@@ -36,8 +37,17 @@ def problem_spec_check(problem_spec, dataset):
 
     # Set ps to copy of problem spec and init
     ps = deepcopy(problem_spec)
+
+    # Apply any passed valid extra params
+    possible_params = Problem_Spec._get_param_names()
+    valid_params = {key: extra_params[key] for key in extra_params
+                    if key in possible_params}
+    ps.set_params(**valid_params)
+
+    # Proc params
     ps._proc_checks()
 
+    # Get target col from dataset
     targets = dataset.get_cols('target')
 
     # Update target, if passed as int
@@ -78,12 +88,54 @@ def problem_spec_check(problem_spec, dataset):
                                            'balanced_accuracy']}
         ps.scorer = default_scorers[pt]
 
+    # Convert to scorer obj
+    ps.scorer = process_scorers(ps.scorer, problem_type=ps.problem_type)[1]
+
     return ps
 
 
-def get_estimator(model_pipeline, dataset, problem_spec):
-    '''Get from input parameter style model_pipeline, a sklearn compatible
-    estimator. This also requires a Dataset, and Problem_Spec.
+def get_estimator(model_pipeline, dataset, problem_spec='default'):
+    '''Get a sklearn compatible estimator from a :class:`Model_Pipeline`,
+    :class:`Dataset` and :class:`Problem_Spec`.
+
+    This function can be used together with Dataset method
+    :func:`get_Xy <Dataset.get_Xy>` and it's variants.
+
+    Parameters
+    -----------
+    model_pipeline : :class:`Model_Pipeline`
+        A BPt input class Model_Pipeline to be intialized according
+        to the passed Dataset and Problem_Spec.
+
+    dataset : :class:`Dataset`
+        The Dataset in which the pipeline should be initialized
+        according to. For example, pipeline's can include Scopes,
+        these need a reference Dataset.
+
+    problem_spec : :class:`Problem_Spec` or 'default', optional
+        `problem_spec` accepts an instance of the
+        params class :class:`Problem_Spec`.
+        This object is essentially a wrapper around commonly used
+        parameters needs to define the context
+        the model pipeline should be evaluated in.
+        It includes parameters like problem_type, scorer, n_jobs,
+        random_state, etc...
+        See :class:`Problem_Spec` for more information
+        and for how to create an instance of this object.
+
+        If left as 'default', then will initialize a
+        Problem_Spec with default params.
+
+        ::
+
+            default = 'default'
+
+    Returns
+    --------
+    estimator : sklearn Estimator
+        The returned object is a sklearn-compatible estimator.
+        It will be either of type BPtPipeline or a BPtPipeline
+        wrapped in a search CV object.
     '''
 
     # @TODO add verbose option?
@@ -250,3 +302,64 @@ def _preproc_param_search(object, ps):
     setattr(object, 'param_search', as_dict)
 
     return True
+
+
+def cross_val_score(model_pipeline, dataset, problem_spec,
+                    n_jobs=1, verbose=0):
+    '''This function is a BPt compatible wrapper around the scikit-learn
+    function cross_val_score,
+    https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html
+
+    Note: the sklearn version can be used directly too, see functions
+    :func:`get_estimator` and :func:`Dataset.get_Xy`.
+
+    Parameters
+    ----------
+    model_pipeline : :class:`Model_Pipeline`
+        A BPt input class Model_Pipeline to be intialized according
+        to the passed Dataset and Problem_Spec, and then evaluated.
+
+    dataset : :class:`Dataset`
+        The Dataset in which the pipeline should be initialized
+        according to, and data drawn from. See parameter
+        `subjects` to use only a subset of the columns or subjects
+        in this call to cross_val_score.
+
+    problem_spec : :class:`Problem_Spec` or 'default', optional
+        `problem_spec` accepts an instance of the
+        params class :class:`Problem_Spec`.
+        This object is essentially a wrapper around commonly used
+        parameters needs to define the context
+        the model pipeline should be evaluated in.
+        It includes parameters like problem_type, scorer, n_jobs,
+        random_state, etc...
+        See :class:`Problem_Spec` for more information
+        and for how to create an instance of this object.
+
+        If left as 'default', then will initialize a
+        Problem_Spec with default params.
+
+        Warning: the parameter weight_scorer in problem_spec
+        is ignored when used with cross_val_score.
+
+        ::
+
+            default = 'default'
+    '''
+
+    # Get estimator
+    estimator = get_estimator(model_pipeline=model_pipeline, dataset=dataset,
+                              problem_spec=problem_spec)
+
+    # Get X and y
+    X, y = dataset.get_Xy(problem_spec=problem_spec, subjects=subjects)
+
+    # Get proc'ed problem spec
+    ps = problem_spec_check(problem_spec=problem_spec, dataset=dataset)
+
+    # Convert cv to sklearn compatible
+    cv = ps.cv.get_cv(X.index, random_state=ps.random_state, return_index=True)
+
+    from sklearn.model_selection import cross_val_score
+    return cross_val_score(estimator=estimator, X=X, y=y, scoring=ps.scorer,
+                           cv=cv, n_jobs=n_jobs, verbose=verbose)

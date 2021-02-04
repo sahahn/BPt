@@ -38,8 +38,6 @@ def model_pipeline_check(model_pipeline, **extra_params):
 
 def problem_spec_check(problem_spec, dataset, **extra_params):
 
-    print(extra_params)
-
     # If attr checked, then means the passed
     # problem_spec has already been checked and is already
     # a proc'ed and ready copy.
@@ -104,7 +102,7 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
         ps.scorer = default_scorers[pt]
 
     # Convert to scorer obj
-    ps.scorer = process_scorers(ps.scorer, problem_type=ps.problem_type)[1]
+    ps.scorer = process_scorers(ps.scorer, problem_type=ps.problem_type)
 
     # Set checked flag in ps
     setattr(ps, '_checked', True)
@@ -291,7 +289,15 @@ def _preproc_model_pipeline(pipe, ps, dataset):
     # Run nested check
     nested_model_check(pipe)
 
-    def nested_cv_check(obj):
+    # Run nested check for any CV input param objects
+    nested_cv_check(pipe, dataset)
+
+    return pipe
+
+
+def nested_cv_check(obj, dataset):
+
+    def _nested_cv_check(obj):
 
         # If has cv object, try applying dataset
         # can be either in object or in dict
@@ -303,20 +309,18 @@ def _preproc_model_pipeline(pipe, ps, dataset):
                 if k == 'cv' and isinstance(obj[k], CV):
                     obj[k] = obj[k].apply_dataset(dataset)
                 else:
-                    nested_cv_check(obj[k])
+                    _nested_cv_check(obj[k])
 
         elif isinstance(obj, list):
-            [nested_cv_check(o) for o in obj]
+            [_nested_cv_check(o) for o in obj]
         elif isinstance(obj, tuple):
-            (nested_cv_check(o) for o in obj)
+            (_nested_cv_check(o) for o in obj)
         elif hasattr(obj, 'get_params'):
             for param in obj.get_params(deep=False):
-                nested_cv_check(getattr(obj, param))
+                _nested_cv_check(getattr(obj, param))
 
     # Run nested check for any CV input param objects
-    nested_cv_check(pipe)
-
-    return pipe
+    _nested_cv_check(obj)
 
 
 def _preproc_param_search(object, ps):
@@ -337,8 +341,8 @@ def _preproc_param_search(object, ps):
     return True
 
 
-def _sk_prep(model_pipeline, dataset,
-             problem_spec='default', **extra_params):
+def _sk_prep(model_pipeline, dataset, problem_spec='default',
+             cv=5, **extra_params):
     '''Internal helper function return the different pieces
     needed by sklearn functions'''
 
@@ -353,15 +357,28 @@ def _sk_prep(model_pipeline, dataset,
     # Get X and y
     X, y = dataset.get_Xy(problem_spec=ps, **extra_params)
 
-    # Convert cv to sklearn compatible
-    cv = ps.cv.get_cv(X.index, random_state=ps.random_state, return_index=True)
+    # If Passed CV class, then need to convert to sklearn compat
+    # otherwise, assume that it is sklearn compat and pass as is.
+    if isinstance(cv, CV):
 
-    return estimator, X, y, ps, cv
+        # Convert from CV class to BPtCV by applying dataset
+        bpt_cv = cv.apply_dataset(dataset)
+
+        # Convert from BPtCV to sklearn compat, i.e., just raw index
+        sk_cv = bpt_cv.get_cv(X.index, random_state=ps.random_state,
+                              return_index=True)
+
+    # @TODO maybe convert to BPtCV then back?
+    # to add random state and what not ?
+    else:
+        sk_cv = cv
+
+    return estimator, X, y, ps, sk_cv
 
 
 def cross_val_score(model_pipeline, dataset,
                     problem_spec='default',
-                    sk_n_jobs=1, verbose=0,
+                    cv=5, sk_n_jobs=1, verbose=0,
                     fit_params=None,
                     error_score=np.nan,
                     **extra_params):
@@ -456,23 +473,23 @@ def cross_val_score(model_pipeline, dataset,
     '''
 
     # Get sk compat pieces
-    estimator, X, y, ps, cv =\
+    estimator, X, y, ps, sk_cv =\
         _sk_prep(model_pipeline=model_pipeline, dataset=dataset,
-                 problem_spec=problem_spec, **extra_params)
+                 problem_spec=problem_spec, cv=cv, **extra_params)
 
-    # Just take first scorer if list
-    if isinstance(ps.scorer, list):
-        ps.scorer = ps.scorer[0]
+    # Just take first scorer if dict
+    if isinstance(ps.scorer, dict):
+        ps.scorer = ps.scorer[list(ps.scorer)[0]]
 
     from sklearn.model_selection import cross_val_score
     return cross_val_score(estimator=estimator, X=X, y=y, scoring=ps.scorer,
-                           cv=cv, n_jobs=sk_n_jobs, verbose=verbose,
+                           cv=sk_cv, n_jobs=sk_n_jobs, verbose=verbose,
                            fit_params=fit_params, error_score=error_score)
 
 
-def cross_validate(self, model_pipeline, dataset,
+def cross_validate(model_pipeline, dataset,
                    problem_spec='default',
-                   sk_n_jobs=1, verbose=0,
+                   cv=5, sk_n_jobs=1, verbose=0,
                    fit_params=None,
                    return_train_score=False,
                    return_estimator=False,
@@ -583,13 +600,13 @@ def cross_validate(self, model_pipeline, dataset,
     '''
 
     # Get sk compat pieces
-    estimator, X, y, ps, cv =\
+    estimator, X, y, ps, sk_cv =\
         _sk_prep(model_pipeline=model_pipeline, dataset=dataset,
-                 problem_spec=problem_spec, **extra_params)
+                 problem_spec=problem_spec, cv=cv, **extra_params)
 
     from sklearn.model_selection import cross_validate
     return cross_validate(estimator=estimator, X=X, y=y, scoring=ps.scorer,
-                          cv=cv, n_jobs=sk_n_jobs, verbose=verbose,
+                          cv=sk_cv, n_jobs=sk_n_jobs, verbose=verbose,
                           fit_params=fit_params,
                           return_train_score=return_train_score,
                           return_estimator=return_estimator,

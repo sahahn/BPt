@@ -98,24 +98,22 @@ def process_scorers(in_scorers, problem_type):
 
     # get scorer_strs as initially list
     scorer_strs = conv_to_list(in_scorers)
-    scorers = []
+    scorers = {}
     cnt = 0
 
     for m in range(len(scorer_strs)):
 
         if isinstance(scorer_strs[m], str):
-            scorer_strs[m] =\
-                proc_type_dep_str(scorer_strs[m], AVALIABLE,
-                                  problem_type)
-            scorers.append(get_scorer_from_str(scorer_strs[m]))
+            name = proc_type_dep_str(scorer_strs[m], AVALIABLE,
+                                     problem_type)
+            scorers[name] = get_scorer_from_str(name)
 
         else:
-            scorers.append(wrap_non_picklable_objects(scorer_strs[m]))
-            scorer_strs[m] = 'Custom Scorer ' + str(cnt)
+            name = 'Custom Scorer ' + str(cnt)
+            scorers[name] = wrap_non_picklable_objects(scorer_strs[m])
             cnt += 1
 
-    scorer = scorers[0]
-    return scorer_strs, scorers, scorer
+    return scorers
 
 
 def process_scorer(scorer_str, problem_type):

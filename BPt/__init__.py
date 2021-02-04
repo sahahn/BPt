@@ -7,7 +7,7 @@ from .main.Params_Classes import (Loader, Imputer, Scaler, Transformer,
                                   Model_Pipeline,
                                   Problem_Spec, Shap_Params,
                                   CV, CV_Strategy, CV_Split, CV_Splits)
-from .main.funcs import get_estimator
+from .main.funcs import (get_estimator, cross_validate, cross_val_score)
 
 from .main.Input_Tools import (Select, Duplicate, Pipe, Value_Subset,
                                Intersection)
@@ -21,4 +21,5 @@ __all__ = ["Dataset", "BPt_ML", "ABCD_ML", "Load", "Loader",
            "Model_Pipeline", "Problem_Spec", "Select",
            "Duplicate", "Pipe", "Value_Subset",
            "Shap_Params", "CV", "CV_Split", "CV_Splits",
-           "CV_Strategy", "Intersection"]
+           "CV_Strategy", "Intersection",
+           "cross_validate", "cross_val_score"]

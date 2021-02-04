@@ -1,10 +1,11 @@
 from .Params_Classes import Model, Model_Pipeline, Problem_Spec, Ensemble, CV
 from copy import deepcopy
+import numpy as np
 from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..pipeline.Scorers import process_scorers
 
 
-def model_pipeline_check(model_pipeline):
+def model_pipeline_check(model_pipeline, **extra_params):
 
     # Make deep copy
     pipe = deepcopy(model_pipeline)
@@ -23,6 +24,12 @@ def model_pipeline_check(model_pipeline):
             raise RuntimeError('model_pipeline must be a Model_Pipeline',
                                ' model str or Model-like')
 
+    # Set any overlapping extra params
+    possible_params = Model_Pipeline._get_param_names()
+    valid_params = {key: extra_params[key] for key in extra_params
+                    if key in possible_params}
+    pipe.set_params(**valid_params)
+
     # Internal class checks
     pipe._proc_checks()
 
@@ -30,6 +37,14 @@ def model_pipeline_check(model_pipeline):
 
 
 def problem_spec_check(problem_spec, dataset, **extra_params):
+
+    print(extra_params)
+
+    # If attr checked, then means the passed
+    # problem_spec has already been checked and is already
+    # a proc'ed and ready copy.
+    if hasattr(problem_spec, '_checked') and getattr(problem_spec, '_checked'):
+        return problem_spec
 
     # Check if problem_spec is left as default
     if problem_spec == 'default':
@@ -91,10 +106,14 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
     # Convert to scorer obj
     ps.scorer = process_scorers(ps.scorer, problem_type=ps.problem_type)[1]
 
+    # Set checked flag in ps
+    setattr(ps, '_checked', True)
+
     return ps
 
 
-def get_estimator(model_pipeline, dataset, problem_spec='default'):
+def get_estimator(model_pipeline, dataset,
+                  problem_spec='default', **extra_params):
     '''Get a sklearn compatible estimator from a :class:`Model_Pipeline`,
     :class:`Dataset` and :class:`Problem_Spec`.
 
@@ -130,6 +149,19 @@ def get_estimator(model_pipeline, dataset, problem_spec='default'):
 
             default = 'default'
 
+    extra_params : problem_spec or model_pipeline params, optional
+        You may pass as extra arguments to this function any model_pipeline
+        or problem_spec argument value pairs. For example,
+
+        ::
+
+            get_estimator(model_pipeline, dataset, problem_spec,
+                          model=Model('ridge'), target='1')
+
+        Would get an estimator according to the passed model_pipeline,
+        but with model=Model('ridge') and the passed problem_spec
+        except with target='1' instead of the original values.
+
     Returns
     --------
     estimator : sklearn Estimator
@@ -139,10 +171,11 @@ def get_estimator(model_pipeline, dataset, problem_spec='default'):
     '''
 
     # @TODO add verbose option?
+    dataset._check_sr()
 
     # Check passed input - note: returns deep copies
-    pipe = model_pipeline_check(model_pipeline)
-    ps = problem_spec_check(problem_spec, dataset)
+    pipe = model_pipeline_check(model_pipeline, **extra_params)
+    ps = problem_spec_check(problem_spec, dataset, **extra_params)
 
     # Get the actual pipeline
     model, _ = _get_pipeline(pipe, ps, dataset)
@@ -304,14 +337,38 @@ def _preproc_param_search(object, ps):
     return True
 
 
-def cross_val_score(model_pipeline, dataset, problem_spec,
-                    n_jobs=1, verbose=0):
+def _sk_prep(model_pipeline, dataset,
+             problem_spec='default', **extra_params):
+    '''Internal helper function return the different pieces
+    needed by sklearn functions'''
+
+    # Get proc'ed problem spec, then passed proced version
+    ps = problem_spec_check(problem_spec=problem_spec, dataset=dataset,
+                            **extra_params)
+
+    # Get estimator
+    estimator = get_estimator(model_pipeline=model_pipeline, dataset=dataset,
+                              problem_spec=ps, **extra_params)
+
+    # Get X and y
+    X, y = dataset.get_Xy(problem_spec=ps, **extra_params)
+
+    # Convert cv to sklearn compatible
+    cv = ps.cv.get_cv(X.index, random_state=ps.random_state, return_index=True)
+
+    return estimator, X, y, ps, cv
+
+
+def cross_val_score(model_pipeline, dataset,
+                    problem_spec='default',
+                    sk_n_jobs=1, verbose=0,
+                    fit_params=None,
+                    error_score=np.nan,
+                    **extra_params):
     '''This function is a BPt compatible wrapper around the scikit-learn
     function cross_val_score,
     https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html
 
-    Note: the sklearn version can be used directly too, see functions
-    :func:`get_estimator` and :func:`Dataset.get_Xy`.
 
     Parameters
     ----------
@@ -345,21 +402,195 @@ def cross_val_score(model_pipeline, dataset, problem_spec,
         ::
 
             default = 'default'
+
+    sk_n_jobs : int, optional
+        The number of jobs as passed to the base sklearn
+        cross_val_score. Typically this value
+        should be kept at 0, and n_jobs as defined
+        through the passed problem_spec used
+        to define the number of jobs.
+
+        For added flexibility though, this
+        parameter can be used either with
+        the n_jobs parameter in problem_spec
+        or instead of.
+
+        ::
+
+            default = 1
+
+    verbose : int, optional
+        The verbosity level as passed to the sklearn function.
+
+        ::
+
+            default = 0
+
+    fit_params : dict, optional
+        Parameters to pass to the fit method of the estimator.
+
+        ::
+
+            default = None
+
+
+    error_score : 'raise' or numeric, optional
+        Base sklearn func parameter.
+
+        ::
+
+            default = np.nan
+
+    extra_params : problem_spec or model_pipeline params, optional
+        You may pass as extra arguments to this function any model_pipeline
+        or problem_spec argument value pairs. For example,
+
+        ::
+
+            cross_val_score(model_pipeline, dataset,
+                            model=Model('ridge'), target='1')
+
+        Would test an estimator according to the passed model_pipeline,
+        but with model=Model('ridge') and the passed problem_spec
+        except with target='1' instead of the original values.
     '''
 
-    # Get estimator
-    estimator = get_estimator(model_pipeline=model_pipeline, dataset=dataset,
-                              problem_spec=problem_spec)
+    # Get sk compat pieces
+    estimator, X, y, ps, cv =\
+        _sk_prep(model_pipeline=model_pipeline, dataset=dataset,
+                 problem_spec=problem_spec, **extra_params)
 
-    # Get X and y
-    X, y = dataset.get_Xy(problem_spec=problem_spec, subjects=subjects)
-
-    # Get proc'ed problem spec
-    ps = problem_spec_check(problem_spec=problem_spec, dataset=dataset)
-
-    # Convert cv to sklearn compatible
-    cv = ps.cv.get_cv(X.index, random_state=ps.random_state, return_index=True)
+    # Just take first scorer if list
+    if isinstance(ps.scorer, list):
+        ps.scorer = ps.scorer[0]
 
     from sklearn.model_selection import cross_val_score
     return cross_val_score(estimator=estimator, X=X, y=y, scoring=ps.scorer,
-                           cv=cv, n_jobs=n_jobs, verbose=verbose)
+                           cv=cv, n_jobs=sk_n_jobs, verbose=verbose,
+                           fit_params=fit_params, error_score=error_score)
+
+
+def cross_validate(self, model_pipeline, dataset,
+                   problem_spec='default',
+                   sk_n_jobs=1, verbose=0,
+                   fit_params=None,
+                   return_train_score=False,
+                   return_estimator=False,
+                   error_score=np.nan,
+                   **extra_params):
+    '''This function is a BPt compatible wrapper around the scikit-learn
+    function cross_validate,
+    https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate
+
+
+    Parameters
+    ----------
+    model_pipeline : :class:`Model_Pipeline`
+        A BPt input class Model_Pipeline to be intialized according
+        to the passed Dataset and Problem_Spec, and then evaluated.
+
+    dataset : :class:`Dataset`
+        The Dataset in which the pipeline should be initialized
+        according to, and data drawn from. See parameter
+        `subjects` to use only a subset of the columns or subjects
+        in this call to cross_val_score.
+
+    problem_spec : :class:`Problem_Spec` or 'default', optional
+        `problem_spec` accepts an instance of the
+        params class :class:`Problem_Spec`.
+        This object is essentially a wrapper around commonly used
+        parameters needs to define the context
+        the model pipeline should be evaluated in.
+        It includes parameters like problem_type, scorer, n_jobs,
+        random_state, etc...
+        See :class:`Problem_Spec` for more information
+        and for how to create an instance of this object.
+
+        If left as 'default', then will initialize a
+        Problem_Spec with default params.
+
+        Warning: the parameter weight_scorer in problem_spec
+        is ignored when used with cross_val_score.
+
+        ::
+
+            default = 'default'
+
+    sk_n_jobs : int, optional
+        The number of jobs as passed to the base sklearn
+        cross_val_score. Typically this value
+        should be kept at 0, and n_jobs as defined
+        through the passed problem_spec used
+        to define the number of jobs.
+
+        For added flexibility though, this
+        parameter can be used either with
+        the n_jobs parameter in problem_spec
+        or instead of.
+
+        ::
+
+            default = 1
+
+    verbose : int, optional
+        The verbosity level as passed to the sklearn function.
+
+        ::
+
+            default = 0
+
+    fit_params : dict, optional
+        Parameters to pass to the fit method of the estimator.
+
+        ::
+
+            default = None
+
+    return_train_score : bool, optional
+        Whether to include train scores.
+
+        ::
+
+            default = False
+
+    return_estimator : bool, optional
+        Whether to return the estimators fitted on each split.
+
+        ::
+
+            default = False
+
+
+    error_score : 'raise' or numeric, optional
+        Base sklearn func parameter.
+
+        ::
+
+            default = np.nan
+
+    extra_params : problem_spec or model_pipeline params, optional
+        You may pass as extra arguments to this function any model_pipeline
+        or problem_spec argument value pairs. For example,
+
+        ::
+
+            cross_val_score(model_pipeline, dataset,
+                            model=Model('ridge'), target='1')
+
+        Would test an estimator according to the passed model_pipeline,
+        but with model=Model('ridge') and the passed problem_spec
+        except with target='1' instead of the original values.
+    '''
+
+    # Get sk compat pieces
+    estimator, X, y, ps, cv =\
+        _sk_prep(model_pipeline=model_pipeline, dataset=dataset,
+                 problem_spec=problem_spec, **extra_params)
+
+    from sklearn.model_selection import cross_validate
+    return cross_validate(estimator=estimator, X=X, y=y, scoring=ps.scorer,
+                          cv=cv, n_jobs=sk_n_jobs, verbose=verbose,
+                          fit_params=fit_params,
+                          return_train_score=return_train_score,
+                          return_estimator=return_estimator,
+                          error_score=error_score)

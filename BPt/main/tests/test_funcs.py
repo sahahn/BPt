@@ -9,9 +9,16 @@ from ..CV import BPtCV
 from ...dataset.Dataset import Dataset
 from nose.tools import assert_raises
 from sklearn.linear_model import Ridge
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.preprocessing import RobustScaler
 import numpy as np
+
+
+def test_no_overlap_param_names():
+
+    ps_params = set(Problem_Spec._get_param_names())
+    pipe_params = set(Model_Pipeline._get_param_names())
+    assert len(ps_params.intersection(pipe_params)) == 0
 
 
 def test_model_pipeline_check():
@@ -32,6 +39,20 @@ def test_model_pipeline_check():
 
     mp_params = Model_Pipeline('ridge')
     mp = model_pipeline_check(mp_params)
+    assert isinstance(mp, Model_Pipeline)
+
+
+def test_model_pipeline_check_extra_args():
+
+    mp_params = Model_Pipeline(imputers=None,
+                               model=Model('ridge'))
+    mp = model_pipeline_check(mp_params)
+    assert isinstance(mp, Model_Pipeline)
+    assert mp.imputers is None
+
+    mp = model_pipeline_check(mp_params, imputers=Imputer('mean'),
+                              ignore='ignore')
+    assert mp.imputers is not None
     assert isinstance(mp, Model_Pipeline)
 
 
@@ -285,6 +306,20 @@ def test_get_estimator_n_jobs():
     model = est.steps[0][1]
     assert isinstance(model, RandomForestRegressor)
     assert model.n_jobs == 2
+
+
+def test_get_estimator_extra_params():
+
+    ps = get_test_ps()
+    data = get_fake_dataset()
+    pipe = Model_Pipeline(model=Model('ridge'))
+    est = get_estimator(model_pipeline=pipe, dataset=data,
+                        problem_spec=ps, model=Model('random forest'),
+                        problem_type='binary')
+
+    assert isinstance(est, BPtPipeline)
+    model = est.steps[0][1]
+    assert isinstance(model, RandomForestClassifier)
 
 
 def test_get_estimator_n_jobs_ng():

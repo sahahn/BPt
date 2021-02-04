@@ -2326,6 +2326,7 @@ class Problem_Spec(Params):
         self.base_dtype = base_dtype
 
         self._final_subjects = None
+        self._checked = False
 
         self._proc_checks()
 

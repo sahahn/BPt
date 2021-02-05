@@ -6,6 +6,7 @@ import warnings
 from sklearn.utils.validation import check_memory
 from sklearn.base import clone
 from .ScopeObjs import ScopeTransformer
+from operator import itemgetter
 
 
 def load_and_trans(transformer, load_func, loc):
@@ -307,3 +308,87 @@ class BPtLoader(ScopeTransformer):
         Xt[:, self.rest_inds_] = X[:, reverse_rest_inds]
 
         return Xt, inverse_X
+
+
+class CompatArray(list):
+
+    def __init__(self, arr_2d):
+
+        self.original_dtype_ = arr_2d.dtype
+        super().__init__(np.swapaxes(arr_2d, 0, 1))
+
+    @property
+    def shape(self):
+        return (len(self[0]), len(self))
+
+    @property
+    def dtype(self):
+        return 'CompatArray'
+
+    def conv_back(self, rest_inds):
+
+        if len(rest_inds) == 0:
+            empty = np.array([], dtype=self.original_dtype_)
+            return empty.reshape((self.shape[0], 0))
+
+        base = np.array(itemgetter(*rest_inds)(self),
+                        dtype=self.original_dtype_)
+        return base.reshape((self.shape[0], len(rest_inds)))
+
+
+class BPtListLoader(BPtLoader):
+
+    def fit_transform(self, X, y=None, mapping=None,
+                      train_data_index=None, **fit_params):
+
+        # Process the mapping
+        if mapping is None:
+            mapping = {}
+        self._proc_mapping(mapping)
+
+        if len(self.inds_) != 1:
+            raise RuntimeWarning('BPtListLoader can only work on one column.')
+
+        # Add in loaded column to x_loaded
+        ind = self.inds[0]
+        X_loaded = CompatArray(X)
+        X_loaded[ind] = self._load_col(X[:, ind])
+
+        # Want to call super fit_transform, but passing
+        # X with the data columns replaced by list of
+        return super().fit_transform(X_loaded, y=None, mapping=None,
+                                     train_data_index=None, **fit_params)
+
+    def _load_col(self, X_col):
+        '''Load as list of subjects'''
+
+        X_col_loaded = []
+        for key in X_col:
+            data_file = self.file_mapping[int(key)]
+            data = data_file.load()
+            X_col_loaded.append(data)
+
+        return X_col_loaded
+
+    def _fit(self, X, y=None, **fit_params):
+        self.estimator_.fit(X[self.inds_[0]], y=y, **fit_params)
+
+        return self
+
+    def transform(self, X):
+
+        # If None, pass along as is
+        if self.estimator_ is None:
+            return X
+
+        # Get X_trans
+        X_trans = self.estimator_.transform(X=X[self.inds_[0]])
+
+        # Save number of output features after X_trans
+        self.n_trans_feats_ = X_trans.shape[1]
+
+        # For compatib.
+        self.X_trans_inds_ = [np.arange(self.n_trans_feats_)]
+
+        # Return stacked X_trans with rest inds
+        return np.hstack([X_trans, X.conv_back(self.rest_inds_)])

@@ -1092,8 +1092,9 @@ class Dataset(pd.DataFrame):
             This argument must be passed as a python dict.
             Specifically, a python dictionary should be passed where
             each key refers to the name of that feature / column of data files
-            to load, and the value is a python list, or array-like of
-            str file paths.
+            to load, and the value is either a list-like of
+            str file paths, or a single globbing str which will
+            be used to determine the files.
 
             In addition to this parameter, you must also pass a
             python function to the file_to_subject param,
@@ -1121,7 +1122,9 @@ class Dataset(pd.DataFrame):
             and they have associated loaded data files 'feat1' and 'feat2'.
 
         file_to_subject : python function or dict of
-            If files is passed, then you also need to specify a function
+            You must pass some way of mapping file names
+            to their corresponding subject. The flexible way
+            to do this is by passing a pytho function
             which takes in a file path, and returns the relevant subject for
             that file path. If just one function is passed, it will be used
             for to load all dictionary entries, alternatively you can pass
@@ -1136,6 +1139,12 @@ class Dataset(pd.DataFrame):
                 # or
                 file_to_subject = {'feat1': file_to_subject_func,
                                    'feat2': file_to_subject_func}
+
+            You may also pass the custom str 'auto' to
+            specify that the subject name should be the base
+            file name with the extension removed. For example
+            if the path is '/some/path/subj16.npy' then the auto
+            subject will be 'subj16'.
 
             In the case that the underlying index is a MultiIndex, this
             function should be designed to return the subject in correct

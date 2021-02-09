@@ -561,13 +561,13 @@ def nan_to_class(self, scope='category', inplace=True):
             default = True
     '''
 
-    # Check scope and roles
-    self._check_sr()
-
     if not inplace:
         df_copy = self.copy(deep=False)
         df_copy.nan_to_class(scope=scope, inplace=False)
         return df_copy
+
+    # Check scope and roles
+    self._check_sr()
 
     # Make sure encoders are up init'ed
     self._check_encoders()
@@ -667,7 +667,7 @@ def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=True):
     self._ordinalize(new_col)
 
     # Set new role
-    self.set_role(new_col, 'non input')
+    self.set_role(new_col, 'non input', inplace=True)
 
     # Make sure scopes updated
     self._check_scopes()

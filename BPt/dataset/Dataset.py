@@ -8,6 +8,7 @@ from copy import copy, deepcopy
 from ..helpers.ML_Helpers import conv_to_list
 from .helpers import (base_load_subjects, proc_file_input)
 from ..main.Input_Tools import Intersection, Value_Subset
+import warnings
 
 # @TODO Loook into pandas finalize
 # https://github.com/pandas-dev/pandas/blob/ce3e57b44932e7131968b9bcca97c1391cb6b532/pandas/core/generic.py#L5422
@@ -28,7 +29,7 @@ class Dataset(pd.DataFrame):
                            'non input', 'target', 'target category',
                            'target float'])
     _metadata = ['roles', 'scopes', 'encoders', 'file_mapping',
-                 'verbose', 'test_subjects', 'train_subjects']
+                 'verbose_', 'test_subjects', 'train_subjects']
 
     @property
     def _constructor(self):
@@ -37,6 +38,20 @@ class Dataset(pd.DataFrame):
     @property
     def _constructor_sliced(self):
         return pd.Series
+
+    @property
+    def verbose(self):
+
+        if not hasattr(self, 'verbose_'):
+            self.verbose_ = 0
+        if self.verbose_ is None:
+            self.verbose_ = 0
+
+        return self.verbose_
+
+    @verbose.setter
+    def verbose(self, verbose):
+        self.verbose_ = verbose
 
     def _print(self, *args, **kwargs):
         '''Overriding the print function to allow for
@@ -54,23 +69,44 @@ class Dataset(pd.DataFrame):
             Anything that would be passed to default python print
         '''
 
-        self._check_verbose()
-
         if 'level' in kwargs:
             level = kwargs.pop('level')
         else:
             level = 1
 
         if self.verbose >= level:
-            print(flush=True, *args, **kwargs)
 
-    # Checks #
-    def _check_verbose(self):
+            # Use warnings for level = 0
+            if level == 0:
 
-        if not hasattr(self, 'verbose'):
-            self.verbose = 0
-        elif getattr(self, 'verbose') is None:
-            self.verbose = 0
+                # Conv print to str - then warn
+                sep = ' '
+                if 'sep' in kwargs:
+                    sep = kwargs.pop('sep')
+                as_str = sep.join(str(arg) for arg in args)
+
+                warnings.warn(as_str)
+
+            # Use base print for rest
+            else:
+                print(flush=True, *args, **kwargs)
+
+    def _inplace(self, func_name, args):
+        '''Assumes that inplace is True for this func to be called.'''
+
+        # Create shallow copy
+        data_copy = self.copy(deep=False)
+
+        # Get args to pass to copy
+        copy_args = {key: args[key] for key in args
+                     if key != 'self' and key != 'inplace'}
+        copy_args['inplace'] = True
+
+        # Apply func in place
+        getattr(data_copy, func_name)(**copy_args)
+
+        # Return copy
+        return data_copy
 
     def _check_test_subjects(self):
 
@@ -125,10 +161,11 @@ class Dataset(pd.DataFrame):
         elif getattr(self, 'encoders') is None:
             self.encoders = {}
 
-    def _check_cols_type(self):
+    def _check_cols(self):
         '''BPt / scopes assume that all columns are of
         type str. This function should be called before
-        check roles or check scope.'''
+        check roles or check scope. Also checks to make sure
+        no columns have one of the reserved role names'''
 
         col_names = list(self)
 
@@ -146,11 +183,18 @@ class Dataset(pd.DataFrame):
             self._print('Warning: the columns:', repr(non_str),
                         'were cast to str', level=0)
 
+        # Check if any columns have the same name as a reserved scope
+        reserved_overlap = set(self.columns).intersection(self.RESERVED_SCOPES)
+        if len(reserved_overlap) > 0:
+            raise RuntimeError('The columns: ' + repr(reserved_overlap) + ' '
+                               'overlap with reserved saved names! '
+                               'They must be changed.')
+
     def _check_roles(self, check_type=True):
 
         # Make sure cols type str
         if check_type:
-            self._check_cols_type()
+            self._check_cols()
 
         if not hasattr(self, 'roles'):
             self.roles = {}
@@ -172,7 +216,7 @@ class Dataset(pd.DataFrame):
         '''Helper to check scopes and roles'''
 
         # Only check once when both being checked
-        self._check_cols_type()
+        self._check_cols()
 
         # Check scopes and roles
         self._check_scopes(check_type=False)
@@ -182,7 +226,7 @@ class Dataset(pd.DataFrame):
 
         # Make sure cols type str
         if check_type:
-            self._check_cols_type()
+            self._check_cols()
 
         # If doesnt exist, create scopes
         if not hasattr(self, 'scopes'):
@@ -358,10 +402,10 @@ class Dataset(pd.DataFrame):
 
         Returns
         ----------
-        subjects : {set, np.array, pd.Index}
+        subjects : {set, pd.Index, pd.MultiIndex}
             Based on value of return_as, returns as
-            a set of subjects, sorted numpy array or
-            sorted pandas Index.
+            a set of subjects, sorted pandas Index, or sorted
+            pandas MultiIndex
         '''
 
         # input validation
@@ -439,16 +483,55 @@ class Dataset(pd.DataFrame):
                                         only_level=only_level)
 
     def get_roles(self):
+        ''' This function can be
+        used to get a dictionary with the currently
+        loaded roles, See :ref:`Role` for more information
+        on how roles are defined and used within BPt.
+
+        Returns
+        --------
+        roles : dict
+            Returns the up to date dictionary
+            of roles stored in self.roles, where
+            each key is a column name and each value
+            is the corresponding role.
+        '''
 
         self._check_roles()
         return self.roles
 
-    def set_role(self, col, role):
+    def set_role(self, scope, role, inplace=False):
+        '''This method is used to set a role for
+        either a single column or multiple, as set
+        through the scope parameter. See :ref:`Role`
+        for more information about how roles are
+        used within BPt.
 
-        self._check_roles()
-        self._set_role(col, role)
+        Parameters
+        ----------
+        scope : :ref:`Scope`
+            A BPt style :ref:`Scope` used to select a subset of
+            column in which to set with the passed role.
 
-    def set_roles(self, scope, role):
+        role : :ref:`Role`
+            A valid role in which to set all columns
+            in the passed scope to. Input must be
+            either 'data', 'target' or 'non input'.
+            Note: by default all columns start with role 'data'.
+
+            See :ref:`Role` for more information on how
+            each role differs.
+
+        inplace : bool, optional
+            If True, do operation inplace and return None.
+
+            ::
+
+                default = False
+        '''
+
+        if not inplace:
+            return self._inplace('set_role', locals())
 
         self._check_sr()
 
@@ -456,7 +539,43 @@ class Dataset(pd.DataFrame):
         for col in cols:
             self._set_role(col, role)
 
+    def set_roles(self, scopes_to_roles, inplace=False):
+        '''This method is used to set multiple roles
+        across multiple scopes as specified by a passed
+        dictionary with keys as scopes and values as
+        the role to set for all columns corresponding to that
+        scope. See :ref:`Role`
+        for more information about how roles are
+        used within BPt.
+
+        Parameters
+        -----------
+        scope_to_roles: dict of :ref:`Scope` to :ref:`Role`
+            A python dictionary with keys as :ref:`Scope`
+            and their corresponding value's as the :ref:`Role`
+            in which those columns should take.
+
+        inplace : bool, optional
+            If True, do operation inplace and return None.
+
+            ::
+
+                default = False
+
+        '''
+
+        if not inplace:
+            return self._inplace('set_roles', locals())
+
+        # Init checks just once
+        self._check_sr()
+
+        # Set for each passed scope - all in place
+        for scope, role in zip(scopes_to_roles, scopes_to_roles.values()):
+            [self._set_role(col, role) for col in self._get_cols(scope)]
+
     def _set_role(self, col, role):
+        '''Internal function for setting a single columns role.'''
 
         if role not in self.ROLES:
             raise AttributeError(
@@ -654,7 +773,7 @@ class Dataset(pd.DataFrame):
         self._check_scopes()
         self._remove_scope(col, scope_val)
 
-    def remove_scopes(self, scope, scope_val):
+    def remove_scopes(self, scope, scope_val, inplace=True):
         '''This method is used for removing scopes
         from an existing subset of columns, as selected by
         the scope parameter.
@@ -680,6 +799,21 @@ class Dataset(pd.DataFrame):
             from the column(s), or an array-like of
             scope values to all remove from the selected
             column(s).
+
+        inplace : bool, optional
+            If this operation should take place on
+            the original object (inplace = True),
+            or if it should be done on a copy of the Dataset
+            object (inplace = False).
+
+            If done inplace, then None will be returned.
+            If done with inplace = False, then a copy
+            of the Dataset with the operation applied
+            will be returned.
+
+            ::
+
+                default = True
         '''
 
         self._check_sr()
@@ -1280,14 +1414,15 @@ class Dataset(pd.DataFrame):
         return 'regression'
 
     def rename(self, **kwargs):
-        print('Warning: rename might cause errors!')
+        print('Warning: rename might cause meta data loss!')
         print('Until this is supported, re-name before casting to a Dataset.')
         return super().rename(**kwargs)
 
-    def _is_category(self, col):
+    def _is_category(self, col, check_scopes=True):
         '''Tests if a column is categorical'''
 
-        self._check_scopes()
+        if check_scopes:
+            self._check_scopes()
 
         # Make sure valid column
         if col not in self.columns:

@@ -6,8 +6,8 @@ import pandas as pd
 def _validate_cv_key(self, cv_key, name):
     '''Various input validation. '''
 
-    # Make sure categorical
-    if not self._is_category(cv_key):
+    # Make sure categorical - scopes should already be checked
+    if not self._is_category(cv_key, check_scopes=False):
         raise RuntimeError('Passed ' + name + ': ' + cv_key + ' must '
                            'be of type category! This can be set '
                            'in a number of ways, e.g., via '

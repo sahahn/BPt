@@ -15,13 +15,39 @@ to the BPt :ref:`Dataset` class, and then use the built in :ref:`Dataset` method
 ready for use with the rest of BPt. This includes steps like specifying which variables are in what
 role (e.g., target variables vs. data variables), outlier detection, transformations like binning and binarizing,
 tools for plotting / viewing distributions and specifying a global train / test split. We will introduce all of
-this functionality in greater depth below!
+this functionality below!
 
 *************
 Loading Data
 *************
 
-Talk about how pandas can be used to initially load data.
+Data of interest is invetibly going to come from a wide range of different sources, luckily the python library pandas
+has an incredible amount of support for loading data from different sources into DataFrames.
+Likewise, pandas offers a hueg amount of support material, e.g., https://pandas.pydata.org/docs/getting_started/intro_tutorials/02_read_write.html
+for getting starting with loading in raw data (or a google search with a specific question will almsot always help).
+Pandas should be used to accomplish the initial loading and merging of all tabular data of interest into a DataFrame.
+
+For example, let's say our data of interest is stored in a file called data.csv, we could load it with:
+
+::
+
+    data = pd.read_csv('data.csv')
+
+Next let's say we wanted to specify that the subject column is called 'subject', we can do this with another
+call to the native pandas API.
+
+::
+
+    data = data.set_index('subject')
+
+Then when we are finished with loading and merging the data of interest into a DataFrame, we can cast it to a BPt Dataset!
+
+::
+
+    from BPt import Dataset
+    data = Dataset(data)
+
+We can now still use a number of the native pandas api methods in addition now to the added functionality of the BPt :ref:`Dataset`!
 
 **********************
 Key Dataset Concepts

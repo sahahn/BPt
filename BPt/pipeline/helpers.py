@@ -4,10 +4,6 @@ import numpy as np
 import os
 
 
-def f_array(in_array, tp='float32'):
-    return np.array(in_array).astype(tp)
-
-
 def to_memmap(X):
 
     f = os.path.join(tempfile.gettempdir(), str(random.random()))
@@ -47,4 +43,3 @@ def get_grid_params(params):
             grid_params[p] = params[p]
 
     return grid_params
-

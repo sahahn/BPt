@@ -413,6 +413,15 @@ def set_train_split(self, size=None, subjects=None,
 
 
 def save_test_subjects(self, loc):
+    '''Saves the currently defined test
+    subjects in a text file with one subject / index
+    per line.
+
+    Parameters
+    ----------
+    loc : str or Path
+        The location in which to save the test subjects
+    '''
 
     self._check_test_subjects()
 
@@ -423,6 +432,15 @@ def save_test_subjects(self, loc):
 
 
 def save_train_subjects(self, loc):
+    '''Saves the currently defined train
+    subjects in a text file with one subject / index
+    per line.
+
+    Parameters
+    ----------
+    loc : str or Path
+        The location in which to save the train subjects
+    '''
 
     self._check_train_subjects()
 

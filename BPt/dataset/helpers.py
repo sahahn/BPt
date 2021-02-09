@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import glob
+import os
 
 
 def proc_fop(fop):
@@ -18,10 +20,19 @@ def proc_fop(fop):
     return tuple([fop[0]/100, 1-(fop[1] / 100)])
 
 
+def auto_file_to_subject(in_path):
+
+    base_name = os.path.basename(in_path)
+    return os.path.splitext(base_name)[0]
+
+
 def proc_file_input(files, file_to_subject):
 
     if not isinstance(files, dict):
         raise ValueError('files must be passed as a python dict')
+
+    if file_to_subject == 'auto':
+        file_to_subject = auto_file_to_subject
 
     if file_to_subject is None:
         raise RuntimeError('file_to_subject must be specified!')
@@ -43,6 +54,11 @@ def proc_file_input(files, file_to_subject):
     for key in files:
 
         file_paths = files[key]
+
+        # If passed file path as str, assume globbing
+        if isinstance(file_paths, str):
+            file_paths = glob.glob(file_paths)
+
         subjects = [file_to_subject[key](fp) for fp in file_paths]
         files_series[key] = pd.Series(file_paths, index=subjects)
 

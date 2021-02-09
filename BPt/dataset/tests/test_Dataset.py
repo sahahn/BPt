@@ -16,17 +16,14 @@ def test_add_scope():
 
     df = get_fake_dataset()
 
-    df.add_scope(col='1', scope_val='a')
-    assert df.scopes['1'] == set(['a'])
-
-    df.add_scopes(scope='1', scope_val='a')
-    assert df.scopes['1'] == set(['a'])
-
-    df.add_scope(col='1', scope_val='b')
+    df.add_scope(scope='1', scope_val='a')
+    df._check_scopes()
     assert df.scopes['1'] != set(['a'])
-    assert df.scopes['1'] == set(['a', 'b'])
 
-    df.add_scopes(scope='1', scope_val='b')
+    df = df.add_scope(scope='1', scope_val='a')
+    assert df.scopes['1'] == set(['a'])
+
+    df = df.add_scope(scope='1', scope_val='b')
     assert df.scopes['1'] != set(['a'])
     assert df.scopes['1'] == set(['a', 'b'])
 
@@ -36,12 +33,33 @@ def test_add_scope():
     assert(set(df.get_cols(['a', 'b'])) == set(['1']))
 
     df = get_fake_dataset()
-    df.add_scope(col='1', scope_val='category')
+    df = df.add_scope(scope='1', scope_val='category')
     assert(df['1'].dtype.name == 'category')
 
+
+def test_remove_scope():
+
     df = get_fake_dataset()
-    df.add_scopes(scope='1', scope_val='category')
-    assert(df['1'].dtype.name == 'category')
+
+    df = df.add_scope(scope='1', scope_val='a')
+    df = df.remove_scope(scope='1', scope_val='a')
+    assert df.scopes['1'] != set(['a'])
+
+
+def test_add_scope_inplace():
+
+    df = get_fake_dataset()
+
+    df.add_scope(scope='1', scope_val='a', inplace=True)
+    assert df.scopes['1'] == set(['a'])
+
+
+def test_remove_scope_inplace():
+
+    df = get_fake_dataset()
+    df.add_scope(scope='1', scope_val='a', inplace=True)
+    df.remove_scope(scope='1', scope_val='a', inplace=True)
+    assert df.scopes['1'] != set(['a'])
 
 
 def test_check_scopes():
@@ -111,25 +129,29 @@ def test_get_cols():
     assert(set(df.get_cols('category')) == set(['2']))
 
 
-def test_auto_detect_categorical():
+def test_auto_detect_categorical_inplace():
 
     df = get_fake_dataset5()
-    df.auto_detect_categorical(scope='all', obj_thresh=4, all_thresh=None)
+    df.auto_detect_categorical(scope='all', obj_thresh=4,
+                               all_thresh=None, inplace=True)
     cat_cols = df.get_cols(scope='category')
     assert cat_cols == ['2', '3', '4']
 
     df = get_fake_dataset5()
-    df.auto_detect_categorical(scope='all', obj_thresh=3, all_thresh=None)
+    df.auto_detect_categorical(scope='all', obj_thresh=3,
+                               all_thresh=None, inplace=True)
     cat_cols = df.get_cols(scope='category')
     assert cat_cols == ['2', '3']
 
     df = get_fake_dataset5()
-    df.auto_detect_categorical(scope='all', obj_thresh=None, all_thresh=None)
+    df.auto_detect_categorical(scope='all', obj_thresh=None,
+                               all_thresh=None, inplace=True)
     cat_cols = df.get_cols(scope='category')
     assert cat_cols == ['2', '3']
 
     df = get_fake_dataset5()
-    df.auto_detect_categorical(scope='all', obj_thresh=None, all_thresh=10)
+    df.auto_detect_categorical(scope='all', obj_thresh=None,
+                               all_thresh=10, inplace=True)
     cat_cols = df.get_cols(scope='category')
     assert cat_cols == ['1', '2', '3', '4']
 
@@ -143,13 +165,24 @@ def test_add_data_files():
 
     files = {'q': ['a_0', 'b_1', 'c_2']}
 
-    df.add_data_files(files=files,
-                      file_to_subject=file_to_subject,
-                      load_func=np.load)
+    df = df.add_data_files(files=files,
+                           file_to_subject=file_to_subject,
+                           load_func=np.load)
 
     assert len(df['q']) == 3
     assert df.loc[2, 'q'] == 2
 
+    assert 'a_0' in df.file_mapping[0].loc
+    assert 'b_1' in df.file_mapping[1].loc
+    assert 'c_2' in df.file_mapping[2].loc
+
+    # Test in place
+    df = get_fake_dataset()
+    df.add_data_files(files=files,
+                      file_to_subject=file_to_subject,
+                      load_func=np.load, inplace=True)
+    assert len(df['q']) == 3
+    assert df.loc[2, 'q'] == 2
     assert 'a_0' in df.file_mapping[0].loc
     assert 'b_1' in df.file_mapping[1].loc
     assert 'c_2' in df.file_mapping[2].loc
@@ -175,9 +208,9 @@ def test_data_files_integration():
     files = {'data_files': locs}
 
     # Test add data files
-    df.add_data_files(files=files,
-                      file_to_subject=file_to_subject,
-                      load_func=np.load)
+    df = df.add_data_files(files=files,
+                           file_to_subject=file_to_subject,
+                           load_func=np.load)
     assert len(df['data_files']) == 3
     assert df.loc[0, 'data_files'] == 0
     assert df.loc[2, 'data_files'] == 2
@@ -194,7 +227,7 @@ def test_data_files_integration():
     assert values.loc[2] == 2
 
     # Test auto detect categorical
-    df.auto_detect_categorical()
+    df = df.auto_detect_categorical()
     cat_cols = df.get_cols(scope='category')
     assert cat_cols == ['2', '3']
 
@@ -204,7 +237,7 @@ def test_data_files_integration():
     # Drop outliers by std, should drop all by 1
     df_copy.filter_outliers_by_std(n_std=.5, scope='data file',
                                    drop=True, reduce_func=np.mean,
-                                   n_jobs=1)
+                                   n_jobs=1, inplace=True)
 
     # Make sure self._check_file_mapping works
     assert len(df_copy.file_mapping) == 1
@@ -214,9 +247,9 @@ def test_data_files_integration():
 
     # Try drop = False
     df_copy = df.copy(deep=True)
-    df_copy.filter_outliers_by_std(n_std=.5, scope='data file',
-                                   drop=False, reduce_func=np.mean,
-                                   n_jobs=1)
+    df_copy = df_copy.filter_outliers_by_std(n_std=.5, scope='data file',
+                                             drop=False, reduce_func=np.mean,
+                                             n_jobs=1)
 
     assert np.nan in df_copy.file_mapping
     assert len(df_copy.file_mapping) == 2
@@ -466,9 +499,9 @@ def test_multi_index_add_data_files():
     files = {'files': ['a_s1_e1', 'a_s1_e2',
                        'b_s2_e1', 'b_s2_e2', 'c_s3_e1']}
 
-    df.add_data_files(files=files,
-                      file_to_subject=file_to_subject,
-                      load_func=np.load)
+    df = df.add_data_files(files=files,
+                           file_to_subject=file_to_subject,
+                           load_func=np.load)
 
     assert len(df['files']) == 6
     assert 'a_s1_e1' in df.file_mapping[0].loc

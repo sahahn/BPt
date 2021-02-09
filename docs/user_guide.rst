@@ -218,8 +218,8 @@ E.g., with the variable data from before:
 This will specify just the column '1'.
 
 2. Passing the name of a scope. What this refers to is the ability to add
-custom scopes to columns with :func:`add_scope <Dataset.add_scope>` or
-:func:`add_scopes <Dataset.add_scopes>`. This acts as a tagging system, where
+custom scopes to columns with :func:`add_scope <Dataset.add_scope>`.
+This acts as a tagging system, where
 you can create custom subsets. For example if we wanted the subset of '1' and '3',
 we can pass scope=['1', '3'], but if we were using this same set many times, we can also
 set the scopes of each of these columns to a custom scope, e.g.,
@@ -231,8 +231,7 @@ set the scopes of each of these columns to a custom scope, e.g.,
     cols = data.get_cols(scope='custom')
 
 In this case, cols would return us the scope 'custom'. Likewise, you may remove
-scopes with :func:`remove_scope <Dataset.remove_scope>` or
-:func:`remove_scopes <Dataset.remove_scopes>`.
+scopes with :func:`remove_scope <Dataset.remove_scope>`.
 
 3. Passing a stub. This functionality allows us to pass a common substring present
 across a number of columns, and lets us select all columns with that substring. For example,

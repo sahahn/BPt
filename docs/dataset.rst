@@ -69,9 +69,9 @@ Scope
 
 See concept :ref:`Scope`. In particular, with respect to the
 :ref:`Dataset` class is the option for passing the name of a scope.
-Functions: :func:`add_scope <Dataset.add_scope>`,
-:func:`add_scopes <Dataset.add_scopes>`, :func:`remove_scope <Dataset.remove_scope>`
-and :func:`remove_scopes <Dataset.remove_scopes>`.
+Functions: :func:`add_scope <Dataset.add_scope>` and
+:func:`remove_scope <Dataset.remove_scope>`
+
 
 Though, this class also uses scope quite frequently as an argument, the same way as
 described in the reference for :ref:`Pipeline Objects`
@@ -95,7 +95,7 @@ are categorical. By default, if any columns are set to pandas type 'category', e
 
 Then this example column, 'col', is already set within BPt as categorical too. You
 may also specify if a column is categorical or not by adding 'category' to that columns
-scope via :func:`add_scope <Dataset.add_scope>` or :func:`add_scopes <Dataset.add_scopes>`.
+scope via :func:`add_scope <Dataset.add_scope>`.
 For example:
 
 ::
@@ -140,7 +140,7 @@ the pandas DataFrame will also work.
 
 
 ********************************
-Dataset - Base Utility Methods
+Dataset - Base Methods
 ********************************
 
 get_cols
@@ -163,19 +163,10 @@ add_scope
 .. automethod:: Dataset.add_scope
 
 
-add_scopes
-=============
-.. automethod:: Dataset.add_scopes
-
-
 remove_scope
 =============
 .. automethod:: Dataset.remove_scope
 
-
-remove_scopes
-=============
-.. automethod:: Dataset.remove_scopes
 
 set_role
 =============
@@ -209,6 +200,21 @@ copy
 auto_detect_categorical
 ===============================
 .. automethod:: Dataset.auto_detect_categorical
+
+
+get_Xy
+===============================
+.. automethod:: Dataset.get_Xy
+
+
+get_train_Xy
+===============================
+.. automethod:: Dataset.get_train_Xy
+
+
+get_test_Xy
+===============================
+.. automethod:: Dataset.get_test_Xy
 
 
 ********************************

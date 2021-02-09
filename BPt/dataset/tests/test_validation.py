@@ -19,7 +19,7 @@ def get_fake_dataset():
     fake = fake.set_role('2', 'target')
     fake = fake.set_role(['3', '4', '5'], 'non input')
 
-    fake.ordinalize(scope='all')
+    fake.ordinalize(scope='all', inplace=True)
 
     return fake
 
@@ -118,31 +118,31 @@ def test_set_test_split():
     df.verbose = -1
 
     with assert_raises(TypeError):
-        df.set_test_split()
+        df = df.set_test_split()
 
     with assert_raises(TypeError):
-        df.set_test_split(size=.2, subjects=[1, 2])
+        df = df.set_test_split(size=.2, subjects=[1, 2])
 
-    df.set_test_split(size=1, cv_strategy=None, random_state=None)
+    df = df.set_test_split(size=1, cv_strategy=None, random_state=None)
 
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
 
-    df.set_test_split(size=.3, cv_strategy=None, random_state=None)
+    df = df.set_test_split(size=.3, cv_strategy=None, random_state=None)
 
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
 
     df.set_test_split(size=.5,
                       cv_strategy=CV_Strategy(train_only_subjects=[0]),
-                      random_state=1)
+                      random_state=1, inplace=True)
 
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
     assert 0 in df.train_subjects
 
     df.set_test_split(size=1, cv_strategy=CV_Strategy(train_only_subjects=[0]),
-                      random_state=1)
+                      random_state=1, inplace=True)
 
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
@@ -150,7 +150,7 @@ def test_set_test_split():
 
     temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
     df.save_test_subjects(temp_loc)
-    df.set_test_split(subjects=temp_loc)
+    df = df.set_test_split(subjects=temp_loc)
     os.remove(temp_loc)
 
     assert len(df.test_subjects) == 1
@@ -163,29 +163,29 @@ def test_set_train_split():
     df = get_fake_dataset()
 
     with assert_raises(TypeError):
-        df.set_train_split()
+        df = df.set_train_split()
 
     with assert_raises(TypeError):
-        df.set_train_split(size=.2, subjects=[1, 2])
+        df = df.set_train_split(size=.2, subjects=[1, 2])
 
-    df.set_train_split(size=1, cv_strategy=None, random_state=None)
+    df = df.set_train_split(size=1, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 2
     assert len(df.train_subjects) == 1
 
-    df.set_train_split(size=.4, cv_strategy=None, random_state=None)
+    df = df.set_train_split(size=.4, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 2
     assert len(df.train_subjects) == 1
 
     df.set_train_split(size=.5,
                        cv_strategy=CV_Strategy(train_only_subjects=[0]),
-                       random_state=1)
+                       random_state=1, inplace=True)
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
     assert 0 in df.train_subjects
 
     df.set_train_split(size=1,
                        cv_strategy=CV_Strategy(train_only_subjects=[0]),
-                       random_state=1)
+                       random_state=1, inplace=True)
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
     assert 0 in df.train_subjects
@@ -193,7 +193,7 @@ def test_set_train_split():
     # Test save and load
     temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
     df.save_train_subjects(temp_loc)
-    df.set_train_split(subjects=temp_loc)
+    df = df.set_train_split(subjects=temp_loc)
     os.remove(temp_loc)
 
     assert len(df.test_subjects) == 1
@@ -203,10 +203,10 @@ def test_set_train_split():
     with assert_raises(ValueError):
         df.set_train_split(size=1,
                            cv_strategy=CV_Strategy(train_only_subjects=[0, 1]),
-                           random_state=1)
+                           random_state=1, inplace=True)
 
     with assert_raises(RuntimeError):
-        df.set_train_split(size=0)
+        df = df.set_train_split(size=0)
 
 
 def get_fake_multi_index_dataset():
@@ -245,7 +245,7 @@ def test_multi_index_proc_cv_strategy():
 def test_multi_index_proc_cv_strategy_groups():
 
     df = get_fake_multi_index_dataset()
-    df.copy_as_non_input('0', 'zero')
+    df = df.copy_as_non_input('0', 'zero')
 
     cv_params = CV_Strategy(groups='zero')
     cv = df._proc_cv_strategy(cv_params)
@@ -259,21 +259,21 @@ def test_multi_index_set_test_split():
     df = get_fake_multi_index_dataset()
     df.verbose = -1
 
-    df.set_test_split(size=1, cv_strategy=None, random_state=None)
+    df = df.set_test_split(size=1, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 5
 
-    df.set_test_split(size=0, cv_strategy=None, random_state=None)
+    df = df.set_test_split(size=0, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 0
     assert len(df.train_subjects) == 6
 
-    df.set_test_split(size=.3, cv_strategy=None, random_state=None)
+    df = df.set_test_split(size=.3, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 2
     assert len(df.train_subjects) == 4
 
     df.set_test_split(size=.5,
                       cv_strategy=CV_Strategy(train_only_subjects=['s1']),
-                      random_state=1)
+                      random_state=1, inplace=True)
 
     assert len(df.test_subjects) == 2
     assert len(df.train_subjects) == 4
@@ -282,7 +282,7 @@ def test_multi_index_set_test_split():
 
     temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
     df.save_test_subjects(temp_loc)
-    df.set_test_split(subjects=temp_loc)
+    df = df.set_test_split(subjects=temp_loc)
     os.remove(temp_loc)
 
     assert len(df.test_subjects) == 2
@@ -295,17 +295,17 @@ def test_multi_index_set_train_split():
 
     df = get_fake_multi_index_dataset()
 
-    df.set_train_split(size=1, cv_strategy=None, random_state=None)
+    df = df.set_train_split(size=1, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 5
     assert len(df.train_subjects) == 1
 
-    df.set_train_split(size=.2, cv_strategy=None, random_state=None)
+    df = df.set_train_split(size=.2, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 5
     assert len(df.train_subjects) == 1
 
     df.set_train_split(size=2,
                        cv_strategy=CV_Strategy(train_only_subjects=['s1']),
-                       random_state=1)
+                       random_state=1, inplace=True)
 
     assert len(df.test_subjects) == 2
     assert len(df.train_subjects) == 4
@@ -314,7 +314,7 @@ def test_multi_index_set_train_split():
 
     temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
     df.save_train_subjects(temp_loc)
-    df.set_train_split(subjects=temp_loc)
+    df = df.set_train_split(subjects=temp_loc)
     os.remove(temp_loc)
 
     assert len(df.test_subjects) == 2

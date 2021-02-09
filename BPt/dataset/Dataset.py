@@ -591,7 +591,7 @@ class Dataset(pd.DataFrame):
 
         # If role is non input, can't have any NaN
         if role == 'non input':
-            self.drop_nan_subjects(scope=col)
+            self.drop_nan_subjects(scope=col, inplace=True)
 
     def get_scopes(self):
         '''This returns the up to date scopes for the
@@ -610,53 +610,7 @@ class Dataset(pd.DataFrame):
         self._check_scopes()
         return self.scopes
 
-    def add_scope(self, col, scope_val):
-        '''This method is used for adding scopes
-        to an existing column.
-
-        See :ref:`Scope` for more information
-        on how scope's are used in BPt. This
-        function specifically is for adding
-        custom, tag-like, scopes to certain columns.
-
-        Note: All passed scopes if not a str are
-        cast to a str! This means that if a scope of
-        say 1 is set, and a scope of "1", they will
-        be equivelent.
-
-        This method is applied in place. Also,
-        see related methods :func:`add_scopes <Dataset.add_scopes>`
-        and :func:`remove_scope <Dataset.remove_scope>`
-
-        Parameters
-        -----------
-        col : str
-            The name of the column in which the scope_val
-            parameter should be added as a scope.
-
-        scope_val : str or array-like of str
-            A single string scope value to add
-            to the column, or an array-like of
-            scope values to all add to the selected
-            col. E.g.,
-
-            ::
-
-                scope_val = '1'
-
-            Would add '1' as a scope
-
-            ::
-
-                scope_val = ['1', '2']
-
-            Would add '1' and '2' as scopes.
-        '''
-
-        self._check_scopes()
-        self._add_scope(col, scope_val)
-
-    def add_scopes(self, scope, scope_val):
+    def add_scope(self, scope, scope_val, inplace=False):
         '''This method is designed as helper for adding a new scope val
         to a number of columns at once, using the existing scope system.
         Don't be confused about the arguments, the scope parameter is used
@@ -667,10 +621,6 @@ class Dataset(pd.DataFrame):
         on how scope's are used in BPt. This
         function specifically is for adding
         custom, tag-like, scopes to certain columns.
-
-        This method is applied in place. Also,
-        see related methods :func:`add_scope <Dataset.add_scope>`
-        and :func:`remove_scopes <Dataset.remove_scopes>`
 
         Parameters
         -----------
@@ -695,7 +645,18 @@ class Dataset(pd.DataFrame):
                 scope_val = ['1', '2']
 
             Would add '1' and '2' as scopes.
+
+        inplace : bool, optional
+            If True, do operation inplace and return None.
+
+            ::
+
+                default = False
         '''
+
+        if not inplace:
+            return self._inplace('add_scope', locals())
+
         self._check_sr()
 
         cols = self._get_cols(scope)
@@ -743,39 +704,10 @@ class Dataset(pd.DataFrame):
             for s in set(list(scope_val)):
                 self._add_scope(col, s)
 
-    def remove_scope(self, col, scope_val):
+    def remove_scope(self, scope, scope_val, inplace=False):
         '''This method is used for removing scopes
-        from an existing column.
-
-        See :ref:`Scope` for more information
-        on how scope's are used in BPt. This
-        function specifically is for removing
-        custom, tag-like, scopes to certain columns.
-
-        This method is applied in place.
-
-        See related methods :func:`add_scope <Dataset.add_scope>`
-        and :func:`remove_scopes <Dataset.remove_scopes>`
-
-        Parameters
-        -----------
-        col : str
-            The name of the column in which the scope_val
-            parameter should be removed as a scope.
-
-        scope_val : str or array-like of str
-            A single string scope value to remove
-            from the column, or an array-like of
-            scope values to all remove from the selected
-            column.
-        '''
-
-        self._check_scopes()
-        self._remove_scope(col, scope_val)
-
-    def remove_scopes(self, scope, scope_val, inplace=True):
-        '''This method is used for removing scopes
-        from an existing subset of columns, as selected by
+        from an existing column or subset of columns,
+        as selected by
         the scope parameter.
 
         See :ref:`Scope` for more information
@@ -783,10 +715,7 @@ class Dataset(pd.DataFrame):
         function specifically is for removing
         custom, tag-like, scopes to certain columns.
 
-        This method is applied in place.
-
-        See related methods :func:`add_scopes <Dataset.add_scopes>`
-        and :func:`remove_scope <Dataset.remove_scope>`
+        See related method :func:`add_scope <Dataset.add_scope>`
 
         Parameters
         -----------
@@ -801,20 +730,15 @@ class Dataset(pd.DataFrame):
             column(s).
 
         inplace : bool, optional
-            If this operation should take place on
-            the original object (inplace = True),
-            or if it should be done on a copy of the Dataset
-            object (inplace = False).
-
-            If done inplace, then None will be returned.
-            If done with inplace = False, then a copy
-            of the Dataset with the operation applied
-            will be returned.
+            If True, do operation inplace and return None.
 
             ::
 
-                default = True
+                default = False
         '''
+
+        if not inplace:
+            return self._inplace('remove_scope', locals())
 
         self._check_sr()
 
@@ -1101,7 +1025,7 @@ class Dataset(pd.DataFrame):
         return self[col][~self[col].isna()].index
 
     def auto_detect_categorical(self, scope='all', obj_thresh=30,
-                                all_thresh=None):
+                                all_thresh=None, inplace=False):
         '''This function will attempt to automatically add scope "category" to
         any loaded categorical variables. Note that any columns with pandas
         data type category should already be detected without
@@ -1161,7 +1085,17 @@ class Dataset(pd.DataFrame):
 
                 default = None
 
+        inplace : bool, optional
+            If True, do operation inplace and return None.
+
+            ::
+
+                default = False
+
         '''
+
+        if not inplace:
+            return self._inplace('auto_detect_categorical', locals())
 
         # Check scope and role
         self._check_sr()
@@ -1216,7 +1150,8 @@ class Dataset(pd.DataFrame):
         self._check_file_mapping()
         return self.file_mapping
 
-    def add_data_files(self, files, file_to_subject, load_func=np.load):
+    def add_data_files(self, files, file_to_subject,
+                       load_func=np.load, inplace=False):
         '''This method is the main way of adding columns of type
         'data file' to the Dataset class.
 
@@ -1255,7 +1190,7 @@ class Dataset(pd.DataFrame):
             In this example, subjects are loaded as 'subj_0' and 'subj_1',
             and they have associated loaded data files 'feat1' and 'feat2'.
 
-        file_to_subject : python function or dict of
+        file_to_subject : python function, dict of or 'auto'
             You must pass some way of mapping file names
             to their corresponding subject. The flexible way
             to do this is by passing a pytho function
@@ -1348,7 +1283,17 @@ class Dataset(pd.DataFrame):
             ::
 
                 default = np.load
+
+        inplace : bool, optional
+            If True, do operation inplace and return None.
+
+            ::
+
+                default = False
         '''
+
+        if not inplace:
+            return self._inplace('add_data_files', locals())
 
         # Wrap load_func here if needed.
         if load_func.__module__ == '__main__':
@@ -1393,7 +1338,7 @@ class Dataset(pd.DataFrame):
                 cnt += 1
 
             # Set scope
-            self.add_scope(file, 'data file')
+            self.add_scope(file, 'data file', inplace=True)
 
     def _get_next_ind(self):
 
@@ -1453,15 +1398,17 @@ class Dataset(pd.DataFrame):
         # Base parent pandas behavior
         dataset = super().copy(deep=deep)
 
-        # Deep copy rest of meta data
-        for m in self._metadata:
-            if hasattr(self, m):
-                c = getattr(dataset, m)
+        # Set copy func by if deep or not
+        copy_func = copy
+        if deep:
+            copy_func = deepcopy
 
-                if deep:
-                    setattr(dataset, m, deepcopy(c))
-                else:
-                    setattr(dataset, m, copy(c))
+        # Make copy of meta data
+        for m in self._metadata:
+
+            # If has this attribute, set in the copy a copy.
+            if hasattr(self, m):
+                setattr(dataset, m, copy_func(getattr(self, m)))
 
         return dataset
 

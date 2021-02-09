@@ -122,7 +122,7 @@ def _finish_split(self):
 
 
 def set_test_split(self, size=None, subjects=None,
-                   cv_strategy=None, random_state=None):
+                   cv_strategy=None, random_state=None, inplace=False):
     '''Defines a set of subjects to be reserved as test subjects. This
     method includes utilities for either defining a new test split, or loading
     an existing one. See related :func:`save_train_split` and
@@ -189,7 +189,17 @@ def set_test_split(self, size=None, subjects=None,
         ::
 
             default = None
+
+    inplace : bool, optional
+        If True, do operation inplace and return None.
+
+        ::
+
+            default = False
     '''
+
+    if not inplace:
+        return self._inplace('set_test_split', locals())
 
     # Input validation
     self._validate_split(size, subjects)
@@ -257,7 +267,7 @@ def set_test_split(self, size=None, subjects=None,
 
 
 def set_train_split(self, size=None, subjects=None,
-                    cv_strategy=None, random_state=None):
+                    cv_strategy=None, random_state=None, inplace=False):
     '''Defines a set of subjects to be reserved as train subjects.
     This is a variation on function :func:`save_test_split`, where
     both set train and test subjects, but vary on if parameters
@@ -329,7 +339,17 @@ def set_train_split(self, size=None, subjects=None,
         ::
 
             default = None
+
+    inplace : bool, optional
+        If True, do operation inplace and return None.
+
+        ::
+
+            default = False
     '''
+
+    if not inplace:
+        return self._inplace('set_train_split', locals())
 
     # Input validation
     self._validate_split(size, subjects)

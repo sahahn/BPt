@@ -213,11 +213,11 @@ def test_preproc_model_pipeline():
 
     # Check another non default CV case - splits
     data = get_fake_dataset()
-    data.copy_as_non_input('1', '4')
-    data.copy_as_non_input('1', '5')
+    data.copy_as_non_input('1', '4', inplace=True)
+    data.copy_as_non_input('1', '5', inplace=True)
 
     # Removpe category, and make sure dtype changes
-    data.remove_scope('5', 'category')
+    data = data.remove_scope('5', 'category')
     assert data['5'].dtype.name != 'category'
 
     pipe = Model_Pipeline(param_search=Param_Search(cv=CV(splits='4')))

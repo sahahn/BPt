@@ -131,7 +131,7 @@ def get_fake_data_dataset(data_keys=None,
     for key in cat_keys:
         dataset[key] = []
         dataset.set_role(key, 'data', inplace=True)
-        dataset.add_scope(key, 'category')
+        dataset.add_scope(key, 'category', inplace=True)
 
     dataset._check_scopes()
 

@@ -22,7 +22,7 @@ def _add_new_copy(self, old, new):
         pass
 
 
-def to_binary(self, scope, drop=True, inplace=True):
+def to_binary(self, scope, drop=True, inplace=False):
     '''This method works by setting all
     columns within scope to just two binary
     categories. This works by setting the two values
@@ -53,25 +53,15 @@ def to_binary(self, scope, drop=True, inplace=True):
             default = True
 
     inplace : bool, optional
-        If this operation should take place on
-        the original object (inplace = True),
-        or if it should be done on a copy of the Dataset
-        object (inplace = False).
-
-        If done inplace, then None will be returned.
-        If done with inplace = False, then a copy
-        of the Dataset with the operation applied
-        will be returned.
+        If True, do operation inplace and return None.
 
         ::
 
-            default = True
+            default = False
     '''
 
     if not inplace:
-        df_copy = self.copy(deep=False)
-        df_copy.to_binary(scope=scope, drop=drop, inplace=True)
-        return df_copy
+        return self._inplace('to_binary', locals())
 
     # Make sure encoders init'ed
     self._check_encoders()
@@ -125,7 +115,7 @@ def _base_binarize(self, col, drop):
     self._ordinalize(col)
 
 
-def binarize(self, scope, threshold, replace=True, drop=True, inplace=True):
+def binarize(self, scope, threshold, replace=True, drop=True, inplace=False):
     '''This method contains a utilities for binarizing a variable.
     These are dichatomizing an existing variable with parameter
     threshold, and applying binarization via two thresholds
@@ -183,25 +173,15 @@ def binarize(self, scope, threshold, replace=True, drop=True, inplace=True):
             default = True
 
     inplace : bool, optional
-        If this operation should take place on
-        the original object (inplace = True),
-        or if it should be done on a copy of the Dataset
-        object (inplace = False).
-
-        If done inplace, then None will be returned.
-        If done with inplace = False, then a copy
-        of the Dataset with the operation applied
-        will be returned.
+        If True, do operation inplace and return None.
 
         ::
 
-            default = True
+            default = False
     '''
 
     if not inplace:
-        df_copy = self.copy(deep=False)
-        df_copy.binarize(scope=scope, threshold=threshold,
-                         replace=replace, drop=drop, inplace=True)
+        return self._inplace('binarize', locals())
 
     # Proc if tuple or not
     if isinstance(threshold, tuple):
@@ -303,7 +283,7 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
     self._add_scope(col, 'category')
 
 
-def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=True):
+def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=False):
     '''This method is used to apply k binning to
     a column, or columns. On the backend
     this function used the scikit-learn
@@ -343,26 +323,15 @@ def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=True):
             default = 'uniform'
 
     inplace : bool, optional
-        If this operation should take place on
-        the original object (inplace = True),
-        or if it should be done on a copy of the Dataset
-        object (inplace = False).
-
-        If done inplace, then None will be returned.
-        If done with inplace = False, then a copy
-        of the Dataset with the operation applied
-        will be returned.
+        If True, do operation inplace and return None.
 
         ::
 
-            default = True
+            default = False
     '''
 
     if not inplace:
-        df_copy = self.copy(deep=False)
-        df_copy.k_bin(scope=scope, n_bins=n_bins,
-                      strategy=strategy, inplace=True)
-        return df_copy
+        return self._inplace('k_bin', locals())
 
     # Check scope and role
     self._check_sr()
@@ -427,7 +396,7 @@ def _k_bin(self, col, n_bins, strategy):
     self._add_scope(col, 'category')
 
 
-def ordinalize(self, scope, nan_to_class=False, inplace=True):
+def ordinalize(self, scope, nan_to_class=False, inplace=False):
     '''This method is used to ordinalize
     a group of columns. Ordinalization is
     performed by setting all n unique
@@ -460,29 +429,18 @@ def ordinalize(self, scope, nan_to_class=False, inplace=True):
             default = False
 
     inplace : bool, optional
-        If this operation should take place on
-        the original object (inplace = True),
-        or if it should be done on a copy of the Dataset
-        object (inplace = False).
-
-        If done inplace, then None will be returned.
-        If done with inplace = False, then a copy
-        of the Dataset with the operation applied
-        will be returned.
+        If True, do operation inplace and return None.
 
         ::
 
-            default = True
+            default = False
     '''
+
+    if not inplace:
+        return self._inplace('ordinalize', locals())
 
     # Check scope and role
     self._check_sr()
-
-    if not inplace:
-        df_copy = self.copy(deep=False)
-        df_copy.ordinalize(scope=scope, nan_to_class=nan_to_class,
-                           inplace=True)
-        return df_copy
 
     # Get cols from scope
     cols = self._get_cols(scope)
@@ -493,7 +451,7 @@ def ordinalize(self, scope, nan_to_class=False, inplace=True):
 
     # Optionally add NaN as class
     if nan_to_class:
-        self.nan_to_class(scope=scope)
+        self.nan_to_class(scope=scope, inplace=True)
 
     # Make sure scope updated
     self._check_scopes()
@@ -531,7 +489,7 @@ def _ordinalize(self, col):
     self._add_scope(col, 'category')
 
 
-def nan_to_class(self, scope='category', inplace=True):
+def nan_to_class(self, scope='category', inplace=False):
     '''This method will cast any columns that were not categorical that are
     passed here to categorical. Will also ordinally encode them if
     they have not already been encoded
@@ -546,25 +504,15 @@ def nan_to_class(self, scope='category', inplace=True):
             default = 'category'
 
     inplace : bool, optional
-        If this operation should take place on
-        the original object (inplace = True),
-        or if it should be done on a copy of the Dataset
-        object (inplace = False).
-
-        If done inplace, then None will be returned.
-        If done with inplace = False, then a copy
-        of the Dataset with the operation applied
-        will be returned.
+        If True, do operation inplace and return None.
 
         ::
 
-            default = True
+            default = False
     '''
 
     if not inplace:
-        df_copy = self.copy(deep=False)
-        df_copy.nan_to_class(scope=scope, inplace=False)
-        return df_copy
+        return self._inplace('nan_to_class', locals())
 
     # Check scope and roles
     self._check_sr()
@@ -604,7 +552,7 @@ def nan_to_class(self, scope='category', inplace=True):
     self._check_scopes()
 
 
-def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=True):
+def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=False):
     '''This method is a used for making a copy of an
     existing column, ordinalizing it and then setting it
     to have role = non input.
@@ -631,26 +579,15 @@ def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=True):
             default = True
 
     inplace : bool, optional
-        If this operation should take place on
-        the original object (inplace = True),
-        or if it should be done on a copy of the Dataset
-        object (inplace = False).
-
-        If done inplace, then None will be returned.
-        If done with inplace = False, then a copy
-        of the Dataset with the operation applied
-        will be returned.
+        If True, do operation inplace and return None.
 
         ::
 
-            default = True
+            default = False
     '''
 
     if not inplace:
-        df_copy = self.copy(deep=False)
-        df_copy.copy_as_non_input(col=col, new_col=new_col,
-                                  copy_scopes=copy_scopes, inplace=True)
-        return df_copy
+        return self._inplace('copy_as_non_input', locals())
 
     # Copy as new col
     self[new_col] = self[col].copy()
@@ -673,7 +610,7 @@ def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=True):
     self._check_scopes()
 
 
-def add_unique_overlap(self, cols, new_col, decode_values=True):
+def add_unique_overlap(self, cols, new_col, decode_values=True, inplace=False):
     '''This function is designed to add a new column
     with the overlapped unique values from passed two or more columns.
     For example, say you had two binary columns, A and B. This function
@@ -737,7 +674,17 @@ def add_unique_overlap(self, cols, new_col, decode_values=True):
 
             default = True
 
+    inplace : bool, optional
+        If True, do operation inplace and return None.
+
+        ::
+
+            default = False
+
     '''
+
+    if not inplace:
+        return self._inplace('add_unique_overlap', locals())
 
     # Make sure up to date
     self._check_sr()

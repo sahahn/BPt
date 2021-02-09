@@ -5,6 +5,7 @@ import numpy as np
 def get_fake_dataset():
 
     fake = Dataset()
+    fake.verbose = -1
     fake['1'] = [1, 2, 3]
     fake['2'] = ['6', '7', '8']
     fake['2'] = fake['2'].astype('category')
@@ -95,8 +96,8 @@ def get_full_dataset():
     fake['subj'] = ['s1', 's2', 's3', 's4', 's5']
     fake.set_index('subj', inplace=True)
 
-    fake['target'] = [.1, .2, .3, .4, .5]
-    fake.set_role('target', 'target')
+    fake['targ'] = [.1, .2, .3, .4, .5]
+    fake = fake.set_role('targ', 'target')
 
     fake.set_test_split(subjects=['s4', 's5'])
 

@@ -9,6 +9,7 @@ from ..helpers import base_load_subjects, save_subjects
 from .datasets import (get_fake_dataset, get_fake_dataset2,
                        get_fake_multi_index_dataset, get_fake_dataset4,
                        get_fake_dataset5, get_full_dataset)
+from ..Dataset import Dataset
 
 
 def test_add_scope():
@@ -57,11 +58,45 @@ def test_check_scopes():
     assert not df._is_category('2')
 
 
+def test_set_role_inplace():
+
+    df = get_fake_dataset()
+    df.set_role('1', 'target', inplace=True)
+    df.set_role('2', 'non input', inplace=True)
+
+    assert(set(df.get_cols('target')) == set(['1']))
+    assert(set(df.get_cols('non input')) == set(['2']))
+
+
 def test_set_role():
 
     df = get_fake_dataset()
     df.set_role('1', 'target')
     df.set_role('2', 'non input')
+
+    assert(set(df.get_cols('target')) != set(['1']))
+    assert(set(df.get_cols('non input')) != set(['2']))
+
+    df = df.set_role('1', 'target')
+    df = df.set_role('2', 'non input')
+
+    assert(set(df.get_cols('target')) == set(['1']))
+    assert(set(df.get_cols('non input')) == set(['2']))
+
+
+def test_set_roles():
+
+    df = get_fake_dataset()
+    df = df.set_roles({'1': 'target', '2': 'non input'})
+
+    assert(set(df.get_cols('target')) == set(['1']))
+    assert(set(df.get_cols('non input')) == set(['2']))
+
+
+def test_set_roles_inplace():
+
+    df = get_fake_dataset()
+    df.set_roles({'1': 'target', '2': 'non input'}, inplace=True)
 
     assert(set(df.get_cols('target')) == set(['1']))
     assert(set(df.get_cols('non input')) == set(['2']))
@@ -510,3 +545,18 @@ def test_get_Xy_alt():
     assert np.array_equal(X[:, 1],
                           np.array([12, 13]).astype('float32'))
     assert np.array_equal(y, np.array([.2, .3]).astype('float64'))
+
+
+def test_invalid_names():
+
+    df = Dataset()
+    df['target'] = ['1']
+
+    with assert_raises(RuntimeError):
+        df._check_cols()
+
+    df = Dataset()
+    df['data'] = ['1']
+
+    with assert_raises(RuntimeError):
+        df._check_cols()

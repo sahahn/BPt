@@ -15,9 +15,9 @@ def get_fake_dataset():
     fake['4'] = ['2', '2', '2']
     fake['5'] = ['2', '1', '2']
 
-    fake.set_role('1', 'data')
-    fake.set_role('2', 'target')
-    fake.set_roles(['3', '4', '5'], 'non input')
+    fake = fake.set_role('1', 'data')
+    fake = fake.set_role('2', 'target')
+    fake = fake.set_role(['3', '4', '5'], 'non input')
 
     fake.ordinalize(scope='all')
 
@@ -115,6 +115,7 @@ def test_proc_cv_strategy_stratify():
 def test_set_test_split():
 
     df = get_fake_dataset()
+    df.verbose = -1
 
     with assert_raises(TypeError):
         df.set_test_split()
@@ -256,6 +257,7 @@ def test_multi_index_proc_cv_strategy_groups():
 def test_multi_index_set_test_split():
 
     df = get_fake_multi_index_dataset()
+    df.verbose = -1
 
     df.set_test_split(size=1, cv_strategy=None, random_state=None)
     assert len(df.test_subjects) == 1

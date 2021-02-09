@@ -63,7 +63,7 @@ def get_fake_dataset():
     fake['1'] = [1, 2, 3]
     fake['2'] = [4, 5, 6]
     fake['3'] = [7, 8, 9]
-    fake.set_role('3', 'target')
+    fake = fake.set_role('3', 'target')
 
     return fake
 

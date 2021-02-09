@@ -314,26 +314,29 @@ class CompatArray(list):
 
     def __init__(self, arr_2d):
 
-        self.original_dtype_ = arr_2d.dtype
+        self.dtype = arr_2d.dtype
         super().__init__(np.swapaxes(arr_2d, 0, 1))
 
     @property
     def shape(self):
         return (len(self[0]), len(self))
 
-    @property
-    def dtype(self):
-        return 'CompatArray'
-
-    def conv_back(self, rest_inds):
+    def conv_rest_back(self, rest_inds):
 
         if len(rest_inds) == 0:
-            empty = np.array([], dtype=self.original_dtype_)
+            empty = np.array([], dtype=self.dtype)
             return empty.reshape((self.shape[0], 0))
 
+        # Create an array from the requested rest inds
         base = np.array(itemgetter(*rest_inds)(self),
-                        dtype=self.original_dtype_)
-        return base.reshape((self.shape[0], len(rest_inds)))
+                        dtype=self.dtype)
+
+        # If only one return axis, conv to correct shape
+        if len(base.shape) == 1:
+            return base[:, np.newaxis]
+
+        # Reverse initial swap
+        return np.swapaxes(base, 0, 1)
 
 
 class BPtListLoader(BPtLoader):
@@ -349,18 +352,23 @@ class BPtListLoader(BPtLoader):
         if len(self.inds_) != 1:
             raise RuntimeWarning('BPtListLoader can only work on one column.')
 
-        # Add in loaded column to x_loaded
+        # Calls super fit_transform, but passing
+        # X with the data columns replaced by CompatArray
+        return super().fit_transform(self._get_X_compat(X), y=y,
+                                     mapping=mapping,
+                                     train_data_index=train_data_index,
+                                     **fit_params)
+
+    def _get_X_compat(self, X):
+
         ind = self.inds[0]
         X_loaded = CompatArray(X)
         X_loaded[ind] = self._load_col(X[:, ind])
 
-        # Want to call super fit_transform, but passing
-        # X with the data columns replaced by list of
-        return super().fit_transform(X_loaded, y=None, mapping=None,
-                                     train_data_index=None, **fit_params)
+        return X_loaded
 
     def _load_col(self, X_col):
-        '''Load as list of subjects'''
+        '''Load X col as list of subjects'''
 
         X_col_loaded = []
         for key in X_col:
@@ -371,6 +379,8 @@ class BPtListLoader(BPtLoader):
         return X_col_loaded
 
     def _fit(self, X, y=None, **fit_params):
+        '''Override the internal fit function to fit only
+        the single requested column.'''
         self.estimator_.fit(X[self.inds_[0]], y=y, **fit_params)
 
         return self
@@ -381,6 +391,10 @@ class BPtListLoader(BPtLoader):
         if self.estimator_ is None:
             return X
 
+        # Load if not laoded
+        if not isinstance(X, CompatArray):
+            X = self._get_X_compat(X)
+
         # Get X_trans
         X_trans = self.estimator_.transform(X=X[self.inds_[0]])
 
@@ -388,7 +402,7 @@ class BPtListLoader(BPtLoader):
         self.n_trans_feats_ = X_trans.shape[1]
 
         # For compatib.
-        self.X_trans_inds_ = [np.arange(self.n_trans_feats_)]
+        self.X_trans_inds_ = [list(range(self.n_trans_feats_))]
 
         # Return stacked X_trans with rest inds
-        return np.hstack([X_trans, X.conv_back(self.rest_inds_)])
+        return np.hstack([X_trans, X.conv_rest_back(self.rest_inds_)])

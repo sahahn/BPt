@@ -178,15 +178,19 @@ class Piece(Params, Check):
 
 class Loader(Piece):
 
-    def __init__(self, obj, params=0, scope='data files',
+    def __init__(self, obj, behav='single', params=0, scope='data file',
                  cache_loc=None, extra_params=None,
                  fix_n_wrapper_jobs=False):
         ''' Loader refers to transformations which operate on loaded Data_Files.
         (See :func:`Load_Data_Files`).
         They in essence take in saved file locations, and after some series
         of transformations pass on compatible features.
-        Notably loaders
-        define operations which are computed on single files indepedently.
+
+        Importantly, the Loader object can operate in two ways. Either
+        the Loader can define operations which are computed on
+        single files independently, or load and pass on data
+        to the defined `obj` as a list, where each element of
+        the list is a subject's data. See parameter behav.
 
         Parameters
         ----------
@@ -195,11 +199,8 @@ class Loader(Piece):
             a str corresponding to
             one of the preset loaders found at :ref:`Loaders`.
             Beyond pre-defined loaders, users can
-            pass in custom objects
-            (they just need to have a defined fit_transform function
-            which when passed the already loaded file, will return
-            a 1D representation of that subjects
-            features.
+            pass in custom objects as long as they have functions
+            corresponding to the correct behavior.
 
             `obj` can also be passed as a :class:`Pipe`.
             See :class:`Pipe`'s documentation to
@@ -217,11 +218,51 @@ class Loader(Piece):
             might constitute loading in say 3D neuroimaging data,
             and passing on features as extracted by ROI.
 
+        behav : {'single', 'all'}, optional
+            The Loader object can operate under two different
+            behaviors, corresponding to operations which can
+            be done for each subject's Data File independently ('single')
+            and operations which must be done using information
+            from all train subject's Data Files ('all').
+
+            'single' is the default behavior, if requested
+            then the Loader will load each subject's Data File
+            seperately and apply the passed `obj` fit_transform.
+            The benefit of this method in contrast to 'all' is
+            that only one subject's full raw data needs to be
+            loaded at once, whereas with all, you must have enough
+            avaliable memory to load all of the current training or
+            validation subject's raw data at one. Likewise 'single'
+            allows for caching fit_transform operations for each
+            individual subject (which can then be more flexibily re-used).
+
+            Behavior 'all' is designed to work with base objects
+            that accept a list of length n_subjects to their fit_transform
+            function, where each element of the list will be that subject's
+            loaded Data File. This behavior requires loading all data
+            into memory, but allows for using information from the rest
+            of the group split. For example we would need to set Loader
+            to 'all' if we wanted to use
+            https://nilearn.github.io/modules/generated/nilearn.connectome.ConnectivityMeasure.html
+            with parameter kind = "tangent" as this transformer requires
+            information from the rest of the loaded subjects when training.
+            On the otherhand, if we used kind = "correlation",
+            then we could use either behavior
+            'all' or 'single' since "correlation" can be computed for each
+            subject individually.
+
+            ::
+
+                default = 'single'
+
+
         params : int, str or dict of :ref:`params<Params>`, optional
             `params` determines optionally if the distribution
             of hyper-parameters to
-            potentially search over for this loader. Preset param distributions are
-            listed for each choice of obj at :ref:`Loaders`, and you can read more on
+            potentially search over for this loader. Preset param
+            distributions are
+            listed for each choice of obj at :ref:`Loaders`,
+            and you can read more on
             how params work more generally at :ref:`Params`.
 
             If obj is passed as :class:`Pipe`, see :class:`Pipe` for an example on how different
@@ -238,13 +279,13 @@ class Loader(Piece):
             be specified.
 
             You will likely want to use either custom key based scopes, or the
-            'data files' preset scope, as something like 'covars'
+            'data file' preset scope, as something like 'covars'
             won't make much sense,
-            when atleast for now, you cannot even load Covars data files.
+            when atleast for now, you cannot even load Covars data file.
 
             ::
 
-                default = 'data files'
+                default = 'data file'
 
         cache_loc : str, Path or None, optional
             Optional location in which to cache loader transformations.
@@ -270,6 +311,12 @@ class Loader(Piece):
         '''
 
         self.obj = obj
+        
+        # Make sure valid behav param
+        if behav not in ['single', 'all']:
+            raise RuntimeError('behav must be either "single" or "all".')
+
+        self.behav = behav
         self.params = params
         self.scope = scope
         self.cache_loc = cache_loc

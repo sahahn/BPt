@@ -635,7 +635,7 @@ class Loaders(Pieces):
 
     def _process(self, params):
 
-        from .BPtLoader import BPtLoader
+        from .BPtLoader import BPtLoader, BPtListLoader
 
         # Process according to passed tuples or not
         passed_loaders, passed_loader_params =\
@@ -659,13 +659,19 @@ class Loaders(Pieces):
             if hasattr(obj, 'random_state'):
                 setattr(obj, 'random_state', self.spec['random_state'])
 
+            # Determine which loader object to use
+            if param.behav == 'single':
+                Loader = BPtLoader
+            else:
+                Loader = BPtListLoader
+
             # Wrap in BPtLoader
             wrapped_obj =\
-                BPtLoader(estimator=obj, inds=inds,
-                          file_mapping=self.dataset.get_file_mapping(),
-                          n_jobs=self.spec['n_jobs'],
-                          fix_n_jobs=param.fix_n_wrapper_jobs,
-                          cache_loc=param.cache_loc)
+                Loader(estimator=obj, inds=inds,
+                       file_mapping=self.dataset.get_file_mapping(),
+                       n_jobs=self.spec['n_jobs'],
+                       fix_n_jobs=param.fix_n_wrapper_jobs,
+                       cache_loc=param.cache_loc)
 
             # Add to loaders, use same as base name
             loaders.append((name, wrapped_obj))

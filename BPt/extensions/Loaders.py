@@ -433,6 +433,9 @@ class SurfMaps(BaseEstimator, TransformerMixin):
         # Load maps
         self.maps_ = load_surf(self.maps)
 
+        # Save dtype
+        self.dtype_ = X.dtype
+
         # Make the maps if passed mask set to 0 in those spots
         if self.mask_ is not None:
 
@@ -503,6 +506,9 @@ class SurfMaps(BaseEstimator, TransformerMixin):
             X_trans = self._transform_average(X)
         else:
             X_trans = None
+
+        # Convert back to original dtype
+        X_trans = X_trans.astype(self.dtype_)
 
         # Always return as shape of extra data if any by
         # number of maps, with number of maps as last dimension

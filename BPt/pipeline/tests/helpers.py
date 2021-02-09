@@ -26,6 +26,27 @@ class ToFixedTransformer(BaseEstimator, TransformerMixin):
         return X_trans
 
 
+class IdentityListLoader(BaseEstimator, TransformerMixin):
+    needs_mapping = True
+
+    def __init__(self):
+        pass
+
+    def fit(self, X, y=None, mapping=None):
+        assert mapping is not None
+        return self
+
+    def transform(self, X):
+
+        assert isinstance(X, list)
+
+        X_trans = []
+        for x in X:
+            X_trans.append(x.flatten())
+
+        return np.array(X_trans)
+
+
 class FakeSelector(SelectorMixin, BaseEstimator):
 
     def __init__(self, mask):
@@ -105,11 +126,11 @@ def get_fake_data_dataset(data_keys=None,
 
     for key in data_keys:
         dataset[key] = []
-        dataset.set_role(key, 'data')
+        dataset.set_role(key, 'data', inplace=True)
 
     for key in cat_keys:
         dataset[key] = []
-        dataset.set_role(key, 'data')
+        dataset.set_role(key, 'data', inplace=True)
         dataset.add_scope(key, 'category')
 
     dataset._check_scopes()

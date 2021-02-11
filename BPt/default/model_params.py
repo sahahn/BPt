@@ -129,7 +129,6 @@ P['rf classifier dist']['class_weight'] = cls_weight
 # Light gbm params
 P['base lgbm'] = {'silent': True}
 
-reg = TransitionChoice([0, Log(lower=1e-5, upper=1)])
 
 P['lgbm dist1'] =\
     {'silent': True,
@@ -145,8 +144,8 @@ P['lgbm dist1'] =\
          Scalar(lower=.3, upper=.95),
          'colsample_bytree':
          Scalar(lower=.3, upper=.95),
-         'reg_alpha': reg,
-         'reg_lambda': reg}
+         'reg_alpha': TransitionChoice([0, Log(lower=1e-5, upper=1)]),
+         'reg_lambda': TransitionChoice([0, Log(lower=1e-5, upper=1)])}
 
 P['lgbm dist2'] =\
     {'silent': True,
@@ -203,8 +202,8 @@ P['xgb dist1'] =\
      'min_child_weight': Log(lower=1e-5, upper=1e4),
      'subsample': Scalar(lower=.3, upper=.95),
      'colsample_bytree': Scalar(lower=.3, upper=.95),
-     'reg_alpha': reg,
-     'reg_lambda': reg}
+     'reg_alpha': TransitionChoice([0, Log(lower=1e-5, upper=1)]),
+     'reg_lambda': TransitionChoice([0, Log(lower=1e-5, upper=1)])}
 
 P['xgb dist2'] =\
     {'verbosity': 0,

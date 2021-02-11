@@ -1,5 +1,5 @@
 from lightgbm import LGBMRegressor, LGBMClassifier
-from ..main.Params_Classes import CV_Split
+from ..main.CV import BPtCV
 from ..helpers.ML_Helpers import proc_mapping
 from sklearn.model_selection import train_test_split
 import warnings
@@ -42,11 +42,13 @@ class BPtMixIn():
 
             # If any eval_split
             if self.eval_split is not None:
-                if isinstance(self.eval_split, CV_Split):
+                if isinstance(self.eval_split, BPtCV):
 
                     # Get the cv_inds
                     train_inds, eval_inds =\
-                        self.eval_split.get_split(train_data_index)
+                        self.eval_split.get_split(
+                            train_data_index,
+                            random_state=self.random_state)
 
                     # Index
                     X_train, y_train = X[train_inds], y[train_inds]

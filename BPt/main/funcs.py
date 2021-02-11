@@ -301,23 +301,35 @@ def nested_cv_check(obj, dataset):
 
         # If has cv object, try applying dataset
         # can be either in object or in dict
-        if hasattr(obj, 'cv') and isinstance(obj.cv, CV):
-            setattr(obj, 'cv', obj.cv.apply_dataset(dataset))
 
+        # If Object, check if any of the parameters are CV
+        if hasattr(obj, 'get_params'):
+            for param in obj.get_params(deep=False):
+                val = getattr(obj, param)
+
+                # If CV proc
+                if isinstance(val, CV):
+                    setattr(obj, param, val.apply_dataset(dataset))
+
+                # If not, nested check
+                else:
+                    _nested_cv_check(val)
+
+        # If Dict, check all valyes
         elif isinstance(obj, dict):
             for k in obj:
-                if k == 'cv' and isinstance(obj[k], CV):
-                    obj[k] = obj[k].apply_dataset(dataset)
-                else:
-                    _nested_cv_check(obj[k])
+                val = obj[k]
 
-        elif isinstance(obj, list):
+                # If CV proc
+                if isinstance(val, CV):
+                    obj[k] = val.apply_dataset(dataset)
+
+                # If not, nested check
+                else:
+                    _nested_cv_check(val)
+
+        elif isinstance(obj, (list, tuple, set)):
             [_nested_cv_check(o) for o in obj]
-        elif isinstance(obj, tuple):
-            (_nested_cv_check(o) for o in obj)
-        elif hasattr(obj, 'get_params'):
-            for param in obj.get_params(deep=False):
-                _nested_cv_check(getattr(obj, param))
 
     # Run nested check for any CV input param objects
     _nested_cv_check(obj)
@@ -365,7 +377,8 @@ def _sk_prep(model_pipeline, dataset, problem_spec='default',
         bpt_cv = cv.apply_dataset(dataset)
 
         # Convert from BPtCV to sklearn compat, i.e., just raw index
-        sk_cv = bpt_cv.get_cv(X.index, random_state=ps.random_state,
+        sk_cv = bpt_cv.get_cv(X.index,
+                              random_state=ps.random_state,
                               return_index=True)
 
     # @TODO maybe convert to BPtCV then back?

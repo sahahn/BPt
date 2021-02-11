@@ -17,7 +17,7 @@ from ..helpers.Data_Helpers import (get_unique_combo_df,
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..pipeline.Evaluator import Evaluator
-from ..main.Params_Classes import (CV_Splits, CV_Split, Feat_Importance,
+from ..main.Params_Classes import (Feat_Importance,
                                    Model_Pipeline,
                                    Model, Ensemble, Problem_Spec)
 from ..pipeline.BPtPipelineConstructor import get_pipe

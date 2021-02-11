@@ -383,8 +383,8 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
         relevant column (as determined by the scope argument) where their
         value is less than the mean of the
         column - n_std[0] * the standard deviation of the column,
-            and greater than the mean of the column + `n_std[1]`
-        * the standard deviation of the column.
+        and greater than the mean of the column + n_std[1] * the standard
+        deviation of the column.
 
         If a single number is passed, that number is applied to
         both the lower

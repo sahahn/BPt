@@ -39,7 +39,7 @@ from sklearn.utils import Bunch
 from sklearn.model_selection import check_cv, cross_val_predict
 import numpy as np
 from .base import _fit_single_estimator, _get_est_fit_params
-from ..main.Params_Classes import CV_Splits
+from ..main.CV import BPtCV
 
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.preprocessing import LabelEncoder
@@ -122,8 +122,19 @@ def stacking_fit(self, X, y, sample_weight=None, mapping=None,
 
     # To train the meta-classifier using the most data as possible, we use
     # a cross-validation to obtain the output of the stacked estimators.
-    if isinstance(self.cv, CV_Splits):
-        _, cv_inds = self.cv.get_splits(train_data_index)
+
+    # If BPtCV call get_cv
+    if isinstance(self.cv, BPtCV):
+
+        random_state = None
+        if hasattr(self, 'random_state'):
+            random_state = self.random_state
+
+        cv_inds = self.cv.get_cv(train_data_index,
+                                 random_state=random_state,
+                                 return_index=True)
+
+    # Otherwise treat as sklearn arg directly
     else:
         cv_inds = self.cv
 
@@ -400,7 +411,7 @@ class Ensemble_Wrapper():
                                            final_estimator,
                                            final_estimator_params,
                                            ensemble_params.n_jobs_type,
-                                           ensemble_params.cv_splits)
+                                           ensemble_params.cv)
 
     def _wrap_des(self, models, ensemble_info, ensemble_split):
 
@@ -491,7 +502,7 @@ class Ensemble_Wrapper():
 
     def _wrap_multiple(self, models, ensemble_info,
                        final_estimator, final_estimator_params,
-                       n_jobs_type, cv_splits):
+                       n_jobs_type, cv):
         '''In case of no split/DES ensemble, and not single estimator based.'''
 
         # Unpack ensemble info
@@ -551,8 +562,8 @@ class Ensemble_Wrapper():
             pass_params['final_estimator'] = final_estimator_obj
 
         # Check if cv passed
-        if cv_splits is not None:
-            pass_params['cv'] = cv_splits
+        if cv is not None:
+            pass_params['cv'] = cv
 
         # Init the ensemble object
         ensemble = ensemble_obj(**pass_params)

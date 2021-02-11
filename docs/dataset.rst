@@ -58,13 +58,32 @@ Key Dataset Concepts
 Role
 ======
 
-There are three roles in the :ref:`Dataset` class / BPt. These are
-'data', 'target' and 'non input'.
+There are three possible roles in the :ref:`Dataset` class / BPt. These are
+'data', 'target' and 'non input'. By default, all loaded columns will be treated with
+role 'data' until set differently. Roles are set through methods :func:`set_role <Dataset.set_role>`
+and :func:`set_roles <Dataset.set_roles>`.
 
+The different roles are described below.
 
-.. _scope:
+- data
+    The default role, data, is used to indicate all columns which might at some point serve as input features for an eventual predective task.
+    Data can have any of the :ref:`Data_Types` including :ref:`Data_Files`. NaN's are allowed in data columns.
 
-Scope
+- target
+    The role of target is used to indicate columns which are to be predicted, and therefore will not serve as input features for any predictive tasks.
+    Targets can take on any of the :ref:`Data_Types` except :ref:`Data_Files`. Target columns can include NaN values, although be warned that trying
+    passing a target with NaN values to some functions may not work correctly. 
+
+- non input
+    As the name suggests, any features set with role non input, will not be provided directly as input features to a predictive task.
+    Instead, these features are usually categorical and can be used to inform cross-validation behavior or
+    to examine predictive results under different groupings. For example see :func:`copy_as_non_input <Dataset.copy_as_non_input>` to
+    make an ordinalized copy of an existing column. While there is no strict requiriment that columns with role non input be categorical,
+    there is a fixed requiriment that any columns with role non input cannot contain any NaN's. 
+
+.. _scopes:
+
+Scopes
 ======
 
 See concept :ref:`Scope`. In particular, with respect to the
@@ -85,7 +104,7 @@ We consider loaded variables to be essentially of three types,
 'float' which are continuous variables, categorical or a data file.
 By default if not specified, variables are considered to be of type 'float'.
 
-Not taking into account data files, which we will discuss below, all one generally
+Not taking into account :ref:`data_files`, which we will discuss below, all one generally
 has to worry about with respect to data types are telling the Dataset class which columns
 are categorical. By default, if any columns are set to pandas type 'category', e.g., via:
 
@@ -100,7 +119,7 @@ For example:
 
 ::
 
-    data.add_scope(col='col', scope='category')
+    data.add_scope('col', 'category')
 
 In addition to explicitly setting columns as categorical, it is important to note
 that a number of Dataset methods will automatically cast relevant columns to type 'category'.
@@ -111,9 +130,18 @@ will try to automatically detect categorical columns, but also functions like:
 :func:`ordinalize <Dataset.ordinalize>`,
 :func:`copy_as_non_input <Dataset.copy_as_non_input>` and more.
 
+.. _data_files:
 
+Data Files
+======================
 Data files allow BPt to work with any type of arbitrary data beyond simply tabular data.
+For example, Data File's can be used to load and work with volumetric or surface based neuroimaging data
+or even connectome data.
 
+See :func:`add_data_files <Dataset.add_data_files>` for how to load data files to a Dataset.
+
+During construction of a model pipeline any loaded data files must have a corresponding
+:class:`Loader` where those files will be converted into valid down stream predictive features.
 
 
 Warnings
@@ -135,8 +163,7 @@ which may cause internal errors and metadata loss.
 ********
 Dataset
 ********
-The different methods for the Dataset class are listed below, though note most methods from
-the pandas DataFrame will also work.
+All extension methods for the Dataset class are listed below, though note most base pandas DataFrame methods will still also work.
 
 
 ********************************
@@ -292,7 +319,7 @@ drop_subjects_by_nan
 
 
 drop_cols_by_unique_val
-=====================
+=========================
 .. automethod:: Dataset.drop_cols_by_unique_val
 
 
@@ -349,11 +376,6 @@ show_nan_info
 info
 =====================
 .. automethod:: Dataset.info
-
-
-print_nan_info
-=====================
-.. automethod:: Dataset.print_nan_info
 
 
 ********************************

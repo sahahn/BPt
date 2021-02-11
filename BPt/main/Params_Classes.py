@@ -796,7 +796,7 @@ class Ensemble(Piece):
                  param_search=None,
                  target_scaler=None,
                  base_model=None,
-                 cv_splits=None,
+                 cv=None,
                  is_des=False,
                  single_estimator=False,
                  des_split=.2,
@@ -924,8 +924,8 @@ class Ensemble(Piece):
 
                 default = None
 
-        cv_splits : :class:`CV_Splits` or None, optional
-            Used for passing custom CV split behavior to
+        cv : :class:`CV` or None, optional
+            Used for passing custom nested internal CV split behavior to
             ensembles which employ splits, e.g., stacking.
 
             ::
@@ -1021,7 +1021,7 @@ class Ensemble(Piece):
         self.param_search = param_search
         self.target_scaler = target_scaler
         self.base_model = base_model
-        self.cv_splits = cv_splits
+        self.cv = cv
         self.is_des = is_des
         self.des_split = des_split
         self.single_estimator = single_estimator
@@ -2496,7 +2496,8 @@ class CV_Strategy(Params):
 class CV(Params):
 
     def __init__(self, splits=3, n_repeats=1,
-                 cv_strategy=None, **cv_strategy_args):
+                 cv_strategy=None, random_state='context',
+                 **cv_strategy_args):
         ''' This object is used to define a BPt style custom
         CV strategy, e.g., as KFold
 
@@ -2554,11 +2555,25 @@ class CV(Params):
             ::
 
                 default = None
+
+        random_state : 'context', int or None, optional
+            The fixed random seed in which this
+            CV object should adhere to.
+
+            If left as default value of 'context', then
+            the random state will be set based on the
+            context of where it is called, i.e., typically
+            the random_state set in :class:`Problem_Spec`.
+
+            ::
+
+                default = 'context'
         '''
 
         self.splits = splits
         self.n_repeats = n_repeats
         self.cv_strategy = cv_strategy
+        self.random_state = random_state
 
         if self.cv_strategy is None:
             self.cv_strategy = CV_Strategy()
@@ -2567,110 +2582,3 @@ class CV(Params):
 
     def apply_dataset(self, dataset):
         return get_bpt_cv(self, dataset)
-
-
-class CV_Split(Params):
-
-    def __init__(self, cv='default', split=.2,
-                 _cv=None, _random_state=None):
-
-        self.cv = cv
-        self.split = split
-        self._cv = _cv
-        self._random_state = _random_state
-
-    def setup(self, cv, random_state):
-
-        self._cv = cv
-        self._random_state = random_state
-
-    def get_split(self, train_data_index):
-
-        return self._cv.train_test_split(subjects=train_data_index,
-                                         test_size=self.split,
-                                         random_state=self._random_state,
-                                         return_index=True)
-
-
-class CV_Splits(Params):
-
-    def __init__(self, cv='default', splits=3, n_repeats=1,
-                 _cv=None, _random_state=None, _splits_vals=None):
-        ''' This object is used to wrap around a CV strategy at a higher level.
-
-        Parameters
-        ----------
-        cv: 'default' or :class:`CV`, optional
-            If left as default 'default', use the class defined CV behavior
-            for the splits, otherwise can pass custom behavior.
-
-        splits : int, float, str or list of str, optional
-            `splits` allows you to specify the base of what CV strategy
-            should be used.
-
-            Specifically, options for split are:
-
-            - int
-                The number of k-fold splits to conduct. (E.g., 3 for
-                3-fold CV split to be conducted at
-                every hyper-param evaluation).
-
-            - float
-                Must be 0 < `splits` < 1, and defines a
-                single train-test like split,
-                with `splits` % of the current training data size used
-                as a validation set.
-
-            - str
-                If a str is passed, then it must correspond to a
-                loaded Strat variable. In
-                this case, a leave-out-group CV will be used according
-                to the value of the
-                indicated Strat variable (E.g., a leave-out-site CV scheme).
-
-            - list of str
-                If multiple str passed, first determine the overlapping
-                unique values from
-                their corresponing loaded Strat variables,
-                and then use this overlapped
-                value to define the leave-out-group CV as described above.
-
-            `n_repeats` is designed to work with any of these choices.
-
-            ::
-
-                default = 3
-
-        n_repeats : int, optional
-            The number of times to repeat the defined strategy
-            as defined in `splits`.
-
-            For example, if `n_repeats` is set to 2, and `splits` is 3,
-            then a twice repeated 3-fold CV will be performed
-
-            ::
-
-                default = 1
-        '''
-
-        self.cv = cv
-        self.splits = splits
-        self.n_repeats = n_repeats
-        self._cv = _cv
-        self._random_state = _random_state
-        self._splits_vals = _splits_vals
-
-    def setup(self, cv, split_vals, random_state):
-
-        self._cv = cv
-        self._splits_vals = split_vals
-        self._random_state = random_state
-
-    def get_splits(self, train_data_index):
-
-        return self._cv.get_cv(train_data_index,
-                               self.splits,
-                               self.n_repeats,
-                               self._splits_vals,
-                               self._random_state,
-                               return_index='both')

@@ -33,20 +33,26 @@ def get_bpt_cv(cv, dataset):
         splits_vals = None
 
     return BPtCV(splits=cv.splits, n_repeats=cv.n_repeats,
-                 cv_strategy=cv_strategy, splits_vals=splits_vals)
+                 cv_strategy=cv_strategy, splits_vals=splits_vals,
+                 random_state=cv.random_state)
 
 
 class BPtCV(BaseEstimator):
 
     def __init__(self, splits, n_repeats,
-                 cv_strategy, splits_vals):
+                 cv_strategy, splits_vals,
+                 random_state='context'):
 
         self.splits = splits
         self.n_repeats = n_repeats
         self.cv_strategy = cv_strategy
         self.splits_vals = splits_vals
+        self.random_state = random_state
 
     def get_cv(self, train_data_index, random_state, return_index):
+
+        if self.random_state != 'context':
+            random_state = self.random_state
 
         return self.cv_strategy.get_cv(train_data_index,
                                        splits=self.splits,
@@ -54,6 +60,25 @@ class BPtCV(BaseEstimator):
                                        splits_vals=self.splits_vals,
                                        random_state=random_state,
                                        return_index=return_index)
+
+    def get_split(self, train_data_index, random_state):
+        '''Used when there is only one split, returns as index'''
+
+        # Make sure splits is a float
+        if not isinstance(self.splits, float):
+            raise RuntimeError('splits must be a float to use get_split!')
+
+        if self.random_state != 'context':
+            random_state = self.random_state
+
+        return self.cv_strategy.train_test_split(train_data_index,
+                                                 test_size=self.splits,
+                                                 random_state=random_state,
+                                                 return_index=True)
+
+    def _build_repr(self):
+        parent_repr = super()._build_repr()
+        return parent_repr
 
 
 def inds_from_names(original_subjects, subject_splits):

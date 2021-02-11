@@ -1643,8 +1643,14 @@ class Dataset(pd.DataFrame):
         html = ''
         for scope in ['data', 'target', 'non input']:
             cols = self._get_cols(scope)
+
+            # Minor formatting for display
+            display_scope = scope[0].upper() + scope[1:]
+            if display_scope == 'Target' and len(cols) > 1:
+                display_scope = 'Targets'
+
             if len(cols) > 0:
-                html += template.format(scope,
+                html += template.format(display_scope,
                                         self[cols]._base_repr_html_())
                 html += '\n'
 
@@ -1705,6 +1711,7 @@ class Dataset(pd.DataFrame):
 
     from ._plotting import (plot,
                             show,
+                            show_nan_info,
                             info,
                             plot_bivar,
                             _plot_cat_cat,

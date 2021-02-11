@@ -192,6 +192,16 @@ class BPtPipeline(Pipeline):
 
         return ordered_objs, ordered_base_names
 
+    def transform(self, X):
+
+        if isinstance(X, pd.DataFrame):
+            X = np.array(X)
+
+        for step in self.steps[:-1]:
+            X = step[1].transform(X)
+
+        return X
+
     def transform_df(self, X_df, fs=True):
         '''Transform an input dataframe, keeping track of feature names'''
 

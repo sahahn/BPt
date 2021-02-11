@@ -331,3 +331,99 @@ class BPtEvaluator():
 
         return pd.DataFrame(fis)
 
+    def _get_val_fold_Xy(self, estimator, X_df, y_df, fold, just_model=True):
+
+        # Get the X and y df's, without any subjects with missing
+        # target values for this fold
+        X_val_df, y_val_df =\
+            get_non_nan_Xy(X_df.loc[self.val_subjs[fold]],
+                           y_df.loc[self.val_subjs[fold]])
+
+        # Base as array, and all feat names
+        X_trans, feat_names = np.array(X_val_df), list(X_val_df)
+
+        # Transform the X df, casts to array if just_model.
+        if just_model:
+            feat_names =\
+                estimator.transform_feat_names(feat_names, fs=True)
+            X_trans = estimator.transform(X_trans)
+
+        return X_trans, np.array(y_val_df), feat_names
+
+    def permutation_importance(self, dataset,
+                               n_repeats=10, scorer='default',
+                               just_model=True,
+                               n_jobs=1, random_state='default'):
+        '''This function computes the permutation feature importances
+        from the base scikit-learn function permutation_importance:
+        https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance
+
+        Parameters
+        -----------
+        dataset : :class:`Dataset`
+            The instance of the Dataset class originally passed to
+            :func:`evaluate`. Note: if you pass a different dataset,
+            you may get unexpected behavior.
+
+        just_model : bool, optional
+            When set to true, the permuation feature importances
+            will be computed using the final set of transformed features
+            as passed when fitting the base model. This is reccomended
+            behavior because it means that the features do not need to
+            be re-transformed through the full pipeline to evaluate each
+            feature. If set to False, will permute the features in the
+            original feature space (which may be useful in some context).
+
+            ::
+
+                default = True
+
+        n_jobs : int, optional
+            The number of jobs to use for this function. Note
+            that if the underlying estimator supports multiple jobs
+            during inference (predicting), and the original
+            problem_spec was set with multiple n_jobs then that original
+            behavior will still hold, and you may wish to keep this
+            parameter as 1. On the otherhand, if the base estimator
+            does not use multiple jobs, passing a higher value here
+            could greatly speed up computation.
+
+            ::
+
+                default = 1
+        '''
+        from sklearn.inspection import permutation_importance
+
+        self._estimators_check()
+
+        # If default scorer, take the first one
+        if scorer == 'default':
+            first = list(self.ps.scorer)[0]
+            scorer = self.ps.scorer[first]
+            self._print('Using scorer:', first, level=1)
+
+        # If default random_state use the one saved in
+        # original problem spec.
+        if random_state == 'default':
+            random_state = self.ps.random_state
+
+        # Get X and y from saved problem spec
+        X, y = dataset.get_Xy(self.ps)
+
+        # For each estimator
+        all_fis = []
+        for fold, estimator in enumerate(self.estimators):
+
+            # Get correct X_val, y_val data
+            X_val, y_val, feat_names =\
+                self._get_val_fold_Xy(estimator, X_df=X, y_df=y,
+                                      fold=fold, just_model=just_model)
+
+            # Run the sklearn feature importances.
+            fis = permutation_importance(estimator, X_val, y_val,
+                                         scoring=scorer, n_repeats=n_repeats,
+                                         n_jobs=n_jobs,
+                                         random_state=random_state)
+            all_fis.append(fis)
+
+        return all_fis

@@ -5,6 +5,7 @@ from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..pipeline.Scorers import process_scorers
 from .BPtEvaluator import BPtEvaluator
 
+
 def model_pipeline_check(model_pipeline, **extra_params):
 
     # Make deep copy

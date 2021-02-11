@@ -43,33 +43,7 @@ from ..main.CV import BPtCV
 
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.preprocessing import LabelEncoder
-
-
-def get_fis(estimators, prop):
-
-    fis = []
-
-    # Go through each trained estimator
-    for est in estimators:
-        if hasattr(est, prop):
-            fi = getattr(est, prop)
-
-            # If any is None, return None
-            if fi is None:
-                return None
-
-            fis.append(fi)
-
-        # If any don't, return None
-        else:
-            return None
-
-    # Make sure all same len
-    if len(set([len(x) for x in fis])) != 1:
-        return None
-
-    # Return as mean
-    return np.mean(np.array(fis), axis=0)
+from .helpers import get_mean_fis
 
 
 def _fit_all_estimators(self, X, y, sample_weight=None, mapping=None,
@@ -234,11 +208,11 @@ class BPtVotingRegressor(VotingRegressor):
 
     @property
     def feature_importances_(self):
-        return get_fis(self.estimators_, 'feature_importances_')
+        return get_mean_fis(self.estimators_, 'feature_importances_')
 
     @property
     def coef_(self):
-        return get_fis(self.estimators_, 'coef_')
+        return get_mean_fis(self.estimators_, 'coef_')
 
 
 class BPtVotingClassifier(VotingClassifier):
@@ -250,11 +224,11 @@ class BPtVotingClassifier(VotingClassifier):
 
     @property
     def feature_importances_(self):
-        return get_fis(self.estimators_, 'feature_importances_')
+        return get_mean_fis(self.estimators_, 'feature_importances_')
 
     @property
     def coef_(self):
-        return get_fis(self.estimators_, 'coef_')
+        return get_mean_fis(self.estimators_, 'coef_')
 
 
 class DES_Ensemble(VotingClassifier):

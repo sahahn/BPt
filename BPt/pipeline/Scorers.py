@@ -77,6 +77,13 @@ SCORERS.update({
 
 })
 
+default_scorers = {'regression': ['explained_variance',
+                                  'neg_mean_squared_error'],
+                   'binary': ['matthews', 'roc_auc',
+                              'balanced_accuracy'],
+                   'categorical': ['matthews', 'roc_auc_ovr',
+                                   'balanced_accuracy']}
+
 
 def get_scorer_from_str(scorer_str):
 
@@ -95,6 +102,10 @@ def get_scorers_by_type(problem_type):
 
 
 def process_scorers(in_scorers, problem_type):
+
+    # Check for default case
+    if in_scorers == 'default':
+        in_scorers = default_scorers[problem_type]
 
     # get scorer_strs as initially list
     scorer_strs = conv_to_list(in_scorers)
@@ -117,6 +128,10 @@ def process_scorers(in_scorers, problem_type):
 
 
 def process_scorer(scorer_str, problem_type):
+
+    # Process scorer strs if default
+    if scorer_str == 'default':
+        scorer_str = default_scorers[problem_type][0]
 
     # If passed as str
     if isinstance(scorer_str, str):

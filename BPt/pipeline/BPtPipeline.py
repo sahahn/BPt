@@ -206,6 +206,18 @@ class BPtPipeline(Pipeline):
 
         return X_df
 
+    def transform_feat_names(self, X_df, fs=True):
+        '''Simmilar to transform df, but just transform feat names.'''
+
+        ordered_objs, ordered_base_names =\
+            self._get_ordered_objs_and_names(fs=fs, model=False)
+
+        feat_names = list(X_df)
+        for obj, base_name in zip(ordered_objs, ordered_base_names):
+            feat_names = obj._proc_new_names(feat_names, base_name=base_name)
+
+        return feat_names
+
     def inverse_transform_FIs(self, fis, feat_names):
 
         # Make compat w/ subjects x feats

@@ -6,7 +6,7 @@ from joblib import wrap_non_picklable_objects
 from ..helpers.Data_File import Data_File, load_data_file_proxy
 from copy import copy, deepcopy
 from ..helpers.ML_Helpers import conv_to_list
-from .helpers import (base_load_subjects, proc_file_input)
+from .helpers import (base_load_subjects, proc_file_input, verbose_print)
 from ..main.Input_Tools import Intersection, Value_Subset
 import warnings
 
@@ -31,6 +31,8 @@ class Dataset(pd.DataFrame):
     _metadata = ['roles', 'scopes', 'encoders', 'file_mapping',
                  'verbose_', 'test_subjects', 'train_subjects']
 
+    _print = verbose_print
+
     @property
     def _constructor(self):
         return Dataset
@@ -52,44 +54,6 @@ class Dataset(pd.DataFrame):
     @verbose.setter
     def verbose(self, verbose):
         self.verbose_ = verbose
-
-    def _print(self, *args, **kwargs):
-        '''Overriding the print function to allow for
-        customizable verbosity.
-
-        According to passed level:
-
-        Warnings are level 0,
-        Information on sizes / how many dropped are level 1.
-        Set to level -1 to mute warnings too.
-
-        Parameters
-        ----------
-        args
-            Anything that would be passed to default python print
-        '''
-
-        if 'level' in kwargs:
-            level = kwargs.pop('level')
-        else:
-            level = 1
-
-        if self.verbose >= level:
-
-            # Use warnings for level = 0
-            if level == 0:
-
-                # Conv print to str - then warn
-                sep = ' '
-                if 'sep' in kwargs:
-                    sep = kwargs.pop('sep')
-                as_str = sep.join(str(arg) for arg in args)
-
-                warnings.warn(as_str)
-
-            # Use base print for rest
-            else:
-                print(flush=True, *args, **kwargs)
 
     def _inplace(self, func_name, args):
         '''Assumes that inplace is True for this func to be called.'''

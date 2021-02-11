@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import glob
 import os
+import warnings
 
 
 def proc_fop(fop):
@@ -117,3 +118,42 @@ def get_str_round(val, places=3):
         return val
 
     return str(np.round(float(val), places))
+
+
+def verbose_print(self, *args, **kwargs):
+    '''Overriding the print function to allow for
+    customizable verbosity.
+
+    According to passed level:
+
+    Warnings are level 0,
+    Information on sizes / how many dropped are level 1.
+    Set to level -1 to mute warnings too.
+
+    Parameters
+    ----------
+    args
+        Anything that would be passed to default python print
+    '''
+
+    if 'level' in kwargs:
+        level = kwargs.pop('level')
+    else:
+        level = 1
+
+    if self.verbose >= level:
+
+        # Use warnings for level = 0
+        if level == 0:
+
+            # Conv print to str - then warn
+            sep = ' '
+            if 'sep' in kwargs:
+                sep = kwargs.pop('sep')
+            as_str = sep.join(str(arg) for arg in args)
+
+            warnings.warn(as_str)
+
+        # Use base print for rest
+        else:
+            print(flush=True, *args, **kwargs)

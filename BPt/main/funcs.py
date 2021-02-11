@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..pipeline.Scorers import process_scorers
-
+from .BPtEvaluator import BPtEvaluator
 
 def model_pipeline_check(model_pipeline, **extra_params):
 
@@ -90,16 +90,6 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
         pt = 'regression'
 
     ps.problem_type = pt
-
-    # Process scorer strs if default
-    if ps.scorer == 'default':
-        default_scorers = {'regression': ['explained_variance',
-                                          'neg_mean_squared_error'],
-                           'binary': ['matthews', 'roc_auc',
-                                      'balanced_accuracy'],
-                           'categorical': ['matthews', 'roc_auc_ovr',
-                                           'balanced_accuracy']}
-        ps.scorer = default_scorers[pt]
 
     # Convert to scorer obj
     ps.scorer = process_scorers(ps.scorer, problem_type=ps.problem_type)
@@ -624,3 +614,55 @@ def cross_validate(model_pipeline, dataset,
                           return_train_score=return_train_score,
                           return_estimator=return_estimator,
                           error_score=error_score)
+
+
+def evaluate(model_pipeline, dataset,
+             problem_spec='default',
+             cv=5,
+             progress_bar=True,
+             store_preds=False,
+             store_estimators=True,
+             store_timing=True,
+             progress_loc=None,
+             **extra_params):
+    '''
+
+    Parameters
+    -----------
+    store_preds : bool, optional
+        If set to True, store raw predictions
+        in the 'preds' parameter of the returned
+        object. This will be a dictionary where
+        each dictionary key corresponds to
+        a valid predict function for the base model,
+        e.g., preds = {'predict': [fold0_preds, fold1_preds, ...]}
+        and the value in the dict is a list
+        (each element corresponding to each fold)
+        of numpy arrays with the raw predictions.
+
+        Note: if store_preds is set to True, then
+        also will stored the corresponding ground
+        truth labels under dictionary key 'y_true' in
+        preds. Or to see corresponding subjects / index,
+        check 'val_subjs' in the evaluator.
+
+    '''
+
+    # Base process each component
+    estimator, X, y, ps, sk_cv =\
+        _sk_prep(model_pipeline=model_pipeline, dataset=dataset,
+                 problem_spec=problem_spec, cv=cv, **extra_params)
+
+    # Init evaluator
+    evaluator = BPtEvaluator(estimator=estimator, ps=ps,
+                             progress_bar=progress_bar,
+                             store_preds=store_preds,
+                             store_estimators=store_estimators,
+                             store_timing=store_timing,
+                             progress_loc=progress_loc)
+
+    # Call evaluate on the evaluator
+    evaluator._evaluate(X, y, sk_cv)
+
+    # Return the BPtEvaluator object
+    return evaluator

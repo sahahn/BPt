@@ -150,6 +150,10 @@ class BPtSearchCV(BaseEstimator):
     def transform_df(self, X_df, fs=True):
         return self.best_estimator_.transform_df(X_df, fs)
 
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def transform_feat_names(self, X_df, fs=True):
+        return self.best_estimator_.transform_feat_names(X_df, fs)
+
     def _set_cv(self, train_data_index):
 
         # Set cv based on train_data_index

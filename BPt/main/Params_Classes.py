@@ -1606,8 +1606,10 @@ class Feat_Importance(Params):
             should be calculated.
             See :class:`Shap_Params` for what these parameters are.
 
-            If 'default' is passed, then shap_params will be set to either the default values of
-            :class:`Shap_Params` if shap feature importances are being used, or None if not.
+            If 'default' is passed, then shap_params will be set to
+            either the default values of
+            :class:`Shap_Params` if shap feature importances
+            are being used, or None if not.
 
             ::
 
@@ -1629,18 +1631,17 @@ class Feat_Importance(Params):
             If there are any loaders, or transformers specified
             in the Model_Pipeline,
             then feature importance becomes slightly trickier.
-            For example, if you have
-            a PCA transformer, and what to calculate averaged feature importance
-            across 3-folds, there is no gaurentee 'pca feature 1' is the same from one
-            fold to the next. In this case, if set to True, global feature
-            importances will be inverse_transformed back into their original feature
-            space - per fold. Note: this will only work if all transformers / loaders
-            have an implemented reverse_transform function, if one does not for transformer, then
-            it will just return 0 for that feature. For a loader w/o, then it will return 
+            Note: this will only work if all transformers / loaders
+            have an implemented reverse_transform function, if one
+            does not for transformer, then
+            it will just return 0 for that feature. For a loader w/o,
+            then it will return
             'No inverse_transform'.
 
-            There are also other cases where this might be a bad idea, for example
-            if you are using one hot encoders in your transformers then trying to 
+            There are also other cases where this might
+            be a bad idea, for example
+            if you are using one hot encoders in your
+            transformers then trying to
             reverse_transform
             feature importances will yield nonsense (NaN's).
 

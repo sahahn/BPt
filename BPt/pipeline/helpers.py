@@ -43,3 +43,30 @@ def get_grid_params(params):
             grid_params[p] = params[p]
 
     return grid_params
+
+
+def get_mean_fis(estimators, prop):
+
+    fis = []
+
+    # Go through each trained estimator
+    for est in estimators:
+        if hasattr(est, prop):
+            fi = getattr(est, prop)
+
+            # If any is None, return None
+            if fi is None:
+                return None
+
+            fis.append(fi)
+
+        # If any don't, return None
+        else:
+            return None
+
+    # Make sure all same len
+    if len(set([len(x) for x in fis])) != 1:
+        return None
+
+    # Return as mean
+    return np.mean(np.array(fis), axis=0)

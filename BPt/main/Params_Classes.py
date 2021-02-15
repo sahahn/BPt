@@ -145,11 +145,13 @@ class Check():
         # scope = getattr(self, 'scope')
 
     def _check_extra_params(self):
+        
+        # Skip for now
+        return
 
         extra_params = getattr(self, 'extra_params')
         if extra_params is None:
             return
-        #    setattr(self, 'extra_params', {})
 
         elif not isinstance(extra_params, dict):
             raise IOError('extra params must be a dict!')
@@ -179,8 +181,8 @@ class Piece(Params, Check):
 class Loader(Piece):
 
     def __init__(self, obj, behav='single', params=0, scope='data file',
-                 cache_loc=None, extra_params=None,
-                 fix_n_wrapper_jobs=False):
+                 cache_loc=None,
+                 fix_n_wrapper_jobs=False, **extra_params):
         ''' Loader refers to transformations which operate on loaded Data_Files.
         (See :func:`Load_Data_Files`).
         They in essence take in saved file locations, and after some series
@@ -330,7 +332,7 @@ class Imputer(Piece):
 
     def __init__(self, obj, params=0, scope='all',
                  base_model=None, base_model_type='default',
-                 extra_params=None):
+                 **extra_params):
         ''' If there is any missing data (NaN's) that have been kept
         within data or covars, then an imputation strategy must be
         defined! This object allows you to define an imputation strategy.
@@ -459,7 +461,7 @@ class Imputer(Piece):
 
 class Scaler(Piece):
 
-    def __init__(self, obj, params=0, scope='float', extra_params=None):
+    def __init__(self, obj, params=0, scope='float', **extra_params):
         ''' Scaler refers to a piece in the :class:`Model_Pipeline`,
         which is responsible
         for performing any sort of scaling or transformation on the data
@@ -525,7 +527,7 @@ class Scaler(Piece):
 class Transformer(Piece):
 
     def __init__(self, obj, params=0, scope='float', cache_loc=None,
-                 extra_params=None, fix_n_wrapper_jobs='default'):
+                 fix_n_wrapper_jobs='default', **extra_params):
         ''' The Transformer is base optional component of the
         :class:`Model_Pipeline` class.
         Transformers define any type of transformation to the loaded
@@ -608,7 +610,7 @@ class Transformer(Piece):
 class Feat_Selector(Piece):
 
     def __init__(self, obj, params=0, scope='all',
-                 base_model=None, extra_params=None):
+                 base_model=None, **extra_params):
         ''' Feat_Selector is a base piece of :class:`Model_Pipeline`, which is designed
         to preform feature selection.
 
@@ -681,7 +683,7 @@ class Model(Piece):
     _is_model = True
 
     def __init__(self, obj, params=0, scope='all', param_search=None,
-                 target_scaler=None, extra_params=None):
+                 target_scaler=None, **extra_params):
         ''' Model represents a base components of the :class:`Model_Pipeline`,
         specifically a single Model / estimator.
         Model can also be used as a component
@@ -801,7 +803,7 @@ class Ensemble(Piece):
                  single_estimator=False,
                  des_split=.2,
                  n_jobs_type='ensemble',
-                 extra_params=None):
+                 **extra_params):
         ''' The Ensemble object is valid base
         :class:`Model_Pipeline` piece, designed
         to be passed as input to the `model` parameter

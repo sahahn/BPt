@@ -70,6 +70,8 @@ class Pieces():
         self.AVAILABLE = None
 
     def get_inds(self, scope):
+
+        # @ TODO ADD warning when a scope returns None here
         return self.dataset._get_data_inds(self.spec['scope'], scope)
 
     def process(self, params):

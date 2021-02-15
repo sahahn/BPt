@@ -106,7 +106,6 @@ class BPtTransformer(ScopeTransformer):
                 # If error, keep as is
                 except KeyError:
                     cat = cat
-                    print(cat, encoders[name])
 
             # If Float, turn to int before cast to str
             if isinstance(cat, float):

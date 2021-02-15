@@ -117,6 +117,12 @@ class BPtSearchCV(BaseEstimator):
             return getattr(self.best_estimator_, 'coef_')
         return None
 
+    @property
+    def _final_estimator(self):
+        if hasattr(self.best_estimator_, '_final_estimator'):
+            return self.best_estimator_._final_estimator
+        return None
+
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
     def predict(self, X):
         return self.best_estimator_.predict(X)
@@ -147,12 +153,13 @@ class BPtSearchCV(BaseEstimator):
                                           sample_weight=sample_weight)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def transform_df(self, X_df, fs=True):
-        return self.best_estimator_.transform_df(X_df, fs)
+    def transform_df(self, X_df, fs=True, encoders=None):
+        return self.best_estimator_.transform_df(X_df, fs, encoders=encoders)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def transform_feat_names(self, X_df, fs=True):
-        return self.best_estimator_.transform_feat_names(X_df, fs)
+    def transform_feat_names(self, X_df, fs=True, encoders=None):
+        return self.best_estimator_.transform_feat_names(X_df, fs,
+                                                         encoders=encoders)
 
     def _set_cv(self, train_data_index):
 

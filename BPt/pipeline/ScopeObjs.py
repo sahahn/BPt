@@ -175,7 +175,7 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         # Return stacked X_trans with rest inds
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
-    def transform_df(self, df, base_name=None):
+    def transform_df(self, df, base_name=None, encoders=None):
 
         # If None, pass along as is
         if self.estimator_ is None:
@@ -191,7 +191,8 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         feat_names = list(df)
 
         # Process new names
-        new_names = self._proc_new_names(feat_names, base_name)
+        new_names = self._proc_new_names(feat_names, base_name,
+                                         encoders=encoders)
 
         # Fill in the new values directly to the passed df
         for i, feat_name in enumerate(new_names):
@@ -201,7 +202,7 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         # the order of new_names, and only with those included in new_names
         return df.loc[:, new_names]
 
-    def _proc_new_names(self, feat_names, base_name=None):
+    def _proc_new_names(self, feat_names, base_name=None, encoders=None):
 
         # Compute new feature names
         new_names = [feat_names[i] for i in self.inds_] +\

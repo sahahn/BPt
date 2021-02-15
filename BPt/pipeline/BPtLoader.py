@@ -210,11 +210,11 @@ class BPtLoader(ScopeTransformer):
 
         return X_trans_cols
 
-    def transform_df(self, df, base_name='loader'):
+    def transform_df(self, df, base_name='loader', encoders=None):
 
         return super().transform_df(df, base_name=base_name)
 
-    def _proc_new_names(self, feat_names, base_name):
+    def _proc_new_names(self, feat_names, base_name, encoders=None):
 
         # Get new names
         new_names = []

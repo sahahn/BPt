@@ -202,7 +202,7 @@ class BPtPipeline(Pipeline):
 
         return X
 
-    def transform_df(self, X_df, fs=True):
+    def transform_df(self, X_df, fs=True, encoders=None):
         '''Transform an input dataframe, keeping track of feature names'''
 
         # Get ordered objects as list, with or without feat selectors
@@ -212,11 +212,12 @@ class BPtPipeline(Pipeline):
 
         # Run all of the transformations
         for obj, base_name in zip(ordered_objs, ordered_base_names):
-            X_df = obj.transform_df(X_df, base_name=base_name)
+            X_df = obj.transform_df(X_df, base_name=base_name,
+                                    encoders=encoders)
 
         return X_df
 
-    def transform_feat_names(self, X_df, fs=True):
+    def transform_feat_names(self, X_df, fs=True, encoders=None):
         '''Simmilar to transform df, but just transform feat names.'''
 
         ordered_objs, ordered_base_names =\
@@ -224,7 +225,8 @@ class BPtPipeline(Pipeline):
 
         feat_names = list(X_df)
         for obj, base_name in zip(ordered_objs, ordered_base_names):
-            feat_names = obj._proc_new_names(feat_names, base_name=base_name)
+            feat_names = obj._proc_new_names(feat_names, base_name=base_name,
+                                             encoders=encoders)
 
         return feat_names
 

@@ -84,6 +84,6 @@ class BPtBase(BaseEstimator):
         if hasattr(self.estimator, 'n_jobs'):
             setattr(self.estimator, 'n_jobs', n_jobs)
 
-    def transform_df(self, X_df, base_name=None):
+    def transform_df(self, X_df, base_name=None, encoders=None):
         '''Override this class in child classes'''
         pass

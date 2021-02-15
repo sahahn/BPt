@@ -59,7 +59,7 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
 
         return self
 
-    def _proc_new_names(self, feat_names, base_name=None):
+    def _proc_new_names(self, feat_names, base_name=None, encoders=None):
 
         # Get base new names from parent class
         new_names = super()._proc_new_names(feat_names)

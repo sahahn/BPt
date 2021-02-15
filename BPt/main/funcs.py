@@ -4,6 +4,7 @@ import numpy as np
 from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..pipeline.Scorers import process_scorers
 from .BPtEvaluator import BPtEvaluator
+from sklearn.model_selection import check_cv
 
 
 def model_pipeline_check(model_pipeline, **extra_params):
@@ -360,22 +361,34 @@ def _sk_prep(model_pipeline, dataset, problem_spec='default',
     # Get X and y
     X, y = dataset.get_Xy(problem_spec=ps, **extra_params)
 
+    # Save if has n_repeats
+    n_repeats = 1
+    if hasattr(cv, 'n_repeats'):
+        n_repeats = n_repeats
+
     # If Passed CV class, then need to convert to sklearn compat
     # otherwise, assume that it is sklearn compat and pass as is.
+    # @TODO maybe convert to BPtCV then back?
+    # to add random state and what not ?
+    sk_cv = cv
     if isinstance(cv, CV):
 
         # Convert from CV class to BPtCV by applying dataset
         bpt_cv = cv.apply_dataset(dataset)
+
+        # Save n_repeats
+        n_repeats = bpt_cv.n_repeats
 
         # Convert from BPtCV to sklearn compat, i.e., just raw index
         sk_cv = bpt_cv.get_cv(X.index,
                               random_state=ps.random_state,
                               return_index=True)
 
-    # @TODO maybe convert to BPtCV then back?
-    # to add random state and what not ?
-    else:
-        sk_cv = cv
+    # Cast explicitly to sklean style cv from either user
+    # passed input or inds
+    is_classifier = ps.problem_type != 'regression'
+    sk_cv = check_cv(cv=sk_cv, y=y, classifier=is_classifier)
+    setattr(sk_cv, 'n_repeats', n_repeats)
 
     return estimator, X, y, ps, sk_cv
 
@@ -624,6 +637,7 @@ def evaluate(model_pipeline, dataset,
              store_preds=False,
              store_estimators=True,
              store_timing=True,
+             decode_feat_names=True,
              progress_loc=None,
              **extra_params):
     '''
@@ -653,9 +667,15 @@ def evaluate(model_pipeline, dataset,
     estimator, X, y, ps, sk_cv =\
         _sk_prep(model_pipeline=model_pipeline, dataset=dataset,
                  problem_spec=problem_spec, cv=cv, **extra_params)
+                 
+    # Check decode feat_names arg
+    encoders = None
+    if decode_feat_names:
+        encoders = dataset.encoders
 
     # Init evaluator
     evaluator = BPtEvaluator(estimator=estimator, ps=ps,
+                             encoders=encoders,
                              progress_bar=progress_bar,
                              store_preds=store_preds,
                              store_estimators=store_estimators,

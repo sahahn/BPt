@@ -112,7 +112,7 @@ class BPtTransformer(ScopeTransformer):
             if isinstance(cat, float):
                 cat = int(cat)
 
-            return name + '=' + str(cat)
+            return name + '=' + repr(cat)
 
         new_names = []
 

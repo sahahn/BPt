@@ -1,5 +1,7 @@
 from ..helpers.ML_Helpers import update_mapping
 from .ScopeObjs import ScopeTransformer
+from sklearn.preprocessing import OneHotEncoder
+import numpy as np
 
 
 class BPtTransformer(ScopeTransformer):
@@ -58,24 +60,29 @@ class BPtTransformer(ScopeTransformer):
         # Now return X_trans
         return X_trans
 
-    def transform_df(self, df, base_name='transformer'):
+    def transform_df(self, df, base_name='transformer', encoders=None):
+        return super().transform_df(df, base_name=base_name, encoders=encoders)
 
-        return super().transform_df(df, base_name=base_name)
+    def _proc_new_names(self, feat_names, base_name, encoders=None):
 
-    def _proc_new_names(self, feat_names, base_name):
+        # Check for one hot encoder
+        if isinstance(self.estimator_, OneHotEncoder):
+            new_names = self._proc_one_hot_new_names(feat_names, encoders=encoders)
 
         # Get new names
-        if len(self.inds_) == 1:
-            alt_name = feat_names[self.inds_[0]]
         else:
-            alt_name = base_name
 
-        try:
-            new_names = [alt_name + '_' + str(i)
-                         for i in range(self.n_trans_feats_)]
-        except IndexError:
-            new_names = [base_name + '_' + str(i)
-                         for i in range(self.n_trans_feats_)]
+            if len(self.inds_) == 1:
+                alt_name = feat_names[self.inds_[0]]
+            else:
+                alt_name = base_name
+
+            try:
+                new_names = [alt_name + '_' + str(i)
+                             for i in range(self.n_trans_feats_)]
+            except IndexError:
+                new_names = [base_name + '_' + str(i)
+                             for i in range(self.n_trans_feats_)]
 
         # Remove old names - using parent method
         feat_names = self._remove_old_names(feat_names)
@@ -84,3 +91,48 @@ class BPtTransformer(ScopeTransformer):
         all_names = new_names + feat_names
 
         return all_names
+
+    def _proc_one_hot_new_names(self, feat_names, encoders=None):
+
+        def get_display_cat(name, cat):
+
+            # If encoders passed, and name in encoder
+            # use de-coded name as the cat
+            if encoders is not None and name in encoders:
+
+                try:
+                    cat = encoders[name][cat]
+
+                # If error, keep as is
+                except KeyError:
+                    cat = cat
+
+                    print(cat, encoders[name])
+
+            # Otherwise, use base behavior
+            if not np.isnan(cat):
+                cat = int(cat)
+
+            return name + '=' + str(cat)
+
+        new_names = []
+
+        # If no drop
+        if self.estimator_.drop_idx_ is None:
+            for name_ind, category in zip(self.inds_,
+                                          self.estimator_.categories_):
+                name = feat_names[name_ind]
+                for cat in category:
+                    new_names.append(get_display_cat(name, cat))
+
+        # Otherwise if drop index
+        else:
+            for name_ind, category, to_drop in zip(self.inds_,
+                                                   self.estimator_.categories_,
+                                                   self.estimator_.drop_idx_):
+                name = feat_names[name_ind]
+                for i, cat in enumerate(category):
+                    if i != to_drop:
+                        new_names.append(get_display_cat(name, cat))
+
+        return new_names

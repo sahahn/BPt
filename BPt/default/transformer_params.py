@@ -10,3 +10,8 @@ P['pca var search'] =\
 P['ohe'] =\
         {'sparse': False,
          'handle_unknown': 'ignore'}
+
+P['dummy code'] =\
+        {'sparse': False,
+         'drop': 'first',
+         'handle_unknown': 'error'}

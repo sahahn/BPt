@@ -23,7 +23,8 @@ TRANSFORMERS = {
     'kernel pca': (KernelPCA, ['default']),
     'nmf': (NMF, ['default']),
     'truncated svd': (TruncatedSVD, ['default']),
-    'one hot encoder': (OneHotEncoder, ['ohe'])}
+    'one hot encoder': (OneHotEncoder, ['ohe']),
+    'dummy coder': (OneHotEncoder, ['dummy code'])}
 
 
 def get_transformer_and_params(transformer_str, extra_params,

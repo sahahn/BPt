@@ -1,7 +1,6 @@
 from ..helpers.ML_Helpers import update_mapping
 from .ScopeObjs import ScopeTransformer
 from sklearn.preprocessing import OneHotEncoder
-import numpy as np
 
 
 class BPtTransformer(ScopeTransformer):
@@ -67,7 +66,8 @@ class BPtTransformer(ScopeTransformer):
 
         # Check for one hot encoder
         if isinstance(self.estimator_, OneHotEncoder):
-            new_names = self._proc_one_hot_new_names(feat_names, encoders=encoders)
+            new_names =\
+                self._proc_one_hot_new_names(feat_names, encoders=encoders)
 
         # Get new names
         else:
@@ -106,11 +106,10 @@ class BPtTransformer(ScopeTransformer):
                 # If error, keep as is
                 except KeyError:
                     cat = cat
-
                     print(cat, encoders[name])
 
-            # Otherwise, use base behavior
-            if not np.isnan(cat):
+            # If Float, turn to int before cast to str
+            if isinstance(cat, float):
                 cat = int(cat)
 
             return name + '=' + str(cat)

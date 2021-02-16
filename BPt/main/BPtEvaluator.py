@@ -1,5 +1,4 @@
 from ..helpers.ML_Helpers import conv_to_list
-from ..pipeline.Feat_Importances import get_feat_importances_and_params
 from ..pipeline.Scorers import process_scorer
 import pandas as pd
 import numpy as np
@@ -82,28 +81,6 @@ class BPtEvaluator():
             self.progress_bar = tqdm_notebook
         else:
             self.progress_bar = tqdm
-
-    def _process_feat_importances(self, feat_importances):
-
-        # Grab feat_importance from spec as a list
-        feat_importances = conv_to_list(feat_importances)
-
-        if feat_importances is not None:
-
-            # Process each scorer
-            scorers = [process_scorer(fi.scorer, self.ps.problem_type)
-                       for fi in feat_importances]
-
-            # Get each feature importance object
-            feat_importances =\
-                [get_feat_importances_and_params(fi, self.ps.problem_type,
-                                                 self.ps.n_jobs, scorer)
-                    for fi, scorer in zip(feat_importances, scorers)]
-
-            return feat_importances
-
-        # Return empty list if None
-        return []
 
     def _evaluate(self, X, y, cv):
         '''cv is passed as raw index, X and y as dataframes.'''

@@ -41,7 +41,7 @@ class Select(list):
     Lastly, explcitly note that Select is not restricted for use with Models,
     it can be used on any of
     the base class:`Model_Pipeline` piece params
-    (i.e., every param but param_search, feat_importances and cache...).
+    (i.e., every param but param_search and cache...).
     '''
     input_type = 'select'
 

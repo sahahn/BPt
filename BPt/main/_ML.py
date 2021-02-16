@@ -16,8 +16,7 @@ from ..helpers.Data_Helpers import (get_unique_combo_df,
                                     get_target_type)
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
-from ..main.Params_Classes import (Feat_Importance,
-                                   Model_Pipeline,
+from ..main.Params_Classes import (Model_Pipeline,
                                    Model, Ensemble, Problem_Spec)
 from ..pipeline.BPtPipelineConstructor import get_pipe
 import pandas as pd

@@ -245,6 +245,8 @@ class BPtLoader(ScopeTransformer):
 
     def inverse_transform(self, X, name='base loader'):
 
+        # @TODO make sure this is still working
+
         # For each column, compute the inverse transform of what's loaded
         inverse_X = {}
         reverse_mapping = get_reverse_mapping(self.mapping_)

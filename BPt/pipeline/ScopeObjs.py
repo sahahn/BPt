@@ -70,22 +70,25 @@ class ScopeObj(BPtBase):
                                            X=X[:, self.inds_],
                                            y=y, **fit_params)
 
-    def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+    def _all_case_update_mappings(self, mapping):
 
-        # Save base dtype of input, and n_features_in
-        self.base_dtype_ = X.dtype
-        self.n_features_in_ = X.shape[1]
+        # In case where the scope is everything
 
-        # Process the passed mapping, sets self.inds_
-        if mapping is None:
-            mapping = {}
-        self._proc_mapping(mapping)
+        # Rest inds is empty
+        self.rest_inds_ = []
 
-        # If no inds to map, skip by setting estimator to None
-        if len(self.inds_) == 0:
-            self.estimator_ = None
-            return self
+        # So is out_mapping
+        self.out_mapping_ = {}
+
+        # The mapping to pass on is just
+        # a copy of the original
+        return mapping.copy()
+
+    def _update_mappings(self, X, mapping):
+
+        # Check in case of Ellipsis / all case
+        if self.inds_ is Ellipsis:
+            return self._all_case_update_mappings(mapping)
 
         # Create a mapping that maps old to new value
         self.out_mapping_ = {}
@@ -103,10 +106,35 @@ class ScopeObj(BPtBase):
         for i in self.rest_inds_:
             self.out_mapping_[i] = None
 
-        # Use the out mapping to create a mapping to pass along.
+        # Use the out mapping to create a mapping to pass along
+        # to any nested objects.
         # Make copy so that the original mapping doesn't change.
         pass_on_mapping = mapping.copy()
         update_mapping(pass_on_mapping, self.out_mapping_)
+
+        return pass_on_mapping
+
+    def fit(self, X, y=None, mapping=None,
+            train_data_index=None, **fit_params):
+
+        # Save base dtype of input, and n_features_in
+        self.base_dtype_ = X.dtype
+        self.n_features_in_ = X.shape[1]
+
+        # Process the passed mapping, sets self.inds_
+        if mapping is None:
+            mapping = {}
+        self._proc_mapping(mapping)
+
+        # If no inds to map, skip by setting estimator to None
+        if self.inds_ is not Ellipsis and len(self.inds_) == 0:
+            self.estimator_ = None
+            return self
+
+        # Get pass on mapping
+        # All saves class attributes:
+        # out_mapping_ and rest_inds_,
+        pass_on_mapping = self._update_mappings(X, mapping)
 
         # Clone estimator, clears previous fits
         self.estimator_ = clone(self.estimator)
@@ -144,6 +172,12 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         if self.estimator_ is None:
             return self
 
+        # Also skip if original scope was all
+        # which means the out_mapping shouldn't change
+        # and also no updates to the mapping should be made.
+        if self.inds_ is Ellipsis:
+            return self
+
         # Now need to make changes to the original mapping
         # to reflect that the new order is self.inds_ + self.rest_inds_
         # or will be after a transform.
@@ -166,7 +200,7 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         if self.estimator_ is None:
             return X
 
-        # Get X_trans
+        # Get X_trans - if self.inds_ is Ellipsis, just selects all
         X_trans = self.estimator_.transform(X=X[:, self.inds_])
 
         # Save number of output features after X_trans
@@ -204,6 +238,10 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
 
     def _proc_new_names(self, feat_names, base_name=None, encoders=None):
 
+        # If all, return as is
+        if self.inds_ is Ellipsis:
+            return feat_names
+
         # Compute new feature names
         new_names = [feat_names[i] for i in self.inds_] +\
                     [feat_names[i] for i in self.rest_inds_]
@@ -213,6 +251,11 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
     def _remove_old_names(self, feat_names):
         '''Create new feature names for the transformed features.
         This class is used in child classes'''
+
+        # If all, all original feat_names get removed
+        # return empty list
+        if self.inds_ is Ellipsis:
+            return []
 
         to_remove = set([feat_names[i] for i in self.inds_])
         feat_names = [name for name in feat_names if name not in to_remove]
@@ -224,7 +267,7 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         if self.estimator_ is None:
             return X
 
-        # Compute reverse inds
+        # Compute reverse inds - if Ellipsis, returns Ellipsis
         reverse_inds = proc_mapping(self.inds_, self.out_mapping_)
 
         # If no inverse_transformer in base transformer, set to 0
@@ -268,6 +311,12 @@ class ScopeModel(ScopeObj):
     def coef_(self):
         if hasattr(self.estimator_, 'coef_'):
             return getattr(self.estimator_, 'coef_')
+        return None
+
+    @property
+    def classes_(self):
+        if hasattr(self.estimator_, 'classes_'):
+            return getattr(self.estimator_, 'classes_')
         return None
 
     def predict(self, X, *args, **kwargs):

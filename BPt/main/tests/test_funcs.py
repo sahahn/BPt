@@ -264,7 +264,10 @@ def test_get_estimator_simple_case():
 
     # Should be regression ridge, so make sure
     # this tests default ps steps too
-    model = est.steps[0][1]
+    scope_model = est.steps[0][1]
+    assert isinstance(scope_model, ScopeModel)
+
+    model = scope_model.estimator
     assert isinstance(model, Ridge)
 
 
@@ -283,7 +286,10 @@ def test_get_estimator_with_ng_search():
     # Estimator should be pipeline, w/ ridge at last step
     est = search_est.estimator
     assert isinstance(est, BPtPipeline)
-    assert isinstance(est.steps[-1][1], Ridge)
+
+    scope_model = est.steps[-1][1]
+    ridge = scope_model.estimator
+    assert isinstance(ridge, Ridge)
 
     param_search = search_est.ps
     assert isinstance(param_search['cv'], BPtCV)
@@ -303,7 +309,10 @@ def test_get_estimator_n_jobs():
                         problem_spec=ps)
     assert isinstance(est, BPtPipeline)
 
-    model = est.steps[0][1]
+    scope_model = est.steps[0][1]
+    assert isinstance(scope_model, ScopeModel)
+
+    model = scope_model.estimator
     assert isinstance(model, RandomForestRegressor)
     assert model.n_jobs == 2
 
@@ -318,7 +327,11 @@ def test_get_estimator_extra_params():
                         problem_type='binary')
 
     assert isinstance(est, BPtPipeline)
-    model = est.steps[0][1]
+
+    scope_model = est.steps[0][1]
+    assert isinstance(scope_model, ScopeModel)
+
+    model = scope_model.estimator
     assert isinstance(model, RandomForestClassifier)
 
 
@@ -335,7 +348,10 @@ def test_get_estimator_n_jobs_ng():
     est = search_est.estimator
     assert isinstance(est, BPtPipeline)
 
-    model = est.steps[0][1]
+    scope_model = est.steps[0][1]
+    assert isinstance(scope_model, ScopeModel)
+
+    model = scope_model.estimator
     assert isinstance(model, RandomForestRegressor)
 
     # Should be n_jobs 1 in model
@@ -359,7 +375,7 @@ def test_get_estimator_with_scope():
     scaler = est.steps[0][1]
     assert isinstance(scaler, ScopeTransformer)
     assert isinstance(scaler.estimator, RobustScaler)
-    assert scaler.inds == [0, 1]
+    assert scaler.inds is Ellipsis
 
     model = est.steps[1][1]
     assert isinstance(model, ScopeModel)
@@ -379,7 +395,10 @@ def test_get_param_wrapped_model():
     assert isinstance(est, BPtPipeline)
     assert len(est.steps) == 1
 
-    search_est = est.steps[0][1]
+    search_scope_est = est.steps[0][1]
+    assert isinstance(search_scope_est, ScopeModel)
+
+    search_est = search_scope_est.estimator
     assert isinstance(search_est, NevergradSearchCV)
 
     param_search = search_est.ps

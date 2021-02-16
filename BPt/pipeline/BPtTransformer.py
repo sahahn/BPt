@@ -16,23 +16,7 @@ class BPtTransformer(ScopeTransformer):
 
         return self
 
-    def fit_transform(self, X, y=None, mapping=None,
-                      train_data_index=None, **fit_params):
-
-        if mapping is None:
-            mapping = {}
-
-        # Call parent fit
-        super().fit(X, y=y, mapping=mapping,
-                    train_data_index=train_data_index,
-                    **fit_params)
-
-        # If skip
-        if self.estimator_ is None:
-            return X
-
-        # Transform X
-        X_trans = self.transform(X)
+    def _update_transformer_mapping(self, mapping):
 
         # Need to update the mapping before returning
 
@@ -56,6 +40,46 @@ class BPtTransformer(ScopeTransformer):
         # will be passed to the next piece of the pipeline
         update_mapping(mapping, self.out_mapping_)
 
+        return self
+
+    def _all_case_update_transformer_mapping(self, X, mapping):
+
+        # Get as list of
+        X_trans_inds = list(range(self.n_trans_feats_))
+
+        # All case out mapping
+        self.out_mapping_ = {i: X_trans_inds for i in range(X.shape[1])}
+
+        # Since no rest inds, update mapping
+        update_mapping(mapping, self.out_mapping_)
+
+        return self
+
+    def fit_transform(self, X, y=None, mapping=None,
+                      train_data_index=None, **fit_params):
+
+        if mapping is None:
+            mapping = {}
+
+        # Call parent fit
+        super().fit(X, y=y, mapping=mapping,
+                    train_data_index=train_data_index,
+                    **fit_params)
+
+        # If skip
+        if self.estimator_ is None:
+            return X
+
+        # Transform X
+        X_trans = self.transform(X)
+
+        # Update mapping and set out_mapping_
+        # special all case
+        if self.inds_ is Ellipsis:
+            self._all_case_update_transformer_mapping(X, mapping)
+        else:
+            self._update_transformer_mapping(mapping)
+
         # Now return X_trans
         return X_trans
 
@@ -72,7 +96,9 @@ class BPtTransformer(ScopeTransformer):
         # Get new names
         else:
 
-            if len(self.inds_) == 1:
+            if self.inds_ is Ellipsis:
+                alt_name = base_name
+            elif len(self.inds_) == 1:
                 alt_name = feat_names[self.inds_[0]]
             else:
                 alt_name = base_name
@@ -113,11 +139,21 @@ class BPtTransformer(ScopeTransformer):
 
             return name + '=' + repr(cat)
 
+        # Scope all case, set inds as identity
+        # over all passed feat names
+        if self.inds_ is Ellipsis:
+            inds = list(range(len(feat_names)))
+
+        # Otherwise use self.inds_
+        else:
+            inds = self.inds_
+
+        # Save new names in new_names
         new_names = []
 
         # If no drop
         if self.estimator_.drop_idx_ is None:
-            for name_ind, category in zip(self.inds_,
+            for name_ind, category in zip(inds,
                                           self.estimator_.categories_):
                 name = feat_names[name_ind]
                 for cat in category:
@@ -125,7 +161,7 @@ class BPtTransformer(ScopeTransformer):
 
         # Otherwise if drop index
         else:
-            for name_ind, category, to_drop in zip(self.inds_,
+            for name_ind, category, to_drop in zip(inds,
                                                    self.estimator_.categories_,
                                                    self.estimator_.drop_idx_):
                 name = feat_names[name_ind]

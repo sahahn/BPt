@@ -42,9 +42,12 @@ def test_iterative_imputer():
     assert isinstance(it_imputer, IterativeImputer)
     assert it_imputer.random_state == 2
 
+    assert it_imputer.estimator.inds is Ellipsis
+
     # Should be categorical, so logistic regression
-    base_estimator = it_imputer.estimator
+    base_estimator = it_imputer.estimator.estimator
     assert isinstance(base_estimator, LogisticRegression)
+    
 
 
 def test_iterative_imputer_default_float():
@@ -74,14 +77,14 @@ def test_iterative_imputer_default_float():
 
     base_trans = objs[0][1]
     assert isinstance(base_trans, ScopeTransformer)
-    assert base_trans.inds == [0, 1, 2]
+    assert base_trans.inds is Ellipsis
 
     it_imputer = base_trans.estimator
     assert isinstance(it_imputer, IterativeImputer)
     assert it_imputer.random_state == 2
 
-    # Not all categorical, so should be linear regression
-    base_estimator = it_imputer.estimator
-    assert isinstance(base_estimator, LinearRegression)
+    assert it_imputer.estimator.inds is Ellipsis
 
-    
+    # Not all categorical, so should be linear regression
+    base_estimator = it_imputer.estimator.estimator
+    assert isinstance(base_estimator, LinearRegression)

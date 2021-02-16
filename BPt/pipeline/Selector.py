@@ -110,6 +110,12 @@ class Selector(_BaseComposition):
             return getattr(self.estimator_, 'coef_')
         return None
 
+    @property
+    def classes_(self):
+        if hasattr(self.estimator_, 'classes_'):
+            return getattr(self.estimator_, 'classes_')
+        return None
+
 
 def selector_wrapper(objs, params, name):
 

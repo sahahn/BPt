@@ -65,7 +65,7 @@ def is_select(obj):
 
 class Duplicate(list):
     '''The Duplicate object is an BPt specific Input wrapper.
-    It is designed to be cast on a list of valid scope parameters, e.g., 
+    It is designed to be cast on a list of valid scope parameters, e.g.,
 
     ::
 

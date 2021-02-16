@@ -38,6 +38,9 @@ class BPtLoader(ScopeTransformer):
     def __init__(self, estimator, inds, file_mapping,
                  n_jobs=1, fix_n_jobs=False,
                  cache_loc=None):
+        '''The inds for loaders are special, they should not be
+        set with Ellipsis. Instead in the case of all, should be
+        passed inds as usual.'''
 
         # Set Super params
         super().__init__(estimator=estimator, inds=inds, cache_loc=cache_loc)
@@ -84,11 +87,32 @@ class BPtLoader(ScopeTransformer):
         '''
 
         # Get the first data point
-        fit_fm_key = X[0, self.inds_[0]]
+        first_feat = self.inds_[0]
+        fit_fm_key = X[0, first_feat]
         fit_X = self.file_mapping[int(fit_fm_key)].load()
 
         # Fit the first data point
         self.estimator_.fit(fit_X, y=y, **fit_params)
+
+    def _update_loader_mappings(self, mapping):
+
+        # Need to set out_mapping_ and update mapping
+        self.out_mapping_ = {}
+
+        # Add changed X_trans by col
+        for c in range(len(self.inds_)):
+            ind = self.inds_[c]
+            self.out_mapping_[ind] = self.X_trans_inds_[c]
+
+        # Fill the remaining spots sequentially,
+        # for each of the rest inds.
+        for c in range(len(self.rest_inds_)):
+            ind = self.rest_inds_[c]
+            self.out_mapping_[ind] = self.n_trans_feats_ + c
+
+        # Update the original mapping, this is the mapping which
+        # will be passed to the next piece of the pipeline
+        update_mapping(mapping, self.out_mapping_)
 
     def fit_transform(self, X, y=None, mapping=None,
                       train_data_index=None, **fit_params):
@@ -109,23 +133,8 @@ class BPtLoader(ScopeTransformer):
         # Now transform X - this sets self.X_trans_inds_
         X_trans = self.transform(X)
 
-        # Need to set out_mapping_ and update mapping
-        self.out_mapping_ = {}
-
-        # Add changed X_trans by col
-        for c in range(len(self.inds_)):
-            ind = self.inds_[c]
-            self.out_mapping_[ind] = self.X_trans_inds_[c]
-
-        # Fill the remaining spots sequentially,
-        # for each of the rest inds.
-        for c in range(len(self.rest_inds_)):
-            ind = self.rest_inds_[c]
-            self.out_mapping_[ind] = self.n_trans_feats_ + c
-
-        # Update the original mapping, this is the mapping which
-        # will be passed to the next piece of the pipeline
-        update_mapping(mapping, self.out_mapping_)
+        # Update the mapping + out_mapping_
+        self._update_loader_mappings(mapping)
 
         # Now return X_trans
         return X_trans

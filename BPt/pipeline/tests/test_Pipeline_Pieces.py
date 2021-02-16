@@ -31,7 +31,7 @@ def test_feature_selectors():
     name, obj = objs[0]
 
     assert 'univariate selection' in name
-    assert obj.inds == [0, 1]
+    assert obj.inds is Ellipsis
     assert len(params) == 0
     assert isinstance(obj, BPtFeatureSelector)
 
@@ -40,7 +40,7 @@ def test_feature_selectors():
     name, obj = objs[0]
 
     assert 'univariate selection' in name
-    assert obj.inds == [0, 1]
+    assert obj.inds is Ellipsis
     assert len(params) > 0
     assert isinstance(obj, BPtFeatureSelector)
 
@@ -86,7 +86,7 @@ def test_feature_selectors_submodel():
 
     assert 'rfe' in name
     assert len(params) == 0
-    assert obj.inds == [0, 1]
+    assert obj.inds is Ellipsis
     assert obj.estimator.estimator is None
     assert isinstance(obj, BPtFeatureSelector)
 
@@ -96,7 +96,7 @@ def test_feature_selectors_submodel():
     name, obj = objs[0]
 
     assert 'rfe' in name
-    assert obj.inds == [0, 1]
+    assert obj.inds is Ellipsis
     assert obj.estimator.estimator is not None
     assert len(params) > 1
     assert isinstance(obj, BPtFeatureSelector)

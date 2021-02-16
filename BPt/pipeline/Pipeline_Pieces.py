@@ -282,7 +282,29 @@ class Pieces():
 
         return objs, obj_params
 
+    def _check_scope_all(self, scope):
+        '''If scope is all or functionally all,
+        return Ellipsis. If not, will return
+        the actual scope inds.'''
+
+        # If keyword all, return True
+        if scope == 'all':
+            return Ellipsis
+
+        # Otherwise check for functionally
+        # all case.
+        inds = self.get_inds(scope)
+        all_inds = self.get_inds('all')
+
+        # Since inds unique, if same length, then same
+        if len(inds) == len(all_inds):
+            return Ellipsis
+
+        return inds
+
     def _make_col_version(self, objs, params, input_params, Wrapper):
+        '''@TODO re-use pieces from this and checking for a Scope model, comb
+        simmilar functionality into one method.'''
 
         # Make objs + params
         col_objs, col_params = [], {}
@@ -300,7 +322,9 @@ class Pieces():
 
             # Proc scope
             scope = input_params[i].scope
-            inds = self.get_inds(scope)
+
+            # Sets to either inds or Ellipsis if all
+            inds = self._check_scope_all(scope)
 
             # Get scope name
             scope_name = get_scope_name(scope)
@@ -547,13 +571,10 @@ class Models(Type_Pieces):
 
     def wrap_model_scope(self, scope, model, model_params):
 
-        # Check if scope is 'all' or functionally 'all'
-        # Only wrap if not functionally all
-        inds = self.get_inds(scope)
-        all_inds = self.get_inds('all')
-
-        if len(inds) == len(all_inds):
-            return model, model_params
+        # Gets model inds, if scope is all
+        # gets inds as Ellipsis, otherwise gets as
+        # actual inds.
+        inds = self._check_scope_all(scope)
 
         # Get scope name
         scope_name = get_scope_name(scope)

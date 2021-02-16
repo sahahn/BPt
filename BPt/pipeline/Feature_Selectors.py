@@ -18,6 +18,45 @@ from .ScopeObjs import ScopeTransformer
 
 class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
 
+    def _update_feat_mapping(self, X, mapping):
+
+        # Need to pass along the correct mapping
+        # overwrite existing out mapping
+        self.out_mapping_ = {}
+
+        # This is the calculated support from the base estimator
+        support = self.estimator_.get_support()
+
+        # Set in scope inds by if all case
+        if self.inds_ is Ellipsis:
+            in_scope_inds = list(range(X.shape[1]))
+        else:
+            in_scope_inds = self.inds_
+
+        # First half is for updating the index within scope
+        cnt = 0
+        for i, ind in enumerate(in_scope_inds):
+
+            # If kept by feat selection, add, otherwise set to None
+            if support[i]:
+                self.out_mapping_[ind] = cnt
+                cnt += 1
+            else:
+                self.out_mapping_[ind] = None
+
+        # Next, need to update the mapping for the remaining wrapper inds
+        # essentially setting them where the cnt left off, then sequentially
+        # If None, will just  skip
+        for rem_ind in range(len(self.rest_inds_)):
+            self.out_mapping_[self.rest_inds_[rem_ind]] = cnt
+            cnt += 1
+
+        # Update the original mapping, this is the mapping which
+        # will be passed to the next piece of the pipeline
+        update_mapping(mapping, self.out_mapping_)
+
+        return self
+
     def fit(self, X, y=None, mapping=None,
             train_data_index=None, **fit_params):
 
@@ -29,35 +68,8 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
                     train_data_index=train_data_index,
                     **fit_params)
 
-        # Need to pass along the correct mapping
-        # overwrite existing out mapping
-        self.out_mapping_ = {}
-
-        # This is the calculated support from the base estimator
-        support = self.estimator_.get_support()
-
-        # First half is for updating the index within scope
-        cnt = 0
-        for i, ind in enumerate(self.inds_):
-
-            # If kept by feat selection, add, otherwise set to None
-            if support[i]:
-                self.out_mapping_[ind] = cnt
-                cnt += 1
-            else:
-                self.out_mapping_[ind] = None
-
-        # Next, need to update the mapping for the remaining wrapper inds
-        # essentially setting them where the cnt left off, then sequentially
-        for rem_ind in range(len(self.rest_inds_)):
-            self.out_mapping_[self.rest_inds_[rem_ind]] = cnt
-            cnt += 1
-
-        # Update the original mapping, this is the mapping which
-        # will be passed to the next piece of the pipeline
-        update_mapping(mapping, self.out_mapping_)
-
-        return self
+        # Need to update mapping
+        return self._update_feat_mapping(X, mapping)
 
     def _proc_new_names(self, feat_names, base_name=None, encoders=None):
 

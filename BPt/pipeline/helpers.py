@@ -84,6 +84,11 @@ def is_array_like(in_val):
 
 def proc_mapping(indx, mapping):
 
+    # Special case, if passed indx of Ellipsis
+    # return as is.
+    if indx is Ellipsis:
+        return indx
+
     # If non-empty mapping and non-empty index
     if len(mapping) > 0 and len(indx) > 0:
 
@@ -116,6 +121,11 @@ def proc_mapping(indx, mapping):
 
 
 def update_mapping(mapping, new_mapping):
+
+    # In case where new_mapping is empty,
+    # return the original mapping as is
+    if len(new_mapping) == 0:
+        return mapping
 
     # Go through the mapping and update each key with the new mapping
     for key in mapping:

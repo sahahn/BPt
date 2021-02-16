@@ -861,7 +861,7 @@ class Dataset(pd.DataFrame):
         inds = [data_cols.index(k) for k in
                 self._get_cols(scope, limit_to=data_cols)]
 
-        return inds
+        return sorted(inds)
 
     def get_values(self, col, dropna=True, decode_values=False,
                    reduce_func=np.mean, n_jobs=1):
@@ -1327,22 +1327,33 @@ class Dataset(pd.DataFrame):
         print('Until this is supported, re-name before casting to a Dataset.')
         return super().rename(**kwargs)
 
-    def _is_category(self, col, check_scopes=True):
-        '''Tests if a column is categorical'''
+    def _is_category(self, scope, limit_to=None, check_scopes=True):
+        '''Tests if a set of columns are categorical,
+        returns True only if all are categorical.'''
 
+        # Only if requested check scopes
         if check_scopes:
             self._check_scopes()
 
-        # Make sure valid column
-        if col not in self.columns:
-            raise KeyError('Passed: ' + repr(col) + ' not a valid loaded col.')
+        # Get cols
+        cols = self._get_cols(scope, limit_to=limit_to)
 
-        # Only check is there is a scope for this col
-        if col in self.scopes:
-            return 'category' in self.scopes[col]
+        # If no valid, raise error
+        if len(cols) == 0:
+            raise KeyError('Passed: ' + repr(scope) +
+                           ' not a valid scope.')
 
-        # If no scope, assume isn't category
-        return False
+        # Check for each col
+        is_category = []
+        for col in self._get_cols(scope):
+
+            # Only check is there is a scope for this col
+            if col in self.scopes:
+                is_category.append('category' in self.scopes[col])
+            else:
+                is_category.append(False)
+
+        return all(is_category)
 
     def copy(self, deep=True):
         '''Creates and returns a dopy of this dataset, either

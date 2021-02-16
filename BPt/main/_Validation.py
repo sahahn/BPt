@@ -276,7 +276,7 @@ def Define_Validation_Strategy(self, cv=None, groups=None, stratify=None,
         passed_cv = cv
 
     else:
-        from .Params_Classes import CV
+        from .input import CV
         passed_cv = CV(groups=groups, stratify=stratify,
                        train_only_loc=train_only_loc,
                        train_only_subjects=train_only_subjects)

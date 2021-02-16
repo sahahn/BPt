@@ -10,14 +10,14 @@ import pickle as pkl
 from tqdm import tqdm
 from tqdm.notebook import tqdm as tqdm_notebook
 
-from .Input_Tools import is_value_subset
+from .input_operations import is_value_subset
 from ..helpers.Data_Helpers import (get_unique_combo_df,
                                     reverse_unique_combo_df,
                                     get_target_type)
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
-from ..main.Params_Classes import (Model_Pipeline,
-                                   Model, Ensemble, Problem_Spec)
+from ..main.input import (Model_Pipeline,
+                                   Model, Ensemble, ProblemSpec)
 from ..pipeline.BPtPipelineConstructor import get_pipe
 import pandas as pd
 import copy
@@ -337,7 +337,7 @@ def Evaluate(self,
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
     Specifically, Evaluate is designed to try and estimate the out of sample
     performance of a passed :class:`Model_Pipeline` on a specific
-    ML task (as specified by :class:`Problem_Spec`).
+    ML task (as specified by :class:`ProblemSpec`).
     This estimate is done through a defined CV strategy
     (`splits` and `n_repeats`). While Evaluate's ideal usage is
     an expirimental context for exploring
@@ -358,20 +358,20 @@ def Evaluate(self,
         See :class:`Model_Pipeline` for more information /
         how to create a the model pipeline.
 
-    problem_spec : :class:`Problem_Spec` or 'default', optional
+    problem_spec : :class:`ProblemSpec` or 'default', optional
 
         `problem_spec` accepts an instance of the BPt.BPt_ML
-        params class :class:`Problem_Spec`.
+        params class :class:`ProblemSpec`.
         This object is essentially a wrapper around commonly used
         parameters needs to define the context
         the model pipeline should be evaluated in.
         It includes parameters like problem_type, scorer, n_jobs,
         random_state, etc...
-        See :class:`Problem_Spec` explicitly for more information
+        See :class:`ProblemSpec` explicitly for more information
         and for how to create an instance of this object.
 
         If left as 'default', then will just initialize a
-        Problem_Spec with default params.
+        ProblemSpec with default params.
 
         ::
 
@@ -466,7 +466,7 @@ def Evaluate(self,
     train_subjects : :ref:`Subjects`, optional
         This parameter determines the set of training subjects which are
         used in this call to `Evaluate`. Note, this parameter is distinct to
-        the `subjects` parameter within :class:`Problem_Spec`, which is
+        the `subjects` parameter within :class:`ProblemSpec`, which is
         applied after
         selecting the subset of `train_subjects` specified here.
         These subjects are
@@ -774,7 +774,7 @@ def Test(self,
     and evaluate it on a further discrete set of `test_subjects`.
     Otherwise, these functions are very simmilar as
     they both evaluate a :class:`Model_Pipeline` as defined in the context of
-    a :class:`Problem_Spec`, and return
+    a :class:`ProblemSpec`, and return
     similar output.
 
     Parameters
@@ -787,20 +787,20 @@ def Test(self,
         See :class:`Model_Pipeline` for more information / how to
         create a the model pipeline.
 
-    problem_spec : :class:`Problem_Spec` or 'default', optional
+    problem_spec : :class:`ProblemSpec` or 'default', optional
 
         `problem_spec` accepts an instance of the BPt.BPt_ML
-        params class :class:`Problem_Spec`.
+        params class :class:`ProblemSpec`.
         This object is essentially a wrapper around commonly used
         parameters needs to define the context
         the model pipeline should be evaluated in.
         It includes parameters like problem_type, scorer, n_jobs,
         random_state, etc...
-        See :class:`Problem_Spec` explicitly for more information
+        See :class:`ProblemSpec` explicitly for more information
         and for how to create an instance of this object.
 
         If left as 'default', then will just initialize a
-        Problem_Spec with default params.
+        ProblemSpec with default params.
 
         ::
 
@@ -812,7 +812,7 @@ def Test(self,
 
         Note, this parameter and `test_subjects` are distinct,
         but complementary to
-        the `subjects` parameter within :class:`Problem_Spec`,
+        the `subjects` parameter within :class:`ProblemSpec`,
         which is applied after
         selecting the subset of `train_subjects` specified here.
 
@@ -852,7 +852,7 @@ def Test(self,
 
         Note, this parameter and `train_subjects` are distinct,
         but complementary to
-        the `subjects` parameter within :class:`Problem_Spec`,
+        the `subjects` parameter within :class:`ProblemSpec`,
         which is applied after
         selecting the subset of `test_subjects` specified here.
 
@@ -1238,7 +1238,7 @@ def _preproc_problem_spec(self, problem_spec):
 
     # Check if problem_spec is left as default
     if problem_spec == 'default':
-        problem_spec = Problem_Spec()
+        problem_spec = ProblemSpec()
 
     # Set ps to copy of problem spec and init
     ps = deepcopy(problem_spec)

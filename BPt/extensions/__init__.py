@@ -1,4 +1,4 @@
-from .Feat_Selectors import RFE_Wrapper, FeatureSelector
+from .FeatSelectors import RFEWrapper, FeatureSelector
 from .Loaders import Identity, SurfLabels, SurfMaps
 
 try:
@@ -17,7 +17,7 @@ from .MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
 from .RandomParcels import RandomParcels
 from .Scalers import Winsorizer
 
-__all__ = ['RFE_Wrapper',
+__all__ = ['RFEWrapper',
            'FeatureSelector',
            'Identity', 'SurfLabels', 'Connectivity', 'MLPRegressor_Wrapper',
            'MLPClassifier_Wrapper',

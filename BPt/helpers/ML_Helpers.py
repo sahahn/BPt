@@ -10,7 +10,7 @@ import inspect
 from ..default.params.default_params import get_base_params, proc_params
 from ..default.params.Params import Params
 from copy import deepcopy
-from ..main.Input_Tools import is_special, Select
+from ..main.input_operations import is_special, Select
 from joblib import hash as joblib_hash
 
 

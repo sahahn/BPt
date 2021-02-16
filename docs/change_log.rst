@@ -26,11 +26,11 @@ Release 2.0
 Release 1.3.6
 ***************
 
-- Removed cache option from Model_Pipeline
+- Removed cache option from ModelPipeline
     - Use cache_loc parameter instead in each individual piece for more flexibility.
 
 - New search_only_params param
-    - In the Param_Search object, there is now a parameter for search_only_params.
+    - In the ParamSearch object, there is now a parameter for search_only_params.
     - This parameter allows some advanced behavior, w.r.t. to only passing params when searching for params.
 
 - More Tests
@@ -130,10 +130,10 @@ Release 1.3
 
 - Support for nested parameter searches
     - :class:`BPt.Model` and :class:`BPt.Ensemble` now support a param_search parameter.
-    - The parameter param_search accepts a :class:`BPt.Param_Search` object, and turns the model or ensemble into a nested search object.
+    - The parameter param_search accepts a :class:`BPt.ParamSearch` object, and turns the model or ensemble into a nested search object.
 
-- Initial support for passing nested :class:`BPt.Model_Pipeline`
-    - Now can pass nested :class:`BPt.Model_Pipeline` if wrapped in a :class:`BPt.Model`
+- Initial support for passing nested :class:`BPt.ModelPipeline`
+    - Now can pass nested :class:`BPt.ModelPipeline` if wrapped in a :class:`BPt.Model`
     - Warning: there are still cases which will not work.
 
 - Better support for stacking ensembles
@@ -171,7 +171,7 @@ Release 1.3
     - Added new returned single metric.
     - Optional parameter for returning the trained model(s).
 
-- Add default case for :class:`BPt.Problem_Spec`
+- Add default case for :class:`BPt.ProblemSpec`
     - Now with default detecting of problem type, can optionally not specify a problem spec in Evaluate or Test.
 
 - Add default problem type

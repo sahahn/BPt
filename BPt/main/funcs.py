@@ -1,4 +1,4 @@
-from .Params_Classes import Model, Model_Pipeline, Problem_Spec, Ensemble, CV
+from .input import Model, ModelPipeline, ProblemSpec, Ensemble, CV
 from copy import deepcopy
 import numpy as np
 from ..pipeline.BPtPipelineConstructor import get_pipe
@@ -12,22 +12,22 @@ def model_pipeline_check(model_pipeline, **extra_params):
     # Make deep copy
     pipe = deepcopy(model_pipeline)
 
-    # Add checks on Model_Pipeline
-    if not isinstance(pipe, Model_Pipeline):
+    # Add checks on ModelPipeline
+    if not isinstance(pipe, ModelPipeline):
 
         # Check for if model str first
         if isinstance(pipe, str):
             pipe = Model(obj=pipe)
 
-        # In case of passed valid single model, wrap in Model_Pipeline
+        # In case of passed valid single model, wrap in ModelPipeline
         if hasattr(pipe, '_is_model'):
-            pipe = Model_Pipeline(model=pipe)
+            pipe = ModelPipeline(model=pipe)
         else:
-            raise RuntimeError('model_pipeline must be a Model_Pipeline',
+            raise RuntimeError('model_pipeline must be a ModelPipeline',
                                ' model str or Model-like')
 
     # Set any overlapping extra params
-    possible_params = Model_Pipeline._get_param_names()
+    possible_params = ModelPipeline._get_param_names()
     valid_params = {key: extra_params[key] for key in extra_params
                     if key in possible_params}
     pipe.set_params(**valid_params)
@@ -48,13 +48,13 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
 
     # Check if problem_spec is left as default
     if problem_spec == 'default':
-        problem_spec = Problem_Spec()
+        problem_spec = ProblemSpec()
 
     # Set ps to copy of problem spec and init
     ps = deepcopy(problem_spec)
 
     # Apply any passed valid extra params
-    possible_params = Problem_Spec._get_param_names()
+    possible_params = ProblemSpec._get_param_names()
     valid_params = {key: extra_params[key] for key in extra_params
                     if key in possible_params}
     ps.set_params(**valid_params)
@@ -104,36 +104,36 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
 
 def get_estimator(model_pipeline, dataset,
                   problem_spec='default', **extra_params):
-    '''Get a sklearn compatible estimator from a :class:`Model_Pipeline`,
-    :class:`Dataset` and :class:`Problem_Spec`.
+    '''Get a sklearn compatible estimator from a :class:`ModelPipeline`,
+    :class:`Dataset` and :class:`ProblemSpec`.
 
     This function can be used together with Dataset method
     :func:`get_Xy <Dataset.get_Xy>` and it's variants.
 
     Parameters
     -----------
-    model_pipeline : :class:`Model_Pipeline`
-        A BPt input class Model_Pipeline to be intialized according
-        to the passed Dataset and Problem_Spec.
+    model_pipeline : :class:`ModelPipeline`
+        A BPt input class ModelPipeline to be intialized according
+        to the passed Dataset and ProblemSpec.
 
     dataset : :class:`Dataset`
         The Dataset in which the pipeline should be initialized
         according to. For example, pipeline's can include Scopes,
         these need a reference Dataset.
 
-    problem_spec : :class:`Problem_Spec` or 'default', optional
+    problem_spec : :class:`ProblemSpec` or 'default', optional
         `problem_spec` accepts an instance of the
-        params class :class:`Problem_Spec`.
+        params class :class:`ProblemSpec`.
         This object is essentially a wrapper around commonly used
         parameters needs to define the context
         the model pipeline should be evaluated in.
         It includes parameters like problem_type, scorer, n_jobs,
         random_state, etc...
-        See :class:`Problem_Spec` for more information
+        See :class:`ProblemSpec` for more information
         and for how to create an instance of this object.
 
         If left as 'default', then will initialize a
-        Problem_Spec with default params.
+        ProblemSpec with default params.
 
         ::
 
@@ -195,7 +195,7 @@ def _get_pipeline(model_pipeline, problem_spec, dataset,
     # nested model pipeline's
     def nested_check(obj):
 
-        if hasattr(obj, 'obj') and isinstance(obj.obj, Model_Pipeline):
+        if hasattr(obj, 'obj') and isinstance(obj.obj, ModelPipeline):
 
             nested_pipe, nested_pipe_params =\
                 _get_pipeline(model_pipeline=obj.obj,
@@ -406,9 +406,9 @@ def cross_val_score(model_pipeline, dataset,
 
     Parameters
     ----------
-    model_pipeline : :class:`Model_Pipeline`
-        A BPt input class Model_Pipeline to be intialized according
-        to the passed Dataset and Problem_Spec, and then evaluated.
+    model_pipeline : :class:`ModelPipeline`
+        A BPt input class ModelPipeline to be intialized according
+        to the passed Dataset and ProblemSpec, and then evaluated.
 
     dataset : :class:`Dataset`
         The Dataset in which the pipeline should be initialized
@@ -416,19 +416,19 @@ def cross_val_score(model_pipeline, dataset,
         `subjects` to use only a subset of the columns or subjects
         in this call to cross_val_score.
 
-    problem_spec : :class:`Problem_Spec` or 'default', optional
+    problem_spec : :class:`ProblemSpec` or 'default', optional
         `problem_spec` accepts an instance of the
-        params class :class:`Problem_Spec`.
+        params class :class:`ProblemSpec`.
         This object is essentially a wrapper around commonly used
         parameters needs to define the context
         the model pipeline should be evaluated in.
         It includes parameters like problem_type, scorer, n_jobs,
         random_state, etc...
-        See :class:`Problem_Spec` for more information
+        See :class:`ProblemSpec` for more information
         and for how to create an instance of this object.
 
         If left as 'default', then will initialize a
-        Problem_Spec with default params.
+        ProblemSpec with default params.
 
         Warning: the parameter weight_scorer in problem_spec
         is ignored when used with cross_val_score.
@@ -519,9 +519,9 @@ def cross_validate(model_pipeline, dataset,
 
     Parameters
     ----------
-    model_pipeline : :class:`Model_Pipeline`
-        A BPt input class Model_Pipeline to be intialized according
-        to the passed Dataset and Problem_Spec, and then evaluated.
+    model_pipeline : :class:`ModelPipeline`
+        A BPt input class ModelPipeline to be intialized according
+        to the passed Dataset and ProblemSpec, and then evaluated.
 
     dataset : :class:`Dataset`
         The Dataset in which the pipeline should be initialized
@@ -529,19 +529,19 @@ def cross_validate(model_pipeline, dataset,
         `subjects` to use only a subset of the columns or subjects
         in this call to cross_val_score.
 
-    problem_spec : :class:`Problem_Spec` or 'default', optional
+    problem_spec : :class:`ProblemSpec` or 'default', optional
         `problem_spec` accepts an instance of the
-        params class :class:`Problem_Spec`.
+        params class :class:`ProblemSpec`.
         This object is essentially a wrapper around commonly used
         parameters needs to define the context
         the model pipeline should be evaluated in.
         It includes parameters like problem_type, scorer, n_jobs,
         random_state, etc...
-        See :class:`Problem_Spec` for more information
+        See :class:`ProblemSpec` for more information
         and for how to create an instance of this object.
 
         If left as 'default', then will initialize a
-        Problem_Spec with default params.
+        ProblemSpec with default params.
 
         Warning: the parameter weight_scorer in problem_spec
         is ignored when used with cross_val_score.

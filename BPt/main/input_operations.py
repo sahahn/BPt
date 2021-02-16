@@ -7,7 +7,7 @@ class Select(list):
     but also choosing between objects
     (as well as their relevant distributions).
 
-    Select is used to cast lists of base :class:`Model_Pipeline`
+    Select is used to cast lists of base :class:`ModelPipeline`
     pieces as different options.
     Consider a simple example, for specifying a selection
     between two different :class:`Models<Model>`
@@ -16,11 +16,11 @@ class Select(list):
 
         model = Select([Model('linear'), Model('random forest')])
 
-    In this example, the model passed to :class:`Model_Pipeline`
+    In this example, the model passed to :class:`ModelPipeline`
     becomes a meta object
     for selecting between the two base models.
-    Note: this does require a :class:`Param_Search`
-    object be passed to :class:`Model_Pipeline`.
+    Note: this does require a :class:`ParamSearch`
+    object be passed to :class:`ModelPipeline`.
     Notably as well, if further param distributions
     are defined within say the `Model('random forest')`,
     those will still be optimized, allowing for
@@ -40,7 +40,7 @@ class Select(list):
 
     Lastly, explcitly note that Select is not restricted for use with Models,
     it can be used on any of
-    the base class:`Model_Pipeline` piece params
+    the base class:`ModelPipeline` piece params
     (i.e., every param but param_search and cache...).
     '''
     input_type = 'select'
@@ -78,7 +78,7 @@ class Duplicate(list):
     but one will have a scope of 'float' and the other 'cat'.
 
     Consider the following exentended example, where loaders is being specified
-    when creating an instance of :class:`Model_Pipeline`:
+    when creating an instance of :class:`ModelPipeline`:
 
     ::
 
@@ -218,7 +218,7 @@ def is_pipe(obj):
 
 class Value_Subset():
     ''' Value_Subset is special wrapper class for BPt designed to work with
-    :ref:`Subjects` style input. As seen in :class:`Param_Search`,
+    :ref:`Subjects` style input. As seen in :class:`ParamSearch`,
     or to the `train_subjects` or `test_subjects`
     params in :func:`Evaluate <BPt.BPt_ML.Evaluate>`
     and :func:`Test <BPt.BPt_ML.Test>`.

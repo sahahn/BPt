@@ -140,8 +140,8 @@ Scope
 
 Scope's represent a key concept within BPt, that are present when preparing data with
 the :ref:`Dataset` class, and during ML. The `scope` argument can also be
-found across different :class:`Model_Pipeline <BPt.Model_Pipeline>` pieces
-and within :class:`Problem_Spec <BPt.Problem_Spec>`. The fundamental idea is
+found across different :class:`ModelPipeline <BPt.ModelPipeline>` pieces
+and within :class:`ProblemSpec <BPt.ProblemSpec>`. The fundamental idea is
 that during loading, plotting, ML, etc... it is often desirable to specify
 a subset of the total loaded columns/features. This is accomplished within BPt via the
 concept of 'scope' and the 'scope' parameter.
@@ -254,7 +254,7 @@ Returns columns '1' and '2'. We can also combine across methods. E.g.,
 In this example, we are requesting the union (NOT the overlap) of column '1', any 
 category columns, any columns with the scope 'custom' and any 'non input' columns.
 
-Scopes can also be associated 1:1 with their corresponding base Model_Pipeline objects (except for the Problem_Spec scope).
+Scopes can also be associated 1:1 with their corresponding base ModelPipeline objects (except for the ProblemSpec scope).
 One useful function designed specifically for objects with Scope is the :class:`Duplicate<BPt.Duplicate>` Input Wrapper, which
 allows us to conviently replicate pipeline objects across a number of scopes. This functionality is especially useful with
 :class:`Transformer<BPt.Transformer>` objects, (though still usable with other pipeline pieces, though other pieces
@@ -390,7 +390,7 @@ In this case, the subjects to select would be loaded from 'subjects.txt' and the
 Pipeline Objects
 ================
 
-Across all base :class:`Model_Pipeline<BPt.Model_Pipeline>` pieces, e.g., :class:`Model<BPt.Model>`
+Across all base :class:`ModelPipeline<BPt.ModelPipeline>` pieces, e.g., :class:`Model<BPt.Model>`
 or :class:`Scaler<BPt.Scaler>`, there exists an `obj` param when initizalizing these objects. This parameter
 can broadly refer to either a str, which indicates a valid pre-defined custom obj for that piece, or depending
 on the pieces, this parameter can be passed a custom object directly.
@@ -401,13 +401,13 @@ on the pieces, this parameter can be passed a custom object directly.
 Params
 ======
 
-On the back-end, if a :class:`Param_Search<BPt.Param_Search>` object is passed when creating a
-:class:`Model_Pipeline <BPt.Model_Pipeline>`, then a hyperparameter search will be conducted.
+On the back-end, if a :class:`ParamSearch<BPt.ParamSearch>` object is passed when creating a
+:class:`ModelPipeline <BPt.ModelPipeline>`, then a hyperparameter search will be conducted.
 All Hyperparameter search types are implemented on the backend with facebook's
 `Nevergrad <https://github.com/facebookresearch/nevergrad>`_ library.
 
 Specific hyperparameters distributions in which to search over are set within their corresponding
-base Model_Pipeline object, e.g., the params argument is :class:`Model<BPt.Model>`. For any object
+base ModelPipeline object, e.g., the params argument is :class:`Model<BPt.Model>`. For any object
 with a params argument you can set an associated hyperparameter distribution, which specifies values to
 search over (again assuming that param_search != None, if param_search is None, only passed params with constant
 values will be applied to object of interest, and any with associated Nevergrad parameter distributions will just
@@ -466,7 +466,7 @@ You have two different options in terms of input that params can accept, these a
         if a param is passed to both params and extra_params).
 
 The special input wrapper :class:`Select<BPt.Select>` can also be used to implicitly introduce hyperparameters
-into the :class:`Model_Pipeline <BPt.Model_Pipeline>`. 
+into the :class:`ModelPipeline <BPt.ModelPipeline>`. 
 
 
 .. _Extra Params:
@@ -474,7 +474,7 @@ into the :class:`Model_Pipeline <BPt.Model_Pipeline>`.
 Extra Params
 =============
 
-All base :class:`Model_Pipeline <BPt.Model_Pipeline>` have the kwargs style input argument `extra params`. This parameter is designed
+All base :class:`ModelPipeline <BPt.ModelPipeline>` have the kwargs style input argument `extra params`. This parameter is designed
 to allow passing additional values to the base objects, seperate from :ref:`Params`. Take the case where you
 are using a preset model, with a preset parameter distribution, but you only want to change 1 parameter in the model while still keeping
 the rest of the parameters associated with the param distribution. In this case, you could pass that value in extra params.
@@ -498,4 +498,4 @@ words, parameters passed as extra have the highest priority.
 Custom Input Objects
 =====================
 
-Custom input objects can be passed to the `obj` parameter for a number of base :class:`Model_Pipeline <BPt.Model_Pipeline>` pieces.
+Custom input objects can be passed to the `obj` parameter for a number of base :class:`ModelPipeline <BPt.ModelPipeline>` pieces.

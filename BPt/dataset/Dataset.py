@@ -7,7 +7,7 @@ from ..helpers.Data_File import Data_File, load_data_file_proxy
 from copy import copy, deepcopy
 from ..helpers.ML_Helpers import conv_to_list
 from .helpers import (base_load_subjects, proc_file_input, verbose_print)
-from ..main.Input_Tools import Intersection, Value_Subset
+from ..main.input_operations import Intersection, Value_Subset
 import warnings
 
 # @TODO Loook into pandas finalize
@@ -1403,25 +1403,25 @@ class Dataset(pd.DataFrame):
 
         Parameters
         -----------
-        problem_spec : :class:`Problem_Spec` or 'default', optional
+        problem_spec : :class:`ProblemSpec` or 'default', optional
             This argument accepts an instance of the
-            params class :class:`Problem_Spec`.
+            params class :class:`ProblemSpec`.
             This object is essentially a wrapper around commonly used
             parameters needs to define the context
             the model pipeline should be evaluated in.
             It includes parameters like problem_type, scorer, n_jobs,
             random_state, etc...
-            See :class:`Problem_Spec` for more information
+            See :class:`ProblemSpec` for more information
             and for how to create an instance of this object.
 
             If left as 'default', then will initialize a
-            Problem_Spec with default params.
+            ProblemSpec with default params.
 
             ::
 
                 default = 'default'
 
-        problem_spec_params : :class:`Problem_Spec` params, optional
+        problem_spec_params : :class:`ProblemSpec` params, optional
             You may also pass any valid parameter value pairs here,
             e.g.
 
@@ -1475,20 +1475,20 @@ class Dataset(pd.DataFrame):
 
         Parameters
         -----------
-        problem_spec : :class:`Problem_Spec` or 'default', optional
+        problem_spec : :class:`ProblemSpec` or 'default', optional
             This argument accepts an instance of the
-            params class :class:`Problem_Spec`.
+            params class :class:`ProblemSpec`.
             This object is essentially a wrapper around commonly used
             parameters needs to define the context
             the model pipeline should be evaluated in.
             It includes parameters like problem_type, scorer, n_jobs,
             random_state, etc...
 
-            See :class:`Problem_Spec` for more information
+            See :class:`ProblemSpec` for more information
             and for how to create an instance of this object.
 
             If left as 'default', then will initialize a
-            Problem_Spec with default params.
+            ProblemSpec with default params.
 
             ::
 
@@ -1510,7 +1510,7 @@ class Dataset(pd.DataFrame):
 
                 default = 'train'
 
-        problem_spec_params : :class:`Problem_Spec` params, optional
+        problem_spec_params : :class:`ProblemSpec` params, optional
             You may also pass any valid parameter value pairs here,
             e.g.
 
@@ -1546,20 +1546,20 @@ class Dataset(pd.DataFrame):
 
         Parameters
         -----------
-        problem_spec : :class:`Problem_Spec` or 'default', optional
+        problem_spec : :class:`ProblemSpec` or 'default', optional
             This argument accepts an instance of the
-            params class :class:`Problem_Spec`.
+            params class :class:`ProblemSpec`.
             This object is essentially a wrapper around commonly used
             parameters needs to define the context
             the model pipeline should be evaluated in.
             It includes parameters like problem_type, scorer, n_jobs,
             random_state, etc...
 
-            See :class:`Problem_Spec` for more information
+            See :class:`ProblemSpec` for more information
             and for how to create an instance of this object.
 
             If left as 'default', then will initialize a
-            Problem_Spec with default params.
+            ProblemSpec with default params.
 
             ::
 
@@ -1581,7 +1581,7 @@ class Dataset(pd.DataFrame):
 
                 default = 'test'
 
-        problem_spec_params : :class:`Problem_Spec` params, optional
+        problem_spec_params : :class:`ProblemSpec` params, optional
             You may also pass any valid parameter value pairs here,
             e.g.
 

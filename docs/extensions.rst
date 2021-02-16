@@ -11,7 +11,7 @@ Winsorizer
 
 FeatureSelector
 ===============
-.. autoclass:: BPt.extensions.Feat_Selectors.FeatureSelector
+.. autoclass:: BPt.extensions.FeatSelectors.FeatureSelector
 
 
 SurfLabels

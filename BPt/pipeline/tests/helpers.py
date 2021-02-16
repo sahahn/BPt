@@ -2,11 +2,11 @@ import os
 import tempfile
 import numpy as np
 from ...helpers.Data_File import Data_File
-from ...main.Params_Classes import Problem_Spec
+from ...main.input import ProblemSpec
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection._base import SelectorMixin
-from ...main.Params_Classes import Param_Search
-from ...main.CV import BPtCV, CV_Strategy
+from ...main.input import ParamSearch
+from ...main.CV import BPtCV, CVStrategy
 from ...dataset.Dataset import Dataset
 
 
@@ -61,7 +61,7 @@ class FakeSelector(SelectorMixin, BaseEstimator):
 
 def get_param_search():
 
-    param_search = Param_Search(search_type='RandomSearch',
+    param_search = ParamSearch(search_type='RandomSearch',
                                 cv='default',
                                 n_iter=10,
                                 scorer='default',
@@ -73,13 +73,13 @@ def get_param_search():
                                 search_only_params=None,
                                 progress_loc=None)
 
-    ps = Problem_Spec(random_state=1,
+    ps = ProblemSpec(random_state=1,
                       n_jobs=2,
                       problem_type='regression')
 
     ps_dict = param_search.as_dict(ps)
     ps_dict['cv'] = BPtCV(splits=3, n_repeats=1,
-                          cv_strategy=CV_Strategy(), splits_vals=None)
+                          cv_strategy=CVStrategy(), splits_vals=None)
 
     return ps_dict
 

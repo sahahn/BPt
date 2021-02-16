@@ -1,4 +1,4 @@
-from ...main.Params_Classes import Imputer, Model
+from ...main.input import Imputer, Model
 from ..Pipeline_Pieces import Imputers
 from ...dataset.Dataset import Dataset
 import numpy as np

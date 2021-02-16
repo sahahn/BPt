@@ -139,8 +139,8 @@ lines = main_category(lines, 'Scorers')
 lines.append('Different availible choices for the `scorer` parameter' +
              ' are shown below.')
 lines.append('`scorer` is accepted by ' +
-             ':class:`Problem_Spec<BPt.Problem_Spec>` and ' +
-             ':class:`Param_Search<BPt.Param_Search>`.')
+             ':class:`ProblemSpec<BPt.ProblemSpec>` and ' +
+             ':class:`ParamSearch<BPt.ParamSearch>`.')
 lines.append('The str indicator for each `scorer` is represented by' +
              'the sub-heading (within "")')
 lines.append('The avaliable scorers are further broken down by which can' +
@@ -204,7 +204,7 @@ lines = add_no_type_block(lines, o.transformers.TRANSFORMERS)
 
 lines = main_category(lines, 'Feat Selectors')
 lines.append('Different base obj choices for the '
-             ':class:`Feat_Selector<BPt.Feat_Selector>` are shown below')
+             ':class:`FeatSelector<BPt.FeatSelector>` are shown below')
 lines.append('The exact str indicator, as passed to the `obj` '
              'param is represented' +
              ' by the sub-heading (within "")')

@@ -4,7 +4,7 @@ from ..helpers.ML_Helpers import is_array_like
 from ..helpers.VARS import ORDERED_NAMES
 
 from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
-                              Transformers, Feat_Selectors)
+                              Transformers, FeatSelectors)
 
 from .BPtSearchCV import get_search_cv
 
@@ -57,7 +57,7 @@ class BPtPipelineConstructor():
 
         # These are the corresponding pieces classes
         pieces_classes = [Loaders, Imputers, Scalers,
-                          Transformers, Feat_Selectors, Models]
+                          Transformers, FeatSelectors, Models]
 
         # Generate / process all of the pipeline pieces in order
         for params, piece_class, name in zip(conv_pipeline_params,
@@ -192,7 +192,7 @@ class BPtPipelineConstructor():
 
 def get_pipe(pipeline_params, problem_spec, dataset):
 
-    # Init the Model_Pipeline, which creates the pipeline pieces
+    # Init the ModelPipeline, which creates the pipeline pieces
     pipeline_constructor =\
         BPtPipelineConstructor(pipeline_params=pipeline_params,
                                problem_spec=problem_spec,

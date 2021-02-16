@@ -1,6 +1,6 @@
 from copy import deepcopy
 import numpy as np
-from ..main.Input_Tools import is_special
+from ..main.input_operations import is_special
 import inspect
 
 

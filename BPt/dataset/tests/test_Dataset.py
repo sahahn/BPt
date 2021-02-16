@@ -3,8 +3,8 @@ import pandas as pd
 import tempfile
 import os
 from nose.tools import assert_raises
-from ...main.Input_Tools import Value_Subset, Intersection
-from ...main.Params_Classes import Problem_Spec
+from ...main.input_operations import Value_Subset, Intersection
+from ...main.input import ProblemSpec
 from ..helpers import base_load_subjects, save_subjects
 from .datasets import (get_fake_dataset, get_fake_dataset2,
                        get_fake_multi_index_dataset, get_fake_dataset4,
@@ -510,7 +510,7 @@ def test_multi_index_add_data_files():
 def test_get_Xy_base():
 
     df = get_full_dataset()
-    ps = Problem_Spec()
+    ps = ProblemSpec()
 
     X, y = df.get_Xy(ps)
     X, y = np.array(X), np.array(y)
@@ -559,7 +559,7 @@ def test_get_Xy_base():
 def test_get_Xy_alt():
 
     df = get_full_dataset()
-    ps = Problem_Spec(subjects=['s2', 's3', 's4'], scope=['1', '3'])
+    ps = ProblemSpec(subjects=['s2', 's3', 's4'], scope=['1', '3'])
 
     X, y = df.get_Xy(ps)
     X, y = np.array(X), np.array(y)

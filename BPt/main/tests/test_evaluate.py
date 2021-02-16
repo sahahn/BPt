@@ -1,4 +1,4 @@
-from ..Params_Classes import Model_Pipeline, Model, CV
+from ..input import ModelPipeline, Model, CV
 from ...dataset.Dataset import Dataset
 from ..funcs import evaluate, cross_val_score
 from nose.tools import assert_raises
@@ -20,7 +20,7 @@ def get_fake_dataset():
 
 def test_evaluate_match_cross_val_score():
 
-    dt_pipe = Model_Pipeline(model=Model('dt'))
+    dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_dataset()
     evaluator = evaluate(model_pipeline=dt_pipe,
                          dataset=dataset,
@@ -45,7 +45,7 @@ def test_evaluate_match_cross_val_score():
 
 def test_evaluate_regression_dt():
 
-    dt_pipe = Model_Pipeline(model=Model('dt'))
+    dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_dataset()
     evaluator = evaluate(model_pipeline=dt_pipe,
                          dataset=dataset,
@@ -99,7 +99,7 @@ def get_fake_category_dataset():
 
 def test_evaluate_categorical_dt():
 
-    dt_pipe = Model_Pipeline(model=Model('dt'))
+    dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_category_dataset()
 
     evaluator = evaluate(model_pipeline=dt_pipe,
@@ -138,7 +138,7 @@ def test_evaluate_categorical_dt():
 
 def test_evaluate_categorical_linear():
 
-    linear_pipe = Model_Pipeline(model=Model('linear'))
+    linear_pipe = ModelPipeline(model=Model('linear'))
     dataset = get_fake_category_dataset()
 
     evaluator = evaluate(model_pipeline=linear_pipe,
@@ -177,7 +177,7 @@ def get_fake_binary_dataset():
 
 def test_evaluate_binary():
 
-    dt_pipe = Model_Pipeline(model=Model('dt'))
+    dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_binary_dataset()
     evaluator = evaluate(model_pipeline=dt_pipe,
                          dataset=dataset,
@@ -215,7 +215,7 @@ def test_evaluate_binary():
 
 def test_evaluate_fail():
 
-    dt_pipe = Model_Pipeline(model=Model('dt'))
+    dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_dataset()
 
     evaluator = evaluate(model_pipeline=dt_pipe,
@@ -232,7 +232,7 @@ def test_evaluate_fail():
 
 def test_evaluate_cv():
 
-    dt_pipe = Model_Pipeline(model=Model('dt'))
+    dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_binary_dataset()
     cv = CV(splits=3, n_repeats=2)
     evaluator = evaluate(model_pipeline=dt_pipe,

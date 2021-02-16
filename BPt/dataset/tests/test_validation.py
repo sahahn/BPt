@@ -3,7 +3,7 @@ from ..Dataset import Dataset
 from nose.tools import assert_raises
 import os
 import tempfile
-from ...main.Params_Classes import CV_Strategy
+from ...main.input import CVStrategy
 
 
 def get_fake_dataset():
@@ -28,7 +28,7 @@ def test_proc_cv_strategy_base():
 
     df = get_fake_dataset()
 
-    cv_params = CV_Strategy()
+    cv_params = CVStrategy()
 
     cv = df._proc_cv_strategy(cv_params)
     assert cv.groups is None
@@ -45,7 +45,7 @@ def test_proc_cv_strategy_train_only():
 
     df = get_fake_dataset()
 
-    cv_params = CV_Strategy(train_only_subjects=[0, 1])
+    cv_params = CVStrategy(train_only_subjects=[0, 1])
     cv = df._proc_cv_strategy(cv_params)
 
     assert cv.groups is None
@@ -53,7 +53,7 @@ def test_proc_cv_strategy_train_only():
     assert np.array_equal(cv.train_only, np.array([0, 1]))
 
     # Make sure sorts for repeatable behavior
-    cv_params = CV_Strategy(train_only_subjects=[0, 1])
+    cv_params = CVStrategy(train_only_subjects=[0, 1])
     cv = df._proc_cv_strategy(cv_params)
 
     assert cv.groups is None
@@ -66,21 +66,21 @@ def test_proc_cv_strategy_groups():
     df = get_fake_dataset()
 
     with assert_raises(RuntimeError):
-        cv_params = CV_Strategy(groups=['1', '2'])
+        cv_params = CVStrategy(groups=['1', '2'])
 
-    cv_params = CV_Strategy(groups='1')
+    cv_params = CVStrategy(groups='1')
     with assert_raises(RuntimeError):
         cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CV_Strategy(groups='doesnt exist')
+    cv_params = CVStrategy(groups='doesnt exist')
     with assert_raises(KeyError):
         cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CV_Strategy(groups='2')
+    cv_params = CVStrategy(groups='2')
     with assert_raises(RuntimeError):
         cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CV_Strategy(groups='3')
+    cv_params = CVStrategy(groups='3')
     cv = df._proc_cv_strategy(cv_params)
     assert len(cv.groups) == 3
     assert cv.groups.nunique() == 1
@@ -91,22 +91,22 @@ def test_proc_cv_strategy_stratify():
     df = get_fake_dataset()
 
     with assert_raises(RuntimeError):
-        cv_params = CV_Strategy(stratify=['1', '2'])
+        cv_params = CVStrategy(stratify=['1', '2'])
 
-    cv_params = CV_Strategy(stratify='1')
+    cv_params = CVStrategy(stratify='1')
     with assert_raises(RuntimeError):
         cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CV_Strategy(stratify='doesnt exist')
+    cv_params = CVStrategy(stratify='doesnt exist')
     with assert_raises(KeyError):
         cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CV_Strategy(stratify='2')
+    cv_params = CVStrategy(stratify='2')
     cv = df._proc_cv_strategy(cv_params)
     assert len(cv.stratify) == 3
     assert cv.stratify.nunique() == 1
 
-    cv_params = CV_Strategy(stratify='3')
+    cv_params = CVStrategy(stratify='3')
     cv = df._proc_cv_strategy(cv_params)
     assert len(cv.stratify) == 3
     assert cv.stratify.nunique() == 1
@@ -134,14 +134,14 @@ def test_set_test_split():
     assert len(df.train_subjects) == 2
 
     df.set_test_split(size=.5,
-                      cv_strategy=CV_Strategy(train_only_subjects=[0]),
+                      cv_strategy=CVStrategy(train_only_subjects=[0]),
                       random_state=1, inplace=True)
 
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
     assert 0 in df.train_subjects
 
-    df.set_test_split(size=1, cv_strategy=CV_Strategy(train_only_subjects=[0]),
+    df.set_test_split(size=1, cv_strategy=CVStrategy(train_only_subjects=[0]),
                       random_state=1, inplace=True)
 
     assert len(df.test_subjects) == 1
@@ -177,14 +177,14 @@ def test_set_train_split():
     assert len(df.train_subjects) == 1
 
     df.set_train_split(size=.5,
-                       cv_strategy=CV_Strategy(train_only_subjects=[0]),
+                       cv_strategy=CVStrategy(train_only_subjects=[0]),
                        random_state=1, inplace=True)
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
     assert 0 in df.train_subjects
 
     df.set_train_split(size=1,
-                       cv_strategy=CV_Strategy(train_only_subjects=[0]),
+                       cv_strategy=CVStrategy(train_only_subjects=[0]),
                        random_state=1, inplace=True)
     assert len(df.test_subjects) == 1
     assert len(df.train_subjects) == 2
@@ -202,7 +202,7 @@ def test_set_train_split():
 
     with assert_raises(ValueError):
         df.set_train_split(size=1,
-                           cv_strategy=CV_Strategy(train_only_subjects=[0, 1]),
+                           cv_strategy=CVStrategy(train_only_subjects=[0, 1]),
                            random_state=1, inplace=True)
 
     with assert_raises(RuntimeError):
@@ -226,7 +226,7 @@ def test_multi_index_proc_cv_strategy():
 
     df = get_fake_multi_index_dataset()
 
-    cv_params = CV_Strategy(train_only_subjects=['s1'])
+    cv_params = CVStrategy(train_only_subjects=['s1'])
     cv = df._proc_cv_strategy(cv_params)
 
     assert len(cv.train_only) == 2
@@ -247,7 +247,7 @@ def test_multi_index_proc_cv_strategy_groups():
     df = get_fake_multi_index_dataset()
     df = df.copy_as_non_input('0', 'zero')
 
-    cv_params = CV_Strategy(groups='zero')
+    cv_params = CVStrategy(groups='zero')
     cv = df._proc_cv_strategy(cv_params)
 
     assert len(cv.groups) == 6
@@ -272,7 +272,7 @@ def test_multi_index_set_test_split():
     assert len(df.train_subjects) == 4
 
     df.set_test_split(size=.5,
-                      cv_strategy=CV_Strategy(train_only_subjects=['s1']),
+                      cv_strategy=CVStrategy(train_only_subjects=['s1']),
                       random_state=1, inplace=True)
 
     assert len(df.test_subjects) == 2
@@ -304,7 +304,7 @@ def test_multi_index_set_train_split():
     assert len(df.train_subjects) == 1
 
     df.set_train_split(size=2,
-                       cv_strategy=CV_Strategy(train_only_subjects=['s1']),
+                       cv_strategy=CVStrategy(train_only_subjects=['s1']),
                        random_state=1, inplace=True)
 
     assert len(df.test_subjects) == 2

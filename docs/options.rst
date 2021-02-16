@@ -1444,7 +1444,7 @@ Scorers
 *******
 
 Different availible choices for the `scorer` parameter are shown below.
-`scorer` is accepted by :class:`Problem_Spec<BPt.Problem_Spec>`, :class:`Param_Search<BPt.Param_Search>` and :class:`Feat_Importance<BPt.Feat_Importance>`
+`scorer` is accepted by :class:`ProblemSpec<BPt.ProblemSpec>`, :class:`ParamSearch<BPt.ParamSearch>` and :class:`Feat_Importance<BPt.Feat_Importance>`
 The str indicator for each `scorer` is represented bythe sub-heading (within "")
 The avaliable scorers are further broken down by which can work with different problem_types.
 Additionally, a link to the original models documentation is shown.
@@ -2464,7 +2464,7 @@ All Problem Types
 Feat Selectors
 **************
 
-Different base obj choices for the :class:`Feat_Selector<BPt.Feat_Selector>` are shown below
+Different base obj choices for the :class:`FeatSelector<BPt.FeatSelector>` are shown below
 The exact str indicator, as passed to the `obj` param is represented by the sub-heading (within "")
 The avaliable feat selectors are further broken down by which can workwith different problem_types.
 Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.

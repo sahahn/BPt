@@ -1,4 +1,4 @@
-from ..main.CV import CV_Strategy
+from ..main.CV import CVStrategy
 from .helpers import save_subjects
 import pandas as pd
 
@@ -31,12 +31,12 @@ def _proc_cv_strategy(self, cv_params):
 
     # If None, return base
     if cv_params is None:
-        return CV_Strategy()
+        return CVStrategy()
 
     # @TODO Support scikit-learn style CV directly.
 
     # If already a CV object, return as is
-    if isinstance(cv_params, CV_Strategy):
+    if isinstance(cv_params, CVStrategy):
         return cv_params
 
     # Load train_only_subjects as sorted numpy array
@@ -68,8 +68,8 @@ def _proc_cv_strategy(self, cv_params):
                                'set_role(...)')
 
         # Return CV
-        return CV_Strategy(groups=self[group_key],
-                           train_only=train_only_subjects)
+        return CVStrategy(groups=self[group_key],
+                          train_only=train_only_subjects)
 
     # If stratify
     elif strat_key is not None:
@@ -86,12 +86,12 @@ def _proc_cv_strategy(self, cv_params):
                                'with set_role(...)')
 
         # Return CV
-        return CV_Strategy(stratify=self[strat_key],
-                           train_only=train_only_subjects)
+        return CVStrategy(stratify=self[strat_key],
+                          train_only=train_only_subjects)
 
     # If None
     else:
-        return CV_Strategy(train_only=train_only_subjects)
+        return CVStrategy(train_only=train_only_subjects)
 
 
 def _validate_split(self, size, subjects):
@@ -166,7 +166,7 @@ def set_test_split(self, size=None, subjects=None,
 
             default = None
 
-    cv_strategy : None or :class:`CV_Strategy`, optional
+    cv_strategy : None or :class:`CVStrategy`, optional
         This parameter is only relevant when size is not None,
         and you are defining a new test split. In this case, it
         defines any validation criteria in which the test split should
@@ -316,7 +316,7 @@ def set_train_split(self, size=None, subjects=None,
 
             default = None
 
-    cv_strategy : None or :class:`CV_Strategy`, optional
+    cv_strategy : None or :class:`CVStrategy`, optional
         This parameter is only relevant when size is not None,
         and you are defining a new train split. In this case, it
         defines any validation criteria in which the test split should

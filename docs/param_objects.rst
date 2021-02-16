@@ -1,12 +1,12 @@
 .. currentmodule:: BPt
 
-Model_Pipeline
+ModelPipeline
 ==============
-.. autoclass:: Model_Pipeline
+.. autoclass:: ModelPipeline
 
-Problem_Spec
+ProblemSpec
 ============
-.. autoclass:: Problem_Spec
+.. autoclass:: ProblemSpec
 
 Pieces
 =======
@@ -27,9 +27,9 @@ Transformer
 **************
 .. autoclass:: Transformer
 
-Feat_Selector
+FeatSelector
 **************
-.. autoclass:: Feat_Selector
+.. autoclass:: FeatSelector
 
 Model
 *******
@@ -39,9 +39,9 @@ Ensemble
 **************
 .. autoclass:: Ensemble
 
-Param_Search
+ParamSearch
 **************
-.. autoclass:: Param_Search
+.. autoclass:: ParamSearch
 
 CV
 *****************

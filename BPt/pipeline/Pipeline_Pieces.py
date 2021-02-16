@@ -1,5 +1,5 @@
 from BPt.pipeline.BPtFeatureSelector import BPtFeatureSelector
-from ..main.Input_Tools import is_pipe, is_select
+from ..main.input_operations import is_pipe, is_select
 
 from ..helpers.ML_Helpers import (check_for_duplicate_names,
                                   proc_type_dep_str, param_len_check,
@@ -364,7 +364,7 @@ class Pieces():
         return col_objs, col_params
 
 
-class Type_Pieces(Pieces):
+class TypePieces(Pieces):
 
     def _base_type_process(self, params, func):
 
@@ -386,7 +386,7 @@ class Type_Pieces(Pieces):
         return params
 
 
-class Models(Type_Pieces):
+class Models(TypePieces):
 
     name = 'models'
 
@@ -465,11 +465,11 @@ class Models(Type_Pieces):
                  if this_ensemble_name == key.split('__')[0]}
 
             # Create wrapper object for building the ensemble
-            wrapper = Ensemble_Wrapper(model_obj_params,
-                                       this_ensemble_obj_params,
-                                       ensembles._get_base_ensembler,
-                                       n_jobs=self.spec['n_jobs'],
-                                       random_state=self.spec['random_state'])
+            wrapper = EnsembleWrapper(model_obj_params,
+                                      this_ensemble_obj_params,
+                                      ensembles._get_base_ensembler,
+                                      n_jobs=self.spec['n_jobs'],
+                                      random_state=self.spec['random_state'])
 
             # Use the wrapper to get the ensembled_obj
             ensembled_objs +=\
@@ -530,7 +530,7 @@ class Models(Type_Pieces):
             return model_obj, model_params
 
         # Process and get the base scaler_obj + params
-        base_scaler_obj = Target_Scalers(self.user_passed_objs,
+        base_scaler_obj = TargetScalers(self.user_passed_objs,
                                          self.dataset,
                                          self.spec)
         scaler_objs, scaler_params =\
@@ -737,7 +737,7 @@ class Imputers(Pieces):
                                       Wrapper=ScopeTransformer)
 
 
-class Target_Scalers(Pieces):
+class TargetScalers(Pieces):
 
     name = 'target scalers'
 
@@ -789,7 +789,7 @@ class Transformers(Pieces):
                                       params, Wrapper=BPtTransformer)
 
 
-class Feat_Selectors(Type_Pieces):
+class FeatSelectors(TypePieces):
 
     name = 'feat_selectors'
 
@@ -812,7 +812,7 @@ class Feat_Selectors(Type_Pieces):
                                       Wrapper=BPtFeatureSelector)
 
 
-class Ensembles(Type_Pieces):
+class Ensembles(TypePieces):
 
     name = 'ensembles'
 
@@ -850,7 +850,7 @@ class Ensembles(Type_Pieces):
                                 n_jobs=self.spec['n_jobs'])
 
 
-class Ensemble_Wrapper():
+class EnsembleWrapper():
 
     def __init__(self, model_params, ensemble_params,
                  _get_ensembler, n_jobs, random_state):

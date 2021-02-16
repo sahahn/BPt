@@ -3,10 +3,12 @@ from sklearn.base import BaseEstimator
 from ..helpers.ML_Helpers import (conv_to_list, proc_input)
 
 from ..helpers.VARS import ORDERED_NAMES
-from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
+from ..main.input_operations import (is_duplicate, is_pipe, is_select,
                                 is_special, is_value_subset)
 from ..default.options.scorers import process_scorer
 from .CV import get_bpt_cv
+
+import warnings
 
 
 def proc_all(base_obj):
@@ -92,7 +94,7 @@ class Check():
         if obj is None:
             raise IOError('passed obj cannot be None, to ignore',
                           'the object itself',
-                          'set it within Model_Pipeline to None,',
+                          'set it within ModelPipeline to None,',
                           ' not obj here.')
 
         if isinstance(obj, list) and not is_pipe(obj):
@@ -424,7 +426,7 @@ class Imputer(Piece):
         base_model : :class:`Model`, :class:`Ensemble` or None, optional
             If 'iterative' is passed to obj, then a base_model is required in
             order to perform iterative imputation! The base model can be
-            any valid Model_Pipeline Model.
+            any valid ModelPipeline Model.
 
             ::
 
@@ -472,7 +474,7 @@ class Scaler(Piece):
     def __init__(self, obj, params=0, scope='float',
                  cache_loc=None, **extra_params):
         '''The Scaler piece refers to
-        a piece in the :class:`Model_Pipeline`,
+        a piece in the :class:`ModelPipeline`,
         which is responsible for performing any sort of scaling or
         transformation on the data
         which doesn't require the target variable, and doesn't
@@ -546,11 +548,11 @@ class Transformer(Piece):
     def __init__(self, obj, params=0, scope='float', cache_loc=None,
                  **extra_params):
         ''' The Transformer is base optional component of the
-        :class:`Model_Pipeline` class.
+        :class:`ModelPipeline` class.
         Transformers define any type of transformation to the loaded
         data which may change the number
         of features in a non-simple way (i.e., conceptually distinct
-        from :class:`Feat_Selector`, where you
+        from :class:`FeatSelector`, where you
         know in advance the transformation is just selecting a subset
         of existing features). These are
         transformations like applying Principle Component Analysis,
@@ -622,12 +624,12 @@ class Transformer(Piece):
         self.check_args()
 
 
-class Feat_Selector(Piece):
+class FeatSelector(Piece):
 
     def __init__(self, obj, params=0, scope='all',
                  cache_loc=None, base_model=None, **extra_params):
-        ''' Feat_Selector is a base piece of
-        :class:`Model_Pipeline`, which is designed
+        ''' FeatSelector is a base piece of
+        :class:`ModelPipeline`, which is designed
         to preform feature selection.
 
         Parameters
@@ -643,7 +645,7 @@ class Feat_Selector(Piece):
 
         params : int, str or dict of :ref:`params<Params>`, optional
             `params` set an associated distribution of hyper-parameters to
-            potentially search over with this Feat_Selector.
+            potentially search over with this FeatSelector.
             Preset param distributions are
             listed for each choice of params with the corresponding
             obj at :ref:`Feat Selectors`,
@@ -679,7 +681,7 @@ class Feat_Selector(Piece):
             If 'rfe' is passed to obj, then a base_model is required in
             order to perform recursive feature elimination.
             The base model can be any valid argument accepts by
-            param `model` in :class:`Model_Pipeline`.
+            param `model` in :class:`ModelPipeline`.
 
             ::
 
@@ -705,7 +707,7 @@ class Model(Piece):
 
     def __init__(self, obj, params=0, scope='all', cache_loc=None,
                  param_search=None, target_scaler=None, **extra_params):
-        ''' Model represents a base components of the :class:`Model_Pipeline`,
+        ''' Model represents a base components of the :class:`ModelPipeline`,
         specifically a single Model / estimator.
 
         obj : str or custom_obj
@@ -753,9 +755,9 @@ class Model(Piece):
 
                 default = None
 
-        param_search : :class:`Param_Search`, None, optional
+        param_search : :class:`ParamSearch`, None, optional
             If None, by default, this will be a base model.
-            Alternatively, by passing a :class:`Param_Search` instance here,
+            Alternatively, by passing a :class:`ParamSearch` instance here,
             it specifies that this model should be wrapped in a
             Hyper-parameter search object.
 
@@ -781,7 +783,7 @@ class Model(Piece):
 
             Note: Has not been fully tested in
             complicated nesting cases, e.g., if Model is
-            wrapping a nested Model_Pipeline, this param will
+            wrapping a nested ModelPipeline, this param will
             likely break.
 
             ::
@@ -839,9 +841,9 @@ class Ensemble(Piece):
                  n_jobs_type='ensemble',
                  **extra_params):
         ''' The Ensemble object is valid base
-        :class:`Model_Pipeline` piece, designed
+        :class:`ModelPipeline` piece, designed
         to be passed as input to the `model` parameter
-        of :class:`Model_Pipeline`, or
+        of :class:`ModelPipeline`, or
         to its own models parameters.
 
         This class is used to create a variety ensembled models,
@@ -913,9 +915,9 @@ class Ensemble(Piece):
 
                 default = 'all'
 
-        param_search : :class:`Param_Search`, None, optional
+        param_search : :class:`ParamSearch`, None, optional
             If None, by default, this will be a base ensemble model.
-            Alternatively, by passing a :class:`Param_Search` instance here,
+            Alternatively, by passing a :class:`ParamSearch` instance here,
             it specifies that this model should be wrapped in a
             Nevergrad hyper-parameter search object.
 
@@ -937,7 +939,7 @@ class Ensemble(Piece):
 
             Note: Has not been fully tested in
             complicated nesting cases, e.g., if Model is
-            wrapping a nested Model_Pipeline, this param will
+            wrapping a nested ModelPipeline, this param will
             likely break.
 
             ::
@@ -1075,7 +1077,7 @@ class Ensemble(Piece):
                     'Passed model in models must be a valid Model/Ensemble.')
 
 
-class Param_Search(Params):
+class ParamSearch(Params):
 
     def __init__(self, search_type='RandomSearch', cv='default',
                  n_iter=10, scorer='default', weight_scorer=False,
@@ -1083,14 +1085,14 @@ class Param_Search(Params):
                  random_state='default',
                  dask_ip=None, memmap_X=False,
                  search_only_params=None, verbose=0, progress_loc=None):
-        ''' Param_Search is special input object designed to be
-        used with :class:`Model_Pipeline`.
-        Param_Search defines a hyperparameter search strategy.
-        When passed to :class:`Model_Pipeline`,
+        ''' ParamSearch is special input object designed to be
+        used with :class:`ModelPipeline`.
+        ParamSearch defines a hyperparameter search strategy.
+        When passed to :class:`ModelPipeline`,
         its search strategy is applied in the context of any set :ref:`Params`
         within the base pieces.
         Specifically, there must be atleast one parameter search
-        somewhere in the object Param_Search is passed!
+        somewhere in the object ParamSearch is passed!
 
         All backend hyper-parameter searches make use of the
         <https://github.com/facebookresearch/nevergrad>`_ library.
@@ -1247,7 +1249,7 @@ class Param_Search(Params):
 
         random_state : int or 'default', optional
             If left as 'default' will set to the value
-            set in the Problem_Spec. Otherwise, can
+            set in the ProblemSpec. Otherwise, can
             set a specific value here.
 
             ::
@@ -1380,7 +1382,7 @@ class Param_Search(Params):
                 'weight_scorer within Param Search cannot be list-like')
 
 
-class Model_Pipeline(Params):
+class ModelPipeline(Params):
 
     def __init__(self,
                  loaders=None, imputers='default',
@@ -1390,7 +1392,7 @@ class Model_Pipeline(Params):
                  param_search=None,
                  cache_fit_dr=None,
                  verbose=0):
-        ''' Model_Pipeline is defined as essentially a wrapper around
+        ''' ModelPipeline is defined as essentially a wrapper around
         all of the explicit modelling pipeline parameters. This object is
         used as input to
         :func:`Evaluate <BPt.BPt_ML.Evaluate>`
@@ -1517,10 +1519,10 @@ class Model_Pipeline(Params):
 
                 default = None
 
-        feat_selectors : :class:`Feat_Selector`, list of or None, optional
-            Each :class:`Feat_Selector` refers to an optional
+        feat_selectors : :class:`FeatSelector`, list of or None, optional
+            Each :class:`FeatSelector` refers to an optional
             feature selection stage
-            of the Pipeline. See :class:`Feat_Selector` for specific options.
+            of the Pipeline. See :class:`FeatSelector` for specific options.
 
             Input can be composed in a list, to apply
             feature selection sequentially,
@@ -1549,18 +1551,18 @@ class Model_Pipeline(Params):
 
                 default = Model('ridge')
 
-        param_search : :class:`Param_Search` or None, optional
-            :class:`Param_Search` can be provided in order
+        param_search : :class:`ParamSearch` or None, optional
+            :class:`ParamSearch` can be provided in order
             to specify a corresponding
             hyperparameter search for the provided pipeline pieces.
             When defining each
             piece, you may set hyperparameter distributions for that piece.
             If param search
             is None, these distribution will be essentially ignored,
-            but if :class:`Param_Search`
+            but if :class:`ParamSearch`
             is passed here, then they will be used along with the
             strategy defined in the passed
-            :class:`Param_Search` to conduct a nested hyper-param search.
+            :class:`ParamSearch` to conduct a nested hyper-param search.
 
             Note: If using input wrapper types like :class:`Select`,
             then a param search must be passed!
@@ -1608,7 +1610,7 @@ class Model_Pipeline(Params):
         self.transformers = transformers
 
         if isinstance(feat_selectors, str):
-            feat_selectors = Feat_Selector(feat_selectors)
+            feat_selectors = FeatSelector(feat_selectors)
         self.feat_selectors = feat_selectors
 
         if model == 'default':
@@ -1701,9 +1703,10 @@ class Model_Pipeline(Params):
         if not is_na:
             self.imputers = None
 
-        elif isinstance(self.imputers, Imputer) and self.imputers.obj == 'default':
-            self.imputers = [Imputer('mean', scope='float'),
-                             Imputer('median', scope='cat')]
+        elif isinstance(self.imputers, Imputer):
+            if self.imputers.obj == 'default':
+                self.imputers = [Imputer('mean', scope='float'),
+                                 Imputer('median', scope='cat')]
 
         return
 
@@ -1749,7 +1752,7 @@ class Model_Pipeline(Params):
                     'feature_selector', 'feature_selectors']
         for p in to_check:
             if hasattr(self, p):
-                print('Warning: Model_Pipeline user set param', p,
+                print('Warning: ModelPipeline user set param', p,
                       ' was set,',
                       'but will have no effect as it is not',
                       ' a valid parameter!')
@@ -1824,7 +1827,7 @@ class Model_Pipeline(Params):
 
         self._p_stack = []
 
-        _print('Model_Pipeline')
+        _print('ModelPipeline')
         _print('--------------')
 
         pipeline_params = self.get_ordered_pipeline_params()
@@ -1840,7 +1843,7 @@ class Model_Pipeline(Params):
         _print()
 
 
-class Problem_Spec(Params):
+class ProblemSpec(Params):
 
     def __init__(self, problem_type='default',
                  target=0, scorer='default',
@@ -1896,7 +1899,7 @@ class Problem_Spec(Params):
             A list of str's can be passed as well, in this case, scores for
             all of the requested scorers will be calculated and returned.
 
-            Note: If using a Param_Search, the Param_Search object has a
+            Note: If using a ParamSearch, the ParamSearch object has a
             seperate scorer parameter.
 
             For a full list of supported scorers please view the
@@ -2056,7 +2059,7 @@ class Problem_Spec(Params):
 
     def print_all(self, _print=print):
 
-        _print('Problem_Spec')
+        _print('ProblemSpec')
         _print('------------')
         _print('problem_type =', self.problem_type)
         _print('target =', self.target)
@@ -2075,7 +2078,7 @@ class Problem_Spec(Params):
         _print()
 
 
-class CV_Strategy(Params):
+class CVStrategy(Params):
 
     # @TODO add support for test_only ?
     def __init__(self, groups=None, stratify=None,
@@ -2210,7 +2213,7 @@ class CV(Params):
 
                 default = 1
 
-        cv_strategy: None or :class:`CV_Strategy`, optional
+        cv_strategy: None or :class:`CVStrategy`, optional
             Optional cv_strategy to employ for calculating splits.
             If passed None, use no strategy.
 
@@ -2229,7 +2232,7 @@ class CV(Params):
             If left as default value of 'context', then
             the random state will be set based on the
             context of where it is called, i.e., typically
-            the random_state set in :class:`Problem_Spec`.
+            the random_state set in :class:`ProblemSpec`.
 
             ::
 
@@ -2242,9 +2245,56 @@ class CV(Params):
         self.random_state = random_state
 
         if self.cv_strategy is None:
-            self.cv_strategy = CV_Strategy()
+            self.cv_strategy = CVStrategy()
 
         self.cv_strategy.set_params(**cv_strategy_args)
 
     def apply_dataset(self, dataset):
         return get_bpt_cv(self, dataset)
+
+# Depreciations
+#############################
+
+
+def depreciate(func):
+
+    # Get current and new names
+    name = str(func.__name__)
+    new_name = str(func.new_class.__name__)
+
+    warn_message = name + ' is depreciated and in a future version will'
+    warn_message += ' be removed. Use the new class '
+    warn_message += new_name + ' to mute this warning.'
+
+    class DepreciatedClass():
+
+        __doc__ = warn_message
+
+        def __new__(cls, *args, **kwargs):
+
+            # Warn on creation
+            warnings.warn(warn_message)
+
+            # Return new class instead of this one
+            return func.new_class(*args, **kwargs)
+
+    return DepreciatedClass
+
+
+@depreciate
+class Feat_Selector():
+    new_class = FeatSelector
+
+@depreciate
+class Param_Search():
+    new_class = ParamSearch
+
+
+@depreciate
+class Model_Pipeline():
+    new_class = ModelPipeline
+
+
+@depreciate
+class Problem_Spec():
+    new_class = ProblemSpec

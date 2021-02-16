@@ -1,5 +1,5 @@
-from ..Pipeline_Pieces import add_estimator_to_params, Feat_Selectors
-from ...main.Params_Classes import Feat_Selector, Model
+from ..Pipeline_Pieces import add_estimator_to_params, FeatSelectors
+from ...main.input import FeatSelector, Model
 from ..BPtFeatureSelector import BPtFeatureSelector
 from .helpers import get_fake_data_dataset
 
@@ -23,10 +23,10 @@ def test_feature_selectors():
             'n_jobs': 1,
             'scope': 'all'}
 
-    fs = Feat_Selectors(dataset=dataset, spec=spec,
-                        user_passed_objs={})
+    fs = FeatSelectors(dataset=dataset, spec=spec,
+                       user_passed_objs={})
 
-    in_params = Feat_Selector('univariate selection')
+    in_params = FeatSelector('univariate selection')
     objs, params = fs.process(in_params)
     name, obj = objs[0]
 
@@ -35,7 +35,7 @@ def test_feature_selectors():
     assert len(params) == 0
     assert isinstance(obj, BPtFeatureSelector)
 
-    in_params = Feat_Selector('univariate selection', params=1)
+    in_params = FeatSelector('univariate selection', params=1)
     objs, params = fs.process(in_params)
     name, obj = objs[0]
 
@@ -47,7 +47,7 @@ def test_feature_selectors():
     for key in params:
         assert 'univariate selection' in key
 
-    in_params = Feat_Selector('univariate selection', scope='category')
+    in_params = FeatSelector('univariate selection', scope='category')
     objs, params = fs.process(in_params)
     name, obj = objs[0]
 
@@ -57,10 +57,10 @@ def test_feature_selectors():
     assert isinstance(obj, BPtFeatureSelector)
 
     dataset = get_fake_data_dataset(data_keys=data_keys, cat_keys=['1'])
-    fs = Feat_Selectors(dataset=dataset, spec=spec,
-                        user_passed_objs={})
+    fs = FeatSelectors(dataset=dataset, spec=spec,
+                       user_passed_objs={})
 
-    in_params = Feat_Selector('univariate selection', scope='category')
+    in_params = FeatSelector('univariate selection', scope='category')
     objs, params = fs.process(in_params)
     name, obj = objs[0]
 
@@ -77,10 +77,10 @@ def test_feature_selectors_submodel():
     spec = {'problem_type': 'binary', 'random_state': None,
             'n_jobs': 1, 'scope': 'all'}
 
-    fs = Feat_Selectors(dataset=dataset, spec=spec,
-                        user_passed_objs={})
+    fs = FeatSelectors(dataset=dataset, spec=spec,
+                       user_passed_objs={})
 
-    in_params = Feat_Selector('rfe')
+    in_params = FeatSelector('rfe')
     objs, params = fs.process(in_params)
     name, obj = objs[0]
 
@@ -90,8 +90,8 @@ def test_feature_selectors_submodel():
     assert obj.estimator.estimator is None
     assert isinstance(obj, BPtFeatureSelector)
 
-    in_params = Feat_Selector(obj='rfe',
-                              base_model=Model(obj='ridge', params=1))
+    in_params = FeatSelector(obj='rfe',
+                             base_model=Model(obj='ridge', params=1))
     objs, params = fs.process(in_params)
     name, obj = objs[0]
 

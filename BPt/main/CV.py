@@ -88,7 +88,7 @@ def inds_from_names(original_subjects, subject_splits):
     return subject_inds
 
 
-class CV_Strategy(BaseEstimator):
+class CVStrategy(BaseEstimator):
     '''Class that holds a CV_Behavior'''
 
     def __init__(self, groups=None, stratify=None, train_only=None):

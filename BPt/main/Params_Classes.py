@@ -1,12 +1,11 @@
 from copy import deepcopy
 from sklearn.base import BaseEstimator
-from ..helpers.ML_Helpers import (conv_to_list, proc_input,
-                                  proc_type_dep_str)
+from ..helpers.ML_Helpers import (conv_to_list, proc_input)
 
 from ..helpers.VARS import ORDERED_NAMES
 from ..main.Input_Tools import (is_duplicate, is_pipe, is_select,
                                 is_special, is_value_subset)
-from ..pipeline.Scorers import process_scorer
+from ..default.options.scorers import process_scorer
 from .CV import get_bpt_cv
 
 
@@ -805,6 +804,12 @@ class Model(Piece):
 
     def view(self, problem_type='regression'):
 
+        # Process some way with the associated piece
+        from ..pipeline.Pipeline_Pieces import Models
+
+        # Need to think about user passed objs
+
+        '''
         from ..pipeline.Models import get_base_model_and_params, AVALIABLE
 
         proc_str = proc_type_dep_str(self.obj, AVALIABLE, problem_type)
@@ -815,6 +820,7 @@ class Model(Piece):
                         for m in model_params}
 
         return model, model_params
+        '''
 
 
 class Ensemble(Piece):

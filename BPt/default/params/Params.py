@@ -1,22 +1,5 @@
 import nevergrad as ng
-
-
-def is_array_like(in_val):
-
-    if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
-     (not isinstance(in_val, dict)) and (not hasattr(in_val, 'fit')) and \
-     (not hasattr(in_val, 'transform')):
-        return True
-    else:
-        return False
-
-
-def args_repr(args, kwargs):
-
-    reprs = [repr(arg) for arg in args]
-    sorted_keys = sorted(list(kwargs))
-    reprs += [key + '=' + repr(kwargs[key]) for key in sorted_keys]
-    return ', '.join(reprs)
+from ..helpers import args_repr
 
 
 class Params():

@@ -1,4 +1,4 @@
-from ..helpers.ML_Helpers import get_obj_and_params
+from ..helpers import get_obj_and_params
 
 from sklearn.decomposition import (PCA, FactorAnalysis,
                                    MiniBatchDictionaryLearning,

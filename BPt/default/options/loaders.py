@@ -1,5 +1,5 @@
-from ..helpers.ML_Helpers import get_obj_and_params
-from ..extensions.Loaders import Identity, SurfLabels
+from ..helpers import get_obj_and_params
+from ...extensions.Loaders import Identity, SurfLabels
 
 LOADERS = {
     'identity': (Identity, ['default']),
@@ -9,7 +9,7 @@ LOADERS = {
 # If nilearn dependencies
 try:
     from nilearn.input_data import NiftiLabelsMasker
-    from ..extensions.Loaders import Connectivity
+    from ...extensions.Loaders import Connectivity
     LOADERS['volume rois'] = (NiftiLabelsMasker, ['default'])
     LOADERS['connectivity'] = (Connectivity, ['default'])
 

@@ -1,6 +1,5 @@
 from sklearn.base import TransformerMixin, clone
 from .helpers import proc_mapping, update_mapping
-from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_memory
 import numpy as np
 import warnings
@@ -163,7 +162,7 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         if mapping is None:
             mapping = {}
 
-        # Call parent fit - base shared fit with ScopeModel
+        # Call parent fit - base shared fit with BPtModel
         super().fit(X, y=y, mapping=mapping,
                     train_data_index=train_data_index,
                     **fit_params)
@@ -293,49 +292,3 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         Xt[:, self.rest_inds_] = X[:, reverse_rest_inds]
 
         return Xt
-
-
-class ScopeModel(ScopeObj):
-
-    @property
-    def _estimator_type(self):
-        return self.estimator._estimator_type
-
-    @property
-    def feature_importances_(self):
-        if hasattr(self.estimator_, 'feature_importances_'):
-            return getattr(self.estimator_, 'feature_importances_')
-        return None
-
-    @property
-    def coef_(self):
-        if hasattr(self.estimator_, 'coef_'):
-            return getattr(self.estimator_, 'coef_')
-        return None
-
-    @property
-    def classes_(self):
-        if hasattr(self.estimator_, 'classes_'):
-            return getattr(self.estimator_, 'classes_')
-        return None
-
-    def predict(self, X, *args, **kwargs):
-        return self.estimator_.predict(X[:, self.inds_], *args, **kwargs)
-
-    @if_delegate_has_method(delegate='estimator_')
-    def predict_proba(self, X, *args, **kwargs):
-        return self.estimator_.predict_proba(X[:, self.inds_], *args, **kwargs)
-
-    @if_delegate_has_method(delegate='estimator_')
-    def decision_function(self, X, *args, **kwargs):
-        return self.estimator_.decision_function(X[:, self.inds_],
-                                                 *args, **kwargs)
-
-    @if_delegate_has_method(delegate='estimator_')
-    def predict_log_proba(self, X, *args, **kwargs):
-        return self.estimator_.predict_log_proba(X[:, self.inds_],
-                                                 *args, **kwargs)
-
-    @if_delegate_has_method(delegate='estimator_')
-    def score(self, X, *args, **kwargs):
-        return self.estimator_.score(X[:, self.inds_], *args, **kwargs)

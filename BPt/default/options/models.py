@@ -1,13 +1,5 @@
-"""
-Models.py
-====================================
-This file contains the different models avaliable for training,
-with additional information on which work with which problem types
-and default params.
-"""
-
 from sklearn.experimental import enable_hist_gradient_boosting
-from ..extensions.MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
+from ...extensions.MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB
@@ -28,7 +20,7 @@ from sklearn.linear_model import (LogisticRegression, ElasticNet,
                                   TweedieRegressor)
 
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
-from ..helpers.ML_Helpers import get_obj_and_params
+from ..helpers import get_obj_and_params
 
 
 AVALIABLE = {
@@ -191,7 +183,7 @@ except ImportError:
     pass
 
 try:
-    from ..extensions.BPtLGBM import BPtLGBMRegressor, BPtLGBMClassifier
+    from ...extensions.BPtLGBM import BPtLGBMRegressor, BPtLGBMClassifier
 
     AVALIABLE['binary']['light gbm'] = 'light gbm classifier'
     AVALIABLE['binary']['lgbm'] = 'light gbm classifier'
@@ -213,7 +205,7 @@ except ImportError:
     pass
 
 try:
-    from ..extensions.AutoGluon import AutoGluon
+    from ...extensions.AutoGluon import AutoGluon
 
     AVALIABLE['binary']['auto gluon'] = 'auto gluon binary'
     AVALIABLE['categorical']['auto gluon'] = 'auto gluon categorical'
@@ -228,16 +220,9 @@ except ImportError:
 
 
 def get_base_model_and_params(model_type, extra_params, model_type_params,
-                              random_state=None, num_feat_keys=None):
+                              random_state=None, **kwargs):
 
     model, extra_model_params, model_type_params =\
         get_obj_and_params(model_type, MODELS, extra_params, model_type_params)
 
-    # Init model, w/ any user passed params + class params
-    model = model(**extra_model_params)
-
-    # Set random state on model, better to overset this
-    if hasattr(model, 'random_state'):
-        setattr(model, 'random_state', random_state)
-
-    return model, model_type_params
+    return model(**extra_model_params), model_type_params

@@ -1,4 +1,4 @@
-from ..Params import TransitionChoice, Choice, Dict, Scalar, Array
+from ..params.Params import TransitionChoice, Choice, Dict, Scalar, Array
 import nevergrad as ng
 
 

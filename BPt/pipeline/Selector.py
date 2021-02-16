@@ -1,7 +1,6 @@
 from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.utils.metaestimators import if_delegate_has_method
-import nevergrad as ng
-from ..default.Params import Dict, Choice
+from ..default.params.Params import Dict, Choice
 from .base import _get_est_fit_params
 
 # @TODO Figure out best way to make selector work with

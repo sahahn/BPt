@@ -3,11 +3,11 @@ Scalers.py
 ====================================
 File containing the various data scalers.
 """
-from ..helpers.ML_Helpers import get_obj_and_params
+from ..helpers import get_obj_and_params
 from sklearn.preprocessing import (MinMaxScaler, RobustScaler, StandardScaler,
                                    PowerTransformer, MaxAbsScaler,
                                    QuantileTransformer, Normalizer)
-from ..extensions.Scalers import Winsorizer
+from ...extensions.Scalers import Winsorizer
 
 
 # Scalers differs from models in that the types are not restricted
@@ -36,8 +36,9 @@ SCALERS = {
     }
 
 
+# @TODO find way to re-use these default ones
 def get_scaler_and_params(scaler_str, extra_params, params,
-                          random_state=None, num_feat_keys=None):
+                          **kwargs):
     '''Returns a scaler based on proced str indicator input,
 
     Parameters
@@ -69,4 +70,3 @@ def get_scaler_and_params(scaler_str, extra_params, params,
         get_obj_and_params(scaler_str, SCALERS, extra_params, params)
 
     return scaler(**extra_scaler_params), scaler_params
-

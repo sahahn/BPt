@@ -1,6 +1,6 @@
 from ..BPtSearchCV import (wrap_param_search, get_search_cv,
                            NevergradSearchCV, BPtGridSearchCV)
-from ...default.Params import Choice
+from ...default.params.Params import Choice
 from .helpers import get_param_search
 
 

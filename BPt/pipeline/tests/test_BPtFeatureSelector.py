@@ -1,5 +1,5 @@
 import numpy as np
-from ..Feature_Selectors import BPtFeatureSelector
+from ..BPtFeatureSelector import BPtFeatureSelector
 from .helpers import FakeSelector
 
 

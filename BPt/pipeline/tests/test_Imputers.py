@@ -1,4 +1,3 @@
-from pandas.core import base
 from ...main.Params_Classes import Imputer, Model
 from ..Pipeline_Pieces import Imputers
 from ...dataset.Dataset import Dataset
@@ -47,7 +46,6 @@ def test_iterative_imputer():
     # Should be categorical, so logistic regression
     base_estimator = it_imputer.estimator.estimator
     assert isinstance(base_estimator, LogisticRegression)
-    
 
 
 def test_iterative_imputer_default_float():

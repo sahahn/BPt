@@ -1,7 +1,7 @@
 from ..helpers import to_memmap, from_memmap, get_grid_params, is_ng
 import numpy as np
 import os
-from ...default.Params import Choice, TransitionChoice, Scalar
+from ...default.params.Params import Choice, TransitionChoice, Scalar
 from nose.tools import raises
 import nevergrad as ng
 

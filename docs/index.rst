@@ -51,11 +51,6 @@ The following documentation includes information about the usage of this toolbox
 
    search_types
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Feature Importances
-
-   feat_importances
 
 .. toctree::
    :maxdepth: 1

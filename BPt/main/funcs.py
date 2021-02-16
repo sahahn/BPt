@@ -2,7 +2,7 @@ from .Params_Classes import Model, Model_Pipeline, Problem_Spec, Ensemble, CV
 from copy import deepcopy
 import numpy as np
 from ..pipeline.BPtPipelineConstructor import get_pipe
-from ..pipeline.Scorers import process_scorers
+from ..default.options.scorers import process_scorers
 from .BPtEvaluator import BPtEvaluator
 from sklearn.model_selection import check_cv
 

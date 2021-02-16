@@ -1,23 +1,6 @@
 from BPt.helpers.ML_Helpers import get_objects_by_type, get_objects
-from BPt.pipeline.Scorers import get_scorers_by_type
 
-from BPt.pipeline.Scorers import AVALIABLE as AVALIABLE_SCORERS
-from BPt.pipeline.Scorers import SCORERS
-
-from BPt.pipeline.Models import AVALIABLE as AVALIABLE_MODELS
-from BPt.pipeline.Models import MODELS
-
-from BPt.pipeline.Loaders import LOADERS
-from BPt.pipeline.Transformers import TRANSFORMERS
-from BPt.pipeline.Scalers import SCALERS
-from BPt.pipeline.Imputers import IMPUTERS
-
-from BPt.pipeline.Feature_Selectors import AVALIABLE as AVALIABLE_SELECTORS
-from BPt.pipeline.Feature_Selectors import SELECTORS
-
-from BPt.pipeline.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
-from BPt.pipeline.Ensembles import ENSEMBLES
-
+import BPt.default.options as o
 from BPt.default.default_params import PARAMS
 from BPt.helpers.Docstring_Helpers import get_name, get_scorer_name
 
@@ -45,7 +28,7 @@ def add_block(lines, problem_types, AVALIABLE=None, OBJS=None):
         lines.append(''.join('=' for i in range(len(pt))))
 
         if AVALIABLE is None and OBJS is None:
-            objs = get_scorers_by_type(pt)
+            objs = o.scorers.get_scorers_by_type(pt)
             scorer = True
 
         else:
@@ -138,15 +121,18 @@ problem_types = ['binary', 'regression', 'categorical']
 lines = []
 
 lines = main_category(lines, 'Models')
-lines.append('Different base obj choices for the :class:`Model<BPt.Model>` are shown below')
-lines.append('The exact str indicator, as passed to the `obj` param is represented' +
+lines.append('Different base obj choices for the :class:`Model<BPt.Model>` '
+             'are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param '
+             'is represented '
              ' by the sub-heading (within "")')
 lines.append('The avaliable models are further broken down by which can work' +
              'with different problem_types.')
 lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
-lines = add_block(lines, problem_types, AVALIABLE_MODELS, MODELS)
+lines = add_block(lines, problem_types, o.models.AVALIABLE,
+                  o.models.MODELS)
 
 lines = main_category(lines, 'Scorers')
 
@@ -167,85 +153,89 @@ lines = add_block(lines, problem_types)
 
 
 lines = main_category(lines, 'Loaders')
-lines.append('Different base obj choices for the :class:`Loader<BPt.Loader>` are shown below')
-lines.append('The exact str indicator, as passed to the `obj` param is represented' +
+lines.append('Different base obj choices for the :class:`Loader<BPt.Loader>`'
+             ' are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param '
+             'is represented' +
              ' by the sub-heading (within "")')
 lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
-lines = add_no_type_block(lines, LOADERS)
+lines = add_no_type_block(lines, o.loaders.LOADERS)
 
 
 lines = main_category(lines, 'Imputers')
-lines.append('Different base obj choices for the :class:`Imputer<BPt.Imputer>` are shown below')
-lines.append('The exact str indicator, as passed to the `obj` param is represented' +
+lines.append('Different base obj choices for the :class:`Imputer<BPt.Imputer>`'
+             ' are shown below')
+lines.append('The exact str indicator, as passed to the `obj` '
+             'param is represented' +
              ' by the sub-heading (within "")')
 lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
-lines.append('Note that if the iterative imputer is requested, base_model must also be passed.')
+lines.append('Note that if the iterative imputer is requested, base_model '
+             'must also be passed.')
 lines.append('')
-lines = add_no_type_block(lines, IMPUTERS)
+lines = add_no_type_block(lines, o.imputers.IMPUTERS)
 
 
 lines = main_category(lines, 'Scalers')
-lines.append('Different base obj choices for the :class:`Scaler<BPt.Scaler>` are shown below')
-lines.append('The exact str indicator, as passed to the `obj` param is represented' +
+lines.append('Different base obj choices for the :class:`Scaler<BPt.Scaler>` '
+             'are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param is '
+             'represented' +
              ' by the sub-heading (within "")')
 lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
-lines = add_no_type_block(lines, SCALERS)
+lines = add_no_type_block(lines, o.scalers.SCALERS)
 
 
 lines = main_category(lines, 'Transformers')
-lines.append('Different base obj choices for the :class:`Transformer<BPt.Transformer>` are shown below')
-lines.append('The exact str indicator, as passed to the `obj` param is represented' +
+lines.append('Different base obj choices for the '
+             ':class:`Transformer<BPt.Transformer>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` param '
+             'is represented' +
              ' by the sub-heading (within "")')
 lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
-lines = add_no_type_block(lines, TRANSFORMERS)
-
-
-# lines = main_category(lines, 'Samplers')
-# lines.append('Different base obj choices for the :class:`Sampler<BPt.Sampler>` are shown below')
-# lines.append('The exact str indicator, as passed to the `obj` param is represented' +
-#             ' by the sub-heading (within "")')
-# lines.append('Additionally, a link to the original models documentation ' +
-#             'as well as the implemented parameter distributions are shown.')
-# lines.append('')
-# lines = add_no_type_block(lines, SAMPLERS)
+lines = add_no_type_block(lines, o.transformers.TRANSFORMERS)
 
 
 lines = main_category(lines, 'Feat Selectors')
-lines.append('Different base obj choices for the :class:`Feat_Selector<BPt.Feat_Selector>` are shown below')
-lines.append('The exact str indicator, as passed to the `obj` param is represented' +
+lines.append('Different base obj choices for the '
+             ':class:`Feat_Selector<BPt.Feat_Selector>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` '
+             'param is represented' +
              ' by the sub-heading (within "")')
-lines.append('The avaliable feat selectors are further broken down by which can work' +
+lines.append('The avaliable feat selectors are further broken down by '
+             'which can work' +
              'with different problem_types.')
 lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
 lines.append('')
-lines = add_block(lines, problem_types, AVALIABLE_SELECTORS, SELECTORS)
+lines = add_block(lines, problem_types, o.feature_selectors.AVALIABLE,
+                  o.feature_selectors.SELECTORS)
 
 
 lines = main_category(lines, 'Ensemble Types')
-lines.append('Different base obj choices for the :class:`Ensemble<BPt.Ensemble>` are shown below')
-lines.append('The exact str indicator, as passed to the `obj` param is represented' +
+lines.append('Different base obj choices for the '
+             ':class:`Ensemble<BPt.Ensemble>` are shown below')
+lines.append('The exact str indicator, as passed to the `obj` '
+             'param is represented' +
              ' by the sub-heading (within "")')
 lines.append('The avaliable ensembles are further broken down by ' +
              'which can work' +
              'with different problem_types.')
 lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
-lines.append('Also note that ensemble require a few extra params! I.e., in general, all DESlib based ensemble need needs_split = True')
+lines.append('Also note that ensemble require a few extra params! I.e., '
+             'in general, all DESlib based ensemble need needs_split = True')
 lines.append('')
-lines = add_block(lines, problem_types, AVALIABLE_ENSEMBLES, ENSEMBLES)
-
+lines = add_block(lines, problem_types, o.ensembles.AVALIABLE,
+                  o.ensembles.ENSEMBLES)
 
 with open('options.rst', 'w') as f:
     for line in lines:
         f.write(line)
         f.write('\n')
-
-

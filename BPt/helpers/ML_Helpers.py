@@ -7,8 +7,8 @@ These are non-class functions that are used in _ML.py and Scoring.py
 import numpy as np
 import inspect
 
-from ..default.default_params import get_base_params, proc_params
-from ..default.Params import Params
+from ..default.params.default_params import get_base_params, proc_params
+from ..default.params.Params import Params
 from copy import deepcopy
 from ..main.Input_Tools import is_special, Select
 from joblib import hash as joblib_hash
@@ -113,7 +113,7 @@ def user_passed_param_check(params, obj_str, search_type):
     return {}, {}
 
 
-def proc_extra_params(obj, extra_params, non_search_params, params=None):
+def proc_extra_params(extra_params, non_search_params, params=None):
 
     if extra_params is None or len(extra_params) == 0:
         return non_search_params, params
@@ -197,8 +197,7 @@ def process_params_by_type(obj, obj_str, base_params, extra_params):
 
     # Process extra params
     non_search_params, params =\
-        proc_extra_params(obj,
-                          extra_params=extra_params,
+        proc_extra_params(extra_params=extra_params,
                           non_search_params=non_search_params,
                           params=params)
 

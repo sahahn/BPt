@@ -2,7 +2,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 
-from ..helpers.ML_Helpers import get_obj_and_params
+from ..helpers import get_obj_and_params
 
 
 IMPUTERS = {

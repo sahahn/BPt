@@ -26,7 +26,7 @@ def proc_name(base_obj, name):
     if hasattr(base_obj, name):
         obj = getattr(base_obj, name)
 
-        if isinstance(obj, list):
+        if isinstance(obj, (list, tuple)):
             for o in obj:
                 proc_all(o)
 
@@ -145,7 +145,7 @@ class Check():
         # scope = getattr(self, 'scope')
 
     def _check_extra_params(self):
-        
+
         # Skip for now
         return
 
@@ -183,8 +183,9 @@ class Loader(Piece):
     def __init__(self, obj, behav='single', params=0, scope='data file',
                  cache_loc=None,
                  fix_n_wrapper_jobs=False, **extra_params):
-        ''' Loader refers to transformations which operate on loaded Data_Files.
-        (See :func:`Load_Data_Files`).
+        ''' Loader refers to transformations which operate on Data_Files.
+        See: :func:`add_data_files <Dataset.add_data_files>`
+        in the :ref:`Dataset` class.
         They in essence take in saved file locations, and after some series
         of transformations pass on compatible features.
 
@@ -267,7 +268,8 @@ class Loader(Piece):
             and you can read more on
             how params work more generally at :ref:`Params`.
 
-            If obj is passed as :class:`Pipe`, see :class:`Pipe` for an example on how different
+            If obj is passed as :class:`Pipe`, see :class:`Pipe`
+            for an example on how different
             corresponding params can be passed to each piece individually.
 
             ::
@@ -275,26 +277,33 @@ class Loader(Piece):
                 default = 0
 
         scope : :ref:`valid scope<Scopes>`, optional
-            `scope` determines on which subset of features the specified loader
-            should transform. See :ref:`Scope` for more information on
-            how scopes can
-            be specified.
+            `scope` determines on which subset of
+            features the specified loader
+            should transform.
 
-            You will likely want to use either custom key based scopes, or the
-            'data file' preset scope, as something like 'covars'
-            won't make much sense,
-            when atleast for now, you cannot even load Covars data file.
+            See :ref:`Scope` for more information on
+            how scopes can be specified.
+
+            Warning: If using behav = 'all', then the loader
+            can only operate on a scope referring to a single fixed column!
+
+            You will likely want to pass either a single custom key
+            based column, or the default preset scope of 'data file'.
 
             ::
 
                 default = 'data file'
 
         cache_loc : str, Path or None, optional
-            Optional location in which to cache loader transformations.
+            Optional location in which to if set, the Loader transform
+            function will be cached for each subject. These cached
+            transformations can then be loaded for each subject when
+            they appear again in later folds.
 
-        extra_params : :ref`extra params dict<Extra Params>`, optional
+            Warning: If behav = 'all', then this parameter is currently
+            not used.
 
-            See :ref:`Extra Params`
+            Set to None, to ignore
 
             ::
 
@@ -310,10 +319,13 @@ class Loader(Piece):
             ::
 
                 default = False
+
+        extra_params : :ref:`Extra Params`
+            See :ref:`Extra Params`
         '''
 
         self.obj = obj
-        
+
         # Make sure valid behav param
         if behav not in ['single', 'all']:
             raise RuntimeError('behav must be either "single" or "all".')
@@ -331,14 +343,15 @@ class Loader(Piece):
 class Imputer(Piece):
 
     def __init__(self, obj, params=0, scope='all',
-                 base_model=None, base_model_type='default',
+                 cache_loc=None, base_model=None, base_model_type='default',
                  **extra_params):
-        ''' If there is any missing data (NaN's) that have been kept
-        within data or covars, then an imputation strategy must be
-        defined! This object allows you to define an imputation strategy.
+        '''If there is any missing data (NaN's), then an imputation strategy
+        is likely neccisary (with some expections, i.e., a final model which
+        can accept NaN values directly).
+        This object allows for defining an imputation strategy.
         In general, you should need at most two Imputers, one for all
-        `float` type data and one for all categorical data, assuming you
-        have been present, and they both have missing values.
+        `float` type data and one for all categorical data. If there
+        is no missing data, this piece will be skipped.
 
         Parameters
         ----------
@@ -347,8 +360,6 @@ class Imputer(Piece):
             See :ref:`Imputers` for all avaliable options.
             Notably, if 'iterative' is passed,
             then a base model must also be passed!
-            Also note that the `sample_posterior`
-            argument within `iterative` imputer is not currently supported.
 
             See :ref:`Pipeline Objects` to read more about
             pipeline objects in general.
@@ -371,7 +382,7 @@ class Imputer(Piece):
             imputer will have access to.
 
             The main options that make sense for imputer are
-            one for `float` data and one for `categorical` / 'cat' datatypes.
+            one for `float` data and one for `category` datatypes.
             Though you can also pass a custom set of keys.
 
             Note: If using iterative imputation you may want to carefully
@@ -400,15 +411,16 @@ class Imputer(Piece):
 
                 default = 'all'
 
-        scope : {'float', 'cat', custom}, optional
-            `scope` determines on which subset of features
-            the imputer should act on.
+        cache_loc : str, Path or None, optional
+            An optional path in which this Piece should be
+            cached after fitting. This is typically useful in
+            cases where fitting the base object takes a long time.
 
-            :ref:`Scope`.
+            To skip this option, keep at the default argument of None.
 
             ::
 
-                default = 'float'
+                default = None
 
         base_model : :class:`Model`, :class:`Ensemble` or None, optional
             If 'iterative' is passed to obj, then a base_model is required in
@@ -430,28 +442,25 @@ class Imputer(Piece):
 
             Choices are {'binary', 'regression', 'categorical'} or 'default'.
             If 'default', then the following behavior will be applied:
-            If the scope of the imputer is set to 'cat' or 'categorical',
-            then the 'categorical' problem type will be used for the base
-            model. If anything else, then the 'regression' type will be used.
+            If all columns within the passed scope of this Imputer object
+            have scope / data type 'category', then the problem
+            type for the base model will be set to 'categorical'.
+            In all other cases, the problem type will be set to 'regression'.
 
             ::
 
                 default = 'default'
 
 
-        extra_params : :ref`extra params dict<Extra Params>`, optional
-
+        extra_params : :ref:`Extra Params`
             See :ref:`Extra Params`
-
-            ::
-
-                default = None
 
         '''
 
         self.obj = obj
         self.params = params
         self.scope = scope
+        self.cache_loc = cache_loc
         self.base_model = deepcopy(base_model)
         self.base_model_type = base_model_type
         self.extra_params = extra_params
@@ -461,13 +470,15 @@ class Imputer(Piece):
 
 class Scaler(Piece):
 
-    def __init__(self, obj, params=0, scope='float', **extra_params):
-        ''' Scaler refers to a piece in the :class:`Model_Pipeline`,
-        which is responsible
-        for performing any sort of scaling or transformation on the data
-        which doesn't require the
-        target variable, and doesn't change the number of data
-        points or features.
+    def __init__(self, obj, params=0, scope='float',
+                 cache_loc=None, **extra_params):
+        '''The Scaler piece refers to
+        a piece in the :class:`Model_Pipeline`,
+        which is responsible for performing any sort of scaling or
+        transformation on the data
+        which doesn't require the target variable, and doesn't
+        change the number of data points or features.
+        These are typically transformations like feature scaling.
 
         Parameters
         ----------
@@ -506,19 +517,26 @@ class Scaler(Piece):
 
                 default = 'float'
 
-        extra_params : :ref`extra params dict<Extra Params>`, optional
+        cache_loc : str, Path or None, optional
+            An optional path in which this Piece should be
+            cached after fitting. This is typically useful in
+            cases where fitting the base object takes a long time.
 
-            See :ref:`Extra Params`
+            To skip this option, keep at the default argument of None.
 
             ::
 
                 default = None
+
+        extra_params : :ref:`Extra Params`
+            See :ref:`Extra Params`
 
         '''
 
         self.obj = obj
         self.params = params
         self.scope = scope
+        self.cache_loc = cache_loc
         self.extra_params = extra_params
 
         self.check_args()
@@ -527,7 +545,7 @@ class Scaler(Piece):
 class Transformer(Piece):
 
     def __init__(self, obj, params=0, scope='float', cache_loc=None,
-                 fix_n_wrapper_jobs='default', **extra_params):
+                 **extra_params):
         ''' The Transformer is base optional component of the
         :class:`Model_Pipeline` class.
         Transformers define any type of transformation to the loaded
@@ -581,20 +599,19 @@ class Transformer(Piece):
 
                 default = 'float'
 
-        extra_params : :ref`extra params dict<Extra Params>`, optional
+        cache_loc : str, Path or None, optional
+            An optional path in which this Piece should be
+            cached after fitting. This is typically useful in
+            cases where fitting the base object takes a long time.
 
-            See :ref:`Extra Params`
+            To skip this option, keep at the default argument of None.
 
             ::
 
                 default = None
 
-        fix_n_wrapper_jobs : int or 'default', optional
-            This parameter is ignored right now for Transformers
-
-            ::
-
-                default = 'default'
+        extra_params : :ref:`Extra Params`
+            See :ref:`Extra Params`
         '''
 
         self.obj = obj
@@ -602,7 +619,6 @@ class Transformer(Piece):
         self.scope = scope
         self.cache_loc = cache_loc
         self.extra_params = extra_params
-        self.fix_n_wrapper_jobs = fix_n_wrapper_jobs
 
         self.check_args()
 
@@ -610,13 +626,14 @@ class Transformer(Piece):
 class Feat_Selector(Piece):
 
     def __init__(self, obj, params=0, scope='all',
-                 base_model=None, **extra_params):
-        ''' Feat_Selector is a base piece of :class:`Model_Pipeline`, which is designed
+                 cache_loc=None, base_model=None, **extra_params):
+        ''' Feat_Selector is a base piece of
+        :class:`Model_Pipeline`, which is designed
         to preform feature selection.
 
         Parameters
         ----------
-        obj : str
+        obj : str or custom_obj
             `obj` selects the feature selection strategy to use.
             See :ref:`Feat Selectors`
             for all avaliable options. Notably, if 'rfe' is passed, then a
@@ -648,30 +665,35 @@ class Feat_Selector(Piece):
 
                 default = 'all'
 
+        cache_loc : str, Path or None, optional
+            An optional path in which this Piece should be
+            cached after fitting. This is typically useful in
+            cases where fitting the base object takes a long time.
+
+            To skip this option, keep at the default argument of None.
+
+            ::
+
+                default = None
+
         base_model : :class:`Model`, :class:`Ensemble` or None, optional
             If 'rfe' is passed to obj, then a base_model is required in
             order to perform recursive feature elimination.
-            The base model can be
-            any valid argument accepts by
+            The base model can be any valid argument accepts by
             param `model` in :class:`Model_Pipeline`.
 
             ::
 
                 default = None
 
-        extra_params : :ref`extra params dict<Extra Params>`, optional
-
+        extra_params : :ref:`Extra Params`
             See :ref:`Extra Params`
-
-            ::
-
-                default = None
-
         '''
 
         self.obj = obj
         self.params = params
         self.scope = scope
+        self.cache_loc = cache_loc
         self.base_model = deepcopy(base_model)
         self.base_model_type = None
         self.extra_params = extra_params
@@ -682,19 +704,13 @@ class Model(Piece):
 
     _is_model = True
 
-    def __init__(self, obj, params=0, scope='all', param_search=None,
-                 target_scaler=None, **extra_params):
+    def __init__(self, obj, params=0, scope='all', cache_loc=None,
+                 param_search=None, target_scaler=None, **extra_params):
         ''' Model represents a base components of the :class:`Model_Pipeline`,
         specifically a single Model / estimator.
-        Model can also be used as a component
-        in building other pieces of the model pipeline,
-        e.g., :class:`Ensemble`.
 
-        Parameters
-        ----------
-
-        obj : str, or custom obj
-            `obj` selects the base model object to use from either
+        obj : str or custom_obj
+            The pased object should be either
             a preset str indicator found at :ref:`Models`,
             or from a custom passed user model (compatible w/ sklearn api).
 
@@ -727,15 +743,32 @@ class Model(Piece):
 
                 default = 'all'
 
+        cache_loc : str, Path or None, optional
+            An optional path in which this model should be
+            cached after fitting. This is typically useful in
+            cases where fitting the base object takes a long time.
+
+            To skip this option, keep at the default argument of None.
+
+            ::
+
+                default = None
+
         param_search : :class:`Param_Search`, None, optional
             If None, by default, this will be a base model.
             Alternatively, by passing a :class:`Param_Search` instance here,
             it specifies that this model should be wrapped in a
-            Nevergrad hyper-parameter search object.
+            Hyper-parameter search object.
 
             This can be useful to create Model's which have
-            a nested hyper-parameter tuning independent from the
-            other pipeline steps.
+            a nested hyper-parameter tuning stage independent from the
+            other pipeline steps, especially when early
+            pipeline steps are long to fit, and don't
+            have associated hyper-params. Notably, if set here,
+            then all children param distributions of this Model
+            will be associated with it's hyper-parameter search
+            and this wrapped object will not pass along any param
+            distributions to higher level searches.
 
             ::
 
@@ -756,19 +789,14 @@ class Model(Piece):
 
                 default = None
 
-        extra_params : :ref`extra params dict<Extra Params>`, optional
-
+        extra_params : :ref:`Extra Params`
             See :ref:`Extra Params`
-
-            ::
-
-                default = None
-
         '''
 
         self.obj = obj
         self.params = params
         self.scope = scope
+        self.cache_loc = cache_loc
         self.param_search = param_search
         self.target_scaler = target_scaler
         self.extra_params = extra_params
@@ -1002,13 +1030,8 @@ class Ensemble(Piece):
 
                 default = 'ensemble'
 
-        extra_params : :ref`extra params dict<Extra Params>`, optional
-
+        extra_params : :ref:`Extra Params`
             See :ref:`Extra Params`
-
-            ::
-
-                default = None
         '''
 
         self.obj = obj
@@ -1351,337 +1374,6 @@ class Param_Search(Params):
                 'weight_scorer within Param Search cannot be list-like')
 
 
-class Shap_Params(Params):
-
-    def __init__(self,
-                 avg_abs=False,
-                 linear_feature_perturbation="interventional",
-                 linear_nsamples=1000,
-                 tree_feature_perturbation='tree_path_dependent',
-                 tree_model_output='raw',
-                 tree_tree_limit=None,
-                 kernel_nkmean=20,
-                 kernel_link='default',
-                 kernel_nsamples='auto',
-                 kernel_l1_reg='auto'):
-        '''
-        There are a number of parameters associated
-        with using shap to determine
-        feature importance. The best way to understand Shap
-        is almost certainly through
-        their documentation directly, `Shap Docs <https://shap.readthedocs.io/en/latest/>`_
-        Just note when using Shap within BPt to pay attention
-        to the version on the shap
-        documentation vs. what is currently supported within BPt.
-
-        Broadly, shap feature importance params are
-        split up into if they are used
-        to explain linear models, tree based models
-        or an abitrary model (kernel).
-        Be warned, kernel shap generally takes a long time to run.
-
-        The type of shap to use will be automatically
-        computed based on the Model to
-        explain, but the parameter below are still
-        split up by type, i.e., with the
-        type prended before the parameter name.
-
-        (A number of the params below are copy-pasting from the
-        relevant Shap description)
-
-        Parameters
-        ----------
-        avg_abs : bool, optional
-            This parameter is considered regardless of
-            the underlying shap model. If
-            set to True, then when computing global feature
-            importance from the
-            initially computed local shap feature importance
-            the average of the absolute value
-            will be taken! When set to False, the average value will be taken.
-            One might want to
-            set this to True if only concerned with the magnitude
-            of feature importance, rather
-            than the sign.
-
-            ::
-
-                default = False
-
-        linear_feature_perturbation : {"interventional", "correlation_dependent"}, optional
-            Only used with linear base models.
-            There are two ways we might want to compute SHAP values,
-            either the full conditional SHAP
-            values or the interventional SHAP values.
-            For interventional SHAP values we break any
-            dependence structure between features in the model and
-            so uncover how the model would behave if we
-            intervened and changed some of the inputs. For the full
-            conditional SHAP values we respect
-            the correlations among the input features, so if the model depends on one input but that
-            input is correlated with another input, then both get some credit for the model's behavior. The
-            interventional option stays "true to the model" meaning it will only give credit to features that are
-            actually used by the model, while the correlation option stays "true to the data" in the sense that
-            it only considers how the model would behave when respecting the correlations in the input data.
-            For sparse case only interventional option is supported.
-
-            ::
-
-                default = "interventional"
-
-        linear_nsamples : int, optional
-            Only used with linear base models.
-            Number of samples to use when estimating the transformation matrix used to account for
-            feature correlations.
-
-            ::
-
-                default = 1000
-
-        tree_feature_perturbation : {"interventional", "tree_path_dependent"}, optional
-            Only used with tree based models.
-            Since SHAP values rely on conditional expectations
-            we need to decide how to handle correlated
-            (or otherwise dependent) input features.
-            The "interventional" approach breaks the dependencies between
-            features according to the rules dictated by casual
-            inference (Janzing et al. 2019). Note that the
-            "interventional" option requires a background dataset
-            and its runtime scales linearly with the size
-            of the background dataset you use. Anywhere from 100 to 1000
-            random background samples are good
-            sizes to use. The "tree_path_dependent" approach is to just follow
-            the trees and use the number
-            of training examples that went down each leaf to represent
-            the background distribution. This approach
-            does not require a background dataset and so is used
-            by default when no background dataset is provided.
-
-            ::
-
-                default = "tree_path_dependent"
-
-        tree_model_output : {"raw", "probability", "log_loss"} optional
-            Only used with tree based models.
-            What output of the model should be explained. If "raw"
-            then we explain the raw output of the
-            trees, which varies by model. For regression models "raw" is
-            the standard output, for binary
-            classification in XGBoost this is the log odds ratio. If model_output is the name of a supported
-            prediction method on the model object then we explain the output of that model method name.
-            For example model_output="predict_proba" explains the result of calling model.predict_proba.
-            If "probability" then we explain the output of the model transformed into probability space
-            (note that this means the SHAP values now sum to the probability output of the model). If "logloss"
-            then we explain the log base e of the model loss function, so that the SHAP values sum up to the
-            log loss of the model for each sample. This is helpful for breaking down model performance by feature.
-            Currently the probability and logloss options are only supported when feature_dependence="independent".
-
-            ::
-
-                default = 'raw'
-
-        tree_tree_limit : None or int, optional
-            Only used with tree based models.
-            Limit the number of trees used by the model. By default None means no use the limit of the
-            original model, and -1 means no limit.
-
-            ::
-
-                default = None
-
-        kernel_n_kmeans : int or None, optional
-            Used when the underlying model is not linear or tree based.
-            This setting offers a speed up to the kernel estimator by replacing
-            the background dataset with a kmeans representation of the data.
-            Set this option to None in order to use the full dataset directly,
-            otherwise the int passed will the determine 'k' in the kmeans algorithm.
-
-            ::
-
-                default = 20
-
-        kernel_link : {"identity", "logit", "default"}
-            Used when the underlying model is not linear or tree based.
-
-            A generalized linear model link to connect the feature importance values to the model
-            output. Since the feature importance values, phi, sum up to the model output, it often makes
-            sense to connect them to the ouput with a link function where link(outout) = sum(phi).
-            If the model output is a probability then the LogitLink link function makes the feature
-            importance values have log-odds units.
-
-            If 'default', set to using 'logic' for binary + categorical problems, along
-            with explaining predict_proba from the model, and 'identity' and explaining
-            predict for regression.
-
-            ::
-
-                default = 'default'
-
-        kernel_nsamples : "auto" or int, optional
-            Used when the underlying model is not linear or tree based.
-            Number of times to re-evaluate the model when explaining each prediction. More samples
-            lead to lower variance estimates of the SHAP values. The "auto" setting uses
-            `nsamples = 2 * X.shape[1] + 2048`.
-
-            ::
-
-                default = 'auto'
-
-        kernel_l1_reg : "num_features(int)", "auto", "aic", "bic", or float, optional
-            Used when the underlying model is not linear or tree based.
-            The l1 regularization to use for feature selection
-            (the estimation procedure is based on
-            a debiased lasso). The auto option currently uses "aic" when less that 20% of the possible sample
-            space is enumerated, otherwise it uses no regularization. THE BEHAVIOR OF "auto" WILL CHANGE
-            in a future version to be based on num_features instead of AIC.
-            The "aic" and "bic" options use the AIC and BIC rules for regularization.
-            Using "num_features(int)" selects a fix number of top features. Passing a float directly sets the
-            "alpha" parameter of the sklearn.linear_model.Lasso model used for feature selection.
-
-            ::
-
-                default = 'auto'
-
-        '''
-
-        try:
-            import shap
-        except ImportError:
-            raise ImportError('You must have shap installed to use shap')
-
-        self.avg_abs = avg_abs
-        self.linear_feature_perturbation = linear_feature_perturbation
-        self.linear_nsamples = linear_nsamples
-        self.tree_feature_perturbation = tree_feature_perturbation
-        self.tree_model_output = tree_model_output
-        self.tree_tree_limit = tree_tree_limit
-        self.kernel_nkmean = kernel_nkmean
-        self.kernel_link = kernel_link
-        self.kernel_nsamples = kernel_nsamples
-        self.kernel_l1_reg = kernel_l1_reg
-
-
-class Feat_Importance(Params):
-
-    def __init__(self, obj, scorer='default',
-                 shap_params='default', n_perm=10,
-                 inverse_global=False, inverse_local=False):
-        '''
-        There are a number of options for creating Feature Importances in BPt.
-        See :ref:`Feat Importances` to learn more about
-        feature importances generally.
-        The way this object works, is that you can a type
-        of feature importance, and then
-        its relevant parameters. This object is designed
-        to passed directly to
-        :class:`Model_Pipeline`.
-
-        Parameters
-        ----------
-        obj : str
-            `obj` is the str indiciator for which feature importance to use.
-            See :ref:`Feat Importances` for what options are avaliable.
-
-        scorer : str or 'default', optional
-
-            If a permutation based feature importance is being used,
-            then a scorer is required.
-
-            For a full list of supported scorers please view the
-            scikit-learn docs at:
-            https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
-
-            If left as 'default', assign a reasonable scorer based on the
-            passed problem type.
-
-            - 'regression'  : 'explained_variance'
-            - 'binary'      : 'matthews'
-            - 'categorical' : 'matthews'
-
-            ::
-
-                default = 'default'
-
-        shap_params : :class:`Shap_Params` or 'default', optional
-            If a shap based feature importance is used, it is necc. to define
-            a number of relevant parameters for how the importances
-            should be calculated.
-            See :class:`Shap_Params` for what these parameters are.
-
-            If 'default' is passed, then shap_params will be set to
-            either the default values of
-            :class:`Shap_Params` if shap feature importances
-            are being used, or None if not.
-
-            ::
-
-                default = 'default'
-
-        n_perm : int, optional
-            If a permutation based feature importance method is selected, then
-            it is neccicary to indicate how many random permutations each feature 
-            should be permuted.
-
-            ::
-
-                default = 10
-
-        inverse_global : bool
-            Warning: This feature, along with inverse_local, is still
-            expirimental.
-
-            If there are any loaders, or transformers specified
-            in the Model_Pipeline,
-            then feature importance becomes slightly trickier.
-            Note: this will only work if all transformers / loaders
-            have an implemented reverse_transform function, if one
-            does not for transformer, then
-            it will just return 0 for that feature. For a loader w/o,
-            then it will return
-            'No inverse_transform'.
-
-            There are also other cases where this might
-            be a bad idea, for example
-            if you are using one hot encoders in your
-            transformers then trying to
-            reverse_transform
-            feature importances will yield nonsense (NaN's).
-
-            ::
-
-                default = False
-
-        inverse_local : bool
-            Same as inverse_global, but for local feature importances.
-            By default this is set to False, as it is
-            more memory and computationally expensive to
-            inverse_transform this case.
-
-            ::
-
-                default = False
-
-        '''
-
-        self.obj = obj
-        self.scorer = scorer
-
-        if shap_params == 'default':
-
-            if 'shap' in self.obj:
-                shap_params = Shap_Params()
-            else:
-                shap_params = None
-
-        self.shap_params = shap_params
-        self.n_perm = n_perm
-        self.inverse_global = inverse_global
-        self.inverse_local = inverse_local
-
-        # For compatibility
-        self.params = 0
-
-
 class Model_Pipeline(Params):
 
     def __init__(self,
@@ -1691,9 +1383,7 @@ class Model_Pipeline(Params):
                  model='default',
                  param_search=None,
                  cache_fit_dr=None,
-                 verbose=0,
-                 cache='depreciated',
-                 feat_importances='depreciated'):
+                 verbose=0):
         ''' Model_Pipeline is defined as essentially a wrapper around
         all of the explicit modelling pipeline parameters. This object is
         used as input to
@@ -1891,28 +1581,6 @@ class Model_Pipeline(Params):
             ::
 
                 default = 0
-
-
-        cache : depreciated
-            The cache parameter has been depreciated,
-            use the cache_loc params within individual pieces instead.
-
-            ::
-
-                default = 'depreciated'
-
-
-        feat_importances : depreciated
-            Feature importances in a past version of BPt were
-            specified via this Model Pipeline object.
-            Now they should be provided to either
-            :func:`Evaluate <BPt.BPt_ML.Evaluate>`
-            and :func:`Test <BPt.BPt_ML.Test>`
-
-        ::
-
-            default = 'depreciated'
-
         '''
 
         if isinstance(loaders, str):
@@ -1947,17 +1615,6 @@ class Model_Pipeline(Params):
         self.param_search = param_search
         self.cache_fit_dr = cache_fit_dr
         self.verbose = verbose
-
-        if cache != 'depreciated':
-            print('Warning: Passing cache is depreciated.')
-        self.cache = cache
-
-        if feat_importances != 'depreciated':
-            print('Warning: Passing feature importances have been moved ',
-                  'to the Evaluate and Test functions!')
-
-        # Regardless save the value to avoid sklearn warnings
-        self.feat_importances = feat_importances
 
         # Perform all preproc on input which can be run
         # more then once, these are essentially checks on the input

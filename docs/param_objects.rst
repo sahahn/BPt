@@ -43,10 +43,6 @@ Param_Search
 **************
 .. autoclass:: Param_Search
 
-Feat_Importance
-*****************
-.. autoclass:: Feat_Importance
-
 CV
 *****************
 .. autoclass:: CV

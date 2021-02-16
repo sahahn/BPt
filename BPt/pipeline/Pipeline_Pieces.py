@@ -245,9 +245,17 @@ class Pieces():
                         # Default regression
                         model_spec['problem_type'] = 'regression'
 
-                        # Check for categorical
-                        scope = params[i].scope
-                        if scope == 'cat' or scope == 'categorical':
+                        # Only change to categorical
+                        # if all cols within scope are categorical
+                        limit_to =\
+                            self.dataset._get_cols('data',
+                                                   limit_to=self.spec['scope'])
+
+                        all_cat = self.dataset._is_category(params[i].scope,
+                                                            limit_to=limit_to,
+                                                            check_scopes=False)
+
+                        if all_cat:
                             model_spec['problem_type'] = 'categorical'
 
                     else:

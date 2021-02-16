@@ -2,8 +2,10 @@ from sklearn.feature_selection import RFE
 from sklearn.base import BaseEstimator
 from sklearn.feature_selection._base import SelectorMixin
 import numpy as np
-from ..helpers.ML_Helpers import proc_mapping
+from ..pipeline.helpers import proc_mapping
 
+# @TODO I think this is updated in a new version of scikit-learn, if so
+# remove and change dependency.
 
 class RFE_Wrapper(RFE):
     def fit(self, X, y):

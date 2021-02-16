@@ -397,78 +397,6 @@ def hash(objs, steps):
     return hash_str1 + hash_str2
 
 
-def proc_mapping(indx, mapping):
-
-    if len(mapping) > 0 and len(indx) > 0:
-
-        # If should proc list...
-        if is_array_like(indx[0]):
-            return [proc_mapping(i, mapping) for i in indx]
-
-        else:
-            new_indx = set()
-
-            for i in indx:
-                new = mapping[i]
-
-                if new is None:
-                    pass
-
-                # If mapping points to a list of values
-                elif isinstance(new, list):
-                    for n in new:
-                        if n is not None:
-                            new_indx.add(n)
-                else:
-                    new_indx.add(new)
-
-            # Sort, then return
-            new_indx = sorted(list(new_indx))
-            return new_indx
-
-    else:
-        return indx
-
-
-def update_mapping(mapping, new_mapping):
-
-    # Go through the mapping and update each key with the new mapping
-    for key in mapping:
-
-        val = mapping[key]
-
-        if isinstance(val, list):
-
-            new_vals = []
-            for v in val:
-
-                if v in new_mapping:
-
-                    new_val = new_mapping[v]
-                    if isinstance(new_val, list):
-                        new_vals += new_val
-                    else:
-                        new_vals.append(new_val)
-
-                else:
-                    new_vals.append(v)
-
-            as_set = set(new_vals)
-
-            try:
-                as_set.remove(None)
-            except KeyError:
-                pass
-
-            mapping[key] = sorted(list(as_set))
-
-        # Assume int if not list
-        else:
-
-            if val in new_mapping:
-                mapping[key] = new_mapping[val]
-
-
 def check_for_duplicate_names(objs_and_params):
     '''Checks for duplicate names within an objs_and_params type obj'''
 
@@ -624,22 +552,6 @@ def get_avaliable_run_name(name, model_pipeline):
             name = 'Custom'
 
     return name
-
-
-def get_reverse_mapping(mapping):
-
-    reverse_mapping = {}
-    for m in mapping:
-        key = mapping[m]
-
-        if isinstance(key, list):
-            for k in key:
-                reverse_mapping[k] = m
-        else:
-            reverse_mapping[key] = m
-
-    return reverse_mapping
-
 
 def set_n_jobs(obj, n_jobs):
 

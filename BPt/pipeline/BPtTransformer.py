@@ -1,4 +1,4 @@
-from ..helpers.ML_Helpers import update_mapping
+from .helpers import update_mapping
 from .ScopeObjs import ScopeTransformer
 from sklearn.preprocessing import OneHotEncoder
 

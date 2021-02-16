@@ -70,3 +70,100 @@ def get_mean_fis(estimators, prop):
 
     # Return as mean
     return np.mean(np.array(fis), axis=0)
+
+
+def is_array_like(in_val):
+
+    if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
+     (not isinstance(in_val, dict)) and (not hasattr(in_val, 'fit')) and \
+     (not hasattr(in_val, 'transform')):
+        return True
+
+    return False
+
+
+def proc_mapping(indx, mapping):
+
+    # If non-empty mapping and non-empty index
+    if len(mapping) > 0 and len(indx) > 0:
+
+        # If should proc list...
+        if is_array_like(indx[0]):
+            return [proc_mapping(i, mapping) for i in indx]
+
+        new_indx = set()
+
+        for i in indx:
+            new = mapping[i]
+
+            if new is None:
+                pass
+
+            # If mapping points to a list of values
+            elif isinstance(new, list):
+                for n in new:
+                    if n is not None:
+                        new_indx.add(n)
+            else:
+                new_indx.add(new)
+
+        # Sort, then return
+        new_indx = sorted(list(new_indx))
+        return new_indx
+
+    # Base case return indx
+    return indx
+
+
+def update_mapping(mapping, new_mapping):
+
+    # Go through the mapping and update each key with the new mapping
+    for key in mapping:
+
+        val = mapping[key]
+
+        if isinstance(val, list):
+
+            new_vals = []
+            for v in val:
+
+                if v in new_mapping:
+
+                    new_val = new_mapping[v]
+                    if isinstance(new_val, list):
+                        new_vals += new_val
+                    else:
+                        new_vals.append(new_val)
+
+                else:
+                    new_vals.append(v)
+
+            as_set = set(new_vals)
+
+            try:
+                as_set.remove(None)
+            except KeyError:
+                pass
+
+            mapping[key] = sorted(list(as_set))
+
+        # Assume int if not list
+        else:
+
+            if val in new_mapping:
+                mapping[key] = new_mapping[val]
+
+
+def get_reverse_mapping(mapping):
+
+    reverse_mapping = {}
+    for m in mapping:
+        key = mapping[m]
+
+        if isinstance(key, list):
+            for k in key:
+                reverse_mapping[k] = m
+        else:
+            reverse_mapping[key] = m
+
+    return reverse_mapping

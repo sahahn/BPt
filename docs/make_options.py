@@ -18,8 +18,6 @@ from BPt.pipeline.Feature_Selectors import SELECTORS
 from BPt.pipeline.Ensembles import AVALIABLE as AVALIABLE_ENSEMBLES
 from BPt.pipeline.Ensembles import ENSEMBLES
 
-from BPt.pipeline.Feat_Importances import IMPORTANCES
-
 from BPt.default.default_params import PARAMS
 from BPt.helpers.Docstring_Helpers import get_name, get_scorer_name
 
@@ -155,8 +153,8 @@ lines = main_category(lines, 'Scorers')
 lines.append('Different availible choices for the `scorer` parameter' +
              ' are shown below.')
 lines.append('`scorer` is accepted by ' +
-             ':class:`Problem_Spec<BPt.Problem_Spec>`, :class:`Param_Search<BPt.Param_Search>`' +
-             ' and :class:`Feat_Importance<BPt.Feat_Importance>`')
+             ':class:`Problem_Spec<BPt.Problem_Spec>` and ' +
+             ':class:`Param_Search<BPt.Param_Search>`.')
 lines.append('The str indicator for each `scorer` is represented by' +
              'the sub-heading (within "")')
 lines.append('The avaliable scorers are further broken down by which can' +
@@ -235,7 +233,8 @@ lines = main_category(lines, 'Ensemble Types')
 lines.append('Different base obj choices for the :class:`Ensemble<BPt.Ensemble>` are shown below')
 lines.append('The exact str indicator, as passed to the `obj` param is represented' +
              ' by the sub-heading (within "")')
-lines.append('The avaliable ensembles are further broken down by which can work' +
+lines.append('The avaliable ensembles are further broken down by ' +
+             'which can work' +
              'with different problem_types.')
 lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
@@ -249,26 +248,4 @@ with open('options.rst', 'w') as f:
         f.write(line)
         f.write('\n')
 
-
-with open('base_feature_importance.txt', 'r') as f:
-    lines = f.readlines()
-    lines = [line.replace('\n', '') for line in lines]
-
-for imp in IMPORTANCES:
-    name = imp
-    try:
-        ri = lines.index('replacewithparams--'+name)
-    except ValueError:
-        continue
-
-    p_name = IMPORTANCES[imp][1]
-    rel_lines = add_params([], p_name)
-    lines = lines[:ri] + rel_lines + lines[ri+1:]
-
-lines = ['.. _Feat Importances:', ''] + lines
-
-with open('feat_importances.rst', 'w') as f:
-    for line in lines:
-        f.write(line)
-        f.write('\n')
 

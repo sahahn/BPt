@@ -1,6 +1,6 @@
 from lightgbm import LGBMRegressor, LGBMClassifier
 from ..main.CV import BPtCV
-from ..helpers.ML_Helpers import proc_mapping
+from ..pipeline.helpers import proc_mapping
 from sklearn.model_selection import train_test_split
 import warnings
 

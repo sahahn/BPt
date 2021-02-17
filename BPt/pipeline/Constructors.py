@@ -17,7 +17,6 @@ from copy import deepcopy
 from .Selector import selector_wrapper
 from sklearn.compose import TransformedTargetRegressor
 from .BPtSearchCV import wrap_param_search
-from .ensemble_wrappers import DES_Ensemble
 
 import numpy as np
 
@@ -916,13 +915,8 @@ class EnsembleWrapper():
                                               se_ensemb_name,
                                               ensemble=False)
 
-            # If DES Ensemble,
-            if ensemble_params.is_des:
-                return self._wrap_des(models, ensemble,
-                                      ensemble_params.ensemble_split)
-
             # If no split and single estimator
-            elif ensemble_params.single_estimator:
+            if ensemble_params.single_estimator:
                 return self._wrap_single(models, ensemble,
                                          ensemble_params.n_jobs_type)
 
@@ -935,39 +929,6 @@ class EnsembleWrapper():
                                            final_estimator_params,
                                            ensemble_params.n_jobs_type,
                                            ensemble_params.cv)
-
-    def _wrap_des(self, models, ensemble_info, ensemble_split):
-
-        # Unpack ensemble info
-        ensemble_name = ensemble_info[0]
-        ensemble_obj = ensemble_info[1][0]
-        ensemble_extra_params = ensemble_info[1][1]
-
-        # Init with default params
-        ensemble = ensemble_obj()
-
-        # Set ensemble random_state
-        if hasattr(ensemble, 'random_state'):
-            setattr(ensemble, 'random_state', self.random_state)
-
-        # Regardless of n_jobs_type, go with models, as
-        # default des doesn't handle multi-proc well.
-        set_n_jobs(ensemble, 1)
-        set_n_jobs(models, self.n_jobs)
-
-        # Create pipeline compatible des ensemble
-        new_ensemble =\
-            [(ensemble_name, DES_Ensemble(models,
-                                          ensemble,
-                                          ensemble_name,
-                                          ensemble_split,
-                                          ensemble_extra_params,
-                                          self.random_state))]
-
-        # Update the params
-        self._update_model_ensemble_params(ensemble_name)
-
-        return new_ensemble
 
     def _wrap_single(self, models, ensemble_info, n_jobs_type):
         '''If passed single_estimator flag'''

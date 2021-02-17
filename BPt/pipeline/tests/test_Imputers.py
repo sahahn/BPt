@@ -1,5 +1,5 @@
 from ...main.input import Imputer, Model
-from ..Pipeline_Pieces import Imputers
+from ..Constructors import Imputers
 from ...dataset.Dataset import Dataset
 import numpy as np
 from sklearn.linear_model import LogisticRegression, LinearRegression

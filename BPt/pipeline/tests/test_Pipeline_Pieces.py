@@ -1,4 +1,4 @@
-from ..Pipeline_Pieces import add_estimator_to_params, FeatSelectors
+from ..Constructors import add_estimator_to_params, FeatSelectors
 from ...main.input import FeatSelector, Model
 from ..BPtFeatureSelector import BPtFeatureSelector
 from .helpers import get_fake_data_dataset

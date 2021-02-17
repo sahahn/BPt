@@ -358,11 +358,6 @@ plot
 .. automethod:: Dataset.plot
 
 
-plot_vars
-=====================
-.. automethod:: Dataset.plot_vars
-
-
 show
 =====================
 .. automethod:: Dataset.show

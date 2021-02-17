@@ -1692,9 +1692,9 @@ class Dataset(pd.DataFrame):
                             _plot_cat_cat,
                             _plot_cat_float,
                             _plot_float_float,
-                            plot_vars,
                             _get_plot_values,
                             _plot_float,
+                            _plot_col,
                             _plot_category,
                             _print_plot_info)
 

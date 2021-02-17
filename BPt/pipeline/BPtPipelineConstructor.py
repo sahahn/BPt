@@ -3,7 +3,7 @@ from ..helpers.ML_Helpers import is_array_like
 
 from ..helpers.VARS import ORDERED_NAMES
 
-from .Pipeline_Pieces import (Models, Loaders, Imputers, Scalers,
+from .Constructors import (Models, Loaders, Imputers, Scalers,
                               Transformers, FeatSelectors)
 
 from .BPtSearchCV import get_search_cv

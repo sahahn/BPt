@@ -4,7 +4,7 @@ from ..helpers.ML_Helpers import (conv_to_list, proc_input)
 
 from ..helpers.VARS import ORDERED_NAMES
 from ..main.input_operations import (is_duplicate, is_pipe, is_select,
-                                is_special, is_value_subset)
+                                     is_special, is_value_subset)
 from ..default.options.scorers import process_scorer
 from .CV import get_bpt_cv
 
@@ -400,10 +400,10 @@ class Imputer(Piece):
             instead of imputing categorical features, load missing
             values as a seperate category - and then set the scope
             here to be 'all', such that the iterative imputer has
-            access to all features. Essently why this is neccisary
-            is the iterative imputer
+            access to all features. This happens because
+            the iterative imputer
             will try to replace any NaN value present in its input
-            features.
+            feature.
 
             See :ref:`Scope` for more information on how scopes can
             be specified.
@@ -806,8 +806,10 @@ class Model(Piece):
 
     def view(self, problem_type='regression'):
 
+        pass
+
         # Process some way with the associated piece
-        from ..pipeline.Pipeline_Pieces import Models
+        #from ..pipeline.Constructors import Models
 
         # Need to think about user passed objs
 
@@ -835,9 +837,7 @@ class Ensemble(Piece):
                  target_scaler=None,
                  base_model=None,
                  cv=None,
-                 is_des=False,
                  single_estimator=False,
-                 des_split=.2,
                  n_jobs_type='ensemble',
                  **extra_params):
         ''' The Ensemble object is valid base
@@ -970,24 +970,6 @@ class Ensemble(Piece):
 
                 default = None
 
-        is_des : bool, optional
-            `is_des` refers to if the requested ensemble obj requires
-            a further training test split in order to train the base ensemble.
-            As of right now, If this parameter is True, it means that the
-            base ensemble is from the
-            `DESlib library <https://deslib.readthedocs.io/en/latest/>`_ .
-            Which means
-            the base ensemble obj must have a `pool_classifiers`
-            init parameter.
-
-            The following `des_split` parameter determines the
-            size of the split if
-            is_des is True.
-
-            ::
-
-                default = False
-
         single_estimator : bool, optional
             The parameter `single_estimator` is used to let the
             Ensemble object know if the `models` must be a single estimator.
@@ -1002,19 +984,6 @@ class Ensemble(Piece):
             ::
 
                 default = False
-
-        des_split : float, optional
-            If `is_des` is True, then the passed ensemble must be
-            fit on a seperate validation set.
-            This parameter determines the size
-            of the further train/val split on initial
-            training set passed to
-            the ensemble. Where the size is comptued as
-            the a percentage of the total size.
-
-            ::
-
-                default = .2
 
         n_jobs_type : 'ensemble' or 'models', optional
             Valid options are either 'ensemble' or 'models'.
@@ -1055,8 +1024,6 @@ class Ensemble(Piece):
         self.target_scaler = target_scaler
         self.base_model = base_model
         self.cv = cv
-        self.is_des = is_des
-        self.des_split = des_split
         self.single_estimator = single_estimator
         self.n_jobs_type = n_jobs_type
         self.extra_params = extra_params

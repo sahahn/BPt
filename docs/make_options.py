@@ -229,8 +229,7 @@ lines.append('The avaliable ensembles are further broken down by ' +
              'with different problem_types.')
 lines.append('Additionally, a link to the original models documentation ' +
              'as well as the implemented parameter distributions are shown.')
-lines.append('Also note that ensemble require a few extra params! I.e., '
-             'in general, all DESlib based ensemble need needs_split = True')
+lines.append('Also note that ensemble may require a few extra params!')
 lines.append('')
 lines = add_block(lines, problem_types, o.ensembles.AVALIABLE,
                   o.ensembles.ENSEMBLES)

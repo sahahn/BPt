@@ -1,18 +1,5 @@
 from ..helpers import get_obj_and_params
 
-from deslib.dcs import (
-    APosteriori, APriori, LCA,
-    MCB, MLA, OLA, Rank)
-
-from deslib.des import (
-    METADES, DESClustering, DESP,
-    DESKNN, KNOP, KNORAE, KNORAU, DESMI,
-    RRC,  DESKL, MinimumDifference,
-    Exponential, Logarithmic)
-
-from deslib.static import SingleBest
-from deslib.static.stacked import StackedClassifier
-
 from sklearn.ensemble import (BaggingClassifier, BaggingRegressor,
                               AdaBoostRegressor, AdaBoostClassifier)
 from ...pipeline.ensemble_wrappers import (BPtStackingRegressor,
@@ -25,27 +12,6 @@ AVALIABLE = {
             'basic ensemble': 'voting classifier',
             None: 'voting classifier',
             'voting': 'voting classifier',
-            'aposteriori': 'aposteriori',
-            'apriori': 'apriori',
-            'lca': 'lca',
-            'mcb': 'mcb',
-            'mla': 'mla',
-            'ola': 'ola',
-            'rank': 'rank',
-            'metades': 'metades',
-            'des clustering': 'des clustering',
-            'desp': 'desp',
-            'des knn': 'des knn',
-            'knop': 'knop',
-            'knorae': 'knorae',
-            'knrau': 'knrau',
-            'desmi': 'desmi',
-            'rrc': 'rrc',
-            'deskl': 'deskl',
-            'min dif': 'min dif',
-            'exponential': 'exponential',
-            'logarithmic': 'logarithmic',
-            'single best': 'single best',
             'stacked': 'stacked',
             'bagging': 'bagging classifier',
             'adaboost': 'adaboost classifier',
@@ -63,28 +29,6 @@ AVALIABLE = {
 
 
 ENSEMBLES = {
-    'aposteriori': (APosteriori, ['default']),
-    'apriori': (APriori, ['default']),
-    'lca': (LCA, ['default']),
-    'mcb': (MCB, ['default']),
-    'mla': (MLA, ['default']),
-    'ola': (OLA, ['default']),
-    'rank': (Rank, ['default']),
-    'metades': (METADES, ['default']),
-    'des clustering': (DESClustering, ['default']),
-    'desp': (DESP, ['default']),
-    'des knn': (DESKNN, ['default']),
-    'knop': (KNOP, ['default']),
-    'knorae': (KNORAE, ['default']),
-    'knrau': (KNORAU, ['default']),
-    'desmi': (DESMI, ['default']),
-    'rrc': (RRC, ['default']),
-    'deskl': (DESKL, ['default']),
-    'min dif': (MinimumDifference, ['default']),
-    'exponential': (Exponential, ['default']),
-    'logarithmic': (Logarithmic, ['default']),
-    'single best': (SingleBest, ['default']),
-    'stacked': (StackedClassifier, ['default']),
     'bagging classifier': (BaggingClassifier, ['default']),
     'bagging regressor': (BaggingRegressor, ['default']),
     'adaboost classifier': (AdaBoostClassifier, ['default']),

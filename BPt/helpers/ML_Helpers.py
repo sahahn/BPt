@@ -396,49 +396,6 @@ def hash(objs, steps):
     return hash_str1 + hash_str2
 
 
-def check_for_duplicate_names(objs_and_params):
-    '''Checks for duplicate names within an objs_and_params type obj'''
-
-    names = [c[0] for c in objs_and_params]
-
-    # If any repeats
-    if len(names) != len(set(names)):
-        new_objs_and_params = []
-
-        for obj in objs_and_params:
-            name = obj[0]
-
-            if name in names:
-
-                cnt = 0
-                used = [c[0] for c in new_objs_and_params]
-                while name + str(cnt) in used:
-                    cnt += 1
-
-                # Need to change name within params also
-                base_obj = obj[1][0]
-                base_obj_params = obj[1][1]
-
-                new_obj_params = {}
-                for param_name in base_obj_params:
-
-                    p_split = param_name.split('__')
-                    new_param_name = p_split[0] + str(cnt)
-                    new_param_name += '__' + '__'.join(p_split[1:])
-
-                    new_obj_params[new_param_name] =\
-                        base_obj_params[param_name]
-
-                new_objs_and_params.append((name + str(cnt),
-                                           (base_obj, new_obj_params)))
-
-            else:
-                new_objs_and_params.append(obj)
-
-        return new_objs_and_params
-    return objs_and_params
-
-
 def proc_type_dep_str(in_strs, avaliable, problem_type):
     '''Helper function to perform str correction on
     underlying proble type dependent input, e.g., for

@@ -31,8 +31,7 @@ def test_BPtPipeline():
     model = BPtModel(estimator=LinearRegression(), inds=[0, 1])
     steps.append(('model', model))
 
-    names = [[], [], ['to_ones'], [], [], ['model']]
-    pipe = BPtPipeline(steps=steps, names=names)
+    pipe = BPtPipeline(steps=steps)
 
     X = np.zeros((3, 3))
     y = np.ones(3)
@@ -115,8 +114,7 @@ def run_pipe_with_loader_ts(cache_fit_dr=None):
     steps.append(('model', search_model))
 
     # Create pipe
-    names = [['loader'], [], ['to_ones'], [], [], ['model']]
-    pipe = BPtPipeline(steps=steps, names=names,
+    pipe = BPtPipeline(steps=steps,
                        cache_fit_dr=cache_fit_dr)
 
     X = np.arange(100).reshape((50, 2))
@@ -135,7 +133,7 @@ def run_pipe_with_loader_ts(cache_fit_dr=None):
     # Make sure reverse transform works
     X_df = pd.DataFrame(X)
 
-    X_trans = pipe.transform_df(X_df, fs=False)
+    X_trans = pipe.transform_df(X_df)
     assert X_trans.shape == (50, 8)
     assert X_trans.loc[4, '1_3'] == 9
     assert X_trans.loc[1, '1_2'] == 3

@@ -1,6 +1,5 @@
 from sklearn.pipeline import Pipeline
 import numpy as np
-from ..helpers.VARS import ORDERED_NAMES
 from ..helpers.ML_Helpers import hash
 from joblib import load, dump
 import pandas as pd
@@ -14,12 +13,10 @@ class BPtPipeline(Pipeline):
     _needs_train_data_index = True
 
     def __init__(self, steps, memory=None,
-                 verbose=False, names=None,
+                 verbose=False,
                  cache_fit_dr=None):
 
-        self.names = names
         self.cache_fit_dr = cache_fit_dr
-
         super().__init__(steps=steps, memory=memory, verbose=verbose)
 
     @property
@@ -161,36 +158,13 @@ class BPtPipeline(Pipeline):
 
         return self
 
-    def _get_objs_by_name(self):
+    def _get_ordered_objs_and_names(self):
 
-        if self.names is None:
-            self.names = []
+        # Get all objects except final model
+        ordered_names = [step[0] for step in self.steps[:-1]]
+        ordered_objs = [self.__getitem__(name) for name in ordered_names]
 
-        fitted_objs = [[self.__getitem__(name) for name in obj]
-                       for obj in self.names]
-        return fitted_objs
-
-    def _get_ordered_objs_and_names(self, fs=True, model=False):
-
-        fitted_objs = self._get_objs_by_name()
-        ordered_objs = []
-        ordered_base_names = []
-
-        for name in ORDERED_NAMES:
-
-            # Check if should add or not based on passed params
-            add = True
-            if name == 'feat_selectors' and not fs:
-                add = False
-            if name == 'model' and not model:
-                add = False
-
-            if add:
-                ind = ORDERED_NAMES.index(name)
-                ordered_objs += fitted_objs[ind]
-                ordered_base_names += self.names[ind]
-
-        return ordered_objs, ordered_base_names
+        return ordered_objs, ordered_names
 
     def transform(self, X):
 
@@ -202,13 +176,12 @@ class BPtPipeline(Pipeline):
 
         return X
 
-    def transform_df(self, X_df, fs=True, encoders=None):
+    def transform_df(self, X_df, encoders=None):
         '''Transform an input dataframe, keeping track of feature names'''
 
-        # Get ordered objects as list, with or without feat selectors
-        # and also the corr. base names
+        # Get as two lists - all steps but last
         ordered_objs, ordered_base_names =\
-            self._get_ordered_objs_and_names(fs=fs, model=False)
+            self._get_ordered_objs_and_names()
 
         # Run all of the transformations
         for obj, base_name in zip(ordered_objs, ordered_base_names):
@@ -217,11 +190,12 @@ class BPtPipeline(Pipeline):
 
         return X_df
 
-    def transform_feat_names(self, X_df, fs=True, encoders=None):
-        '''Simmilar to transform df, but just transform feat names.'''
+    def transform_feat_names(self, X_df, encoders=None):
+        '''Like transform df, but just transform feat names.'''
 
+        # Get as two lists - all steps but last
         ordered_objs, ordered_base_names =\
-            self._get_ordered_objs_and_names(fs=fs, model=False)
+            self._get_ordered_objs_and_names()
 
         feat_names = list(X_df)
         for obj, base_name in zip(ordered_objs, ordered_base_names):
@@ -231,6 +205,10 @@ class BPtPipeline(Pipeline):
         return feat_names
 
     def inverse_transform_FIs(self, fis, feat_names):
+
+        # @TODO Need to write and check each base objects
+        # inverse transform
+        return
 
         # Make compat w/ subjects x feats
         if len(fis.shape) == 1:

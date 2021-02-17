@@ -204,7 +204,10 @@ def proc_str_input(in_str):
 
     # Remove regressor or classifier
     chunk_replace_dict = {' regressor': '',
-                          ' classifier': ''}
+                          ' classifier': '',
+                          '_regressor': '',
+                          '_classifier': ''}
+
     for chunk in chunk_replace_dict:
         in_str = in_str.replace(chunk, chunk_replace_dict[chunk])
 

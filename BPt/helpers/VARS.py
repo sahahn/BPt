@@ -6,9 +6,6 @@ SCOPES = set(['float', 'data', 'data files',
               'float covars', 'fc', 'all',
               'n', 'cat', 'categorical', 'covars'])
 
-ORDERED_NAMES = ['loaders', 'imputers', 'scalers',
-                 'transformers', 'feat_selectors', 'model']
-
 
 def is_f2b(d_type):
 

@@ -1,12 +1,56 @@
 from .BPtPipeline import BPtPipeline
 from ..helpers.ML_Helpers import is_array_like
-
-from ..helpers.VARS import ORDERED_NAMES
-
-from .Constructors import (Models, Loaders, Imputers, Scalers,
-                              Transformers, FeatSelectors)
-
 from .BPtSearchCV import get_search_cv
+
+
+def _check_for_user_passed(objs, cnt, up):
+
+    if objs is not None:
+
+        # If list / array like passed
+        if is_array_like(objs):
+
+            # Call recursively on each entry
+            for o in range(len(objs)):
+                objs[o], cnt = _check_for_user_passed(objs[o], cnt, up)
+
+        # If a single obj
+        else:
+
+            if hasattr(objs, 'base_model'):
+                if objs.base_model is not None:
+                    objs.base_model, cnt =\
+                        _check_for_user_passed(objs.base_model, cnt, up)
+            if hasattr(objs, 'models'):
+                if objs.models is not None:
+                    objs.models, cnt =\
+                        _check_for_user_passed(objs.models, cnt, up)
+            if hasattr(objs, 'target_scaler'):
+                if objs.target_scaler is not None:
+                    objs.target_scaler, cnt =\
+                        _check_for_user_passed(objs.target_scaler, cnt, up)
+
+            # If a Param obj - call recursively to set the value of the
+            # base obj
+            if hasattr(objs, 'obj'):
+                objs.obj, cnt = _check_for_user_passed(objs.obj, cnt, up)
+
+            # Now, we assume any single obj that gets here, if not
+            # a str is user passed custom obj
+            elif not isinstance(objs, str):
+                save_name = 'Custom ' + str(cnt)
+                cnt += 1
+                up[save_name] = objs
+                objs = save_name
+
+    return objs, cnt
+
+
+def check_for_user_passed(objs):
+
+    user_passed = {}
+    objs, _ = _check_for_user_passed(objs, 0, up=user_passed)
+    return objs, user_passed
 
 
 class BPtPipelineConstructor():
@@ -26,141 +70,66 @@ class BPtPipelineConstructor():
                 'problem_type': problem_spec.problem_type,
                 'scope': problem_spec.scope}
 
-        # Extract ordered
-        ordered_pipeline_params = pipeline_params.get_ordered_pipeline_params()
+        # Get params as ordered list of steps
+        pipe_params = pipeline_params.get_steps()
 
         # Create the pipeline pieces
         self._create_pipeline_pieces(
-            ordered_pipeline_params=ordered_pipeline_params,
+            pipe_params=pipe_params,
             dataset=dataset, spec=spec)
 
-    def _create_pipeline_pieces(self, ordered_pipeline_params,
+    def _create_pipeline_pieces(self, pipe_params,
                                 dataset, spec):
 
-        # Order is:
-        # ['loaders', 'imputers',
-        #  'scalers',
-        #  'transformers',
-        #  'feat_selectors', 'model']
+        # First check for user passed - update in place
+        # Check for user passed out here to avoid possible name collisions.
+        pipe_params, user_passed_objs = check_for_user_passed(pipe_params)
 
-        # First check for user passed
-        self.user_passed_objs = {}
-        conv_pipeline_params = []
-        cnt = 0
+        # Want to process all pieces with the same constructor
+        # at the same time, then put back in the right order
 
-        for params in ordered_pipeline_params:
-            conv_params, cnt = self._check_for_user_passed(params, cnt)
-            conv_pipeline_params.append(conv_params)
+        # Create empty list of objects to fill
+        self.objs = [None for _ in range(len(pipe_params))]
 
-        self.named_objs = {}
-        self.named_params = {}
+        # Params is dict, so unordered
+        self.params = {}
 
-        # These are the corresponding pieces classes
-        pieces_classes = [Loaders, Imputers, Scalers,
-                          Transformers, FeatSelectors, Models]
+        # Get unique constructors
+        constructors = [param.constructor_ for param in pipe_params]
+        unique = set(constructors)
 
-        # Generate / process all of the pipeline pieces in order
-        for params, piece_class, name in zip(conv_pipeline_params,
-                                             pieces_classes, ORDERED_NAMES):
+        # For each unique piece_type
+        for constr_type in unique:
 
-            piece = piece_class(user_passed_objs=self.user_passed_objs,
-                                dataset=dataset, spec=spec)
-            objs, params = piece.process(params)
+            # Get a list of the pieces of this type
+            # and their original index
+            in_scope, inds = [], []
+            for i in range(len(pipe_params)):
+                if constructors[i] is constr_type:
+                    in_scope.append(pipe_params[i])
+                    inds.append(i)
 
-            self.named_objs[name] = objs
-            self.named_params[name] = params
+            # Init the correct constructor
+            constructor = constr_type(spec=spec, dataset=dataset,
+                                      user_passed_objs=user_passed_objs)
 
-    def _check_for_user_passed(self, objs, cnt):
+            # Process the pipe params of this type
+            objs, params = constructor.process(in_scope)
 
-        if objs is not None:
+            # Put in correct spots
+            for i, ind in enumerate(inds):
+                self.objs[ind] = objs[i]
 
-            # If list / array like passed
-            if is_array_like(objs):
+            # Update params
+            self.params.update(params)
 
-                # Call recursively on each entry
-                for o in range(len(objs)):
-                    objs[o], cnt = self._check_for_user_passed(objs[o], cnt)
-
-            # If a single obj
-            else:
-
-                if hasattr(objs, 'base_model'):
-                    if objs.base_model is not None:
-                        objs.base_model, cnt =\
-                            self._check_for_user_passed(objs.base_model, cnt)
-                if hasattr(objs, 'models'):
-                    if objs.models is not None:
-                        objs.models, cnt =\
-                            self._check_for_user_passed(objs.models, cnt)
-                if hasattr(objs, 'target_scaler'):
-                    if objs.target_scaler is not None:
-                        objs.target_scaler, cnt =\
-                            self._check_for_user_passed(objs.target_scaler,
-                                                        cnt)
-
-                # If a Param obj - call recursively to set the value of the
-                # base obj
-                if hasattr(objs, 'obj'):
-                    objs.obj, cnt = self._check_for_user_passed(objs.obj, cnt)
-
-                # Now, we assume any single obj that gets here, if not
-                # a str is user passed custom obj
-                elif not isinstance(objs, str):
-                    save_name = 'Custom ' + str(cnt)
-                    cnt += 1
-
-                    self.user_passed_objs[save_name] = objs
-                    objs = save_name
-
-        return objs, cnt
-
-    def get_all_params(self):
-        '''Returns a dict with all the params combined'''
-
-        all_params = {}
-        for name in ORDERED_NAMES:
-            all_params.update(self.named_params[name])
-
-        return all_params
-
-    def _get_objs(self, names):
-
-        objs = []
-        for name in names:
-            objs += self.named_objs[name]
-
-        return objs
-
-    def _get_names(self, names):
-
-        all_obj_names = []
-        for name in names:
-
-            obj_names = []
-            for obj in self.named_objs[name]:
-                obj_names.append(obj[0])
-
-            all_obj_names.append(obj_names)
-
-        return all_obj_names
-
-    def _get_sep_objs(self, names):
-
-        objs = []
-        for name in names:
-            objs.append(self.named_objs[name])
-
-        return objs
+        # Now self.objs contains the initialized steps, and self.params
+        # the corresponding param dists.
 
     def get_pipeline(self):
         '''Make the model pipeline object'''
 
-        # Get all steps + names
-        steps = self._get_objs(ORDERED_NAMES)
-        names = self._get_names(ORDERED_NAMES)
-
-        model_pipeline = BPtPipeline(steps, verbose=self.verbose,
-                                     names=names,
+        model_pipeline = BPtPipeline(self.objs, verbose=self.verbose,
                                      cache_fit_dr=self.cache_fit_dr)
 
         return model_pipeline
@@ -177,16 +146,16 @@ class BPtPipelineConstructor():
         base_pipeline = self.get_pipeline()
 
         # If no search, just return copy of pipeline
+        # and the params seperately
         if not self.is_search():
-            return base_pipeline, self.get_all_params()
+            return base_pipeline, self.params
 
         # Create the search object
-        search_model = get_search_cv(
-                estimator=base_pipeline,
-                param_search=self.param_search,
-                param_distributions=self.get_all_params()
-                )
+        search_model = get_search_cv(estimator=base_pipeline,
+                                     param_search=self.param_search,
+                                     param_distributions=self.params)
 
+        # Return search model, and empty dict, since params are used
         return search_model, {}
 
 

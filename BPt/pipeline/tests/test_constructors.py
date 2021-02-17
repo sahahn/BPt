@@ -1,4 +1,4 @@
-from ..Constructors import add_estimator_to_params, FeatSelectors
+from ..constructors import add_estimator_to_params, FeatSelectorConstructor
 from ...main.input import FeatSelector, Model
 from ..BPtFeatureSelector import BPtFeatureSelector
 from .helpers import get_fake_data_dataset
@@ -23,8 +23,8 @@ def test_feature_selectors():
             'n_jobs': 1,
             'scope': 'all'}
 
-    fs = FeatSelectors(dataset=dataset, spec=spec,
-                       user_passed_objs={})
+    fs = FeatSelectorConstructor(dataset=dataset, spec=spec,
+                                 user_passed_objs={})
 
     in_params = FeatSelector('univariate selection')
     objs, params = fs.process(in_params)
@@ -57,8 +57,8 @@ def test_feature_selectors():
     assert isinstance(obj, BPtFeatureSelector)
 
     dataset = get_fake_data_dataset(data_keys=data_keys, cat_keys=['1'])
-    fs = FeatSelectors(dataset=dataset, spec=spec,
-                       user_passed_objs={})
+    fs = FeatSelectorConstructor(dataset=dataset, spec=spec,
+                                 user_passed_objs={})
 
     in_params = FeatSelector('univariate selection', scope='category')
     objs, params = fs.process(in_params)
@@ -77,8 +77,8 @@ def test_feature_selectors_submodel():
     spec = {'problem_type': 'binary', 'random_state': None,
             'n_jobs': 1, 'scope': 'all'}
 
-    fs = FeatSelectors(dataset=dataset, spec=spec,
-                       user_passed_objs={})
+    fs = FeatSelectorConstructor(dataset=dataset, spec=spec,
+                                 user_passed_objs={})
 
     in_params = FeatSelector('rfe')
     objs, params = fs.process(in_params)

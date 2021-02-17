@@ -1,12 +1,14 @@
 from copy import deepcopy
 from sklearn.base import BaseEstimator
-from ..helpers.ML_Helpers import (conv_to_list, proc_input)
+from ..default.helpers import proc_input, conv_to_list
 
-from ..helpers.VARS import ORDERED_NAMES
-from ..main.input_operations import (is_duplicate, is_pipe, is_select,
-                                     is_special, is_value_subset)
+from ..main.input_operations import (is_pipe, is_select,
+                                     is_special, is_value_subset, Duplicate)
 from ..default.options.scorers import process_scorer
 from .CV import get_bpt_cv
+from ..pipeline.constructors import (LoaderConstructor, ImputerConstructor,
+                                     ScalerConstructor, TransformerConstructor,
+                                     FeatSelectorConstructor, ModelConstructor)
 
 import warnings
 
@@ -169,7 +171,7 @@ class Check():
         if is_select(base_model):
             return
 
-        if not hasattr(base_model, '_is_model'):
+        if not isinstance(base_model, Model):
             raise IOError('base_model must be either None or a valid '
                           'Model / Ensemble ',
                           'set of wrapeper params!')
@@ -180,6 +182,8 @@ class Piece(Params, Check):
 
 
 class Loader(Piece):
+
+    constructor_ = LoaderConstructor
 
     def __init__(self, obj, behav='single', params=0, scope='data file',
                  cache_loc=None,
@@ -343,6 +347,8 @@ class Loader(Piece):
 
 class Imputer(Piece):
 
+    constructor_ = ImputerConstructor
+
     def __init__(self, obj, params=0, scope='all',
                  cache_loc=None, base_model=None, base_model_type='default',
                  **extra_params):
@@ -471,6 +477,8 @@ class Imputer(Piece):
 
 class Scaler(Piece):
 
+    constructor_ = ScalerConstructor
+
     def __init__(self, obj, params=0, scope='float',
                  cache_loc=None, **extra_params):
         '''The Scaler piece refers to
@@ -544,6 +552,8 @@ class Scaler(Piece):
 
 
 class Transformer(Piece):
+
+    constructor_ = TransformerConstructor
 
     def __init__(self, obj, params=0, scope='float', cache_loc=None,
                  **extra_params):
@@ -626,6 +636,8 @@ class Transformer(Piece):
 
 class FeatSelector(Piece):
 
+    constructor_ = FeatSelectorConstructor
+
     def __init__(self, obj, params=0, scope='all',
                  cache_loc=None, base_model=None, **extra_params):
         ''' FeatSelector is a base piece of
@@ -703,7 +715,7 @@ class FeatSelector(Piece):
 
 class Model(Piece):
 
-    _is_model = True
+    constructor_ = ModelConstructor
 
     def __init__(self, obj, params=0, scope='all', cache_loc=None,
                  param_search=None, target_scaler=None, **extra_params):
@@ -827,9 +839,9 @@ class Model(Piece):
         '''
 
 
-class Ensemble(Piece):
+class Ensemble(Model):
 
-    _is_model = True
+    constructor_ = ModelConstructor
 
     def __init__(self, obj, models,
                  params=0, scope='all',
@@ -1034,12 +1046,12 @@ class Ensemble(Piece):
 
         if isinstance(self.models, list):
             for model in self.models:
-                if not hasattr(model, '_is_model'):
+                if not isinstance(model, Model):
                     raise IOError(
                         'All models must be valid Model/Ensemble !')
 
         else:
-            if not hasattr(self.models, '_is_model'):
+            if not isinstance(self.models, Model):
                 raise IOError(
                     'Passed model in models must be a valid Model/Ensemble.')
 
@@ -1349,272 +1361,98 @@ class ParamSearch(Params):
                 'weight_scorer within Param Search cannot be list-like')
 
 
-class ModelPipeline(Params):
+class Pipeline(Params):
 
-    def __init__(self,
-                 loaders=None, imputers='default',
-                 scalers=None, transformers=None,
-                 feat_selectors=None,
-                 model='default',
-                 param_search=None,
-                 cache_fit_dr=None,
-                 verbose=0):
-        ''' ModelPipeline is defined as essentially a wrapper around
-        all of the explicit modelling pipeline parameters. This object is
-        used as input to
-        :func:`Evaluate <BPt.BPt_ML.Evaluate>`
-        and :func:`Test <BPt.BPt_ML.Test>`
-
-        The ordering of the parameters listed below defines the pre-set
-        order in which these Pipeline pieces are composed
-        (params up to model, param_search is not an ordered pipeline piece).
-        For more flexibility, one can always use custom defined objects,
-        or even pass custom defined
-        pipelines directly to model
-        (i.e., in the case where you have a specific pipeline you want to use
-        already defined, but say just want to use the loaders from BPt).
-
-        Parameters
-        ----------
-        loaders : :class:`Loader`, list of or None, optional
-            Each :class:`Loader` refers to transformations
-            which operate on loaded Data_Files
-            (See :func:`Load_Data_Files <BPt.BPt_ML.Load_Data_Files>`).
-            See :class:`Loader`
-            explcitly for more information on how to create a valid object,
-            with relevant params and scope.
-
-            In the case that a list of Loaders is passed to loaders,
-            if a native python list, then passed loaders will
-            be applied sequentially (likely each
-            passed loader given a seperate scope, as the output from
-            one loader cannot be input
-            to another- note to create actual sequential loader steps,
-            look into using the
-            :class:`Pipe` wrapper
-            argument when creating a single :class:`Loader` obj).
-
-            Passed loaders can also be wrapped in a
-            :class:`Select` wrapper, e.g., as either
-
-            .. code-block::
-
-                # Just passing select
-                loaders = Select([Loader(...), Loader(...)])
-
-                # Or nested
-                loaders = [Loader(...), Select([Loader(...), Loader(...)])]
-
-            In this way, most of the pipeline objects can accept lists,
-            or nested lists with
-            param wrapped, not just loaders!
-
-            .. code-block::
-
-                default = None
-
-        imputers : :class:`Imputer`, list of or None, optional
-            If there is any missing data (NaN's) that have been kept
-            within data or covars, then an imputation strategy must be
-            defined! This param controls what kind of
-            imputation strategy to use.
-
-            Each :class:`Imputer` contains information
-            around which imputation
-            strategy to use, what scope it is applied
-            to (in this case only 'float' vs. 'cat'),
-            and other relevant base parameters
-            (i.e., a base model if an iterative imputer is selected).
-
-            In the case that a list of :class:`Imputer` are passed,
-            they will be applied sequentially,
-            though note that unless custom scopes
-            are employed, at most passing only an imputer for float data and
-            an imputer for categorical data makes sense.
-            You may also use input wrapper, like :class:`Select`.
-
-            In the case that no NaN data is passed, but imputers is not None,
-            it will simply be set to None.
-
-            ::
-
-                default = [Imputer('mean', scope='float'),
-                           Imputer('median', scope='cat')]
-
-        scalers : :class:`Scaler`, list of or None, optional
-            Each :class:`Scaler` refers to any potential data scaling where a
-            transformation on the data
-            (without access to the target variable) is
-            computed, and the number of features or
-            data points does not change.
-            Each :class:`Scaler` object contains information
-            about the base object, what
-            scope it should be applied to, and saved param
-            distributions if relevant.
-
-            As with other pipeline params, scalers can
-            accept a list of :class:`Scaler` objects,
-            in order to apply sequential transformations
-            (or again in the case where each object has a seperate scope,
-            these are essentially two different streams of transformations,
-            vs. when two Scalers with the same scope are passed,
-            the output from one
-            is passed as input to the next). Likewise,
-            you may also use valid input wrappers,
-            e.g., :class:`Select`.
-
-            By default no scaler is used, though it is reccomended.
-
-            ::
-
-                default = None
-
-        transformers : :class:`Transformer`, list of or None, optional
-            Each :class:`Transformer` defines a type of transformation to
-            the data that changes the number of
-            features in perhaps non-deterministic
-            or not simply removal
-            (i.e., different from feat_selectors), for example
-            applying a PCA, where both the number of features change, but
-            also the new features do not 1:1 correspond to the original
-            features. See :class:`Transformer` for more information.
-
-            Transformers can be composed sequentially with list or special
-            input type wrappers, the same as other objects.
-
-            ::
-
-                default = None
-
-        feat_selectors : :class:`FeatSelector`, list of or None, optional
-            Each :class:`FeatSelector` refers to an optional
-            feature selection stage
-            of the Pipeline. See :class:`FeatSelector` for specific options.
-
-            Input can be composed in a list, to apply
-            feature selection sequentially,
-            or with special Input Type wrapper, e.g., :class:`Select`.
-
-            ::
-
-                default = None
-
-        model : :class:`Model`, :class:`Ensemble`, optional
-            model accepts one input of type
-            :class:`Model` or :class:`Ensemble`. Though,
-            while it cannot accept a list (i.e., no sequential behavior), you
-            may still pass Input Type wrapper like :class:`Select` to perform
-            model selection via param search.
-
-            See :class:`Model` for more information on how to specify a single
-            model to BPt, and :class:`Ensemble` for information on how
-            to build an ensemble of models.
-
-            Note: You must have provide a model, there is
-            no option for None. Instead
-            default behavior is to use a ridge regression.
-
-            ::
-
-                default = Model('ridge')
-
-        param_search : :class:`ParamSearch` or None, optional
-            :class:`ParamSearch` can be provided in order
-            to specify a corresponding
-            hyperparameter search for the provided pipeline pieces.
-            When defining each
-            piece, you may set hyperparameter distributions for that piece.
-            If param search
-            is None, these distribution will be essentially ignored,
-            but if :class:`ParamSearch`
-            is passed here, then they will be used along with the
-            strategy defined in the passed
-            :class:`ParamSearch` to conduct a nested hyper-param search.
-
-            Note: If using input wrapper types like :class:`Select`,
-            then a param search must be passed!
-
-            ::
-
-                default = None
-
-        cache_fit_dr : Path str or None, optional
-            Optional parameter specifying a directory
-            in which full BPt pipeline's should
-            be cached after fitting. This may be useful
-            in some contexts. If desired,
-            passed the location of the directory in
-            which to store this cache.
-
-            ::
-
-                default = None
-
-        verbose : int, optional
-            If greater than 0, use pipelin verbosity.
-
-            ::
-
-                default = 0
+    def __init__(self, steps, param_search=None, cache_fit_dr=None, verbose=0):
         '''
 
-        if isinstance(loaders, str):
-            loaders = Loader(loaders)
-        self.loaders = loaders
+        Parameters
+        -----------
+        steps : list of :ref:`Pipeline Objects`
+            Input here is a list of :ref:`Pipeline Objects`
+            that can be in any order as long as there is only
+            one :class:`Model` or :class:`Ensemble`
+            and it is at the end of the list. This excludes
+            any nested model-type classes!
+        '''
 
-        if imputers == 'default':
-            imputers = Imputer('default')
-        elif isinstance(imputers, str):
-            imputers = Imputer(imputers)
-        self.imputers = imputers
-
-        if isinstance(scalers, str):
-            scalers = Scaler(scalers)
-        self.scalers = scalers
-
-        if isinstance(transformers, str):
-            transformers = Transformer(transformers)
-        self.transformers = transformers
-
-        if isinstance(feat_selectors, str):
-            feat_selectors = FeatSelector(feat_selectors)
-        self.feat_selectors = feat_selectors
-
-        if model == 'default':
-            model = Model('ridge')
-            print('Passed default model, setting to:', print(model))
-        elif isinstance(model, str):
-            model = Model(model)
-        self.model = model
-
+        self.steps = steps
         self.param_search = param_search
         self.cache_fit_dr = cache_fit_dr
         self.verbose = verbose
 
-        # Perform all preproc on input which can be run
-        # more then once, these are essentially checks on the input
         self._proc_checks()
 
-    def _proc_all_pieces(self, func):
-        '''Helper to proc all pieces with a function
-        that accepts a list of pieces'''
+    def _proc_checks(self):
 
-        for param_name in ORDERED_NAMES:
-            params = getattr(self, param_name)
+        # Check last step
+        self._check_last_step()
 
-            if params is None:
-                new_params = params
+        # Validate rest of input
+        self._validate_input()
 
-            elif isinstance(params, list):
-                new_params = func(params)
+        # Proc duplicates, then flatten
+        self.steps = self._proc_duplicates(self.steps)
+        self._flatten_steps()
 
-            # If not list-
+        # Proc input
+        self.steps = self._proc_input(self.steps)
+
+    def _check_last_step(self):
+
+        if not isinstance(self.steps, list):
+            raise TypeError('steps must be a list!')
+
+        if len(self.steps) == 0:
+            raise IndexError('steps cannot be empty!')
+
+        # If last step is str, conv to Model
+        if isinstance(self.steps[-1], str):
+            self.steps[-1] = Model(self.steps[-1])
+
+        # If last step isnt model, raise error
+        if not isinstance(self.steps[-1], Model):
+            raise RuntimeError('The last step must be a Model.')
+
+    def _validate_input(self):
+        '''Make sure all steps are Pieces, and param
+        search is valid if not None'''
+
+        # Validate steps
+        for step in self.steps:
+
+            if not isinstance(step, Piece):
+                raise RuntimeError('passed step:' + repr(step) +
+                                   ' is not a valid Pipeline Piece.')
+
+            # Check input args in case anything changed
+            step.check_args()
+
+        # Validate param search
+        if self.param_search is not None:
+            if not isinstance(self.param_search, ParamSearch):
+                raise RuntimeError(repr(self.param_search) + 'is not a'
+                                   ' ParamSearch.')
+
+            # Check input args in case anything changed
+            self.param_search.check_args()
+
+    def _flatten_steps(self):
+
+        # If just one element cast to list and end
+        if not isinstance(self.steps, list):
+            self.steps = [self.steps]
+            return
+
+        steps = []
+        for step in self.steps:
+            if isinstance(step, list):
+                for sub_step in step:
+                    steps.append(sub_step)
             else:
-                new_params = func([params])
-                if isinstance(new_params, list) and len(new_params) == 1:
-                    new_params = new_params[0]
+                steps.append(step)
 
-            setattr(self, param_name, new_params)
+        self.steps = steps
 
     def _proc_duplicates(self, params):
 
@@ -1634,7 +1472,7 @@ class ModelPipeline(Params):
             scopes = getattr(params, 'scope')
             new_params = []
 
-            if is_duplicate(scopes):
+            if isinstance(scopes, Duplicate):
                 for scope in scopes:
                     new = deepcopy(params)
                     new.scope = scope
@@ -1653,6 +1491,269 @@ class ModelPipeline(Params):
                 proc_all(p)
 
         return params
+
+    def get_steps(self):
+        return self.steps
+
+
+class ModelPipeline(Pipeline):
+
+    ORDERED_NAMES = ['loaders', 'imputers', 'scalers',
+                     'transformers', 'feat_selectors', 'model']
+
+    def __init__(self,
+                 loaders=None, imputers='default',
+                 scalers='default', transformers=None,
+                 feat_selectors=None,
+                 model='default',
+                 param_search=None,
+                 cache_fit_dr=None,
+                 verbose=0):
+        ''' ModelPipeline is used to create BPtPipeline's. ModelPipeline
+        is special in that it enforces a simplification on the ordering of
+        pieces, representing the typical order in which they might appear.
+        Specifically, the order enforced is:
+
+        1. loaders,
+        2. imputers
+        3. scalers
+        4. transformers
+        5. feat_selectors
+        6. model
+
+        For each parameter, which the exception of model,
+        you may pass either one instance of that piece
+        or a list of that piece. In the case that
+        a list is passed, then it will be treated as
+        a sequential set of steps / transformation
+        where the output from each element of the
+        list if passed on to the next as input.
+
+        Parameters
+        ----------
+        loaders : :class:`Loader`, list of or None, optional
+            Each :class:`Loader` refers to transformations
+            which operate on loaded Data_Files
+            See :class:`Loader`.
+
+            You may wish to consider using the
+            :class:`Pipe` input class
+            when creating a single :class:`Loader` obj
+
+            Passed loaders can also be wrapped in a
+            :class:`Select` wrapper, e.g., as either
+
+            .. code-block::
+
+                # Just passing select
+                loaders = Select([Loader(...), Loader(...)])
+
+                # Or nested
+                loaders = [Loader(...), Select([Loader(...), Loader(...)])]
+
+            In this way, most of the pipeline objects can accept lists,
+            or nested lists with param wrapped, not just loaders!
+
+            .. code-block::
+
+                default = None
+
+        imputers : :class:`Imputer`, list of or None, optional
+            If there is any missing data (NaN's) that have been kept
+            within data or covars, then an imputation strategy must be
+            defined! This param controls what kind of
+            imputation strategy to use.
+
+            See :class:`Imputer`.
+
+            You may also pass a value of 'default' here, which in
+            the case that any NaN data is present within the training
+            set, the set of two imputers:
+
+            ::
+
+                default = [Imputer('mean', scope='float'),
+                           Imputer('median', scope='category')]
+
+            Will be used. Otherwise, if there is no NaN present
+            in the input data, no Imputer will be used.
+
+            ::
+
+                default = 'default'
+
+        scalers : :class:`Scaler`, list of or None, optional
+            Each :class:`Scaler` refers to any potential data scaling where a
+            transformation on the data
+            (without access to the target variable) is
+            computed, and the number of features or
+            data points does not change.
+
+            See :class:`Scaler`.
+
+            By keeping the default behavior, with parameter, 'default',
+            standard scaling is applied,
+            which sets each feature to have a std of 1 and mean 0.
+
+            ::
+
+                default = 'default'
+
+        transformers : :class:`Transformer`, list of or None, optional
+            Each :class:`Transformer` defines a type of transformation to
+            the data that changes the number of
+            features in perhaps non-deterministic
+            or not simply removal
+            (i.e., different from feat_selectors), for example
+            applying a PCA, where both the number of features change, but
+            also the new features do not 1:1 correspond to the original
+            features. See :class:`Transformer` for more information.
+
+            ::
+
+                default = None
+
+        feat_selectors : :class:`FeatSelector`, list of or None, optional
+            Each :class:`FeatSelector` refers to an optional
+            feature selection stage of the Pipeline.
+
+            See :class:`FeatSelector`.
+
+            ::
+
+                default = None
+
+        model : :class:`Model`, :class:`Ensemble`, optional
+            This parameter accepts one input of type
+            :class:`Model` or :class:`Ensemble`. Though,
+            while it cannot accept a list (i.e., no sequential behavior), you
+            may still pass Input Type wrapper like :class:`Select` to perform
+            model selection via param search.
+
+            See :class:`Model` for more information on how to specify a single
+            model to BPt, and :class:`Ensemble` for information on how
+            to build an ensemble of models.
+
+            This parameter cannot be None. In the default
+            case of passing 'default', a ridge regression
+            is used.
+
+            ::
+
+                default =  'default'
+
+        param_search : :class:`ParamSearch` or None, optional
+            A :class:`ParamSearch` can be provided specifying that
+            a nested hyper-parameter search be constructed across
+            all valid param distributions set across all pieces.
+
+            To use a parameter search requires atleast one piece
+            to have a distribution of parameters.
+            You can set specific piece to a distribution of
+            parameters with the parameter `params`.
+
+            If param search is None, any defined distributions
+            will be ignored, though any static parameters specified via
+            `params` will still be used. If :class:`ParamSearch`
+            then they will instead be used along with the
+            strategy defined in the passed
+            :class:`ParamSearch` to conduct a nested hyper-param search.
+
+            Note: The input wrapper type :class:`Select`,
+            is fundamentally a hyper-parameter distribution
+            and therefore requires a search to be passed here.
+
+            ::
+
+                default = None
+
+        cache_fit_dr : Path str or None, optional
+            Optional parameter specifying a directory
+            in which full BPt pipeline's should
+            be cached after fitting. This may be useful
+            in some contexts. If desired,
+            pass the location of the directory in
+            which to store this cache.
+
+            ::
+
+                default = None
+
+        verbose : int, optional
+            If greater than 0, print statements about
+            the current progress of the pipeline during fitting.
+
+            ::
+
+                default = 0
+        '''
+
+        if isinstance(loaders, str):
+            loaders = Loader(loaders)
+        self.loaders = loaders
+
+        if imputers == 'default':
+            imputers = Imputer('default')
+        elif isinstance(imputers, str):
+            imputers = Imputer(imputers)
+        self.imputers = imputers
+
+        if isinstance(scalers, str):
+            if scalers == 'default':
+                scalers = Scaler('standard')
+                if verbose > 0:
+                    print('Passed default scalers, setting to:',
+                          scalers)
+            else:
+                scalers = Scaler(scalers)
+
+        self.scalers = scalers
+
+        if isinstance(transformers, str):
+            transformers = Transformer(transformers)
+        self.transformers = transformers
+
+        if isinstance(feat_selectors, str):
+            feat_selectors = FeatSelector(feat_selectors)
+        self.feat_selectors = feat_selectors
+
+        if model == 'default':
+            model = Model('ridge')
+            if verbose > 0:
+                print('Passed default model, setting to:', model)
+
+        elif isinstance(model, str):
+            model = Model(model)
+        self.model = model
+
+        self.param_search = param_search
+        self.cache_fit_dr = cache_fit_dr
+        self.verbose = verbose
+
+        # Perform all preproc on input which can be run
+        # more then once, these are essentially checks on the input
+        self._proc_checks()
+
+    def _proc_all_pieces(self, func):
+        '''Helper to proc all pieces with a function
+        that accepts a list of pieces'''
+
+        for param_name in self.ORDERED_NAMES:
+            params = getattr(self, param_name)
+
+            if params is None:
+                new_params = params
+
+            elif isinstance(params, list):
+                new_params = func(params)
+
+            # If not list-
+            else:
+                new_params = func([params])
+                if isinstance(new_params, list) and len(new_params) == 1:
+                    new_params = new_params[0]
+
+            setattr(self, param_name, new_params)
 
     def _check_args(self, params):
 
@@ -1673,7 +1774,11 @@ class ModelPipeline(Params):
         elif isinstance(self.imputers, Imputer):
             if self.imputers.obj == 'default':
                 self.imputers = [Imputer('mean', scope='float'),
-                                 Imputer('median', scope='cat')]
+                                 Imputer('median', scope='category')]
+
+                if self.verbose > 0:
+                    print('Default passed, setting imputers to:',
+                          self.imputers)
 
         return
 
@@ -1738,11 +1843,24 @@ class ModelPipeline(Params):
         if self.param_search is not None:
             self.param_search.check_args()
 
-    def get_ordered_pipeline_params(self):
+    def get_steps(self):
 
-        # Conv all to list & return in order as a deep copy
-        return deepcopy([conv_to_list(getattr(self, piece_name))
-                         for piece_name in ORDERED_NAMES])
+        # Return as a flat list in order
+        params = []
+        for piece_name in self.ORDERED_NAMES:
+
+            piece = getattr(self, piece_name)
+            if piece is None:
+                continue
+
+            params += conv_to_list(piece)
+
+        return params
+
+    def get_params_by_step(self):
+
+        return [conv_to_list(getattr(self, piece_name))
+                for piece_name in self.ORDERED_NAMES]
 
     def get_indent(self, indent):
 
@@ -1797,8 +1915,8 @@ class ModelPipeline(Params):
         _print('ModelPipeline')
         _print('--------------')
 
-        pipeline_params = self.get_ordered_pipeline_params()
-        for name, params in zip(ORDERED_NAMES, pipeline_params):
+        pipeline_params = self.get_params_by_step()
+        for name, params in zip(self.ORDERED_NAMES, pipeline_params):
 
             if params is not None:
                 _print(name + '=\\')

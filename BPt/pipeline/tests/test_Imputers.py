@@ -1,5 +1,5 @@
 from ...main.input import Imputer, Model
-from ..Constructors import Imputers
+from ..constructors import ImputerConstructor
 from ...dataset.Dataset import Dataset
 import numpy as np
 from sklearn.linear_model import LogisticRegression, LinearRegression
@@ -23,7 +23,7 @@ def test_iterative_imputer():
 
     assert dataset.get_cols('category') == ['cat', 'cat missing']
 
-    piece = Imputers(dataset=dataset, spec=spec, user_passed_objs={})
+    piece = ImputerConstructor(dataset=dataset, spec=spec, user_passed_objs={})
 
     input_piece = Imputer('iterative', scope='category',
                           base_model=Model('linear'),
@@ -63,7 +63,7 @@ def test_iterative_imputer_default_float():
 
     assert dataset.get_cols('category') == ['cat', 'cat missing']
 
-    piece = Imputers(dataset=dataset, spec=spec, user_passed_objs={})
+    piece = ImputerConstructor(dataset=dataset, spec=spec, user_passed_objs={})
 
     input_piece = Imputer('iterative', scope='all',
                           base_model=Model('linear'),

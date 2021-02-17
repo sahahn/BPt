@@ -20,10 +20,11 @@ def model_pipeline_check(model_pipeline, **extra_params):
             pipe = Model(obj=pipe)
 
         # In case of passed valid single model, wrap in ModelPipeline
-        if hasattr(pipe, '_is_model'):
-            pipe = ModelPipeline(model=pipe)
+        # with non-default scalers of None
+        if isinstance(pipe, Model):
+            pipe = ModelPipeline(model=pipe, scalers=None)
         else:
-            raise RuntimeError('model_pipeline must be a ModelPipeline',
+            raise RuntimeError('model_pipeline must be a Pipeline',
                                ' model str or Model-like')
 
     # Set any overlapping extra params

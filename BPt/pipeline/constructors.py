@@ -1,11 +1,9 @@
 from BPt.pipeline.BPtFeatureSelector import BPtFeatureSelector
 from ..main.input_operations import is_pipe, is_select
 
-from ..helpers.ML_Helpers import (check_for_duplicate_names,
-                                  proc_type_dep_str, param_len_check,
+from ..helpers.ML_Helpers import (proc_type_dep_str, param_len_check,
                                   conv_to_list,
-                                  process_params_by_type, replace_model_name,
-                                  replace_with_in_params, set_n_jobs)
+                                  process_params_by_type, replace_model_name)
 
 from .ScopeObjs import ScopeTransformer
 from .BPtModel import BPtModel
@@ -17,8 +15,52 @@ from copy import deepcopy
 from .Selector import selector_wrapper
 from sklearn.compose import TransformedTargetRegressor
 from .BPtSearchCV import wrap_param_search
+from .ensemble_wrappers import EnsembleWrapper
 
 import numpy as np
+
+
+def check_for_duplicate_names(objs_and_params):
+    '''Checks for duplicate names within an objs_and_params type obj'''
+
+    names = [c[0] for c in objs_and_params]
+
+    # If any repeats
+    if len(names) != len(set(names)):
+        new_objs_and_params = []
+
+        for obj in objs_and_params:
+            name = obj[0]
+
+            if name in names:
+
+                cnt = 0
+                used = [c[0] for c in new_objs_and_params]
+                while name + str(cnt) in used:
+                    cnt += 1
+
+                # Need to change name within params also
+                base_obj = obj[1][0]
+                base_obj_params = obj[1][1]
+
+                new_obj_params = {}
+                for param_name in base_obj_params:
+
+                    p_split = param_name.split('__')
+                    new_param_name = p_split[0] + str(cnt)
+                    new_param_name += '__' + '__'.join(p_split[1:])
+
+                    new_obj_params[new_param_name] =\
+                        base_obj_params[param_name]
+
+                new_objs_and_params.append((name + str(cnt),
+                                           (base_obj, new_obj_params)))
+
+            else:
+                new_objs_and_params.append(obj)
+
+        return new_objs_and_params
+    return objs_and_params
 
 
 def process_input_types(obj_strs, param_strs, scopes):
@@ -58,7 +100,7 @@ def add_estimator_to_params(passed_params):
     return params
 
 
-class Pieces():
+class Constructor():
 
     def __init__(self, user_passed_objs, dataset, spec):
         # problem_type, random_state, n_jobs are stored in spec
@@ -264,9 +306,9 @@ class Pieces():
                         model_spec['problem_type'] = base_model_type
 
                 # Grab the base estimator
-                base_model_obj = Models(self.user_passed_objs,
-                                        self.dataset,
-                                        model_spec)
+                base_model_obj = ModelConstructor(self.user_passed_objs,
+                                                  self.dataset,
+                                                  model_spec)
                 base_objs, base_params =\
                     base_model_obj.process(params[i].base_model)
 
@@ -363,7 +405,7 @@ class Pieces():
         return col_objs, col_params
 
 
-class TypePieces(Pieces):
+class TypeConstructor(Constructor):
 
     def _base_type_process(self, params, func):
 
@@ -385,7 +427,7 @@ class TypePieces(Pieces):
         return params
 
 
-class Models(TypePieces):
+class ModelConstructor(TypeConstructor):
 
     name = 'models'
 
@@ -437,7 +479,7 @@ class Models(TypePieces):
 
         # Get base ensemble objs. and obj_params
         ensembles =\
-            Ensembles(self.user_passed_objs, self.dataset, self.spec)
+            EnsembleConstructor(self.user_passed_objs, self.dataset, self.spec)
         ensemble_objs, ensemble_obj_params = ensembles.process(ensemble_params)
 
         # For each ensemble, go through and process
@@ -529,9 +571,9 @@ class Models(TypePieces):
             return model_obj, model_params
 
         # Process and get the base scaler_obj + params
-        base_scaler_obj = TargetScalers(self.user_passed_objs,
-                                         self.dataset,
-                                         self.spec)
+        base_scaler_obj = TargetScalerConstructor(self.user_passed_objs,
+                                                  self.dataset,
+                                                  self.spec)
         scaler_objs, scaler_params =\
             base_scaler_obj.process(target_scaler)
         scaler_obj = scaler_objs[0]
@@ -606,7 +648,7 @@ class Models(TypePieces):
         return scope_model, model_params
 
 
-class Loaders(Pieces):
+class LoaderConstructor(Constructor):
 
     name = 'loaders'
 
@@ -714,7 +756,7 @@ class Loaders(Pieces):
         return loaders, loader_params
 
 
-class Imputers(Pieces):
+class ImputerConstructor(Constructor):
 
     name = 'imputers'
 
@@ -736,7 +778,7 @@ class Imputers(Pieces):
                                       Wrapper=ScopeTransformer)
 
 
-class TargetScalers(Pieces):
+class TargetScalerConstructor(Constructor):
 
     name = 'target scalers'
 
@@ -752,7 +794,7 @@ class TargetScalers(Pieces):
         return objs, obj_params
 
 
-class Scalers(Pieces):
+class ScalerConstructor(Constructor):
 
     name = 'scalers'
 
@@ -770,7 +812,7 @@ class Scalers(Pieces):
                                       Wrapper=ScopeTransformer)
 
 
-class Transformers(Pieces):
+class TransformerConstructor(Constructor):
 
     name = 'transformers'
 
@@ -788,7 +830,7 @@ class Transformers(Pieces):
                                       params, Wrapper=BPtTransformer)
 
 
-class FeatSelectors(TypePieces):
+class FeatSelectorConstructor(TypeConstructor):
 
     name = 'feat_selectors'
 
@@ -811,7 +853,7 @@ class FeatSelectors(TypePieces):
                                       Wrapper=BPtFeatureSelector)
 
 
-class Ensembles(TypePieces):
+class EnsembleConstructor(TypeConstructor):
 
     name = 'ensembles'
 
@@ -847,223 +889,3 @@ class Ensembles(TypePieces):
 
         return VotingClassifier(models, voting='soft',
                                 n_jobs=self.spec['n_jobs'])
-
-
-class EnsembleWrapper():
-
-    def __init__(self, model_params, ensemble_params,
-                 _get_ensembler, n_jobs, random_state):
-
-        self.model_params = model_params
-        self.ensemble_params = ensemble_params
-        self._get_ensembler = _get_ensembler
-        self.n_jobs = n_jobs
-        self.random_state = random_state
-
-    def _update_model_ensemble_params(self, to_add, model=True, ensemble=True):
-
-        if model:
-            new_model_params = {}
-            for key in self.model_params:
-                new_model_params[to_add + '__' + key] =\
-                    self.model_params[key]
-            self.model_params = new_model_params
-
-        if ensemble:
-
-            new_ensemble_params = {}
-            for key in self.ensemble_params:
-                new_ensemble_params[to_add + '__' + key] =\
-                    self.ensemble_params[key]
-            self.ensemble_params = new_ensemble_params
-
-    def _basic_ensemble(self, models, name, ensemble=False):
-
-        if len(models) == 1:
-            return models
-
-        else:
-            basic_ensemble = self._get_ensembler(models)
-            self._update_model_ensemble_params(name, ensemble=ensemble)
-
-            return [(name, basic_ensemble)]
-
-    def get_updated_params(self):
-
-        self.model_params.update(self.ensemble_params)
-        return self.model_params
-
-    def wrap_ensemble(self, models, ensemble, ensemble_params,
-                      final_estimator=None,
-                      final_estimator_params=None):
-
-        # If no ensembling is passed, return either the 1 model,
-        # or a voting wrapper
-        if ensemble is None or len(ensemble) == 0:
-            return self._basic_ensemble(models=models,
-                                        name='Default Voting',
-                                        ensemble=True)
-
-        # Otherwise special ensembles
-        else:
-
-            # If needs a single estimator, but multiple models passed,
-            # wrap in ensemble!
-            if ensemble_params.single_estimator:
-                se_ensemb_name = 'Single-Estimator Compatible Ensemble'
-                models = self._basic_ensemble(models,
-                                              se_ensemb_name,
-                                              ensemble=False)
-
-            # If no split and single estimator
-            if ensemble_params.single_estimator:
-                return self._wrap_single(models, ensemble,
-                                         ensemble_params.n_jobs_type)
-
-            # Last case is, no split/DES ensemble and also
-            # not single estimator based
-            # e.g., in case of stacking regressor.
-            else:
-                return self._wrap_multiple(models, ensemble,
-                                           final_estimator,
-                                           final_estimator_params,
-                                           ensemble_params.n_jobs_type,
-                                           ensemble_params.cv)
-
-    def _wrap_single(self, models, ensemble_info, n_jobs_type):
-        '''If passed single_estimator flag'''
-
-        # Unpack ensemble info
-        ensemble_name = ensemble_info[0]
-        ensemble_obj = ensemble_info[1][0]
-        ensemble_extra_params = ensemble_info[1][1]
-
-        # Models here since single estimator is assumed
-        # to be just a list with
-        # of one tuple as
-        # [(model or ensemble name, model or ensemble)]
-        base_estimator = models[0][1]
-
-        # Set n jobs based on passed type
-        if n_jobs_type == 'ensemble':
-            model_n_jobs = 1
-            ensemble_n_jobs = self.n_jobs
-        else:
-            model_n_jobs = self.n_jobs
-            ensemble_n_jobs = 1
-
-        # Set model / base_estimator n_jobs
-        set_n_jobs(base_estimator, model_n_jobs)
-
-        # Make sure random_state is set (should be already)
-        if hasattr(base_estimator, 'random_state'):
-            setattr(base_estimator, 'random_state', self.random_state)
-
-        # Create the ensemble object
-        ensemble = ensemble_obj(base_estimator=base_estimator,
-                                **ensemble_extra_params)
-
-        # Set ensemble n_jobs
-        set_n_jobs(ensemble, ensemble_n_jobs)
-
-        # Set random state
-        if hasattr(ensemble, 'random_state'):
-            setattr(ensemble, 'random_state', self.random_state)
-
-        # Wrap as object
-        new_ensemble = [(ensemble_name, ensemble)]
-
-        # Have to change model name to base_estimator
-        self.model_params =\
-            replace_with_in_params(self.model_params, models[0][0],
-                                   'base_estimator')
-
-        # Append ensemble name to all model params
-        self._update_model_ensemble_params(ensemble_name,
-                                           ensemble=False)
-
-        return new_ensemble
-
-    def _wrap_multiple(self, models, ensemble_info,
-                       final_estimator, final_estimator_params,
-                       n_jobs_type, cv):
-        '''In case of no split/DES ensemble, and not single estimator based.'''
-
-        # Unpack ensemble info
-        ensemble_name = ensemble_info[0]
-        ensemble_obj = ensemble_info[1][0]
-        ensemble_extra_params = ensemble_info[1][1]
-
-        # Models here just self.models a list of tuple of
-        # all models.
-        # So, ensemble_extra_params should contain the
-        # final estimator + other params
-
-        # Set model_n_jobs and ensemble n_jobs based on type
-        if n_jobs_type == 'ensemble':
-            model_n_jobs = 1
-            ensemble_n_jobs = self.n_jobs
-        else:
-            model_n_jobs = self.n_jobs
-            ensemble_n_jobs = 1
-
-        # Set the model jobs
-        set_n_jobs(models, model_n_jobs)
-
-        # Make sure random state is propegated
-        for model in models:
-            if hasattr(model[1], 'random_state'):
-                setattr(model[1], 'random_state', self.random_state)
-
-        # Determine the parameters to init the ensemble
-        pass_params = ensemble_extra_params
-        pass_params['estimators'] = models
-
-        # Process final_estimator if passed
-        if final_estimator is not None:
-
-            # Replace name of final estimator w/ final_estimator in params
-            final_estimator_params =\
-                replace_with_in_params(params=final_estimator_params,
-                                       original=final_estimator[0][0],
-                                       replace='final_estimator')
-
-            # Add final estimator params to model_params - once name changed
-            # to avoid potential overlap.
-            self.model_params.update(final_estimator_params)
-
-            # Unpack actual model obj
-            final_estimator_obj = final_estimator[0][1]
-
-            # Set final estimator n_jobs to model n_jobs
-            set_n_jobs(final_estimator_obj, model_n_jobs)
-
-            # Redundant random state check
-            if hasattr(final_estimator_obj, 'random_state'):
-                setattr(final_estimator_obj, 'random_state', self.random_state)
-
-            # Add to pass params
-            pass_params['final_estimator'] = final_estimator_obj
-
-        # Check if cv passed
-        if cv is not None:
-            pass_params['cv'] = cv
-
-        # Init the ensemble object
-        ensemble = ensemble_obj(**pass_params)
-
-        # Set ensemble n_jobs
-        set_n_jobs(ensemble, ensemble_n_jobs)
-
-        # Set random state
-        if hasattr(ensemble, 'random_state'):
-            setattr(ensemble, 'random_state', self.random_state)
-
-        # Wrap as pipeline compatible object
-        new_ensemble = [(ensemble_name, ensemble)]
-
-        # Append ensemble name to all model params
-        self._update_model_ensemble_params(ensemble_name,
-                                           ensemble=False)
-
-        return new_ensemble

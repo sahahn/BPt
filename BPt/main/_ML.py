@@ -1574,7 +1574,7 @@ def model_pipeline_check(model_pipeline, data):
             model_pipeline = Model(obj=model_pipeline)
 
         # In case of passed valid single model, wrap in Model_Pipeline
-        if hasattr(model_pipeline, '_is_model'):
+        if isinstance(model_pipeline, Model):
             model_pipeline = Model_Pipeline(imputers=None,
                                             model=model_pipeline)
         else:

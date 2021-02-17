@@ -214,7 +214,7 @@ class BPtEvaluator():
 
         # Get and save final transformed feat names
         self.feat_names.append(
-            estimator_.transform_feat_names(X_tr, fs=True,
+            estimator_.transform_feat_names(X_tr,
                                             encoders=self.encoders_))
 
         # If store estimators, save in self.estimators
@@ -449,7 +449,7 @@ class BPtEvaluator():
         # Transform the X df, casts to array if just_model.
         if just_model:
             feat_names =\
-                estimator.transform_feat_names(feat_names, fs=True,
+                estimator.transform_feat_names(feat_names,
                                                encoders=self.encoders_)
             X_trans = estimator.transform(X_trans)
             estimator = estimator._final_estimator

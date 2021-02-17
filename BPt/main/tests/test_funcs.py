@@ -2,7 +2,7 @@ from ...pipeline.BPtPipeline import BPtPipeline
 from ...pipeline.BPtSearchCV import NevergradSearchCV
 from ...pipeline.ScopeObjs import ScopeTransformer
 from ...pipeline.BPtModel import BPtModel
-from ..input import (Model, ModelPipeline, CV, Scaler,
+from ..input import (Model, ModelPipeline, Pipeline, CV, Scaler,
                      ProblemSpec, ParamSearch, Imputer)
 from ..funcs import (model_pipeline_check, problem_spec_check, get_estimator,
                      _preproc_model_pipeline, _preproc_param_search)
@@ -36,11 +36,11 @@ def test_model_pipeline_check():
 
     mp_params = Model('ridge')
     mp = model_pipeline_check(mp_params)
-    assert isinstance(mp, ModelPipeline)
+    assert isinstance(mp, Pipeline)
 
     mp_params = ModelPipeline('ridge')
     mp = model_pipeline_check(mp_params)
-    assert isinstance(mp, ModelPipeline)
+    assert isinstance(mp, Pipeline)
 
 
 def test_model_pipeline_check_extra_args():
@@ -337,12 +337,60 @@ def test_get_estimator_extra_params():
     assert isinstance(model, RandomForestClassifier)
 
 
+def test_get_estimator_extra_params_pipeline():
+
+    ps = get_test_ps()
+    data = get_fake_dataset()
+    pipe = Pipeline([Model('ridge')])
+
+    # Using Pipeline so should ignore Model
+    est = get_estimator(model_pipeline=pipe, dataset=data,
+                        problem_spec=ps, model=Model('random forest'),
+                        problem_type='regression')
+
+    assert isinstance(est, BPtPipeline)
+
+    scope_model = est.steps[0][1]
+    assert isinstance(scope_model, BPtModel)
+
+    model = scope_model.estimator
+    assert isinstance(model, Ridge)
+
+
 def test_get_estimator_n_jobs_ng():
 
     ps = get_checked_ps()
     data = get_fake_dataset()
     pipe = ModelPipeline(model=Model('random forest', params=1), scalers=None,
                          param_search=ParamSearch('RandomSearch'))
+    search_est = get_estimator(model_pipeline=pipe, dataset=data,
+                               problem_spec=ps)
+
+    assert isinstance(search_est, NevergradSearchCV)
+    est = search_est.estimator
+    assert isinstance(est, BPtPipeline)
+
+    scope_model = est.steps[0][1]
+    assert isinstance(scope_model, BPtModel)
+
+    model = scope_model.estimator
+    assert isinstance(model, RandomForestRegressor)
+
+    # Should be n_jobs 1 in model
+    assert model.n_jobs == 1
+
+    # and n_jobs 2 in nevergrad search cv
+    assert search_est.n_jobs == 2
+
+
+def test_get_estimator_n_jobs_ng_pipeline():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    pipe = Pipeline(steps=[Model('random forest', params=1)],
+                    param_search=ParamSearch('RandomSearch'))
+
     search_est = get_estimator(model_pipeline=pipe, dataset=data,
                                problem_spec=ps)
 

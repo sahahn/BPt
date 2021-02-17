@@ -1,16 +1,16 @@
 from .dataset.Dataset import Dataset
 from .main.input import (Loader, Imputer, Scaler,
-                                  Transformer,
-                                  FeatSelector, Model, Ensemble,
-                                  Param_Search, ParamSearch, ModelPipeline,
-                                  Model_Pipeline,
-                                  Problem_Spec, ProblemSpec,
-                                  CV, CVStrategy, Feat_Selector)
+                         Transformer,
+                         FeatSelector, Model, Ensemble,
+                         Param_Search, ParamSearch, ModelPipeline,
+                         Model_Pipeline, Pipeline,
+                         Problem_Spec, ProblemSpec,
+                         CV, CVStrategy, Feat_Selector)
 from .main.funcs import (get_estimator, cross_validate,
                          cross_val_score, evaluate)
 
 from .main.input_operations import (Select, Duplicate, Pipe, Value_Subset,
-                               Intersection)
+                                    Intersection)
 
 from .default.params import Params as p
 
@@ -24,4 +24,4 @@ __all__ = ["Dataset", "Loader",
            "Duplicate", "Pipe", "Value_Subset",
            "CV", "CVStrategy", "Intersection",
            "cross_validate", "cross_val_score", "evaluate",
-           'p', "Feat_Selector", 'ModelPipeline']
+           'p', "Feat_Selector", 'ModelPipeline', 'Pipeline']

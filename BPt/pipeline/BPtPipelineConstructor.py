@@ -61,7 +61,7 @@ class BPtPipelineConstructor():
         self.param_search = pipeline_params.param_search
 
         # Extract params for BPtPipeline
-        self.cache_fit_dr = pipeline_params.cache_fit_dr
+        self.cache_loc = pipeline_params.cache_loc
         self.verbose = pipeline_params.verbose
 
         # Save some params to pass around when building the steps
@@ -130,7 +130,7 @@ class BPtPipelineConstructor():
         '''Make the model pipeline object'''
 
         model_pipeline = BPtPipeline(self.objs, verbose=self.verbose,
-                                     cache_fit_dr=self.cache_fit_dr)
+                                     cache_loc=self.cache_loc)
 
         return model_pipeline
 
@@ -161,7 +161,7 @@ class BPtPipelineConstructor():
 
 def get_pipe(pipeline_params, problem_spec, dataset):
 
-    # Init the ModelPipeline, which creates the pipeline pieces
+    # Init the Pipeline, which creates the pipeline pieces
     pipeline_constructor =\
         BPtPipelineConstructor(pipeline_params=pipeline_params,
                                problem_spec=problem_spec,

@@ -96,7 +96,7 @@ class Check():
         if obj is None:
             raise IOError('passed obj cannot be None, to ignore',
                           'the object itself',
-                          'set it within ModelPipeline to None,',
+                          'set it within Pipeline to None,',
                           ' not obj here.')
 
         if isinstance(obj, list) and not is_pipe(obj):
@@ -178,7 +178,65 @@ class Check():
 
 
 class Piece(Params, Check):
-    pass
+
+    # @TODO make this function work with custom objects
+    def build(self, dataset, problem_spec='default', **problem_spec_params):
+        '''This method is used to convert a single pipeline piece into
+        the base sklearn-style object used in the pipeline.
+
+        Warning: For now this method will not work when the base
+        obj is a custom object.
+
+        Parameters
+        ----------
+        dataset : :class:`Dataset`
+            The Dataset in which the pipeline should be initialized
+            according to. For example, pipeline's can include Scopes,
+            these need a reference Dataset.
+
+        problem_spec : :class:`ProblemSpec` or 'default', optional
+            `problem_spec` accepts an instance of the
+            params class :class:`ProblemSpec`.
+            This object is essentially a wrapper around commonly used
+            parameters needs to define the context
+            the model pipeline should be evaluated in.
+            It includes parameters like problem_type, scorer, n_jobs,
+            random_state, etc...
+            See :class:`ProblemSpec` for more information
+            and for how to create an instance of this object.
+
+            If left as 'default', then will initialize a
+            ProblemSpec with default params.
+
+            ::
+
+                default = 'default'
+
+        problem_spec_params : :class:`ProblemSpec` params, optional
+            You may also pass any valid parameter value pairs here.
+            These are passed in kwargs style, e.g.
+
+            ::
+
+                build(problem_type='binary')
+
+        '''
+
+        from ..main.funcs import problem_spec_check
+
+        # Get proc'ed problem spec
+        ps = problem_spec_check(problem_spec, dataset=self,
+                                **problem_spec_params)
+
+        # Make sure dataset up to date
+        dataset._check_sr()
+
+        # Get constructor
+        constructor =\
+            self.constructor_(spec=ps, dataset=dataset, user_passed_objs={})
+
+        # Return the objs and params
+        return constructor.process(self)
 
 
 class Loader(Piece):
@@ -432,7 +490,7 @@ class Imputer(Piece):
         base_model : :class:`Model`, :class:`Ensemble` or None, optional
             If 'iterative' is passed to obj, then a base_model is required in
             order to perform iterative imputation! The base model can be
-            any valid ModelPipeline Model.
+            any valid :class:`Model` or :class:`Ensemble`
 
             ::
 
@@ -482,7 +540,7 @@ class Scaler(Piece):
     def __init__(self, obj, params=0, scope='float',
                  cache_loc=None, **extra_params):
         '''The Scaler piece refers to
-        a piece in the :class:`ModelPipeline`,
+        a piece in the :class:`ModelPipeline` or :class:`Pipeline`,
         which is responsible for performing any sort of scaling or
         transformation on the data
         which doesn't require the target variable, and doesn't
@@ -558,7 +616,7 @@ class Transformer(Piece):
     def __init__(self, obj, params=0, scope='float', cache_loc=None,
                  **extra_params):
         ''' The Transformer is base optional component of the
-        :class:`ModelPipeline` class.
+        :class:`ModelPipeline` or :class:`Pipeline` class.
         Transformers define any type of transformation to the loaded
         data which may change the number
         of features in a non-simple way (i.e., conceptually distinct
@@ -641,7 +699,7 @@ class FeatSelector(Piece):
     def __init__(self, obj, params=0, scope='all',
                  cache_loc=None, base_model=None, **extra_params):
         ''' FeatSelector is a base piece of
-        :class:`ModelPipeline`, which is designed
+        :class:`ModelPipeline` or :class:`Pipeline`, which is designed
         to preform feature selection.
 
         Parameters
@@ -693,7 +751,7 @@ class FeatSelector(Piece):
             If 'rfe' is passed to obj, then a base_model is required in
             order to perform recursive feature elimination.
             The base model can be any valid argument accepts by
-            param `model` in :class:`ModelPipeline`.
+            param `model` in :class:`ModelPipeline` or :class:`Pipeline`.
 
             ::
 
@@ -719,7 +777,8 @@ class Model(Piece):
 
     def __init__(self, obj, params=0, scope='all', cache_loc=None,
                  param_search=None, target_scaler=None, **extra_params):
-        ''' Model represents a base components of the :class:`ModelPipeline`,
+        ''' Model represents a base components of the :class:`Pipeline` 
+        or :class:`ModelPipeline`,
         specifically a single Model / estimator.
 
         obj : str or custom_obj
@@ -795,7 +854,7 @@ class Model(Piece):
 
             Note: Has not been fully tested in
             complicated nesting cases, e.g., if Model is
-            wrapping a nested ModelPipeline, this param will
+            wrapping a nested Pipeline, this param will
             likely break.
 
             ::
@@ -816,32 +875,12 @@ class Model(Piece):
 
         self.check_args()
 
-    def view(self, problem_type='regression'):
-
-        pass
-
-        # Process some way with the associated piece
-        #from ..pipeline.Constructors import Models
-
-        # Need to think about user passed objs
-
-        '''
-        from ..pipeline.Models import get_base_model_and_params, AVALIABLE
-
-        proc_str = proc_type_dep_str(self.obj, AVALIABLE, problem_type)
-        model, model_params =\
-            get_base_model_and_params(proc_str, self.extra_params,
-                                      self.params, True)
-        model_params = {'__'.join(m.split('__')[1:]): model_params[m]
-                        for m in model_params}
-
-        return model, model_params
-        '''
-
 
 class Ensemble(Model):
 
     constructor_ = ModelConstructor
+
+    # @TODO add cache_loc here? Do the wrapper's support it?
 
     def __init__(self, obj, models,
                  params=0, scope='all',
@@ -853,7 +892,7 @@ class Ensemble(Model):
                  n_jobs_type='ensemble',
                  **extra_params):
         ''' The Ensemble object is valid base
-        :class:`ModelPipeline` piece, designed
+        :class:`ModelPipeline` (or :class:`Pipeline`) piece, designed
         to be passed as input to the `model` parameter
         of :class:`ModelPipeline`, or
         to its own models parameters.
@@ -951,7 +990,7 @@ class Ensemble(Model):
 
             Note: Has not been fully tested in
             complicated nesting cases, e.g., if Model is
-            wrapping a nested ModelPipeline, this param will
+            wrapping a nested Pipeline, this param will
             likely break.
 
             ::
@@ -1065,9 +1104,9 @@ class ParamSearch(Params):
                  dask_ip=None, memmap_X=False,
                  search_only_params=None, verbose=0, progress_loc=None):
         ''' ParamSearch is special input object designed to be
-        used with :class:`ModelPipeline`.
+        used with :class:`ModelPipeline` pr :class:`Pipeline`.
         ParamSearch defines a hyperparameter search strategy.
-        When passed to :class:`ModelPipeline`,
+        When passed to :class:`Pipeline`,
         its search strategy is applied in the context of any set :ref:`Params`
         within the base pieces.
         Specifically, there must be atleast one parameter search
@@ -1363,8 +1402,12 @@ class ParamSearch(Params):
 
 class Pipeline(Params):
 
-    def __init__(self, steps, param_search=None, cache_fit_dr=None, verbose=0):
-        '''
+    def __init__(self, steps, param_search=None, cache_loc=None, verbose=0):
+        '''This class is used to create flexible BPt style pipeline's.
+
+        See :class:`ModelPipeline` for an alternate version of this class
+        which enforces a strict ordering on how pipeline pieces can be set, and
+        also includes a number of useful default behaviors.
 
         Parameters
         -----------
@@ -1374,11 +1417,23 @@ class Pipeline(Params):
             one :class:`Model` or :class:`Ensemble`
             and it is at the end of the list. This excludes
             any nested model-type classes!
+
+            Each step must be a valid Pipeline object, for
+            example:
+
+            ::
+
+                Pipeline(steps=[Imputer('mean'),
+                                Scaler('robust'),
+                                Model('elastic')])
+
+            Would create a pipeline with mean imputation, robust scaling
+            and an elastic net.
         '''
 
         self.steps = steps
         self.param_search = param_search
-        self.cache_fit_dr = cache_fit_dr
+        self.cache_loc = cache_loc
         self.verbose = verbose
 
         self._proc_checks()
@@ -1495,6 +1550,12 @@ class Pipeline(Params):
     def get_steps(self):
         return self.steps
 
+    def check_imputers(self, is_na):
+
+        # If no NaN set to none
+        if not is_na:
+            self.imputers = None
+
 
 class ModelPipeline(Pipeline):
 
@@ -1507,12 +1568,15 @@ class ModelPipeline(Pipeline):
                  feat_selectors=None,
                  model='default',
                  param_search=None,
-                 cache_fit_dr=None,
+                 cache_loc=None,
                  verbose=0):
         ''' ModelPipeline is used to create BPtPipeline's. ModelPipeline
         is special in that it enforces a simplification on the ordering of
         pieces, representing the typical order in which they might appear.
-        Specifically, the order enforced is:
+        See :class:`Pipeline` for a more flexible version of this class
+        which does not enforce any ordering.
+
+        The order enforced, which follows the order of the input arguments, is:
 
         1. loaders,
         2. imputers
@@ -1667,7 +1731,7 @@ class ModelPipeline(Pipeline):
 
                 default = None
 
-        cache_fit_dr : Path str or None, optional
+        cache_loc : Path str or None, optional
             Optional parameter specifying a directory
             in which full BPt pipeline's should
             be cached after fitting. This may be useful
@@ -1727,7 +1791,7 @@ class ModelPipeline(Pipeline):
         self.model = model
 
         self.param_search = param_search
-        self.cache_fit_dr = cache_fit_dr
+        self.cache_loc = cache_loc
         self.verbose = verbose
 
         # Perform all preproc on input which can be run
@@ -1913,7 +1977,7 @@ class ModelPipeline(Pipeline):
         self._p_stack = []
 
         _print('ModelPipeline')
-        _print('--------------')
+        _print('-------------')
 
         pipeline_params = self.get_params_by_step()
         for name, params in zip(self.ORDERED_NAMES, pipeline_params):

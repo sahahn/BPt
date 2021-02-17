@@ -1,4 +1,4 @@
-from .input import Model, ModelPipeline, ProblemSpec, Ensemble, CV
+from .input import Model, Pipeline, ModelPipeline, ProblemSpec, Ensemble, CV
 from copy import deepcopy
 import numpy as np
 from ..pipeline.BPtPipelineConstructor import get_pipe
@@ -12,23 +12,23 @@ def model_pipeline_check(model_pipeline, **extra_params):
     # Make deep copy
     pipe = deepcopy(model_pipeline)
 
-    # Add checks on ModelPipeline
-    if not isinstance(pipe, ModelPipeline):
+    # If passed pipeline is not Pipeline or ModelPipeline
+    # then make input as Pipeline around model
+    if not isinstance(pipe, Pipeline):
 
         # Check for if model str first
         if isinstance(pipe, str):
             pipe = Model(obj=pipe)
 
-        # In case of passed valid single model, wrap in ModelPipeline
-        # with non-default scalers of None
+        # In case of passed valid single model, wrap in Pipeline
         if isinstance(pipe, Model):
-            pipe = ModelPipeline(model=pipe, scalers=None)
+            pipe = Pipeline(steps=[pipe])
         else:
             raise RuntimeError('model_pipeline must be a Pipeline',
                                ' model str or Model-like')
 
     # Set any overlapping extra params
-    possible_params = ModelPipeline._get_param_names()
+    possible_params = pipe._get_param_names()
     valid_params = {key: extra_params[key] for key in extra_params
                     if key in possible_params}
     pipe.set_params(**valid_params)
@@ -105,7 +105,8 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
 
 def get_estimator(model_pipeline, dataset,
                   problem_spec='default', **extra_params):
-    '''Get a sklearn compatible estimator from a :class:`ModelPipeline`,
+    '''Get a sklearn compatible estimator from a
+    :class:`Pipeline` (or :class:`ModelPipeline`),
     :class:`Dataset` and :class:`ProblemSpec`.
 
     This function can be used together with Dataset method
@@ -113,9 +114,23 @@ def get_estimator(model_pipeline, dataset,
 
     Parameters
     -----------
-    model_pipeline : :class:`ModelPipeline`
-        A BPt input class ModelPipeline to be intialized according
-        to the passed Dataset and ProblemSpec.
+    model_pipeline : :class:`Pipeline`
+        A BPt input class Pipeline to be intialized according
+        to the passed Dataset and ProblemSpec. This can
+        accept either :class:`Pipeline` or :class:`ModelPipeline`.
+        In the case that a single str is passed, it will assumed
+        to be a model indicator str and the pipeline used will be:
+
+        ::
+
+            model_pipeline = Pipeline(Model(model_pipeline))
+
+        Likewise, if just a Model passed, then the input will be
+        cast as:
+
+        ::
+
+            model_pipeline = Pipeline(model_pipeline)
 
     dataset : :class:`Dataset`
         The Dataset in which the pipeline should be initialized
@@ -196,7 +211,7 @@ def _get_pipeline(model_pipeline, problem_spec, dataset,
     # nested model pipeline's
     def nested_check(obj):
 
-        if hasattr(obj, 'obj') and isinstance(obj.obj, ModelPipeline):
+        if hasattr(obj, 'obj') and isinstance(obj.obj, Pipeline):
 
             nested_pipe, nested_pipe_params =\
                 _get_pipeline(model_pipeline=obj.obj,
@@ -259,7 +274,7 @@ def _preproc_model_pipeline(pipe, ps, dataset):
     def nested_model_check(obj):
 
         # Check for Model or Ensemble
-        if isinstance(obj, Model) or isinstance(obj, Ensemble):
+        if isinstance(obj, Model):
             _preproc_param_search(obj, nested_ps)
 
         if isinstance(obj, list):
@@ -407,8 +422,8 @@ def cross_val_score(model_pipeline, dataset,
 
     Parameters
     ----------
-    model_pipeline : :class:`ModelPipeline`
-        A BPt input class ModelPipeline to be intialized according
+    model_pipeline : :class:`Pipeline`
+        A BPt input class Pipeline to be intialized according
         to the passed Dataset and ProblemSpec, and then evaluated.
 
     dataset : :class:`Dataset`
@@ -520,8 +535,8 @@ def cross_validate(model_pipeline, dataset,
 
     Parameters
     ----------
-    model_pipeline : :class:`ModelPipeline`
-        A BPt input class ModelPipeline to be intialized according
+    model_pipeline : :class:`Pipeline`
+        A BPt input class Pipeline to be intialized according
         to the passed Dataset and ProblemSpec, and then evaluated.
 
     dataset : :class:`Dataset`

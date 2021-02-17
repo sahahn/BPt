@@ -8,7 +8,7 @@ class Select(list):
     (as well as their relevant distributions).
 
     Select is used to cast lists of base :class:`ModelPipeline`
-    pieces as different options.
+    or :class:`Pipeline` pieces as different options.
     Consider a simple example, for specifying a selection
     between two different :class:`Models<Model>`
 
@@ -16,11 +16,12 @@ class Select(list):
 
         model = Select([Model('linear'), Model('random forest')])
 
-    In this example, the model passed to :class:`ModelPipeline`
+    In this example, the model passed to :class:`Pipeline`
+    or :class:`Model_Pipeline`
     becomes a meta object
     for selecting between the two base models.
     Note: this does require a :class:`ParamSearch`
-    object be passed to :class:`ModelPipeline`.
+    object be passed to :class:`Pipeline`.
     Notably as well, if further param distributions
     are defined within say the `Model('random forest')`,
     those will still be optimized, allowing for
@@ -40,7 +41,7 @@ class Select(list):
 
     Lastly, explcitly note that Select is not restricted for use with Models,
     it can be used on any of
-    the base class:`ModelPipeline` piece params
+    the base class:`Pipeline` piece params
     (i.e., every param but param_search and cache...).
     '''
     input_type = 'select'
@@ -78,7 +79,7 @@ class Duplicate(list):
     but one will have a scope of 'float' and the other 'cat'.
 
     Consider the following exentended example, where loaders is being specified
-    when creating an instance of :class:`ModelPipeline`:
+    when creating an instance of :class:`Pipeline`:
 
     ::
 

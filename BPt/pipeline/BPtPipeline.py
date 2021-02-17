@@ -14,9 +14,9 @@ class BPtPipeline(Pipeline):
 
     def __init__(self, steps, memory=None,
                  verbose=False,
-                 cache_fit_dr=None):
+                 cache_loc=None):
 
-        self.cache_fit_dr = cache_fit_dr
+        self.cache_loc = cache_loc
         super().__init__(steps=steps, memory=memory, verbose=verbose)
 
     @property
@@ -77,7 +77,7 @@ class BPtPipeline(Pipeline):
             # Cast to np array
             y = np.array(y)
 
-        if self.cache_fit_dr is not None:
+        if self.cache_loc is not None:
 
             # Compute the hash for this fit
             # Store as an attribute
@@ -114,7 +114,7 @@ class BPtPipeline(Pipeline):
         super().fit(X, y, **fit_params)
 
         # If cache fit enabled, hash fitted pipe here
-        if self.cache_fit_dr is not None:
+        if self.cache_loc is not None:
             self._hash_fit()
 
         return self
@@ -122,10 +122,10 @@ class BPtPipeline(Pipeline):
     def _get_hash_loc(self):
 
         # Make sure directory exists
-        os.makedirs(self.cache_fit_dr, exist_ok=True)
+        os.makedirs(self.cache_loc, exist_ok=True)
 
         # Set hash loc as directory + hash of fit args
-        hash_loc = os.path.join(self.cache_fit_dr, self.hash_)
+        hash_loc = os.path.join(self.cache_loc, self.hash_)
 
         return hash_loc
 

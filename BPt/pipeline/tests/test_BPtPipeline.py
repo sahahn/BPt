@@ -79,7 +79,7 @@ def test_file_mapping_hash():
     assert h1 == h2
 
 
-def run_pipe_with_loader_ts(cache_fit_dr=None):
+def run_pipe_with_loader_ts(cache_loc=None):
 
     steps = []
 
@@ -115,7 +115,7 @@ def run_pipe_with_loader_ts(cache_fit_dr=None):
 
     # Create pipe
     pipe = BPtPipeline(steps=steps,
-                       cache_fit_dr=cache_fit_dr)
+                       cache_loc=cache_loc)
 
     X = np.arange(100).reshape((50, 2))
     y = np.ones(50)
@@ -161,16 +161,16 @@ def run_pipe_with_loader_ts(cache_fit_dr=None):
 def test_pipeline_with_loader():
 
     # Base pipeline with loader tests
-    run_pipe_with_loader_ts(cache_fit_dr=None)
+    run_pipe_with_loader_ts(cache_loc=None)
 
 
 def test_pipeline_fit_caching():
 
     # Run with cache fit dr
-    cache_fit_dr =\
+    cache_loc =\
         os.path.join(tempfile.gettempdir(), 'test_cache')
 
-    pipe = run_pipe_with_loader_ts(cache_fit_dr=cache_fit_dr)
+    pipe = run_pipe_with_loader_ts(cache_loc=cache_loc)
 
     # Make sure computed hash + saved copy
     assert hasattr(pipe, 'hash_',)
@@ -181,10 +181,10 @@ def test_pipeline_fit_caching():
 
     # Run again a few times to make sure loading from cache works
     for i in range(5):
-        pipe = run_pipe_with_loader_ts(cache_fit_dr=cache_fit_dr)
+        pipe = run_pipe_with_loader_ts(cache_loc=cache_loc)
         assert hasattr(pipe, 'hash_')
         assert pipe.loaded_ is True
         del pipe
 
     # Removed cached once done
-    shutil.rmtree(cache_fit_dr)
+    shutil.rmtree(cache_loc)

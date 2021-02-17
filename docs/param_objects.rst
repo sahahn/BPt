@@ -1,5 +1,9 @@
 .. currentmodule:: BPt
 
+Pipeline
+==============
+.. autoclass:: Pipeline
+
 ModelPipeline
 ==============
 .. autoclass:: ModelPipeline

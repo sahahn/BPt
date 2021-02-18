@@ -174,7 +174,7 @@ class Check():
         if not isinstance(base_model, Model):
             raise IOError('base_model must be either None or a valid '
                           'Model / Ensemble ',
-                          'set of wrapeper params!')
+                          'set of wrapper params!')
 
 
 class Piece(Params, Check):
@@ -182,7 +182,9 @@ class Piece(Params, Check):
     # @TODO make this function work with custom objects
     def build(self, dataset, problem_spec='default', **problem_spec_params):
         '''This method is used to convert a single pipeline piece into
-        the base sklearn-style object used in the pipeline.
+        the base sklearn style object used in the pipeline. This method
+        is mostly used to investigate pieces and is not necessarily
+        designed to produce independently usable pieces.
 
         Warning: For now this method will not work when the base
         obj is a custom object.
@@ -225,7 +227,7 @@ class Piece(Params, Check):
         from ..main.funcs import problem_spec_check
 
         # Get proc'ed problem spec
-        ps = problem_spec_check(problem_spec, dataset=self,
+        ps = problem_spec_check(problem_spec, dataset=dataset,
                                 **problem_spec_params)
 
         # Make sure dataset up to date
@@ -233,7 +235,8 @@ class Piece(Params, Check):
 
         # Get constructor
         constructor =\
-            self.constructor_(spec=ps, dataset=dataset, user_passed_objs={})
+            self.constructor_(spec=ps.get_spec(),
+                              dataset=dataset, user_passed_objs={})
 
         # Return the objs and params
         return constructor.process(self)
@@ -300,7 +303,7 @@ class Loader(Piece):
             avaliable memory to load all of the current training or
             validation subject's raw data at one. Likewise 'single'
             allows for caching fit_transform operations for each
-            individual subject (which can then be more flexibily re-used).
+            individual subject (which can then be more flexibly re-used).
 
             Behavior 'all' is designed to work with base objects
             that accept a list of length n_subjects to their fit_transform
@@ -411,7 +414,7 @@ class Imputer(Piece):
                  cache_loc=None, base_model=None, base_model_type='default',
                  **extra_params):
         '''If there is any missing data (NaN's), then an imputation strategy
-        is likely neccisary (with some expections, i.e., a final model which
+        is likely necessary (with some expections, i.e., a final model which
         can accept NaN values directly).
         This object allows for defining an imputation strategy.
         In general, you should need at most two Imputers, one for all
@@ -462,7 +465,7 @@ class Imputer(Piece):
             In this way, you
             may want to either just treat all features as float, or
             instead of imputing categorical features, load missing
-            values as a seperate category - and then set the scope
+            values as a separate category - and then set the scope
             here to be 'all', such that the iterative imputer has
             access to all features. This happens because
             the iterative imputer
@@ -777,12 +780,12 @@ class Model(Piece):
 
     def __init__(self, obj, params=0, scope='all', cache_loc=None,
                  param_search=None, target_scaler=None, **extra_params):
-        ''' Model represents a base components of the :class:`Pipeline` 
+        ''' Model represents a base components of the :class:`Pipeline`
         or :class:`ModelPipeline`,
         specifically a single Model / estimator.
 
         obj : str or custom_obj
-            The pased object should be either
+            The passed object should be either
             a preset str indicator found at :ref:`Models`,
             or from a custom passed user model (compatible w/ sklearn api).
 
@@ -907,7 +910,7 @@ class Ensemble(Model):
             Each str passed to ensemble refers to a type of ensemble to train,
             based on also the passed input to the `models` parameter,
             and also the
-            additional parameters passed when init'ing Ensemble.
+            additional parameters passed when initializing Ensemble.
 
             See :ref:`Ensemble Types` to see all
             avaliable options for ensembles.
@@ -915,8 +918,8 @@ class Ensemble(Model):
             Passing custom objects here, while technically possible,
             is not currently full supported.
             That said, there are just certain assumptions that
-            the custom object must meet in order to work, specifially,
-            they should have simmilar input params to other simmilar existing
+            the custom object must meet in order to work, specifically,
+            they should have similar input params to other similar existing
             ensembles, e.g., in the case the `single_estimator` is False
             and `needs_split` is also False, then the passed object needs
             to be able to accept an input parameter `estimators`,
@@ -945,7 +948,7 @@ class Ensemble(Model):
             params for base `models` should be passed
             accordingly when creating the base models.
             Preset param distributions are listed at :ref:`Ensemble Types`,
-            under each of the options for ensemble obj's.
+            under each of the options for ensemble objs.
 
             You can read more about generally about
             hyper-parameter distributions as associated with
@@ -1109,7 +1112,7 @@ class ParamSearch(Params):
         When passed to :class:`Pipeline`,
         its search strategy is applied in the context of any set :ref:`Params`
         within the base pieces.
-        Specifically, there must be atleast one parameter search
+        Specifically, there must be at least one parameter search
         somewhere in the object ParamSearch is passed!
 
         All backend hyper-parameter searches make use of the
@@ -1121,7 +1124,7 @@ class ParamSearch(Params):
             The type of nevergrad hyper-parameter search to conduct. See
             :ref:`Search Types<Search Types>` for all avaliable options.
             Also you may further look into
-            nevergrad's experimental varients if you so choose,
+            nevergrad's experimental variants if you so choose,
             this parameter can accept
             those as well.
 
@@ -1153,7 +1156,7 @@ class ParamSearch(Params):
             (via `splits` and `n_repeats`). In general, if too few
             choices are provided
             the algorithm will likely not select high
-            performing hyper-paramers, and alternatively
+            performing hyperparameters, and alternatively
             if too high a value/budget is
             set, then you may find overfit/non-generalize
             hyper-parameter choices. Other factors which will influence
@@ -1185,7 +1188,7 @@ class ParamSearch(Params):
                 good choice of `n_iter`.
 
             Notably, one can always if they have the resources
-            simply expiriment with this parameter.
+            simply experiment with this parameter.
 
             ::
 
@@ -1314,7 +1317,7 @@ class ParamSearch(Params):
             search_only_params = {'svm classifier__probability': False}
 
             And assuming that the default / selecting parameter for this svm
-            classifier for probaility is True by default,
+            classifier for probability is True by default,
             then only when exploring
             nested hyper-parameter options will
             probability be set to False, but
@@ -1465,7 +1468,7 @@ class Pipeline(Params):
         if isinstance(self.steps[-1], str):
             self.steps[-1] = Model(self.steps[-1])
 
-        # If last step isnt model, raise error
+        # If last step isn't model, raise error
         if not isinstance(self.steps[-1], Model):
             raise RuntimeError('The last step must be a Model.')
 
@@ -1624,8 +1627,8 @@ class ModelPipeline(Pipeline):
 
         imputers : :class:`Imputer`, list of or None, optional
             If there is any missing data (NaN's) that have been kept
-            within data or covars, then an imputation strategy must be
-            defined! This param controls what kind of
+            within the input data, then an imputation strategy should likely
+            be defined. This param controls what kind of
             imputation strategy to use.
 
             See :class:`Imputer`.
@@ -1711,7 +1714,7 @@ class ModelPipeline(Pipeline):
             a nested hyper-parameter search be constructed across
             all valid param distributions set across all pieces.
 
-            To use a parameter search requires atleast one piece
+            To use a parameter search requires at least one piece
             to have a distribution of parameters.
             You can set specific piece to a distribution of
             parameters with the parameter `params`.
@@ -2049,7 +2052,7 @@ class ProblemSpec(Params):
             all of the requested scorers will be calculated and returned.
 
             Note: If using a ParamSearch, the ParamSearch object has a
-            seperate scorer parameter.
+            separate scorer parameter.
 
             For a full list of supported scorers please view the
             scikit-learn docs at:
@@ -2076,9 +2079,9 @@ class ProblemSpec(Params):
             When default CV schemes are employed,
             there is likely no point in
             applying this weighting, as the validation
-            folds will have simmilar sizes.
+            folds will have similar sizes.
 
-            If you are passing mutiple scorers, then you can also pass a 
+            If you are passing multiple scorers, then you can also pass a
             list of values for weight_scorer, with each value
             set as boolean True or False,
             specifying if the corresponding scorer by index
@@ -2093,7 +2096,7 @@ class ProblemSpec(Params):
 
         scope : key str or Scope obj, optional
             This parameter allows the user to optionally
-            run an expiriment with just a subset of the loaded features
+            run an experiment with just a subset of the loaded features
             / columns.
 
             See :ref:`Scope` for a more detailed explained / guide
@@ -2134,15 +2137,15 @@ class ProblemSpec(Params):
                 default = 'all'
 
         n_jobs : int
-            n_jobs are employed witin the context
+            n_jobs are employed within the context
             of a call to Evaluate or Test.
 
-            In general, the way n_jobs are propegated to the different pipeline
+            In general, the way n_jobs are propagated to the different pipeline
             pieces on the backend is that,
             if there is a parameter search, the base
             ML pipeline will all be set to use 1 job,
             and the n_jobs budget will be used
-            to train pipelines in parellel to explore different params.
+            to train pipelines in parallel to explore different params.
             Otherwise, if no param search,
             n_jobs will be used for each piece individually,
             though some might not support it.
@@ -2156,14 +2159,14 @@ class ProblemSpec(Params):
             the random seed is set by np.random.
 
             This parameter is used to ensure replicability
-            of expirements (wherever possible!).
+            of experiments (wherever possible!).
             In some cases even with a random seed, depending on
             the pipeline pieces being used,
             if any have a component that occassionally yields
             different results, even with the same
             random seed, e.g., some model optimizations,
             then you might still not get
-            exact replicicability.
+            exact replicability.
 
             ::
 
@@ -2226,6 +2229,13 @@ class ProblemSpec(Params):
         _print('random_state =', self.random_state)
         _print()
 
+    def get_spec(self):
+
+        return {'n_jobs': self.n_jobs,
+                'random_state': self.random_state,
+                'problem_type': self.problem_type,
+                'scope': self.scope}
+
 
 class CVStrategy(Params):
 
@@ -2250,9 +2260,9 @@ class CVStrategy(Params):
             default = None
 
         stratify : str or None, optional
-            The str input should refer
-            to a loaded column key, either non input / strat or target.
-            It will assign it as a value to preserve
+            The str input should refer to a loaded non input
+            variable which if of type category. It will assign it
+            as a value to preserve
             distribution of groups by during any during any CV splits.
 
             Note: the passed column must be of type category as well.
@@ -2313,6 +2323,8 @@ class CVStrategy(Params):
 
 class CV(Params):
 
+    # @TODO Fix these CV docstrings
+
     def __init__(self, splits=3, n_repeats=1,
                  cv_strategy=None, random_state='context',
                  **cv_strategy_args):
@@ -2340,10 +2352,9 @@ class CV(Params):
 
             - str
                 If a str is passed, then it must correspond to a
-                loaded Strat variable. In
+                loaded categorical non input variable. In
                 this case, a leave-out-group CV will be used according
-                to the value of the
-                indicated Strat variable (E.g., a leave-out-site CV scheme).
+                to the value of the variable.
 
             `n_repeats` is designed to work with any of these choices.
 

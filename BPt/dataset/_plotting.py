@@ -126,7 +126,6 @@ def _plot_float(self, col, subjs, cut, show, print_info=True):
     plt.title(str(col) + ' Distribution')
 
     if show:
-        print(show, 'show')
         plt.show()
 
     return info
@@ -198,7 +197,7 @@ def _print_plot_info(self, col, info):
     self._print(str(col) + ':', str(info['n']), 'rows', end='', level=1)
 
     if info['n_nan'] > 0:
-        self._print('(' + str(info['n_nan']), 'NaN)',
+        self._print(' (' + str(info['n_nan']), 'NaN)',
                     end='', level=1)
 
     self._print(level=1)

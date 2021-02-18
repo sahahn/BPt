@@ -33,10 +33,17 @@ class ScopeObj(BPtBase):
         self.cache_loc = cache_loc
 
     def __repr__(self):
+
         temp_inds = self.inds
-        self.inds = 'len(' + str(len(self.inds)) + ')'
+
+        if self.inds is Ellipsis:
+            self.inds = 'all'
+        else:
+            self.inds = 'len(' + str(len(self.inds)) + ')'
+
         rep = super().__repr__()
         self.inds = temp_inds
+
         return rep
 
     def _proc_mapping(self, mapping):

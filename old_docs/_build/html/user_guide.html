@@ -1,0 +1,996 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>New Users &mdash; BPt 2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Overview" href="dataset.html" />
+    <link rel="prev" title="From Scratch" href="install.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+</head>
+
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://github.com/sahahn/BPt" aria-label="BPt">
+       <!-- <img class="call-to-action-img" src="_static/images/blue_logo.png"/> -->
+      </a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/sahahn/BPt/tree/master/Examples">Examples</a>
+          </li>
+
+          <li>
+            <a href="https://bpt.readthedocs.io/en/latest/">Docs</a>
+          </li>
+
+          <li>
+            <div class="resources-dropdown">
+              <a id="resourcesDropdownButton" data-toggle="resources-dropdown">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href=""">
+                  <span class=dropdown-title>Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <!--
+                <a class="nav-dropdown-item" href="">
+                  <span class=dropdown-title>About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+                -->
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a href="https://github.com/sahahn/BPt">Github</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+
+  </div>
+</div>
+
+
+<body class="pytorch-body">
+
+   
+
+    
+
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
+            
+
+            
+              
+              
+            
+
+            
+
+
+  
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+            
+          </div>
+
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Install</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">From Scratch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#pip-installation">Pip Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#github-pip-installation">Github / Pip Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#extra-libraries">Extra Libraries</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">New Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#why-bpt">Why BPt?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#core-concepts">Core Concepts</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Preparing Data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#loading-data">Loading Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#key-dataset-concepts">Key Dataset Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset-base-methods">Dataset - Base Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset-encoding-methods">Dataset - Encoding Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset-filtering-drop-methods">Dataset - Filtering &amp; Drop Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset-plotting-viewing-methods">Dataset - Plotting / Viewing Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset-test-split-methods">Dataset - Test Split Methods</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Change Logs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="change_log.html">In Dev</a></li>
+<li class="toctree-l1"><a class="reference internal" href="change_log.html#release-2-0">Release 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="change_log.html#release-1-3-6">Release 1.3.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="change_log.html#release-1-3-5">Release 1.3.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="change_log.html#release-1-3-4">Release 1.3.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="change_log.html#release-1-3-3">Release 1.3.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="change_log.html#release-1-3-1-and-1-3-2">Release 1.3.1 and 1.3.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="change_log.html#release-1-3">Release 1.3</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Modeling Params</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="param_objects.html">Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="param_objects.html#modelpipeline">ModelPipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="param_objects.html#problemspec">ProblemSpec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="param_objects.html#pieces">Pieces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="param_objects.html#input-types">Input Types</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Available Modeling Options</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="options.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#scorers">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#loaders">Loaders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#imputers">Imputers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#scalers">Scalers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#transformers">Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#feat-selectors">Feat Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#ensemble-types">Ensemble Types</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Search Types</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html">Random Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#one-shot-optimization">One Shot Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#one-plus-one">One Plus One</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#cma">CMA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#evolution-strategies">Evolution Strategies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#differential-evolution">Differential Evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#algorithm-selection">Algorithm Selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#competence-maps">Competence Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#misc">Misc.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#experimental-variants">Experimental Variants</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Extension Classes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extensions</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
+        
+      <li>New Users</li>
+    
+    
+      <li class="pytorch-breadcrumbs-aside">
+        
+            
+            <a href="_sources/user_guide.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+</div>
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <div class="section" id="new-users">
+<h1>New Users<a class="headerlink" href="#new-users" title="Permalink to this headline">¶</a></h1>
+<p>BPt is provided as a python based library and api, with workflows designed to be run in jupyter notebook-esque environments.
+That said, a complementary web interface is under active development and can be downloaded and used from <a class="reference external" href="https://github.com/sahahn/BPt_app">https://github.com/sahahn/BPt_app</a>.
+Users can choose to either use the more flexible python based library and / or make use of the web interface application.
+Trade-offs to consider namely revolve around prior user experience (i.e., those without coding or python experience may find
+the web interface easier, whereas more experienced users might prefer the greater
+flexibility and integration with the rest of the python data science environment that the python api offers) and personal preference.</p>
+<p>A few general introductory resources for learning python, jupyter notebooks and machine learning are provided below:</p>
+<ul class="simple">
+<li><p>Introduction to python: <a class="reference external" href="https://jakevdp.github.io/WhirlwindTourOfPython/">https://jakevdp.github.io/WhirlwindTourOfPython/</a></p></li>
+<li><p>Brief intro to Machine Learning in python / jupyter environment: <a class="reference external" href="https://www.kaggle.com/learn/intro-to-machine-learning">https://www.kaggle.com/learn/intro-to-machine-learning</a></p></li>
+</ul>
+</div>
+<div class="section" id="why-bpt">
+<h1>Why BPt?<a class="headerlink" href="#why-bpt" title="Permalink to this headline">¶</a></h1>
+<p>BPt seeks to integrate a number of lower level packages towards providing a higher level package and user experience.
+On the surface it may appear that this utility overlaps highly with libraries like scikit-learn,
+or a combination of scikit-learn with nilearn.
+While this is in some cases true with respect to the base python library,
+BPt seeks to provide extended functionality beyond what is found in the base scikit-learn package.
+The most notable is perhaps direct integration with a web based interface, allowing most of the library
+functionality to be accessed by those without prior programming experience.
+That said, the python based library, independent of the GUI, seeks to offer new utility beyond
+that found in scikit-learn and other packages in a number of key ways:</p>
+<ul class="simple">
+<li><p>Scikit-learn is fundamentally a lower level package, one which provides a number of the building blocks used in our package.
+That said, scikit-learn does not impose any sort of inherent order on the analysis workflow, and is far more flexible than our library.
+Flexibility is highly useful for a number of use cases, but still leaves room for higher level packages.
+Specifically, higher level packages like ours can help to both impose a conceptual ordering of recommended steps,
+as well as abstracting away boilerplate code in addition to providing other convenience functions.
+While it is obviously possible for users to re-create all of the functionality found in our library
+with the base libraries we employ, it would require in some cases immense effort, thus the existence of our package.</p></li>
+<li><p>We offer advanced and flexible hyper-parameter optimization via tight integration with the python nevergrad package.
+This allows BPt to offer a huge range of optimization strategies beyond the Random and Grid Searches found in scikit-learn.
+Beyond offering differing optimization methods, Nevergrad importantly supports more advanced functionality such as
+nesting hyperparameters with dictionaries or choice like objects.
+This functionality allows users to easily implement within
+BPt almost auto-ML like powerful and expressive parameter searches.</p></li>
+<li><p>BPt allows hyper-parameter distributions to be associated directly with machine learning pipeline objects.
+This functionality we believe makes it easier to optimize hyper-parameters across
+a number of pipeline pieces concurrently. We further allow preset hyper-parameter
+distributions to be selected or modified.
+This functionality allows less experienced users to still be able to perform hyper-parameter optimization
+without specifying the sometimes complex parameters themselves.
+In the future we hope to support the sharing of user defined hyper-parameter
+distributions (note: this feature is already supported in the multi-user version of the web interface).</p></li>
+<li><p>We introduce meta hyper-parameter objects, e.g., the <a class="reference internal" href="param_objects.html#BPt.Select" title="BPt.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> object, which allows specifying the choice between
+different pipeline objects as a hyper-parameter. For example, the choice between base two or more base models,
+say a Random Forest model and an Elastic Net Regression (each with their own associated distributions of hyper-parameters),
+can be specified with the Select wrapper as itself a hyper-parameter.
+In this way, broader modelling strategies can be defined explicitly within the hyper-parameter search.
+This allows researchers the ability to easily perform properly nested model selection,
+and thus avoid common pitfalls associated with performing too many repeated internal validations.
+Along similar lines, we introduce functionality where features can themselves be set as binary hyper-parameters.
+This allows for the possibility of higher level optimizations.</p></li>
+<li><p>BPt introduced the concept of Scopes across all pipeline pieces.
+Scopes are a way for different pipeline pieces to optionally act on only a subset of
+features. While a similar functionality is provided via ColumnTransformers in scikit-learn,
+our package improves on this principle in a number of ways. In particular, a number of
+transformers and feature selection objects can alter in sometimes unpredictable ways the number
+of features (i.e., the number of features input before a PCA transformation, vs. the number of output features).
+Our package tracks these changes. What tracking these changes allows is for scopes to be set in downstream pipeline pieces,
+e.g., the model itself, and have that functional set of features passed to the piece still reflect the intention
+of the original scope. For example, if one wanted to perform one hot encoding on a feature X,
+then further specify that a sub-model within an ensemble learner should only be provided feature X,
+our implemented scope system would make this possible.
+Importantly, the number of output features from the one hot encoding does not need to be known ahead of time,
+which makes properly nesting transformations like this much more accessible.
+Scopes can be particularly useful in neuroimaging based ML where a user might have data from a number of different modalities,
+and further a combination of categorical and continuous variables, all of which they may want to dynamically treat differently.</p></li>
+<li><p>We seek to more tightly couple in general the interaction between data loading, defining cross validation strategies,
+evaluating ML pipelines and making sense of results. For libraries like scikit-learn,
+this coupling is explicitly discouraged (which allows them to provide an extremely modular set of building blocks).
+On the other hand, by coupling these processes on our end, we can introduce a number of conveniences to the end-user.
+These span a number of common use cases associated with neuroimaging based ML, including: Allowing the previously introduced concept of Scope.
+Abstracting away a number of the considerations that must be made when dealing with loading, plotting and modelling across different data types (e.g., categorical vs. continuous).
+Abstracting away a number of the considerations that must be made when dealing with loading, plotting and modelling with missing data / NaN’s
+Data loading and visualization related functions, e.g., dropping outliers and automatically visually viewing the distributions of a number of input variables.
+The generation of automatic feature importances across different cross validation schemes, and their plotting.
+Exporting of loaded variable summary information to .docx format.
+The ability to easily save and load full projects. And more!</p></li>
+<li><p>At the cost of some flexibility, but with the aims of reducing potentially redundant and cognitively demanding choices,
+the Model Pipeline’s constructed within BPt restrict the order in which the different pieces can be specified (e.g., Imputation must come before feature selection).
+That said, as all pipeline pieces are designed to accept custom objects, experienced users can easily get around this by passing in their own custom pipelines in relevant places.
+Whenever possible, we believe it to be a benefit to reduce researcher degrees of freedom.</p></li>
+<li><p>BPt provides a loader module which allows the arbitrary inclusion of non-typical 2D scikit-learn input directly integrated into the ML pipeline.
+This functionality is designed to work with the hyper-parameter optimization, scope and other features already mentioned,
+and allows the usage of common neuroimaging features such as 3D MRI volumes, timeseries, connectomes, surface based inputs,
+and more. Explicitly, this functionality is designed to be used and evaluated in a properly nested machine learning context.
+An immensely useful package in this regard is nilearn, and by extension nibabel.
+Nilearn provides a number of functions which work very nicely with this loader module.
+This can be seen as combining the functionality of our package and nilearn, as an alternative to combining scikit-learn and nilearn.
+While the latter is obviously possible and preferable for some users, we hope that providing a higher level interface is still useful to others.</p></li>
+<li><p>Along with the loader module, we currently include a number of extension objects beyond those found in the base nilearn library.
+These span the extraction of Network metrics from an adjacency matrix, support for extracting regions of interest from static or timeseries surfaces,
+the generation of randomly defined surface parcellations,and the automatic caching of user defined, potentially computationally expensive,
+loading transformations. We plan to continue to add more useful functions like these in the future.</p></li>
+<li><p>Additional measures of feature importance can be specified to be automatically computed. Further, by tracking how features change,
+it can be useful in certain circumstances to back project computed feature importances to their
+original space (e.g., in the case of pipeline where surfaces from a few modalities are loaded from disk along
+with a number of phenotypic categorical variables, a parcellation applied on just the surface volumes,
+feature selection performed separately for say a number of different modalities, and then a base model evaluated,
+feature importances from the base model can be automatically projected back to the different modalities surfaces).</p></li>
+<li><p>BPt integrates useful pieces from a number of other scikit-learn adjacent packages.
+These span from popular gradient boosting libraries lightgbm and xgboost, to ensemble options offered by deslib,
+feature importances as computed by the SHAP library, the Categorical Encoders library for categorical encoding options
+and more. By providing a unified interface for accessing these popular and powerful tools,
+we hope to make it easier for users to easily integrate the latest advances in machine learning.</p></li>
+</ul>
+</div>
+<div class="section" id="core-concepts">
+<h1>Core Concepts<a class="headerlink" href="#core-concepts" title="Permalink to this headline">¶</a></h1>
+<p>This section is devoted as a placeholder with more detailed information about different core components of the library.
+In particular, you will often find within other sections of the documentation links to sub-sections within the sections as a way
+of referring to a more detailed explanation around a concept when warranted.</p>
+<div class="section" id="scope">
+<span id="id1"></span><h2>Scope<a class="headerlink" href="#scope" title="Permalink to this headline">¶</a></h2>
+<p>Scope’s represent a key concept within BPt, that are present when preparing data with
+the <a class="reference internal" href="dataset.html#dataset"><span class="std std-ref">Dataset</span></a> class, and during ML. The <cite>scope</cite> argument can also be
+found across different <a class="reference internal" href="param_objects.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> pieces
+and within <a class="reference internal" href="param_objects.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>. The fundamental idea is
+that during loading, plotting, ML, etc… it is often desirable to specify
+a subset of the total loaded columns/features. This is accomplished within BPt via the
+concept of ‘scope’ and the ‘scope’ parameter.</p>
+<p>The concept of scopes extends beyond the <a class="reference internal" href="dataset.html#dataset"><span class="std std-ref">Dataset</span></a> class to the rest of
+BPt. The fundamental idea is that it provides a utility for more easily selecting different
+subsets of columns from the full dataset. This is accomplished by providing different functions
+and methods with a <cite>scope</cite> argument, which accepts any BPt style <a class="reference internal" href="#scope"><span class="std std-ref">Scope</span></a> input, and then
+operates just on that subset of columns. For example consider the example below
+with the function <code class="xref py py-func docutils literal notranslate"><span class="pre">get_cols</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Empty Dataset with 3 columns</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">])</span>
+
+<span class="c1"># scope of &#39;all&#39; will return all columns</span>
+<span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+<span class="c1"># cols == [&#39;1&#39;, &#39;2&#39;, &#39;3&#39;]</span>
+</pre></div>
+</div>
+<p>In this example, we pass a fixed input str scope: ‘all’. This is a special reserved scope
+which will always return all columns. In addition to ‘all’ there are a number of other
+reserved special scopes which cannot be set, and have their own fixed behavior. These are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>‘all’</dt><dd><p>All loaded columns</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘float’</dt><dd><p>All loaded columns of type ‘float’, i.e.,
+a continuous variable and not a categorical variable or a data file,
+see: <a class="reference internal" href="dataset.html#data-types"><span class="std std-ref">Data Types</span></a></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘category’</dt><dd><p>All loaded columns of type / scope ‘category’, see <a class="reference internal" href="dataset.html#data-types"><span class="std std-ref">Data Types</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘data file’</dt><dd><p>All loaded columns of type / scope ‘data file’, see <a class="reference internal" href="dataset.html#data-types"><span class="std std-ref">Data Types</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘data’</dt><dd><p>All loaded columns with role ‘data’, see <a class="reference internal" href="dataset.html#role"><span class="std std-ref">Role</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘target’</dt><dd><p>All loaded columns with role ‘target’, see <a class="reference internal" href="dataset.html#role"><span class="std std-ref">Role</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘non input’</dt><dd><p>All loaded columns with role ‘non input’, see <a class="reference internal" href="dataset.html#role"><span class="std std-ref">Role</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘data float’</dt><dd><p>All loaded columns of type ‘float’ with role ‘data’.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘data category’</dt><dd><p>All loaded columns of type ‘float’ with role ‘data’.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘target float’</dt><dd><p>All loaded columns of type ‘float’ with role ‘target’.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘target category’</dt><dd><p>All loaded columns of type ‘float’ with role ‘target’.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Those enumerated, the scope system also passing other strings, which are not one of the above,
+reserved scopes. In the case that a string is passed, the following options are possible
+and are checked in this order:</p>
+<p>1. Passing the name of a column directly. In this case that column will be returned by name.
+E.g., with the variable data from before:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will specify just the column ‘1’.</p>
+<p>2. Passing the name of a scope. What this refers to is the ability to add
+custom scopes to columns with <code class="xref py py-func docutils literal notranslate"><span class="pre">add_scope</span></code>.
+This acts as a tagging system, where
+you can create custom subsets. For example if we wanted the subset of ‘1’ and ‘3’,
+we can pass scope=[‘1’, ‘3’], but if we were using this same set many times, we can also
+set the scopes of each of these columns to a custom scope, e.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">set_scopes</span><span class="p">({</span><span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="s1">&#39;custom&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="s1">&#39;custom&#39;</span><span class="p">})</span>
+
+<span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;custom&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, cols would return us the scope ‘custom’. Likewise, you may remove
+scopes with <code class="xref py py-func docutils literal notranslate"><span class="pre">remove_scope</span></code>.</p>
+<p>3. Passing a stub. This functionality allows us to pass a common substring present
+across a number of columns, and lets us select all columns with that substring. For example,
+let’s say we have columns ‘my_col1’, ‘my_col2’ and ‘target’ loaded. By passing scope=’my_col’
+we can select both ‘my_col1’ and ‘my_col2, but not ‘target’.</p>
+<p>In addition to the 4 different ways scopes can be used enemurated above, we can also
+compose any combination by passing a list of scopes. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Returns columns ‘1’ and ‘2’. We can also combine across methods. E.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s1">&#39;custom&#39;</span><span class="p">,</span> <span class="s1">&#39;non input&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>In this example, we are requesting the union (NOT the overlap) of column ‘1’, any
+category columns, any columns with the scope ‘custom’ and any ‘non input’ columns.</p>
+<p>Scopes can also be associated 1:1 with their corresponding base ModelPipeline objects (except for the ProblemSpec scope).
+One useful function designed specifically for objects with Scope is the <a class="reference internal" href="param_objects.html#BPt.Duplicate" title="BPt.Duplicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Duplicate</span></code></a> Input Wrapper, which
+allows us to conviently replicate pipeline objects across a number of scopes. This functionality is especially useful with
+<a class="reference internal" href="param_objects.html#BPt.Transformer" title="BPt.Transformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transformer</span></code></a> objects, (though still usable with other pipeline pieces, though other pieces
+tend to work on each feature independenly, ruining some of the benefit). For example consider a case where you would like to
+run a PCA tranformer on different groups of variables seperately, or say you wanted to use a categorical encoder on 15 different
+categorical variables. Rather then having to manually type out every combination or write a for loop, you can use <a class="reference internal" href="param_objects.html#BPt.Duplicate" title="BPt.Duplicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Duplicate</span></code></a>.</p>
+<p>See <a class="reference internal" href="param_objects.html#BPt.Duplicate" title="BPt.Duplicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Duplicate</span></code></a> for more information on how to use this funcationality.</p>
+</div>
+<div class="section" id="subjects">
+<span id="id2"></span><h2>Subjects<a class="headerlink" href="#subjects" title="Permalink to this headline">¶</a></h2>
+<p>Various functions within BPt, and <a class="reference internal" href="dataset.html#dataset"><span class="std std-ref">Dataset</span></a> can accept subjects or some variation on this
+name as an argument. The parameter can accept a few different values. These are explained below:</p>
+<p>1. You may pass any array-like (e.g., list, set, pandas Index, etc…) of subjects directly.
+Warning: Passing a python tuple is reserved for a special MultiIndex case!</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;subj1&#39;</span><span class="p">,</span> <span class="s1">&#39;subj2&#39;</span><span class="p">,</span> <span class="s1">&#39;subj3&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Would select those three subjects.</p>
+<p>2. You may pass the location of a text file were subject’s names are stored as one subject’s
+name per line. Names should be saved with python style types, e.g., quotes around str’s, but
+if they are not, it should in most cases still be able to figure out the correct type.
+For example if subjects.txt contained:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;subj1&#39;</span>
+<span class="s1">&#39;subj2&#39;</span>
+<span class="s1">&#39;subj3&#39;</span>
+</pre></div>
+</div>
+<p>We could pass:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="s1">&#39;subjects.txt&#39;</span>
+</pre></div>
+</div>
+<p>To select those three subjects.</p>
+<ol class="arabic simple" start="3">
+<li><p>A reserved key word may be passed. These include:</p></li>
+</ol>
+<ul class="simple">
+<li><p>‘all’
+Operate on all subjects</p></li>
+<li><p>‘nan’
+Select any subjects with any missing values in any of their loaded columns,
+regardless of scope or role.</p></li>
+<li><p>‘train’
+Select the set of train subjects as defined by a split in the Dataset, e.g.,
+<a class="reference internal" href="dataset.html#BPt.Dataset.set_train_split" title="BPt.Dataset.set_train_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_train_split</span></code></a>.</p></li>
+<li><p>‘test’
+Select the set of test subjects as defined by a split in the Dataset, e.g.,
+<a class="reference internal" href="dataset.html#BPt.Dataset.set_test_split" title="BPt.Dataset.set_test_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_test_split</span></code></a>.</p></li>
+</ul>
+<p>4. You can pass the special input wrapper <code class="xref py py-class docutils literal notranslate"><span class="pre">Value_Subset</span></code>. This can be
+used to select subsets of subject by a column’s value or values. See <code class="xref py py-class docutils literal notranslate"><span class="pre">Value_Subset</span></code> for more
+information on how this input class is used.</p>
+<p>There also exists the case where you may wish for the underlying index of subjects to be a MultiIndex.
+In this case, there is some extra functionality to discuss. Say for example we have a Dataset multiindex’ed
+by subject and eventname, e.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span> <span class="s1">&#39;eventname&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We now have more options for how we might want to index this dataset, and therefore more options
+for valid arguments to pass to a subjects argument. Consider first all of the examples from above,
+where we are just specifying a subject-like index. In this case, all of those arguments will still work,
+and will just return all subjects with all of their eventnames. E.g., assuming there were two eventname values
+for each subjects ‘e1’ and ‘e2’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;subj1&#39;</span><span class="p">,</span> <span class="s1">&#39;subj2&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Would select subject eventname pairs:
+(‘subj1’, ‘e1’), (‘subj1’, ‘e2’), (‘subj2’, ‘e1’), (‘subj2’, ‘e2’)
+and likewise with loading from a text file which just specified ‘subj1’ and ‘subj2’.</p>
+<p>Note that if we pass arguments in this manner, BPt will assume they refer to whatever
+index is first, in this case ‘subject’, and not ‘eventname’. If we wish to also select
+explicitly by eventname, we have two options.</p>
+<ol class="arabic simple">
+<li><p>Pass fully index’ed tuples in an array-like manner, the same as 1. from before, e.g.:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;subj1&#39;</span><span class="p">,</span> <span class="s1">&#39;e1&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subj2&#39;</span><span class="p">,</span> <span class="s1">&#39;e2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To just keep ‘subj1’ at event ‘e1’ and ‘subj2’ at ‘e2’. Likewise, we
+could select this same subset if subjects.txt was formatted as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;subj1&#39;</span><span class="p">,</span> <span class="s1">&#39;e1&#39;</span><span class="p">)</span>
+<span class="p">(</span><span class="s1">&#39;subj2&#39;</span><span class="p">,</span> <span class="s1">&#39;e2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>2. Our second option is to use the special tuple reserved input. In this case,
+we must pass a python tuple with the same length at the number of levels in the
+underlying MultiIndex, e.g., in the example before, of length two. Each index in the
+tuple will then be used to specify the BPt subjects compatible argument for just that
+level of the index. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;e1&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Would select all subjects, and then note the array-like list in the second index of the tuple,
+would filter that to include only subject eventname pairs with an eventname of ‘e1’. Consider another example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;subjects.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;events.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, the subjects to select would be loaded from ‘subjects.txt’ and the corresponding eventnames from
+‘events.txt’.</p>
+</div>
+<div class="section" id="pipeline-objects">
+<span id="id3"></span><h2>Pipeline Objects<a class="headerlink" href="#pipeline-objects" title="Permalink to this headline">¶</a></h2>
+<p>Across all base <a class="reference internal" href="param_objects.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> pieces, e.g., <a class="reference internal" href="param_objects.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>
+or <a class="reference internal" href="param_objects.html#BPt.Scaler" title="BPt.Scaler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scaler</span></code></a>, there exists an <cite>obj</cite> param when initizalizing these objects. This parameter
+can broadly refer to either a str, which indicates a valid pre-defined custom obj for that piece, or depending
+on the pieces, this parameter can be passed a custom object directly.</p>
+</div>
+<div class="section" id="params">
+<span id="id4"></span><h2>Params<a class="headerlink" href="#params" title="Permalink to this headline">¶</a></h2>
+<p>On the back-end, if a <a class="reference internal" href="param_objects.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a> object is passed when creating a
+<a class="reference internal" href="param_objects.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a>, then a hyperparameter search will be conducted.
+All Hyperparameter search types are implemented on the backend with facebook’s
+<a class="reference external" href="https://github.com/facebookresearch/nevergrad">Nevergrad</a> library.</p>
+<p>Specific hyperparameters distributions in which to search over are set within their corresponding
+base ModelPipeline object, e.g., the params argument is <a class="reference internal" href="param_objects.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>. For any object
+with a params argument you can set an associated hyperparameter distribution, which specifies values to
+search over (again assuming that param_search != None, if param_search is None, only passed params with constant
+values will be applied to object of interest, and any with associated Nevergrad parameter distributions will just
+be ignored).</p>
+<p>You have two different options in terms of input that params can accept, these are:</p>
+<blockquote>
+<div><ul>
+<li><dl>
+<dt>Select a preset distribution</dt><dd><p>To select a preset, BPt defined, distribution, the selected object must first
+have atleast one preset distribution. These options can be found for each object
+specifically in the documentation under where that object is defined. Specifially,
+they will be listed with both an integer index, and a corresponding str name
+(see <a class="reference internal" href="options.html#models"><span class="std std-ref">Models</span></a>).</p>
+<p>For example, in creating a binary <a class="reference internal" href="param_objects.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> we could pass:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Option 1 - as int</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">obj</span> <span class="o">=</span> <span class="s2">&quot;dt classifier&quot;</span><span class="p">,</span>
+              <span class="n">params</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Option 2 - as str</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">obj</span> <span class="o">=</span> <span class="s2">&quot;dt classifier&quot;</span><span class="p">,</span>
+              <span class="n">params</span> <span class="o">=</span> <span class="s2">&quot;dt classifier dist&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In both cases, this selects the same preset distribution for the decision
+tree classifier.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Pass a custom nevergrad distribution</dt><dd><p>If you would like to specify your own custom hyperparameter distribution to search over,
+you can, you just need to specify it as a python dictionary of
+<a class="reference external" href="https://facebookresearch.github.io/nevergrad/parametrization.html">nevergrad parameters</a>
+(follow the link to learn more about how to specify nevergrad params).
+You can also go into the source code for BPt, specifically BPt/helpers/Default_Params.py,
+to see how the preset distributions are defined, as a further example.</p>
+<p>Specifically the dictionary of params should follow the scikit_learn param dictionary format,
+where the each key corresponds to a parameter, but the value as a nevergrad parameter (instead of scikit_learn style).
+Further, if you need to specify nested parameters, e.g., for a custom object, you seperate parameters with ‘__’,
+so e.g., if your custom model has a base_estimator param, you can pass:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;base_estimator__some_param&#39;</span> <span class="p">:</span> <span class="n">nevergrad</span> <span class="n">dist</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Lastly, it is worth noting that you can pass either just static values or a combination of nevergrad distributions
+and static values, e.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;base_estimator__some_param&#39;</span> <span class="p">:</span> <span class="mi">6</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>(Note: extra params can also be used to pass static values, and extra_params takes precedence
+if a param is passed to both params and extra_params).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>The special input wrapper <a class="reference internal" href="param_objects.html#BPt.Select" title="BPt.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> can also be used to implicitly introduce hyperparameters
+into the <a class="reference internal" href="param_objects.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a>.</p>
+</div>
+<div class="section" id="extra-params">
+<span id="id5"></span><h2>Extra Params<a class="headerlink" href="#extra-params" title="Permalink to this headline">¶</a></h2>
+<p>All base <a class="reference internal" href="param_objects.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> have the kwargs style input argument <cite>extra params</cite>. This parameter is designed
+to allow passing additional values to the base objects, seperate from <a class="reference internal" href="#params"><span class="std std-ref">Params</span></a>. Take the case where you
+are using a preset model, with a preset parameter distribution, but you only want to change 1 parameter in the model while still keeping
+the rest of the parameters associated with the param distribution. In this case, you could pass that value in extra params.</p>
+<p><cite>extra params</cite> are passed as in kwargs style, which means as extra named params, where the names are the names of parameters (only those accessible to the base classes init), for example
+if we were selecting the ‘dt’ (‘decision tree’) <a class="reference internal" href="param_objects.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, and we wanted to use the first built in
+preset distribution for <a class="reference internal" href="#params"><span class="std std-ref">Params</span></a>, but then fix the number of <cite>max_features</cite>, we could do it is as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">obj</span> <span class="o">=</span> <span class="s1">&#39;dt&#39;</span><span class="p">,</span>
+              <span class="n">params</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+              <span class="n">max_features</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note: Any parameters passed as extra params will override any values if overlapping with the fixed passed params = 1. In other
+words, parameters passed as extra have the highest priority.</p>
+</div>
+<div class="section" id="custom-input-objects">
+<span id="id6"></span><h2>Custom Input Objects<a class="headerlink" href="#custom-input-objects" title="Permalink to this headline">¶</a></h2>
+<p>Custom input objects can be passed to the <cite>obj</cite> parameter for a number of base <a class="reference internal" href="param_objects.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> pieces.</p>
+</div>
+</div>
+
+
+             </article>
+             
+            </div>
+            <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dataset.html" class="btn btn-neutral float-right" title="Overview" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral" title="From Scratch" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+      
+    </div>
+  
+
+  
+
+    <hr>
+
+  
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, sahahn.
+
+    </p>
+  </div>
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
+
+</footer>
+
+          </div>
+        </div>
+
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">New Users</a></li>
+<li><a class="reference internal" href="#why-bpt">Why BPt?</a></li>
+<li><a class="reference internal" href="#core-concepts">Core Concepts</a><ul>
+<li><a class="reference internal" href="#scope">Scope</a></li>
+<li><a class="reference internal" href="#subjects">Subjects</a></li>
+<li><a class="reference internal" href="#pipeline-objects">Pipeline Objects</a></li>
+<li><a class="reference internal" href="#params">Params</a></li>
+<li><a class="reference internal" href="#extra-params">Extra Params</a></li>
+<li><a class="reference internal" href="#custom-input-objects">Custom Input Objects</a></li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  
+
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+         <script src="_static/jquery.js"></script>
+         <script src="_static/underscore.js"></script>
+         <script src="_static/doctools.js"></script>
+         <script src="_static/language_data.js"></script>
+     
+
+  
+
+  <script type="text/javascript" src="_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="_static/js/vendor/bootstrap.min.js"></script>
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <!--
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://bpt.readthedocs.io/en/latest/">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://github.com/sahahn/BPt/tree/master/Examples">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="">View Resources</a>
+        </div>
+        -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://github.com/sahahn/BPt" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+
+        <div class="footer-logo-col">
+          <img class="footer-logo-img" src="_static/images/dark_asteroid_logo.svg"/>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://github.com/sahahn/BPt">Asteroid</a></li>
+            <li><a href="">Get Started</a></li>
+            <li><a href="">Features</a></li>
+            <li><a href="">Ecosystem</a></li>
+            <li><a href="">Blog</a></li>
+            <li><a href="">Resources</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="">Support</a></li>
+            <li><a href="https://github.com/sahahn/BPt/tree/master/Examples">Tutorials</a></li>
+            <li><a href="https://bpt.readthedocs.io/en/latest/">Docs</a></li>
+            <li><a href="" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/sahahn/BPt/issues" target="_blank">Github Issues</a></li>
+            <li><a href="" target="_blank">Slack</a></li>
+            <li><a href="https://github.com/sahahn/BPt/blob/master/README.md" target="_blank">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Follow Us</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="" target="_blank" class="facebook"></a>
+            <a href="" target="_blank" class="twitter"></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </footer> -->
+
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://github.com/sahahn/BPt" aria-label="BPt"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/sahahn/BPt/tree/master/Examples">Examples</a>
+          </li>
+
+          <li>
+            <a href="https://bpt.readthedocs.io/en/latest/">Docs</a>
+          </li>
+
+          <li>
+            <a href="">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/sahahn/BPt">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+</body>
+</html>

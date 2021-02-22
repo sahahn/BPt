@@ -1,10 +1,11 @@
-from .input import Model, Pipeline, ModelPipeline, ProblemSpec, Ensemble, CV
+from .input import Model, Pipeline, ProblemSpec, CV
 from copy import deepcopy
 import numpy as np
 from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..default.options.scorers import process_scorers
 from .BPtEvaluator import BPtEvaluator
 from sklearn.model_selection import check_cv
+from ..main.input_operations import Intersection
 
 
 def model_pipeline_check(model_pipeline, **extra_params):
@@ -193,7 +194,7 @@ def _get_pipeline(model_pipeline, problem_spec, dataset,
                   has_search=False):
 
     # If has search is False, means this is the top level
-    # or the top level didnt have a search
+    # or the top level didn't have a search
     if not has_search:
         has_search = True
         if model_pipeline.param_search is None:
@@ -260,7 +261,7 @@ def _preproc_model_pipeline(pipe, ps, dataset):
     # Check if any NaN in data
     data_cols = dataset._get_cols(scope='data', limit_to=ps.scope)
     is_na = dataset[data_cols].isna().any().any()
-    pipe.check_imputers(is_na)
+    pipe._check_imputers(is_na)
 
     # Pre-proc param search
     has_param_search = _preproc_param_search(pipe, ps)
@@ -317,7 +318,7 @@ def nested_cv_check(obj, dataset):
 
                 # If CV proc
                 if isinstance(val, CV):
-                    setattr(obj, param, val.apply_dataset(dataset))
+                    setattr(obj, param, val._apply_dataset(dataset))
 
                 # If not, nested check
                 else:
@@ -330,7 +331,7 @@ def nested_cv_check(obj, dataset):
 
                 # If CV proc
                 if isinstance(val, CV):
-                    obj[k] = val.apply_dataset(dataset)
+                    obj[k] = val._apply_dataset(dataset)
 
                 # If not, nested check
                 else:
@@ -353,7 +354,7 @@ def _preproc_param_search(object, ps):
         return False
 
     # If a param search, apply ps and dataset + convert to dict
-    as_dict = param_search.as_dict(ps=ps)
+    as_dict = param_search._as_dict(ps=ps)
 
     # Set new proc'ed
     setattr(object, 'param_search', as_dict)
@@ -366,7 +367,7 @@ def _sk_prep(model_pipeline, dataset, problem_spec='default',
     '''Internal helper function return the different pieces
     needed by sklearn functions'''
 
-    # Get proc'ed problem spec, then passed proced version
+    # Get proc'ed problem spec, then passed proc'ed version
     ps = problem_spec_check(problem_spec=problem_spec, dataset=dataset,
                             **extra_params)
 
@@ -390,7 +391,7 @@ def _sk_prep(model_pipeline, dataset, problem_spec='default',
     if isinstance(cv, CV):
 
         # Convert from CV class to BPtCV by applying dataset
-        bpt_cv = cv.apply_dataset(dataset)
+        bpt_cv = cv._apply_dataset(dataset)
 
         # Save n_repeats
         n_repeats = bpt_cv.n_repeats
@@ -400,7 +401,19 @@ def _sk_prep(model_pipeline, dataset, problem_spec='default',
                               random_state=ps.random_state,
                               return_index=True)
 
-    # Cast explicitly to sklean style cv from either user
+    # Check for passed test case
+    elif cv == 'test' or cv == 'Test':
+
+        # Get train and test subjs as intersection of train and ps
+        train = dataset.get_subjects(Intersection(['train', ps.subjects]),
+                                     return_as='flat index')
+        test = dataset.get_subjects(Intersection(['test', ps.subjects]),
+                                    return_as='flat index')
+
+        # Set as single iterable.
+        sk_cv = [(train, test)]
+
+    # Cast explicitly to sklearn style cv from either user
     # passed input or inds
     is_classifier = ps.problem_type != 'regression'
     sk_cv = check_cv(cv=sk_cv, y=y, classifier=is_classifier)
@@ -559,9 +572,6 @@ def cross_validate(model_pipeline, dataset,
         If left as 'default', then will initialize a
         ProblemSpec with default params.
 
-        Warning: the parameter weight_scorer in problem_spec
-        is ignored when used with cross_val_score.
-
         ::
 
             default = 'default'
@@ -660,14 +670,41 @@ def evaluate(model_pipeline, dataset,
 
     Parameters
     -----------
+    cv : :class:`CV` or sklearn compat CV, optional
+        This parameter controls the cross-validation
+        behavior in which to evaluate. You may pass
+        a number of options here.
+
+        - An instance of the :class:`CV` representing a
+            custom strategy as defined by the BPt style CV.
+
+        - The custom str 'test', which specifies that the
+            whole train set should be used to train the pipeline
+            and the full test set used to validate it (assuming that
+            a train test split has been defined in the underlying dataset)
+
+         - Any valid scikit-learn style option:
+            Which include an int to specify the number of folds in a
+            (Stratified) KFold, a sklearn CV splitter or an iterable
+            yielding (train, test) splits as arrays of indices.
+
+            See the sklearn documentation for more information on this:
+            https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation
+
+
     store_preds : bool, optional
         If set to True, store raw predictions
         in the 'preds' parameter of the returned
         object. This will be a dictionary where
         each dictionary key corresponds to
         a valid predict function for the base model,
-        e.g., preds = {'predict': [fold0_preds, fold1_preds, ...]}
-        and the value in the dict is a list
+        for example:
+
+        ::
+
+            preds = {'predict': [fold0_preds, fold1_preds, ...]}
+
+        And the value in the dict is a list
         (each element corresponding to each fold)
         of numpy arrays with the raw predictions.
 
@@ -683,7 +720,7 @@ def evaluate(model_pipeline, dataset,
     estimator, X, y, ps, sk_cv =\
         _sk_prep(model_pipeline=model_pipeline, dataset=dataset,
                  problem_spec=problem_spec, cv=cv, **extra_params)
-                 
+
     # Check decode feat_names arg
     encoders = None
     if decode_feat_names:

@@ -65,10 +65,10 @@ class BPtPipelineConstructor():
         self.verbose = pipeline_params.verbose
 
         # Save some params to pass around when building the steps
-        spec = problem_spec.get_spec()
+        spec = problem_spec._get_spec()
 
         # Get params as ordered list of steps
-        pipe_params = pipeline_params.get_steps()
+        pipe_params = pipeline_params._get_steps()
 
         # Create the pipeline pieces
         self._create_pipeline_pieces(
@@ -92,7 +92,7 @@ class BPtPipelineConstructor():
         self.params = {}
 
         # Get unique constructors
-        constructors = [param.constructor_ for param in pipe_params]
+        constructors = [param._constructor for param in pipe_params]
         unique = set(constructors)
 
         # For each unique piece_type

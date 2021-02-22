@@ -29,7 +29,7 @@ def test_modelpipeline_check_duplicate():
     pipe = ModelPipeline(transformers=t, imputers=None,
                          scalers=None, model='ridge')
 
-    steps = pipe.get_steps()
+    steps = pipe._get_steps()
     assert len(steps) == 3
     assert steps[0].scope == '1'
     assert steps[0].obj == 'fake'

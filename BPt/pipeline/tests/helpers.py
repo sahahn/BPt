@@ -74,10 +74,10 @@ def get_param_search():
                                 progress_loc=None)
 
     ps = ProblemSpec(random_state=1,
-                      n_jobs=2,
-                      problem_type='regression')
+                     n_jobs=2,
+                     problem_type='regression')
 
-    ps_dict = param_search.as_dict(ps)
+    ps_dict = param_search._as_dict(ps)
     ps_dict['cv'] = BPtCV(splits=3, n_repeats=1,
                           cv_strategy=CVStrategy(), splits_vals=None)
 

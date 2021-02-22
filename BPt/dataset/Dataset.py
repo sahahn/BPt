@@ -8,12 +8,11 @@ from copy import copy, deepcopy
 from ..helpers.ML_Helpers import conv_to_list
 from .helpers import (base_load_subjects, proc_file_input, verbose_print)
 from ..main.input_operations import Intersection, Value_Subset
-import warnings
 
-# @TODO Loook into pandas finalize
+# @TODO Look into pandas finalize
 # https://github.com/pandas-dev/pandas/blob/ce3e57b44932e7131968b9bcca97c1391cb6b532/pandas/core/generic.py#L5422
 
-# @TODO Customize the appearence of Dataset class, e.g.
+# @TODO Customize the appearance of Dataset class, e.g.
 # add to repr and to_html, etc...
 
 
@@ -38,7 +37,7 @@ class Dataset(pd.DataFrame):
         return Dataset
 
     @property
-    def _constructor_sliced(self):
+    def __constructorsliced(self):
         return pd.Series
 
     @property
@@ -133,7 +132,7 @@ class Dataset(pd.DataFrame):
 
         col_names = list(self)
 
-        # Check if any col names not strs
+        # Check if any col names not str's
         non_str = []
         for col in col_names:
             if not isinstance(col, str):
@@ -192,7 +191,7 @@ class Dataset(pd.DataFrame):
         if check_type:
             self._check_cols()
 
-        # If doesnt exist, create scopes
+        # If doesn't exist, create scopes
         if not hasattr(self, 'scopes'):
             self.scopes = {}
 
@@ -335,7 +334,7 @@ class Dataset(pd.DataFrame):
 
         Parameters
         -----------
-        subjects : :ref:`Subjects`
+        subjects : :ref:`subjects`
             This argument can be any of the BPt accepted
             :ref:`Subjects` style inputs.
             E.g., None, 'nan' for subjects
@@ -1267,7 +1266,7 @@ class Dataset(pd.DataFrame):
                         'cloud wrapped.',
                         'The function will still work, but it is '
                         'reccomended to',
-                        'define this function in a seperate file, '
+                        'define this function in a separate file, '
                         'and then import',
                         'it , otherwise loader caching will be limited',
                         'in utility!', level=0)
@@ -1396,11 +1395,6 @@ class Dataset(pd.DataFrame):
         so none of the Dataset meta data is accessible through the
         returned X, y here.
 
-        To use this function to get the training set for example,
-        either you can either pass the subjects parameter in problem
-        spec with :class:`Intersection` or see related function
-        Dataset :func:`Dataset.get_train_Xy` and :func:`Dataset.get_test_Xy`.
-
         Parameters
         -----------
         problem_spec : :class:`ProblemSpec` or 'default', optional
@@ -1447,6 +1441,12 @@ class Dataset(pd.DataFrame):
         y : pandas Series
             Series with the the target values as requested
             by the passed problem_spec.
+
+        See Also
+        --------
+        get_train_Xy : Gets X and y for just the training set.
+        get_test_Xy : Gets X and y for just the testing set.
+
         '''
         from ..main.funcs import problem_spec_check
 

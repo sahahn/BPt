@@ -1,0 +1,1020 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>In Dev &mdash; BPt 2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pipeline" href="param_objects.html" />
+    <link rel="prev" title="Overview" href="dataset.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+</head>
+
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://github.com/sahahn/BPt" aria-label="BPt">
+       <!-- <img class="call-to-action-img" src="_static/images/blue_logo.png"/> -->
+      </a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/sahahn/BPt/tree/master/Examples">Examples</a>
+          </li>
+
+          <li>
+            <a href="https://bpt.readthedocs.io/en/latest/">Docs</a>
+          </li>
+
+          <li>
+            <div class="resources-dropdown">
+              <a id="resourcesDropdownButton" data-toggle="resources-dropdown">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href=""">
+                  <span class=dropdown-title>Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <!--
+                <a class="nav-dropdown-item" href="">
+                  <span class=dropdown-title>About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+                -->
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a href="https://github.com/sahahn/BPt">Github</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+
+  </div>
+</div>
+
+
+<body class="pytorch-body">
+
+   
+
+    
+
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
+            
+
+            
+              
+              
+            
+
+            
+
+
+  
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+            
+          </div>
+
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Install</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">From Scratch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#pip-installation">Pip Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#github-pip-installation">Github / Pip Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html#extra-libraries">Extra Libraries</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">New Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html#why-bpt">Why BPt?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html#core-concepts">Core Concepts</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Preparing Data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#loading-data">Loading Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#key-dataset-concepts">Key Dataset Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset-base-methods">Dataset - Base Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset-encoding-methods">Dataset - Encoding Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset-filtering-drop-methods">Dataset - Filtering &amp; Drop Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset-plotting-viewing-methods">Dataset - Plotting / Viewing Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html#dataset-test-split-methods">Dataset - Test Split Methods</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Change Logs</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">In Dev</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#release-2-0">Release 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#release-1-3-6">Release 1.3.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#release-1-3-5">Release 1.3.5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#release-1-3-4">Release 1.3.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#release-1-3-3">Release 1.3.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#release-1-3-1-and-1-3-2">Release 1.3.1 and 1.3.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#release-1-3">Release 1.3</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Modeling Params</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="param_objects.html">Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="param_objects.html#modelpipeline">ModelPipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="param_objects.html#problemspec">ProblemSpec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="param_objects.html#pieces">Pieces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="param_objects.html#input-types">Input Types</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Available Modeling Options</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="options.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#scorers">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#loaders">Loaders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#imputers">Imputers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#scalers">Scalers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#transformers">Transformers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#feat-selectors">Feat Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="options.html#ensemble-types">Ensemble Types</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Search Types</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html">Random Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#one-shot-optimization">One Shot Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#one-plus-one">One Plus One</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#cma">CMA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#evolution-strategies">Evolution Strategies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#differential-evolution">Differential Evolution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#algorithm-selection">Algorithm Selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#competence-maps">Competence Maps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#misc">Misc.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search_types.html#experimental-variants">Experimental Variants</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Extension Classes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extensions</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
+        
+      <li>In Dev</li>
+    
+    
+      <li class="pytorch-breadcrumbs-aside">
+        
+            
+            <a href="_sources/change_log.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+</div>
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <div class="section" id="in-dev">
+<h1>In Dev<a class="headerlink" href="#in-dev" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Full refactor of feature importance plotting</dt><dd><ul>
+<li><p>The plotting interface will eventually be moved fully to within the feature importance object as return as a result.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="release-2-0">
+<h1>Release 2.0<a class="headerlink" href="#release-2-0" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><dl class="simple">
+<dt>Big Change: New <a class="reference internal" href="dataset.html#dataset"><span class="std std-ref">Dataset</span></a> class</dt><dd><ul class="simple">
+<li><p>This new Dataset class is designed to fully replace the old system of loading via the BPt_ML class.</p></li>
+<li><p>This new system is designed to be more flexible than the old system.</p></li>
+<li><p>Most of the old functionality is ported over, and various new functionality added.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Updates to the project documentation</dt><dd><ul class="simple">
+<li><p>With replacing the BPt_ML class, large amounts of the documentation was replaced and updated.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Removed Values_Subset class</dt><dd><ul class="simple">
+<li><p>Now the Value_Subset class replaces this functionality, and more generally the</p></li>
+</ul>
+<p>feature of creating overlaps of column values on the fly is depreciated.</p>
+</dd>
+</dl>
+</li>
+<li><p>cache_loc</p></li>
+</ul>
+</div>
+<div class="section" id="release-1-3-6">
+<h1>Release 1.3.6<a class="headerlink" href="#release-1-3-6" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Removed cache option from ModelPipeline</dt><dd><ul>
+<li><p>Use cache_loc parameter instead in each individual piece for more flexibility.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>New search_only_params param</dt><dd><ul>
+<li><p>In the ParamSearch object, there is now a parameter for search_only_params.</p></li>
+<li><p>This parameter allows some advanced behavior, w.r.t. to only passing params when searching for params.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>More Tests</dt><dd><ul>
+<li><p>Increasing greatly the number of unit tests.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="release-1-3-5">
+<h1>Release 1.3.5<a class="headerlink" href="#release-1-3-5" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><dl class="simple">
+<dt>GridSearchCV support</dt><dd><ul>
+<li><p>Added new abstract BPtSearchCV class.</p></li>
+<li><p>Added in if search_type = ‘grid’ will try and convert parameters
+to grid search compatible, and use on the backend sklearn’s GridSearchCV.</p></li>
+<li><p>n_jobs will propegate correctly.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Replaced LGBM with BPtLBGM</dt><dd><ul>
+<li><p>Replaces LGBMRegressor and Classifier with BPtLGBMRegressor and BPtLGBMClassifier.</p></li>
+<li><p>These classes act as wrappers which automatically pass categorical features to the LGBM fit.</p></li>
+<li><p>These classes also allow setting parameters ‘early_stopping_rounds’ and ‘eval_split’.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Update Nevergrad version</dt><dd><ul>
+<li><p>Update to nevergrad version 0.4.2.post5</p></li>
+<li><p>Warning: The list of avaliable search types may be a little out of date.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>New CV_Split class</dt><dd><ul>
+<li><p>This can be used for passing single splits</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>New parameter fix_n_wrapper_jobs for Loader</dt><dd><ul>
+<li><p>This parameter allows setting a fixed number of jobs for the Loading Wrapper.</p></li>
+<li><p>In the future a better system for fixing n_jobs may be added.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Fix/Change internal representation for Scope Models + Transformers</dt><dd><ul>
+<li><p>Introduce new internal classes for ScopeModel + ScopeTransformer.</p></li>
+<li><p>These classes fixed a few existing bugs, and should make behavior moving forward more consistent.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Fix bug with Loader transform_df</dt><dd><ul>
+<li><p>Fixed a bug with the transform_df function for Loaders.</p></li>
+<li><p>This resulted in a error with computing feature importances for data loaded with a Loader.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Better pipeline names</dt><dd><ul>
+<li><p>When using sklearn verbose, or inspecting models, a few names have been changed to look better / be more informative.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="release-1-3-4">
+<h1>Release 1.3.4<a class="headerlink" href="#release-1-3-4" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Added support for pandas &gt;= 1</dt><dd><ul>
+<li><p>Previously didn’t support latest pandas.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Add sklearn OneHotEncoder</dt><dd><ul>
+<li><p>Previously used category_encoders, use scikit-learn’s instead for better and more reliable performance.</p></li>
+<li><p>This object can be accessed as a transformer under ‘one hot encoder’.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Added initial support for in-place FIs</dt><dd><ul>
+<li><p>Moving from plotting via ML to plotting from the Feature Importance object itself</p></li>
+<li><p>Only fully supports global right now.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Allow transformers to be skipped if out of scope</dt><dd><ul>
+<li><p>Previously would cause error.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="release-1-3-3">
+<h1>Release 1.3.3<a class="headerlink" href="#release-1-3-3" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Fixed bug with problem type</dt><dd><ul>
+<li><p>There was an error which was mistakenly setting categorical problem type instead of regression.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Fixed internal bug with mapping</dt><dd><ul>
+<li><p>Effected Transformer.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Added base_dtype option</dt><dd><ul>
+<li><p>Evaluate and Test now have base dtype options, which allow changing dtype of data</p></li>
+<li><p>Changed default data dtype from float64 to float32, should provide general speed ups</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="release-1-3-1-and-1-3-2">
+<h1>Release 1.3.1 and 1.3.2<a class="headerlink" href="#release-1-3-1-and-1-3-2" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><dl class="simple">
+<dt>New AutoGluon option</dt><dd><ul>
+<li><p>Can now specify the auto machine learning package AutoGluon as a <a class="reference internal" href="param_objects.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Model</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>New SurfMaps extension loader</dt><dd><ul>
+<li><p>Added new extension Loader <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.SurfMaps</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>only_fold parameter</dt><dd><ul>
+<li><p>New optional parameter in Evaluate for running only one fold.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Better support for scikit-learns VotingClassifier and VotingRegressor</dt><dd><ul>
+<li><p>Similar to Stacking update from 1.3, but for voting classifier + regressor.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>More support for nested pipelines</dt><dd><ul>
+<li><p>Can now have nested pipelines propagate their parameter distributions to a parameter search in the top level pipeline.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Bug Fix with CV</dt><dd><ul>
+<li><p>Fixed rare bug with CV expecting pandas Series, added support for passing numpy array.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="release-1-3">
+<h1>Release 1.3<a class="headerlink" href="#release-1-3" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Support for nested parameter searches</dt><dd><ul>
+<li><p><a class="reference internal" href="param_objects.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Model</span></code></a> and <a class="reference internal" href="param_objects.html#BPt.Ensemble" title="BPt.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Ensemble</span></code></a> now support a param_search parameter.</p></li>
+<li><p>The parameter param_search accepts a <a class="reference internal" href="param_objects.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.ParamSearch</span></code></a> object, and turns the model or ensemble into a nested search object.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Initial support for passing nested <a class="reference internal" href="param_objects.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.ModelPipeline</span></code></a></dt><dd><ul>
+<li><p>Now can pass nested <a class="reference internal" href="param_objects.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.ModelPipeline</span></code></a> if wrapped in a <a class="reference internal" href="param_objects.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Model</span></code></a></p></li>
+<li><p>Warning: there are still cases which will not work.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Better support for stacking ensembles</dt><dd><ul>
+<li><p>Stacking ensembles are ported from scikit-learn’s StackingClassifier and StackingRegressor.</p></li>
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Ensemble</span></code> object can now support the arguments base_model and cv_splits.</p></li>
+<li><p>The parameter, base_model allows passing in BPt compatible models to act as the final_estimator in stacking.</p></li>
+<li><p>cv_splits allows passing a new input class <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.CV_Splits</span></code> which in the context of stacking, allows for custom CV behavior to train the base estimators.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Add experimental auto data type to loading targets</dt><dd><ul>
+<li><p>You can now pass ‘a’ or ‘auto’ when loading targets to the data_type parameter to specify that the data type should be automatically inferred.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Change input parameter CV to cv</dt><dd><ul>
+<li><p>In order to be more compatible with other libraries and intuitive, now CV always refers to classes and cv an input parameter.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>New Loky multi-processing support</dt><dd><ul>
+<li><p>Changed to the new default mp_context.</p></li>
+<li><p>Loky is a python library <a class="reference external" href="https://pypi.org/project/loky/">https://pypi.org/project/loky/</a> with better multiprocessing support than python’s default.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>New Dask multi-processing support</dt><dd><ul>
+<li><p>Experimental support for dask multiprocessing</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Fixed how n_jobs propagates in complex model pipelines</dt><dd><ul>
+<li><p>New parameter in <a class="reference internal" href="param_objects.html#BPt.Ensemble" title="BPt.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Ensemble</span></code></a> n_jobs_type, which allows more controls over how n_jobs are spread out in the context of Ensembles.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Fixed bug with RandomParcels</dt><dd><ul>
+<li><p>The RandomParcels object can be imported through from BPt.extensions import RandomParcels</p></li>
+<li><p>A previous bug would allow some vertex labelled as medial wall, to be mislabeled, this has been fixed.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Add view to <a class="reference internal" href="param_objects.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Model</span></code></a></dt><dd><ul>
+<li><p>Initial support for an experimental <cite>view</cite> method for the <a class="reference internal" href="param_objects.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Model</span></code></a> class.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Improve the outputted results from Evaluate and Test</dt><dd><ul>
+<li><p>Default feature importance to calculate is now None.</p></li>
+<li><p>Added more optional parameters here.</p></li>
+<li><p>Added new returned single metric.</p></li>
+<li><p>Optional parameter for returning the trained model(s).</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Add default case for <a class="reference internal" href="param_objects.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.ProblemSpec</span></code></a></dt><dd><ul>
+<li><p>Now with default detecting of problem type, can optionally not specify a problem spec in Evaluate or Test.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Add default problem type</dt><dd><ul>
+<li><p>Now if no target_type is specified, a default type will be set based on the type of the loaded target.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>New default scorers</dt><dd><ul>
+<li><p>The default scorers have changed, now provides multiple scorers for each type by default</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Speed up working with Data Files</dt><dd><ul>
+<li><p>Some improved performance in loading Data Files</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Seperate caching for transformers and loaders</dt><dd><ul>
+<li><p>Loaders and Transformers can now be cached via a cache_loc parameter.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Added experimental support for target transformation</dt><dd><ul>
+<li><p>In some cases it is useful to allow nested transformations to the target variable.</p></li>
+<li><p><a class="reference internal" href="param_objects.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Model</span></code></a> and <a class="reference internal" href="param_objects.html#BPt.Ensemble" title="BPt.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Ensemble</span></code></a> now support an experimental argument for specifying a target transformation.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Introduce new <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Values_Subset</span></code></dt><dd><ul>
+<li><p>In addition, added better description of <cite>subjects</cite> as a parameter type, with more universal behavior.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Large amounts of internal refactoring</dt><dd><ul>
+<li><p>From docstrings, to structure of code, big amounts of re-factoring.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Name change from ABCD_ML to BPt</dt><dd><ul>
+<li><p>Along with this change, the import of the ML object changed.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>New support for k bins encoding when loading targets</dt><dd><ul>
+<li><p>When loading targets, you may now specify a k-bins encoding scheme directly.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Renamed metric to scorer</dt><dd><ul>
+<li><p>The argument metric has been renamed to scorer</p></li>
+<li><p>The scorers accepted have also been re-defined to more closely align with scikit-learn’s scorers.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Added support for categorical encoders and the categorical encoder library</dt><dd><ul>
+<li><p>The new encouraged way to perform categorical encoding is by specifying transformers, via added options from the categorical encoders library.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>New, now all parameter objects can accept scope as an argument</dt><dd><ul>
+<li><p>In previous versions, input objects differed in which could accept a <cite>scope</cite> argument, now all can.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>New ML verbosity options</dt><dd><ul>
+<li><p>Some new ML verbosity options</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Support latest scikit-learn version</dt><dd><ul>
+<li><p>Backend changes allowing full compat. with latest scikit-learn versions.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Add more print information</dt><dd><ul>
+<li><p>In an effort to make more of the library behavior transparent, more verbose print info has been added by default.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Removed ML class eval and test scores</dt><dd><ul>
+<li><p>Depreciated the class wide eval and test scores previously stored in ML object</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+
+
+             </article>
+             
+            </div>
+            <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="param_objects.html" class="btn btn-neutral float-right" title="Pipeline" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+      
+      
+        <a href="dataset.html" class="btn btn-neutral" title="Overview" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+      
+    </div>
+  
+
+  
+
+    <hr>
+
+  
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, sahahn.
+
+    </p>
+  </div>
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
+
+</footer>
+
+          </div>
+        </div>
+
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">In Dev</a></li>
+<li><a class="reference internal" href="#release-2-0">Release 2.0</a></li>
+<li><a class="reference internal" href="#release-1-3-6">Release 1.3.6</a></li>
+<li><a class="reference internal" href="#release-1-3-5">Release 1.3.5</a></li>
+<li><a class="reference internal" href="#release-1-3-4">Release 1.3.4</a></li>
+<li><a class="reference internal" href="#release-1-3-3">Release 1.3.3</a></li>
+<li><a class="reference internal" href="#release-1-3-1-and-1-3-2">Release 1.3.1 and 1.3.2</a></li>
+<li><a class="reference internal" href="#release-1-3">Release 1.3</a></li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  
+
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+         <script src="_static/jquery.js"></script>
+         <script src="_static/underscore.js"></script>
+         <script src="_static/doctools.js"></script>
+         <script src="_static/language_data.js"></script>
+     
+
+  
+
+  <script type="text/javascript" src="_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="_static/js/vendor/bootstrap.min.js"></script>
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <!--
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://bpt.readthedocs.io/en/latest/">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://github.com/sahahn/BPt/tree/master/Examples">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="">View Resources</a>
+        </div>
+        -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://github.com/sahahn/BPt" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+
+        <div class="footer-logo-col">
+          <img class="footer-logo-img" src="_static/images/dark_asteroid_logo.svg"/>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://github.com/sahahn/BPt">Asteroid</a></li>
+            <li><a href="">Get Started</a></li>
+            <li><a href="">Features</a></li>
+            <li><a href="">Ecosystem</a></li>
+            <li><a href="">Blog</a></li>
+            <li><a href="">Resources</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="">Support</a></li>
+            <li><a href="https://github.com/sahahn/BPt/tree/master/Examples">Tutorials</a></li>
+            <li><a href="https://bpt.readthedocs.io/en/latest/">Docs</a></li>
+            <li><a href="" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/sahahn/BPt/issues" target="_blank">Github Issues</a></li>
+            <li><a href="" target="_blank">Slack</a></li>
+            <li><a href="https://github.com/sahahn/BPt/blob/master/README.md" target="_blank">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Follow Us</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="" target="_blank" class="facebook"></a>
+            <a href="" target="_blank" class="twitter"></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </footer> -->
+
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://github.com/sahahn/BPt" aria-label="BPt"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/sahahn/BPt/tree/master/Examples">Examples</a>
+          </li>
+
+          <li>
+            <a href="https://bpt.readthedocs.io/en/latest/">Docs</a>
+          </li>
+
+          <li>
+            <a href="">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/sahahn/BPt">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+</body>
+</html>

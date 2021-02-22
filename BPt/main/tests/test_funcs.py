@@ -43,7 +43,7 @@ def test_model_pipeline_check():
     assert isinstance(mp, Pipeline)
 
 
-def test_model_pipeline_check_extra_args():
+def test_model_pipeline__check_extra_args():
 
     mp_params = ModelPipeline(imputers=None,
                               model=Model('ridge'))

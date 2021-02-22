@@ -39,7 +39,7 @@ class Select(list):
     Select options could be another Select, with say
     another Select...
 
-    Lastly, explcitly note that Select is not restricted for use with Models,
+    Lastly, explicitly note that Select is not restricted for use with Models,
     it can be used on any of
     the base class:`Pipeline` piece params
     (i.e., every param but param_search and cache...).
@@ -78,7 +78,7 @@ class Duplicate(list):
     (i.e., obj, params, extra_params),
     but one will have a scope of 'float' and the other 'cat'.
 
-    Consider the following exentended example, where loaders is being specified
+    Consider the following extended example, where loaders is being specified
     when creating an instance of :class:`Pipeline`:
 
     ::
@@ -119,12 +119,12 @@ class Pipe(list):
     for now to work specifically within :class:`Loader`.
     Because loader
     objects within BPt are designed to work on single files at a time,
-    and further are resitricted in that they must go
+    and further are restricted in that they must go
     directly from some arbitrary
     file, shape and charteristics to outputted
-    as a valid 2D (# Subects X # Features) array,
+    as a valid 2D (# Subjects X # Features) array,
     it restricts potential sequential compositions.
-    Pipe offers some utilty towards
+    Pipe offers some utility towards
     building sequential compositions.
 
     For example, say one had saved 4D neuroimaging fMRI timeseries,
@@ -132,13 +132,13 @@ class Pipe(list):
     to first employ a loader to extract timeseries by ROI
     (with say hyper-parameters defined to select which ROI to use),
     but then wanted to use
-    another loader to convert the timeseries ROIs to a correlation matrix,
+    another loader to convert the timeseries ROI's to a correlation matrix,
     and only then pass
     along the output as 1D features per subject.
-    In this case, the Pipe wrapper is a greate canidate!
+    In this case, the Pipe wrapper is a great candidate!
 
     Specifically, the pipe wrapper works at the level of defining a
-    specific Loader, where basicially
+    specific Loader, where basically
     you are requesting that the loader you want to use be a
     Pipeline of a few different loader options,
     where the loader options are ones compatible in

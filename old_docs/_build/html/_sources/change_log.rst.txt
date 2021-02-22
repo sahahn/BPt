@@ -1,0 +1,225 @@
+In Dev
+*******
+
+- Full refactor of feature importance plotting
+    - The plotting interface will eventually be moved fully to within the feature importance object as return as a result.
+
+
+Release 2.0
+************
+
+- Big Change: New :ref:`Dataset` class
+    - This new Dataset class is designed to fully replace the old system of loading via the BPt_ML class.
+    - This new system is designed to be more flexible than the old system.
+    - Most of the old functionality is ported over, and various new functionality added.
+
+- Updates to the project documentation
+    - With replacing the BPt_ML class, large amounts of the documentation was replaced and updated.
+
+- Removed Values_Subset class
+    - Now the Value_Subset class replaces this functionality, and more generally the
+    feature of creating overlaps of column values on the fly is depreciated.
+
+- cache_loc
+
+
+Release 1.3.6
+***************
+
+- Removed cache option from ModelPipeline
+    - Use cache_loc parameter instead in each individual piece for more flexibility.
+
+- New search_only_params param
+    - In the ParamSearch object, there is now a parameter for search_only_params.
+    - This parameter allows some advanced behavior, w.r.t. to only passing params when searching for params.
+
+- More Tests
+    - Increasing greatly the number of unit tests.
+
+
+Release 1.3.5
+***************
+
+- GridSearchCV support
+    - Added new abstract BPtSearchCV class.
+    - Added in if search_type = 'grid' will try and convert parameters
+      to grid search compatible, and use on the backend sklearn's GridSearchCV.
+    - n_jobs will propegate correctly.
+
+- Replaced LGBM with BPtLBGM
+    - Replaces LGBMRegressor and Classifier with BPtLGBMRegressor and BPtLGBMClassifier.
+    - These classes act as wrappers which automatically pass categorical features to the LGBM fit.
+    - These classes also allow setting parameters 'early_stopping_rounds' and 'eval_split'.
+
+- Update Nevergrad version
+    - Update to nevergrad version 0.4.2.post5
+    - Warning: The list of avaliable search types may be a little out of date.
+
+- New CV_Split class
+    - This can be used for passing single splits
+
+- New parameter fix_n_wrapper_jobs for Loader
+    - This parameter allows setting a fixed number of jobs for the Loading Wrapper.
+    - In the future a better system for fixing n_jobs may be added.
+
+- Fix/Change internal representation for Scope Models + Transformers
+    - Introduce new internal classes for ScopeModel + ScopeTransformer.
+    - These classes fixed a few existing bugs, and should make behavior moving forward more consistent.
+
+- Fix bug with Loader transform_df
+    - Fixed a bug with the transform_df function for Loaders.
+    - This resulted in a error with computing feature importances for data loaded with a Loader.
+
+- Better pipeline names
+    - When using sklearn verbose, or inspecting models, a few names have been changed to look better / be more informative.
+
+Release 1.3.4
+***************
+
+- Added support for pandas >= 1
+    - Previously didn't support latest pandas.
+
+- Add sklearn OneHotEncoder
+    - Previously used category_encoders, use scikit-learn's instead for better and more reliable performance.
+    - This object can be accessed as a transformer under 'one hot encoder'.
+
+- Added initial support for in-place FIs 
+    - Moving from plotting via ML to plotting from the Feature Importance object itself
+    - Only fully supports global right now.
+
+- Allow transformers to be skipped if out of scope
+    - Previously would cause error.
+
+Release 1.3.3
+***************
+
+- Fixed bug with problem type
+    - There was an error which was mistakenly setting categorical problem type instead of regression.
+
+- Fixed internal bug with mapping
+    - Effected Transformer.
+
+- Added base_dtype option
+    - Evaluate and Test now have base dtype options, which allow changing dtype of data
+    - Changed default data dtype from float64 to float32, should provide general speed ups
+
+
+Release 1.3.1 and 1.3.2
+************************
+
+- New AutoGluon option
+    - Can now specify the auto machine learning package AutoGluon as a :class:`BPt.Model`
+
+- New SurfMaps extension loader
+    - Added new extension Loader :class:`BPt.SurfMaps`
+
+- only_fold parameter
+    - New optional parameter in Evaluate for running only one fold.
+
+- Better support for scikit-learns VotingClassifier and VotingRegressor
+    - Similar to Stacking update from 1.3, but for voting classifier + regressor.
+
+- More support for nested pipelines
+    - Can now have nested pipelines propagate their parameter distributions to a parameter search in the top level pipeline.
+
+- Bug Fix with CV
+    - Fixed rare bug with CV expecting pandas Series, added support for passing numpy array.
+
+Release 1.3
+************
+
+- Support for nested parameter searches
+    - :class:`BPt.Model` and :class:`BPt.Ensemble` now support a param_search parameter.
+    - The parameter param_search accepts a :class:`BPt.ParamSearch` object, and turns the model or ensemble into a nested search object.
+
+- Initial support for passing nested :class:`BPt.ModelPipeline`
+    - Now can pass nested :class:`BPt.ModelPipeline` if wrapped in a :class:`BPt.Model`
+    - Warning: there are still cases which will not work.
+
+- Better support for stacking ensembles
+    - Stacking ensembles are ported from scikit-learn's StackingClassifier and StackingRegressor.
+    - The :class:`Ensemble` object can now support the arguments base_model and cv_splits.
+    - The parameter, base_model allows passing in BPt compatible models to act as the final_estimator in stacking.
+    - cv_splits allows passing a new input class :class:`BPt.CV_Splits` which in the context of stacking, allows for custom CV behavior to train the base estimators.
+
+- Add experimental auto data type to loading targets
+    - You can now pass 'a' or 'auto' when loading targets to the data_type parameter to specify that the data type should be automatically inferred.
+
+- Change input parameter CV to cv
+    - In order to be more compatible with other libraries and intuitive, now CV always refers to classes and cv an input parameter.
+
+- New Loky multi-processing support
+    - Changed to the new default mp_context.
+    - Loky is a python library https://pypi.org/project/loky/ with better multiprocessing support than python's default.
+
+- New Dask multi-processing support
+    - Experimental support for dask multiprocessing
+
+- Fixed how n_jobs propagates in complex model pipelines
+    - New parameter in :class:`BPt.Ensemble` n_jobs_type, which allows more controls over how n_jobs are spread out in the context of Ensembles.
+
+- Fixed bug with RandomParcels
+    - The RandomParcels object can be imported through from BPt.extensions import RandomParcels
+    - A previous bug would allow some vertex labelled as medial wall, to be mislabeled, this has been fixed.
+    
+- Add view to :class:`BPt.Model`
+    - Initial support for an experimental `view` method for the :class:`BPt.Model` class.
+
+- Improve the outputted results from Evaluate and Test
+    - Default feature importance to calculate is now None.
+    - Added more optional parameters here.
+    - Added new returned single metric.
+    - Optional parameter for returning the trained model(s).
+
+- Add default case for :class:`BPt.ProblemSpec`
+    - Now with default detecting of problem type, can optionally not specify a problem spec in Evaluate or Test.
+
+- Add default problem type
+    - Now if no target_type is specified, a default type will be set based on the type of the loaded target.
+
+- New default scorers
+    - The default scorers have changed, now provides multiple scorers for each type by default
+
+- Speed up working with Data Files
+    - Some improved performance in loading Data Files
+
+- Seperate caching for transformers and loaders
+    - Loaders and Transformers can now be cached via a cache_loc parameter.
+
+- Added experimental support for target transformation
+    - In some cases it is useful to allow nested transformations to the target variable.
+    - :class:`BPt.Model` and :class:`BPt.Ensemble` now support an experimental argument for specifying a target transformation.
+
+- Introduce new :class:`BPt.Values_Subset`
+    - In addition, added better description of `subjects` as a parameter type, with more universal behavior.
+
+- Large amounts of internal refactoring
+    - From docstrings, to structure of code, big amounts of re-factoring.
+
+- Name change from ABCD_ML to BPt
+    - Along with this change, the import of the ML object changed.
+
+- New support for k bins encoding when loading targets
+    - When loading targets, you may now specify a k-bins encoding scheme directly.
+
+- Renamed metric to scorer
+    - The argument metric has been renamed to scorer
+    - The scorers accepted have also been re-defined to more closely align with scikit-learn's scorers.
+
+- Added support for categorical encoders and the categorical encoder library
+    - The new encouraged way to perform categorical encoding is by specifying transformers, via added options from the categorical encoders library.
+
+- New, now all parameter objects can accept scope as an argument
+    - In previous versions, input objects differed in which could accept a `scope` argument, now all can.
+
+- New ML verbosity options
+    - Some new ML verbosity options
+
+- Support latest scikit-learn version
+    - Backend changes allowing full compat. with latest scikit-learn versions.
+
+- Add more print information
+    - In an effort to make more of the library behavior transparent, more verbose print info has been added by default.
+
+- Removed ML class eval and test scores
+    - Depreciated the class wide eval and test scores previously stored in ML object

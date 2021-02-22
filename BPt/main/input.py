@@ -42,29 +42,16 @@ def proc_name(base_obj, name):
 
 class Params(BaseEstimator):
 
-    def set_values(self, args):
-
-        for key in args:
-            if key != 'self' and hasattr(self, key):
-
-                try:
-                    if isinstance(args[key], str):
-                        if args[key] != 'default':
-                            setattr(self, key, args[key])
-                    else:
-                        setattr(self, key, args[key])
-
-                # If value error, set to key
-                except ValueError:
-                    setattr(self, key, args[key])
-
     def copy(self):
+        '''This method returns a deepcopy of the base object.'''
         return deepcopy(self)
 
 
 class Check():
 
-    def check_args(self):
+    def _check_args(self):
+        '''This method is used to ensure arguments are valid.
+        It called automatically at the end of init.'''
 
         if hasattr(self, 'obj'):
             self._check_obj()
@@ -85,7 +72,7 @@ class Check():
             self._check_base_model()
 
         try:
-            self.check_extra_args()
+            self._check_extra_args()
         except AttributeError:
             pass
 
@@ -178,6 +165,8 @@ class Check():
 
 
 class Piece(Params, Check):
+    '''This is the base piece in which :ref`pipeline_objects` inherit from. This
+    class should not be used directly.'''
 
     # @TODO make this function work with custom objects
     def build(self, dataset, problem_spec='default', **problem_spec_params):
@@ -222,7 +211,53 @@ class Piece(Params, Check):
 
                 build(problem_type='binary')
 
+        Returns
+        -------
+        estimator : sklearn compatible estimator
+            Returns the BPt-style sklearn compatible estimator
+            version of this piece as converted to internally
+            when building the pipeline
+
+        params : dict
+            Returns a dictionary with any parameter distributions
+            associated with this object, for example
+            this can be used to check what exactly
+            pre-existing parameter distributions point
+            to.
+
+        Examples
+        --------
+
+        Given a dataset and pipeline piece (this can be any
+        of the valid :ref:`api.pipeline_pieces` not just :class:`Model`
+        as used here).
+
+        .. ipython:: python
+
+            import BPt as bp
+
+            dataset = bp.Dataset(data={'col1': [1, 2], 'col2': [3, 4]})
+            dataset.set_role('col2', 'target', inplace=True)
+            dataset
+
+            piece = bp.Model('ridge', params=1)
+            piece
+
+        We can call build from the piece
+
+        .. ipython:: python
+
+            estimator, params = piece.build(dataset)
+            estimator
+            params
+
         '''
+
+        # @TODO also passing no dataset here
+        # as long as all scopes are all, i.e., make
+        # a fake dataset class and it should have a function
+        # _get_data_inds, and _get_cols that throw errors
+        # when invalid. Add this option to get_estimator also.
 
         from ..main.funcs import problem_spec_check
 
@@ -235,160 +270,161 @@ class Piece(Params, Check):
 
         # Get constructor
         constructor =\
-            self.constructor_(spec=ps.get_spec(),
+            self._constructor(spec=ps._get_spec(),
                               dataset=dataset, user_passed_objs={})
 
         # Return the objs and params
-        return constructor.process(self)
+        objs, params = constructor.process(self)
+        return objs[0], params
 
 
 class Loader(Piece):
+    ''' Loader refers to transformations which operate on Data_Files.
+    See: :func:`add_data_files <Dataset.add_data_files>`
+    in the :class:`Dataset` class.
+    They in essence take in saved file locations, and after some series
+    of transformations pass on compatible features.
 
-    constructor_ = LoaderConstructor
+    Importantly, the Loader object can operate in two ways. Either
+    the Loader can define operations which are computed on
+    single files independently, or load and pass on data
+    to the defined `obj` as a list, where each element of
+    the list is a subject's data. See parameter behav.
+
+    Parameters
+    ----------
+    obj : str, custom obj or :class:`Pipe`
+        `obj` selects the base loader object to use, this can be either
+        a str corresponding to
+        one of the preset loaders found at :ref:`Loaders`.
+        Beyond pre-defined loaders, users can
+        pass in custom objects as long as they have functions
+        corresponding to the correct behavior.
+
+        `obj` can also be passed as a :class:`Pipe`.
+        See :class:`Pipe`'s documentation to
+        learn more on how this works, and why you might want to use it.
+
+        See :ref:`Pipeline Objects<pipeline_objects>` to read more
+        about pipeline objects in general.
+
+        For example, the 'identity' loader will load in saved data at
+        the stored file
+        location, lets say they are 2d numpy arrays,
+        and will return a flattened version
+        of the saved arrays, with each data point as a feature.
+        A more practical example
+        might constitute loading in say 3D neuroimaging data,
+        and passing on features as extracted by ROI.
+
+    behav : {'single', 'all'}, optional
+        The Loader object can operate under two different
+        behaviors, corresponding to operations which can
+        be done for each subject's Data File independently ('single')
+        and operations which must be done using information
+        from all train subject's Data Files ('all').
+
+        'single' is the default behavior, if requested
+        then the Loader will load each subject's Data File
+        seperately and apply the passed `obj` fit_transform.
+        The benefit of this method in contrast to 'all' is
+        that only one subject's full raw data needs to be
+        loaded at once, whereas with all, you must have enough
+        avaliable memory to load all of the current training or
+        validation subject's raw data at one. Likewise 'single'
+        allows for caching fit_transform operations for each
+        individual subject (which can then be more flexibly re-used).
+
+        Behavior 'all' is designed to work with base objects
+        that accept a list of length n_subjects to their fit_transform
+        function, where each element of the list will be that subject's
+        loaded Data File. This behavior requires loading all data
+        into memory, but allows for using information from the rest
+        of the group split. For example we would need to set Loader
+        to 'all' if we wanted to use
+        https://nilearn.github.io/modules/generated/nilearn.connectome.ConnectivityMeasure.html
+        with parameter kind = "tangent" as this transformer requires
+        information from the rest of the loaded subjects when training.
+        On the otherhand, if we used kind = "correlation",
+        then we could use either behavior
+        'all' or 'single' since "correlation" can be computed for each
+        subject individually.
+
+        ::
+
+            default = 'single'
+
+
+    params : int, str or dict of :ref:`params<Params>`, optional
+        `params` determines optionally if the distribution
+        of hyper-parameters to
+        potentially search over for this loader. Preset param
+        distributions are
+        listed for each choice of obj at :ref:`Loaders`,
+        and you can read more on
+        how params work more generally at :ref:`Params`.
+
+        If obj is passed as :class:`Pipe`, see :class:`Pipe`
+        for an example on how different
+        corresponding params can be passed to each piece individually.
+
+        ::
+
+            default = 0
+
+    scope : :ref:`Scope`, optional
+        `scope` determines on which subset of
+        features the specified loader
+        should transform.
+
+        See :ref:`Scope` for more information on
+        how scopes can be specified.
+
+        Warning: If using behav = 'all', then the loader
+        can only operate on a scope referring to a single fixed column!
+
+        You will likely want to pass either a single custom key
+        based column, or the default preset scope of 'data file'.
+
+        ::
+
+            default = 'data file'
+
+    cache_loc : str, Path or None, optional
+        Optional location in which to if set, the Loader transform
+        function will be cached for each subject. These cached
+        transformations can then be loaded for each subject when
+        they appear again in later folds.
+
+        Warning: If behav = 'all', then this parameter is currently
+        not used.
+
+        Set to None, to ignore
+
+        ::
+
+            default = None
+
+    fix_n_wrapper_jobs : int or False, optional
+        Typically this parameter is left as default, but
+        in special cases you may want to set this. It controls
+        the number of jobs fixed for the Loading Wrapper.
+
+        This parameter can be used to set that value.
+
+        ::
+
+            default = False
+
+    extra_params : :ref:`extra_params`
+        See :ref:`extra_params`
+    '''
+
+    _constructor = LoaderConstructor
 
     def __init__(self, obj, behav='single', params=0, scope='data file',
                  cache_loc=None,
                  fix_n_wrapper_jobs=False, **extra_params):
-        ''' Loader refers to transformations which operate on Data_Files.
-        See: :func:`add_data_files <Dataset.add_data_files>`
-        in the :ref:`Dataset` class.
-        They in essence take in saved file locations, and after some series
-        of transformations pass on compatible features.
-
-        Importantly, the Loader object can operate in two ways. Either
-        the Loader can define operations which are computed on
-        single files independently, or load and pass on data
-        to the defined `obj` as a list, where each element of
-        the list is a subject's data. See parameter behav.
-
-        Parameters
-        ----------
-        obj : str, custom obj or :class:`Pipe`
-            `obj` selects the base loader object to use, this can be either
-            a str corresponding to
-            one of the preset loaders found at :ref:`Loaders`.
-            Beyond pre-defined loaders, users can
-            pass in custom objects as long as they have functions
-            corresponding to the correct behavior.
-
-            `obj` can also be passed as a :class:`Pipe`.
-            See :class:`Pipe`'s documentation to
-            learn more on how this works, and why you might want to use it.
-
-            See :ref:`Pipeline Objects` to read more
-            about pipeline objects in general.
-
-            For example, the 'identity' loader will load in saved data at
-            the stored file
-            location, lets say they are 2d numpy arrays,
-            and will return a flattened version
-            of the saved arrays, with each data point as a feature.
-            A more practical example
-            might constitute loading in say 3D neuroimaging data,
-            and passing on features as extracted by ROI.
-
-        behav : {'single', 'all'}, optional
-            The Loader object can operate under two different
-            behaviors, corresponding to operations which can
-            be done for each subject's Data File independently ('single')
-            and operations which must be done using information
-            from all train subject's Data Files ('all').
-
-            'single' is the default behavior, if requested
-            then the Loader will load each subject's Data File
-            seperately and apply the passed `obj` fit_transform.
-            The benefit of this method in contrast to 'all' is
-            that only one subject's full raw data needs to be
-            loaded at once, whereas with all, you must have enough
-            avaliable memory to load all of the current training or
-            validation subject's raw data at one. Likewise 'single'
-            allows for caching fit_transform operations for each
-            individual subject (which can then be more flexibly re-used).
-
-            Behavior 'all' is designed to work with base objects
-            that accept a list of length n_subjects to their fit_transform
-            function, where each element of the list will be that subject's
-            loaded Data File. This behavior requires loading all data
-            into memory, but allows for using information from the rest
-            of the group split. For example we would need to set Loader
-            to 'all' if we wanted to use
-            https://nilearn.github.io/modules/generated/nilearn.connectome.ConnectivityMeasure.html
-            with parameter kind = "tangent" as this transformer requires
-            information from the rest of the loaded subjects when training.
-            On the otherhand, if we used kind = "correlation",
-            then we could use either behavior
-            'all' or 'single' since "correlation" can be computed for each
-            subject individually.
-
-            ::
-
-                default = 'single'
-
-
-        params : int, str or dict of :ref:`params<Params>`, optional
-            `params` determines optionally if the distribution
-            of hyper-parameters to
-            potentially search over for this loader. Preset param
-            distributions are
-            listed for each choice of obj at :ref:`Loaders`,
-            and you can read more on
-            how params work more generally at :ref:`Params`.
-
-            If obj is passed as :class:`Pipe`, see :class:`Pipe`
-            for an example on how different
-            corresponding params can be passed to each piece individually.
-
-            ::
-
-                default = 0
-
-        scope : :ref:`valid scope<Scopes>`, optional
-            `scope` determines on which subset of
-            features the specified loader
-            should transform.
-
-            See :ref:`Scope` for more information on
-            how scopes can be specified.
-
-            Warning: If using behav = 'all', then the loader
-            can only operate on a scope referring to a single fixed column!
-
-            You will likely want to pass either a single custom key
-            based column, or the default preset scope of 'data file'.
-
-            ::
-
-                default = 'data file'
-
-        cache_loc : str, Path or None, optional
-            Optional location in which to if set, the Loader transform
-            function will be cached for each subject. These cached
-            transformations can then be loaded for each subject when
-            they appear again in later folds.
-
-            Warning: If behav = 'all', then this parameter is currently
-            not used.
-
-            Set to None, to ignore
-
-            ::
-
-                default = None
-
-        fix_n_wrapper_jobs : int or False, optional
-            Typically this parameter is left as default, but
-            in special cases you may want to set this. It controls
-            the number of jobs fixed for the Loading Wrapper.
-
-            This parameter can be used to set that value.
-
-            ::
-
-                default = False
-
-        extra_params : :ref:`Extra Params`
-            See :ref:`Extra Params`
-        '''
 
         self.obj = obj
 
@@ -403,127 +439,127 @@ class Loader(Piece):
         self.extra_params = extra_params
         self.fix_n_wrapper_jobs = fix_n_wrapper_jobs
 
-        self.check_args()
+        self._check_args()
 
 
 class Imputer(Piece):
+    '''If there is any missing data (NaN's), then an imputation strategy
+    is likely necessary (with some expections, i.e., a final model which
+    can accept NaN values directly).
+    This object allows for defining an imputation strategy.
+    In general, you should need at most two Imputers, one for all
+    `float` type data and one for all categorical data. If there
+    is no missing data, this piece will be skipped.
 
-    constructor_ = ImputerConstructor
+    Parameters
+    ----------
+    obj : str
+        `obj` selects the base imputation strategy to use.
+        See :ref:`Imputers` for all avaliable options.
+        Notably, if 'iterative' is passed,
+        then a base model must also be passed!
+
+        See :ref:`Pipeline Objects<pipeline_objects>` to read more about
+        pipeline objects in general.
+
+    params : int, str or dict of :ref:`params<Params>`, optional
+        `params` set an associated distribution of hyper-parameters to
+        potentially search over with the Imputer.
+        Preset param distributions are
+        listed for each choice of params with the corresponding
+        obj at :ref:`Imputers`,
+        and you can read more on how params
+        work more generally at :ref:`Params`.
+
+        ::
+
+            default = 0
+
+    scope : :ref:`Scope`, optional
+        `scope` determines on which subset of features the specified
+        imputer will have access to.
+
+        The main options that make sense for imputer are
+        one for `float` data and one for `category` datatypes.
+        Though you can also pass a custom set of keys.
+
+        Note: If using iterative imputation you may want to carefully
+        consider the scope passed. For example, while it may be beneficial
+        to impute categorical and float features seperately, i.e., with
+        different base_model_type's
+        (categorical for categorical and regression for float), you must
+        also consider that in predicting the missing values under
+        this setup, the categorical imputer would not have access to
+        to the float features and vice versa.
+
+        In this way, you
+        may want to either just treat all features as float, or
+        instead of imputing categorical features, load missing
+        values as a separate category - and then set the scope
+        here to be 'all', such that the iterative imputer has
+        access to all features. This happens because
+        the iterative imputer
+        will try to replace any NaN value present in its input
+        feature.
+
+        See :ref:`Scope` for more information on how scopes can
+        be specified.
+
+        ::
+
+            default = 'all'
+
+    cache_loc : str, Path or None, optional
+        An optional path in which this Piece should be
+        cached after fitting. This is typically useful in
+        cases where fitting the base object takes a long time.
+
+        To skip this option, keep at the default argument of None.
+
+        ::
+
+            default = None
+
+    base_model : :class:`Model`, :class:`Ensemble` or None, optional
+        If 'iterative' is passed to obj, then a base_model is required in
+        order to perform iterative imputation! The base model can be
+        any valid :class:`Model` or :class:`Ensemble`
+
+        ::
+
+            default = None
+
+    base_model_type : 'default' or Problem Type, optional
+        In setting a base imputer model, it may be desirable to
+        have this model have a different 'problem type', then your
+        over-arching problem. For example, if performing iterative
+        imputation on categorical features only, you will likely
+        want to use a categorical predictor - but for imputing on
+        float-type features, you will want to use a 'regression' type
+        base model.
+
+        Choices are {'binary', 'regression', 'categorical'} or 'default'.
+        If 'default', then the following behavior will be applied:
+        If all columns within the passed scope of this Imputer object
+        have scope / data type 'category', then the problem
+        type for the base model will be set to 'categorical'.
+        In all other cases, the problem type will be set to 'regression'.
+
+        ::
+
+            default = 'default'
+
+
+    extra_params : :ref:`extra_params`
+        See :ref:`extra_params`
+
+    '''
+
+    _constructor = ImputerConstructor
 
     def __init__(self, obj, params=0, scope='all',
                  cache_loc=None, base_model=None, base_model_type='default',
                  **extra_params):
-        '''If there is any missing data (NaN's), then an imputation strategy
-        is likely necessary (with some expections, i.e., a final model which
-        can accept NaN values directly).
-        This object allows for defining an imputation strategy.
-        In general, you should need at most two Imputers, one for all
-        `float` type data and one for all categorical data. If there
-        is no missing data, this piece will be skipped.
-
-        Parameters
-        ----------
-        obj : str
-            `obj` selects the base imputation strategy to use.
-            See :ref:`Imputers` for all avaliable options.
-            Notably, if 'iterative' is passed,
-            then a base model must also be passed!
-
-            See :ref:`Pipeline Objects` to read more about
-            pipeline objects in general.
-
-        params : int, str or dict of :ref:`params<Params>`, optional
-            `params` set an associated distribution of hyper-parameters to
-            potentially search over with the Imputer.
-            Preset param distributions are
-            listed for each choice of params with the corresponding
-            obj at :ref:`Imputers`,
-            and you can read more on how params
-            work more generally at :ref:`Params`.
-
-            ::
-
-                default = 0
-
-        scope : :ref:`valid scope<Scopes>`, optional
-            `scope` determines on which subset of features the specified
-            imputer will have access to.
-
-            The main options that make sense for imputer are
-            one for `float` data and one for `category` datatypes.
-            Though you can also pass a custom set of keys.
-
-            Note: If using iterative imputation you may want to carefully
-            consider the scope passed. For example, while it may be beneficial
-            to impute categorical and float features seperately, i.e., with
-            different base_model_type's
-            (categorical for categorical and regression for float), you must
-            also consider that in predicting the missing values under
-            this setup, the categorical imputer would not have access to
-            to the float features and vice versa.
-
-            In this way, you
-            may want to either just treat all features as float, or
-            instead of imputing categorical features, load missing
-            values as a separate category - and then set the scope
-            here to be 'all', such that the iterative imputer has
-            access to all features. This happens because
-            the iterative imputer
-            will try to replace any NaN value present in its input
-            feature.
-
-            See :ref:`Scope` for more information on how scopes can
-            be specified.
-
-            ::
-
-                default = 'all'
-
-        cache_loc : str, Path or None, optional
-            An optional path in which this Piece should be
-            cached after fitting. This is typically useful in
-            cases where fitting the base object takes a long time.
-
-            To skip this option, keep at the default argument of None.
-
-            ::
-
-                default = None
-
-        base_model : :class:`Model`, :class:`Ensemble` or None, optional
-            If 'iterative' is passed to obj, then a base_model is required in
-            order to perform iterative imputation! The base model can be
-            any valid :class:`Model` or :class:`Ensemble`
-
-            ::
-
-                default = None
-
-        base_model_type : 'default' or Problem Type, optional
-            In setting a base imputer model, it may be desirable to
-            have this model have a different 'problem type', then your
-            over-arching problem. For example, if performing iterative
-            imputation on categorical features only, you will likely
-            want to use a categorical predictor - but for imputing on
-            float-type features, you will want to use a 'regression' type
-            base model.
-
-            Choices are {'binary', 'regression', 'categorical'} or 'default'.
-            If 'default', then the following behavior will be applied:
-            If all columns within the passed scope of this Imputer object
-            have scope / data type 'category', then the problem
-            type for the base model will be set to 'categorical'.
-            In all other cases, the problem type will be set to 'regression'.
-
-            ::
-
-                default = 'default'
-
-
-        extra_params : :ref:`Extra Params`
-            See :ref:`Extra Params`
-
-        '''
 
         self.obj = obj
         self.params = params
@@ -533,75 +569,75 @@ class Imputer(Piece):
         self.base_model_type = base_model_type
         self.extra_params = extra_params
 
-        self.check_args()
+        self._check_args()
 
 
 class Scaler(Piece):
+    '''The Scaler piece refers to
+    a piece in the :class:`ModelPipeline` or :class:`Pipeline`,
+    which is responsible for performing any sort of scaling or
+    transformation on the data
+    which doesn't require the target variable, and doesn't
+    change the number of data points or features.
+    These are typically transformations like feature scaling.
 
-    constructor_ = ScalerConstructor
+    Parameters
+    ----------
+    obj : str or custom obj
+        `obj` if passed a str selects a scaler from the preset defined
+        scalers, See :ref:`Scalers`
+        for all avaliable options. If passing a custom object, it must
+        be a sklearn compatible
+        transformer, and further must not require the target variable,
+        not change the number of data
+        points or features.
+
+        See :ref:`Pipeline Objects<pipeline_objects>` to read more about
+        pipeline objects in general.
+
+    params : int, str or dict of :ref:`params<Params>`, optional
+        `params` set an associated distribution of hyper-parameters to
+        potentially search over with this Scaler.
+        Preset param distributions are
+        listed for each choice of params with the
+        corresponding obj at :ref:`Scalers`,
+        and you can read more on how params work more
+        generally at :ref:`Params`.
+
+        ::
+
+            default = 0
+
+    scope : :ref:`Scope`, optional
+        `scope` determines on which subset of features the specified scaler
+        should transform. See :ref:`Scope` for more
+        information on how scopes can
+        be specified.
+
+        ::
+
+            default = 'float'
+
+    cache_loc : str, Path or None, optional
+        An optional path in which this Piece should be
+        cached after fitting. This is typically useful in
+        cases where fitting the base object takes a long time.
+
+        To skip this option, keep at the default argument of None.
+
+        ::
+
+            default = None
+
+    extra_params : :ref:`extra_params`
+        See :ref:`extra_params`
+
+    '''
+
+    _constructor = ScalerConstructor
 
     def __init__(self, obj, params=0, scope='float',
                  cache_loc=None, **extra_params):
-        '''The Scaler piece refers to
-        a piece in the :class:`ModelPipeline` or :class:`Pipeline`,
-        which is responsible for performing any sort of scaling or
-        transformation on the data
-        which doesn't require the target variable, and doesn't
-        change the number of data points or features.
-        These are typically transformations like feature scaling.
-
-        Parameters
-        ----------
-        obj : str or custom obj
-            `obj` if passed a str selects a scaler from the preset defined
-            scalers, See :ref:`Scalers`
-            for all avaliable options. If passing a custom object, it must
-            be a sklearn compatible
-            transformer, and further must not require the target variable,
-            not change the number of data
-            points or features.
-
-            See :ref:`Pipeline Objects` to read more about
-            pipeline objects in general.
-
-        params : int, str or dict of :ref:`params<Params>`, optional
-            `params` set an associated distribution of hyper-parameters to
-            potentially search over with this Scaler.
-            Preset param distributions are
-            listed for each choice of params with the
-            corresponding obj at :ref:`Scalers`,
-            and you can read more on how params work more
-            generally at :ref:`Params`.
-
-            ::
-
-                default = 0
-
-        scope : :ref:`valid scope<Scopes>`, optional
-            `scope` determines on which subset of features the specified scaler
-            should transform. See :ref:`Scope` for more
-            information on how scopes can
-            be specified.
-
-            ::
-
-                default = 'float'
-
-        cache_loc : str, Path or None, optional
-            An optional path in which this Piece should be
-            cached after fitting. This is typically useful in
-            cases where fitting the base object takes a long time.
-
-            To skip this option, keep at the default argument of None.
-
-            ::
-
-                default = None
-
-        extra_params : :ref:`Extra Params`
-            See :ref:`Extra Params`
-
-        '''
 
         self.obj = obj
         self.params = params
@@ -609,82 +645,81 @@ class Scaler(Piece):
         self.cache_loc = cache_loc
         self.extra_params = extra_params
 
-        self.check_args()
+        self._check_args()
 
 
 class Transformer(Piece):
+    ''' The Transformer is base optional component of the
+    :class:`ModelPipeline` or :class:`Pipeline` class.
+    Transformers define any type of transformation to the loaded
+    data which may change the number
+    of features in a non-simple way (i.e., conceptually distinct
+    from :class:`FeatSelector`, where you
+    know in advance the transformation is just selecting a subset
+    of existing features). These are
+    transformations like applying Principle Component Analysis,
+    or on the fly One Hot Encoding.
 
-    constructor_ = TransformerConstructor
+    Parameters
+    ----------
+    obj : str or custom_obj
+        `obj` if passed a str selects from the avaliable class
+        defined options for
+        transformer as found at :ref:`Transformers`.
+
+        If a custom object is passed as `obj`, it must be a
+        sklearn api compatible
+        transformer (i.e., have fit, transform, get_params
+        and set_params methods, and further be
+        cloneable via sklearn's clone function).
+
+        See :ref:`Pipeline Objects<pipeline_objects>` to read more about
+        pipeline objects in general.
+
+    params : int, str or dict of :ref:`params<Params>`, optional
+        `params` determines optionally if the distribution of
+        hyper-parameters to potentially search over for this transformer.
+        Preset param distributions are listed for each choice of obj
+        at :ref:`Transformers`, and you can read more on
+        how params work more generally at :ref:`Params`.
+
+        ::
+
+            default = 0
+
+    scope : :ref:`Scope`, optional
+        `scope` determines on which subset of features
+        the specified transformer
+        should transform. See :ref:`Scope` for more information
+        on how scopes can
+        be specified.
+
+        Specifically, it may be useful to consider the use of
+        :class:`Duplicate` here.
+
+        ::
+
+            default = 'float'
+
+    cache_loc : str, Path or None, optional
+        An optional path in which this Piece should be
+        cached after fitting. This is typically useful in
+        cases where fitting the base object takes a long time.
+
+        To skip this option, keep at the default argument of None.
+
+        ::
+
+            default = None
+
+    extra_params : :ref:`extra_params`
+        See :ref:`extra_params`
+    '''
+
+    _constructor = TransformerConstructor
 
     def __init__(self, obj, params=0, scope='float', cache_loc=None,
                  **extra_params):
-        ''' The Transformer is base optional component of the
-        :class:`ModelPipeline` or :class:`Pipeline` class.
-        Transformers define any type of transformation to the loaded
-        data which may change the number
-        of features in a non-simple way (i.e., conceptually distinct
-        from :class:`FeatSelector`, where you
-        know in advance the transformation is just selecting a subset
-        of existing features). These are
-        transformations like applying Principle Component Analysis,
-        or on the fly One Hot Encoding.
-
-        Parameters
-        ----------
-        obj : str or custom_obj
-            `obj` if passed a str selects from the avaliable class
-            defined options for
-            transformer as found at :ref:`Transformers`.
-
-            If a custom object is passed as `obj`, it must be a
-            sklearn api compatible
-            transformer (i.e., have fit, transform, get_params
-            and set_params methods, and further be
-            cloneable via sklearn's clone function).
-            See :ref:`Custom Input Objects` for more info.
-
-            See :ref:`Pipeline Objects` to read more about
-            pipeline objects in general.
-
-        params : int, str or dict of :ref:`params<Params>`, optional
-            `params` determines optionally if the distribution of
-            hyper-parameters to potentially search over for this transformer.
-            Preset param distributions are listed for each choice of obj
-            at :ref:`Transformers`, and you can read more on
-            how params work more generally at :ref:`Params`.
-
-            ::
-
-                default = 0
-
-        scope : :ref:`valid scope<Scopes>`, optional
-            `scope` determines on which subset of features
-            the specified transformer
-            should transform. See :ref:`Scope` for more information
-            on how scopes can
-            be specified.
-
-            Specifically, it may be useful to consider the use of
-            :class:`Duplicate` here.
-
-            ::
-
-                default = 'float'
-
-        cache_loc : str, Path or None, optional
-            An optional path in which this Piece should be
-            cached after fitting. This is typically useful in
-            cases where fitting the base object takes a long time.
-
-            To skip this option, keep at the default argument of None.
-
-            ::
-
-                default = None
-
-        extra_params : :ref:`Extra Params`
-            See :ref:`Extra Params`
-        '''
 
         self.obj = obj
         self.params = params
@@ -692,77 +727,77 @@ class Transformer(Piece):
         self.cache_loc = cache_loc
         self.extra_params = extra_params
 
-        self.check_args()
+        self._check_args()
 
 
 class FeatSelector(Piece):
+    ''' FeatSelector is a base piece of
+    :class:`ModelPipeline` or :class:`Pipeline`, which is designed
+    to preform feature selection.
 
-    constructor_ = FeatSelectorConstructor
+    Parameters
+    ----------
+    obj : str or custom_obj
+        `obj` selects the feature selection strategy to use.
+        See :ref:`Feat Selectors`
+        for all avaliable options. Notably, if 'rfe' is passed, then a
+        base model must also be passed!
+
+        See :ref:`Pipeline Objects<pipeline_objects>` to read more about pipeline objects
+        in general.
+
+    params : int, str or dict of :ref:`params<Params>`, optional
+        `params` set an associated distribution of hyper-parameters to
+        potentially search over with this FeatSelector.
+        Preset param distributions are
+        listed for each choice of params with the corresponding
+        obj at :ref:`Feat Selectors`,
+        and you can read more on how params
+        work more generally at :ref:`Params`.
+
+        ::
+
+            default = 0
+
+    scope : :ref:`Scope`, optional
+        `scope` determines on which subset of features the specified
+        feature selector will have access to.
+        See :ref:`Scope` for more information on how scopes can
+        be specified.
+
+        ::
+
+            default = 'all'
+
+    cache_loc : str, Path or None, optional
+        An optional path in which this Piece should be
+        cached after fitting. This is typically useful in
+        cases where fitting the base object takes a long time.
+
+        To skip this option, keep at the default argument of None.
+
+        ::
+
+            default = None
+
+    base_model : :class:`Model`, :class:`Ensemble` or None, optional
+        If 'rfe' is passed to obj, then a base_model is required in
+        order to perform recursive feature elimination.
+        The base model can be any valid argument accepts by
+        param `model` in :class:`ModelPipeline` or :class:`Pipeline`.
+
+        ::
+
+            default = None
+
+    extra_params : :ref:`extra_params`
+        See :ref:`extra_params`
+    '''
+
+    _constructor = FeatSelectorConstructor
 
     def __init__(self, obj, params=0, scope='all',
                  cache_loc=None, base_model=None, **extra_params):
-        ''' FeatSelector is a base piece of
-        :class:`ModelPipeline` or :class:`Pipeline`, which is designed
-        to preform feature selection.
-
-        Parameters
-        ----------
-        obj : str or custom_obj
-            `obj` selects the feature selection strategy to use.
-            See :ref:`Feat Selectors`
-            for all avaliable options. Notably, if 'rfe' is passed, then a
-            base model must also be passed!
-
-            See :ref:`Pipeline Objects` to read more about pipeline objects
-            in general.
-
-        params : int, str or dict of :ref:`params<Params>`, optional
-            `params` set an associated distribution of hyper-parameters to
-            potentially search over with this FeatSelector.
-            Preset param distributions are
-            listed for each choice of params with the corresponding
-            obj at :ref:`Feat Selectors`,
-            and you can read more on how params
-            work more generally at :ref:`Params`.
-
-            ::
-
-                default = 0
-
-        scope : :ref:`valid scope<Scopes>`, optional
-            `scope` determines on which subset of features the specified
-            feature selector will have access to.
-            See :ref:`Scope` for more information on how scopes can
-            be specified.
-
-            ::
-
-                default = 'all'
-
-        cache_loc : str, Path or None, optional
-            An optional path in which this Piece should be
-            cached after fitting. This is typically useful in
-            cases where fitting the base object takes a long time.
-
-            To skip this option, keep at the default argument of None.
-
-            ::
-
-                default = None
-
-        base_model : :class:`Model`, :class:`Ensemble` or None, optional
-            If 'rfe' is passed to obj, then a base_model is required in
-            order to perform recursive feature elimination.
-            The base model can be any valid argument accepts by
-            param `model` in :class:`ModelPipeline` or :class:`Pipeline`.
-
-            ::
-
-                default = None
-
-        extra_params : :ref:`Extra Params`
-            See :ref:`Extra Params`
-        '''
 
         self.obj = obj
         self.params = params
@@ -771,102 +806,102 @@ class FeatSelector(Piece):
         self.base_model = deepcopy(base_model)
         self.base_model_type = None
         self.extra_params = extra_params
-        self.check_args()
+        self._check_args()
 
 
 class Model(Piece):
+    ''' Model represents a base components of the :class:`Pipeline`
+    or :class:`ModelPipeline`,
+    specifically a single Model / estimator.
 
-    constructor_ = ModelConstructor
+    obj : str or custom_obj
+        The passed object should be either
+        a preset str indicator found at :ref:`Models`,
+        or from a custom passed user model (compatible w/ sklearn api).
+
+        See :ref:`Pipeline Objects<pipeline_objects>` to
+        read more about pipeline objects in general.
+
+        `obj` should be wither a single str indicator or a
+        single custom model object, and not passed a list-like of either.
+        If an ensemble of models is requested, then see :class:`Ensemble`.
+
+    params : int, str or dict of :ref:`params<Params>`, optional
+        `params` optionally set an
+        associated distribution of hyper-parameters to
+        this model object. Preset param distributions are
+        listed for each choice of obj at :ref:`Models`,
+        and you can read more on
+        how params work more generally at :ref:`Params`.
+
+        ::
+
+            default = 0
+
+    scope : :ref:`Scope`, optional
+        `scope` determines on which subset of features the specified model
+        should work on. See :ref:`Scope` for more
+        information on how scopes can
+        be specified.
+
+        ::
+
+            default = 'all'
+
+    cache_loc : str, Path or None, optional
+        An optional path in which this model should be
+        cached after fitting. This is typically useful in
+        cases where fitting the base object takes a long time.
+
+        To skip this option, keep at the default argument of None.
+
+        ::
+
+            default = None
+
+    param_search : :class:`ParamSearch`, None, optional
+        If None, by default, this will be a base model.
+        Alternatively, by passing a :class:`ParamSearch` instance here,
+        it specifies that this model should be wrapped in a
+        Hyper-parameter search object.
+
+        This can be useful to create Model's which have
+        a nested hyper-parameter tuning stage independent from the
+        other pipeline steps, especially when early
+        pipeline steps are long to fit, and don't
+        have associated hyper-params. Notably, if set here,
+        then all children param distributions of this Model
+        will be associated with it's hyper-parameter search
+        and this wrapped object will not pass along any param
+        distributions to higher level searches.
+
+        ::
+
+            default = None
+
+    target_scaler : Scaler, None, optional
+
+        Still somewhat experimental, can pass
+        a Scaler object here and have this model
+        perform target scaling + reverse scaling.
+
+        Note: Has not been fully tested in
+        complicated nesting cases, e.g., if Model is
+        wrapping a nested Pipeline, this param will
+        likely break.
+
+        ::
+
+            default = None
+
+    extra_params : :ref:`extra_params`
+        See :ref:`extra_params`
+    '''
+
+    _constructor = ModelConstructor
 
     def __init__(self, obj, params=0, scope='all', cache_loc=None,
                  param_search=None, target_scaler=None, **extra_params):
-        ''' Model represents a base components of the :class:`Pipeline`
-        or :class:`ModelPipeline`,
-        specifically a single Model / estimator.
-
-        obj : str or custom_obj
-            The passed object should be either
-            a preset str indicator found at :ref:`Models`,
-            or from a custom passed user model (compatible w/ sklearn api).
-
-            See :ref:`Pipeline Objects` to
-            read more about pipeline objects in general.
-
-            `obj` should be wither a single str indicator or a
-            single custom model object, and not passed a list-like of either.
-            If an ensemble of models is requested, then see :class:`Ensemble`.
-
-        params : int, str or dict of :ref:`params<Params>`, optional
-            `params` optionally set an
-            associated distribution of hyper-parameters to
-            this model object. Preset param distributions are
-            listed for each choice of obj at :ref:`Models`,
-            and you can read more on
-            how params work more generally at :ref:`Params`.
-
-            ::
-
-                default = 0
-
-        scope : :ref:`valid scope<Scopes>`, optional
-            `scope` determines on which subset of features the specified model
-            should work on. See :ref:`Scope` for more
-            information on how scopes can
-            be specified.
-
-            ::
-
-                default = 'all'
-
-        cache_loc : str, Path or None, optional
-            An optional path in which this model should be
-            cached after fitting. This is typically useful in
-            cases where fitting the base object takes a long time.
-
-            To skip this option, keep at the default argument of None.
-
-            ::
-
-                default = None
-
-        param_search : :class:`ParamSearch`, None, optional
-            If None, by default, this will be a base model.
-            Alternatively, by passing a :class:`ParamSearch` instance here,
-            it specifies that this model should be wrapped in a
-            Hyper-parameter search object.
-
-            This can be useful to create Model's which have
-            a nested hyper-parameter tuning stage independent from the
-            other pipeline steps, especially when early
-            pipeline steps are long to fit, and don't
-            have associated hyper-params. Notably, if set here,
-            then all children param distributions of this Model
-            will be associated with it's hyper-parameter search
-            and this wrapped object will not pass along any param
-            distributions to higher level searches.
-
-            ::
-
-                default = None
-
-        target_scaler : Scaler, None, optional
-
-            Still somewhat experimental, can pass
-            a Scaler object here and have this model
-            perform target scaling + reverse scaling.
-
-            Note: Has not been fully tested in
-            complicated nesting cases, e.g., if Model is
-            wrapping a nested Pipeline, this param will
-            likely break.
-
-            ::
-
-                default = None
-
-        extra_params : :ref:`Extra Params`
-            See :ref:`Extra Params`
-        '''
 
         self.obj = obj
         self.params = params
@@ -876,12 +911,182 @@ class Model(Piece):
         self.target_scaler = target_scaler
         self.extra_params = extra_params
 
-        self.check_args()
+        self._check_args()
 
 
 class Ensemble(Model):
+    '''The Ensemble object is valid base
+    :class:`ModelPipeline` (or :class:`Pipeline`) piece, designed
+    to be passed as input to the `model` parameter
+    of :class:`ModelPipeline`, or
+    to its own models parameters.
 
-    constructor_ = ModelConstructor
+    This class is used to create a variety ensembled models,
+    typically based on
+    :class:`Model` pieces.
+
+    Parameters
+    ----------
+    obj : str
+        Each str passed to ensemble refers to a type of ensemble to train,
+        based on also the passed input to the `models` parameter,
+        and also the
+        additional parameters passed when initializing Ensemble.
+
+        See :ref:`Ensemble Types` to see all
+        avaliable options for ensembles.
+
+        Passing custom objects here, while technically possible,
+        is not currently full supported.
+        That said, there are just certain assumptions that
+        the custom object must meet in order to work, specifically,
+        they should have similar input params to other similar existing
+        ensembles, e.g., in the case the `single_estimator` is False
+        and `needs_split` is also False, then the passed object needs
+        to be able to accept an input parameter `estimators`,
+        which accepts a list of (str, estimator) tuples.
+        Whereas if needs_split is still False,
+        but single_estimator is True, then the passed object needs
+        to support an init param of `base_estimator`,
+        which accepts a single estimator.
+
+    models : :class:`Model`, :class:`Ensemble` or list of
+        The `models` parameter is designed to accept any single model-like
+        pipeline parameter object, i.e.,
+        :class:`Model` or even another :class:`Ensemble`.
+        The passed pieces here will be used along with the
+        requested ensemble object to
+        create the requested ensemble.
+
+        See :class:`Model` for how to create a valid base model(s)
+        to pass as input here.
+
+    params : int, str or dict of :ref:`params<Params>`, optional
+        `params` sets as associated distribution of hyper-parameters
+        for this ensemble object. These parameters will be used only
+        in the context of a hyper-parameter search.
+        Notably, these `params` refer to the ensemble obj itself,
+        params for base `models` should be passed
+        accordingly when creating the base models.
+        Preset param distributions are listed at :ref:`Ensemble Types`,
+        under each of the options for ensemble objs.
+
+        You can read more about generally about
+        hyper-parameter distributions as associated with
+        objects at :ref:`Params`.
+
+        ::
+
+            default = 0
+
+    scope : :ref:`Scope`, optional
+        `scope` determines on which subset of features the specified
+        ensemble model
+        should work on. See :ref:`Scope` for more
+        information on how scopes can
+        be specified.
+
+        ::
+
+            default = 'all'
+
+    param_search : :class:`ParamSearch`, None, optional
+        If None, by default, this will be a base ensemble model.
+        Alternatively, by passing a :class:`ParamSearch` instance here,
+        it specifies that this model should be wrapped in a
+        Nevergrad hyper-parameter search object.
+
+        This can be useful to create Model's which have
+        a nested hyper-parameter tuning independent from the
+        other pipeline steps.
+
+        ::
+
+            default = None
+
+    target_scaler : Scaler, None, optional
+
+        Still somewhat experimental, can pass
+        a Scaler object here and have this model
+        perform target scaling + reverse scaling.
+
+        scope in the passed scaler is ignored.
+
+        Note: Has not been fully tested in
+        complicated nesting cases, e.g., if Model is
+        wrapping a nested Pipeline, this param will
+        likely break.
+
+        ::
+
+            default = None
+
+    base_model : :class:`Model`, None, optional
+        In the case that an ensemble is passed which has
+        the parameter `final_estimator` (not base model!),
+        for example in the case of stacking,
+        then you may pass a Model type
+        object here to be used as that final estimator.
+
+        Otherwise, by default this will be left as None,
+        and if the requested ensemble has the final_estimator
+        parameter, then it will pass None to the object
+        (which is typically for setting the default).
+
+        ::
+
+            default = None
+
+    cv : :class:`CV` or None, optional
+        Used for passing custom nested internal CV split behavior to
+        ensembles which employ splits, e.g., stacking.
+
+        ::
+
+            default = None
+
+    single_estimator : bool, optional
+        The parameter `single_estimator` is used to let the
+        Ensemble object know if the `models` must be a single estimator.
+        This is used for ensemble types
+        that requires an init param `base_estimator`.
+        In the case that multiple models
+        are passed to `models`, but `single_estimator` is True,
+        then the models will automatically
+        be wrapped in a voting ensemble,
+        thus creating one single estimator.
+
+        ::
+
+            default = False
+
+    n_jobs_type : 'ensemble' or 'models', optional
+        Valid options are either 'ensemble' or 'models'.
+
+        This parameter controls how the total n_jobs are distributed, if
+        'ensemble', then the n_jobs will be used all in the ensemble object
+        and every instance within the sub-models set to n_jobs = 1.
+        Alternatively, if passed 'models', then the ensemble
+        object will not be multi-processed, i.e.,
+        will be set to n_jobs = 1, and the n_jobs will
+        be distributed to each base model.
+
+        If you are training a stacking regressor for example
+        with n_jobs = 16, and you have 16+ models, then 'ensemble'
+        is likely a good choice here. If instead you have only
+        3 base models, and one or more of those 3 could benefit from
+        a higher n_jobs, then setting n_jobs_type to 'models' might
+        give a speed-up.
+
+        ::
+
+            default = 'ensemble'
+
+    extra_params : :ref:`extra_params`
+        See :ref:`extra_params`
+    '''
+
+    _constructor = ModelConstructor
 
     # @TODO add cache_loc here? Do the wrapper's support it?
 
@@ -894,176 +1099,6 @@ class Ensemble(Model):
                  single_estimator=False,
                  n_jobs_type='ensemble',
                  **extra_params):
-        ''' The Ensemble object is valid base
-        :class:`ModelPipeline` (or :class:`Pipeline`) piece, designed
-        to be passed as input to the `model` parameter
-        of :class:`ModelPipeline`, or
-        to its own models parameters.
-
-        This class is used to create a variety ensembled models,
-        typically based on
-        :class:`Model` pieces.
-
-        Parameters
-        ----------
-        obj : str
-            Each str passed to ensemble refers to a type of ensemble to train,
-            based on also the passed input to the `models` parameter,
-            and also the
-            additional parameters passed when initializing Ensemble.
-
-            See :ref:`Ensemble Types` to see all
-            avaliable options for ensembles.
-
-            Passing custom objects here, while technically possible,
-            is not currently full supported.
-            That said, there are just certain assumptions that
-            the custom object must meet in order to work, specifically,
-            they should have similar input params to other similar existing
-            ensembles, e.g., in the case the `single_estimator` is False
-            and `needs_split` is also False, then the passed object needs
-            to be able to accept an input parameter `estimators`,
-            which accepts a list of (str, estimator) tuples.
-            Whereas if needs_split is still False,
-            but single_estimator is True, then the passed object needs
-            to support an init param of `base_estimator`,
-            which accepts a single estimator.
-
-        models : :class:`Model`, :class:`Ensemble` or list of
-            The `models` parameter is designed to accept any single model-like
-            pipeline parameter object, i.e.,
-            :class:`Model` or even another :class:`Ensemble`.
-            The passed pieces here will be used along with the
-            requested ensemble object to
-            create the requested ensemble.
-
-            See :class:`Model` for how to create a valid base model(s)
-            to pass as input here.
-
-        params : int, str or dict of :ref:`params<Params>`, optional
-            `params` sets as associated distribution of hyper-parameters
-            for this ensemble object. These parameters will be used only
-            in the context of a hyper-parameter search.
-            Notably, these `params` refer to the ensemble obj itself,
-            params for base `models` should be passed
-            accordingly when creating the base models.
-            Preset param distributions are listed at :ref:`Ensemble Types`,
-            under each of the options for ensemble objs.
-
-            You can read more about generally about
-            hyper-parameter distributions as associated with
-            objects at :ref:`Params`.
-
-            ::
-
-                default = 0
-
-        scope : :ref:`valid scope<Scopes>`, optional
-            `scope` determines on which subset of features the specified
-            ensemble model
-            should work on. See :ref:`Scope` for more
-            information on how scopes can
-            be specified.
-
-            ::
-
-                default = 'all'
-
-        param_search : :class:`ParamSearch`, None, optional
-            If None, by default, this will be a base ensemble model.
-            Alternatively, by passing a :class:`ParamSearch` instance here,
-            it specifies that this model should be wrapped in a
-            Nevergrad hyper-parameter search object.
-
-            This can be useful to create Model's which have
-            a nested hyper-parameter tuning independent from the
-            other pipeline steps.
-
-            ::
-
-                default = None
-
-        target_scaler : Scaler, None, optional
-
-            Still somewhat experimental, can pass
-            a Scaler object here and have this model
-            perform target scaling + reverse scaling.
-
-            scope in the passed scaler is ignored.
-
-            Note: Has not been fully tested in
-            complicated nesting cases, e.g., if Model is
-            wrapping a nested Pipeline, this param will
-            likely break.
-
-            ::
-
-                default = None
-
-        base_model : :class:`Model`, None, optional
-            In the case that an ensemble is passed which has
-            the parameter `final_estimator` (not base model!),
-            for example in the case of stacking,
-            then you may pass a Model type
-            object here to be used as that final estimator.
-
-            Otherwise, by default this will be left as None,
-            and if the requested ensemble has the final_estimator
-            parameter, then it will pass None to the object
-            (which is typically for setting the default).
-
-            ::
-
-                default = None
-
-        cv : :class:`CV` or None, optional
-            Used for passing custom nested internal CV split behavior to
-            ensembles which employ splits, e.g., stacking.
-
-            ::
-
-                default = None
-
-        single_estimator : bool, optional
-            The parameter `single_estimator` is used to let the
-            Ensemble object know if the `models` must be a single estimator.
-            This is used for ensemble types
-            that requires an init param `base_estimator`.
-            In the case that multiple models
-            are passed to `models`, but `single_estimator` is True,
-            then the models will automatically
-            be wrapped in a voting ensemble,
-            thus creating one single estimator.
-
-            ::
-
-                default = False
-
-        n_jobs_type : 'ensemble' or 'models', optional
-            Valid options are either 'ensemble' or 'models'.
-
-            This parameter controls how the total n_jobs are distributed, if
-            'ensemble', then the n_jobs will be used all in the ensemble object
-            and every instance within the sub-models set to n_jobs = 1.
-            Alternatively, if passed 'models', then the ensemble
-            object will not be multi-processed, i.e.,
-            will be set to n_jobs = 1, and the n_jobs will
-            be distributed to each base model.
-
-            If you are training a stacking regressor for example
-            with n_jobs = 16, and you have 16+ models, then 'ensemble'
-            is likely a good choice here. If instead you have only
-            3 base models, and one or more of those 3 could benefit from
-            a higher n_jobs, then setting n_jobs_type to 'models' might
-            give a speed-up.
-
-            ::
-
-                default = 'ensemble'
-
-        extra_params : :ref:`Extra Params`
-            See :ref:`Extra Params`
-        '''
 
         self.obj = obj
 
@@ -1082,9 +1117,9 @@ class Ensemble(Model):
         self.n_jobs_type = n_jobs_type
         self.extra_params = extra_params
 
-        self.check_args()
+        self._check_args()
 
-    def check_extra_args(self):
+    def _check_extra_args(self):
 
         if isinstance(self.models, list):
             for model in self.models:
@@ -1099,6 +1134,252 @@ class Ensemble(Model):
 
 
 class ParamSearch(Params):
+    ''' ParamSearch is special input object designed to be
+    used with :class:`ModelPipeline` pr :class:`Pipeline`.
+    ParamSearch defines a hyperparameter search strategy.
+    When passed to :class:`Pipeline`,
+    its search strategy is applied in the context of any set :ref:`Params`
+    within the base pieces.
+    Specifically, there must be at least one parameter search
+    somewhere in the object ParamSearch is passed!
+
+    All backend hyper-parameter searches make use of the
+    <https://github.com/facebookresearch/nevergrad>`_ library.
+
+    Parameters
+    ----------
+    search_type : str, optional
+        The type of nevergrad hyper-parameter search to conduct. See
+        :ref:`Search Types<Search Types>` for all avaliable options.
+        Also you may further look into
+        nevergrad's experimental variants if you so choose,
+        this parameter can accept
+        those as well.
+
+        New: You may pass 'grid' here in addition to the
+        supported nevergrad searches. This will use sklearn's
+        GridSearch. Note in this case some of the other parameters
+        are ignored, these are: weight_scorer, mp_context, dask_ip,
+        memmap_X, search_only_params
+
+        ::
+
+            default = 'RandomSearch'
+
+    cv : :class:`CV` or 'default', optional
+        This parameter defines the splits to be used
+        internally
+        @TODO finish writing this doc
+
+        ::
+
+            default = 'default'
+
+    n_iter : int, optional
+        The number of hyper-parameters to try / budget
+        of the underlying search algorithm.
+        How well a hyper-parameter search works and how long
+        it takes will be very dependent on this parameter
+        and the defined internal CV strategy
+        (via `splits` and `n_repeats`). In general, if too few
+        choices are provided
+        the algorithm will likely not select high
+        performing hyperparameters, and alternatively
+        if too high a value/budget is
+        set, then you may find overfit/non-generalize
+        hyper-parameter choices. Other factors which will influence
+        the 'right' number of `n_iter` to specify are:
+
+        - `search_type`
+            Depending on the underlying search type, it may
+            take a bigger or smaller budget
+            on average to find a good set of hyper-parameters
+
+        - The dimension of the underlying search space
+            If you are only optimizing a few, say 2,
+            underlying parameter distributions,
+            this will require a far smaller budget then say a really
+            high dimensional search space.
+
+        - The CV strategy
+            The CV strategy defined via `splits` and `n_repeats`
+            may make it easier or harder to overfit when searching
+            for hyper-parameters, thus conceptually
+            a good choice of CV strategy can serve to increase
+            the number `n_iter` you can use
+            before overfitting, or conversely a bad choice may limit it.
+
+        - Number of data points / subjects
+            Along with CV strategy, the number of data points/subjects
+            will greatly influence
+            how quickly you overfit, and therefore a
+            good choice of `n_iter`.
+
+        Notably, one can always if they have the resources
+        simply experiment with this parameter.
+
+        ::
+
+            default = 10
+
+    scorer : str or 'default', optional
+        In order for a set of hyper-parameters to be evaluated,
+        a single scorer must be defined.
+
+        For a full list of supported scorers please view the
+        scikit-learn docs at:
+        https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
+
+        If left as 'default', assign a reasonable scorer based on the
+        passed problem type.
+
+        - 'regression'  : 'explained_variance'
+        - 'binary'      : 'matthews'
+        - 'categorical' : 'matthews'
+
+        Be careful to make sure to select an appropriate scorer for
+        the problem type.
+
+        Only one value of `scorer` may be passed here.
+
+        ::
+
+            default = 'default'
+
+    weight_scorer : bool or 'default', optional
+        `weight_scorer` describes if the scorer of interest
+        should be weighted by
+        the number of subjects within each validation fold.
+        So, for example, if
+        a leave-out-group CV scheme is specified to `splits`,
+        and the groups have
+        drastically different numbers of subjects,
+        then you may want to consider
+        weighting the final average validation metric
+        (as computed across in this case
+        all groups used by themselves) by the number
+        of subjects in each fold.
+
+        ::
+
+            default = False
+
+    mp_context : str, optional
+        When a hyper-parameter search is launched, there are different
+        ways through python that the multi-processing can be launched
+        (assuming n_jobs > 1). Occassionally some choices can lead to
+        unexpected errors.
+
+        Choices are:
+
+        - 'loky': Create and use the python library loky backend.
+
+        - 'fork': Python default fork mp_context
+
+        - 'forkserver': Python default forkserver mp_context
+
+        - 'spawn': Python default spawn mp_context
+
+        ::
+
+            default = 'loky'
+
+    n_jobs : int or 'default', optional
+        The number of cores to be used for the
+        search. In general, this parameter
+        should be left as 'default', which will set it
+        based on the n_jobs as set in the problem spec-
+        and will attempt to automatically change this
+        value if say in the context of nesting.
+
+        ::
+
+            default = 'default'
+
+    random_state : int or 'default', optional
+        If left as 'default' will set to the value
+        set in the ProblemSpec. Otherwise, can
+        set a specific value here.
+
+        ::
+
+            default = 'default'
+
+
+    dask_ip : str or None, optional
+        If None, default, then ignore this parameter..
+
+        For experimental Dask support.
+        This should be the ip of a created dask
+        cluster. A dask Client object will be created
+        and passed this ip in order to connect to the cluster.
+
+        ::
+
+            default = None
+
+    memmap_X : bool, optional
+        When passing large memory arrays in each parameter search,
+        it can be useful as a memory reduction technique to pass
+        numpy memmap'ed arrays. This solves an issue where
+        the loky backend will not properly pass too large arrays.
+
+        Warning: This can slow down code, and only reduces the actual
+        memory consumption of each job by a little bit.
+
+        Note: If passing a dask_ip, this option will be skipped,
+        as if using the dask backend, then large X's will be
+        pre-scattered instead.
+
+        ::
+
+            default = False
+
+    search_only_params : dict or None, optional
+        In some rare cases, it may be the case that you want
+        to specify that certain parameters be passed only during
+        the nested parameter searches. A dict of parameters
+        can be passed here to accomplish that. For example,
+        if passing:
+
+        search_only_params = {'svm classifier__probability': False}
+
+        And assuming that the default / selecting parameter for this svm
+        classifier for probability is True by default,
+        then only when exploring
+        nested hyper-parameter options will
+        probability be set to False, but
+        when fitting the final model with the best
+        parameters found from the search,
+        it will revert back to the default,
+        i.e., in this case probability = True.
+
+        Note: this may be a little bit tricky to use as
+        you need to know how to represent the parameters correctly!
+
+        To ignore this parameter / option.
+        simply keep the default value of None
+
+        ::
+
+            default = None
+
+    verbose : int, optional
+        Controls the verbosity: the higher, the more messages.
+        By default, no verbosity, i.e., 0.
+
+        ::
+
+            default = 0
+
+    progress_loc : None or str, optional
+        Optional parameter, will append to a text file
+        after every completed tested parameter.
+
+        ::
+
+            default = None
+    '''
 
     def __init__(self, search_type='RandomSearch', cv='default',
                  n_iter=10, scorer='default', weight_scorer=False,
@@ -1106,253 +1387,6 @@ class ParamSearch(Params):
                  random_state='default',
                  dask_ip=None, memmap_X=False,
                  search_only_params=None, verbose=0, progress_loc=None):
-        ''' ParamSearch is special input object designed to be
-        used with :class:`ModelPipeline` pr :class:`Pipeline`.
-        ParamSearch defines a hyperparameter search strategy.
-        When passed to :class:`Pipeline`,
-        its search strategy is applied in the context of any set :ref:`Params`
-        within the base pieces.
-        Specifically, there must be at least one parameter search
-        somewhere in the object ParamSearch is passed!
-
-        All backend hyper-parameter searches make use of the
-        <https://github.com/facebookresearch/nevergrad>`_ library.
-
-        Parameters
-        ----------
-        search_type : str, optional
-            The type of nevergrad hyper-parameter search to conduct. See
-            :ref:`Search Types<Search Types>` for all avaliable options.
-            Also you may further look into
-            nevergrad's experimental variants if you so choose,
-            this parameter can accept
-            those as well.
-
-            New: You may pass 'grid' here in addition to the
-            supported nevergrad searches. This will use sklearn's
-            GridSearch. Note in this case some of the other parameters
-            are ignored, these are: weight_scorer, mp_context, dask_ip,
-            memmap_X, search_only_params
-
-            ::
-
-                default = 'RandomSearch'
-
-        cv : :class:`CV` or 'default', optional
-            This parameter defines the splits to be used
-            internally
-            @TODO finish writing this doc
-
-            ::
-
-                default = 'default'
-
-        n_iter : int, optional
-            The number of hyper-parameters to try / budget
-            of the underlying search algorithm.
-            How well a hyper-parameter search works and how long
-            it takes will be very dependent on this parameter
-            and the defined internal CV strategy
-            (via `splits` and `n_repeats`). In general, if too few
-            choices are provided
-            the algorithm will likely not select high
-            performing hyperparameters, and alternatively
-            if too high a value/budget is
-            set, then you may find overfit/non-generalize
-            hyper-parameter choices. Other factors which will influence
-            the 'right' number of `n_iter` to specify are:
-
-            - `search_type`
-                Depending on the underlying search type, it may
-                take a bigger or smaller budget
-                on average to find a good set of hyper-parameters
-
-            - The dimension of the underlying search space
-                If you are only optimizing a few, say 2,
-                underlying parameter distributions,
-                this will require a far smaller budget then say a really
-                high dimensional search space.
-
-            - The CV strategy
-                The CV strategy defined via `splits` and `n_repeats`
-                may make it easier or harder to overfit when searching
-                for hyper-parameters, thus conceptually
-                a good choice of CV strategy can serve to increase
-                the number `n_iter` you can use
-                before overfitting, or conversely a bad choice may limit it.
-
-            - Number of data points / subjects
-                Along with CV strategy, the number of data points/subjects
-                will greatly influence
-                how quickly you overfit, and therefore a
-                good choice of `n_iter`.
-
-            Notably, one can always if they have the resources
-            simply experiment with this parameter.
-
-            ::
-
-                default = 10
-
-        scorer : str or 'default', optional
-            In order for a set of hyper-parameters to be evaluated,
-            a single scorer must be defined.
-
-            For a full list of supported scorers please view the
-            scikit-learn docs at:
-            https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
-
-            If left as 'default', assign a reasonable scorer based on the
-            passed problem type.
-
-            - 'regression'  : 'explained_variance'
-            - 'binary'      : 'matthews'
-            - 'categorical' : 'matthews'
-
-            Be careful to make sure to select an appropriate scorer for
-            the problem type.
-
-            Only one value of `scorer` may be passed here.
-
-            ::
-
-                default = 'default'
-
-        weight_scorer : bool or 'default', optional
-            `weight_scorer` describes if the scorer of interest
-            should be weighted by
-            the number of subjects within each validation fold.
-            So, for example, if
-            a leave-out-group CV scheme is specified to `splits`,
-            and the groups have
-            drastically different numbers of subjects,
-            then you may want to consider
-            weighting the final average validation metric
-            (as computed across in this case
-            all groups used by themselves) by the number
-            of subjects in each fold.
-
-            ::
-
-                default = False
-
-        mp_context : str, optional
-            When a hyper-parameter search is launched, there are different
-            ways through python that the multi-processing can be launched
-            (assuming n_jobs > 1). Occassionally some choices can lead to
-            unexpected errors.
-
-            Choices are:
-
-            - 'loky': Create and use the python library loky backend.
-
-            - 'fork': Python default fork mp_context
-
-            - 'forkserver': Python default forkserver mp_context
-
-            - 'spawn': Python default spawn mp_context
-
-            ::
-
-                default = 'loky'
-
-        n_jobs : int or 'default', optional
-            The number of cores to be used for the
-            search. In general, this parameter
-            should be left as 'default', which will set it
-            based on the n_jobs as set in the problem spec-
-            and will attempt to automatically change this
-            value if say in the context of nesting.
-
-            ::
-
-                default = 'default'
-
-        random_state : int or 'default', optional
-            If left as 'default' will set to the value
-            set in the ProblemSpec. Otherwise, can
-            set a specific value here.
-
-            ::
-
-                default = 'default'
-
-
-        dask_ip : str or None, optional
-            If None, default, then ignore this parameter..
-
-            For experimental Dask support.
-            This should be the ip of a created dask
-            cluster. A dask Client object will be created
-            and passed this ip in order to connect to the cluster.
-
-            ::
-
-                default = None
-
-        memmap_X : bool, optional
-            When passing large memory arrays in each parameter search,
-            it can be useful as a memory reduction technique to pass
-            numpy memmap'ed arrays. This solves an issue where
-            the loky backend will not properly pass too large arrays.
-
-            Warning: This can slow down code, and only reduces the actual
-            memory consumption of each job by a little bit.
-
-            Note: If passing a dask_ip, this option will be skipped,
-            as if using the dask backend, then large X's will be
-            pre-scattered instead.
-
-            ::
-
-                default = False
-
-        search_only_params : dict or None, optional
-            In some rare cases, it may be the case that you want
-            to specify that certain parameters be passed only during
-            the nested parameter searches. A dict of parameters
-            can be passed here to accomplish that. For example,
-            if passing:
-
-            search_only_params = {'svm classifier__probability': False}
-
-            And assuming that the default / selecting parameter for this svm
-            classifier for probability is True by default,
-            then only when exploring
-            nested hyper-parameter options will
-            probability be set to False, but
-            when fitting the final model with the best
-            parameters found from the search,
-            it will revert back to the default,
-            i.e., in this case probability = True.
-
-            Note: this may be a little bit tricky to use as
-            you need to know how to represent the parameters correctly!
-
-            To ignore this parameter / option.
-            simply keep the default value of None
-
-            ::
-
-                default = None
-
-        verbose : int, optional
-            Controls the verbosity: the higher, the more messages.
-            By default, no verbosity, i.e., 0.
-
-            ::
-
-                default = 0
-
-        progress_loc : None or str, optional
-            Optional parameter, will append to a text file
-            after every completed tested parameter.
-
-            ::
-
-                default = None
-        '''
-
         self.search_type = search_type
 
         if cv == 'default':
@@ -1374,9 +1408,9 @@ class ParamSearch(Params):
         self.progress_loc = progress_loc
         self.search_only_params = search_only_params
 
-        self.check_args()
+        self._check_args()
 
-    def as_dict(self, ps):
+    def _as_dict(self, ps):
 
         params = self.get_params()
 
@@ -1394,7 +1428,7 @@ class ParamSearch(Params):
 
         return params
 
-    def check_args(self):
+    def _check_args(self):
 
         if isinstance(self.scorer, list):
             raise IOError('scorer within Param Search cannot be list-like')
@@ -1404,36 +1438,34 @@ class ParamSearch(Params):
 
 
 class Pipeline(Params):
+    '''This class is used to create flexible BPt style pipeline's.
 
+    See :class:`ModelPipeline` for an alternate version of this class
+    which enforces a strict ordering on how pipeline pieces can be set, and
+    also includes a number of useful default behaviors.
+
+    Parameters
+    -----------
+    steps : list of :ref:`Pipeline Objects<pipeline_objects>`
+        Input here is a list of :ref:`Pipeline Objects<pipeline_objects>`
+        that can be in any order as long as there is only
+        one :class:`Model` or :class:`Ensemble`
+        and it is at the end of the list. This excludes
+        any nested model-type classes!
+
+        Each step must be a valid Pipeline object, for
+        example:
+
+        ::
+
+            Pipeline(steps=[Imputer('mean'),
+                            Scaler('robust'),
+                            Model('elastic')])
+
+        Would create a pipeline with mean imputation, robust scaling
+        and an elastic net.
+    '''
     def __init__(self, steps, param_search=None, cache_loc=None, verbose=0):
-        '''This class is used to create flexible BPt style pipeline's.
-
-        See :class:`ModelPipeline` for an alternate version of this class
-        which enforces a strict ordering on how pipeline pieces can be set, and
-        also includes a number of useful default behaviors.
-
-        Parameters
-        -----------
-        steps : list of :ref:`Pipeline Objects`
-            Input here is a list of :ref:`Pipeline Objects`
-            that can be in any order as long as there is only
-            one :class:`Model` or :class:`Ensemble`
-            and it is at the end of the list. This excludes
-            any nested model-type classes!
-
-            Each step must be a valid Pipeline object, for
-            example:
-
-            ::
-
-                Pipeline(steps=[Imputer('mean'),
-                                Scaler('robust'),
-                                Model('elastic')])
-
-            Would create a pipeline with mean imputation, robust scaling
-            and an elastic net.
-        '''
-
         self.steps = steps
         self.param_search = param_search
         self.cache_loc = cache_loc
@@ -1484,7 +1516,7 @@ class Pipeline(Params):
                                    ' is not a valid Pipeline Piece.')
 
             # Check input args in case anything changed
-            step.check_args()
+            step._check_args()
 
         # Validate param search
         if self.param_search is not None:
@@ -1493,7 +1525,7 @@ class Pipeline(Params):
                                    ' ParamSearch.')
 
             # Check input args in case anything changed
-            self.param_search.check_args()
+            self.param_search._check_args()
 
     def _flatten_steps(self):
 
@@ -1550,10 +1582,10 @@ class Pipeline(Params):
 
         return params
 
-    def get_steps(self):
+    def _get_steps(self):
         return self.steps
 
-    def check_imputers(self, is_na):
+    def _check_imputers(self, is_na):
 
         # If no NaN set to none
         if not is_na:
@@ -1561,6 +1593,189 @@ class Pipeline(Params):
 
 
 class ModelPipeline(Pipeline):
+    '''The ModelPipeline class is used to create BPtPipeline's.
+    The ModelPipeline differs from :class:`Pipeline`
+    in that it enforces a simplification on the ordering of
+    pieces, representing the typical order in which they might appear.
+    See :class:`Pipeline` for a more flexible version of this class
+    which does not enforce any ordering.
+
+    The order enforced, which follows the order of the input arguments, is:
+
+    1. loaders,
+    2. imputers
+    3. scalers
+    4. transformers
+    5. feat_selectors
+    6. model
+
+    For each parameter, which the exception of model,
+    you may pass either one instance of that piece
+    or a list of that piece. In the case that
+    a list is passed, then it will be treated as
+    a sequential set of steps / transformation
+    where the output from each element of the
+    list if passed on to the next as input.
+
+    Parameters
+    ----------
+    loaders : :class:`Loader` or list of, optional
+        Each :class:`Loader` refers to transformations
+        which operate on loaded Data_Files
+        See :class:`Loader`.
+
+        You may wish to consider using the
+        :class:`Pipe` input class
+        when creating a single :class:`Loader` obj
+
+        Passed loaders can also be wrapped in a
+        :class:`Select` wrapper, e.g., as either
+
+        ::
+
+            # Just passing select
+            loaders = Select([Loader(...), Loader(...)])
+
+            # Or nested
+            loaders = [Loader(...), Select([Loader(...), Loader(...)])]
+
+        In this way, most of the pipeline objects can accept lists,
+        or nested lists with param wrapped, not just loaders!
+
+        ::
+
+            default = None
+
+    imputers : :class:`Imputer`, list of or None, optional
+        If there is any missing data (NaN's) that have been kept
+        within the input data, then an imputation strategy should likely
+        be defined. This param controls what kind of
+        imputation strategy to use.
+
+        See :class:`Imputer`.
+
+        You may also pass a value of 'default' here, which in
+        the case that any NaN data is present within the training
+        set, the set of two imputers:
+
+        ::
+
+            'default' == [Imputer('mean', scope='float'),
+                          Imputer('median', scope='category')]
+
+        Will be used. Otherwise, if there is no NaN present
+        in the input data, no Imputer will be used.
+
+        ::
+
+            default = 'default'
+
+    scalers : :class:`Scaler`, list of or None, optional
+        Each :class:`Scaler` refers to any potential data scaling where a
+        transformation on the data
+        (without access to the target variable) is
+        computed, and the number of features or
+        data points does not change.
+
+        See :class:`Scaler`.
+
+        By keeping the default behavior, with parameter, 'default',
+        standard scaling is applied,
+        which sets each feature to have a std of 1 and mean 0.
+
+        ::
+
+            default = 'default'
+
+    transformers : :class:`Transformer`, list of or None, optional
+        Each :class:`Transformer` defines a type of transformation to
+        the data that changes the number of
+        features in perhaps non-deterministic
+        or not simply removal
+        (i.e., different from feat_selectors), for example
+        applying a PCA, where both the number of features change, but
+        also the new features do not 1:1 correspond to the original
+        features. See :class:`Transformer` for more information.
+
+        ::
+
+            default = None
+
+    feat_selectors : :class:`FeatSelector`, list of or None, optional
+        Each :class:`FeatSelector` refers to an optional
+        feature selection stage of the Pipeline.
+
+        See :class:`FeatSelector`.
+
+        ::
+
+            default = None
+
+    model : :class:`Model`, :class:`Ensemble`, optional
+        This parameter accepts one input of type
+        :class:`Model` or :class:`Ensemble`. Though,
+        while it cannot accept a list (i.e., no sequential behavior), you
+        may still pass Input Type wrapper like :class:`Select` to perform
+        model selection via param search.
+
+        See :class:`Model` for more information on how to specify a single
+        model to BPt, and :class:`Ensemble` for information on how
+        to build an ensemble of models.
+
+        This parameter cannot be None. In the default
+        case of passing 'default', a ridge regression
+        is used.
+
+        ::
+
+            default =  'default'
+
+    param_search : :class:`ParamSearch` or None, optional
+        A :class:`ParamSearch` can be provided specifying that
+        a nested hyper-parameter search be constructed across
+        all valid param distributions set across all pieces.
+
+        To use a parameter search requires at least one piece
+        to have a distribution of parameters.
+        You can set specific piece to a distribution of
+        parameters with the parameter `params`.
+
+        If param search is None, any defined distributions
+        will be ignored, though any static parameters specified via
+        `params` will still be used. If :class:`ParamSearch`
+        then they will instead be used along with the
+        strategy defined in the passed
+        :class:`ParamSearch` to conduct a nested hyper-param search.
+
+        Note: The input wrapper type :class:`Select`,
+        is fundamentally a hyper-parameter distribution
+        and therefore requires a search to be passed here.
+
+        ::
+
+            default = None
+
+    cache_loc : Path str or None, optional
+        Optional parameter specifying a directory
+        in which full BPt pipeline's should
+        be cached after fitting. This may be useful
+        in some contexts. If desired,
+        pass the location of the directory in
+        which to store this cache.
+
+        ::
+
+            default = None
+
+    verbose : int, optional
+        If greater than 0, print statements about
+        the current progress of the pipeline during fitting.
+
+        ::
+
+            default = 0
+
+        '''
 
     ORDERED_NAMES = ['loaders', 'imputers', 'scalers',
                      'transformers', 'feat_selectors', 'model']
@@ -1573,187 +1788,6 @@ class ModelPipeline(Pipeline):
                  param_search=None,
                  cache_loc=None,
                  verbose=0):
-        ''' ModelPipeline is used to create BPtPipeline's. ModelPipeline
-        is special in that it enforces a simplification on the ordering of
-        pieces, representing the typical order in which they might appear.
-        See :class:`Pipeline` for a more flexible version of this class
-        which does not enforce any ordering.
-
-        The order enforced, which follows the order of the input arguments, is:
-
-        1. loaders,
-        2. imputers
-        3. scalers
-        4. transformers
-        5. feat_selectors
-        6. model
-
-        For each parameter, which the exception of model,
-        you may pass either one instance of that piece
-        or a list of that piece. In the case that
-        a list is passed, then it will be treated as
-        a sequential set of steps / transformation
-        where the output from each element of the
-        list if passed on to the next as input.
-
-        Parameters
-        ----------
-        loaders : :class:`Loader`, list of or None, optional
-            Each :class:`Loader` refers to transformations
-            which operate on loaded Data_Files
-            See :class:`Loader`.
-
-            You may wish to consider using the
-            :class:`Pipe` input class
-            when creating a single :class:`Loader` obj
-
-            Passed loaders can also be wrapped in a
-            :class:`Select` wrapper, e.g., as either
-
-            .. code-block::
-
-                # Just passing select
-                loaders = Select([Loader(...), Loader(...)])
-
-                # Or nested
-                loaders = [Loader(...), Select([Loader(...), Loader(...)])]
-
-            In this way, most of the pipeline objects can accept lists,
-            or nested lists with param wrapped, not just loaders!
-
-            .. code-block::
-
-                default = None
-
-        imputers : :class:`Imputer`, list of or None, optional
-            If there is any missing data (NaN's) that have been kept
-            within the input data, then an imputation strategy should likely
-            be defined. This param controls what kind of
-            imputation strategy to use.
-
-            See :class:`Imputer`.
-
-            You may also pass a value of 'default' here, which in
-            the case that any NaN data is present within the training
-            set, the set of two imputers:
-
-            ::
-
-                default = [Imputer('mean', scope='float'),
-                           Imputer('median', scope='category')]
-
-            Will be used. Otherwise, if there is no NaN present
-            in the input data, no Imputer will be used.
-
-            ::
-
-                default = 'default'
-
-        scalers : :class:`Scaler`, list of or None, optional
-            Each :class:`Scaler` refers to any potential data scaling where a
-            transformation on the data
-            (without access to the target variable) is
-            computed, and the number of features or
-            data points does not change.
-
-            See :class:`Scaler`.
-
-            By keeping the default behavior, with parameter, 'default',
-            standard scaling is applied,
-            which sets each feature to have a std of 1 and mean 0.
-
-            ::
-
-                default = 'default'
-
-        transformers : :class:`Transformer`, list of or None, optional
-            Each :class:`Transformer` defines a type of transformation to
-            the data that changes the number of
-            features in perhaps non-deterministic
-            or not simply removal
-            (i.e., different from feat_selectors), for example
-            applying a PCA, where both the number of features change, but
-            also the new features do not 1:1 correspond to the original
-            features. See :class:`Transformer` for more information.
-
-            ::
-
-                default = None
-
-        feat_selectors : :class:`FeatSelector`, list of or None, optional
-            Each :class:`FeatSelector` refers to an optional
-            feature selection stage of the Pipeline.
-
-            See :class:`FeatSelector`.
-
-            ::
-
-                default = None
-
-        model : :class:`Model`, :class:`Ensemble`, optional
-            This parameter accepts one input of type
-            :class:`Model` or :class:`Ensemble`. Though,
-            while it cannot accept a list (i.e., no sequential behavior), you
-            may still pass Input Type wrapper like :class:`Select` to perform
-            model selection via param search.
-
-            See :class:`Model` for more information on how to specify a single
-            model to BPt, and :class:`Ensemble` for information on how
-            to build an ensemble of models.
-
-            This parameter cannot be None. In the default
-            case of passing 'default', a ridge regression
-            is used.
-
-            ::
-
-                default =  'default'
-
-        param_search : :class:`ParamSearch` or None, optional
-            A :class:`ParamSearch` can be provided specifying that
-            a nested hyper-parameter search be constructed across
-            all valid param distributions set across all pieces.
-
-            To use a parameter search requires at least one piece
-            to have a distribution of parameters.
-            You can set specific piece to a distribution of
-            parameters with the parameter `params`.
-
-            If param search is None, any defined distributions
-            will be ignored, though any static parameters specified via
-            `params` will still be used. If :class:`ParamSearch`
-            then they will instead be used along with the
-            strategy defined in the passed
-            :class:`ParamSearch` to conduct a nested hyper-param search.
-
-            Note: The input wrapper type :class:`Select`,
-            is fundamentally a hyper-parameter distribution
-            and therefore requires a search to be passed here.
-
-            ::
-
-                default = None
-
-        cache_loc : Path str or None, optional
-            Optional parameter specifying a directory
-            in which full BPt pipeline's should
-            be cached after fitting. This may be useful
-            in some contexts. If desired,
-            pass the location of the directory in
-            which to store this cache.
-
-            ::
-
-                default = None
-
-        verbose : int, optional
-            If greater than 0, print statements about
-            the current progress of the pipeline during fitting.
-
-            ::
-
-                default = 0
-        '''
 
         if isinstance(loaders, str):
             loaders = Loader(loaders)
@@ -1822,17 +1856,17 @@ class ModelPipeline(Pipeline):
 
             setattr(self, param_name, new_params)
 
-    def _check_args(self, params):
+    def __check_args(self, params):
 
         for p in params:
             if isinstance(p, list):
-                self._check_args(p)
+                self.__check_args(p)
             else:
-                p.check_args()
+                p._check_args()
 
         return params
 
-    def check_imputers(self, is_na):
+    def _check_imputers(self, is_na):
 
         # If no NaN set to none
         if not is_na:
@@ -1904,13 +1938,13 @@ class ModelPipeline(Pipeline):
         proc_all(self.param_search)
 
         # Double check input args in case something changed
-        self._proc_all_pieces(self._check_args)
+        self._proc_all_pieces(self.__check_args)
 
         # Proc param search if not None
         if self.param_search is not None:
-            self.param_search.check_args()
+            self.param_search._check_args()
 
-    def get_steps(self):
+    def _get_steps(self):
 
         # Return as a flat list in order
         params = []
@@ -1924,12 +1958,12 @@ class ModelPipeline(Pipeline):
 
         return params
 
-    def get_params_by_step(self):
+    def _get_params_by_step(self):
 
         return [conv_to_list(getattr(self, piece_name))
                 for piece_name in self.ORDERED_NAMES]
 
-    def get_indent(self, indent):
+    def _get_indent(self, indent):
 
         if indent is None:
             return ''
@@ -1943,51 +1977,53 @@ class ModelPipeline(Pipeline):
 
             return ' ' * ind
 
-    def params_print(self, params, indent, _print=print, end='\n'):
+    def _params_print(self, params, indent, _print=print, end='\n'):
 
         if not isinstance(params, list):
-            _print(self.get_indent(indent), params, sep='', end=end)
+            _print(self._get_indent(indent), params, sep='', end=end)
             return
 
         elif len(params) == 1:
-            self.params_print(params[0], 0, _print=_print)
+            self._params_print(params[0], 0, _print=_print)
             return
 
         elif not is_special(params):
 
-            _print(self.get_indent(indent), '[', sep='', end='')
+            _print(self._get_indent(indent), '[', sep='', end='')
             self._p_stack.append(']')
-            self.params_print(params[0], None, _print=_print, end='')
+            self._params_print(params[0], None, _print=_print, end='')
             _print(',', sep='')
 
         elif is_select(params):
-            _print(self.get_indent(indent), 'Select([', sep='', end='')
+            _print(self._get_indent(indent), 'Select([', sep='', end='')
             self._p_stack.append('])')
-            self.params_print(params[0], None, _print=_print, end='')
+            self._params_print(params[0], None, _print=_print, end='')
             _print(',', sep='')
 
         for param in params[1:-1]:
-            self.params_print(param, 0, _print=_print, end='')
+            self._params_print(param, 0, _print=_print, end='')
             _print(',', sep='')
 
-        self.params_print(params[-1], 0, _print=_print, end='')
+        self._params_print(params[-1], 0, _print=_print, end='')
         _print(self._p_stack.pop(), end=end)
 
         return
 
     def print_all(self, _print=print):
+        '''This method can be used to print a formatted
+        representation of this object.'''
 
         self._p_stack = []
 
         _print('ModelPipeline')
         _print('-------------')
 
-        pipeline_params = self.get_params_by_step()
+        pipeline_params = self._get_params_by_step()
         for name, params in zip(self.ORDERED_NAMES, pipeline_params):
 
             if params is not None:
                 _print(name + '=\\')
-                self.params_print(params, 0, _print=_print)
+                self._params_print(params, 0, _print=_print)
                 _print()
 
         _print('param_search=\\')
@@ -1996,192 +2032,194 @@ class ModelPipeline(Pipeline):
 
 
 class ProblemSpec(Params):
+    '''Problem Spec is defined as an object of params encapsulating the set of
+    parameters shared by modelling class functions
+    :func:`Evaluate <BPt.BPt_ML.Evaluate>`
+    and :func:`Test <BPt.BPt_ML.Test>`
 
-    def __init__(self, problem_type='default',
-                 target=0, scorer='default',
+    Parameters
+    ----------
+    target : int or str, optional
+        The loaded target in which to use during modelling.
+        This should be passed as the name of the target column.
+        This can also be set as the int index
+        (in alphabetical order)
+        If only one target is loaded, just leave as default of 0.
+
+        ::
+
+            default = 0
+
+    scorer : str or list, optional
+        Indicator str for which scorer(s) to use when calculating
+        average validation score in Evaluate, or Test set score in Test.
+
+        A list of str's can be passed as well, in this case, scores for
+        all of the requested scorers will be calculated and returned.
+
+        Note: If using a ParamSearch, the ParamSearch object has a
+        separate scorer parameter.
+
+        For a full list of supported scorers please view the
+        scikit-learn docs at:
+        https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
+
+        If left as 'default', assign a reasonable scorer based on the
+        passed problem type.
+
+        - 'regression'  : ['explained_variance', 'neg_mean_squared_error']
+        - 'binary'      : ['matthews', 'roc_auc', 'balanced_accuracy']
+        - 'categorical' : ['matthews', 'roc_auc_ovr', 'balanced_accuracy']
+
+        ::
+
+            default = 'default'
+
+    weight_scorer : bool, list of, optional
+        If True, then the scorer of interest will be weighted within
+        each repeated fold by the number of subjects in that
+        validation set.
+        This parameter only typically makes sense for
+        custom split behavior where
+        validation folds may end up with differing sizes.
+        When default CV schemes are employed,
+        there is likely no point in
+        applying this weighting, as the validation
+        folds will have similar sizes.
+
+        If you are passing multiple scorers, then you can also pass a
+        list of values for weight_scorer, with each value
+        set as boolean True or False,
+        specifying if the corresponding scorer by index
+        should be weighted or not.
+
+        Warning: This parameter is ignored when using sklearn
+        compatible functions.
+
+        ::
+
+            default = False
+
+    scope : key str or Scope obj, optional
+        This parameter allows the user to optionally
+        run an experiment with just a subset of the loaded features
+        / columns.
+
+        See :ref:`Scope` for a more detailed explained / guide
+        on how scopes are defined and used within BPt.
+
+        ::
+
+            default = 'all'
+
+    subjects : str, array-like or Value_Subset, optional
+        This parameter allows the user to optionally run Evaluate or Test
+        with just a subset of the loaded subjects. It is notably distinct
+        from the `train_subjects`, and `test_subjects` parameters directly
+        avaliable to Evaluate and Test, as those parameters typically refer
+        to train/test splits. Specifically, any value specified
+        for this  subjects parameter will be applied
+        AFTER selecting the relevant train or test subset.
+
+        One use case for this parameter might be specifying
+        subjects of just one
+        sex, where you would still want the same training set for example,
+        but just want to test sex specific models.
+
+        If set to 'all' (as is by default), all avaliable subjects will be
+        used.
+
+        `subjects` can accept either a specific array of subjects,
+        or even a loc of a text file (formatted one subject per line) in
+        which to read from.
+
+        A special wrapper, Value_Subset,
+        can also be used to specify more specific,
+        specifically value specific, subsets of subjects to use.
+        See :class:`Value_Subset` for how this input wrapper can be used.
+
+        ::
+
+            default = 'all'
+
+    problem_type : str or 'default', optional
+        This parameter controls what type of machine learning
+        should be conducted. As either a regression, or classification
+        where 'categorical' represents a special case of
+        binary classification, where typically a binary
+        classifier is trained on each class.
+
+        - 'default'
+            Determine the problem type based on how
+            the requested target variable is loaded.
+
+        - 'regression', 'f' or 'float'
+            For ML on float/continuous target data.
+
+        - 'binary' or 'b'
+            For ML on binary target data.
+
+        - 'categorical' or 'c'
+            For ML on categorical target data, as multiclass.
+
+        This can almost always be left as default.
+
+        ::
+
+            default = 'default'
+
+    n_jobs : int
+        n_jobs are employed within the context
+        of a call to Evaluate or Test.
+
+        In general, the way n_jobs are propagated to the different pipeline
+        pieces on the backend is that,
+        if there is a parameter search, the base
+        ML pipeline will all be set to use 1 job,
+        and the n_jobs budget will be used
+        to train pipelines in parallel to explore different params.
+        Otherwise, if no param search,
+        n_jobs will be used for each piece individually,
+        though some might not support it.
+
+        ::
+
+            default = 1
+
+    random_state : int, RandomState instance or None, optional
+        Random state, either as int for a specific seed, or if None then
+        the random seed is set by np.random.
+
+        This parameter is used to ensure replicability
+        of experiments (wherever possible!).
+        In some cases even with a random seed, depending on
+        the pipeline pieces being used,
+        if any have a component that occassionally yields
+        different results, even with the same
+        random seed, e.g., some model optimizations,
+        then you might still not get
+        exact replicability.
+
+        ::
+
+            default = 1
+
+    base_dtype : numpy dtype
+        The dataset is cast to a numpy array of float.
+        This parameter can be used to change the default
+        behavior, e.g., if more resolution or less is needed.
+
+        ::
+
+            default = 'float32'
+
+    '''
+    def __init__(self, target=0, scorer='default',
                  weight_scorer=False,
                  scope='all', subjects='all',
-                 n_jobs=1, random_state=1, base_dtype='float32'):
-        '''Problem Spec is defined as an object of params encapsulating the set of
-        parameters shared by modelling class functions
-        :func:`Evaluate <BPt.BPt_ML.Evaluate>`
-        and :func:`Test <BPt.BPt_ML.Test>`
-
-        Parameters
-        ----------
-        problem_type : str or 'default', optional
-            This parameter controls what type of machine learning
-            should be conducted. As either a regression, or classification
-            where 'categorical' represents a special case of
-            binary classification,
-            where typically a binary classifier is trained on each class.
-
-            - 'default'
-                Determine the problem type based on how
-                the requested target variable is loaded.
-
-            - 'regression', 'f' or 'float'
-                For ML on float/continuous target data.
-
-            - 'binary' or 'b'
-                For ML on binary target data.
-
-            - 'categorical' or 'c'
-                For ML on categorical target data, as multiclass.
-
-            ::
-
-                default = 'default'
-
-        target : int or str, optional
-            The loaded target in which to use during modelling.
-            This should be passed as the name of the target column.
-            This can also be set as the int index
-            (in alphabetical order)
-            If only one target is loaded, just leave as default of 0.
-
-            ::
-
-                default = 0
-
-        scorer : str or list, optional
-            Indicator str for which scorer(s) to use when calculating
-            average validation score in Evaluate, or Test set score in Test.
-
-            A list of str's can be passed as well, in this case, scores for
-            all of the requested scorers will be calculated and returned.
-
-            Note: If using a ParamSearch, the ParamSearch object has a
-            separate scorer parameter.
-
-            For a full list of supported scorers please view the
-            scikit-learn docs at:
-            https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
-
-            If left as 'default', assign a reasonable scorer based on the
-            passed problem type.
-
-            - 'regression'  : ['explained_variance', 'neg_mean_squared_error']
-            - 'binary'      : ['matthews', 'roc_auc', 'balanced_accuracy']
-            - 'categorical' : ['matthews', 'roc_auc_ovr', 'balanced_accuracy']
-
-            ::
-
-                default = 'default'
-
-        weight_scorer : bool, list of, optional
-            If True, then the scorer of interest will be weighted within
-            each repeated fold by the number of subjects in that
-            validation set.
-            This parameter only typically makes sense for
-            custom split behavior where
-            validation folds may end up with differing sizes.
-            When default CV schemes are employed,
-            there is likely no point in
-            applying this weighting, as the validation
-            folds will have similar sizes.
-
-            If you are passing multiple scorers, then you can also pass a
-            list of values for weight_scorer, with each value
-            set as boolean True or False,
-            specifying if the corresponding scorer by index
-            should be weighted or not.
-
-            Warning: This parameter is ignored when using sklearn
-            compatible functions.
-
-            ::
-
-                default = False
-
-        scope : key str or Scope obj, optional
-            This parameter allows the user to optionally
-            run an experiment with just a subset of the loaded features
-            / columns.
-
-            See :ref:`Scope` for a more detailed explained / guide
-            on how scopes are defined and used within BPt.
-
-            ::
-
-                default = 'all'
-
-        subjects : str, array-like or Value_Subset, optional
-            This parameter allows the user to optionally run Evaluate or Test
-            with just a subset of the loaded subjects. It is notably distinct
-            from the `train_subjects`, and `test_subjects` parameters directly
-            avaliable to Evaluate and Test, as those parameters typically refer
-            to train/test splits. Specifically, any value specified
-            for this  subjects parameter will be applied
-            AFTER selecting the relevant train or test subset.
-
-            One use case for this parameter might be specifying
-            subjects of just one
-            sex, where you would still want the same training set for example,
-            but just want to test sex specific models.
-
-            If set to 'all' (as is by default), all avaliable subjects will be
-            used.
-
-            `subjects` can accept either a specific array of subjects,
-            or even a loc of a text file (formatted one subject per line) in
-            which to read from.
-
-            A special wrapper, Value_Subset,
-            can also be used to specify more specific,
-            specifically value specific, subsets of subjects to use.
-            See :class:`Value_Subset` for how this input wrapper can be used.
-
-            ::
-
-                default = 'all'
-
-        n_jobs : int
-            n_jobs are employed within the context
-            of a call to Evaluate or Test.
-
-            In general, the way n_jobs are propagated to the different pipeline
-            pieces on the backend is that,
-            if there is a parameter search, the base
-            ML pipeline will all be set to use 1 job,
-            and the n_jobs budget will be used
-            to train pipelines in parallel to explore different params.
-            Otherwise, if no param search,
-            n_jobs will be used for each piece individually,
-            though some might not support it.
-
-            ::
-
-                default = 1
-
-        random_state : int, RandomState instance or None, optional
-            Random state, either as int for a specific seed, or if None then
-            the random seed is set by np.random.
-
-            This parameter is used to ensure replicability
-            of experiments (wherever possible!).
-            In some cases even with a random seed, depending on
-            the pipeline pieces being used,
-            if any have a component that occassionally yields
-            different results, even with the same
-            random seed, e.g., some model optimizations,
-            then you might still not get
-            exact replicability.
-
-            ::
-
-                default = 1
-
-        base_dtype : numpy dtype
-            The dataset is cast to a numpy array of float.
-            This parameter can be used to change the default
-            behavior, e.g., if more resolution or less is needed.
-
-            ::
-
-                default = 'float32'
-
-        '''
+                 problem_type='default',
+                 n_jobs=1, random_state=1,
+                 base_dtype='float32'):
 
         self.problem_type = problem_type
         self.target = target
@@ -2201,15 +2239,9 @@ class ProblemSpec(Params):
     def _proc_checks(self):
         proc_all(self)
 
-    def set_final_subjects(self, final_subjects):
-        self._final_subjects = final_subjects
-
-    def get_model_spec(self):
-
-        return {'problem_type': self.problem_type,
-                'random_state': self.random_state}
-
     def print_all(self, _print=print):
+        '''This method can be used to print a formatted
+        representation of this object.'''
 
         _print('ProblemSpec')
         _print('------------')
@@ -2229,7 +2261,7 @@ class ProblemSpec(Params):
         _print('random_state =', self.random_state)
         _print()
 
-    def get_spec(self):
+    def _get_spec(self):
 
         return {'n_jobs': self.n_jobs,
                 'random_state': self.random_state,
@@ -2238,65 +2270,57 @@ class ProblemSpec(Params):
 
 
 class CVStrategy(Params):
+    '''This objects is used to encapsulate a set of parameters
+    representing a cross-validation strategy.
 
-    # @TODO add support for test_only ?
-    def __init__(self, groups=None, stratify=None,
-                 train_only_subjects=None):
-        ''' This objects is used to encapsulate a set of parameters
-        for a CV strategy.
+    Parameters
+    -----------
+    groups : str or None, optional
+        The str should refer to the column key in which
+        to preserve groups by during any CV splits.
+        To create a combination of unique values, use
+        :func:`Dataset.add_unique_overlap`.
 
-        Parameters
-        ----------
-        groups : str or None, optional
-            The str should refer to the column key in which
-            to preserve groups by during any CV splits.
-            To create a combination of unique values, see the
-            add_unique_overlap function in the Dataset Class.
-
-            Note: the passed column must be of type category as well.
+        Note: the passed column must be of type category as well.
 
         ::
 
             default = None
 
-        stratify : str or None, optional
-            The str input should refer to a loaded non input
-            variable which if of type category. It will assign it
-            as a value to preserve
-            distribution of groups by during any during any CV splits.
+    stratify : str or None, optional
+        The str input should refer to a loaded non input
+        variable which if of type category. It will assign it
+        as a value to preserve
+        distribution of groups by during any during any CV splits.
 
-            Note: the passed column must be of type category as well.
+        To create a combination of unique values, use
+        :func:`Dataset.add_unique_overlap`.
 
-            Any target_cols passed must be categorical
-            or binary, and cannot be
-            float. Though you may consider creating a binary / k bin copy
-            of a float / cont. type target variable.
+        Note: the passed column must be of type category as well.
 
-            ::
+        Any target_cols passed must be categorical
+        or binary, and cannot be
+        float. Though you may consider creating a binary / k bin copy
+        of a float / cont. type target variable.
 
-                default = None
+        ::
 
-        train_only_subjects : set, array-like, 'nan', or None, optional
-            An explicit list or array-like of train_only subjects, where
-            any subject loaded as train_only will be assigned to every training
-            fold, and never to a testing fold.
+            default = None
 
-            You can also optionally specify 'nan' as input, which
-            will add all subjects with any NaN data to train only.
+    train_only_subjects : None or :ref:`subjects`, optional
+        If passed  any valid :ref:`subjects` style input here,
+        these subjects will be condiered train only and will
+        be assigned to every training fold, and never to
+        a testing or validation fold.
 
-            If you want to add both all the NaN subjects and custom
-            subjects, call :func:`Get_Nan_Subjects` to get all NaN subjects,
-            and then merge them yourself with any you want to pass.
+        ::
 
-            You can load from a loc and pass subjects, the subjects
-            from each source will be merged.
+            default = None
+    '''
 
-            This parameter is compatible with groups / stratify.
-
-            ::
-
-                default = None
-        '''
+    # @TODO add support for test_only ?
+    def __init__(self, groups=None, stratify=None,
+                 train_only_subjects=None):
 
         self.groups = groups
         self.stratify = stratify
@@ -2322,82 +2346,83 @@ class CVStrategy(Params):
 
 
 class CV(Params):
+    ''' This object is used to define a BPt style custom
+    CV strategy, e.g., as KFold
 
-    # @TODO Fix these CV docstrings
+    Parameters
+    ----------
+    splits : int, float, str or list of str, optional
+        `splits` allows you to specify the base of what CV strategy
+        should be used.
+
+        Specifically, options for split are:
+
+        - int
+            The number of k-fold splits to conduct. (E.g., 3 for
+            3-fold CV split to be conducted at
+            every hyper-param evaluation).
+
+        - float
+            Must be 0 < `splits` < 1, and defines a
+            single train-test like split,
+            with `splits` % of the current training data size used
+            as a validation set.
+
+        - str
+            If a str is passed, then it must correspond to a
+            loaded categorical non input variable. In
+            this case, a leave-out-group CV will be used according
+            to the value of the variable.
+
+        Note that the parameter n_repeats is designed to work with
+        any of these choices.
+
+        ::
+
+            default = 3
+
+    n_repeats : int, optional
+        The number of times to repeat the defined strategy
+        as defined in `splits`.
+
+        For example, if `n_repeats` is set to 2, and `splits` is 3,
+        then a twice repeated 3-fold CV will be performed
+
+        ::
+
+            default = 1
+
+    cv_strategy : None or :class:`CVStrategy`, optional
+        Optional cv_strategy to employ for calculating splits.
+        If passed None, use no strategy.
+
+        See :class:`CVStrategy`
+
+        Can also pass valid cv_strategy args seperately.
+        If any passed, they will override any values
+        set in the pass cv_strategy if any.
+
+        ::
+
+            default = None
+
+    random_state : 'context', int or None, optional
+        The fixed random seed in which this
+        CV object should adhere to.
+
+        If left as default value of 'context', then
+        the random state will be set based on the
+        context of where it is called, i.e., typically
+        the random_state set in :class:`ProblemSpec`.
+
+        ::
+
+            default = 'context'
+    '''
 
     def __init__(self, splits=3, n_repeats=1,
                  cv_strategy=None, random_state='context',
                  **cv_strategy_args):
-        ''' This object is used to define a BPt style custom
-        CV strategy, e.g., as KFold
-
-        Parameters
-        ----------
-        splits : int, float, str or list of str, optional
-            `splits` allows you to specify the base of what CV strategy
-            should be used.
-
-            Specifically, options for split are:
-
-            - int
-                The number of k-fold splits to conduct. (E.g., 3 for
-                3-fold CV split to be conducted at
-                every hyper-param evaluation).
-
-            - float
-                Must be 0 < `splits` < 1, and defines a
-                single train-test like split,
-                with `splits` % of the current training data size used
-                as a validation set.
-
-            - str
-                If a str is passed, then it must correspond to a
-                loaded categorical non input variable. In
-                this case, a leave-out-group CV will be used according
-                to the value of the variable.
-
-            `n_repeats` is designed to work with any of these choices.
-
-            ::
-
-                default = 3
-
-        n_repeats : int, optional
-            The number of times to repeat the defined strategy
-            as defined in `splits`.
-
-            For example, if `n_repeats` is set to 2, and `splits` is 3,
-            then a twice repeated 3-fold CV will be performed
-
-            ::
-
-                default = 1
-
-        cv_strategy: None or :class:`CVStrategy`, optional
-            Optional cv_strategy to employ for calculating splits.
-            If passed None, use no strategy.
-
-            Can also pass valid cv_strategy args seperately.
-            If any passed, they will override any values
-            set in the pass cv_strategy if any.
-
-            ::
-
-                default = None
-
-        random_state : 'context', int or None, optional
-            The fixed random seed in which this
-            CV object should adhere to.
-
-            If left as default value of 'context', then
-            the random state will be set based on the
-            context of where it is called, i.e., typically
-            the random_state set in :class:`ProblemSpec`.
-
-            ::
-
-                default = 'context'
-        '''
 
         self.splits = splits
         self.n_repeats = n_repeats
@@ -2409,7 +2434,7 @@ class CV(Params):
 
         self.cv_strategy.set_params(**cv_strategy_args)
 
-    def apply_dataset(self, dataset):
+    def _apply_dataset(self, dataset):
         return get_bpt_cv(self, dataset)
 
 # Depreciations

@@ -12,7 +12,6 @@ AVALIABLE = {
             'basic ensemble': 'voting classifier',
             None: 'voting classifier',
             'voting': 'voting classifier',
-            'stacked': 'stacked',
             'bagging': 'bagging classifier',
             'adaboost': 'adaboost classifier',
             'stacking': 'stacking classifier',

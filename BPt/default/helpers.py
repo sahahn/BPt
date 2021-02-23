@@ -1,6 +1,6 @@
 from copy import deepcopy
 import numpy as np
-from ..main.input_operations import is_special
+from ..main.input_operations import BPtInputMixIn
 import inspect
 
 
@@ -123,7 +123,7 @@ def conv_to_list(in_val, amt=1):
     if in_val is None:
         return None
 
-    if not is_array_like(in_val) or is_special(in_val):
+    if not is_array_like(in_val) or isinstance(in_val, BPtInputMixIn):
         in_val = [in_val for i in range(amt)]
 
     return in_val

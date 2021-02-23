@@ -1,6 +1,8 @@
+class BPtInputMixIn():
+    pass
 
 
-class Select(list):
+class Select(list, BPtInputMixIn):
     '''The Select object is an BPt specific Input Wrapper designed
     to allow hyper-parameter searches to include not
     just choice of hyper-parameter,
@@ -44,7 +46,6 @@ class Select(list):
     the base class:`Pipeline` piece params
     (i.e., every param but param_search and cache...).
     '''
-    input_type = 'select'
 
     def __repr__(self):
         return 'Select(' + super().__repr__() + ')'
@@ -53,18 +54,7 @@ class Select(list):
         return self.__repr__()
 
 
-def is_select(obj):
-
-    try:
-        if obj.input_type == 'select':
-            return True
-        return False
-
-    except AttributeError:
-        return False
-
-
-class Duplicate(list):
+class Duplicate(list, BPtInputMixIn):
     '''The Duplicate object is an BPt specific Input wrapper.
     It is designed to be cast on a list of valid scope parameters, e.g.,
 
@@ -94,8 +84,6 @@ class Duplicate(list):
 
     '''
 
-    input_type = 'duplicate'
-
     def __repr__(self):
         return 'Duplicate(' + super().__repr__() + ')'
 
@@ -103,18 +91,7 @@ class Duplicate(list):
         return self.__repr__()
 
 
-def is_duplicate(obj):
-
-    try:
-        if obj.input_type == 'duplicate':
-            return True
-        return False
-
-    except AttributeError:
-        return False
-
-
-class Pipe(list):
+class Pipe(list, BPtInputMixIn):
     '''The Pipe object is an BPt specific Input wrapper, designed
     for now to work specifically within :class:`Loader`.
     Because loader
@@ -197,8 +174,6 @@ class Pipe(list):
     both with the passed value.
     '''
 
-    input_type = 'pipe'
-
     def __repr__(self):
         return 'Pipe(' + super().__repr__() + ')'
 
@@ -206,36 +181,23 @@ class Pipe(list):
         return self.__repr__()
 
 
-def is_pipe(obj):
-
-    try:
-        if obj.input_type == 'pipe':
-            return True
-        return False
-
-    except AttributeError:
-        return False
-
-
-class Value_Subset():
+class Value_Subset(BPtInputMixIn):
     ''' Value_Subset is special wrapper class for BPt designed to work with
     :ref:`Subjects` style input. As seen in :class:`ParamSearch`,
     or to the `train_subjects` or `test_subjects`
     params in :func:`Evaluate <BPt.BPt_ML.Evaluate>`
     and :func:`Test <BPt.BPt_ML.Test>`.
 
-     This wrapper can be used as follows, just specify an object as
+    This wrapper can be used as follows, just specify an object as
 
      ::
 
         Value_Subset(name, values)
 
-    Where name is the name of a loaded Strat column / feature,
+    Where name is the name of a loaded non input categorical column / feature,
     and value is the subset of values from that column to select subjects by.
     E.g., if you wanted to select just subjects of a specific sex,
-    and assuming a variable was
-    loaded in Strat (See :func:`Load_Strat <BPt.BPt_ML.Load_Strat>`)
-    you could pass:
+    and assuming the variable was properly loaded,
 
     ::
 
@@ -264,8 +226,6 @@ class Value_Subset():
 
     '''
 
-    input_type = 'value_subset'
-
     def __init__(self, name, values, decode_values=False):
 
         self.name = name
@@ -287,18 +247,7 @@ class Value_Subset():
         return self.__repr__()
 
 
-def is_value_subset(obj):
-
-    try:
-        if obj.input_type == 'value_subset':
-            return True
-        return False
-
-    except AttributeError:
-        return False
-
-
-class Intersection(list):
+class Intersection(list, BPtInputMixIn):
     '''The Intersection class is a special
     wrapper class used to request the intersection
     of two valid arguments for :ref:`Subjects`.
@@ -314,14 +263,8 @@ class Intersection(list):
     train subjects and subjects 1, 2 and 3.
     '''
 
-    input_type = 'intersection'
-
     def __repr__(self):
         return 'Intersection(' + super().__repr__() + ')'
 
     def __str__(self):
         return self.__repr__()
-
-
-def is_special(obj):
-    return hasattr(obj, 'input_type')

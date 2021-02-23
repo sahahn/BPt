@@ -2,8 +2,8 @@ from copy import deepcopy
 from sklearn.base import BaseEstimator
 from ..default.helpers import proc_input, conv_to_list
 
-from ..main.input_operations import (is_pipe, is_select,
-                                     is_special, is_value_subset, Duplicate)
+from ..main.input_operations import (Pipe, Select,
+                                     BPtInputMixIn, Value_Subset, Duplicate)
 from ..default.options.scorers import process_scorer
 from .CV import get_bpt_cv
 from ..pipeline.constructors import (LoaderConstructor, ImputerConstructor,
@@ -86,7 +86,7 @@ class Check():
                           'set it within Pipeline to None,',
                           ' not obj here.')
 
-        if isinstance(obj, list) and not is_pipe(obj):
+        if isinstance(obj, list) and not isinstance(obj, Pipe):
             raise IOError('You may only pass a list of objs with ',
                           'special input',
                           'Pipe()')
@@ -103,7 +103,7 @@ class Check():
         obj = getattr(self, 'obj')
         params = getattr(self, 'params')
 
-        if is_pipe(obj):
+        if isinstance(obj, Pipe):
 
             if not isinstance(params, list):
 
@@ -155,7 +155,7 @@ class Check():
             return
 
         # Assume select is okay too
-        if is_select(base_model):
+        if isinstance(base_model, Select):
             return
 
         if not isinstance(base_model, Model):
@@ -1150,7 +1150,7 @@ class ParamSearch(Params):
     ----------
     search_type : str, optional
         The type of nevergrad hyper-parameter search to conduct. See
-        :ref:`Search Types<Search Types>` for all avaliable options.
+        :ref:`Search Types<search_type_options>` for all avaliable options.
         Also you may further look into
         nevergrad's experimental variants if you so choose,
         this parameter can accept
@@ -1777,8 +1777,22 @@ class ModelPipeline(Pipeline):
 
         '''
 
-    ORDERED_NAMES = ['loaders', 'imputers', 'scalers',
-                     'transformers', 'feat_selectors', 'model']
+    @property
+    def fixed_piece_order(self):
+        '''ModelPipeline has a fixed order in which
+        pieces are constructed, this is:
+
+            1. loaders,
+            2. imputers
+            3. scalers
+            4. transformers
+            5. feat_selectors
+            6. model
+
+        '''
+        return ['loaders', 'imputers', 'scalers',
+                'transformers', 'feat_selectors', 'model']
+
 
     def __init__(self,
                  loaders=None, imputers='default',
@@ -1839,7 +1853,7 @@ class ModelPipeline(Pipeline):
         '''Helper to proc all pieces with a function
         that accepts a list of pieces'''
 
-        for param_name in self.ORDERED_NAMES:
+        for param_name in self.fixed_piece_order:
             params = getattr(self, param_name)
 
             if params is None:
@@ -1948,7 +1962,7 @@ class ModelPipeline(Pipeline):
 
         # Return as a flat list in order
         params = []
-        for piece_name in self.ORDERED_NAMES:
+        for piece_name in self.fixed_piece_order:
 
             piece = getattr(self, piece_name)
             if piece is None:
@@ -1961,7 +1975,7 @@ class ModelPipeline(Pipeline):
     def _get_params_by_step(self):
 
         return [conv_to_list(getattr(self, piece_name))
-                for piece_name in self.ORDERED_NAMES]
+                for piece_name in self.fixed_piece_order]
 
     def _get_indent(self, indent):
 
@@ -1987,14 +2001,14 @@ class ModelPipeline(Pipeline):
             self._params_print(params[0], 0, _print=_print)
             return
 
-        elif not is_special(params):
+        elif not isinstance(params, BPtInputMixIn):
 
             _print(self._get_indent(indent), '[', sep='', end='')
             self._p_stack.append(']')
             self._params_print(params[0], None, _print=_print, end='')
             _print(',', sep='')
 
-        elif is_select(params):
+        elif isinstance(params, Select):
             _print(self._get_indent(indent), 'Select([', sep='', end='')
             self._p_stack.append('])')
             self._params_print(params[0], None, _print=_print, end='')
@@ -2019,7 +2033,7 @@ class ModelPipeline(Pipeline):
         _print('-------------')
 
         pipeline_params = self._get_params_by_step()
-        for name, params in zip(self.ORDERED_NAMES, pipeline_params):
+        for name, params in zip(self.fixed_piece_order, pipeline_params):
 
             if params is not None:
                 _print(name + '=\\')
@@ -2060,9 +2074,11 @@ class ProblemSpec(Params):
         Note: If using a ParamSearch, the ParamSearch object has a
         separate scorer parameter.
 
-        For a full list of supported scorers please view the
+        For a full list of the base sklearn supported scorers please view the
         scikit-learn docs at:
         https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules
+
+        You can also view the BPt reference to these options at :ref:`Scorers`.
 
         If left as 'default', assign a reasonable scorer based on the
         passed problem type.
@@ -2100,10 +2116,10 @@ class ProblemSpec(Params):
 
             default = False
 
-    scope : key str or Scope obj, optional
-        This parameter allows the user to optionally
-        run an experiment with just a subset of the loaded features
-        / columns.
+    scope : :ref:`Scope`, optional
+        This parameter allows for specifying that
+        only subset of columns be used in what modelling
+        this ProblemSpec is passed to.
 
         See :ref:`Scope` for a more detailed explained / guide
         on how scopes are defined and used within BPt.
@@ -2112,31 +2128,20 @@ class ProblemSpec(Params):
 
             default = 'all'
 
-    subjects : str, array-like or Value_Subset, optional
-        This parameter allows the user to optionally run Evaluate or Test
-        with just a subset of the loaded subjects. It is notably distinct
-        from the `train_subjects`, and `test_subjects` parameters directly
-        avaliable to Evaluate and Test, as those parameters typically refer
-        to train/test splits. Specifically, any value specified
-        for this  subjects parameter will be applied
-        AFTER selecting the relevant train or test subset.
+    subjects : :ref:`Subjects`, optional
+        This parameter allows for specifying that
+        the current experiment be run with only a subset of
+        the current subjects.
 
-        One use case for this parameter might be specifying
-        subjects of just one
-        sex, where you would still want the same training set for example,
-        but just want to test sex specific models.
+        A common use of this parameter is to
+        specify the reserved keyword 'train' to
+        specify that only the training subjects should be used.
 
         If set to 'all' (as is by default), all avaliable subjects will be
         used.
 
-        `subjects` can accept either a specific array of subjects,
-        or even a loc of a text file (formatted one subject per line) in
-        which to read from.
-
-        A special wrapper, Value_Subset,
-        can also be used to specify more specific,
-        specifically value specific, subsets of subjects to use.
-        See :class:`Value_Subset` for how this input wrapper can be used.
+        See :ref:`Subjects` for more information
+        of the different accepted BPt subject style inputs.
 
         ::
 
@@ -2231,7 +2236,6 @@ class ProblemSpec(Params):
         self.random_state = random_state
         self.base_dtype = base_dtype
 
-        self._final_subjects = None
         self._checked = False
 
         self._proc_checks()
@@ -2251,12 +2255,11 @@ class ProblemSpec(Params):
         _print('weight_scorer =', self.weight_scorer)
         _print('scope =', self.scope)
 
-        if is_value_subset(self.subjects) or len(self.subjects) < 50:
+        if isinstance(self.subjects, Value_Subset):
+            _print('subjects =', self.subjects)
+        elif len(self.subjects) < 50:
             _print('subjects =', self.subjects)
 
-        if self._final_subjects is not None:
-            _print('len(subjects) =', len(self._final_subjects),
-                   '(before overlap w/ train/test subjects)')
         _print('n_jobs =', self.n_jobs)
         _print('random_state =', self.random_state)
         _print()

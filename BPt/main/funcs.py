@@ -6,12 +6,123 @@ from ..default.options.scorers import process_scorers
 from .BPtEvaluator import BPtEvaluator
 from sklearn.model_selection import check_cv
 from ..main.input_operations import Intersection
+from pandas.util._decorators import doc
 
 
-def model_pipeline_check(model_pipeline, **extra_params):
+_base_docs = {}
+
+_base_docs[
+    "pipeline"
+] = """pipeline : :class:`Pipeline`
+        A BPt input class Pipeline to be intialized according
+        to the passed dataset and problem_spec.
+
+        This parameter can be either an instance of :class:`Pipeline`,
+        :class:`ModelPipeline` or one of the below cases.
+
+        In the case that a single str is passed, it will assumed
+        to be a model indicator str and the pipeline used will be:
+
+        ::
+
+            pipeline = Pipeline(Model(pipeline))
+
+        Likewise, if just a Model passed, then the input will be
+        cast as:
+
+        ::
+
+            pipeline = Pipeline(pipeline)
+
+    """
+
+_base_docs[
+    "dataset"
+] = """dataset : :class:`Dataset`
+        The Dataset in function should be evaluated in the context of.
+        The dataset is as the data source for this operation.
+
+        Arguments within problem_spec can be used to
+        select just subsets of data. For example parameter
+        scope can be used to select only some columns or
+        parameter subjects to select a subset of subjects.
+    """
+
+_base_docs[
+    "problem_spec"
+] = """problem_spec : :class:`ProblemSpec` or 'default', optional
+        This parameter accepts an instance of the
+        params class :class:`ProblemSpec`.
+        The ProblemSpec is essentially a wrapper
+        around commonly used
+        parameters needs to define the context
+        the model pipeline should be evaluated in.
+        It includes parameters like problem_type, scorer, n_jobs,
+        random_state, etc...
+
+        See :class:`ProblemSpec` for more information
+        and for how to create an instance of this object.
+
+        If left as 'default', then will initialize a
+        ProblemSpec with default params.
+
+        ::
+
+            default = 'default'
+"""
+
+_base_docs[
+    "extra_params"
+] = """ extra_params : problem_spec or pipeline params, optional
+        You may pass as extra arguments to this function any pipeline
+        or problem_spec argument as python kwargs style value pairs.
+
+        For example:
+
+        ::
+
+            target=1
+
+        Would override the value of the target parameter
+        in the passed problem_spec. Or for example:
+
+        ::
+
+            model=Model('ridge')
+
+    """
+
+_eval_docs = _base_docs.copy()
+_eval_docs[
+    "cv"
+] = """cv : :class:`CV` or :ref:`sklearn CV <cross_validation>`, optional
+        This parameter controls what type of cross-validation
+        splitting strategy is used. You may pass
+        a number of options here.
+
+        - An instance of :class:`CV` representing a
+          custom strategy as defined by the BPt style CV.
+
+        - The custom str 'test', which specifies that the
+          whole train set should be used to train the pipeline
+          and the full test set used to validate it (assuming that
+          a train test split has been defined in the underlying dataset)
+
+        - Any valid scikit-learn style option:
+          Which include an int to specify the number of folds in a
+          (Stratified) KFold, a sklearn CV splitter or an iterable
+          yielding (train, test) splits as arrays of indices.
+
+        ::
+
+            default = 5
+"""
+
+
+def pipeline_check(pipeline, **extra_params):
 
     # Make deep copy
-    pipe = deepcopy(model_pipeline)
+    pipe = deepcopy(pipeline)
 
     # If passed pipeline is not Pipeline or ModelPipeline
     # then make input as Pipeline around model
@@ -25,7 +136,7 @@ def model_pipeline_check(model_pipeline, **extra_params):
         if isinstance(pipe, Model):
             pipe = Pipeline(steps=[pipe])
         else:
-            raise RuntimeError('model_pipeline must be a Pipeline',
+            raise RuntimeError('pipeline must be a Pipeline',
                                ' model str or Model-like')
 
     # Set any overlapping extra params
@@ -104,84 +215,41 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
     return ps
 
 
-def get_estimator(model_pipeline, dataset,
+@doc(**_base_docs)
+def get_estimator(pipeline, dataset,
                   problem_spec='default', **extra_params):
-    '''Get a sklearn compatible estimator from a
+    '''Get a sklearn compatible :ref:`estimator<develop>` from a
     :class:`Pipeline` (or :class:`ModelPipeline`),
     :class:`Dataset` and :class:`ProblemSpec`.
 
-    This function can be used together with Dataset method
-    :func:`get_Xy <Dataset.get_Xy>` and it's variants.
-
     Parameters
     -----------
-    model_pipeline : :class:`Pipeline`
-        A BPt input class Pipeline to be intialized according
-        to the passed Dataset and ProblemSpec. This can
-        accept either :class:`Pipeline` or :class:`ModelPipeline`.
-        In the case that a single str is passed, it will assumed
-        to be a model indicator str and the pipeline used will be:
+    {pipeline}
 
-        ::
+    {dataset}
 
-            model_pipeline = Pipeline(Model(model_pipeline))
+    {problem_spec}
 
-        Likewise, if just a Model passed, then the input will be
-        cast as:
-
-        ::
-
-            model_pipeline = Pipeline(model_pipeline)
-
-    dataset : :class:`Dataset`
-        The Dataset in which the pipeline should be initialized
-        according to. For example, pipeline's can include Scopes,
-        these need a reference Dataset.
-
-    problem_spec : :class:`ProblemSpec` or 'default', optional
-        `problem_spec` accepts an instance of the
-        params class :class:`ProblemSpec`.
-        This object is essentially a wrapper around commonly used
-        parameters needs to define the context
-        the model pipeline should be evaluated in.
-        It includes parameters like problem_type, scorer, n_jobs,
-        random_state, etc...
-        See :class:`ProblemSpec` for more information
-        and for how to create an instance of this object.
-
-        If left as 'default', then will initialize a
-        ProblemSpec with default params.
-
-        ::
-
-            default = 'default'
-
-    extra_params : problem_spec or model_pipeline params, optional
-        You may pass as extra arguments to this function any model_pipeline
-        or problem_spec argument value pairs. For example,
-
-        ::
-
-            get_estimator(model_pipeline, dataset, problem_spec,
-                          model=Model('ridge'), target='1')
-
-        Would get an estimator according to the passed model_pipeline,
-        but with model=Model('ridge') and the passed problem_spec
-        except with target='1' instead of the original values.
+    {extra_params}
 
     Returns
     --------
-    estimator : sklearn Estimator
+    estimator : :ref:`sklearn Estimator <develop>`
         The returned object is a sklearn-compatible estimator.
         It will be either of type BPtPipeline or a BPtPipeline
         wrapped in a search CV object.
+
+    Notes
+    ------
+    This function can be used together with Dataset method
+    :func:`get_Xy <Dataset.get_Xy>` and it's variants.
     '''
 
     # @TODO add verbose option?
     dataset._check_sr()
 
     # Check passed input - note: returns deep copies
-    pipe = model_pipeline_check(model_pipeline, **extra_params)
+    pipe = pipeline_check(pipeline, **extra_params)
     ps = problem_spec_check(problem_spec, dataset, **extra_params)
 
     # Get the actual pipeline
@@ -190,17 +258,17 @@ def get_estimator(model_pipeline, dataset,
     return model
 
 
-def _get_pipeline(model_pipeline, problem_spec, dataset,
+def _get_pipeline(pipeline, problem_spec, dataset,
                   has_search=False):
 
     # If has search is False, means this is the top level
     # or the top level didn't have a search
     if not has_search:
         has_search = True
-        if model_pipeline.param_search is None:
+        if pipeline.param_search is None:
             has_search = False
 
-    # If either this set of model_pipeline params or the parent
+    # If either this set of pipeline params or the parent
     # params had search params, then a copy of problem spec with n_jobs set
     # to 1 should be passed to children get pipelines,
     nested_ps = problem_spec
@@ -215,7 +283,7 @@ def _get_pipeline(model_pipeline, problem_spec, dataset,
         if hasattr(obj, 'obj') and isinstance(obj.obj, Pipeline):
 
             nested_pipe, nested_pipe_params =\
-                _get_pipeline(model_pipeline=obj.obj,
+                _get_pipeline(pipeline=obj.obj,
                               problem_spec=nested_ps,
                               has_search=has_search)
 
@@ -242,20 +310,20 @@ def _get_pipeline(model_pipeline, problem_spec, dataset,
                 nested_check(getattr(obj, param))
             return
 
-    # Run nested check on passed model_pipeline
-    nested_check(model_pipeline)
+    # Run nested check on passed pipeline
+    nested_check(pipeline)
 
     # Preproc model
-    model_pipeline =\
-        _preproc_model_pipeline(model_pipeline, problem_spec, dataset)
+    pipeline =\
+        _preproc_pipeline(pipeline, problem_spec, dataset)
 
     # Return the pipeline
-    return get_pipe(pipeline_params=model_pipeline,
+    return get_pipe(pipeline_params=pipeline,
                     problem_spec=problem_spec,
                     dataset=dataset)
 
 
-def _preproc_model_pipeline(pipe, ps, dataset):
+def _preproc_pipeline(pipe, ps, dataset):
 
     # Check imputers default case
     # Check if any NaN in data
@@ -362,7 +430,7 @@ def _preproc_param_search(object, ps):
     return True
 
 
-def _sk_prep(model_pipeline, dataset, problem_spec='default',
+def _sk_prep(pipeline, dataset, problem_spec='default',
              cv=5, **extra_params):
     '''Internal helper function return the different pieces
     needed by sklearn functions'''
@@ -372,7 +440,7 @@ def _sk_prep(model_pipeline, dataset, problem_spec='default',
                             **extra_params)
 
     # Get estimator
-    estimator = get_estimator(model_pipeline=model_pipeline, dataset=dataset,
+    estimator = get_estimator(pipeline=pipeline, dataset=dataset,
                               problem_spec=ps, **extra_params)
 
     # Get X and y
@@ -422,49 +490,25 @@ def _sk_prep(model_pipeline, dataset, problem_spec='default',
     return estimator, X, y, ps, sk_cv
 
 
-def cross_val_score(model_pipeline, dataset,
+@doc(**_eval_docs)
+def cross_val_score(pipeline, dataset,
                     problem_spec='default',
                     cv=5, sk_n_jobs=1, verbose=0,
                     fit_params=None,
                     error_score=np.nan,
                     **extra_params):
-    '''This function is a BPt compatible wrapper around the scikit-learn
-    function cross_val_score,
-    https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html
-
+    '''This function is a BPt compatible wrapper around
+    :func:`sklearn.model_selection.cross_val_score`
 
     Parameters
     ----------
-    model_pipeline : :class:`Pipeline`
-        A BPt input class Pipeline to be intialized according
-        to the passed Dataset and ProblemSpec, and then evaluated.
+    {pipeline}
 
-    dataset : :class:`Dataset`
-        The Dataset in which the pipeline should be initialized
-        according to, and data drawn from. See parameter
-        `subjects` to use only a subset of the columns or subjects
-        in this call to cross_val_score.
+    {dataset}
 
-    problem_spec : :class:`ProblemSpec` or 'default', optional
-        `problem_spec` accepts an instance of the
-        params class :class:`ProblemSpec`.
-        This object is essentially a wrapper around commonly used
-        parameters needs to define the context
-        the model pipeline should be evaluated in.
-        It includes parameters like problem_type, scorer, n_jobs,
-        random_state, etc...
-        See :class:`ProblemSpec` for more information
-        and for how to create an instance of this object.
+    {problem_spec}
 
-        If left as 'default', then will initialize a
-        ProblemSpec with default params.
-
-        Warning: the parameter weight_scorer in problem_spec
-        is ignored when used with cross_val_score.
-
-        ::
-
-            default = 'default'
+    {cv}
 
     sk_n_jobs : int, optional
         The number of jobs as passed to the base sklearn
@@ -504,23 +548,18 @@ def cross_val_score(model_pipeline, dataset,
 
             default = np.nan
 
-    extra_params : problem_spec or model_pipeline params, optional
-        You may pass as extra arguments to this function any model_pipeline
-        or problem_spec argument value pairs. For example,
+    {extra_params}
 
-        ::
+    See Also
+    ---------
+    cross_validate : To run on multiple metrics and other options.
+    evaluate : The BPt style similar function with extra options.
 
-            cross_val_score(model_pipeline, dataset,
-                            model=Model('ridge'), target='1')
-
-        Would test an estimator according to the passed model_pipeline,
-        but with model=Model('ridge') and the passed problem_spec
-        except with target='1' instead of the original values.
     '''
 
     # Get sk compat pieces
     estimator, X, y, ps, sk_cv =\
-        _sk_prep(model_pipeline=model_pipeline, dataset=dataset,
+        _sk_prep(pipeline=pipeline, dataset=dataset,
                  problem_spec=problem_spec, cv=cv, **extra_params)
 
     # Just take first scorer if dict
@@ -533,7 +572,8 @@ def cross_val_score(model_pipeline, dataset,
                            fit_params=fit_params, error_score=error_score)
 
 
-def cross_validate(model_pipeline, dataset,
+@doc(**_eval_docs)
+def cross_validate(pipeline, dataset,
                    problem_spec='default',
                    cv=5, sk_n_jobs=1, verbose=0,
                    fit_params=None,
@@ -541,40 +581,18 @@ def cross_validate(model_pipeline, dataset,
                    return_estimator=False,
                    error_score=np.nan,
                    **extra_params):
-    '''This function is a BPt compatible wrapper around the scikit-learn
-    function cross_validate,
-    https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate
-
+    '''This function is a BPt compatible wrapper around
+    :func:`sklearn.model_selection.cross_validate`
 
     Parameters
     ----------
-    model_pipeline : :class:`Pipeline`
-        A BPt input class Pipeline to be intialized according
-        to the passed Dataset and ProblemSpec, and then evaluated.
+    {pipeline}
 
-    dataset : :class:`Dataset`
-        The Dataset in which the pipeline should be initialized
-        according to, and data drawn from. See parameter
-        `subjects` to use only a subset of the columns or subjects
-        in this call to cross_val_score.
+    {dataset}
 
-    problem_spec : :class:`ProblemSpec` or 'default', optional
-        `problem_spec` accepts an instance of the
-        params class :class:`ProblemSpec`.
-        This object is essentially a wrapper around commonly used
-        parameters needs to define the context
-        the model pipeline should be evaluated in.
-        It includes parameters like problem_type, scorer, n_jobs,
-        random_state, etc...
-        See :class:`ProblemSpec` for more information
-        and for how to create an instance of this object.
+    {problem_spec}
 
-        If left as 'default', then will initialize a
-        ProblemSpec with default params.
-
-        ::
-
-            default = 'default'
+    {cv}
 
     sk_n_jobs : int, optional
         The number of jobs as passed to the base sklearn
@@ -628,23 +646,18 @@ def cross_validate(model_pipeline, dataset,
 
             default = np.nan
 
-    extra_params : problem_spec or model_pipeline params, optional
-        You may pass as extra arguments to this function any model_pipeline
-        or problem_spec argument value pairs. For example,
+    {extra_params}
 
-        ::
+    See Also
+    ---------
+    cross_val_score : Simplified version of this function.
+    evaluate : The BPt style similar function with extra options.
 
-            cross_val_score(model_pipeline, dataset,
-                            model=Model('ridge'), target='1')
-
-        Would test an estimator according to the passed model_pipeline,
-        but with model=Model('ridge') and the passed problem_spec
-        except with target='1' instead of the original values.
     '''
 
     # Get sk compat pieces
     estimator, X, y, ps, sk_cv =\
-        _sk_prep(model_pipeline=model_pipeline, dataset=dataset,
+        _sk_prep(pipeline=pipeline, dataset=dataset,
                  problem_spec=problem_spec, cv=cv, **extra_params)
 
     from sklearn.model_selection import cross_validate
@@ -656,7 +669,8 @@ def cross_validate(model_pipeline, dataset,
                           error_score=error_score)
 
 
-def evaluate(model_pipeline, dataset,
+@doc(**_eval_docs)
+def evaluate(pipeline, dataset,
              problem_spec='default',
              cv=5,
              progress_bar=True,
@@ -666,31 +680,28 @@ def evaluate(model_pipeline, dataset,
              decode_feat_names=True,
              progress_loc=None,
              **extra_params):
-    '''
+    ''' This method is used to evaluate a model pipeline
+    with cross-validation.
 
     Parameters
     -----------
-    cv : :class:`CV` or sklearn compat CV, optional
-        This parameter controls the cross-validation
-        behavior in which to evaluate. You may pass
-        a number of options here.
+    {pipeline}
 
-        - An instance of the :class:`CV` representing a
-            custom strategy as defined by the BPt style CV.
+    {dataset}
 
-        - The custom str 'test', which specifies that the
-            whole train set should be used to train the pipeline
-            and the full test set used to validate it (assuming that
-            a train test split has been defined in the underlying dataset)
+    {problem_spec}
 
-         - Any valid scikit-learn style option:
-            Which include an int to specify the number of folds in a
-            (Stratified) KFold, a sklearn CV splitter or an iterable
-            yielding (train, test) splits as arrays of indices.
+    {cv}
 
-            See the sklearn documentation for more information on this:
-            https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation
+    progress_bar : bool, optional
+        If True, then an progress
+        bar will be displaying showing fit
+        progress across
+        evaluation splits.
 
+        ::
+
+            default = True
 
     store_preds : bool, optional
         If set to True, store raw predictions
@@ -698,11 +709,10 @@ def evaluate(model_pipeline, dataset,
         object. This will be a dictionary where
         each dictionary key corresponds to
         a valid predict function for the base model,
-        for example:
+        for example self.preds will hold
+        a dictionary with ::
 
-        ::
-
-            preds = {'predict': [fold0_preds, fold1_preds, ...]}
+            [fold0_preds, fold1_preds, ...]
 
         And the value in the dict is a list
         (each element corresponding to each fold)
@@ -714,11 +724,46 @@ def evaluate(model_pipeline, dataset,
         preds. Or to see corresponding subjects / index,
         check 'val_subjs' in the evaluator.
 
+    store_estimators : bool, optional
+        Skip.
+
+        ::
+
+            default = True
+
+    store_timing : bool, optional
+        Skip.
+
+        ::
+
+            default = True
+
+    decode_feat_names : bool, optional
+        Skip.
+
+        ::
+
+            default = True
+
+    progress_loc : str or None, optional
+        Skip.
+
+        ::
+
+            default = None
+
+    {extra_params}
+
+    See Also
+    ---------
+    cross_val_score : Similar sklearn style function.
+    cross_validate : Similar sklearn style function.
+
     '''
 
     # Base process each component
     estimator, X, y, ps, sk_cv =\
-        _sk_prep(model_pipeline=model_pipeline, dataset=dataset,
+        _sk_prep(pipeline=pipeline, dataset=dataset,
                  problem_spec=problem_spec, cv=cv, **extra_params)
 
     # Check decode feat_names arg

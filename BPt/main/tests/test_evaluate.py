@@ -22,7 +22,7 @@ def test_evaluate_match_cross_val_score():
 
     dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_dataset()
-    evaluator = evaluate(model_pipeline=dt_pipe,
+    evaluator = evaluate(pipeline=dt_pipe,
                          dataset=dataset,
                          problem_spec='default',
                          cv=5,
@@ -34,7 +34,7 @@ def test_evaluate_match_cross_val_score():
                          progress_loc=None,
                          problem_type='regression')
 
-    cv_scores = cross_val_score(model_pipeline=dt_pipe,
+    cv_scores = cross_val_score(pipeline=dt_pipe,
                                 dataset=dataset,
                                 scorer='r2',
                                 problem_spec='default',
@@ -47,7 +47,7 @@ def test_evaluate_regression_dt():
 
     dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_dataset()
-    evaluator = evaluate(model_pipeline=dt_pipe,
+    evaluator = evaluate(pipeline=dt_pipe,
                          dataset=dataset,
                          problem_spec='default',
                          cv=5,
@@ -102,7 +102,7 @@ def test_evaluate_categorical_dt():
     dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_category_dataset()
 
-    evaluator = evaluate(model_pipeline=dt_pipe,
+    evaluator = evaluate(pipeline=dt_pipe,
                          dataset=dataset,
                          problem_spec='default',
                          cv=5,
@@ -141,7 +141,7 @@ def test_evaluate_categorical_linear():
     linear_pipe = ModelPipeline(model=Model('linear'))
     dataset = get_fake_category_dataset()
 
-    evaluator = evaluate(model_pipeline=linear_pipe,
+    evaluator = evaluate(pipeline=linear_pipe,
                          dataset=dataset,
                          problem_spec='default',
                          cv=5,
@@ -179,7 +179,7 @@ def test_evaluate_binary():
 
     dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_binary_dataset()
-    evaluator = evaluate(model_pipeline=dt_pipe,
+    evaluator = evaluate(pipeline=dt_pipe,
                          dataset=dataset,
                          problem_spec='default',
                          cv=5,
@@ -218,7 +218,7 @@ def test_evaluate_fail():
     dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_dataset()
 
-    evaluator = evaluate(model_pipeline=dt_pipe,
+    evaluator = evaluate(pipeline=dt_pipe,
                          dataset=dataset,
                          progress_bar=False,
                          store_estimators=False)
@@ -235,7 +235,7 @@ def test_evaluate_cv():
     dt_pipe = ModelPipeline(model=Model('dt'))
     dataset = get_fake_binary_dataset()
     cv = CV(splits=3, n_repeats=2)
-    evaluator = evaluate(model_pipeline=dt_pipe,
+    evaluator = evaluate(pipeline=dt_pipe,
                          dataset=dataset,
                          problem_spec='default',
                          cv=cv,

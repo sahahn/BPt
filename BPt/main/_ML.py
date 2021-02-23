@@ -10,14 +10,14 @@ import pickle as pkl
 from tqdm import tqdm
 from tqdm.notebook import tqdm as tqdm_notebook
 
-from .input_operations import is_value_subset
+from .input_operations import Value_Subset
 from ..helpers.Data_Helpers import (get_unique_combo_df,
                                     reverse_unique_combo_df,
                                     get_target_type)
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
 from ..main.input import (Model_Pipeline,
-                                   Model, Ensemble, ProblemSpec)
+                          Model, Ensemble, ProblemSpec)
 from ..pipeline.BPtPipelineConstructor import get_pipe
 import pandas as pd
 import copy
@@ -40,7 +40,7 @@ def Set_Default_ML_Verbosity(
     save_results : bool, optional
         If True, all results returned by Evaluate
         will be saved within the log dr (if one exists!),
-        under run_name + .eval, and simmilarly for results
+        under run_name + .eval, and similarly for results
         returned by Test, but as run_name + .test.
 
         if 'default', and not already defined, set to False.

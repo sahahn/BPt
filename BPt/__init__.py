@@ -11,8 +11,7 @@ from .main.funcs import (get_estimator, cross_validate,
 
 from .main.input_operations import (Select, Duplicate, Pipe, Value_Subset,
                                     Intersection)
-
-from .default.params import Params as p
+from . import p
 
 __author__ = "sahahn"
 __version__ = "2"

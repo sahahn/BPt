@@ -22,11 +22,6 @@ class Dataset(pd.DataFrame):
     as of BPt version >= 2 (replacing the building in loading functions of the
     old BPt_ML).'''
 
-    ROLES = set(['data', 'target', 'non input'])
-    RESERVED_SCOPES = set(['all', 'float', 'category', 'data float',
-                           'data', 'data file', 'data category',
-                           'non input', 'target', 'target category',
-                           'target float'])
     _metadata = ['roles', 'scopes', 'encoders', 'file_mapping',
                  'verbose_', 'test_subjects', 'train_subjects']
 
@@ -41,7 +36,38 @@ class Dataset(pd.DataFrame):
         return pd.Series
 
     @property
+    def reserved_roles(self):
+        '''The dataset class has three fixed roles,
+        these are ::
+
+            ['data', 'target', 'non input']
+
+        '''
+        return set(['data', 'target', 'non input'])
+
+    @property
+    def reservered_scopes(self):
+        '''There are a number of reserved fixed scopes
+        in the Dataset class, these are ::
+
+            ['all', 'float', 'category', 'data float',
+             'data', 'data file', 'data category',
+             'non input', 'target', 'target category',
+             'target float']
+        '''
+        return set(['all', 'float', 'category', 'data float',
+                    'data', 'data file', 'data category',
+                    'non input', 'target', 'target category',
+                    'target float'])
+
+    @property
     def verbose(self):
+        '''This parameter takes a verbosity level
+        as an integer, where level 0 is just warnings,
+        a value lower than 0 can be set to mute warnings
+        and then higher values for more verbosity.
+        E.g., level 1 will print basic information,
+        where level 2 or higher will print more extensive information.'''
 
         if not hasattr(self, 'verbose_'):
             self.verbose_ = 0
@@ -147,7 +173,7 @@ class Dataset(pd.DataFrame):
                         'were cast to str', level=0)
 
         # Check if any columns have the same name as a reserved scope
-        reserved_overlap = set(self.columns).intersection(self.RESERVED_SCOPES)
+        reserved_overlap = set(self.columns).intersection(self.reservered_scopes)
         if len(reserved_overlap) > 0:
             raise RuntimeError('The columns: ' + repr(reserved_overlap) + ' '
                                'overlap with reserved saved names! '
@@ -540,10 +566,10 @@ class Dataset(pd.DataFrame):
     def _set_role(self, col, role):
         '''Internal function for setting a single columns role.'''
 
-        if role not in self.ROLES:
+        if role not in self.reserved_roles:
             raise AttributeError(
                 'Passed role "' + str(role) + '" must be one of ' +
-                str(self.ROLES))
+                str(self.reserved_roles))
 
         # If col is int or float, cast
         if isinstance(col, int) or isinstance(col, float):
@@ -740,7 +766,7 @@ class Dataset(pd.DataFrame):
 
         # Check is passed scope is reserved
         if isinstance(scope, str):
-            if scope in self.RESERVED_SCOPES:
+            if scope in self.reservered_scopes:
 
                 if scope == 'all':
                     return list(columns)
@@ -1156,7 +1182,7 @@ class Dataset(pd.DataFrame):
         file_to_subject : python function, dict of or 'auto'
             You must pass some way of mapping file names
             to their corresponding subject. The flexible way
-            to do this is by passing a pytho function
+            to do this is by passing a python function
             which takes in a file path, and returns the relevant subject for
             that file path. If just one function is passed, it will be used
             for to load all dictionary entries, alternatively you can pass
@@ -1237,7 +1263,7 @@ class Dataset(pd.DataFrame):
                     return np.stack(np.load(x))
 
             In this case though, it is reccomended that
-            you define this function in a seperate file from
+            you define this function in a separate file from
             where the main script will be run (for ease of caching)
 
             By default this function assumes data files are passed
@@ -1253,6 +1279,10 @@ class Dataset(pd.DataFrame):
             ::
 
                 default = False
+
+        See Also
+        --------
+        get_file_mapping : Returns the raw file mapping.
         '''
 
         if not inplace:

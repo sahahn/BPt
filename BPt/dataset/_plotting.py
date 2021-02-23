@@ -30,6 +30,7 @@ def plot(self, scope,
         Optionally restrict the plot to only a subset of
         subjects. This argument can be any of the BPt accepted
         :ref:`Subjects` style inputs.
+
         E.g., None, 'nan' for subjects
         with any nan data, 'train', the str location of a file
         formatted with one subject per line, or directly an
@@ -40,6 +41,19 @@ def plot(self, scope,
         ::
 
             default = 'all'
+
+    decode_values : bool, optional
+        When plotting categorical variables
+        that have been encoded through a BPt
+        dataset method, e.g., :func:`Dataset.ordinalize`,
+        then you may optionally either plot
+        the original categorical values before encoding
+        with decode_values = True, or use the current
+        internal values with decode_values = False.
+
+        ::
+
+            default = True
 
     cut : float, optional
         Only for plotting non-categorical variables.
@@ -70,7 +84,7 @@ def plot(self, scope,
         otherwise overlap.
 
         In the case that you are only plotting
-        one column, and want to make custimizations,
+        one column, and want to make customizations,
         then you should pass this value as False,
         and you can make changes to the figure
         via matplotlib's global state system.
@@ -205,6 +219,58 @@ def _print_plot_info(self, col, info):
 
 def plot_bivar(self, col1, col2, subjects='all',
                decode_values=True, show=True):
+    '''This method can be used to plot the relationship
+    between two variables. Different types of plots will
+    be used based on the types of the underlying variables.
+
+    Parameters
+    -----------
+    col1 : str
+        The name of the first loaded column in
+        which to plot against col2.
+
+    col2 : str
+        The name of the second loaded column
+        in which to plot against col1.
+
+    subjects : :ref:`Subjects`, optional
+        Optionally restrict the plot to only a subset of
+        subjects. This argument can be any of the BPt accepted
+        :ref:`Subjects` style inputs.
+
+        E.g., None, 'nan' for subjects
+        with any nan data, 'train', the str location of a file
+        formatted with one subject per line, or directly an
+        array-like of subjects, to name some options.
+
+        See :ref:`Subjects` for all options.
+
+        ::
+
+            default = 'all'
+
+    decode_values : bool, optional
+        When plotting categorical variables
+        that have been encoded through a BPt
+        dataset method, e.g., :func:`Dataset.ordinalize`,
+        then you may optionally either plot
+        the original categorical values before encoding
+        with decode_values = True, or use the current
+        internal values with decode_values = False.
+
+        ::
+
+            default = True
+
+    show : bool, optional
+        If plt.show() from matplotlib should
+        be called after plotting each column within
+        the passed scope.
+
+        ::
+
+            default = True
+    '''
 
     self._check_scopes()
 

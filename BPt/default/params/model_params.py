@@ -278,7 +278,7 @@ P['mlp dist 1 layer'] =\
 P['mlp dist es 1 layer'] = P['mlp dist 1 layer'].copy()
 P['mlp dist es 1 layer']['early_stopping'] = True
 P['mlp dist es 1 layer']['n_iter_no_change'] =\
-    Scalar(lower=5, upper=50)
+    Scalar(lower=5, upper=50).set_integer_casting()
 
 two_layer = Array(init=(100, 100)).set_mutation(sigma=50)
 two_layer = two_layer.set_bounds(lower=1, upper=300).set_integer_casting()
@@ -330,7 +330,7 @@ P['sgd classifier big search'] =\
      'power_t': Scalar(lower=.1, upper=.9),
      'early_stopping': TransitionChoice([False, True]),
      'validation_fraction': Scalar(lower=.05, upper=.5),
-     'n_iter_no_change': TransitionChoice(np.arange(2, 20)),
+     'n_iter_no_change': Scalar(lower=5, upper=30).set_integer_casting(),
      'class_weight': cls_weight}
 
 # Make elastic net version

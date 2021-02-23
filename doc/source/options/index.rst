@@ -2,20 +2,15 @@
 
 .. _default_options:
 
-================
+=========================
 Default Options
-================
+=========================
 
 .. toctree::
    :maxdepth: 2
 
-   loaders
-   imputers
-   scalers
-   transformers
-   selectors
-   models
-   ensembles
-   scorers
+   pipeline_options/index
+   search_type_options/index
+
 
 

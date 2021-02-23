@@ -16,3 +16,6 @@ This is the API reference
    pipeline_pieces
    problem_spec
    CV
+   input_operations
+   dists
+   evaluate

@@ -4,8 +4,8 @@ from ...pipeline.ScopeObjs import ScopeTransformer
 from ...pipeline.BPtModel import BPtModel
 from ..input import (Model, ModelPipeline, Pipeline, CV, Scaler,
                      ProblemSpec, ParamSearch, Imputer)
-from ..funcs import (model_pipeline_check, problem_spec_check, get_estimator,
-                     _preproc_model_pipeline, _preproc_param_search)
+from ..funcs import (pipeline_check, problem_spec_check, get_estimator,
+                     _preproc_pipeline, _preproc_param_search)
 from ..CV import BPtCV
 from ...dataset.Dataset import Dataset
 from nose.tools import assert_raises
@@ -22,36 +22,36 @@ def test_no_overlap_param_names():
     assert len(ps_params.intersection(pipe_params)) == 0
 
 
-def test_model_pipeline_check():
+def test_pipeline_check():
 
     mp_params = ModelPipeline(imputers=None,
                               model=Model('ridge'))
-    mp = model_pipeline_check(mp_params)
+    mp = pipeline_check(mp_params)
     assert isinstance(mp, ModelPipeline)
 
     mp_params = ModelPipeline(imputers=None,
                               model='ridge')
-    mp = model_pipeline_check(mp_params)
+    mp = pipeline_check(mp_params)
     assert isinstance(mp, ModelPipeline)
 
     mp_params = Model('ridge')
-    mp = model_pipeline_check(mp_params)
+    mp = pipeline_check(mp_params)
     assert isinstance(mp, Pipeline)
 
     mp_params = ModelPipeline('ridge')
-    mp = model_pipeline_check(mp_params)
+    mp = pipeline_check(mp_params)
     assert isinstance(mp, Pipeline)
 
 
-def test_model_pipeline__check_extra_args():
+def test_pipeline_check_extra_args():
 
     mp_params = ModelPipeline(imputers=None,
                               model=Model('ridge'))
-    mp = model_pipeline_check(mp_params)
+    mp = pipeline_check(mp_params)
     assert isinstance(mp, ModelPipeline)
     assert mp.imputers is None
 
-    mp = model_pipeline_check(mp_params, imputers=Imputer('mean'),
+    mp = pipeline_check(mp_params, imputers=Imputer('mean'),
                               ignore='ignore')
     assert mp.imputers is not None
     assert isinstance(mp, ModelPipeline)
@@ -181,7 +181,7 @@ def test_preproc_preproc_param_search():
     assert callable(search_d['scorer'])
 
 
-def test_preproc_model_pipeline():
+def test_preproc_pipeline():
 
     ps = get_checked_ps()
     data = get_fake_dataset()
@@ -189,12 +189,12 @@ def test_preproc_model_pipeline():
 
     # Test imputers first
     pipe = ModelPipeline(model='ridge', imputers='default')
-    proc_pipe = _preproc_model_pipeline(pipe, ps, dataset=data)
+    proc_pipe = _preproc_pipeline(pipe, ps, dataset=data)
     assert proc_pipe.imputers is None
 
     data.loc[0, '1'] = np.nan
     pipe = ModelPipeline(model='ridge', imputers='default')
-    proc_pipe = _preproc_model_pipeline(pipe, ps, dataset=data)
+    proc_pipe = _preproc_pipeline(pipe, ps, dataset=data)
     assert isinstance(proc_pipe.imputers[0], Imputer)
     assert isinstance(proc_pipe.imputers[1], Imputer)
 
@@ -202,7 +202,7 @@ def test_preproc_model_pipeline():
     pipe = ModelPipeline(model='ridge', imputers='default', scalers=None,
                          param_search=ParamSearch(
                             search_type='DiscreteOnePlusOne'))
-    proc_pipe = _preproc_model_pipeline(pipe, ps, dataset=data)
+    proc_pipe = _preproc_pipeline(pipe, ps, dataset=data)
     assert isinstance(proc_pipe.param_search, dict)
     assert proc_pipe.param_search['search_type'] == 'DiscreteOnePlusOne'
 
@@ -222,7 +222,7 @@ def test_preproc_model_pipeline():
     assert data['5'].dtype.name != 'category'
 
     pipe = ModelPipeline(param_search=ParamSearch(cv=CV(splits='4')))
-    proc_pipe = _preproc_model_pipeline(pipe, ps, dataset=data)
+    proc_pipe = _preproc_pipeline(pipe, ps, dataset=data)
     cv_obj = proc_pipe.param_search['cv']
     assert len(cv_obj.splits_vals) == 3
     assert cv_obj.splits_vals.nunique() == 3
@@ -230,17 +230,17 @@ def test_preproc_model_pipeline():
     # Not a valid column error
     pipe = ModelPipeline(param_search=ParamSearch(cv=CV(splits='6')))
     with assert_raises(KeyError):
-        proc_pipe = _preproc_model_pipeline(pipe, ps, dataset=data)
+        proc_pipe = _preproc_pipeline(pipe, ps, dataset=data)
 
     # Trigger role failure
     pipe = ModelPipeline(param_search=ParamSearch(cv=CV(splits='3')))
     with assert_raises(RuntimeError):
-        proc_pipe = _preproc_model_pipeline(pipe, ps, dataset=data)
+        proc_pipe = _preproc_pipeline(pipe, ps, dataset=data)
 
     # Not category failure
     pipe = ModelPipeline(param_search=ParamSearch(cv=CV(splits='5')))
     with assert_raises(RuntimeError):
-        proc_pipe = _preproc_model_pipeline(pipe, ps, dataset=data)
+        proc_pipe = _preproc_pipeline(pipe, ps, dataset=data)
 
 
 def test_get_estimator_simple_case():
@@ -250,7 +250,7 @@ def test_get_estimator_simple_case():
 
     pipe = ModelPipeline(model='ridge', imputers='default',
                          scalers=None, verbose=1)
-    est = get_estimator(model_pipeline=pipe, dataset=data, problem_spec=ps)
+    est = get_estimator(pipeline=pipe, dataset=data, problem_spec=ps)
 
     # Should be BPtpipeline output
     assert isinstance(est, BPtPipeline)
@@ -279,7 +279,7 @@ def test_get_estimator_with_ng_search():
     data = get_fake_dataset()
     pipe = ModelPipeline(model=Model('ridge', params=1), scalers=None,
                          param_search=ParamSearch('RandomSearch'))
-    search_est = get_estimator(model_pipeline=pipe, dataset=data,
+    search_est = get_estimator(pipeline=pipe, dataset=data,
                                problem_spec=ps)
 
     # Nevergrad cv
@@ -307,7 +307,7 @@ def test_get_estimator_n_jobs():
     ps = get_checked_ps()
     data = get_fake_dataset()
     pipe = ModelPipeline(model=Model('random forest'), scalers=None)
-    est = get_estimator(model_pipeline=pipe, dataset=data,
+    est = get_estimator(pipeline=pipe, dataset=data,
                         problem_spec=ps)
     assert isinstance(est, BPtPipeline)
 
@@ -324,7 +324,7 @@ def test_get_estimator_extra_params():
     ps = get_test_ps()
     data = get_fake_dataset()
     pipe = ModelPipeline(model=Model('ridge'), scalers=None)
-    est = get_estimator(model_pipeline=pipe, dataset=data,
+    est = get_estimator(pipeline=pipe, dataset=data,
                         problem_spec=ps, model=Model('random forest'),
                         problem_type='binary')
 
@@ -344,7 +344,7 @@ def test_get_estimator_extra_params_pipeline():
     pipe = Pipeline([Model('ridge')])
 
     # Using Pipeline so should ignore Model
-    est = get_estimator(model_pipeline=pipe, dataset=data,
+    est = get_estimator(pipeline=pipe, dataset=data,
                         problem_spec=ps, model=Model('random forest'),
                         problem_type='regression')
 
@@ -363,7 +363,7 @@ def test_get_estimator_n_jobs_ng():
     data = get_fake_dataset()
     pipe = ModelPipeline(model=Model('random forest', params=1), scalers=None,
                          param_search=ParamSearch('RandomSearch'))
-    search_est = get_estimator(model_pipeline=pipe, dataset=data,
+    search_est = get_estimator(pipeline=pipe, dataset=data,
                                problem_spec=ps)
 
     assert isinstance(search_est, NevergradSearchCV)
@@ -391,7 +391,7 @@ def test_get_estimator_n_jobs_ng_pipeline():
     pipe = Pipeline(steps=[Model('random forest', params=1)],
                     param_search=ParamSearch('RandomSearch'))
 
-    search_est = get_estimator(model_pipeline=pipe, dataset=data,
+    search_est = get_estimator(pipeline=pipe, dataset=data,
                                problem_spec=ps)
 
     assert isinstance(search_est, NevergradSearchCV)
@@ -417,7 +417,7 @@ def test_get_estimator_with_scope():
     data = get_fake_dataset()
     pipe = ModelPipeline(model=Model('ridge', scope='1'),
                          scalers=Scaler('robust', scope='float'))
-    est = get_estimator(model_pipeline=pipe, dataset=data,
+    est = get_estimator(pipeline=pipe, dataset=data,
                         problem_spec=ps)
 
     assert len(est.steps) == 2
@@ -439,7 +439,7 @@ def test_get_param_wrapped_model():
     data = get_fake_dataset()
     pipe = Model('random forest', params=1,
                  param_search=ParamSearch('RandomSearch'))
-    est = get_estimator(model_pipeline=pipe, dataset=data,
+    est = get_estimator(pipeline=pipe, dataset=data,
                         problem_spec=ps)
 
     assert isinstance(est, BPtPipeline)

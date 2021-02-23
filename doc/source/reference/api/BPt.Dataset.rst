@@ -259,8 +259,6 @@ BPt.Dataset
    .. autosummary::
       :toctree:
       
-      Dataset.RESERVED_SCOPES
-      Dataset.ROLES
       Dataset.T
       Dataset.at
       Dataset.attrs
@@ -274,6 +272,8 @@ BPt.Dataset
       Dataset.index
       Dataset.loc
       Dataset.ndim
+      Dataset.reserved_roles
+      Dataset.reservered_scopes
       Dataset.shape
       Dataset.size
       Dataset.style

@@ -2,7 +2,7 @@
 
 The backend library for conducting hyper-parameter searches within the BPt is nevergrad, a library developed by facebook.
 They implement a whole bunch of methods, and have limited documentation explaining them.
-This page will try to break down the different avaliable options.
+This page will try to break down the different available options.
 
 
 Random Search

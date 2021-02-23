@@ -126,10 +126,10 @@ class BPtPipelineConstructor():
     def get_pipeline(self):
         '''Make the model pipeline object'''
 
-        model_pipeline = BPtPipeline(self.objs, verbose=self.verbose,
-                                     cache_loc=self.cache_loc)
+        pipeline = BPtPipeline(self.objs, verbose=self.verbose,
+                               cache_loc=self.cache_loc)
 
-        return model_pipeline
+        return pipeline
 
     def is_search(self):
 

@@ -29,6 +29,6 @@ BPt.ModelPipeline
    .. autosummary::
       :toctree:
       
-      ModelPipeline.ORDERED_NAMES
+      ModelPipeline.fixed_piece_order
 
 

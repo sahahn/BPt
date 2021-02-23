@@ -23,6 +23,8 @@ from sphinx.ext.autosummary import _import_by_name
 
 logger = logging.getLogger(__name__)
 
+NumpyDocString.sections['Note'] = []
+
 # https://github.com/sphinx-doc/sphinx/pull/2325/files
 # Workaround for sphinx-build recursion limit overflow:
 # pickle.dump(doctree, f, pickle.HIGHEST_PROTOCOL)
@@ -376,8 +378,8 @@ if include_api:
         'sklearn': ('http://scikit-learn.org/stable', None),
         'lightgbm': ('https://lightgbm.readthedocs.io/en/latest', None),
         'xgboost': ('https://xgboost.readthedocs.io/en/latest', None),
-        'imblearn': ('https://imbalanced-learn.readthedocs.io/en/stable', None),
-        'category_encoders': ('http://contrib.scikit-learn.org/category_encoders/', None)     
+        'nevergrad': ('https://facebookresearch.github.io/nevergrad/', None),
+        'imblearn': ('https://imbalanced-learn.readthedocs.io/en/stable', None)
     }
 
 

@@ -1,5 +1,5 @@
 from BPt.pipeline.BPtFeatureSelector import BPtFeatureSelector
-from ..main.input_operations import is_pipe, is_select
+from ..main.input_operations import Pipe, Select
 
 from ..helpers.ML_Helpers import (proc_type_dep_str, param_len_check,
                                   conv_to_list,
@@ -131,7 +131,7 @@ class Constructor():
         params = conv_to_list(params)
 
         # Check for select
-        select_mask = np.array([is_select(param) for param in params])
+        select_mask = np.array([isinstance(param, Select) for param in params])
         if select_mask.any():
             return self._process_with_select(params, select_mask)
 
@@ -657,7 +657,7 @@ class LoaderConstructor(Constructor):
         from ..default.options.loaders import get_loader_and_params
 
         # Check for pipe first
-        pipe_mask = np.array([is_pipe(param.obj) for param in params])
+        pipe_mask = np.array([isinstance(param.obj, Pipe) for param in params])
 
         # Init objs as empty list of correct size w/ just place holders
         objs = [None for i in range(len(params))]

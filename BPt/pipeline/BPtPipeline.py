@@ -239,10 +239,10 @@ class BPtPipeline(Pipeline):
 
         # If DataFrame input
         if isinstance(Xt, pd.DataFrame):
-            Xt = np.array(Xt)
 
-            # Set transform subjects
+            # Set transform index, then cast to array
             transform_index = Xt.index
+            Xt = np.array(Xt)
 
         # For each transformer, but the last
         for step in self.steps[:-1]:
@@ -292,78 +292,60 @@ class BPtPipeline(Pipeline):
         # inverse transform
         return
 
-        # Make compat w/ subjects x feats
-        if len(fis.shape) == 1:
-            fis = np.expand_dims(fis, axis=0)
-
-        # To inverse transform FIs, we are only concerned with feat_selectors
-        # transformers, and loaders
-        fitted_objs = self._get_objs_by_name()
-
-        # Feat selectors
-        fs_ind = ORDERED_NAMES.index('feat_selectors')
-        for feat_selector in fitted_objs[fs_ind][::-1]:
-            fis = feat_selector.inverse_transform(fis)
-
-        # Transformers
-        trans_ind = ORDERED_NAMES.index('transformers')
-        for transformer, name in zip(fitted_objs[trans_ind][::-1],
-                                     self.names[trans_ind][::-1]):
-            fis = transformer.inverse_transform(fis, name=name)
-
-        # Loaders - special case
-        inversed_loaders = {}
-        l_ind = ORDERED_NAMES.index('loaders')
-        for loader, name in zip(fitted_objs[l_ind][::-1],
-                                self.names[l_ind][::-1]):
-            fis, inverse_X = loader.inverse_transform(fis, name=name)
-            inversed_loaders.update(inverse_X)
-
-        # Make the final feat_importances dict
-        feat_imp_dict = {}
-        for i in range(len(feat_names)):
-            if i in inversed_loaders:
-                feat_imp_dict[feat_names[i]] = inversed_loaders[i]
-            else:
-                feat_imp_dict[feat_names[i]] = fis[:, i]
-
-        return feat_imp_dict
-
     @if_delegate_has_method(delegate='_final_estimator')
     def predict(self, X, **predict_params):
-        if isinstance(X, pd.DataFrame):
-            X = np.array(X)
-        return super().predict(X, **predict_params)
+
+        # Transform X
+        Xt = self.transform(X)
+
+        # Then return final pipeline piece predicting
+        # on the transformed data
+        return self.steps[-1][-1].predict(Xt, **predict_params)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def fit_predict(self, X, y=None, **fit_params):
+        raise RuntimeError('Not Implemented')
 
     @if_delegate_has_method(delegate='_final_estimator')
     def predict_proba(self, X):
-        if isinstance(X, pd.DataFrame):
-            X = np.array(X)
-        return super().predict_proba(X)
+
+        # Transform X and predict
+        Xt = self.transform(X)
+        return self.steps[-1][-1].predict_proba(Xt)
 
     @if_delegate_has_method(delegate='_final_estimator')
     def decision_function(self, X):
-        if isinstance(X, pd.DataFrame):
-            X = np.array(X)
-        return super().decision_function(X)
+
+        # Transform X and predict
+        Xt = self.transform(X)
+        return self.steps[-1][-1].decision_function(Xt)
 
     @if_delegate_has_method(delegate='_final_estimator')
     def score_samples(self, X):
-        if isinstance(X, pd.DataFrame):
-            X = np.array(X)
-        return super().score_samples(X)
+
+        # Transform X and score samples
+        Xt = self.transform(X)
+        return self.steps[-1][-1].score_samples(Xt)
 
     @if_delegate_has_method(delegate='_final_estimator')
     def predict_log_proba(self, X):
-        if isinstance(X, pd.DataFrame):
-            X = np.array(X)
-        return super().predict_log_proba(X)
+
+        # Transform X and predict
+        Xt = self.transform(X)
+        return self.steps[-1][-1].predict_log_proba(Xt)
 
     @if_delegate_has_method(delegate='_final_estimator')
     def score(self, X, y=None, sample_weight=None):
-        if isinstance(X, pd.DataFrame):
-            X = np.array(X)
-        if isinstance(y, pd.DataFrame):
+
+        # Transform X
+        Xt = self.transform(X)
+
+        # Cast y from dataframe or series if needed
+        if isinstance(y, (pd.DataFrame, pd.Series)):
             y = np.array(y)
 
-        return super().score(X=X, y=y, sample_weight=sample_weight)
+        # Rest of function
+        score_params = {}
+        if sample_weight is not None:
+            score_params['sample_weight'] = sample_weight
+        return self.steps[-1][-1].score(Xt, y, **score_params)

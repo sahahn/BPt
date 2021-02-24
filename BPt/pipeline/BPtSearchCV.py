@@ -381,7 +381,7 @@ class NevergradSearchCV(BPtSearchCV):
         try:
             opt = ng.optimizers.registry[self.ps['search_type']]
 
-        # If not found, look for in expirimental variants
+        # If not found, look for in experimental variants
         except KeyError:
             import nevergrad.optimization.experimentalvariants
             opt = ng.optimizers.registry[self.ps['search_type']]

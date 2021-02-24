@@ -49,19 +49,19 @@ class BPtCV(BaseEstimator):
         self.splits_vals = splits_vals
         self.random_state = random_state
 
-    def get_cv(self, train_data_index, random_state, return_index):
+    def get_cv(self, fit_index, random_state, return_index):
 
         if self.random_state != 'context':
             random_state = self.random_state
 
-        return self.cv_strategy.get_cv(train_data_index,
+        return self.cv_strategy.get_cv(fit_index,
                                        splits=self.splits,
                                        n_repeats=self.n_repeats,
                                        splits_vals=self.splits_vals,
                                        random_state=random_state,
                                        return_index=return_index)
 
-    def get_split(self, train_data_index, random_state):
+    def get_split(self, fit_index, random_state):
         '''Used when there is only one split, returns as index'''
 
         # Make sure splits is a float
@@ -71,7 +71,7 @@ class BPtCV(BaseEstimator):
         if self.random_state != 'context':
             random_state = self.random_state
 
-        return self.cv_strategy.train_test_split(train_data_index,
+        return self.cv_strategy.train_test_split(fit_index,
                                                  test_size=self.splits,
                                                  random_state=random_state,
                                                  return_index=True)
@@ -439,17 +439,17 @@ class CVStrategy(BaseEstimator):
 
         return len(np.unique(groups))
 
-    def get_cv(self, train_data_index, splits, n_repeats,
+    def get_cv(self, fit_index, splits, n_repeats,
                splits_vals=None, random_state=None, return_index=False):
         '''Always return as list of tuples'''
 
         if return_index == 'both':
-            no_index = self.get_cv(train_data_index, splits, n_repeats,
+            no_index = self.get_cv(fit_index, splits, n_repeats,
                                    splits_vals=splits_vals,
                                    random_state=random_state,
                                    return_index=False)
 
-            index = self.get_cv(train_data_index, splits, n_repeats,
+            index = self.get_cv(fit_index, splits, n_repeats,
                                 splits_vals=splits_vals,
                                 random_state=random_state,
                                 return_index=True)
@@ -459,7 +459,7 @@ class CVStrategy(BaseEstimator):
         # If split_vals passed, then by group
         if splits_vals is not None:
 
-            return self.repeated_leave_one_group_out(train_data_index,
+            return self.repeated_leave_one_group_out(fit_index,
                                                      n_repeats=n_repeats,
                                                      groups_series=splits_vals,
                                                      return_index=return_index)
@@ -467,7 +467,7 @@ class CVStrategy(BaseEstimator):
         # K-fold is splits is an int
         elif isinstance(splits, int):
 
-            return self.repeated_k_fold(train_data_index, n_repeats,
+            return self.repeated_k_fold(fit_index, n_repeats,
                                         n_splits=splits,
                                         random_state=random_state,
                                         return_index=return_index)
@@ -475,7 +475,7 @@ class CVStrategy(BaseEstimator):
         # Otherwise, as train test splits
         else:
 
-            return self.repeated_train_test_split(train_data_index, n_repeats,
+            return self.repeated_train_test_split(fit_index, n_repeats,
                                                   test_size=splits,
                                                   random_state=random_state,
                                                   return_index=return_index)

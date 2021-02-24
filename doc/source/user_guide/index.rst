@@ -16,6 +16,7 @@ Guides
 
     why_bpt
     loading_data
+    example1
 
 Key Concept References
 -----------------------

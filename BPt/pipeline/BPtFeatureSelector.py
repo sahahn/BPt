@@ -46,14 +46,14 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
         return self
 
     def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+            fit_index=None, **fit_params):
 
         if mapping is None:
             mapping = {}
 
         # Call parent fit
         super().fit(X, y=y, mapping=mapping,
-                    train_data_index=train_data_index,
+                    fit_index=fit_index,
                     **fit_params)
 
         # Need to update mapping

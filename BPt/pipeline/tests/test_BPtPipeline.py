@@ -120,7 +120,7 @@ def run_pipe_with_loader_ts(cache_loc=None):
     X = np.arange(100).reshape((50, 2))
     y = np.ones(50)
 
-    pipe.fit(X, y, train_data_index=np.arange(50))
+    pipe.fit(X, y, fit_index=np.arange(50))
 
     # Make sure fit worked correctly
     assert pipe[0].n_features_in_ == 2
@@ -169,6 +169,11 @@ def test_pipeline_fit_caching():
     # Run with cache fit dr
     cache_loc =\
         os.path.join(tempfile.gettempdir(), 'test_cache')
+
+    # If already exists, say from a failed test
+    # delete
+    if os.path.exists(cache_loc):
+        shutil.rmtree(cache_loc)
 
     pipe = run_pipe_with_loader_ts(cache_loc=cache_loc)
 

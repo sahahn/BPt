@@ -8,8 +8,8 @@ import warnings
 class BPtMixIn():
 
     _needs_mapping = True
-    _needs_train_data_index = True
-    needs_cat_inds = True
+    _needs_fit_index = True
+    _needs_cat_inds = True
 
     def _get_categorical_feature(self, mapping):
 
@@ -29,7 +29,7 @@ class BPtMixIn():
         # Otherwise keep as default
         return 'auto'
 
-    def _get_eval_set(self, X, y, train_data_index=None):
+    def _get_eval_set(self, X, y, fit_index=None):
 
         # Make sure there's early stop rounds set!
         if not hasattr(self, 'early_stopping_rounds'):
@@ -47,7 +47,7 @@ class BPtMixIn():
                     # Get the cv_inds
                     train_inds, eval_inds =\
                         self.eval_split.get_split(
-                            train_data_index,
+                            fit_index,
                             random_state=self.random_state)
 
                     # Index
@@ -65,7 +65,7 @@ class BPtMixIn():
 
         return X, y, None
 
-    def fit(self, X, y, mapping=None, train_data_index=None, **kwargs):
+    def fit(self, X, y, mapping=None, fit_index=None, **kwargs):
 
         # Get rid of "other params"
         self._other_params = {}
@@ -75,7 +75,7 @@ class BPtMixIn():
 
         # Proc eval set
         X_train, y_train, eval_set =\
-            self._get_eval_set(X, y, train_data_index=train_data_index)
+            self._get_eval_set(X, y, fit_index=fit_index)
 
         # Check early stopping rounds:
         if hasattr(self, 'early_stopping_rounds'):

@@ -11,7 +11,7 @@ from .base import _get_est_fit_params
 class Selector(_BaseComposition):
 
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
 
     def __init__(self, estimators, to_use=0):
         self.estimators = estimators

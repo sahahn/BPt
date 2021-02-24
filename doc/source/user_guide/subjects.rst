@@ -126,3 +126,47 @@ pairs with an eventname of 'e1'. Consider another example:
 In this case, the subjects to select would be loaded from
 'subjects.txt' and the corresponding eventnames from
 'events.txt'.
+
+Examples
+~~~~~~~~~~~
+
+First let's define an example dataset to show some examples with.
+
+.. ipython:: python
+
+  import BPt as bp
+  import numpy as np
+
+  data = bp.Dataset()
+  data['index'] = ['subj1', 'subj2', 'subj3']
+  data['col1'] = [1, 2, np.nan]
+  data.set_index('index', inplace=True)
+  data
+
+Next, we will use :func:`Dataset.get_subjects` to explore what passing
+different values to `subjects` will return.
+
+.. ipython:: python
+  
+  data.get_subjects(subjects=['subj1'])
+  data.get_subjects(subjects=['subj1', 'subj2'])
+
+One gotcha is that if we pass a single str value, it will be assumed to
+be a file path, so if we pass subjects='subj1', we will get an error.
+Let's try using :class:`Value_Subset` next.
+
+.. ipython:: python
+
+  data.get_subjects(bp.Value_Subset('col1', 1))
+  data.get_subjects(bp.Value_Subset('col1', [1, 2]))
+
+We can also use special reversed keywords.
+
+.. ipython:: python
+
+  data.get_subjects('nan')
+  
+
+
+
+

@@ -6,12 +6,12 @@ from sklearn.preprocessing import OneHotEncoder
 class BPtTransformer(ScopeTransformer):
 
     def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+            fit_index=None, **fit_params):
 
         # Need the output from a transform to full fit,
         # so when fit is called, call fit_transform instead
         self.fit_transform(X=X, y=y, mapping=mapping,
-                           train_data_index=train_data_index,
+                           fit_index=fit_index,
                            **fit_params)
 
         return self
@@ -56,22 +56,22 @@ class BPtTransformer(ScopeTransformer):
         return self
 
     def fit_transform(self, X, y=None, mapping=None,
-                      train_data_index=None, **fit_params):
+                      fit_index=None, **fit_params):
 
         if mapping is None:
             mapping = {}
 
         # Call parent fit
         super().fit(X, y=y, mapping=mapping,
-                    train_data_index=train_data_index,
+                    fit_index=fit_index,
                     **fit_params)
 
         # If skip
         if self.estimator_ is None:
             return X
 
-        # Transform X
-        X_trans = self.transform(X)
+        # Transform X - since fit_transform, index is fit index
+        X_trans = self.transform(X, transform_index=fit_index)
 
         # Update mapping and set out_mapping_
         # special all case

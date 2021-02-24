@@ -225,6 +225,15 @@ def get_possible_init_params(model):
         return pos_params['co_varnames']
 
 
+def get_possible_params(estimator, method):
+
+    if not hasattr(estimator, method):
+        return []
+
+    pos_params = dict(inspect.getmembers(getattr(estimator, method).__code__))
+    return pos_params['co_varnames']
+
+
 def get_possible_fit_params(model):
     '''Helper function to grab the names of valid arguments to
     classes fit method
@@ -238,7 +247,31 @@ def get_possible_fit_params(model):
     ----------
         All valid parameters to the model
     '''
+    if not hasattr(model, 'fit'):
+        return []
+
     pos_params = dict(inspect.getmembers(model.fit.__code__))
+    return pos_params['co_varnames']
+
+
+def get_possible_trans_params(model):
+    '''Helper function to grab the names of valid arguments to
+    classes transform method
+
+    Parameters
+    ----------
+    model : object w/ fit method
+        The model object to inspect
+
+    Returns
+    ----------
+        All valid parameters to the model
+    '''
+
+    if not hasattr(model, 'transform'):
+        return []
+
+    pos_params = dict(inspect.getmembers(model.transform.__code__))
     return pos_params['co_varnames']
 
 

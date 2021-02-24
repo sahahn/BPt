@@ -19,7 +19,7 @@ from .helpers import get_mean_fis
 
 
 def _fit_all_estimators(self, X, y, sample_weight=None, mapping=None,
-                        train_data_index=None):
+                        fit_index=None):
 
     # Validate
     names, all_estimators = self._validate_estimators()
@@ -27,7 +27,7 @@ def _fit_all_estimators(self, X, y, sample_weight=None, mapping=None,
     # Fit all estimators
     self.estimators_ = Parallel(n_jobs=self.n_jobs)(
         delayed(_fit_single_estimator)(clone(est), X, y, sample_weight,
-                                       mapping, train_data_index)
+                                       mapping, fit_index)
         for est in all_estimators if est != 'drop'
     )
 
@@ -45,18 +45,18 @@ def _fit_all_estimators(self, X, y, sample_weight=None, mapping=None,
 
 
 def voting_fit(self, X, y, sample_weight=None, mapping=None,
-               train_data_index=None, **kwargs):
+               fit_index=None, **kwargs):
 
     # Fit self.estimators_ on all data
     self._fit_all_estimators(
         X, y, sample_weight=sample_weight, mapping=mapping,
-        train_data_index=train_data_index)
+        fit_index=fit_index)
 
     return self
 
 
 def stacking_fit(self, X, y, sample_weight=None, mapping=None,
-                 train_data_index=None, **kwargs):
+                 fit_index=None, **kwargs):
 
     # Validate final estimastor
     self._validate_final_estimator()
@@ -64,7 +64,7 @@ def stacking_fit(self, X, y, sample_weight=None, mapping=None,
     # Fit self.estimators_ on all data
     names, all_estimators = self._fit_all_estimators(
         X, y, sample_weight=sample_weight, mapping=mapping,
-        train_data_index=train_data_index)
+        fit_index=fit_index)
 
     # To train the meta-classifier using the most data as possible, we use
     # a cross-validation to obtain the output of the stacked estimators.
@@ -76,7 +76,7 @@ def stacking_fit(self, X, y, sample_weight=None, mapping=None,
         if hasattr(self, 'random_state'):
             random_state = self.random_state
 
-        cv_inds = self.cv.get_cv(train_data_index,
+        cv_inds = self.cv.get_cv(fit_index,
                                  random_state=random_state,
                                  return_index=True)
 
@@ -105,7 +105,7 @@ def stacking_fit(self, X, y, sample_weight=None, mapping=None,
 
     # Get the fit params for each indv estimator
     all_fit_params = [_get_est_fit_params(est, mapping=mapping,
-                                          train_data_index=train_data_index,
+                                          fit_index=fit_index,
                                           other_params=sample_weight_params)
                       for est in all_estimators]
 
@@ -133,14 +133,14 @@ def stacking_fit(self, X, y, sample_weight=None, mapping=None,
     _fit_single_estimator(self.final_estimator_, X_meta, y,
                           sample_weight=sample_weight,
                           mapping=None,
-                          train_data_index=train_data_index)
+                          fit_index=fit_index)
 
     return self
 
 
 def ensemble_classifier_fit(self, X, y,
                             sample_weight=None, mapping=None,
-                            train_data_index=None, **kwargs):
+                            fit_index=None, **kwargs):
 
     check_classification_targets(y)
 
@@ -153,20 +153,20 @@ def ensemble_classifier_fit(self, X, y,
     return self.bpt_fit(X, self._le.transform(y),
                         sample_weight=sample_weight,
                         mapping=mapping,
-                        train_data_index=train_data_index,
+                        fit_index=fit_index,
                         **kwargs)
 
 
 class BPtStackingRegressor(StackingRegressor):
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
     _fit_all_estimators = _fit_all_estimators
     fit = stacking_fit
 
 
 class BPtStackingClassifier(StackingClassifier):
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
     _fit_all_estimators = _fit_all_estimators
     bpt_fit = stacking_fit
     fit = ensemble_classifier_fit
@@ -174,7 +174,7 @@ class BPtStackingClassifier(StackingClassifier):
 
 class BPtVotingRegressor(VotingRegressor):
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
     _fit_all_estimators = _fit_all_estimators
     fit = voting_fit
 
@@ -189,7 +189,7 @@ class BPtVotingRegressor(VotingRegressor):
 
 class BPtVotingClassifier(VotingClassifier):
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
     _fit_all_estimators = _fit_all_estimators
     bpt_fit = voting_fit
     fit = ensemble_classifier_fit

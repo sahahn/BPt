@@ -6,6 +6,7 @@ from sklearn.utils.validation import check_memory
 from sklearn.base import clone
 from .ScopeObjs import ScopeTransformer
 from operator import itemgetter
+from .base import _get_est_trans_params
 
 
 def load_and_trans(transformer, load_func, loc):
@@ -70,12 +71,12 @@ class BPtLoader(ScopeTransformer):
         return self.fix_n_jobs
 
     def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+            fit_index=None, **fit_params):
 
         # Need the output from a transform to full fit,
         # so when fit is called, call fit_transform instead
         self.fit_transform(X=X, y=y, mapping=mapping,
-                           train_data_index=train_data_index,
+                           fit_index=fit_index,
                            **fit_params)
 
         return self
@@ -115,14 +116,14 @@ class BPtLoader(ScopeTransformer):
         update_mapping(mapping, self.out_mapping_)
 
     def fit_transform(self, X, y=None, mapping=None,
-                      train_data_index=None, **fit_params):
+                      fit_index=None, **fit_params):
 
         if mapping is None:
             mapping = {}
 
         # Call parent fit but passing only the first data point
         super().fit(X, y=y, mapping=mapping,
-                    train_data_index=train_data_index,
+                    fit_index=fit_index,
                     **fit_params)
 
         # The parent fit takes care of, in addition to
@@ -131,7 +132,7 @@ class BPtLoader(ScopeTransformer):
         # sets rest inds, etc...
 
         # Now transform X - this sets self.X_trans_inds_
-        X_trans = self.transform(X)
+        X_trans = self.transform(X, transform_index=fit_index)
 
         # Update the mapping + out_mapping_
         self._update_loader_mappings(mapping)
@@ -139,7 +140,10 @@ class BPtLoader(ScopeTransformer):
         # Now return X_trans
         return X_trans
 
-    def transform(self, X):
+    def transform(self, X, transform_index=None):
+
+        # @ TODO transform index just exists for compat
+        # with loader right now, won't actually propegate.
 
         # Init lists + mappings
         X_trans, self.X_trans_inds_ = [], []
@@ -352,7 +356,7 @@ class CompatArray(list):
 class BPtListLoader(BPtLoader):
 
     def fit_transform(self, X, y=None, mapping=None,
-                      train_data_index=None, **fit_params):
+                      fit_index=None, **fit_params):
 
         # Process the mapping
         if mapping is None:
@@ -366,7 +370,7 @@ class BPtListLoader(BPtLoader):
         # X with the data columns replaced by CompatArray
         return super().fit_transform(self._get_X_compat(X), y=y,
                                      mapping=mapping,
-                                     train_data_index=train_data_index,
+                                     fit_index=fit_index,
                                      **fit_params)
 
     def _get_X_compat(self, X):
@@ -395,23 +399,27 @@ class BPtListLoader(BPtLoader):
 
         return self
 
-    def transform(self, X):
+    def transform(self, X, transform_index=None):
 
         # If None, pass along as is
         if self.estimator_ is None:
             return X
 
-        # Load if not laoded
+        # Load if not loaded
         if not isinstance(X, CompatArray):
             X = self._get_X_compat(X)
 
+        # Get transform params
+        trans_params = _get_est_trans_params(self.estimator_,
+                                             transform_index=transform_index)
+
         # Get X_trans
-        X_trans = self.estimator_.transform(X=X[self.inds_[0]])
+        X_trans = self.estimator_.transform(X=X[self.inds_[0]], **trans_params)
 
         # Save number of output features after X_trans
         self.n_trans_feats_ = X_trans.shape[1]
 
-        # For compatib.
+        # For compat
         self.X_trans_inds_ = [list(range(self.n_trans_feats_))]
 
         # Return stacked X_trans with rest inds

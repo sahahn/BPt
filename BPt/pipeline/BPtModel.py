@@ -26,7 +26,7 @@ class BPtModel(ScopeObj):
             return getattr(self.estimator_, 'classes_')
         return None
 
-    # Every estimator should have atleast predict
+    # Every estimator should have at least predict
     def predict(self, X, *args, **kwargs):
         return self.estimator_.predict(X[:, self.inds_], *args, **kwargs)
 

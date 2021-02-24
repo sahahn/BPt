@@ -5,12 +5,17 @@ from joblib import load, dump
 import pandas as pd
 from sklearn.utils.metaestimators import if_delegate_has_method
 import os
+from sklearn.utils import _print_elapsed_time
+from sklearn.base import clone
+from .base import (_get_est_fit_params, _get_est_trans_params,
+                   _get_est_fit_trans_params)
 
 
 class BPtPipeline(Pipeline):
 
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
+    _needs_transform_index = True
 
     def __init__(self, steps, memory=None,
                  verbose=False,
@@ -61,13 +66,54 @@ class BPtPipeline(Pipeline):
         super()._set_params('steps', **kwargs)
         return self
 
+    def _fit(self, X, y=None, fit_index=None, **fit_params_steps):
+
+        # shallow copy of steps - this should really be steps_
+        self.steps = list(self.steps)
+        self._validate_steps()
+
+        # For each transformer
+        for (step_idx,
+             name,
+             transformer) in self._iter(with_final=False,
+                                        filter_passthrough=False):
+
+            with _print_elapsed_time('Pipeline',
+                                     self._log_message(step_idx)):
+
+                # Skip if passthrough
+                if (transformer is None or transformer == 'passthrough'):
+                    continue
+
+                # Clone transformer
+                cloned_transformer = clone(transformer)
+
+                # Get the correct fit_transform params
+                fit_trans_params =\
+                    _get_est_fit_trans_params(
+                        estimator=cloned_transformer,
+                        mapping=self.mapping_,
+                        fit_index=fit_index,
+                        other_params=fit_params_steps[name],
+                        copy_mapping=False)
+
+                # Fit transform the current transformer
+                X = cloned_transformer.fit_transform(X=X, y=y,
+                                                     **fit_trans_params)
+
+                # Replace the transformer of the step with the
+                # cloned and now fitted transformer
+                self.steps[step_idx] = (name, cloned_transformer)
+
+        return X
+
     def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+            fit_index=None, **fit_params):
 
         if isinstance(X, pd.DataFrame):
 
             # Set train data index
-            train_data_index = X.index
+            fit_index = X.index
 
             # Cast to np array
             X = np.array(X)
@@ -82,7 +128,7 @@ class BPtPipeline(Pipeline):
             # Compute the hash for this fit
             # Store as an attribute
             self.hash_ = hash([X, y, mapping,
-                               train_data_index, fit_params],
+                               fit_index, fit_params],
                               self.steps)
 
             # Check if hash exists - if it does load
@@ -94,30 +140,51 @@ class BPtPipeline(Pipeline):
 
             # Otherwise, continue to fit as normal
 
-        # Add mapping to fit params if already passed, e.g., in nested context
-        # Or init new
+        # Set internal mapping as either passed mapping or
+        # initialize a new 1:1 mapping.
         if mapping is not None:
             self.mapping_ = mapping.copy()
         else:
             self.mapping_ = {i: i for i in range(X.shape[1])}
 
-        # Add to the fit parameters according to estimator tags
-        # adding mapping + needs_train_index info
-        for step in self.steps:
-            name, estimator = step[0], step[1]
-            if hasattr(estimator, '_needs_mapping'):
-                fit_params[name + '__mapping'] = self.mapping_
-            if hasattr(estimator, '_needs_train_data_index'):
-                fit_params[name + '__train_data_index'] = train_data_index
+        # The base parent fit
+        # -------------------
 
-        # Call parent fit
-        super().fit(X, y, **fit_params)
+        # Get fit params as indexed by each step
+        fit_params_steps = self._check_fit_params(**fit_params)
+
+        # Fit and transform X for all but the last step.
+        Xt = self._fit(X, y, fit_index=fit_index,
+                       **fit_params_steps)
+
+        # Fit the final step
+        with _print_elapsed_time('Pipeline',
+                                 self._log_message(len(self.steps) - 1)):
+            if self._final_estimator != 'passthrough':
+
+                # Get last params fit params
+                fit_params_last_step = fit_params_steps[self.steps[-1][0]]
+
+                # Add mapping and train data index if valid
+                fit_params_last_step =\
+                    _get_est_fit_params(self._final_estimator,
+                                        mapping=self.mapping_,
+                                        fit_index=fit_index,
+                                        other_params=fit_params_last_step,
+                                        copy_mapping=False)
+
+                # Fit the final estimator
+                self._final_estimator.fit(Xt, y, **fit_params_last_step)
 
         # If cache fit enabled, hash fitted pipe here
         if self.cache_loc is not None:
             self._hash_fit()
 
         return self
+
+    def fit_transform(X, y=None, **fit_params):
+        # @ TODO is there a case where we might need this?
+        raise RuntimeError('Not currently implemented')
 
     def _get_hash_loc(self):
 
@@ -166,15 +233,30 @@ class BPtPipeline(Pipeline):
 
         return ordered_objs, ordered_names
 
-    def transform(self, X):
+    def transform(self, X, transform_index=None):
 
-        if isinstance(X, pd.DataFrame):
-            X = np.array(X)
+        Xt = X
 
+        # If DataFrame input
+        if isinstance(Xt, pd.DataFrame):
+            Xt = np.array(Xt)
+
+            # Set transform subjects
+            transform_index = Xt.index
+
+        # For each transformer, but the last
         for step in self.steps[:-1]:
-            X = step[1].transform(X)
+            transformer = step[1]
 
-        return X
+            # Get any needed transform params
+            trans_params =\
+                _get_est_trans_params(transformer,
+                                      transform_index=transform_index)
+
+            # Transform X - think in place is okay
+            Xt = transformer.transform(Xt, **trans_params)
+
+        return Xt
 
     def transform_df(self, X_df, encoders=None):
         '''Transform an input dataframe, keeping track of feature names'''

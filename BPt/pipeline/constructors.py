@@ -267,8 +267,8 @@ class Constructor():
         if hasattr(obj, 'n_jobs'):
             setattr(obj, 'n_jobs', self.spec['n_jobs'])
 
-        if hasattr(obj, 'needs_cat_inds'):
-            if getattr(obj, 'needs_cat_inds'):
+        if hasattr(obj, '_needs_cat_inds'):
+            if getattr(obj, '_needs_cat_inds'):
                 obj.set_params(cat_inds=self.get_inds('category'))
 
         return obj

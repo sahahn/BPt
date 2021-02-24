@@ -196,7 +196,7 @@ class BPtEvaluator():
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()
         estimator_.fit(X=np.array(X_tr), y=np.array(y_tr),
-                       train_data_index=X_tr.index)
+                       fit_index=X_tr.index)
         fit_time = time.time() - start_time
 
         # Score estimator

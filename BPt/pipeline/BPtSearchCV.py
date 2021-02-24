@@ -1,5 +1,5 @@
 from sklearn.base import BaseEstimator
-from .base import _get_est_fit_params
+from .base import _get_est_fit_params, _needs, _get_est_trans_params
 from sklearn.model_selection import GridSearchCV
 from sklearn.utils.metaestimators import if_delegate_has_method
 import warnings
@@ -28,7 +28,7 @@ except ImportError:
 class BPtSearchCV(BaseEstimator):
 
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
     name = 'search'
 
     def __init__(self, estimator=None, ps=None,
@@ -41,6 +41,11 @@ class BPtSearchCV(BaseEstimator):
         self.param_distributions = param_distributions
         self.n_jobs = n_jobs
         self.random_state = random_state
+
+    @property
+    def _needs_transform_index(self):
+        return _needs(self.estimator, '_needs_transform_index',
+                      'transform_index', 'transform')
 
     @property
     def n_jobs(self):
@@ -140,8 +145,13 @@ class BPtSearchCV(BaseEstimator):
         return self.best_estimator_.decision_function(X)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def transform(self, X):
-        return self.best_estimator_.transform(X)
+    def transform(self, X, transform_index=None):
+
+        trans_params = _get_est_trans_params(
+            self.best_estimator_,
+            transform_index=transform_index)
+
+        return self.best_estimator_.transform(X, **trans_params)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
     def inverse_transform(self, Xt):
@@ -161,54 +171,54 @@ class BPtSearchCV(BaseEstimator):
         return self.best_estimator_.transform_feat_names(X_df,
                                                          encoders=encoders)
 
-    def _set_cv(self, train_data_index):
+    def _set_cv(self, fit_index):
 
-        # Set cv based on train_data_index
+        # Set cv based on fit_index
         self.cv_subjects, self.cv_inds =\
-            self.ps['cv'].get_cv(train_data_index,
+            self.ps['cv'].get_cv(fit_index,
                                  self.ps['random_state'],
                                  return_index='both')
 
     def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+            fit_index=None, **fit_params):
 
         # Conv from dataframe if necc.
         if isinstance(X, pd.DataFrame):
-            train_data_index = X.index
+            fit_index = X.index
             X = np.array(X)
         if isinstance(y, pd.DataFrame):
             y = np.array(y)
 
         # Make sure train data index is passed
-        if train_data_index is None:
+        if fit_index is None:
             raise RuntimeWarning('SearchCV Object must be passed a '
-                                 'train_data_index! Or passed X as '
+                                 'fit_index! Or passed X as '
                                  'a DataFrame.')
 
         if self.ps['verbose'] > 1:
-            print('Fit Search CV, len(train_data_index) == ',
-                  len(train_data_index),
+            print('Fit Search CV, len(fit_index) == ',
+                  len(fit_index),
                   'has mapping == ', 'mapping' in fit_params,
                   'X.shape ==', X.shape)
 
-        # Set the search cv passed on passed train_data_index
-        self._set_cv(train_data_index)
+        # Set the search cv passed on passed fit_index
+        self._set_cv(fit_index)
 
         # Run different fit depending on type of search
         if self.ps['search_type'] == 'grid':
             self.fit_grid(X=X, y=y, mapping=mapping,
-                          train_data_index=train_data_index,
+                          fit_index=fit_index,
                           **fit_params)
         else:
             self.fit_nevergrad(X=X, y=y, mapping=mapping,
-                               train_data_index=train_data_index,
+                               fit_index=fit_index,
                                **fit_params)
 
 
 class BPtGridSearchCV(BPtSearchCV):
 
     def fit_grid(self, X, y=None, mapping=None,
-                 train_data_index=None, **fit_params):
+                 fit_index=None, **fit_params):
 
         # Conv nevergrad to grid compat. param grid
         param_grid = get_grid_params(self.param_distributions)
@@ -226,7 +236,7 @@ class BPtGridSearchCV(BPtSearchCV):
         f_params = _get_est_fit_params(
             self.estimator,
             mapping=mapping,
-            train_data_index=train_data_index,
+            fit_index=fit_index,
             other_params=fit_params)
 
         # Fit search object
@@ -294,7 +304,7 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer, cv_inds, cv_subjects,
         f_params = _get_est_fit_params(
             estimator,
             mapping=mapping,
-            train_data_index=cv_subjects[i][0],
+            fit_index=cv_subjects[i][0],
             other_params=fit_params)
 
         # Fit estimator on train
@@ -443,7 +453,7 @@ class NevergradSearchCV(BPtSearchCV):
         return recommendation
 
     def fit_nevergrad(self, X, y=None, mapping=None,
-                      train_data_index=None, **fit_params):
+                      fit_index=None, **fit_params):
 
         # Check if need to make dask client
         # Criteria is greater than 1 job, and passed as dask_ip of non-None
@@ -471,10 +481,10 @@ class NevergradSearchCV(BPtSearchCV):
 
         # Fit best est, w/ best params
         self.fit_best_estimator(recommendation, X, y, mapping,
-                                train_data_index, fit_params)
+                                fit_index, fit_params)
 
     def fit_best_estimator(self, recommendation,  X, y, mapping,
-                           train_data_index, fit_params):
+                           fit_index, fit_params):
 
         # Fit best estimator, w/ found best params
         self.best_estimator_ = clone(self.estimator)
@@ -484,7 +494,7 @@ class NevergradSearchCV(BPtSearchCV):
         f_params = _get_est_fit_params(
             self.best_estimator_,
             mapping=mapping,
-            train_data_index=train_data_index,
+            fit_index=fit_index,
             other_params=fit_params)
 
         # Fit

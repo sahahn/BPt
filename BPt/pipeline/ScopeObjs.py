@@ -4,7 +4,7 @@ from sklearn.utils.validation import check_memory
 import numpy as np
 import warnings
 
-from .base import BPtBase, _get_est_fit_params
+from .base import BPtBase, _get_est_fit_params, _needs, _get_est_trans_params
 
 
 def _fit_estimator(estimator, X, y=None, **fit_params):
@@ -16,7 +16,7 @@ def _fit_estimator(estimator, X, y=None, **fit_params):
 class ScopeObj(BPtBase):
 
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
 
     # Override
     _required_parameters = ["estimator", "inds"]
@@ -121,7 +121,7 @@ class ScopeObj(BPtBase):
         return pass_on_mapping
 
     def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+            fit_index=None, **fit_params):
 
         # Save base dtype of input, and n_features_in
         self.base_dtype_ = X.dtype
@@ -149,7 +149,7 @@ class ScopeObj(BPtBase):
         pass_fit_params =\
             _get_est_fit_params(estimator=self.estimator_,
                                 mapping=pass_on_mapping,
-                                train_data_index=train_data_index,
+                                fit_index=fit_index,
                                 other_params=fit_params)
 
         # Fit actual estimator with or without caching
@@ -163,15 +163,20 @@ class ScopeObj(BPtBase):
 
 class ScopeTransformer(ScopeObj, TransformerMixin):
 
+    @property
+    def _needs_transform_index(self):
+        return _needs(self.estimator, '_needs_transform_index',
+                      'transform_index', 'transform')
+
     def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+            fit_index=None, **fit_params):
 
         if mapping is None:
             mapping = {}
 
         # Call parent fit - base shared fit with BPtModel
         super().fit(X, y=y, mapping=mapping,
-                    train_data_index=train_data_index,
+                    fit_index=fit_index,
                     **fit_params)
 
         # If skip
@@ -200,14 +205,18 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
 
         return self
 
-    def transform(self, X):
+    def transform(self, X, transform_index=None):
 
         # If None, pass along as is
         if self.estimator_ is None:
             return X
 
+        # Get transform params
+        trans_params = _get_est_trans_params(self.estimator_,
+                                             transform_index=transform_index)
+
         # Get X_trans - if self.inds_ is Ellipsis, just selects all
-        X_trans = self.estimator_.transform(X=X[:, self.inds_])
+        X_trans = self.estimator_.transform(X=X[:, self.inds_], **trans_params)
 
         # Save number of output features after X_trans
         self.n_trans_feats_ = X_trans.shape[1]
@@ -221,11 +230,14 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         if self.estimator_ is None:
             return df
 
+        # Get transfrom index from df
+        transform_index = df.index
+
         # Prepare as numpy array - make sure same as original passed dtype
         X = np.array(df).astype(self.base_dtype_)
 
         # Transform data
-        X_trans = self.transform(X)
+        X_trans = self.transform(X, transform_index=transform_index)
 
         # Feat names are as is
         feat_names = list(df)

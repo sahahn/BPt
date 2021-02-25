@@ -62,16 +62,16 @@ class FakeSelector(SelectorMixin, BaseEstimator):
 def get_param_search():
 
     param_search = ParamSearch(search_type='RandomSearch',
-                                cv='default',
-                                n_iter=10,
-                                scorer='default',
-                                weight_scorer=False,
-                                mp_context='loky',
-                                n_jobs='default',
-                                dask_ip=None,
-                                memmap_X=False,
-                                search_only_params=None,
-                                progress_loc=None)
+                               cv='default',
+                               n_iter=10,
+                               scorer='default',
+                               weight_scorer=False,
+                               mp_context='loky',
+                               n_jobs='default',
+                               dask_ip=None,
+                               memmap_X=False,
+                               search_only_params=None,
+                               progress_loc=None)
 
     ps = ProblemSpec(random_state=1,
                      n_jobs=2,

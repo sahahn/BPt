@@ -1,62 +1,8 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 import numpy as np
 from sklearn.linear_model import LinearRegression
-
-
-def get_resid_with_nans(covars, data):
-
-    # Go from pandas df to numpy array
-    covars = np.array(covars)
-
-    # Make sure data is numpy array
-    data = np.array(data)
-
-    # Init empty resid array of NaN's
-    resid = np.empty(shape=data.shape)
-    resid[:] = np.nan
-
-    # For each feature seperately
-    for i in range(data.shape[1]):
-
-        # Operate on non-nan subjects for this feature
-        mask = ~np.isnan(data[:, i])
-
-        # If not at least 2 subjects valid,
-        # skip and propegate NaN's for this
-        # voxel.
-        if len(mask) > 1:
-
-            # Fit model
-            model = LinearRegression().fit(covars[mask], data[mask, i])
-
-            # Compute difference of real value - predicted
-            dif_i = data[mask, i] - model.predict(covars[mask])
-
-            # Set resid as diff + intercept
-            resid_i = model.intercept_ + dif_i
-
-            # Fill in NaN mask
-            resid[mask, i] = resid_i
-
-    return resid
-
-
-def get_resid_base(covars, data):
-
-    # Go from pandas df to numpy array
-    covars = np.array(covars)
-
-    # Make sure data is numpy array
-    data = np.array(data)
-
-    model = LinearRegression().fit(covars, data)
-
-    # The difference is the real value of the voxel, minus the predicted value
-    dif = data - model.predict(covars)
-
-    resid = model.intercept_ + dif
-
-    return resid
+from sklearn.preprocessing import OneHotEncoder
+import pandas as pd
 
 
 class LinearResidualizer(BaseEstimator, TransformerMixin):
@@ -110,22 +56,158 @@ class LinearResidualizer(BaseEstimator, TransformerMixin):
         ::
 
             default = True
+
+    fit_intercept : bool, optional
+        If True, then the intercept of the
+        linear model will be fitted. It will then
+        be added onto the residualized data as
+        intercept + difference in real - predicted
+
+        ::
+
+            default = False
     '''
 
     _needs_fit_index = True
     _needs_transform_index = True
 
-    def __init__(self, to_resid_df, demean=True, dummy_code=True):
+    def __init__(self, to_resid_df, demean=True,
+                 dummy_code=True, fit_intercept=False):
 
         self.to_resid_df = to_resid_df
         self.demean = demean
         self.dummy_code = dummy_code
+        self.fit_intercept = fit_intercept
 
-    def fit(self, X, y=None):
-        pass
+    def _transform_covars(self, X, index=None, fit=True):
+
+        # Grab covars as copy of indexed df
+        covars = self.to_resid_df.loc[index].copy()
+
+        if self.dummy_code:
+
+            # Find which cols are categorical
+            cat_cols = [col for col in covars
+                        if covars[col].dtype.name == 'category']
+
+            # Must be more than 0 cat columns
+            if len(cat_cols) > 0:
+
+                # Cast to np
+                cat_trans = np.array(covars[cat_cols])
+
+                # Init and fit if fit
+                if fit:
+                    self.encoder_ = OneHotEncoder(drop='first', sparse=False)
+                    self.encoder_.fit(cat_trans)
+
+                # Transform
+                cat_trans = self.encoder_.transform(cat_trans)
+
+                # Stack with non-cat in place
+                rest_cols = [col for col in covars if col not in cat_cols]
+                covars = np.hstack([np.array(covars[rest_cols]), cat_trans])
+
+        # At this stage make sure np array if not already
+        covars = np.array(covars)
+
+        if self.demean:
+
+            # Need to calculate means if fit
+            if fit:
+                self.means_ = np.mean(covars, axis=0)
+
+            covars = covars - self.means_
+
+        return covars
+
+    def fit(self, X, y=None, fit_index=None):
+
+        if isinstance(X, pd.DataFrame):
+            fit_index = X.index
+            X = np.array(X)
+
+        # Get covars as proc'ed np array, fitting demean or dummy code.
+        covars = self._transform_covars(X, index=fit_index, fit=True)
+        return self._fit(X, covars)
+
+    def transform(self, X, transform_index=None):
+
+        if isinstance(X, pd.DataFrame):
+            transform_index = X.index
+            X = np.array(X)
+
+        # Get covars as proc'ed np array
+        covars =\
+            self._transform_covars(X, index=transform_index, fit=False)
+
+        # Returned transformed copy
+        return self._transform(X, covars)
+
+    def _fit(self, X, covars):
+
+        # For each feature seperately
+        self.estimators_ = []
+        for i in range(X.shape[1]):
+
+            # Operate on non-nan subjects for this feature
+            mask = ~np.isnan(X[:, i])
+
+            # If not at least 2 subjects valid,
+            # skip and propegate NaN.
+            if len(mask) > 1:
+
+                # Fit model
+                model = LinearRegression(fit_intercept=self.fit_intercept)
+                model.fit(covars[mask], X[mask, i])
+                self.estimators_.append(model)
+
+            # During transform, if skipped here, then will
+            # transform to all NaNs.
+            else:
+                self.estimators_.append(None)
+
+        return self
+
+    def _transform(self, X, covars):
+
+        # Init empty resid array of NaN's
+        resid = np.empty(shape=X.shape)
+        resid[:] = np.nan
+
+        # For each feature seperately
+        for i in range(X.shape[1]):
+
+            # Operate on non-nan subjects for this feature
+            mask = ~np.isnan(X[:, i])
+
+            # If not at least 2 subjects valid,
+            # skip and propegate NaN.
+            if len(mask) > 1:
+
+                # Grab saved estimator
+                model = self.estimators_[i]
+
+                # Compute difference of real value - predicted
+                dif_i = X[mask, i] - model.predict(covars[mask])
+
+                # Set resid as either diff or diff + intercept
+                resid_i = dif_i
+
+                if self.fit_intercept:
+                    resid_i += model.intercept_
+
+                # Fill in NaN mask
+                resid[mask, i] = resid_i
+
+        return resid
 
     def fit_transform(self, X, y=None, fit_index=None):
-        return self.fit(X=X, y=y,
-                        fit_index=fit_index).transform(X)
 
-    def transform(self,)
+        if isinstance(X, pd.DataFrame):
+            fit_index = X.index
+            X = np.array(X)
+
+        covars = self._transform_covars(X, index=fit_index, fit=True)
+        return self._fit(X, covars)._transform(X, covars)
+

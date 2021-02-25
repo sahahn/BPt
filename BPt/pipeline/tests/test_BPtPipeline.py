@@ -193,3 +193,4 @@ def test_pipeline_fit_caching():
 
     # Removed cached once done
     shutil.rmtree(cache_loc)
+

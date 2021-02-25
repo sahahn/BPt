@@ -224,6 +224,14 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         # Return stacked X_trans with rest inds
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
+    def fit_transform(self, X, y=None, mapping=None,
+                      fit_index=None, **fit_params):
+        '''Override fit transfrom to pass fit_index to transform_index'''
+
+        return self.fit(
+            X=X, y=y, mapping=mapping, fit_index=fit_index,
+            **fit_params).transform(X=X, transform_index=fit_index)
+
     def transform_df(self, df, base_name=None, encoders=None):
 
         # If None, pass along as is

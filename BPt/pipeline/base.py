@@ -22,11 +22,6 @@ def _get_est_fit_params(estimator, mapping=None,
                         other_params=None,
                         copy_mapping=True):
 
-    if copy_mapping:
-        c_mapping = mapping.copy()
-    else:
-        c_mapping = mapping
-
     if other_params is None:
         fit_params = {}
     else:
@@ -40,7 +35,11 @@ def _get_est_fit_params(estimator, mapping=None,
 
     if mapping is not None and _needs(estimator, '_needs_mapping',
                                       'mapping', 'fit'):
-        fit_params['mapping'] = c_mapping
+
+        if copy_mapping:
+            fit_params['mapping'] = mapping.copy()
+        else:
+            fit_params['mapping'] = mapping
 
     if fit_index is not None and _needs(estimator, '_needs_fit_index',
                                         'fit_index', 'fit'):

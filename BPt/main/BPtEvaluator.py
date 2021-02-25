@@ -242,7 +242,7 @@ class BPtEvaluator():
 
             # Get preds, skip if estimator doesn't have predict func
             try:
-                preds = getattr(estimator, predict_func)(np.array(X_val))
+                preds = getattr(estimator, predict_func)(X_val)
             except AttributeError:
                 continue
 

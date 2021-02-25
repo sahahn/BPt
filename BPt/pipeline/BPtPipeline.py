@@ -90,7 +90,7 @@ class BPtPipeline(Pipeline):
 
                 # Get the correct fit_transform params
                 fit_trans_params =\
-                    _get_est_fit_trans_params(
+                    _get_est_fit_params(
                         estimator=cloned_transformer,
                         mapping=self.mapping_,
                         fit_index=fit_index,

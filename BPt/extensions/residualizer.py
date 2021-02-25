@@ -79,6 +79,8 @@ class LinearResidualizer(BaseEstimator, TransformerMixin):
         self.dummy_code = dummy_code
         self.fit_intercept = fit_intercept
 
+        self._check_args()
+
     def _transform_covars(self, X, index=None, fit=True):
 
         # Grab covars as copy of indexed df
@@ -144,7 +146,23 @@ class LinearResidualizer(BaseEstimator, TransformerMixin):
         # Returned transformed copy
         return self._transform(X, covars)
 
+    def _check_args(self):
+
+        if not isinstance(self.to_resid_df, pd.DataFrame):
+            raise RuntimeError('to_resid_df must be a DataFrame or Dataset.')
+
+        if not isinstance(self.demean, bool):
+            raise RuntimeError('demean must be True or False.')
+
+        if not isinstance(self.dummy_code, bool):
+            raise RuntimeError('dummy code must be True or False.')
+
+        if not isinstance(self.fit_intercept, bool):
+            raise RuntimeError('fit_intercept must be True or False.')
+
     def _fit(self, X, covars):
+
+        self._check_args()
 
         # For each feature seperately
         self.estimators_ = []

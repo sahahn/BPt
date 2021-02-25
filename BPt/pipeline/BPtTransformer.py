@@ -56,7 +56,8 @@ class BPtTransformer(ScopeTransformer):
         return self
 
     def fit_transform(self, X, y=None, mapping=None,
-                      fit_index=None, **fit_params):
+                      fit_index=None,
+                      transform_index=None, **fit_params):
 
         if mapping is None:
             mapping = {}

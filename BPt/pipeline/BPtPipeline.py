@@ -8,14 +8,13 @@ import os
 from sklearn.utils import _print_elapsed_time
 from sklearn.base import clone
 from .base import (_get_est_fit_params, _get_est_trans_params,
-                   _get_est_fit_trans_params)
+                   _needs)
 
 
 class BPtPipeline(Pipeline):
 
     _needs_mapping = True
     _needs_fit_index = True
-    _needs_transform_index = True
 
     def __init__(self, steps, memory=None,
                  verbose=False,
@@ -23,6 +22,18 @@ class BPtPipeline(Pipeline):
 
         self.cache_loc = cache_loc
         super().__init__(steps=steps, memory=memory, verbose=verbose)
+
+    @property
+    def _needs_transform_index(self):
+
+        # If any steps need it
+        for step in self.steps:
+            if _needs(step[1], '_needs_transform_index',
+                      'transform_index', 'transform'):
+                return True
+
+        # Otherwise False
+        return False
 
     @property
     def n_jobs(self):

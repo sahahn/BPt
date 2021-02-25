@@ -727,7 +727,6 @@ def Evaluate(self,
     for scrs, name in zip(score_list, score_type_list):
 
         summary_scores = self._handle_scores(scrs, name,
-                                             ps.weight_scorer,
                                              n_repeats, run_name,
                                              self.evaluator.n_splits_,
                                              summary_dfs)

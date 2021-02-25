@@ -123,7 +123,7 @@ class BPtEvaluator():
 
     def _init_progress_bars(self, cv):
 
-        # Passed cv should have n_repeats param - save in classs
+        # Passed cv should have n_repeats param - save in class
         self.n_repeats_ = 1
         if hasattr(cv, 'n_repeats'):
             self.n_repeats_ = cv.n_repeats
@@ -261,11 +261,19 @@ class BPtEvaluator():
     def _compute_summary_scores(self):
 
         self.mean_scores, self.std_scores = {}, {}
+        self.weighted_mean_scores = {}
+
         for scorer_key in self.scores:
 
             # Save mean under same name
             scores = self.scores[scorer_key]
             self.mean_scores[scorer_key] = np.mean(scores)
+
+            # Compute scores weighted by number of subjs
+            weights = [len(self.val_subjs[i])
+                       for i in range(len(self.val_subjs))]
+            self.weighted_mean_scores[scorer_key] =\
+                np.average(scores, weights=weights)
 
             # Compute and add base micro std
             self.std_scores[scorer_key] = np.std(scores)
@@ -304,8 +312,9 @@ class BPtEvaluator():
         if self.timing is not None:
             saved_attrs.append('timing')
 
-        saved_attrs += ['train_subjs', 'val_subjs', 'feat_names', 'ps']
-        saved_attrs += ['mean_scores', 'std_scores', 'scores']
+        saved_attrs += ['train_subjs', 'val_subjs', 'feat_names', 'ps',
+                        'mean_scores', 'std_scores',
+                        'weighted_mean_scores', 'scores']
 
         if self.estimators is not None:
 

@@ -109,9 +109,8 @@ def process_scorers(in_scorers, problem_type):
 
     # get scorer_strs as initially list
     scorer_strs = conv_to_list(in_scorers)
-    scorers = {}
-    cnt = 0
 
+    scorers, to_weight, cnt = {}, {}, 0
     for m in range(len(scorer_strs)):
 
         if isinstance(scorer_strs[m], str):

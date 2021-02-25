@@ -182,7 +182,7 @@ class BPtSearchCV(BaseEstimator):
     def fit(self, X, y=None, mapping=None,
             fit_index=None, **fit_params):
 
-        # Conv from dataframe if necc.
+        # Conv from dataframe if dataframe.
         if isinstance(X, pd.DataFrame):
             fit_index = X.index
             X = np.array(X)
@@ -326,6 +326,8 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer, cv_inds, cv_subjects,
 class NevergradSearchCV(BPtSearchCV):
 
     # @TODO add more info from verbose!
+    # @TODO add cv_results_, best_index_
+    # other features of sklearn style.
 
     @property
     def n_features_in_(self):

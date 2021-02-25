@@ -2046,19 +2046,21 @@ class ModelPipeline(Pipeline):
 
 
 class ProblemSpec(Params):
-    '''Problem Spec is defined as an object of params encapsulating the set of
-    parameters shared by modelling class functions
-    :func:`Evaluate <BPt.BPt_ML.Evaluate>`
-    and :func:`Test <BPt.BPt_ML.Test>`
+    '''Problem Spec is defined as an object encapsulating the set of
+    parameters used by different :ref:`Evaluation Functions<api.evaluate>`
 
     Parameters
     ----------
     target : int or str, optional
-        The loaded target in which to use during modelling.
-        This should be passed as the name of the target column.
-        This can also be set as the int index
-        (in alphabetical order)
-        If only one target is loaded, just leave as default of 0.
+        The target variable to predict, where the target variable
+        is a loaded column within the :class:`Dataset` eventually used
+        that has been set to :ref:`Role` target.
+
+        This parameter can be passed either as the name of the
+        column, or by passing an integer index. If passed
+        an interger index (default = 0), then all loaded target
+        variables will be sorted in alphabetical order and that
+        index used to select the target to model.
 
         ::
 
@@ -2066,13 +2068,17 @@ class ProblemSpec(Params):
 
     scorer : str or list, optional
         Indicator str for which scorer(s) to use when calculating
-        average validation score in Evaluate, or Test set score in Test.
+        validation scores in the context of different
+        :ref:`Evaluation Functions<api.evaluate>`.
 
         A list of str's can be passed as well, in this case, scores for
         all of the requested scorers will be calculated and returned.
+        In some cases though, for example :ref:`cross_val_score` only
+        one scorer can be used, and if passed a list here, the first
+        element of the list will be used.
 
-        Note: If using a ParamSearch, the ParamSearch object has a
-        separate scorer parameter.
+        Note: If using a nested :class:`ParamSearch`, this object
+        has its own separate scorer param.
 
         For a full list of the base sklearn supported scorers please view the
         scikit-learn docs at:
@@ -2080,8 +2086,8 @@ class ProblemSpec(Params):
 
         You can also view the BPt reference to these options at :ref:`Scorers`.
 
-        If left as 'default', assign a reasonable scorer based on the
-        passed problem type.
+        If left as 'default', reasonable scorers will be assigned based
+        on the underlying problem type.
 
         - 'regression'  : ['explained_variance', 'neg_mean_squared_error']
         - 'binary'      : ['matthews', 'roc_auc', 'balanced_accuracy']
@@ -2090,31 +2096,6 @@ class ProblemSpec(Params):
         ::
 
             default = 'default'
-
-    weight_scorer : bool, list of, optional
-        If True, then the scorer of interest will be weighted within
-        each repeated fold by the number of subjects in that
-        validation set.
-        This parameter only typically makes sense for
-        custom split behavior where
-        validation folds may end up with differing sizes.
-        When default CV schemes are employed,
-        there is likely no point in
-        applying this weighting, as the validation
-        folds will have similar sizes.
-
-        If you are passing multiple scorers, then you can also pass a
-        list of values for weight_scorer, with each value
-        set as boolean True or False,
-        specifying if the corresponding scorer by index
-        should be weighted or not.
-
-        Warning: This parameter is ignored when using sklearn
-        compatible functions.
-
-        ::
-
-            default = False
 
     scope : :ref:`Scope`, optional
         This parameter allows for specifying that
@@ -2137,8 +2118,8 @@ class ProblemSpec(Params):
         specify the reserved keyword 'train' to
         specify that only the training subjects should be used.
 
-        If set to 'all' (as is by default), all avaliable subjects will be
-        used.
+        If set to 'all' (as is by default),
+        all avaliable subjects will be used.
 
         See :ref:`Subjects` for more information
         of the different accepted BPt subject style inputs.
@@ -2220,7 +2201,6 @@ class ProblemSpec(Params):
 
     '''
     def __init__(self, target=0, scorer='default',
-                 weight_scorer=False,
                  scope='all', subjects='all',
                  problem_type='default',
                  n_jobs=1, random_state=1,
@@ -2229,7 +2209,6 @@ class ProblemSpec(Params):
         self.problem_type = problem_type
         self.target = target
         self.scorer = scorer
-        self.weight_scorer = weight_scorer
         self.scope = scope
         self.subjects = subjects
         self.n_jobs = n_jobs
@@ -2252,7 +2231,6 @@ class ProblemSpec(Params):
         _print('problem_type =', self.problem_type)
         _print('target =', self.target)
         _print('scorer =', self.scorer)
-        _print('weight_scorer =', self.weight_scorer)
         _print('scope =', self.scope)
 
         if isinstance(self.subjects, Value_Subset):

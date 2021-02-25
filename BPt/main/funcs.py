@@ -207,7 +207,9 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
     ps.problem_type = pt
 
     # Convert to scorer obj
-    ps.scorer = process_scorers(ps.scorer, problem_type=ps.problem_type)
+    ps.scorer =\
+        process_scorers(ps.scorer,
+                        problem_type=ps.problem_type)
 
     # Set checked flag in ps
     setattr(ps, '_checked', True)

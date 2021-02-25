@@ -311,8 +311,18 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer, cv_inds, cv_subjects,
         estimator.fit(X[tr_inds], y[tr_inds], **deepcopy(f_params))
 
         # Get the score, but scoring return high values as better,
-        # so flip sign
-        score = -scoring(estimator, X[test_inds], y[test_inds])
+        # so flip sign.
+
+        # Hack to allow passing info on transform_index.
+        if _needs(estimator, '_needs_transform_index',
+                  'transform_index', 'transform'):
+            score_X = pd.DataFrame(X[test_inds], index=cv_subjects[i][1])
+            score = -scoring(estimator, score_X, y[test_inds])
+
+        else:
+            score = -scoring(estimator, X[test_inds], y[test_inds])
+
+        # score = -scoring(estimator, X[test_inds], y[test_inds])
         cv_scores.append(score)
 
     if weight_scorer:

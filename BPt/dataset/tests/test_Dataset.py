@@ -12,6 +12,27 @@ from .datasets import (get_fake_dataset, get_fake_dataset2,
 from ..Dataset import Dataset
 
 
+def test_indexing():
+    '''Want to make sure when we grab a sub-index of the dataframe,
+    the attributes gets set in the sub-frame as a copy of the original.'''
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data['2'] = [4, 5, 6]
+
+    data = data.set_role('2', 'target')
+    assert len(data.roles) == 2
+
+    copy = data[['1']]
+    copy.add_scope('1', 'something', inplace=True)
+
+    o_scopes = data.get_scopes()
+    c_scopes = copy.get_scopes()
+
+    assert 'something' in c_scopes['1']
+    assert 'something' not in o_scopes['1']
+
+
 def test_add_scope():
 
     df = get_fake_dataset()
@@ -127,6 +148,15 @@ def test_get_cols():
     assert(set(df.get_cols('data')) == set(['1', '2', '3']))
     assert(set(df.get_cols('1')) == set(['1']))
     assert(set(df.get_cols('category')) == set(['2']))
+
+
+def test_get_cols_as_index():
+
+    df = get_fake_dataset()
+    assert len(df['all']) == 3
+    assert(set(df['data']) == set(['1', '2', '3']))
+    assert(set(df['category']) == set(['2']))
+    assert isinstance(df['1'], pd.Series)
 
 
 def test_auto_detect_categorical_inplace():

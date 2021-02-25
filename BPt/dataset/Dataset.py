@@ -27,6 +27,22 @@ class Dataset(pd.DataFrame):
 
     _print = verbose_print
 
+    def __getitem__(self, key):
+
+        try:
+            item = super().__getitem__(key)
+
+        # If the original passed index isn't a key,
+        # then try again treating it as a scope.
+        except KeyError:
+            item = super().__getitem__(self.get_cols(key))
+
+        # If index returns Dataset, copy over metadata
+        if isinstance(item, Dataset):
+            self._copy_meta_data(item, deep=True)
+
+        return item
+
     @property
     def _constructor(self):
         return Dataset
@@ -1402,6 +1418,14 @@ class Dataset(pd.DataFrame):
         # Base parent pandas behavior
         dataset = super().copy(deep=deep)
 
+        # Make copy of meta data from self to dataset in place
+        self._copy_meta_data(dataset, deep=deep)
+
+        return dataset
+
+    def _copy_meta_data(self, dataset, deep=True):
+        '''Add copy of meta data from self to dataset in place'''
+
         # Set copy func by if deep or not
         copy_func = copy
         if deep:
@@ -1414,7 +1438,7 @@ class Dataset(pd.DataFrame):
             if hasattr(self, m):
                 setattr(dataset, m, copy_func(getattr(self, m)))
 
-        return dataset
+        return self
 
     def get_Xy(self, problem_spec='default', **problem_spec_params):
         '''This function is used to get a sklearn-style

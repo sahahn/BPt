@@ -214,11 +214,10 @@ class BPtSearchCV(BaseEstimator):
                                fit_index=fit_index,
                                **fit_params)
 
+        return self
+
 
 class BPtGridSearchCV(BPtSearchCV):
-
-    # @TODO scoring will break right now in
-    # the case of needs_transform_index.
 
     def fit_grid(self, X, y=None, mapping=None,
                  fit_index=None, **fit_params):
@@ -242,8 +241,16 @@ class BPtGridSearchCV(BPtSearchCV):
             fit_index=fit_index,
             other_params=fit_params)
 
-        # Fit search object
-        self.search_obj_.fit(X, y, **f_params)
+        # Hack to support scoring for needs_transform
+        if _needs(self.estimator, '_needs_transform_index',
+                  'transform_index', 'transform'):
+            score_X = pd.DataFrame(X, index=fit_index)
+            self.search_obj_.fit(score_X, y, **f_params)
+
+        else:
+            self.search_obj_.fit(X, y, **f_params)
+
+        return self
 
     @property
     def n_features_in_(self):
@@ -497,6 +504,8 @@ class NevergradSearchCV(BPtSearchCV):
         # Fit best est, w/ best params
         self.fit_best_estimator(recommendation, X, y, mapping,
                                 fit_index, fit_params)
+
+        return self
 
     def fit_best_estimator(self, recommendation,  X, y, mapping,
                            fit_index, fit_params):

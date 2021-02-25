@@ -29,6 +29,7 @@ def is_ng(p):
 
 
 def get_grid_params(params):
+    print(params)
 
     # Set grid params
     grid_params = {}
@@ -38,7 +39,7 @@ def get_grid_params(params):
             grid_params[p] = params[p].to_grid()
         elif is_ng(params[p]):
             raise RuntimeError('Passing nevergrad parameters directly is not '
-                               'supported. Pass as a BPt Params equivilent.')
+                               'supported. Pass as a BPt Params equivalent.')
         else:
             grid_params[p] = params[p]
 

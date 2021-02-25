@@ -129,7 +129,7 @@ class BPtPipeline(Pipeline):
             # Cast to np array
             X = np.array(X)
 
-        if isinstance(y, pd.DataFrame):
+        if isinstance(y, (pd.DataFrame, pd.Series)):
 
             # Cast to np array
             y = np.array(y)

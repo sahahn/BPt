@@ -186,7 +186,7 @@ class BPtSearchCV(BaseEstimator):
         if isinstance(X, pd.DataFrame):
             fit_index = X.index
             X = np.array(X)
-        if isinstance(y, pd.DataFrame):
+        if isinstance(y, (pd.DataFrame, pd.Series)):
             y = np.array(y)
 
         # Make sure train data index is passed
@@ -216,6 +216,9 @@ class BPtSearchCV(BaseEstimator):
 
 
 class BPtGridSearchCV(BPtSearchCV):
+
+    # @TODO scoring will break right now in
+    # the case of needs_transform_index.
 
     def fit_grid(self, X, y=None, mapping=None,
                  fit_index=None, **fit_params):

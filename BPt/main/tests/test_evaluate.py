@@ -1,9 +1,10 @@
-from ..input import ModelPipeline, Model, CV
+from ..input import ModelPipeline, Model, CV, Pipeline, Scaler
 from ...dataset.Dataset import Dataset
 from ..funcs import evaluate, cross_val_score
 from nose.tools import assert_raises
 import pandas as pd
 import numpy as np
+from ...extensions import LinearResidualizer
 
 
 def get_fake_dataset():
@@ -250,3 +251,51 @@ def test_evaluate_cv():
     assert evaluator.n_splits_ == 3
     assert len(evaluator.mean_scores) == 3
     assert len(evaluator.std_scores) == 6
+
+
+def test_evaluate_with_resid():
+
+    dataset = get_fake_dataset()
+    resid = LinearResidualizer(to_resid_df=dataset[['1']])
+    pipe = Pipeline(steps=[Scaler(obj=resid, scope='all'), Model('dt')])
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         problem_spec='default',
+                         cv=5,
+                         scorer='r2',
+                         progress_bar=False,
+                         store_preds=True,
+                         store_estimators=True,
+                         store_timing=True,
+                         progress_loc=None,
+                         problem_type='regression')
+
+    # Test matches / works with cross_val_score
+    cv_scores = cross_val_score(pipeline=pipe,
+                                dataset=dataset,
+                                scorer='r2',
+                                problem_spec='default',
+                                problem_type='regression')
+    assert np.sum(evaluator.scores['r2']) == np.sum(cv_scores)
+
+    assert len(evaluator.scores) > 0
+    assert len(evaluator.timing['fit_time']) > 0
+    assert len(evaluator.timing['score_time']) > 0
+    evaluator._estimators_check()
+
+    fis_df = evaluator.get_fis()
+    assert list(fis_df) == ['1', '2']
+    assert len(fis_df) == 5
+    assert len(evaluator.feature_importances_) == 2
+
+    raw_fis = evaluator.get_feature_importances()
+    assert len(raw_fis) == 5
+    assert evaluator.coef_ is None
+
+    assert isinstance(evaluator.preds, dict)
+    assert len(evaluator.preds['predict']) == 5
+    assert len(evaluator.preds['y_true']) == 5
+
+    assert len(evaluator.train_subjs) == 5
+    assert len(evaluator.val_subjs) == 5

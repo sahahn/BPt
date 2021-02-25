@@ -195,8 +195,8 @@ class BPtEvaluator():
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()
-        estimator_.fit(X=np.array(X_tr), y=np.array(y_tr),
-                       fit_index=X_tr.index)
+
+        estimator_.fit(X=X_tr, y=np.array(y_tr))
         fit_time = time.time() - start_time
 
         # Score estimator
@@ -229,7 +229,7 @@ class BPtEvaluator():
         # Save score for each scorer
         for scorer_str in self.ps.scorer:
             score = self.ps.scorer[scorer_str](estimator_,
-                                               np.array(X_val),
+                                               X_val,
                                                np.array(y_val))
             self.scores[scorer_str].append(score)
 
@@ -387,7 +387,7 @@ class BPtEvaluator():
 
         - When using transformers, for example one hot encoder,
         since the encoding is done on the fly, there is no
-        gaurentee that 'one hot encoder category_1' is actually
+        guarantee that 'one hot encoder category_1' is actually
         the same category 1 across folds.
 
         - If for some reason some folds have a model with feature
@@ -452,6 +452,7 @@ class BPtEvaluator():
         X_val_df, y_val_df =\
             get_non_nan_Xy(X_df.loc[self.val_subjs[fold]],
                            y_df.loc[self.val_subjs[fold]])
+
         # Base as array, and all feat names
         X_trans, feat_names = np.array(X_val_df), list(X_val_df)
 
@@ -460,7 +461,8 @@ class BPtEvaluator():
             feat_names =\
                 estimator.transform_feat_names(feat_names,
                                                encoders=self.encoders_)
-            X_trans = estimator.transform(X_trans)
+            X_trans = estimator.transform(X_trans,
+                                          transform_index=X_val_df.index)
             estimator = estimator._final_estimator
 
         return estimator, X_trans, np.array(y_val_df), feat_names
@@ -500,7 +502,7 @@ class BPtEvaluator():
 
 
         just_model : bool, optional
-            When set to true, the permuation feature importances
+            When set to true, the permutation feature importances
             will be computed using the final set of transformed features
             as passed when fitting the base model. This is reccomended
             behavior because it means that the features do not need to
@@ -557,6 +559,11 @@ class BPtEvaluator():
 
                 default = 'default'
         '''
+
+        # @TODO in case of just_model = False, won't pass along
+        # transform_index correctly to scorer.
+
+
         from sklearn.inspection import permutation_importance
 
         self._estimators_check()

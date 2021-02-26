@@ -173,7 +173,7 @@ class LinearResidualizer(BaseEstimator, TransformerMixin):
 
             # If not at least 2 subjects valid,
             # skip and propegate NaN.
-            if len(mask) > 1:
+            if np.sum(mask) > 1:
 
                 # Fit model
                 model = LinearRegression(fit_intercept=self.fit_intercept)

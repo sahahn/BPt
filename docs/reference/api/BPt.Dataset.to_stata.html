@@ -1,0 +1,552 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BPt.Dataset.to_stata &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BPt.Dataset.to_string" href="BPt.Dataset.to_string.html" />
+    <link rel="prev" title="BPt.Dataset.to_sql" href="BPt.Dataset.to_sql.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../index.html">
+    
+      <img src="../../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+          
+            
+  
+                <li class="active">
+                    <a href="../dataset.html">Dataset</a>
+                    <ul>
+                    
+                        <li class="active">
+                            <a href="BPt.Dataset.html">BPt.Dataset</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_cols.html">BPt.Dataset.get_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_subjects.html">BPt.Dataset.get_subjects</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_values.html">BPt.Dataset.get_values</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_scope.html">BPt.Dataset.add_scope</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.remove_scope.html">BPt.Dataset.remove_scope</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_role.html">BPt.Dataset.set_role</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_roles.html">BPt.Dataset.set_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.copy.html">BPt.Dataset.copy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.auto_detect_categorical.html">BPt.Dataset.auto_detect_categorical</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_train_Xy.html">BPt.Dataset.get_train_Xy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_test_Xy.html">BPt.Dataset.get_test_Xy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_binary.html">BPt.Dataset.to_binary</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.binarize.html">BPt.Dataset.binarize</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.k_bin.html">BPt.Dataset.k_bin</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.ordinalize.html">BPt.Dataset.ordinalize</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.nan_to_class.html">BPt.Dataset.nan_to_class</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.copy_as_non_input.html">BPt.Dataset.copy_as_non_input</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.filter_outliers_by_std.html">BPt.Dataset.filter_outliers_by_std</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.filter_outliers_by_percent.html">BPt.Dataset.filter_outliers_by_percent</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.filter_categorical_by_percent.html">BPt.Dataset.filter_categorical_by_percent</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_cols.html">BPt.Dataset.drop_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_nan_subjects.html">BPt.Dataset.drop_nan_subjects</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_subjects_by_nan.html">BPt.Dataset.drop_subjects_by_nan</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_cols_by_unique_val.html">BPt.Dataset.drop_cols_by_unique_val</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_cols_by_nan.html">BPt.Dataset.drop_cols_by_nan</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_id_cols.html">BPt.Dataset.drop_id_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_duplicate_cols.html">BPt.Dataset.drop_duplicate_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.apply_inclusions.html">BPt.Dataset.apply_inclusions</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.apply_exclusions.html">BPt.Dataset.apply_exclusions</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.plot.html">BPt.Dataset.plot</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.show.html">BPt.Dataset.show</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.show_nan_info.html">BPt.Dataset.show_nan_info</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.info.html">BPt.Dataset.info</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_test_split.html">BPt.Dataset.set_test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_train_split.html">BPt.Dataset.set_train_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.save_test_split.html">BPt.Dataset.save_test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.save_train_split.html">BPt.Dataset.save_train_split</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline.html">Pipelines</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline_pieces.html">Pipeline Pieces</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../problem_spec.html">ProblemSpec</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../CV.html">CV</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../input_operations.html">Input Operations</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../dists.html">Parameter Distributions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../evaluate.html">Evaluate Functions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="bpt-dataset-to-stata">
+<h1>BPt.Dataset.to_stata<a class="headerlink" href="#bpt-dataset-to-stata" title="Permalink to this headline">¶</a></h1>
+<dl class="py method">
+<dt id="BPt.Dataset.to_stata">
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_stata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">convert_dates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">write_index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">byteorder</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time_stamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">variable_labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">version</span><span class="o">=</span><span class="default_value">114</span></em>, <em class="sig-param"><span class="n">convert_strl</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compression</span><span class="o">=</span><span class="default_value">'infer'</span></em>, <em class="sig-param"><span class="n">storage_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L2112-L2271"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_stata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export DataFrame object to Stata dta format.</p>
+<p>Writes the DataFrame to a Stata dataset file.
+“dta” files contain a Stata dataset.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>path</strong><span class="classifier">str, buffer or path object</span></dt><dd><p>String, path object (pathlib.Path or py._path.local.LocalPath) or
+object implementing a binary write() function. If using a buffer
+then the buffer will not be automatically closed after the file
+data has been written.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0.0.</span></p>
+</div>
+<p>Previously this was “fname”</p>
+</dd>
+<dt><strong>convert_dates</strong><span class="classifier">dict</span></dt><dd><p>Dictionary mapping columns containing datetime types to stata
+internal format to use when writing the dates. Options are ‘tc’,
+‘td’, ‘tm’, ‘tw’, ‘th’, ‘tq’, ‘ty’. Column can be either an integer
+or a name. Datetime columns that do not have a conversion type
+specified will be converted to ‘tc’. Raises NotImplementedError if
+a datetime column has timezone information.</p>
+</dd>
+<dt><strong>write_index</strong><span class="classifier">bool</span></dt><dd><p>Write the index to Stata dataset.</p>
+</dd>
+<dt><strong>byteorder</strong><span class="classifier">str</span></dt><dd><p>Can be “&gt;”, “&lt;”, “little”, or “big”. default is <cite>sys.byteorder</cite>.</p>
+</dd>
+<dt><strong>time_stamp</strong><span class="classifier">datetime</span></dt><dd><p>A datetime to use as file creation date.  Default is the current
+time.</p>
+</dd>
+<dt><strong>data_label</strong><span class="classifier">str, optional</span></dt><dd><p>A label for the data set.  Must be 80 characters or smaller.</p>
+</dd>
+<dt><strong>variable_labels</strong><span class="classifier">dict</span></dt><dd><p>Dictionary containing columns as keys and variable labels as
+values. Each label must be 80 characters or smaller.</p>
+</dd>
+<dt><strong>version</strong><span class="classifier">{114, 117, 118, 119, None}, default 114</span></dt><dd><p>Version to use in the output dta file. Set to None to let pandas
+decide between 118 or 119 formats depending on the number of
+columns in the frame. Version 114 can be read by Stata 10 and
+later. Version 117 can be read by Stata 13 or later. Version 118
+is supported in Stata 14 and later. Version 119 is supported in
+Stata 15 and later. Version 114 limits string variables to 244
+characters or fewer while versions 117 and later allow strings
+with lengths up to 2,000,000 characters. Versions 118 and 119
+support Unicode characters, and version 119 supports more than
+32,767 variables.</p>
+<p>Version 119 should usually only be used when the number of
+variables exceeds the capacity of dta format 118. Exporting
+smaller datasets in format 119 may have unintended consequences,
+and, as of November 2020, Stata SE cannot read version 119 files.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.0.0: </span>Added support for formats 118 and 119.</p>
+</div>
+</dd>
+<dt><strong>convert_strl</strong><span class="classifier">list, optional</span></dt><dd><p>List of column names to convert to string columns to Stata StrL
+format. Only available if version is 117.  Storing strings in the
+StrL format can produce smaller dta files if strings have more than
+8 characters and values are repeated.</p>
+</dd>
+<dt><strong>compression</strong><span class="classifier">str or dict, default ‘infer’</span></dt><dd><p>For on-the-fly compression of the output dta. If string, specifies
+compression mode. If dict, value at key ‘method’ specifies
+compression mode. Compression mode must be one of {‘infer’, ‘gzip’,
+‘bz2’, ‘zip’, ‘xz’, None}. If compression mode is ‘infer’ and
+<cite>fname</cite> is path-like, then detect compression from the following
+extensions: ‘.gz’, ‘.bz2’, ‘.zip’, or ‘.xz’ (otherwise no
+compression). If dict and compression mode is one of {‘zip’,
+‘gzip’, ‘bz2’}, or inferred as one of the above, other entries
+passed as additional compression options.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.1.0.</span></p>
+</div>
+</dd>
+<dt><strong>storage_options</strong><span class="classifier">dict, optional</span></dt><dd><p>Extra options that make sense for a particular storage connection, e.g.
+host, port, username, password, etc., if using a URL that will
+be parsed by <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>, e.g., starting “s3://”, “gcs://”. An error
+will be raised if providing this argument with a non-fsspec URL.
+See the fsspec and backend storage implementation docs for the set of
+allowed keys and values.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.2.0.</span></p>
+</div>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>NotImplementedError</dt><dd><ul class="simple">
+<li><p>If datetimes contain timezone information</p></li>
+<li><p>Column dtype is not representable in Stata</p></li>
+</ul>
+</dd>
+<dt>ValueError</dt><dd><ul class="simple">
+<li><p>Columns listed in convert_dates are neither datetime64[ns]
+or datetime.datetime</p></li>
+<li><p>Column listed in convert_dates is not in DataFrame</p></li>
+<li><p>Categorical label contains more than 32,000 characters</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_stata</span></code></dt><dd><p>Import Stata data files.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.stata.StataWriter</span></code></dt><dd><p>Low-level writer for Stata data files.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.stata.StataWriter117</span></code></dt><dd><p>Low-level writer for version 117 files.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;animal&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;falcon&#39;</span><span class="p">,</span> <span class="s1">&#39;parrot&#39;</span><span class="p">,</span> <span class="s1">&#39;falcon&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                              <span class="s1">&#39;parrot&#39;</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="s1">&#39;speed&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">350</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">361</span><span class="p">,</span> <span class="mi">15</span><span class="p">]})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">to_stata</span><span class="p">(</span><span class="s1">&#39;animals.dta&#39;</span><span class="p">)</span>  
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="BPt.Dataset.to_sql.html" title="previous page">BPt.Dataset.to_sql</a>
+    <a class='right-next' id="next-link" href="BPt.Dataset.to_string.html" title="next page">BPt.Dataset.to_string</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

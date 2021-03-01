@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API reference &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Dataset" href="dataset.html" />
+    <link rel="prev" title="Extra Params" href="../user_guide/extra_params.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../index.html">
+    
+      <img src="../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="dataset.html">Dataset</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pipeline.html">Pipelines</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pipeline_pieces.html">Pipeline Pieces</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="problem_spec.html">ProblemSpec</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="CV.html">CV</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="input_operations.html">Input Operations</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="dists.html">Parameter Distributions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="evaluate.html">Evaluate Functions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="extensions.html">Extension Classes</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="api-reference">
+<span id="api"></span><h1>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<p>This is the API reference</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataset.html">Dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dataset.html#constructor">Constructor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset.html#base">Base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset.html#encoding">Encoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset.html#filtering-drop">Filtering &amp; Drop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset.html#plotting-viewing">Plotting / Viewing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline.html">Pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Pipeline.html">BPt.Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.ModelPipeline.html">BPt.ModelPipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_pieces.html">Pipeline Pieces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Loader.html">BPt.Loader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Imputer.html">BPt.Imputer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Scaler.html">BPt.Scaler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Transformer.html">BPt.Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.FeatSelector.html">BPt.FeatSelector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Model.html">BPt.Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Ensemble.html">BPt.Ensemble</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.ParamSearch.html">BPt.ParamSearch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="problem_spec.html">ProblemSpec</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.ProblemSpec.html">BPt.ProblemSpec</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="CV.html">CV</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.CV.html">BPt.CV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.CVStrategy.html">BPt.CVStrategy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="input_operations.html">Input Operations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Select.html">BPt.Select</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Duplicate.html">BPt.Duplicate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Value_Subset.html">BPt.Value_Subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Intersection.html">BPt.Intersection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.Pipe.html">BPt.Pipe</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dists.html">Parameter Distributions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.p.Choice.html">BPt.p.Choice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.p.TransitionChoice.html">BPt.p.TransitionChoice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.p.Scalar.html">BPt.p.Scalar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.p.Log.html">BPt.p.Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.p.Array.html">BPt.p.Array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.p.Tuple.html">BPt.p.Tuple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.p.Dict.html">BPt.p.Dict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.p.Instrumentation.html">BPt.p.Instrumentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evaluate.html">Evaluate Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.evaluate.html">BPt.evaluate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.cross_validate.html">BPt.cross_validate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.cross_val_score.html">BPt.cross_val_score</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extension Classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.extensions.Identity.html">BPt.extensions.Identity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.extensions.SurfLabels.html">BPt.extensions.SurfLabels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.extensions.SurfMaps.html">BPt.extensions.SurfMaps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/BPt.extensions.ThresholdNetworkMeasures.html">BPt.extensions.ThresholdNetworkMeasures</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="../user_guide/extra_params.html" title="previous page">Extra Params</a>
+    <a class='right-next' id="next-link" href="dataset.html" title="next page">Dataset</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

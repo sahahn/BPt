@@ -1,0 +1,523 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transformers &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Feat Selectors" href="selectors.html" />
+    <link rel="prev" title="Scalers" href="scalers.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../index.html">
+    
+      <img src="../../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../reference/index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+        
+        
+          
+            
+  
+                <li class="active">
+                    <a href="index.html">Pipeline Options</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="loaders.html">Loaders</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="imputers.html">Imputers</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="scalers.html">Scalers</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="">Transformers</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="selectors.html">Feat Selectors</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="models.html">Models</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="ensembles.html">Ensemble Types</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="scorers.html">Scorers</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../search_type_options/index.html">Search Type Options</a>
+                </li>
+            
+          
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#pca" class="nav-link">“pca”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#sparse-pca" class="nav-link">“sparse pca”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#mini-batch-sparse-pca" class="nav-link">“mini batch sparse pca”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#factor-analysis" class="nav-link">“factor analysis”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#dictionary-learning" class="nav-link">“dictionary learning”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#mini-batch-dictionary-learning" class="nav-link">“mini batch dictionary learning”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#fast-ica" class="nav-link">“fast ica”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#incremental-pca" class="nav-link">“incremental pca”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#kernel-pca" class="nav-link">“kernel pca”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#nmf" class="nav-link">“nmf”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#truncated-svd" class="nav-link">“truncated svd”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#one-hot-encoder" class="nav-link">“one hot encoder”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#dummy-coder" class="nav-link">“dummy coder”</a>
+        </li>
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="transformers">
+<span id="id1"></span><h1>Transformers<a class="headerlink" href="#transformers" title="Permalink to this headline">¶</a></h1>
+<p>Different base obj choices for the <a class="reference internal" href="../../reference/api/BPt.Transformer.html#BPt.Transformer" title="BPt.Transformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transformer</span></code></a> are shown below
+The exact str indicator, as passed to the <cite>obj</cite> param is represented by the sub-heading (within “”)
+Additionally, a link to the original models documentation as well as the implemented parameter distributions are shown.</p>
+<div class="section" id="pca">
+<h2>“pca”<a class="headerlink" href="#pca" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html#sklearn.decomposition.PCA" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.PCA</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+<li><p>“pca var search”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n_components</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">0.99</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">0.14833333333333334</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">0.99</span><span class="p">)</span>
+<span class="n">svd_solver</span><span class="p">:</span> <span class="s1">&#39;full&#39;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="sparse-pca">
+<h2>“sparse pca”<a class="headerlink" href="#sparse-pca" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.SparsePCA.html#sklearn.decomposition.SparsePCA" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.SparsePCA</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="mini-batch-sparse-pca">
+<h2>“mini batch sparse pca”<a class="headerlink" href="#mini-batch-sparse-pca" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.MiniBatchSparsePCA.html#sklearn.decomposition.MiniBatchSparsePCA" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.MiniBatchSparsePCA</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="factor-analysis">
+<h2>“factor analysis”<a class="headerlink" href="#factor-analysis" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.FactorAnalysis.html#sklearn.decomposition.FactorAnalysis" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.FactorAnalysis</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="dictionary-learning">
+<h2>“dictionary learning”<a class="headerlink" href="#dictionary-learning" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.DictionaryLearning.html#sklearn.decomposition.DictionaryLearning" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.DictionaryLearning</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="mini-batch-dictionary-learning">
+<h2>“mini batch dictionary learning”<a class="headerlink" href="#mini-batch-dictionary-learning" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.MiniBatchDictionaryLearning.html#sklearn.decomposition.MiniBatchDictionaryLearning" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.MiniBatchDictionaryLearning</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="fast-ica">
+<h2>“fast ica”<a class="headerlink" href="#fast-ica" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.FastICA.html#sklearn.decomposition.FastICA" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.FastICA</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="incremental-pca">
+<h2>“incremental pca”<a class="headerlink" href="#incremental-pca" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.IncrementalPCA.html#sklearn.decomposition.IncrementalPCA" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.IncrementalPCA</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="kernel-pca">
+<h2>“kernel pca”<a class="headerlink" href="#kernel-pca" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.KernelPCA.html#sklearn.decomposition.KernelPCA" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.KernelPCA</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="nmf">
+<h2>“nmf”<a class="headerlink" href="#nmf" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.NMF.html#sklearn.decomposition.NMF" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.NMF</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="truncated-svd">
+<h2>“truncated svd”<a class="headerlink" href="#truncated-svd" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.TruncatedSVD.html#sklearn.decomposition.TruncatedSVD" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.decomposition.TruncatedSVD</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="one-hot-encoder">
+<h2>“one hot encoder”<a class="headerlink" href="#one-hot-encoder" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html#sklearn.preprocessing.OneHotEncoder" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.OneHotEncoder</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“ohe”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sparse</span><span class="p">:</span> <span class="kc">False</span>
+<span class="n">handle_unknown</span><span class="p">:</span> <span class="s1">&#39;ignore&#39;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="dummy-coder">
+<h2>“dummy coder”<a class="headerlink" href="#dummy-coder" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html#sklearn.preprocessing.OneHotEncoder" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing.OneHotEncoder</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“dummy code”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sparse</span><span class="p">:</span> <span class="kc">False</span>
+<span class="n">drop</span><span class="p">:</span> <span class="s1">&#39;first&#39;</span>
+<span class="n">handle_unknown</span><span class="p">:</span> <span class="s1">&#39;error&#39;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="scalers.html" title="previous page">Scalers</a>
+    <a class='right-next' id="next-link" href="selectors.html" title="next page">Feat Selectors</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

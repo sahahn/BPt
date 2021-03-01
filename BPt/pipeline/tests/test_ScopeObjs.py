@@ -29,3 +29,50 @@ def test_scope_transformer_2():
     assert len(st.inds) == 3
     assert len(st.mapping_) == 0
     assert st.rest_inds_ == [1, 2]
+
+
+def test_scope_transformer_pass_val_index():
+
+    class Trans(ToFixedTransformer):
+        _needs_fit_index = True
+        _needs_transform_index = True
+
+        def fit(self, X, y, fit_index=None):
+            self.fit_index = fit_index
+            self.n_features_in_ = X.shape[1]
+            return self
+
+        def transform(self, X, transform_index=None):
+            self.transform_index = transform_index
+            X_trans = np.zeros(X.shape)
+            X_trans[:] = self.to
+            return X_trans
+
+    to_ones = Trans(to=1)
+    st = ScopeTransformer(estimator=to_ones,
+                          inds=[0, 3, 4],
+                          cache_loc=None)
+
+    assert st._needs_transform_index
+
+    X = np.zeros((10, 5))
+    st.fit_transform(X)
+    assert st.estimator_.fit_index is None
+    assert st.estimator_.transform_index is None
+
+    st.fit(X, fit_index=np.arange(10))
+    assert len(st.estimator_.fit_index) == 10
+
+    to_ones = Trans(to=1)
+    st = ScopeTransformer(estimator=to_ones,
+                          inds=[0, 3, 4],
+                          cache_loc=None)
+
+    st.fit_transform(X, fit_index=np.arange(10))
+
+    assert len(st.estimator_.fit_index) == 10
+    assert len(st.estimator_.transform_index) == 10
+
+    st.transform(X, transform_index=np.arange(5))
+    assert len(st.estimator_.fit_index) == 10
+    assert len(st.estimator_.transform_index) == 5

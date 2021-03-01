@@ -1,6 +1,5 @@
 from sklearn.base import BaseEstimator
-from ..helpers.CV import CV
-from .base import _get_est_fit_params
+from .base import _get_est_fit_params, _needs, _get_est_trans_params
 from sklearn.model_selection import GridSearchCV
 from sklearn.utils.metaestimators import if_delegate_has_method
 import warnings
@@ -16,6 +15,7 @@ import multiprocessing as mp
 from sklearn.base import clone
 from copy import deepcopy
 import os
+import pandas as pd
 
 from .helpers import to_memmap, from_memmap, get_grid_params
 
@@ -28,22 +28,24 @@ except ImportError:
 class BPtSearchCV(BaseEstimator):
 
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
     name = 'search'
 
-    def __init__(self, estimator=None, param_search=None,
+    def __init__(self, estimator=None, ps=None,
                  param_distributions=None,
-                 progress_loc=None, n_jobs=1,
-                 random_state=None,
-                 verbose=False):
+                 n_jobs=1,
+                 random_state=None):
 
         self.estimator = estimator
-        self.param_search = param_search
+        self.ps = ps
         self.param_distributions = param_distributions
-        self.progress_loc = progress_loc
         self.n_jobs = n_jobs
         self.random_state = random_state
-        self.verbose = verbose
+
+    @property
+    def _needs_transform_index(self):
+        return _needs(self.estimator, '_needs_transform_index',
+                      'transform_index', 'transform')
 
     @property
     def n_jobs(self):
@@ -60,9 +62,19 @@ class BPtSearchCV(BaseEstimator):
         if hasattr(self.estimator, 'n_jobs'):
             setattr(self.estimator, 'n_jobs', 1)
 
-        # Also check for wrapper n jobs
-        if hasattr(self.estimator, 'wrapper_n_jobs'):
-            setattr(self.estimator, 'wrapper_n_jobs', 1)
+    @property
+    def random_state(self):
+        return self._random_state
+
+    @random_state.setter
+    def random_state(self, random_state):
+
+        # Store
+        self._random_state = random_state
+
+        # Propegate
+        if hasattr(self.estimator, 'random_state'):
+            setattr(self.estimator, 'random_state', random_state)
 
     def get_params(self, deep=True):
         """
@@ -98,6 +110,24 @@ class BPtSearchCV(BaseEstimator):
     def _estimator_type(self):
         return self.estimator._estimator_type
 
+    @property
+    def feature_importances_(self):
+        if hasattr(self.best_estimator_, 'feature_importances_'):
+            return getattr(self.best_estimator_, 'feature_importances_')
+        return None
+
+    @property
+    def coef_(self):
+        if hasattr(self.best_estimator_, 'coef_'):
+            return getattr(self.best_estimator_, 'coef_')
+        return None
+
+    @property
+    def _final_estimator(self):
+        if hasattr(self.best_estimator_, '_final_estimator'):
+            return self.best_estimator_._final_estimator
+        return None
+
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
     def predict(self, X):
         return self.best_estimator_.predict(X)
@@ -115,58 +145,82 @@ class BPtSearchCV(BaseEstimator):
         return self.best_estimator_.decision_function(X)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def transform(self, X):
-        return self.best_estimator_.transform(X)
+    def transform(self, X, transform_index=None):
+
+        trans_params = _get_est_trans_params(
+            self.best_estimator_,
+            transform_index=transform_index)
+
+        return self.best_estimator_.transform(X, **trans_params)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
     def inverse_transform(self, Xt):
         return self.best_estimator_.inverse_transform(Xt)
 
-    def _set_cv(self, train_data_index):
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def score(self, X, y=None, sample_weight=None):
+        return self.best_estimator_.score(X=X, y=y,
+                                          sample_weight=sample_weight)
 
-        # If no CV, use random
-        if self.param_search._cv is None:
-            self.param_search._cv = CV()
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def transform_df(self, X_df, encoders=None):
+        return self.best_estimator_.transform_df(X_df, encoders=encoders)
 
+    @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
+    def transform_feat_names(self, X_df, encoders=None):
+        return self.best_estimator_.transform_feat_names(X_df,
+                                                         encoders=encoders)
+
+    def _set_cv(self, fit_index):
+
+        # Set cv based on fit_index
         self.cv_subjects, self.cv_inds =\
-            self.param_search._cv.get_cv(train_data_index,
-                                         self.param_search.splits,
-                                         self.param_search.n_repeats,
-                                         self.param_search._splits_vals,
-                                         self.param_search._random_state,
-                                         return_index='both')
+            self.ps['cv'].get_cv(fit_index,
+                                 self.ps['random_state'],
+                                 return_index='both')
 
     def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+            fit_index=None, **fit_params):
 
-        if train_data_index is None:
-            raise RuntimeWarning('SearchCV Object must be passed a ' +
-                                 'train_data_index!')
+        # Conv from dataframe if dataframe.
+        if isinstance(X, pd.DataFrame):
+            fit_index = X.index
+            X = np.array(X)
+        if isinstance(y, (pd.DataFrame, pd.Series)):
+            y = np.array(y)
 
-        if self.verbose:
-            print('Fit Search CV, len(train_data_index) == ',
-                  len(train_data_index),
+        # Make sure train data index is passed
+        if fit_index is None:
+            raise RuntimeWarning('SearchCV Object must be passed a '
+                                 'fit_index! Or passed X as '
+                                 'a DataFrame.')
+
+        if self.ps['verbose'] > 1:
+            print('Fit Search CV, len(fit_index) == ',
+                  len(fit_index),
                   'has mapping == ', 'mapping' in fit_params,
                   'X.shape ==', X.shape)
 
-        # Set the search cv passed on passed train_data_index
-        self._set_cv(train_data_index)
+        # Set the search cv passed on passed fit_index
+        self._set_cv(fit_index)
 
         # Run different fit depending on type of search
-        if self.param_search.search_type == 'grid':
+        if self.ps['search_type'] == 'grid':
             self.fit_grid(X=X, y=y, mapping=mapping,
-                          train_data_index=train_data_index,
+                          fit_index=fit_index,
                           **fit_params)
         else:
             self.fit_nevergrad(X=X, y=y, mapping=mapping,
-                               train_data_index=train_data_index,
+                               fit_index=fit_index,
                                **fit_params)
+
+        return self
 
 
 class BPtGridSearchCV(BPtSearchCV):
 
     def fit_grid(self, X, y=None, mapping=None,
-                 train_data_index=None, **fit_params):
+                 fit_index=None, **fit_params):
 
         # Conv nevergrad to grid compat. param grid
         param_grid = get_grid_params(self.param_distributions)
@@ -174,21 +228,29 @@ class BPtGridSearchCV(BPtSearchCV):
         # Fit GridSearchCV object
         self.search_obj_ = GridSearchCV(estimator=self.estimator,
                                         param_grid=param_grid,
-                                        scoring=self.param_search._scorer,
+                                        scoring=self.ps['scorer'],
                                         n_jobs=self.n_jobs,
                                         cv=self.cv_inds,
                                         refit=True,
-                                        verbose=0)
+                                        verbose=self.ps['verbose'])
 
         # Generate the fit params to pass
         f_params = _get_est_fit_params(
             self.estimator,
             mapping=mapping,
-            train_data_index=train_data_index,
+            fit_index=fit_index,
             other_params=fit_params)
 
-        # Fit search object
-        self.search_obj_.fit(X, y, **f_params)
+        # Hack to support scoring for needs_transform
+        if _needs(self.estimator, '_needs_transform_index',
+                  'transform_index', 'transform'):
+            score_X = pd.DataFrame(X, index=fit_index)
+            self.search_obj_.fit(score_X, y, **f_params)
+
+        else:
+            self.search_obj_.fit(X, y, **f_params)
+
+        return self
 
     @property
     def n_features_in_(self):
@@ -252,15 +314,25 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer, cv_inds, cv_subjects,
         f_params = _get_est_fit_params(
             estimator,
             mapping=mapping,
-            train_data_index=cv_subjects[i][0],
+            fit_index=cv_subjects[i][0],
             other_params=fit_params)
 
         # Fit estimator on train
         estimator.fit(X[tr_inds], y[tr_inds], **deepcopy(f_params))
 
         # Get the score, but scoring return high values as better,
-        # so flip sign
-        score = -scoring(estimator, X[test_inds], y[test_inds])
+        # so flip sign.
+
+        # Hack to allow passing info on transform_index.
+        if _needs(estimator, '_needs_transform_index',
+                  'transform_index', 'transform'):
+            score_X = pd.DataFrame(X[test_inds], index=cv_subjects[i][1])
+            score = -scoring(estimator, score_X, y[test_inds])
+
+        else:
+            score = -scoring(estimator, X[test_inds], y[test_inds])
+
+        # score = -scoring(estimator, X[test_inds], y[test_inds])
         cv_scores.append(score)
 
     if weight_scorer:
@@ -272,6 +344,10 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer, cv_inds, cv_subjects,
 
 
 class NevergradSearchCV(BPtSearchCV):
+
+    # @TODO add more info from verbose!
+    # @TODO add cv_results_, best_index_
+    # other features of sklearn style.
 
     @property
     def n_features_in_(self):
@@ -288,19 +364,19 @@ class NevergradSearchCV(BPtSearchCV):
         if client is None:
 
             # Check for memmap X, only if no client
-            if self.param_search.memmap_X:
+            if self.ps['memmap_X']:
                 X_mem = to_memmap(X)
             else:
                 X_mem = X
 
             instrumentation =\
                 ng.p.Instrumentation(X_mem, y, self.estimator,
-                                     self.param_search._scorer,
-                                     self.param_search.weight_scorer,
+                                     self.ps['scorer'],
+                                     self.ps['weight_scorer'],
                                      self.cv_inds,
                                      self.cv_subjects, mapping,
                                      fit_params,
-                                     self.param_search.search_only_params,
+                                     self.ps['search_only_params'],
                                      **self.param_distributions)
 
         # If using dask client, pre-scatter some big memory fixed params
@@ -312,12 +388,12 @@ class NevergradSearchCV(BPtSearchCV):
 
             instrumentation =\
                 ng.p.Instrumentation(X_s, y_s, self.estimator,
-                                     self.param_search._scorer,
-                                     self.param_search.weight_scorer,
+                                     self.ps['scorer'],
+                                     self.ps['weight_scorer'],
                                      cv_inds_s,
                                      cv_subjects_s, mapping,
                                      fit_params,
-                                     self.param_search.search_only_params,
+                                     self.ps['search_only_params'],
                                      **self.param_distributions)
 
         return instrumentation, X_file
@@ -325,15 +401,15 @@ class NevergradSearchCV(BPtSearchCV):
     def get_optimizer(self, instrumentation):
 
         try:
-            opt = ng.optimizers.registry[self.param_search.search_type]
+            opt = ng.optimizers.registry[self.ps['search_type']]
 
-        # If not found, look for in expirimental variants
+        # If not found, look for in experimental variants
         except KeyError:
             import nevergrad.optimization.experimentalvariants
-            opt = ng.optimizers.registry[self.param_search.search_type]
+            opt = ng.optimizers.registry[self.ps['search_type']]
 
         optimizer = opt(parametrization=instrumentation,
-                        budget=self.param_search.n_iter,
+                        budget=self.ps['n_iter'],
                         num_workers=self.n_jobs)
 
         # Set random state is defined
@@ -345,8 +421,8 @@ class NevergradSearchCV(BPtSearchCV):
             optimizer.parametrization.random_state =\
                 self.random_state
 
-        if self.progress_loc is not None:
-            logger = ProgressLogger(self.progress_loc)
+        if self.ps['progress_loc'] is not None:
+            logger = ProgressLogger(self.ps['progress_loc'])
             optimizer.register_callback('tell', logger)
 
         return optimizer
@@ -367,7 +443,7 @@ class NevergradSearchCV(BPtSearchCV):
         # Otherwise use futures pool executor
         else:
 
-            if self.param_search.mp_context == 'loky':
+            if self.ps['mp_context'] == 'loky':
 
                 try:
                     executor = get_reusable_executor(
@@ -382,7 +458,7 @@ class NevergradSearchCV(BPtSearchCV):
             try:
                 with futures.ProcessPoolExecutor(
                   max_workers=self.n_jobs,
-                  mp_context=mp.get_context(self.param_search.mp_context)) as ex:
+                  mp_context=mp.get_context(self.ps['mp_context'])) as ex:
 
                     recommendation = optimizer.minimize(ng_cv_score,
                                                         executor=ex,
@@ -399,13 +475,13 @@ class NevergradSearchCV(BPtSearchCV):
         return recommendation
 
     def fit_nevergrad(self, X, y=None, mapping=None,
-                      train_data_index=None, **fit_params):
+                      fit_index=None, **fit_params):
 
         # Check if need to make dask client
         # Criteria is greater than 1 job, and passed as dask_ip of non-None
-        if self.n_jobs > 1 and self.param_search.dask_ip is not None:
+        if self.n_jobs > 1 and self.ps['dask_ip'] is not None:
             from dask.distributed import Client
-            client = Client(self.param_search.dask_ip)
+            client = Client(self.ps['dask_ip'])
         else:
             client = None
 
@@ -427,10 +503,12 @@ class NevergradSearchCV(BPtSearchCV):
 
         # Fit best est, w/ best params
         self.fit_best_estimator(recommendation, X, y, mapping,
-                                train_data_index, fit_params)
+                                fit_index, fit_params)
+
+        return self
 
     def fit_best_estimator(self, recommendation,  X, y, mapping,
-                           train_data_index, fit_params):
+                           fit_index, fit_params):
 
         # Fit best estimator, w/ found best params
         self.best_estimator_ = clone(self.estimator)
@@ -440,7 +518,7 @@ class NevergradSearchCV(BPtSearchCV):
         f_params = _get_est_fit_params(
             self.best_estimator_,
             mapping=mapping,
-            train_data_index=train_data_index,
+            fit_index=fit_index,
             other_params=fit_params)
 
         # Fit
@@ -469,28 +547,26 @@ def wrap_param_search(param_search, model_obj, model_params):
     search_obj = get_search_cv(
         estimator=model_obj[1],
         param_search=param_search,
-        param_distributions=m_params,
-        progress_loc=None)
+        param_distributions=m_params)
 
     # Create the wrapper nevergrad CV model
     return (name + '_SearchCV', search_obj), model_params
 
 
 def get_search_cv(estimator, param_search,
-                  param_distributions, progress_loc):
+                  param_distributions):
 
     # Determine which CV model to make
-    if param_search.search_type == 'grid':
+    if param_search['search_type'] == 'grid':
         SearchCV = BPtGridSearchCV
     else:
         SearchCV = NevergradSearchCV
 
     search_obj = SearchCV(
         estimator=estimator,
-        param_search=param_search,
+        ps=param_search,
         param_distributions=param_distributions,
-        n_jobs=param_search._n_jobs,
-        random_state=param_search._random_state,
-        progress_loc=progress_loc)
+        n_jobs=param_search['n_jobs'],
+        random_state=param_search['random_state'])
 
     return search_obj

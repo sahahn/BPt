@@ -1,37 +1,73 @@
 from sklearn.pipeline import Pipeline
 import numpy as np
-from ..helpers.VARS import ORDERED_NAMES
-from .helpers import f_array
+from ..helpers.ML_Helpers import hash
+from joblib import load, dump
+import pandas as pd
+from sklearn.utils.metaestimators import if_delegate_has_method
+import os
+from sklearn.utils import _print_elapsed_time
+from sklearn.base import clone
+from .base import (_get_est_fit_params, _get_est_trans_params,
+                   _needs)
 
 
 class BPtPipeline(Pipeline):
 
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
 
-    def __init__(self, steps, memory=None, verbose=False, names=None):
-        self.names = names
+    def __init__(self, steps, memory=None,
+                 verbose=False,
+                 cache_loc=None):
 
+        self.cache_loc = cache_loc
         super().__init__(steps=steps, memory=memory, verbose=verbose)
 
     @property
+    def _needs_transform_index(self):
+
+        # If any steps need it
+        for step in self.steps:
+            if _needs(step[1], '_needs_transform_index',
+                      'transform_index', 'transform'):
+                return True
+
+        # Otherwise False
+        return False
+
+    @property
     def n_jobs(self):
-        return self._n_jobs
+        '''Return the first n jobs found in steps.
+        This function is just meant to be a check to
+        see if any of the pipeline steps have n_jobs to set.'''
+
+        for step in self.steps:
+            if hasattr(step[1], 'n_jobs'):
+                return getattr(step[1], 'n_jobs')
+
+        # Otherwise, return a step we know
+        # doesn't have n_jobs
+        return self.steps[0][1].n_jobs
 
     @n_jobs.setter
     def n_jobs(self, n_jobs):
-
-        # Store ... in self._n_jobs
-        self._n_jobs = n_jobs
 
         # If set here, try to propegate to all steps
         for step in self.steps:
             if hasattr(step[1], 'n_jobs'):
                 setattr(step[1], 'n_jobs', n_jobs)
 
-            # Also check for wrapper n jobs
-            if hasattr(step[1], 'wrapper_n_jobs'):
-                setattr(step[1], 'wrapper_n_jobs', n_jobs)
+    @property
+    def feature_importances_(self):
+        if hasattr(self.__getitem__(-1), 'feature_importances_'):
+            return getattr(self.__getitem__(-1), 'feature_importances_')
+        return None
+
+    @property
+    def coef_(self):
+        if hasattr(self[-1], 'coef_'):
+            return getattr(self[-1], 'coef_')
+        return None
 
     def get_params(self, deep=True):
         params = super()._get_params('steps', deep=deep)
@@ -41,109 +77,286 @@ class BPtPipeline(Pipeline):
         super()._set_params('steps', **kwargs)
         return self
 
+    def _fit(self, X, y=None, fit_index=None, **fit_params_steps):
+
+        # shallow copy of steps - this should really be steps_
+        self.steps = list(self.steps)
+        self._validate_steps()
+
+        # For each transformer
+        for (step_idx,
+             name,
+             transformer) in self._iter(with_final=False,
+                                        filter_passthrough=False):
+
+            with _print_elapsed_time('Pipeline',
+                                     self._log_message(step_idx)):
+
+                # Skip if passthrough
+                if (transformer is None or transformer == 'passthrough'):
+                    continue
+
+                # Clone transformer
+                cloned_transformer = clone(transformer)
+
+                # Get the correct fit_transform params
+                fit_trans_params =\
+                    _get_est_fit_params(
+                        estimator=cloned_transformer,
+                        mapping=self.mapping_,
+                        fit_index=fit_index,
+                        other_params=fit_params_steps[name],
+                        copy_mapping=False)
+
+                # Fit transform the current transformer
+                X = cloned_transformer.fit_transform(X=X, y=y,
+                                                     **fit_trans_params)
+
+                # Replace the transformer of the step with the
+                # cloned and now fitted transformer
+                self.steps[step_idx] = (name, cloned_transformer)
+
+        return X
+
     def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+            fit_index=None, **fit_params):
 
-        # Add mapping to fit params if already passed, e.g., in nested context
-        # Or init new
+        if isinstance(X, pd.DataFrame):
+
+            # Set train data index
+            fit_index = X.index
+
+            # Cast to np array
+            X = np.array(X)
+
+        if isinstance(y, (pd.DataFrame, pd.Series)):
+
+            # Cast to np array
+            y = np.array(y)
+
+        if self.cache_loc is not None:
+
+            # Compute the hash for this fit
+            # Store as an attribute
+            self.hash_ = hash([X, y, mapping,
+                               fit_index, fit_params],
+                              self.steps)
+
+            # Check if hash exists - if it does load
+            if os.path.exists(self._get_hash_loc()):
+                self._load_from_hash()
+
+                # end / return!
+                return self
+
+            # Otherwise, continue to fit as normal
+
+        # Set internal mapping as either passed mapping or
+        # initialize a new 1:1 mapping.
         if mapping is not None:
-            self._mapping = mapping.copy()
+            self.mapping_ = mapping.copy()
         else:
-            self._mapping = {i: i for i in range(X.shape[1])}
+            self.mapping_ = {i: i for i in range(X.shape[1])}
 
-        # Add to the fit parameters according to estimator tags
-        # adding mapping + needs_train_index info
-        for step in self.steps:
-            name, estimator = step[0], step[1]
-            if hasattr(estimator, '_needs_mapping'):
-                fit_params[name + '__mapping'] = self._mapping
-            if hasattr(estimator, '_needs_train_data_index'):
-                fit_params[name + '__train_data_index'] = train_data_index
+        # The base parent fit
+        # -------------------
 
-        # Call parent fit
-        super().fit(X, y, **fit_params)
+        # Get fit params as indexed by each step
+        fit_params_steps = self._check_fit_params(**fit_params)
+
+        # Fit and transform X for all but the last step.
+        Xt = self._fit(X, y, fit_index=fit_index,
+                       **fit_params_steps)
+
+        # Fit the final step
+        with _print_elapsed_time('Pipeline',
+                                 self._log_message(len(self.steps) - 1)):
+            if self._final_estimator != 'passthrough':
+
+                # Get last params fit params
+                fit_params_last_step = fit_params_steps[self.steps[-1][0]]
+
+                # Add mapping and train data index if valid
+                fit_params_last_step =\
+                    _get_est_fit_params(self._final_estimator,
+                                        mapping=self.mapping_,
+                                        fit_index=fit_index,
+                                        other_params=fit_params_last_step,
+                                        copy_mapping=False)
+
+                # Fit the final estimator
+                self._final_estimator.fit(Xt, y, **fit_params_last_step)
+
+        # If cache fit enabled, hash fitted pipe here
+        if self.cache_loc is not None:
+            self._hash_fit()
+
         return self
 
-    def _get_objs_by_name(self):
+    def fit_transform(X, y=None, **fit_params):
+        # @ TODO is there a case where we might need this?
+        raise RuntimeError('Not currently implemented')
 
-        if self.names is None:
-            self.names = []
+    def _get_hash_loc(self):
 
-        fitted_objs = [[self.__getitem__(name) for name in obj]
-                       for obj in self.names]
-        return fitted_objs
+        # Make sure directory exists
+        os.makedirs(self.cache_loc, exist_ok=True)
 
-    def _get_ordered_objs_and_names(self, fs=True, model=False):
+        # Set hash loc as directory + hash of fit args
+        hash_loc = os.path.join(self.cache_loc, self.hash_)
 
-        fitted_objs = self._get_objs_by_name()
-        ordered_objs = []
-        ordered_base_names = []
+        return hash_loc
 
-        for name in ORDERED_NAMES:
+    def _hash_fit(self):
 
-            # Check if should add or not based on passed params
-            add = True
-            if name == 'feat_selectors' and not fs:
-                add = False
-            if name == 'model' and not model:
-                add = False
+        # Just save full fitted pipeline
+        dump(self, self._get_hash_loc())
+        return self
 
-            if add:
-                ind = ORDERED_NAMES.index(name)
-                ordered_objs += fitted_objs[ind]
-                ordered_base_names += self.names[ind]
+    def _load_from_hash(self):
 
-        return ordered_objs, ordered_base_names
+        # Load from saved hash, by
+        # loading the fitted object
+        # and then copying over
+        # each relevant saved fitted parameter
+        fitted_pipe = load(self._get_hash_loc())
 
-    def transform_df(self, X_df, fs=True):
+        # Copy mapping
+        self.mapping_ = fitted_pipe.mapping_
+
+        # Copy each step with the fitted version
+        for (step_idx,
+             name,
+             fitted_piece) in fitted_pipe._iter(with_final=True,
+                                                filter_passthrough=False):
+            self.steps[step_idx] = (name, fitted_piece)
+
+        # Set flag for testing
+        self.loaded_ = True
+
+        return self
+
+    def _get_ordered_objs_and_names(self):
+
+        # Get all objects except final model
+        ordered_names = [step[0] for step in self.steps[:-1]]
+        ordered_objs = [self.__getitem__(name) for name in ordered_names]
+
+        return ordered_objs, ordered_names
+
+    def transform(self, X, transform_index=None):
+
+        Xt = X
+
+        # If DataFrame input
+        if isinstance(Xt, pd.DataFrame):
+
+            # Set transform index, then cast to array
+            transform_index = Xt.index
+            Xt = np.array(Xt)
+
+        # For each transformer, but the last
+        for step in self.steps[:-1]:
+            transformer = step[1]
+
+            # Get any needed transform params
+            trans_params =\
+                _get_est_trans_params(transformer,
+                                      transform_index=transform_index)
+
+            # Transform X - think in place is okay
+            Xt = transformer.transform(Xt, **trans_params)
+
+        return Xt
+
+    def transform_df(self, X_df, encoders=None):
         '''Transform an input dataframe, keeping track of feature names'''
 
-        # Get ordered objects as list, with or without feat selectors
-        # and also the corr. base names
+        # Get as two lists - all steps but last
         ordered_objs, ordered_base_names =\
-            self._get_ordered_objs_and_names(fs=fs, model=False)
+            self._get_ordered_objs_and_names()
 
         # Run all of the transformations
         for obj, base_name in zip(ordered_objs, ordered_base_names):
-            X_df = obj.transform_df(X_df, base_name=base_name)
+            X_df = obj.transform_df(X_df, base_name=base_name,
+                                    encoders=encoders)
 
         return X_df
 
+    def transform_feat_names(self, X_df, encoders=None):
+        '''Like transform df, but just transform feat names.'''
+
+        # Get as two lists - all steps but last
+        ordered_objs, ordered_base_names =\
+            self._get_ordered_objs_and_names()
+
+        feat_names = list(X_df)
+        for obj, base_name in zip(ordered_objs, ordered_base_names):
+            feat_names = obj._proc_new_names(feat_names, base_name=base_name,
+                                             encoders=encoders)
+
+        return feat_names
+
     def inverse_transform_FIs(self, fis, feat_names):
 
-        # Make compat w/ subjects x feats
-        if len(fis.shape) == 1:
-            fis = np.expand_dims(fis, axis=0)
+        # @TODO Need to write and check each base objects
+        # inverse transform
+        return
 
-        # To inverse transform FIs, we are only concerned with feat_selectors
-        # transformers, and loaders
-        fitted_objs = self._get_objs_by_name()
+    @if_delegate_has_method(delegate='_final_estimator')
+    def predict(self, X, **predict_params):
 
-        # Feat selectors
-        fs_ind = ORDERED_NAMES.index('feat_selectors')
-        for feat_selector in fitted_objs[fs_ind][::-1]:
-            fis = feat_selector.inverse_transform(fis)
+        # Transform X
+        Xt = self.transform(X)
 
-        # Transformers
-        trans_ind = ORDERED_NAMES.index('transformers')
-        for transformer, name in zip(fitted_objs[trans_ind][::-1],
-                                     self.names[trans_ind][::-1]):
-            fis = transformer.inverse_transform(fis, name=name)
+        # Then return final pipeline piece predicting
+        # on the transformed data
+        return self.steps[-1][-1].predict(Xt, **predict_params)
 
-        # Loaders - special case
-        inversed_loaders = {}
-        l_ind = ORDERED_NAMES.index('loaders')
-        for loader, name in zip(fitted_objs[l_ind][::-1],
-                                self.names[l_ind][::-1]):
-            fis, inverse_X = loader.inverse_transform(fis, name=name)
-            inversed_loaders.update(inverse_X)
+    @if_delegate_has_method(delegate='_final_estimator')
+    def fit_predict(self, X, y=None, **fit_params):
+        raise RuntimeError('Not Implemented')
 
-        # Make the final feat_importances dict
-        feat_imp_dict = {}
-        for i in range(len(feat_names)):
-            if i in inversed_loaders:
-                feat_imp_dict[feat_names[i]] = inversed_loaders[i]
-            else:
-                feat_imp_dict[feat_names[i]] = fis[:, i]
+    @if_delegate_has_method(delegate='_final_estimator')
+    def predict_proba(self, X):
 
-        return feat_imp_dict
+        # Transform X and predict
+        Xt = self.transform(X)
+        return self.steps[-1][-1].predict_proba(Xt)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def decision_function(self, X):
+
+        # Transform X and predict
+        Xt = self.transform(X)
+        return self.steps[-1][-1].decision_function(Xt)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def score_samples(self, X):
+
+        # Transform X and score samples
+        Xt = self.transform(X)
+        return self.steps[-1][-1].score_samples(Xt)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def predict_log_proba(self, X):
+
+        # Transform X and predict
+        Xt = self.transform(X)
+        return self.steps[-1][-1].predict_log_proba(Xt)
+
+    @if_delegate_has_method(delegate='_final_estimator')
+    def score(self, X, y=None, sample_weight=None):
+
+        # Transform X
+        Xt = self.transform(X)
+
+        # Cast y from dataframe or series if needed
+        if isinstance(y, (pd.DataFrame, pd.Series)):
+            y = np.array(y)
+
+        # Rest of function
+        score_params = {}
+        if sample_weight is not None:
+            score_params['sample_weight'] = sample_weight
+        return self.steps[-1][-1].score(Xt, y, **score_params)

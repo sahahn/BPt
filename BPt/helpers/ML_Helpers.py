@@ -6,15 +6,16 @@ These are non-class functions that are used in _ML.py and Scoring.py
 """
 import numpy as np
 import inspect
-from .Default_Params import get_base_params, proc_params
+
+from ..default.params.default_params import get_base_params, proc_params
+from ..default.params.Params import Params
 from copy import deepcopy
-import nevergrad as ng
-from ..main.Input_Tools import is_special, Select
-from nevergrad.parametrization.core import Constant
+from ..main.input_operations import BPtInputMixIn, Select
+from joblib import hash as joblib_hash
 
 
 def compute_micro_macro(scores, n_repeats, n_splits, weights=None):
-    '''Compute and return scores, as computed froma repeated k-fold.
+    '''Compute and return scores, as computed from a repeated k-fold.
 
     Parameters
     ----------
@@ -66,7 +67,7 @@ def conv_to_list(in_val, amt=1):
     if in_val is None:
         return None
 
-    if not is_array_like(in_val) or is_special(in_val):
+    if not is_array_like(in_val) or isinstance(in_val, BPtInputMixIn):
         in_val = [in_val for i in range(amt)]
 
     return in_val
@@ -112,7 +113,7 @@ def user_passed_param_check(params, obj_str, search_type):
     return {}, {}
 
 
-def proc_extra_params(obj, extra_params, non_search_params, params=None):
+def proc_extra_params(extra_params, non_search_params, params=None):
 
     if extra_params is None or len(extra_params) == 0:
         return non_search_params, params
@@ -186,16 +187,8 @@ def process_params_by_type(obj, obj_str, base_params, extra_params):
     param_keys = list(params)
     for p in param_keys:
 
-        try:
-            module = params[p].__module__
-
-            # If has a module, but no nevergrad in path, then not a
-            # nevergrad param
-            if 'nevergrad' not in module:
-                non_search_params[p] = params.pop(p)
-
-        # If no module, then not a nevergrad param
-        except AttributeError:
+        # If not a special search param
+        if not isinstance(params[p], Params):
             non_search_params[p] = params.pop(p)
 
     # Append obj_str to all params still in params
@@ -204,8 +197,7 @@ def process_params_by_type(obj, obj_str, base_params, extra_params):
 
     # Process extra params
     non_search_params, params =\
-        proc_extra_params(obj,
-                          extra_params=extra_params,
+        proc_extra_params(extra_params=extra_params,
                           non_search_params=non_search_params,
                           params=params)
 
@@ -233,6 +225,15 @@ def get_possible_init_params(model):
         return pos_params['co_varnames']
 
 
+def get_possible_params(estimator, method):
+
+    if not hasattr(estimator, method):
+        return []
+
+    pos_params = dict(inspect.getmembers(getattr(estimator, method).__code__))
+    return pos_params['co_varnames']
+
+
 def get_possible_fit_params(model):
     '''Helper function to grab the names of valid arguments to
     classes fit method
@@ -246,7 +247,31 @@ def get_possible_fit_params(model):
     ----------
         All valid parameters to the model
     '''
+    if not hasattr(model, 'fit'):
+        return []
+
     pos_params = dict(inspect.getmembers(model.fit.__code__))
+    return pos_params['co_varnames']
+
+
+def get_possible_trans_params(model):
+    '''Helper function to grab the names of valid arguments to
+    classes transform method
+
+    Parameters
+    ----------
+    model : object w/ fit method
+        The model object to inspect
+
+    Returns
+    ----------
+        All valid parameters to the model
+    '''
+
+    if not hasattr(model, 'transform'):
+        return []
+
+    pos_params = dict(inspect.getmembers(model.transform.__code__))
     return pos_params['co_varnames']
 
 
@@ -342,136 +367,66 @@ def replace_with_in_params(params, original, replace):
     return new_params
 
 
-def type_check(ud):
-    '''Check if a nevergrad dist'''
+def check_replace(objs):
 
-    def_dist = [ng.p.Log, ng.p.Scalar, ng.p.Choice, ng.p.TransitionChoice]
-    for dd in def_dist:
-        if isinstance(ud, dd):
-            return True
+    if isinstance(objs, list):
+        return [check_replace(o) for o in objs]
 
-    types_to_check = [int, float, list, tuple, str, bool, dict, set, Constant]
+    if isinstance(objs, set):
+        new_set = set()
+        for o in objs:
+            new_set.add(check_replace(o))
+        return new_set
 
-    for ttc in types_to_check:
-        if isinstance(ud, ttc):
-            return False
+    if isinstance(objs, tuple):
+        return tuple([check_replace(o) for o in objs])
 
-    return True
+    if isinstance(objs, dict):
+        return {k: check_replace(objs[k]) for k in objs}
 
+    if hasattr(objs, 'get_params'):
+        for param in objs.get_params(deep=False):
+            new_value = check_replace(getattr(objs, param))
+            setattr(objs, param, new_value)
 
-def proc_mapping(indx, mapping):
-
-    if len(mapping) > 0 and len(indx) > 0:
-
-        # If should proc list...
-        if is_array_like(indx[0]):
-            return [proc_mapping(i, mapping) for i in indx]
-
-        else:
-            new_indx = set()
-
-            for i in indx:
-                new = mapping[i]
-
-                if new is None:
-                    pass
-
-                # If mapping points to a list of values
-                elif isinstance(new, list):
-                    for n in new:
-                        if n is not None:
-                            new_indx.add(n)
-                else:
-                    new_indx.add(new)
-
-            # Sort, then return
-            new_indx = sorted(list(new_indx))
-            return new_indx
-
-    else:
-        return indx
-
-
-def update_mapping(mapping, new_mapping):
-
-    # Go through the mapping and update each key with the new mapping
-    for key in mapping:
-
-        val = mapping[key]
-
-        if isinstance(val, list):
-
-            new_vals = []
-            for v in val:
-
-                if v in new_mapping:
-
-                    new_val = new_mapping[v]
-                    if isinstance(new_val, list):
-                        new_vals += new_val
-                    else:
-                        new_vals.append(new_val)
-
-                else:
-                    new_vals.append(v)
-
-            as_set = set(new_vals)
-
+        # Also if has n_jobs replace all with fixed 1
+        if hasattr(objs, 'n_jobs'):
+            setattr(objs, 'n_jobs', 1)
+        if hasattr(objs, 'fix_n_jobs'):
+            setattr(objs, 'fix_n_jobs', 1)
+        if hasattr(objs, '_n_jobs'):
             try:
-                as_set.remove(None)
-            except KeyError:
+                setattr(objs, '_n_jobs', 1)
+            except AttributeError:
+                pass
+        if hasattr(objs, 'n_jobs_'):
+            try:
+                setattr(objs, 'n_jobs_', 1)
+            except AttributeError:
                 pass
 
-            mapping[key] = sorted(list(as_set))
+        # Return objs as changed in place
+        return objs
 
-        # Assume int if not list
-        else:
+    # If nevergrad / params convert to repr
+    if isinstance(objs, Params):
+        return repr(objs)
 
-            if val in new_mapping:
-                mapping[key] = new_mapping[val]
+    # Return identity otherwise
+    return objs
 
 
-def check_for_duplicate_names(objs_and_params):
-    '''Checks for duplicate names within an objs_and_params type obj'''
+def hash(objs, steps):
+    '''Expects a list'''
 
-    names = [c[0] for c in objs_and_params]
+    # Make copy with nevergrad / params dists replaced by repr
+    hash_steps = check_replace(deepcopy(steps))
 
-    # If any repeats
-    if len(names) != len(set(names)):
-        new_objs_and_params = []
+    # Hash steps and objs seperate, then combine
+    hash_str1 = joblib_hash(objs, hash_name='md5')
+    hash_str2 = joblib_hash(hash_steps, hash_name='md5')
 
-        for obj in objs_and_params:
-            name = obj[0]
-
-            if name in names:
-
-                cnt = 0
-                used = [c[0] for c in new_objs_and_params]
-                while name + str(cnt) in used:
-                    cnt += 1
-
-                # Need to change name within params also
-                base_obj = obj[1][0]
-                base_obj_params = obj[1][1]
-
-                new_obj_params = {}
-                for param_name in base_obj_params:
-
-                    p_split = param_name.split('__')
-                    new_param_name = p_split[0] + str(cnt)
-                    new_param_name += '__' + '__'.join(p_split[1:])
-
-                    new_obj_params[new_param_name] =\
-                        base_obj_params[param_name]
-
-                new_objs_and_params.append((name + str(cnt),
-                                           (base_obj, new_obj_params)))
-
-            else:
-                new_objs_and_params.append(obj)
-
-        return new_objs_and_params
-    return objs_and_params
+    return hash_str1 + hash_str2
 
 
 def proc_type_dep_str(in_strs, avaliable, problem_type):
@@ -587,22 +542,6 @@ def get_avaliable_run_name(name, model_pipeline):
 
     return name
 
-
-def get_reverse_mapping(mapping):
-
-    reverse_mapping = {}
-    for m in mapping:
-        key = mapping[m]
-
-        if isinstance(key, list):
-            for k in key:
-                reverse_mapping[k] = m
-        else:
-            reverse_mapping[key] = m
-
-    return reverse_mapping
-
-
 def set_n_jobs(obj, n_jobs):
 
     # Call recursively for list
@@ -613,7 +552,3 @@ def set_n_jobs(obj, n_jobs):
     # Check and set for n_jobs
     if hasattr(obj, 'n_jobs'):
         setattr(obj, 'n_jobs', n_jobs)
-
-    # Also check for wrapper_n_jobs
-    if hasattr(obj, 'wrapper_n_jobs'):
-        setattr(obj, 'wrapper_n_jobs', n_jobs)

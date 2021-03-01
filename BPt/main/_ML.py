@@ -10,17 +10,15 @@ import pickle as pkl
 from tqdm import tqdm
 from tqdm.notebook import tqdm as tqdm_notebook
 
-from .Input_Tools import is_value_subset, is_values_subset
+from .input_operations import Value_Subset
 from ..helpers.Data_Helpers import (get_unique_combo_df,
                                     reverse_unique_combo_df,
                                     get_target_type)
 from ..helpers.ML_Helpers import (compute_micro_macro, conv_to_list,
                                   get_avaliable_run_name)
-from ..pipeline.Evaluator import Evaluator
-from ..main.Params_Classes import (CV_Splits, CV_Split, Feat_Importance,
-                                   Model_Pipeline,
-                                   Model, Ensemble, Problem_Spec)
-from ..pipeline.Model_Pipeline import get_pipe
+from ..main.input import (Model_Pipeline,
+                          Model, Ensemble, ProblemSpec)
+from ..pipeline.BPtPipelineConstructor import get_pipe
 import pandas as pd
 import copy
 
@@ -42,7 +40,7 @@ def Set_Default_ML_Verbosity(
     save_results : bool, optional
         If True, all results returned by Evaluate
         will be saved within the log dr (if one exists!),
-        under run_name + .eval, and simmilarly for results
+        under run_name + .eval, and similarly for results
         returned by Test, but as run_name + .test.
 
         if 'default', and not already defined, set to False.
@@ -339,7 +337,7 @@ def Evaluate(self,
     for building and evaluating :class:`Model_Pipeline` on the loaded data.
     Specifically, Evaluate is designed to try and estimate the out of sample
     performance of a passed :class:`Model_Pipeline` on a specific
-    ML task (as specified by :class:`Problem_Spec`).
+    ML task (as specified by :class:`ProblemSpec`).
     This estimate is done through a defined CV strategy
     (`splits` and `n_repeats`). While Evaluate's ideal usage is
     an expirimental context for exploring
@@ -360,20 +358,20 @@ def Evaluate(self,
         See :class:`Model_Pipeline` for more information /
         how to create a the model pipeline.
 
-    problem_spec : :class:`Problem_Spec` or 'default', optional
+    problem_spec : :class:`ProblemSpec` or 'default', optional
 
         `problem_spec` accepts an instance of the BPt.BPt_ML
-        params class :class:`Problem_Spec`.
+        params class :class:`ProblemSpec`.
         This object is essentially a wrapper around commonly used
         parameters needs to define the context
         the model pipeline should be evaluated in.
         It includes parameters like problem_type, scorer, n_jobs,
         random_state, etc...
-        See :class:`Problem_Spec` explicitly for more information
+        See :class:`ProblemSpec` explicitly for more information
         and for how to create an instance of this object.
 
         If left as 'default', then will just initialize a
-        Problem_Spec with default params.
+        ProblemSpec with default params.
 
         ::
 
@@ -468,7 +466,7 @@ def Evaluate(self,
     train_subjects : :ref:`Subjects`, optional
         This parameter determines the set of training subjects which are
         used in this call to `Evaluate`. Note, this parameter is distinct to
-        the `subjects` parameter within :class:`Problem_Spec`, which is
+        the `subjects` parameter within :class:`ProblemSpec`, which is
         applied after
         selecting the subset of `train_subjects` specified here.
         These subjects are
@@ -729,7 +727,6 @@ def Evaluate(self,
     for scrs, name in zip(score_list, score_type_list):
 
         summary_scores = self._handle_scores(scrs, name,
-                                             ps.weight_scorer,
                                              n_repeats, run_name,
                                              self.evaluator.n_splits_,
                                              summary_dfs)
@@ -776,7 +773,7 @@ def Test(self,
     and evaluate it on a further discrete set of `test_subjects`.
     Otherwise, these functions are very simmilar as
     they both evaluate a :class:`Model_Pipeline` as defined in the context of
-    a :class:`Problem_Spec`, and return
+    a :class:`ProblemSpec`, and return
     similar output.
 
     Parameters
@@ -789,20 +786,20 @@ def Test(self,
         See :class:`Model_Pipeline` for more information / how to
         create a the model pipeline.
 
-    problem_spec : :class:`Problem_Spec` or 'default', optional
+    problem_spec : :class:`ProblemSpec` or 'default', optional
 
         `problem_spec` accepts an instance of the BPt.BPt_ML
-        params class :class:`Problem_Spec`.
+        params class :class:`ProblemSpec`.
         This object is essentially a wrapper around commonly used
         parameters needs to define the context
         the model pipeline should be evaluated in.
         It includes parameters like problem_type, scorer, n_jobs,
         random_state, etc...
-        See :class:`Problem_Spec` explicitly for more information
+        See :class:`ProblemSpec` explicitly for more information
         and for how to create an instance of this object.
 
         If left as 'default', then will just initialize a
-        Problem_Spec with default params.
+        ProblemSpec with default params.
 
         ::
 
@@ -814,7 +811,7 @@ def Test(self,
 
         Note, this parameter and `test_subjects` are distinct,
         but complementary to
-        the `subjects` parameter within :class:`Problem_Spec`,
+        the `subjects` parameter within :class:`ProblemSpec`,
         which is applied after
         selecting the subset of `train_subjects` specified here.
 
@@ -854,7 +851,7 @@ def Test(self,
 
         Note, this parameter and `train_subjects` are distinct,
         but complementary to
-        the `subjects` parameter within :class:`Problem_Spec`,
+        the `subjects` parameter within :class:`ProblemSpec`,
         which is applied after
         selecting the subset of `test_subjects` specified here.
 
@@ -1161,13 +1158,13 @@ def _preproc_cv_splits(self, obj, random_state):
         cv = self._get_cv(obj.cv, show=False)
 
     # If CV_Splits
-    if isinstance(obj, CV_Splits):
+    #if isinstance(obj, CV_Splits):
 
         # Set split vals
-        _, split_vals, _ =\
-            self._get_split_vals(obj.splits)
+    #    _, split_vals, _ =\
+    #        self._get_split_vals(obj.splits)
 
-        obj.setup(cv=cv, split_vals=split_vals, random_state=random_state)
+    #    obj.setup(cv=cv, split_vals=split_vals, random_state=random_state)
 
     # Otherwise must be CV_Split
     else:
@@ -1217,8 +1214,8 @@ def _preproc_model_pipeline(self, model_pipeline, n_jobs,
 
     def nested_cv_splits_check(obj):
 
-        if isinstance(obj, CV_Splits) or isinstance(obj, CV_Split):
-            self._preproc_cv_splits(obj, random_state)
+        #if isinstance(obj, CV_Splits) or isinstance(obj, CV_Split):
+        #    self._preproc_cv_splits(obj, random_state)
 
         elif isinstance(obj, list):
             [nested_cv_splits_check(o) for o in obj]
@@ -1240,7 +1237,7 @@ def _preproc_problem_spec(self, problem_spec):
 
     # Check if problem_spec is left as default
     if problem_spec == 'default':
-        problem_spec = Problem_Spec()
+        problem_spec = ProblemSpec()
 
     # Set ps to copy of problem spec and init
     ps = deepcopy(problem_spec)
@@ -1352,25 +1349,6 @@ def _get_subjects_to_use(self, subjects_to_use):
         self._print('subjects set to: ',
                     last_subjects_names)
         self._print()
-
-    # Can also be values subset
-    elif is_values_subset(subjects_to_use):
-
-        # Add strat u name to name if not already added
-        name = self._add_strat_u_name(subjects_to_use.name)
-
-        # Extract the values as list
-        values = conv_to_list(subjects_to_use.values)
-
-        # Check name to make sure loaded
-        if name not in self.all_data:
-            raise ValueError(name, 'is not a valid loaded Strat feature!')
-
-        # Get by value
-        subjects = self.all_data[self.all_data[name].isin(values)].index
-
-        # Make sure subjects is set-like
-        subjects = set(list(subjects))
 
     # Lastly, if not the above, assume it is an array-like of subjects
     else:
@@ -1595,7 +1573,7 @@ def model_pipeline_check(model_pipeline, data):
             model_pipeline = Model(obj=model_pipeline)
 
         # In case of passed valid single model, wrap in Model_Pipeline
-        if hasattr(model_pipeline, '_is_model'):
+        if isinstance(model_pipeline, Model):
             model_pipeline = Model_Pipeline(imputers=None,
                                             model=model_pipeline)
         else:

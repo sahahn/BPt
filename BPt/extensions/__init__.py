@@ -1,24 +1,25 @@
-from .Feat_Selectors import RFE_Wrapper, FeatureSelector
-from .Loaders import Identity, SurfLabels, SurfMaps
+from .FeatSelectors import RFEWrapper, FeatureSelector
+from .loaders import Identity, SurfLabels, SurfMaps
 
 try:
-    from .Loaders import Connectivity
+    from .loaders import Connectivity
 except ImportError:
     class Connectivity():
         pass
 
 try:
-    from .Loaders import Networks
+    from .loaders import ThresholdNetworkMeasures
 except ImportError:
-    class Networks():
+    class ThresholdNetworkMeasures():
         pass
 
 from .MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
 from .RandomParcels import RandomParcels
 from .Scalers import Winsorizer
+from .residualizer import LinearResidualizer
 
-__all__ = ['RFE_Wrapper',
+__all__ = ['RFEWrapper',
            'FeatureSelector',
            'Identity', 'SurfLabels', 'Connectivity', 'MLPRegressor_Wrapper',
-           'MLPClassifier_Wrapper',
-           'RandomParcels', 'Winsorizer', 'Networks', 'SurfMaps']
+           'MLPClassifier_Wrapper', 'LinearResidualizer',
+           'RandomParcels', 'Winsorizer', 'ThresholdNetworkMeasures', 'SurfMaps']

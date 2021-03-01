@@ -2,24 +2,49 @@ import os
 import tempfile
 import numpy as np
 from ...helpers.Data_File import Data_File
-from ...helpers.Data_Scopes import Data_Scopes
-from ...main.Params_Classes import Problem_Spec
+from ...main.input import ProblemSpec
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection._base import SelectorMixin
+from ...main.input import ParamSearch
+from ...main.CV import BPtCV, CVStrategy
+from ...dataset.Dataset import Dataset
 
 
 class ToFixedTransformer(BaseEstimator, TransformerMixin):
 
-    def __init__(self, to):
+    def __init__(self, to, n_jobs=1):
         self.to = to
+        self.n_jobs = n_jobs
 
     def fit(self, X, y):
+        self.n_features_in_ = X.shape[1]
         return self
 
     def transform(self, X):
         X_trans = np.zeros(X.shape)
         X_trans[:] = self.to
         return X_trans
+
+
+class IdentityListLoader(BaseEstimator, TransformerMixin):
+    needs_mapping = True
+
+    def __init__(self):
+        pass
+
+    def fit(self, X, y=None, mapping=None):
+        assert mapping is not None
+        return self
+
+    def transform(self, X):
+
+        assert isinstance(X, list)
+
+        X_trans = []
+        for x in X:
+            X_trans.append(x.flatten())
+
+        return np.array(X_trans)
 
 
 class FakeSelector(SelectorMixin, BaseEstimator):
@@ -32,6 +57,31 @@ class FakeSelector(SelectorMixin, BaseEstimator):
 
     def _get_support_mask(self):
         return self.mask
+
+
+def get_param_search():
+
+    param_search = ParamSearch(search_type='RandomSearch',
+                               cv='default',
+                               n_iter=10,
+                               scorer='default',
+                               weight_scorer=False,
+                               mp_context='loky',
+                               n_jobs='default',
+                               dask_ip=None,
+                               memmap_X=False,
+                               search_only_params=None,
+                               progress_loc=None)
+
+    ps = ProblemSpec(random_state=1,
+                     n_jobs=2,
+                     problem_type='regression')
+
+    ps_dict = param_search._as_dict(ps)
+    ps_dict['cv'] = BPtCV(splits=3, n_repeats=1,
+                          cv_strategy=CVStrategy(), splits_vals=None)
+
+    return ps_dict
 
 
 def get_temp_files(n):
@@ -63,8 +113,8 @@ def clean_fake_mapping(n):
         os.unlink(loc)
 
 
-def get_fake_data_scopes(data_keys=None,
-                         cat_keys=None):
+def get_fake_data_dataset(data_keys=None,
+                          cat_keys=None):
 
     if data_keys is None:
         data_keys = []
@@ -72,15 +122,17 @@ def get_fake_data_scopes(data_keys=None,
     if cat_keys is None:
         cat_keys = []
 
-    data_scopes =\
-        Data_Scopes(data_keys=data_keys,
-                    data_file_keys=[],
-                    cat_keys=cat_keys,
-                    strat_keys=[],
-                    covars_keys=[],
-                    file_mapping=None)
+    dataset = Dataset()
 
-    fake_ps = Problem_Spec(target='target', scope='all')
-    data_scopes.set_all_keys(fake_ps)
+    for key in data_keys:
+        dataset[key] = []
+        dataset.set_role(key, 'data', inplace=True)
 
-    return data_scopes
+    for key in cat_keys:
+        dataset[key] = []
+        dataset.set_role(key, 'data', inplace=True)
+        dataset.add_scope(key, 'category', inplace=True)
+
+    dataset._check_scopes()
+
+    return dataset

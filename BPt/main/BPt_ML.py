@@ -9,7 +9,7 @@ import os
 import pickle as pkl
 
 from ..helpers.Docstring_Helpers import get_new_docstring
-# from ..helpers.Params_Classes import ML_Params
+# from ..helpers.input import ML_Params
 from ..helpers.CV import CV
 
 

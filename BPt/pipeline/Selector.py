@@ -1,9 +1,17 @@
 from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.utils.metaestimators import if_delegate_has_method
-import nevergrad as ng
+from ..default.params.Params import Dict, Choice
+from .base import _get_est_fit_params
+
+# @TODO Figure out best way to make selector work with
+# downstream objects which might need special fit arguments,
+# e.g., should this class use the bpt fit and have all tags?
 
 
 class Selector(_BaseComposition):
+
+    _needs_mapping = True
+    _needs_fit_index = True
 
     def __init__(self, estimators, to_use=0):
         self.estimators = estimators
@@ -27,13 +35,22 @@ class Selector(_BaseComposition):
 
     @if_delegate_has_method(delegate='example_estimator_')
     def fit(self, *args, **kwargs):
-        self.is_fitted_ = True
+
+        # Select correct estimator
         self.estimator_ = self.estimators[self.to_use][1]
-        self.estimator_.fit(*args, **kwargs)
+
+        # Set correct fit params based on chosen estimator
+        fit_params = _get_est_fit_params(self.estimator_, other_params=kwargs)
+
+        # Fit
+        self.estimator_.fit(*args, **fit_params)
+        self.is_fitted_ = True
+
         return self
 
     @if_delegate_has_method(delegate='example_estimator_')
     def fit_transform(self, *args, **kwargs):
+
         self.estimator_ = self.estimators[self.to_use][1]
         return self.estimator_.fit_transform(*args, **kwargs)
 
@@ -77,7 +94,26 @@ class Selector(_BaseComposition):
 
     @property
     def _estimator_type(self):
+        '''This should remain static across all passed estimators'''
         return self.example_estimator_._estimator_type
+
+    @property
+    def feature_importances_(self):
+        if hasattr(self.estimator_, 'feature_importances_'):
+            return getattr(self.estimator_, 'feature_importances_')
+        return None
+
+    @property
+    def coef_(self):
+        if hasattr(self.estimator_, 'coef_'):
+            return getattr(self.estimator_, 'coef_')
+        return None
+
+    @property
+    def classes_(self):
+        if hasattr(self.estimator_, 'classes_'):
+            return getattr(self.estimator_, 'classes_')
+        return None
 
 
 def selector_wrapper(objs, params, name):
@@ -91,10 +127,10 @@ def selector_wrapper(objs, params, name):
             {p: params[p] for p in params if p.split('__')[0] == obj_name}
         rel_params['to_use'] = i
 
-        p_dict = ng.p.Dict(**rel_params)
+        p_dict = Dict(**rel_params)
         p_dicts.append(p_dict)
 
-    select = ng.p.Choice(p_dicts, deterministic=True)
+    select = Choice(p_dicts, deterministic=True)
     select_params = {name + '__select': select}
 
     return selector, select_params

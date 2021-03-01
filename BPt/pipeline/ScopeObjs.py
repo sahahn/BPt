@@ -1,11 +1,10 @@
 from sklearn.base import TransformerMixin, clone
-from ..helpers.ML_Helpers import proc_mapping, update_mapping
-from sklearn.utils.metaestimators import if_delegate_has_method
+from .helpers import proc_mapping, update_mapping
 from sklearn.utils.validation import check_memory
 import numpy as np
 import warnings
 
-from .base import BPtBase, _get_est_fit_params
+from .base import BPtBase, _get_est_fit_params, _needs, _get_est_trans_params
 
 
 def _fit_estimator(estimator, X, y=None, **fit_params):
@@ -17,7 +16,7 @@ def _fit_estimator(estimator, X, y=None, **fit_params):
 class ScopeObj(BPtBase):
 
     _needs_mapping = True
-    _needs_train_data_index = True
+    _needs_fit_index = True
 
     # Override
     _required_parameters = ["estimator", "inds"]
@@ -32,6 +31,20 @@ class ScopeObj(BPtBase):
 
         # This is the optional cache_loc for memory
         self.cache_loc = cache_loc
+
+    def __repr__(self):
+
+        temp_inds = self.inds
+
+        if self.inds is Ellipsis:
+            self.inds = 'all'
+        else:
+            self.inds = 'len(' + str(len(self.inds)) + ')'
+
+        rep = super().__repr__()
+        self.inds = temp_inds
+
+        return rep
 
     def _proc_mapping(self, mapping):
 
@@ -63,22 +76,25 @@ class ScopeObj(BPtBase):
                                            X=X[:, self.inds_],
                                            y=y, **fit_params)
 
-    def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+    def _all_case_update_mappings(self, mapping):
 
-        # Save base dtype of input, and n_features_in
-        self.base_dtype_ = X.dtype
-        self.n_features_in_ = X.shape[1]
+        # In case where the scope is everything
 
-        # Process the passed mapping, sets self.inds_
-        if mapping is None:
-            mapping = {}
-        self._proc_mapping(mapping)
+        # Rest inds is empty
+        self.rest_inds_ = []
 
-        # If no inds to map, skip by setting estimator to None
-        if len(self.inds_) == 0:
-            self.estimator_ = None
-            return self
+        # So is out_mapping
+        self.out_mapping_ = {}
+
+        # The mapping to pass on is just
+        # a copy of the original
+        return mapping.copy()
+
+    def _update_mappings(self, X, mapping):
+
+        # Check in case of Ellipsis / all case
+        if self.inds_ is Ellipsis:
+            return self._all_case_update_mappings(mapping)
 
         # Create a mapping that maps old to new value
         self.out_mapping_ = {}
@@ -96,10 +112,35 @@ class ScopeObj(BPtBase):
         for i in self.rest_inds_:
             self.out_mapping_[i] = None
 
-        # Use the out mapping to create a mapping to pass along.
+        # Use the out mapping to create a mapping to pass along
+        # to any nested objects.
         # Make copy so that the original mapping doesn't change.
         pass_on_mapping = mapping.copy()
         update_mapping(pass_on_mapping, self.out_mapping_)
+
+        return pass_on_mapping
+
+    def fit(self, X, y=None, mapping=None,
+            fit_index=None, **fit_params):
+
+        # Save base dtype of input, and n_features_in
+        self.base_dtype_ = X.dtype
+        self.n_features_in_ = X.shape[1]
+
+        # Process the passed mapping, sets self.inds_
+        if mapping is None:
+            mapping = {}
+        self._proc_mapping(mapping)
+
+        # If no inds to map, skip by setting estimator to None
+        if self.inds_ is not Ellipsis and len(self.inds_) == 0:
+            self.estimator_ = None
+            return self
+
+        # Get pass on mapping
+        # All saves class attributes:
+        # out_mapping_ and rest_inds_,
+        pass_on_mapping = self._update_mappings(X, mapping)
 
         # Clone estimator, clears previous fits
         self.estimator_ = clone(self.estimator)
@@ -108,7 +149,7 @@ class ScopeObj(BPtBase):
         pass_fit_params =\
             _get_est_fit_params(estimator=self.estimator_,
                                 mapping=pass_on_mapping,
-                                train_data_index=train_data_index,
+                                fit_index=fit_index,
                                 other_params=fit_params)
 
         # Fit actual estimator with or without caching
@@ -122,19 +163,30 @@ class ScopeObj(BPtBase):
 
 class ScopeTransformer(ScopeObj, TransformerMixin):
 
+    @property
+    def _needs_transform_index(self):
+        return _needs(self.estimator, '_needs_transform_index',
+                      'transform_index', 'transform')
+
     def fit(self, X, y=None, mapping=None,
-            train_data_index=None, **fit_params):
+            fit_index=None, **fit_params):
 
         if mapping is None:
             mapping = {}
 
-        # Call parent fit - base shared fit with ScopeModel
+        # Call parent fit - base shared fit with BPtModel
         super().fit(X, y=y, mapping=mapping,
-                    train_data_index=train_data_index,
+                    fit_index=fit_index,
                     **fit_params)
 
         # If skip
         if self.estimator_ is None:
+            return self
+
+        # Also skip if original scope was all
+        # which means the out_mapping shouldn't change
+        # and also no updates to the mapping should be made.
+        if self.inds_ is Ellipsis:
             return self
 
         # Now need to make changes to the original mapping
@@ -153,14 +205,18 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
 
         return self
 
-    def transform(self, X):
+    def transform(self, X, transform_index=None):
 
         # If None, pass along as is
         if self.estimator_ is None:
             return X
 
-        # Get X_trans
-        X_trans = self.estimator_.transform(X=X[:, self.inds_])
+        # Get transform params
+        trans_params = _get_est_trans_params(self.estimator_,
+                                             transform_index=transform_index)
+
+        # Get X_trans - if self.inds_ is Ellipsis, just selects all
+        X_trans = self.estimator_.transform(X=X[:, self.inds_], **trans_params)
 
         # Save number of output features after X_trans
         self.n_trans_feats_ = X_trans.shape[1]
@@ -168,33 +224,50 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         # Return stacked X_trans with rest inds
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
-    def transform_df(self, df, base_name=None):
+    def fit_transform(self, X, y=None, mapping=None,
+                      fit_index=None, transform_index=None,
+                      **fit_params):
+        '''Override fit transfrom to pass fit_index to transform_index'''
+
+        return self.fit(
+            X=X, y=y, mapping=mapping, fit_index=fit_index,
+            **fit_params).transform(X=X, transform_index=fit_index)
+
+    def transform_df(self, df, base_name=None, encoders=None):
 
         # If None, pass along as is
         if self.estimator_ is None:
             return df
 
+        # Get transfrom index from df
+        transform_index = df.index
+
         # Prepare as numpy array - make sure same as original passed dtype
         X = np.array(df).astype(self.base_dtype_)
 
         # Transform data
-        X_trans = self.transform(X)
+        X_trans = self.transform(X, transform_index=transform_index)
 
         # Feat names are as is
         feat_names = list(df)
 
         # Process new names
-        new_names = self._proc_new_names(feat_names, base_name)
+        new_names = self._proc_new_names(feat_names, base_name,
+                                         encoders=encoders)
 
         # Fill in the new values directly to the passed df
         for i, feat_name in enumerate(new_names):
-            df[feat_name] = X_trans[:, i]
+            df.loc[:, feat_name] = X_trans[:, i]
 
         # Return by re-ordering the df so that it matches
         # the order of new_names, and only with those included in new_names
-        return df[new_names]
+        return df.loc[:, new_names]
 
-    def _proc_new_names(self, feat_names, base_name=None):
+    def _proc_new_names(self, feat_names, base_name=None, encoders=None):
+
+        # If all, return as is
+        if self.inds_ is Ellipsis:
+            return feat_names
 
         # Compute new feature names
         new_names = [feat_names[i] for i in self.inds_] +\
@@ -206,6 +279,11 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         '''Create new feature names for the transformed features.
         This class is used in child classes'''
 
+        # If all, all original feat_names get removed
+        # return empty list
+        if self.inds_ is Ellipsis:
+            return []
+
         to_remove = set([feat_names[i] for i in self.inds_])
         feat_names = [name for name in feat_names if name not in to_remove]
         return feat_names
@@ -216,7 +294,7 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         if self.estimator_ is None:
             return X
 
-        # Compute reverse inds
+        # Compute reverse inds - if Ellipsis, returns Ellipsis
         reverse_inds = proc_mapping(self.inds_, self.out_mapping_)
 
         # If no inverse_transformer in base transformer, set to 0
@@ -242,39 +320,3 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         Xt[:, self.rest_inds_] = X[:, reverse_rest_inds]
 
         return Xt
-
-
-class ScopeModel(ScopeObj):
-
-    @property
-    def _estimator_type(self):
-        return self.estimator._estimator_type
-
-    @property
-    def coef_(self):
-        return self.estimator_.coef_
-
-    @property
-    def feature_importances_(self):
-        return self.estimator_.feature_importances_
-
-    def predict(self, X, *args, **kwargs):
-        return self.estimator_.predict(X[:, self.inds_], *args, **kwargs)
-
-    @if_delegate_has_method(delegate='estimator_')
-    def predict_proba(self, X, *args, **kwargs):
-        return self.estimator_.predict_proba(X[:, self.inds_], *args, **kwargs)
-
-    @if_delegate_has_method(delegate='estimator_')
-    def decision_function(self, X, *args, **kwargs):
-        return self.estimator_.decision_function(X[:, self.inds_],
-                                                 *args, **kwargs)
-
-    @if_delegate_has_method(delegate='estimator_')
-    def predict_log_proba(self, X, *args, **kwargs):
-        return self.estimator_.predict_log_proba(X[:, self.inds_],
-                                                 *args, **kwargs)
-
-    @if_delegate_has_method(delegate='estimator_')
-    def score(self, X, *args, **kwargs):
-        return self.estimator_.score(X[:, self.inds_], *args, **kwargs)

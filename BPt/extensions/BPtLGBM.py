@@ -1,6 +1,6 @@
 from lightgbm import LGBMRegressor, LGBMClassifier
-from ..main.Params_Classes import CV_Split
-from ..helpers.ML_Helpers import proc_mapping
+from ..main.CV import BPtCV
+from ..pipeline.helpers import proc_mapping
 from sklearn.model_selection import train_test_split
 import warnings
 
@@ -8,8 +8,8 @@ import warnings
 class BPtMixIn():
 
     _needs_mapping = True
-    _needs_train_data_index = True
-    needs_cat_inds = True
+    _needs_fit_index = True
+    _needs_cat_inds = True
 
     def _get_categorical_feature(self, mapping):
 
@@ -29,7 +29,7 @@ class BPtMixIn():
         # Otherwise keep as default
         return 'auto'
 
-    def _get_eval_set(self, X, y, train_data_index=None):
+    def _get_eval_set(self, X, y, fit_index=None):
 
         # Make sure there's early stop rounds set!
         if not hasattr(self, 'early_stopping_rounds'):
@@ -42,11 +42,13 @@ class BPtMixIn():
 
             # If any eval_split
             if self.eval_split is not None:
-                if isinstance(self.eval_split, CV_Split):
+                if isinstance(self.eval_split, BPtCV):
 
                     # Get the cv_inds
                     train_inds, eval_inds =\
-                        self.eval_split.get_split(train_data_index)
+                        self.eval_split.get_split(
+                            fit_index,
+                            random_state=self.random_state)
 
                     # Index
                     X_train, y_train = X[train_inds], y[train_inds]
@@ -63,7 +65,7 @@ class BPtMixIn():
 
         return X, y, None
 
-    def fit(self, X, y, mapping=None, train_data_index=None, **kwargs):
+    def fit(self, X, y, mapping=None, fit_index=None, **kwargs):
 
         # Get rid of "other params"
         self._other_params = {}
@@ -73,7 +75,7 @@ class BPtMixIn():
 
         # Proc eval set
         X_train, y_train, eval_set =\
-            self._get_eval_set(X, y, train_data_index=train_data_index)
+            self._get_eval_set(X, y, fit_index=fit_index)
 
         # Check early stopping rounds:
         if hasattr(self, 'early_stopping_rounds'):

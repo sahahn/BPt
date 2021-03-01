@@ -92,5 +92,5 @@ Dataset - Test Split Methods
 
    Dataset.set_test_split
    Dataset.set_train_split
-   Dataset.save_test_subjects
-   Dataset.save_train_subjects
+   Dataset.save_test_split
+   Dataset.save_train_split

@@ -8,9 +8,9 @@ except ImportError:
         pass
 
 try:
-    from .loaders import Networks
+    from .loaders import ThresholdNetworkMeasures
 except ImportError:
-    class Networks():
+    class ThresholdNetworkMeasures():
         pass
 
 from .MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
@@ -22,4 +22,4 @@ __all__ = ['RFEWrapper',
            'FeatureSelector',
            'Identity', 'SurfLabels', 'Connectivity', 'MLPRegressor_Wrapper',
            'MLPClassifier_Wrapper', 'LinearResidualizer',
-           'RandomParcels', 'Winsorizer', 'Networks', 'SurfMaps']
+           'RandomParcels', 'Winsorizer', 'ThresholdNetworkMeasures', 'SurfMaps']

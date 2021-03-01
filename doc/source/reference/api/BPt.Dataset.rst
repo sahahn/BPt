@@ -184,8 +184,8 @@ BPt.Dataset
       Dataset.rsub
       Dataset.rtruediv
       Dataset.sample
-      Dataset.save_test_subjects
-      Dataset.save_train_subjects
+      Dataset.save_test_split
+      Dataset.save_train_split
       Dataset.select_dtypes
       Dataset.sem
       Dataset.set_axis

@@ -588,7 +588,7 @@ class SurfMaps(BaseEstimator, TransformerMixin):
     See Also
     -----------
     SurfLabels : For extracting static / non-probabilistic parcellations.
-    nilearn.input_data.NiftiMapsMasker : For working with volumetric nifti data.
+    nilearn.input_data.NiftiMapsMasker : For volumetric nifti data.
     '''
 
     def __init__(self, maps, strategy='auto', mask=None, vectorize=True):
@@ -848,13 +848,114 @@ except ImportError:
     pass
 
 
-class Networks(BaseEstimator, TransformerMixin):
-    def __init__(self, threshold=.2, threshold_method='abs',
+def avg(func):
+
+    def mean_func(G):
+        return np.mean(func(G).values())
+
+    return mean_func
+
+
+class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
+    '''This class is designed for thresholding and then extracting network
+    measures from an input correlation matrix.
+
+    Parameters
+    -----------
+    threshold : float, optional
+        A floating point threshold between 0 and 1.
+        This represents the threshold at which a connection
+        in the passed data needs to be in order for it to
+        be set as an edge. The type of threshold_method
+        also changes how this threshold behaves.
+
+        ::
+
+            default = .2
+
+    threshold_method : {'abs', 'pos', 'neg', 'density'}, optional
+        The type of threshold to apply in order to define edges.
+
+        ::
+
+            default = 'abs'
+
+    to_compute : valid_measure or list of, optional
+        Either a single str representing a network
+        measure to compute, or a list of valid
+        measures.
+
+        You may also pass any custom function
+        which accepts one argument G, and returns
+        a value.
+
+        The following global measures are currently implemented
+        as options:
+
+
+        - 'avg_cluster':
+            :func:`networkx.algorithms.cluster.average_clustering`
+        - 'assortativity':
+            :func:`networkx.algorithms.assortativity.degree_assortativity_coefficient`
+        - 'global_eff':
+            :func:`networkx.algorithms.efficiency_measures.global_efficiency`
+        - 'local_eff':
+            :func:`networkx.algorithms.efficiency_measures.local_efficiency`
+        - 'sigma':
+            :func:`networkx.algorithms.smallworld.sigma`
+        - 'omega`:
+            :func:`networkx.algorithms.smallworld.omega`
+        - 'transitivity':
+            :func:`networkx.algorithms.cluster.transitivity`
+
+        You may also select from one of the following
+        averages of local measures:
+
+
+        - 'avg_eigenvector_centrality':
+            :func:`networkx.algorithms.centrality.eigenvector_centrality_numpy`
+        - 'avg_closeness_centrality':
+            :func:`networkx.algorithms.centrality.closeness_centrality`
+        - 'avg_degree':
+            Average graph degree.
+        - 'avg_triangles':
+            :func:`networkx.algorithms.cluster.triangles`
+        - 'avg_pagerank':
+            :func:`networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+        - 'avg_betweenness_centrality':
+            :func:`networkx.algorithms.centrality.betweenness_centrality`
+        - 'avg_information_centrality':
+            :func:`networkx.algorithms.centrality.information_centrality`
+        - 'avg_shortest_path_length':
+            :func:`networkx.algorithms.shortest_paths.generic.average_shortest_path_length`
+
+
+        ::
+
+            default = 'avg_degree'
+
+    '''
+
+    def __init__(self, threshold=.2,
+                 threshold_method='abs',
                  to_compute='avg_degree'):
 
         self.threshold = threshold
         self.threshold_method = threshold_method
         self.to_compute = to_compute
+
+    @property
+    def feat_names_(self):
+        '''The list of feature names returned
+        by this objects transform function. This property
+        is special in that it can interact with :class:`Loader`,
+        passing along feature name information.
+        '''
+        return self._feat_names
+
+    @feat_names_.setter
+    def feat_names_(self, feat_names):
+        self._feat_names = feat_names
 
     def fit(self, X, y=None):
         '''X is a 2d correlation matrix'''
@@ -864,12 +965,42 @@ class Networks(BaseEstimator, TransformerMixin):
 
         try:
             import networkx
+            networkx
         except ImportError:
             raise ImportError(
                 'To use this class, make sure you have networkx installed!')
+
+        # The dictionary of valid options
+        self._func_dict = {
+            'avg_cluster': nx.average_clustering,
+            'assortativity': nx.degree_assortativity_coefficient,
+            'global_eff': nx.global_efficiency,
+            'local_eff': nx.local_efficiency,
+            'sigma': nx.sigma,
+            'omega': nx.omega,
+            'transitivity': nx.transitivity,
+            'avg_eigenvector_centrality': avg(nx.eigenvector_centrality_numpy),
+            'avg_closeness_centrality': avg(nx.closeness_centrality),
+            'avg_degree': self._avg_degree,
+            'avg_triangles': avg(nx.triangles),
+            'avg_pagerank': avg(nx.pagerank),
+            'avg_betweenness_centrality': avg(nx.betweenness_centrality),
+            'avg_information_centrality': avg(nx.information_centrality),
+            'avg_shortest_path_length': nx.average_shortest_path_length
+        }
+
+        # Compute the feat names to return once here.
+        self.feat_names_ = []
+        for compute in self.to_compute:
+            if compute not in self._func_dict:
+                self.feat_names_.append(compute.__name__)
+            else:
+                self.feat_names_.append(compute)
+
         return self
 
     def fit_transform(self, X, y=None):
+        '''Temp.'''
         return self.fit(X, y).transform(X)
 
     def _apply_threshold(self, X):
@@ -882,8 +1013,8 @@ class Networks(BaseEstimator, TransformerMixin):
             return np.where(X[0] <= self.threshold, 1, 0)
         elif self.threshold_method == 'density':
             top_n = round((len(np.triu(X).flatten())-len(X))/2*self.threshold)
-            thres = sorted(np.triu(X).flatten(), reverse=True)[top_n]
-            return np.where(X >= thres, 1, 0)
+            thresh = sorted(np.triu(X).flatten(), reverse=True)[top_n]
+            return np.where(X >= thresh, 1, 0)
 
     def _threshold_check(self, X):
 
@@ -892,6 +1023,7 @@ class Networks(BaseEstimator, TransformerMixin):
             self.threshold -= .01
 
     def transform(self, X):
+        '''Temp.'''
 
         # Squeeze X
         X = np.squeeze(X)
@@ -903,63 +1035,15 @@ class Networks(BaseEstimator, TransformerMixin):
         X = self._apply_threshold(X)
         G = nx.from_numpy_matrix(X)
 
-        func_dict = {'avg_cluster': nx.average_clustering,
-                     'assortativity': nx.degree_assortativity_coefficient,
-                     'global_eff': nx.global_efficiency,
-                     'local_eff': nx.local_efficiency,
-                     'transitivity': nx.transitivity,
-                     'avg_eigenvector_centrality':
-                     self._avg_eigenvector_centrality,
-                     'avg_closeness_centrality':
-                     self._avg_closeness_centrality,
-                     'avg_degree': self._avg_degree,
-                     'avg_triangles': self._avg_triangles,
-                     'avg_pagerank': self._avg_pagerank,
-                     'avg_betweenness_centrality':
-                     self._avg_betweenness_centrality,
-                     'avg_information_centrality':
-                     self._avg_information_centrality,
-                     'avg_shortest_path_length':
-                     nx.average_shortest_path_length
-                     }
-
         X_trans = []
+
         for compute in self.to_compute:
-            X_trans += [func_dict[compute](G)]
+            if compute not in self._func_dict:
+                X_trans += [compute(G)]
+            else:
+                X_trans += [self._func_dict[compute](G)]
         return np.array(X_trans)
 
-    # Local
     def _avg_degree(self, G):
         avg_degree = np.mean([i[1] for i in nx.degree(G)])
         return avg_degree
-
-    def _avg_triangles(self, G):
-        avg_triangles = np.mean([nx.triangles(G)[i] for i in nx.triangles(G)])
-        return avg_triangles
-
-    def _avg_eigenvector_centrality(self, G):
-        avg_eigenvector_centrality =\
-            np.mean([nx.eigenvector_centrality_numpy(G)[
-                     i] for i in nx.eigenvector_centrality_numpy(G)])
-        return avg_eigenvector_centrality
-
-    def _avg_closeness_centrality(self, G):
-        avg_closeness_centrality = np.mean(
-            [nx.closeness_centrality(G)[i] for i in nx.closeness_centrality(G)])
-        return avg_closeness_centrality
-
-    def _avg_betweenness_centrality(self, G):
-        avg_betweenness_centrality = np.mean(
-            [nx.betweenness_centrality(G)[i]
-             for i in nx.betweenness_centrality(G)])
-        return avg_betweenness_centrality
-
-    def _avg_information_centrality(self, G):
-        avg_information_centrality = np.mean(
-            [nx.information_centrality(G)[i]
-             for i in nx.information_centrality(G)])
-        return avg_information_centrality
-
-    def _avg_pagerank(self, G):
-        avg_pagerank = np.mean([nx.pagerank(G)[i] for i in nx.pagerank(G)])
-        return avg_pagerank

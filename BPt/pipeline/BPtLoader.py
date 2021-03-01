@@ -228,6 +228,10 @@ class BPtLoader(ScopeTransformer):
 
     def _proc_new_names(self, feat_names, base_name, encoders=None):
 
+        # If base loader has stored feat names, use those.
+        if hasattr(self.estimator_, 'feat_names_'):
+            return getattr(self.estimator_, 'feat_names_')
+
         # Get new names
         new_names = []
         for c in range(len(self.inds_)):

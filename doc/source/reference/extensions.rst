@@ -14,3 +14,4 @@ Extension Classes
    Identity
    SurfLabels
    SurfMaps
+   ThresholdNetworkMeasures

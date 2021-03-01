@@ -126,7 +126,7 @@ def set_test_split(self, size=None, subjects=None,
     '''Defines a set of subjects to be reserved as test subjects. This
     method includes utilities for either defining a new test split, or loading
     an existing one. See related :func:`save_train_split` and
-    :func:`save_test_subjects` or to view
+    :func:`save_test_split` or to view
     directly any saved test subjects, you can check self.test_subjects,
     and likewise for train_subjects.
 
@@ -276,7 +276,7 @@ def set_train_split(self, size=None, subjects=None,
 
     This method includes utilities for either defining a new train split,
     or loading an existing one. See related
-    :func:`save_train_subjects` or to view
+    :func:`save_train_split` or to view
     directly any saved train subjects, you can check self.train_subjects,
     and likewise for test_subjects.
 
@@ -412,7 +412,7 @@ def set_train_split(self, size=None, subjects=None,
     self._finish_split()
 
 
-def save_test_subjects(self, loc):
+def save_test_split(self, loc):
     '''Saves the currently defined test
     subjects in a text file with one subject / index
     per line.
@@ -431,7 +431,7 @@ def save_test_subjects(self, loc):
     save_subjects(loc, self.test_subjects)
 
 
-def save_train_subjects(self, loc):
+def save_train_split(self, loc):
     '''Saves the currently defined train
     subjects in a text file with one subject / index
     per line.

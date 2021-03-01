@@ -380,6 +380,7 @@ if include_api:
         'lightgbm': ('https://lightgbm.readthedocs.io/en/latest', None),
         'xgboost': ('https://xgboost.readthedocs.io/en/latest', None),
         'nevergrad': ('https://facebookresearch.github.io/nevergrad/', None),
+        'networkx': ('https://networkx.org/documentation/stable/', None),
         'imblearn': ('https://imbalanced-learn.readthedocs.io/en/stable', None)
     }
 

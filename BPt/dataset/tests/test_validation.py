@@ -149,7 +149,7 @@ def test_set_test_split():
     assert 0 in df.train_subjects
 
     temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
-    df.save_test_subjects(temp_loc)
+    df.save_test_split(temp_loc)
     df = df.set_test_split(subjects=temp_loc)
     os.remove(temp_loc)
 
@@ -192,7 +192,7 @@ def test_set_train_split():
 
     # Test save and load
     temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
-    df.save_train_subjects(temp_loc)
+    df.save_train_split(temp_loc)
     df = df.set_train_split(subjects=temp_loc)
     os.remove(temp_loc)
 
@@ -281,7 +281,7 @@ def test_multi_index_set_test_split():
     assert ('s1', 'e1') in df.train_subjects
 
     temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
-    df.save_test_subjects(temp_loc)
+    df.save_test_split(temp_loc)
     df = df.set_test_split(subjects=temp_loc)
     os.remove(temp_loc)
 
@@ -313,7 +313,7 @@ def test_multi_index_set_train_split():
     assert ('s1', 'e1') in df.train_subjects
 
     temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
-    df.save_train_subjects(temp_loc)
+    df.save_train_split(temp_loc)
     df = df.set_train_split(subjects=temp_loc)
     os.remove(temp_loc)
 

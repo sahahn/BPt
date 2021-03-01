@@ -1794,8 +1794,8 @@ class Dataset(pd.DataFrame):
                               _finish_split,
                               set_test_split,
                               set_train_split,
-                              save_test_subjects,
-                              save_train_subjects)
+                              save_test_split,
+                              save_train_split)
 
     from ._filtering import (_drop_subjects,
                              drop_nan_subjects,

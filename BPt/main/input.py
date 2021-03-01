@@ -2073,7 +2073,7 @@ class ProblemSpec(Params):
 
         A list of str's can be passed as well, in this case, scores for
         all of the requested scorers will be calculated and returned.
-        In some cases though, for example :ref:`cross_val_score` only
+        In some cases though, for example :func:`cross_val_score` only
         one scorer can be used, and if passed a list here, the first
         element of the list will be used.
 

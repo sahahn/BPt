@@ -19,3 +19,4 @@ This is the API reference
    input_operations
    dists
    evaluate
+   extensions

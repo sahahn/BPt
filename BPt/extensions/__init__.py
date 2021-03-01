@@ -1,14 +1,14 @@
 from .FeatSelectors import RFEWrapper, FeatureSelector
-from .Loaders import Identity, SurfLabels, SurfMaps
+from .loaders import Identity, SurfLabels, SurfMaps
 
 try:
-    from .Loaders import Connectivity
+    from .loaders import Connectivity
 except ImportError:
     class Connectivity():
         pass
 
 try:
-    from .Loaders import Networks
+    from .loaders import Networks
 except ImportError:
     class Networks():
         pass

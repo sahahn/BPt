@@ -85,7 +85,7 @@ def get_name(obj):
                          'forest', 'classes', 'base', 'multilayer_perceptron',
                          'univariate_selection', 'minimum_difference', 'deskl',
                          'exponential', 'logarithmic', 'rrc', 'data',
-                         'variance_threshold']
+                         'variance_threshold', 'nifti_labels_masker']
 
     for r in base_replace_list:
         name = name.replace('.' + r + '.', '.')

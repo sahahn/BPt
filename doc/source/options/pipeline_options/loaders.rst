@@ -35,7 +35,7 @@ Additionally, a link to the original models documentation as well as the impleme
 "volume rois"
 *************
 
-  Base Class Documentation: :class:`nilearn.input_data.nifti_labels_masker.NiftiLabelsMasker`
+  Base Class Documentation: :class:`nilearn.input_data.NiftiLabelsMasker`
 
   Param Distributions
 

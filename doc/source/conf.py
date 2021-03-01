@@ -369,6 +369,7 @@ if include_api:
     intersphinx_mapping = {
         "matplotlib": ("https://matplotlib.org/stable/", None),
         "numpy": ("https://numpy.org/doc/stable/", None),
+        "nilearn": ("https://nilearn.github.io/", None),
         "pandas": ("https://pandas.pydata.org/docs/", None),
         "py": ("https://pylib.readthedocs.io/en/latest/", None),
         "python": ("https://docs.python.org/3/", None),

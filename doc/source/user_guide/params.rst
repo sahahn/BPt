@@ -9,7 +9,7 @@ Params
 On the back-end, if a :class:`ParamSearch<BPt.ParamSearch>` object is passed when creating a
 :class:`ModelPipeline <BPt.ModelPipeline>`, then a hyperparameter search will be conducted.
 All Hyperparameter search types are implemented on the backend with facebook's
-`Nevergrad <https://github.com/facebookresearch/nevergrad>`_ library, or a sklearn GridSearch.
+`Nevergrad <https://github.com/facebookresearch/nevergrad>`_ library or a sklearn GridSearch.
 
 Specific hyper-parameters distributions in which to search over are set within their corresponding
 base ModelPipeline object, e.g., the params argument is :class:`Model<BPt.Model>`. For any object
@@ -43,32 +43,34 @@ You have two different options in terms of input that params can accept, these a
         tree classifier.
 
 
-    - Pass a custom nevergrad distribution
+    - Pass a custom distributions
         If you would like to specify your own custom hyperparameter distribution to search over,
-        you can, you just need to specify it as a python dictionary of 
-        `nevergrad parameters <https://facebookresearch.github.io/nevergrad/parametrization.html>`_ 
-        (follow the link to learn more about how to specify nevergrad params).
-        You can also go into the source code for BPt, specifically BPt/helpers/Default_Params.py,
-        to see how the preset distributions are defined, as a further example.
-
-        Specifically the dictionary of params should follow the scikit_learn param dictionary format,
-        where the each key corresponds to a parameter, but the value as a nevergrad parameter (instead of scikit_learn style).
-        Further, if you need to specify nested parameters, e.g., for a custom object, you separate parameters with '__',
+        you can create it using parameter objects from :ref:`api.dists` which are based on
+        `nevergrad parameters <https://facebookresearch.github.io/nevergrad/parametrization.html>`_ .
+         
+        Specifically the dictionary of params should follow
+        the scikit_learn param dictionary format,
+        where the each key corresponds to a parameter, 
+        but the value as an instance of a BPt :ref:`Parameter<api.dists>`
+        
+        Further, if you need to specify nested parameters, e.g.,
+        for a custom object, you separate parameters with '__',
         so e.g., if your custom model has a base_estimator param, you can pass:
         
         ::
 
-            params = {'base_estimator__some_param' : nevergrad dist}
+            params = {'base_estimator__some_param' : dist}
 
-        Lastly, it is worth noting that you can pass either just static values or a combination of nevergrad distributions
+        Lastly, it is worth noting that you can pass either just static values
+        or a combination of distributions
         and static values, e.g.,
 
         ::
 
             {'base_estimator__some_param' : 6} 
 
-        (Note: extra params can also be used to pass static values, and extra_params takes precedence
-        if a param is passed to both params and extra_params).
+        Note: extra params can also be used to pass static values, and extra_params takes precedence
+        if a param is passed to both params and extra_params.
 
 The special input wrapper :class:`Select<BPt.Select>`
 can also be used to implicitly introduce hyper-parameters

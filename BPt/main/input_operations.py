@@ -183,10 +183,48 @@ class Pipe(list, BPtInputMixIn):
 
 class Value_Subset(BPtInputMixIn):
     ''' Value_Subset is special wrapper class for BPt designed to work with
-    :ref:`Subjects` style input. As seen in :class:`ParamSearch`,
-    or to the `train_subjects` or `test_subjects`
-    params in :func:`Evaluate <BPt.BPt_ML.Evaluate>`
-    and :func:`Test <BPt.BPt_ML.Test>`.
+    :ref:`Subjects` style input. It is used to select a subset of subjects
+    based on a loaded column's value.
+
+    Parameters
+    -----------
+    name : str
+        The name of the loaded column in :class:`Dataset`
+        in which the values refer to.
+
+        In the case of selecting values from
+        an overlap of multiple columns, you can
+        first create a new overlap column.
+        See method :func:`Dataset.add_unique_overlap`,
+        then pass the name of the overlap column here.
+
+    values : str, float or list of
+        This parameter refers to either a single or
+        list of values in which if the loaded
+        subject has the value, or one of the values,
+        in the column selected
+        via name, then that subject will be selected.
+
+    decode_values : bool, optional
+        This parameter is boolean flag which represents if encoded
+        values should be
+        used or not. What this asks is that should the actual
+        ordinal post encoded
+        value be specified, or the should the value be
+        set based on the original
+        encoded name.
+
+        This parameter is only relevant assuming the underlying
+        name column was encoding using an encoding method
+        from :class:`Dataset`, for example :func:`Dataset.to_binary`
+        or :func:`Dataset.ordinalize`.
+
+        ::
+
+            default = False
+
+    Examples
+    ---------
 
     This wrapper can be used as follows, just specify an object as
 
@@ -212,13 +250,15 @@ class Value_Subset(BPtInputMixIn):
 
     Would select the subset of subjects from sites 0, 1 and 5.
 
-    There is one more parameter which represents if encoded values should be
-    used or not. What this asks is that should the actual ordinal post encoded
-    value be specified, or the should the value be set based on the original
-    encoded name. For example, let's say sex originally had values 'M' and 'F'
-    and then binarize was used to set it to 0 and 1. If decode_values is set
-    as the default value of False, then you must pass value = 0 or 1, but
-    if decode_values = True, then you must pass value = 'M' or 'F'. E.g.,
+    We can also consider using the decode_values parameter.
+    For example, let's say sex originally had values 'M' and 'F'
+    and then :func:`Dataset.binarize` was used to
+    transform the values internally to 0 and 1.
+    If decode_values is set
+    as the default value of False,
+    then you must pass value = 0 or 1, but
+    if decode_values = True,
+    then it allows passing value = 'M' or 'F'. E.g.,
 
     ::
 

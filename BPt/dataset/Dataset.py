@@ -19,8 +19,31 @@ from ..main.input_operations import Intersection, Value_Subset
 class Dataset(pd.DataFrame):
     '''The BPt Dataset class is the main class used for preparing data
     into a compatible format to work with machine learning. This class is new
-    as of BPt version >= 2 (replacing the building in loading functions of the
-    old BPt_ML).'''
+    as of BPt version 2 (replacing the building in loading functions of the
+    old BPt_ML).
+
+    See :ref:`loading_data` for more a comprehensive guide on this object.
+
+    This class can be initialized like a pandas.DataFrame, or
+    typically from a pandas.DataFrame.
+
+    .. ipython:: python
+
+        import BPt as bp
+        data = bp.Dataset()
+        data['1'] = [1, 2, 3]
+        data
+
+    Or from a pandas DataFrame.
+
+    .. ipython:: python
+
+        import pandas as pd
+        df = pd.DataFrame()
+        df['1'] = [1, 2, 3]
+        data = bp.Dataset(df)
+        data
+    '''
 
     _metadata = ['roles', 'scopes', 'encoders', 'file_mapping',
                  'verbose_', 'test_subjects', 'train_subjects']

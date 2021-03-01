@@ -6,23 +6,90 @@ from scipy.linalg import lstsq
 
 
 class Identity(BaseEstimator, TransformerMixin):
+    '''This loader will simply flatten the input object, if not already.
+    This loader is used to for example pass along loaded surfaces
+    or volumes to a PCA or other similar transformation.
+
+    This object is designed to be used with :class:`Loader`
+    for operating on single subjects at a time.
+    '''
 
     def __init__(self):
-        '''This loader will simply flatten the input object, if not already.
-        This loader is used to for example pass along loaded surfaces
-        or volumes to a PCA or other simmilar transformation.'''
         pass
 
     def fit(self, X, y=None):
-        pass
+        '''Fit accepts anything for X,
+        and doesn't do anything except save the
+        original shape of X.
+
+        Parameters
+        ----------
+        X : numpy.array
+            numpy.array with any shape, for one subject.
+
+        y : numpy.array, optional
+            This parameter is skipped.
+
+            ::
+
+                default = None
+
+        '''
+        self.X_shape_ = X.shape
+        return self
 
     def fit_transform(self, X, y=None):
+        '''Calls fit then transform, and returns the transformed output.
 
-        return self.transform(X)
+        Parameters
+        ----------
+        X : numpy.array
+            numpy.array with any shape, for one subject.
+
+        y : numpy.array, optional
+            This parameter is skipped, it exists
+            for compatibility.
+
+            ::
+
+                default = None
+
+        '''
+        return self.fit(X).transform(X)
 
     def transform(self, X):
+        '''Transform simply returns a flattened version of the passed
+        X, making it compatible with downstream classifiers.
 
+        Parameters
+        ----------
+        X : numpy.array
+            numpy.array with any shape, for one subject.
+
+        Returns
+        ---------
+        X_trans : numpy.array
+            1D flattened array for this subject.
+
+        '''
         return X.flatten()
+
+    def reverse_transform(self, X_trans):
+        '''Reverse transform, i.e., un-flatten.
+
+        Parameters
+        ----------
+        X_trans : numpy.array
+            1D transformed numpy.array.
+
+        Returns
+        ---------
+        X : numpy.array
+            Data in original shape.
+
+        '''
+
+        return X_trans.reshape(self.X_shape_)
 
 
 def load_surf(surf):
@@ -65,114 +132,123 @@ def load_surf(surf):
 
 
 class SurfLabels(BaseEstimator, TransformerMixin):
+    '''Extract signals from non-overlapping labels.
+
+    This class functions similar to
+    :class:`nilearn.input_data.NiftiLabelsMasker`, except
+    it is designed to work for surface, cifti or any arbitrary
+    1 or 2D numpy arrays.
+
+    Parameters
+    -----------
+    labels : str or array-like
+        This should represent an array, of the same size as the data
+        dimension, as a mask
+        with unique integer values for each ROI. You can also pass a str
+        location in which
+        to load in this array (though the saved file must be loadable by
+        either numpy.load, or
+        if not a numpy array, will try and load with
+        nilearn.surface.load_surf_data(), which you
+        will need nilearn installed to use.)
+
+    background_labels : int, array-like of int, optional
+        This parameter determines which label, if any,
+        in the corresponding
+        passed labels, should be treated as 'background'
+        and therefore no ROI
+        calculated for that value or values.
+        You may pass either a single interger
+        value, an array-like of integer values.
+
+        If not background label is desired, just pass
+        a label which doesn't exist in any of the data,
+        e.g., -100.
+
+        ::
+
+            default = 0
+
+    mask : None, str or array-like, optional
+        This parameter allows you to optional pass a mask of values in
+        which to not calculate ROI values for.
+        This can be passed as a str or
+        array-like of values (just like labels),
+        and should be comprised of
+        a boolean array (or 1's and 0's),
+        where a value of 1 means that value
+        will be ignored (set to background label)
+        should be kept, and a value of 0,
+        for that value should be masked away.
+        This array should have the same length as the passed `labels`.
+
+        ::
+
+            default = None
+
+    strategy: specific str, custom_func, optional
+        This parameter dictates the function to be applied
+        to each data's ROI's
+        individually, e.g., mean to calculate the mean by ROI.
+
+        If a str is passed, it must correspond to one of the below preset
+        options:
+
+        - 'mean'
+            Calculate the mean with :func:`numpy.mean`
+
+        - 'sum'
+            Calculate the sum with :func:`numpy.sum`
+
+        - 'min' or 'minimum
+            Calculate the min value with :func:`numpy.min`
+
+        - 'max' or 'maximum
+            Calculate the max value with :func:`numpy.max`
+
+        - 'std' or 'standard_deviation'
+            Calculate the standard deviation with :func:`numpy.std`
+
+        - 'var' or  'variance'
+            Calculate the variance with :func:`numpy.var`
+
+        If a custom function is passed, it must accept two arguments,
+        custom_func(X_i, axis=data_dim), X_i, where X_i is a subjects data
+        array where that subjects data corresponds to
+        labels == some class i, and can potentially
+        be either a 1D array or 2D array, and an axis argument
+        to specify which axis is
+        the data dimension (e.g., if calculating for a time-series
+        [n_timepoints, data_dim], then data_dim = 1,
+        if calculating for say stacked contrasts where
+        [data_dim, n_contrasts], data_dim = 0, and lastly for a 1D
+        array, data_dim is also 0.
+
+        ::
+
+            default = 'mean'
+
+    vectorize : bool, optional
+        If the returned array should be flattened to 1D. E.g., if the
+        last step in a set of loader steps this should be True, if before
+        a different step it may make sense to set to False.
+
+        ::
+
+            default = True
+
+    See Also
+    -----------
+    SurfMaps : For extracting non-static / probabilistic parcellations.
+    nilearn.input_data.NiftiLabelsMasker : For working with volumetric data.
+
+    '''
 
     def __init__(self, labels,
                  background_label=0,
                  mask=None,
                  strategy='mean',
                  vectorize=True):
-        '''This class functions simmilar to NiftiLabelsMasker from nilearn,
-        but instead is for surfaces (though it could work on a cifti
-        image too).
-
-        Parameters
-        ----------
-        labels : str or array-like
-            This should represent an array, of the same size as the data
-            dimension, as a mask
-            with unique integer values for each ROI. You can also pass a str
-            location in which
-            to load in this array (though the saved file must be loadable by
-            either numpy.load, or
-            if not a numpy array, will try and load with
-            nilearn.surface.load_surf_data(), which you
-            will need nilearn installed to use.)
-
-        background_labels : int, array-like of int, optional
-            This parameter determines which label, if any,
-            in the corresponding
-            passed labels, should be treated as 'background'
-            and therefore no ROI
-            calculated for that value or values.
-            You may pass either a single interger
-            value, an array-like of integer values.
-
-            If not background label is desired, just pass
-            a label which doesn't exist in any of the data,
-            e.g., -100.
-
-            ::
-
-                default = 0
-
-        mask : None, str or array-like, optional
-            This parameter allows you to optional pass a mask of values in
-            which to not calculate ROI values for.
-            This can be passed as a str or
-            array-like of values (just like labels),
-            and should be comprised of
-            a boolean array (or 1's and 0's),
-            where a value of 1 means that value
-            will be ignored (set to background label)
-            should be kept, and a value of 0,
-            for that value should be masked away.
-            This array should have the same length as the passed `labels`.
-
-            ::
-
-                default = None
-
-        strategy: specific str, custom_func, optional
-            This parameter dictates the function to be applied
-            to each data's ROI's
-            individually, e.g., mean to calculate the mean by ROI.
-
-            If a str is passed, it must correspond to one of the below preset
-            options:
-
-            - 'mean'
-                Calculate the mean with np.mean
-
-            - 'sum'
-                Calculate the sum with np.sum
-
-            - 'min' or 'minimum
-                Calculate the min value with np.min
-
-            - 'max' or 'maximum
-                Calculate the max value with np.max
-
-            - 'std' or 'standard_deviation'
-                Calculate the standard deviation with np.std
-
-            - 'var' or  'variance'
-                Calculate the variance with np.var
-
-            If a custom function is passed, it must accept two arguments,
-            custom_func(X_i, axis=data_dim), X_i, where X_i is a subjects data
-            array where that subjects data corresponds to
-            labels == some class i, and can potentially
-            be either a 1D array or 2D array, and an axis argument
-            to specify which axis is
-            the data dimension (e.g., if calculating for a time-series
-            [n_timepoints, data_dim], then data_dim = 1,
-            if calculating for say stacked contrasts where
-            [data_dim, n_contrasts], data_dim = 0, and lastly for a 1D
-            array, data_dim is also 0.
-
-            ::
-
-                default = 'mean'
-
-        vectorize : bool, optional
-            If the returned array should be flattened to 1D. E.g., if the
-            last step in a set of loader steps this should be True, if before
-            a different step it may make sense to set to False.
-
-            ::
-
-                default = True
-        '''
 
         self.labels = labels
         self.background_label = background_label
@@ -181,6 +257,25 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         self.vectorize = vectorize
 
     def fit(self, X, y=None):
+        '''Fit this object according
+        the passed subjects data, X.
+
+        Parameters
+        ----------
+        X : numpy.array
+            numpy.array as either a 1D array,
+            or a 2D array, where one dimension
+            is matches the shape of the past
+            labels and the other represents
+            different time-points or modalities.
+
+        y : numpy.array, optional
+            This parameter is skipped.
+
+            ::
+
+                default = None
+        '''
 
         # Load mask if any
         self.mask_ = load_surf(self.mask)
@@ -241,6 +336,31 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         return self
 
     def fit_transform(self, X, y=None):
+        '''Fit, then transform this object.
+
+        Parameters
+        ----------
+        X : numpy.array
+            numpy.array as either a 1D array,
+            or a 2D array, where one dimension
+            is matches the shape of the past
+            labels and the other represents
+            different time-points or modalities.
+
+        y : numpy.array, optional
+            This parameter is skipped.
+
+            ::
+
+                default = None
+
+        Returns
+        ---------
+        X_trans : numpy.array
+            The transformed data, either as 1D
+            array is passed 1D data, or 2D if passed
+            vectorize=False and originally 2D data.
+        '''
         return self.fit(X, y).transform(X)
 
     def _check_fitted(self):
@@ -249,7 +369,33 @@ class SurfLabels(BaseEstimator, TransformerMixin):
                              'You must call fit() before calling transform()')
 
     def transform(self, X):
-        ''' If X has the both the same dimensions, raise warning'''
+        '''Transform this the passed data.
+
+        If X has the both the same dimension's, raise warning.
+
+        Parameters
+        ----------
+        X : numpy.array
+            numpy.array as either a 1D array,
+            or a 2D array, where one dimension
+            is matches the shape of the past
+            labels and the other represents
+            different time-points or modalities.
+
+        y : numpy.array, optional
+            This parameter is skipped.
+
+            ::
+
+                default = None
+
+        Returns
+        ---------
+        X_trans : numpy.array
+            The transformed data, either as 1D
+            array is passed 1D data, or 2D if passed
+            vectorize=False and originally 2D data.
+        '''
 
         self._check_fitted()
 
@@ -290,6 +436,24 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         return X_trans.flatten()
 
     def inverse_transform(self, X_trans):
+        '''Reverse the original transformation.
+
+        Parameters
+        ----------
+        X_trans : numpy.array
+            Data with the same number of outputted
+            features as data transformed
+            by this object, e.g., the original
+            transformed data or corresponding
+            feature importances.
+
+        Returns
+        --------
+        X : numpy.array
+            The reverse transformed data
+            passed back in its original space.
+
+        '''
 
         # Reverse the vectorize
         if self.vectorize:
@@ -311,121 +475,148 @@ class SurfLabels(BaseEstimator, TransformerMixin):
 
 
 class SurfMaps(BaseEstimator, TransformerMixin):
+    '''Extract signals from overlapping labels.
+
+    This class functions similar to
+    :class:`nilearn.input_data.NiftiMapsMasker`, except
+    it is designed to work for surface, cifti or any arbitrary
+    1 or 2D numpy arrays.
+
+    This object calculates the signal for each of the
+    passed maps as extracted from the input during fit,
+    and returns for each map a value.
+
+    maps : str or array-like, optional
+        This parameter represents the maps in which
+        to apply to each surface, where the shape of
+        the passed maps should be (# of vertex, # of maps)
+        or in other words, the size of the data array in the first
+        dimension and the number of maps
+        (i.e., the number of outputted ROIs from fit)
+        as the second dimension.
+
+        You may pass maps as either an array-like,
+        or the str file location of a numpy or other
+        valid surface file format array in which to load.
+
+    strategy : {'auto', 'ls', 'average'}, optional
+        The strategy in which the maps are used to extract
+        signal. If 'ls' is selected, which stands for
+        least squares, the least-squares solution will
+        be used for each region.
+
+        Alternatively, if 'average' is passed, then
+        the weighted average value for each map
+        will be computed.
+
+        By default 'auto' will be selected,
+        which will use 'average' if the passed
+        maps contain only positive weights, and
+        'ls' in the case that there are
+        any negative values in the passed maps.
+
+        Otherwise, you can set a specific strategy.
+        In deciding which method to use,
+        consider an example. Let's say the
+        fit data X, and maps are
+
+        ::
+
+            data = np.array([1, 1, 5, 5])
+            maps = np.array([[0, 0],
+                                [0, 0],
+                                [1, -1],
+                                [1, -1]])
+
+        In this case, the 'ls' method would
+        yield region signals [2.5, -2.5], whereas
+        the weighted 'average' method, would yield
+        [5, 5], notably ignoring the negative weights.
+        This highlights an important limitation to the
+        weighted averaged method, as it does not
+        handle negative values well.
+
+        On the other hand, consider changing the maps
+        weights to
+
+        ::
+
+            data = np.array([1, 1, 5, 5])
+            maps = np.array([[0, 1],
+                                [0, 2],
+                                [1, 0],
+                                [1, 0]])
+
+            ls_sol = [5. , 0.6]
+            average_sol = [5, 1]
+
+        In this case, we can see that the weighted
+        average gives a maybe more intuitive summary
+        of the regions. In general, it depends on
+        what signal you are trying to summarize, and
+        how you are trying to summarize it.
+
+    mask : None, str or array-like, optional
+        This parameter allows you to optional pass a mask of values in
+        which to not calculate ROI values for.
+        This can be passed as a str or
+        array-like of values (just like maps),
+        and should be comprised of
+        a boolean array (or 1's and 0's),
+        where a value of 1 means that value
+        will be ignored (set to 0)
+        should be kept, and a value of 0,
+        for that value should be masked away.
+        This array should have the same length as the passed `maps`.
+        Specifically, where the shape of maps is (size, n_maps),
+        the shape of mask should be (size).
+
+        ::
+
+            default = None
+
+    vectorize : bool, optional
+        If the returned array should be flattened to 1D. E.g., if this is
+        the last step in a set of loader steps this should be True.
+        Also note, if the surface data it is being applied to is 1D,
+        then the output will be 1D regardless of this parameter.
+
+        ::
+
+            default = True
+
+    See Also
+    -----------
+    SurfLabels : For extracting static / non-probabilistic parcellations.
+    nilearn.input_data.NiftiMapsMasker : For working with volumetric nifti data.
+    '''
 
     def __init__(self, maps, strategy='auto', mask=None, vectorize=True):
-        '''Simmilar to NiftiMapsMasker from nilearn
-        but for surfaces, and designed to work with BPt Loader.
-
-        This object calculates the signal for each of the
-        passed maps as extracted from the input during fit,
-        and returns for each map a value.
-
-        maps : str or array-like, optional
-            This parameter represents the maps in which
-            to apply to each surface, where the shape of
-            the passed maps should be (# of vertex, # of maps)
-            or in other words, the size of the data array in the first
-            dimension and the number of maps
-            (i.e., the number of outputted ROIs from fit)
-            as the second dimension.
-
-            You may pass maps as either an array-like,
-            or the str file location of a numpy or other
-            valid surface file format array in which to load.
-
-        strategy : {'auto', 'ls', 'average'}, optional
-            The stratgey in which the maps are used to extract
-            signal. If 'ls' is selected, which stands for
-            least squares, the least-squares solution will
-            be used for each region.
-
-            Alternatively, if 'average' is passed, then
-            the weighted average value for each map
-            will be computed.
-
-            By default 'auto' will be selected,
-            which will use 'average' if the passed
-            maps contain only positive weights, and
-            'ls' in the case that there are
-            any negative values in the passed maps.
-
-            Otherwise, you can set a specific strategy.
-            In deciding which method to use,
-            consider an example. Let's say the
-            fit data X, and maps are
-
-            ::
-
-                data = np.array([1, 1, 5, 5])
-                maps = np.array([[0, 0],
-                                 [0, 0],
-                                 [1, -1],
-                                 [1, -1]])
-
-            In this case, the 'ls' method would
-            yield region signals [2.5, -2.5], whereas
-            the weighted 'average' method, would yield
-            [5, 5], notably ignoring the negative weights.
-            This highlights an important limitation to the
-            weighted averaged method, as it does not
-            handle negative values well.
-
-            On the other hand, consider changing the maps
-            weights to
-
-            ::
-
-                data = np.array([1, 1, 5, 5])
-                maps = np.array([[0, 1],
-                                 [0, 2],
-                                 [1, 0],
-                                 [1, 0]])
-
-                ls_sol = [5. , 0.6]
-                average_sol = [5, 1]
-
-            In this case, we can see that the weighted
-            average gives a maybe more intuative summary
-            of the regions. In general, it depends on
-            what signal you are trying to summarize, and
-            how you are trying to summarize it.
-
-        mask : None, str or array-like, optional
-            This parameter allows you to optional pass a mask of values in
-            which to not calculate ROI values for.
-            This can be passed as a str or
-            array-like of values (just like maps),
-            and should be comprised of
-            a boolean array (or 1's and 0's),
-            where a value of 1 means that value
-            will be ignored (set to 0)
-            should be kept, and a value of 0,
-            for that value should be masked away.
-            This array should have the same length as the passed `maps`.
-            Specifically, where the shape of maps is (size, n_maps),
-            the shape of mask should be (size).
-
-            ::
-
-                default = None
-
-        vectorize : bool, optional
-            If the returned array should be flattened to 1D. E.g., if this is
-            the last step in a set of loader steps this should be True.
-            Also note, if the surface data it is being applied to is 1D,
-            then the output will be 1D regardless of this parameter.
-
-            ::
-
-                default = True
-        '''
-
         self.maps = maps
         self.strategy = strategy
         self.mask = mask
         self.vectorize = vectorize
 
     def fit(self, X, y=None):
+        '''Fit this object according
+        the passed subjects data, X.
+
+        Parameters
+        ----------
+        X : numpy.array
+            numpy.array as either a 1D array,
+            or a 2D array, where one dimension
+            is matches the shape of the past
+            labels and the other represents
+            different time-points or modalities.
+
+        y : numpy.array, optional
+            This parameter is skipped.
+
+            ::
+
+                default = None
+        '''
 
         # Load mask if any
         self.mask_ = load_surf(self.mask)
@@ -466,6 +657,32 @@ class SurfMaps(BaseEstimator, TransformerMixin):
         return self
 
     def fit_transform(self, X, y=None):
+        '''Fit, then transform this object.
+
+        Parameters
+        ----------
+        X : numpy.array
+            numpy.array as either a 1D array,
+            or a 2D array, where one dimension
+            is matches the shape of the past
+            labels and the other represents
+            different time-points or modalities.
+
+        y : numpy.array, optional
+            This parameter is skipped.
+
+            ::
+
+                default = None
+
+        Returns
+        ---------
+        X_trans : numpy.array
+            The transformed data, either as 1D
+            array is passed 1D data, or 2D if passed
+            vectorize=False and originally 2D data.
+        '''
+
         return self.fit(X, y).transform(X)
 
     def _check_fitted(self):
@@ -474,6 +691,33 @@ class SurfMaps(BaseEstimator, TransformerMixin):
                              'You must call fit() before calling transform()')
 
     def transform(self, X):
+        '''Transform this the passed data.
+
+        If X has the both the same dimension's, raise warning.
+
+        Parameters
+        ----------
+        X : numpy.array
+            numpy.array as either a 1D array,
+            or a 2D array, where one dimension
+            is matches the shape of the past
+            labels and the other represents
+            different time-points or modalities.
+
+        y : numpy.array, optional
+            This parameter is skipped.
+
+            ::
+
+                default = None
+
+        Returns
+        ---------
+        X_trans : numpy.array
+            The transformed data, either as 1D
+            array is passed 1D data, or 2D if passed
+            vectorize=False and originally 2D data.
+        '''
 
         self._check_fitted()
 
@@ -543,6 +787,24 @@ class SurfMaps(BaseEstimator, TransformerMixin):
         return np.array(X_trans).T
 
     def inverse_transform(self, X_trans):
+        '''Reverse the original transformation.
+
+        Parameters
+        ----------
+        X_trans : numpy.array
+            Data with the same number of outputted
+            features as data transformed
+            by this object, e.g., the original
+            transformed data or corresponding
+            feature importances.
+
+        Returns
+        --------
+        X : numpy.array
+            The reverse transformed data
+            passed back in its original space.
+
+        '''
 
         # Reverse the vectorize, if needed
         if self.vectorize:

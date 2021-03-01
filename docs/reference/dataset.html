@@ -1,0 +1,654 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dataset &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BPt.Dataset" href="api/BPt.Dataset.html" />
+    <link rel="prev" title="API reference" href="index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../index.html">
+    
+      <img src="../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+          
+            
+  
+                <li class="active">
+                    <a href="">Dataset</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.html">BPt.Dataset</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.get_cols.html">BPt.Dataset.get_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.get_subjects.html">BPt.Dataset.get_subjects</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.get_values.html">BPt.Dataset.get_values</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.add_scope.html">BPt.Dataset.add_scope</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.remove_scope.html">BPt.Dataset.remove_scope</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.set_role.html">BPt.Dataset.set_role</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.set_roles.html">BPt.Dataset.set_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.copy.html">BPt.Dataset.copy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.auto_detect_categorical.html">BPt.Dataset.auto_detect_categorical</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.get_train_Xy.html">BPt.Dataset.get_train_Xy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.get_test_Xy.html">BPt.Dataset.get_test_Xy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.to_binary.html">BPt.Dataset.to_binary</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.binarize.html">BPt.Dataset.binarize</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.k_bin.html">BPt.Dataset.k_bin</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.ordinalize.html">BPt.Dataset.ordinalize</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.nan_to_class.html">BPt.Dataset.nan_to_class</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.copy_as_non_input.html">BPt.Dataset.copy_as_non_input</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.filter_outliers_by_std.html">BPt.Dataset.filter_outliers_by_std</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.filter_outliers_by_percent.html">BPt.Dataset.filter_outliers_by_percent</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.filter_categorical_by_percent.html">BPt.Dataset.filter_categorical_by_percent</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.drop_cols.html">BPt.Dataset.drop_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.drop_nan_subjects.html">BPt.Dataset.drop_nan_subjects</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.drop_subjects_by_nan.html">BPt.Dataset.drop_subjects_by_nan</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.drop_cols_by_unique_val.html">BPt.Dataset.drop_cols_by_unique_val</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.drop_cols_by_nan.html">BPt.Dataset.drop_cols_by_nan</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.drop_id_cols.html">BPt.Dataset.drop_id_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.drop_duplicate_cols.html">BPt.Dataset.drop_duplicate_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.apply_inclusions.html">BPt.Dataset.apply_inclusions</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.apply_exclusions.html">BPt.Dataset.apply_exclusions</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.plot.html">BPt.Dataset.plot</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.show.html">BPt.Dataset.show</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.show_nan_info.html">BPt.Dataset.show_nan_info</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.info.html">BPt.Dataset.info</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.set_test_split.html">BPt.Dataset.set_test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.set_train_split.html">BPt.Dataset.set_train_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.save_test_split.html">BPt.Dataset.save_test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.save_train_split.html">BPt.Dataset.save_train_split</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pipeline.html">Pipelines</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pipeline_pieces.html">Pipeline Pieces</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="problem_spec.html">ProblemSpec</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="CV.html">CV</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="input_operations.html">Input Operations</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="dists.html">Parameter Distributions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="evaluate.html">Evaluate Functions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="extensions.html">Extension Classes</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#constructor" class="nav-link">Constructor</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#base" class="nav-link">Base</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#encoding" class="nav-link">Encoding</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#filtering-drop" class="nav-link">Filtering & Drop</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#plotting-viewing" class="nav-link">Plotting / Viewing</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#dataset-test-split-methods" class="nav-link">Dataset - Test Split Methods</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="dataset">
+<span id="api-dataset"></span><h1>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="constructor">
+<h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset</span></code></a>([data, index, columns, dtype, copy])</p></td>
+<td><p>The BPt Dataset class is the main class used for preparing data into a compatible format to work with machine learning.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="base">
+<h2>Base<a class="headerlink" href="#base" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.get_cols.html#BPt.Dataset.get_cols" title="BPt.Dataset.get_cols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_cols</span></code></a>(scope[, limit_to])</p></td>
+<td><p>This method is the main internal and external facing way of getting the names of columns which match a passed scope from the Dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.get_subjects.html#BPt.Dataset.get_subjects" title="BPt.Dataset.get_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_subjects</span></code></a>(subjects[, return_as, …])</p></td>
+<td><p>Method to get a set of subjects, from a set of already loaded ones, or from a saved location.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.get_values.html#BPt.Dataset.get_values" title="BPt.Dataset.get_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_values</span></code></a>(col[, dropna, …])</p></td>
+<td><p>This method is used to obtain the either normally loaded and stored values from a passed column, or in the case of a data file column, the data file proxy values will be loaded.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.add_scope.html#BPt.Dataset.add_scope" title="BPt.Dataset.add_scope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.add_scope</span></code></a>(scope, scope_val[, inplace])</p></td>
+<td><p>This method is designed as helper for adding a new scope val to a number of columns at once, using the existing scope system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.remove_scope.html#BPt.Dataset.remove_scope" title="BPt.Dataset.remove_scope"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.remove_scope</span></code></a>(scope, scope_val[, inplace])</p></td>
+<td><p>This method is used for removing scopes from an existing column or subset of columns, as selected by the scope parameter.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.set_role.html#BPt.Dataset.set_role" title="BPt.Dataset.set_role"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.set_role</span></code></a>(scope, role[, inplace])</p></td>
+<td><p>This method is used to set a role for either a single column or multiple, as set through the scope parameter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.set_roles.html#BPt.Dataset.set_roles" title="BPt.Dataset.set_roles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.set_roles</span></code></a>(scopes_to_roles[, inplace])</p></td>
+<td><p>This method is used to set multiple roles across multiple scopes as specified by a passed dictionary with keys as scopes and values as the role to set for all columns corresponding to that scope.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.get_roles.html#BPt.Dataset.get_roles" title="BPt.Dataset.get_roles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_roles</span></code></a>()</p></td>
+<td><p>This function can be used to get a dictionary with the currently loaded roles, See <a class="reference internal" href="../user_guide/role.html#role"><span class="std std-ref">Role</span></a> for more information on how roles are defined and used within BPt.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.add_data_files.html#BPt.Dataset.add_data_files" title="BPt.Dataset.add_data_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.add_data_files</span></code></a>(files, file_to_subject)</p></td>
+<td><p>This method is the main way of adding columns of type ‘data file’ to the Dataset class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.get_file_mapping.html#BPt.Dataset.get_file_mapping" title="BPt.Dataset.get_file_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_file_mapping</span></code></a>()</p></td>
+<td><p>This function is used to access the up to date file mapping.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.copy.html#BPt.Dataset.copy" title="BPt.Dataset.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.copy</span></code></a>([deep])</p></td>
+<td><p>Creates and returns a dopy of this dataset, either a deep copy or shallow.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.auto_detect_categorical.html#BPt.Dataset.auto_detect_categorical" title="BPt.Dataset.auto_detect_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.auto_detect_categorical</span></code></a>([scope, …])</p></td>
+<td><p>This function will attempt to automatically add scope “category” to any loaded categorical variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.get_Xy.html#BPt.Dataset.get_Xy" title="BPt.Dataset.get_Xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_Xy</span></code></a>([problem_spec])</p></td>
+<td><p>This function is used to get a sklearn-style grouping of input data (X) and target data (y) from the Dataset as according to a passed problem_spec.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.get_train_Xy.html#BPt.Dataset.get_train_Xy" title="BPt.Dataset.get_train_Xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_train_Xy</span></code></a>([problem_spec, subjects])</p></td>
+<td><p>This function is used to get a sklearn-style grouping of input data (X) and target data (y) from the Dataset for just the defined train set.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.get_test_Xy.html#BPt.Dataset.get_test_Xy" title="BPt.Dataset.get_test_Xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_test_Xy</span></code></a>([problem_spec, subjects])</p></td>
+<td><p>This function is used to get a sklearn-style grouping of input data (X) and target data (y) from the Dataset for just the defined test set.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="encoding">
+<h2>Encoding<a class="headerlink" href="#encoding" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.to_binary.html#BPt.Dataset.to_binary" title="BPt.Dataset.to_binary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.to_binary</span></code></a>(scope[, drop, inplace])</p></td>
+<td><p>This method works by setting all columns within scope to just two binary categories.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.binarize.html#BPt.Dataset.binarize" title="BPt.Dataset.binarize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.binarize</span></code></a>(scope, threshold[, …])</p></td>
+<td><p>This method contains a utilities for binarizing a variable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.k_bin.html#BPt.Dataset.k_bin" title="BPt.Dataset.k_bin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.k_bin</span></code></a>(scope[, n_bins, strategy, inplace])</p></td>
+<td><p>This method is used to apply k binning to a column, or columns.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.ordinalize.html#BPt.Dataset.ordinalize" title="BPt.Dataset.ordinalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.ordinalize</span></code></a>(scope[, nan_to_class, …])</p></td>
+<td><p>This method is used to ordinalize a group of columns.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.nan_to_class.html#BPt.Dataset.nan_to_class" title="BPt.Dataset.nan_to_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.nan_to_class</span></code></a>([scope, inplace])</p></td>
+<td><p>This method will cast any columns that were not categorical that are passed here to categorical.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.copy_as_non_input.html#BPt.Dataset.copy_as_non_input" title="BPt.Dataset.copy_as_non_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.copy_as_non_input</span></code></a>(col, new_col[, …])</p></td>
+<td><p>This method is a used for making a copy of an existing column, ordinalizing it and then setting it to have role = non input.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.add_unique_overlap.html#BPt.Dataset.add_unique_overlap" title="BPt.Dataset.add_unique_overlap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.add_unique_overlap</span></code></a>(cols, new_col[, …])</p></td>
+<td><p>This function is designed to add a new column with the overlapped unique values from passed two or more columns.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="filtering-drop">
+<h2>Filtering &amp; Drop<a class="headerlink" href="#filtering-drop" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.filter_outliers_by_std.html#BPt.Dataset.filter_outliers_by_std" title="BPt.Dataset.filter_outliers_by_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.filter_outliers_by_std</span></code></a>([n_std, …])</p></td>
+<td><p>This method is designed to allow dropping outliers from the requested columns based on comparisons with that columns standard deviation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.filter_outliers_by_percent.html#BPt.Dataset.filter_outliers_by_percent" title="BPt.Dataset.filter_outliers_by_percent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.filter_outliers_by_percent</span></code></a>([fop, …])</p></td>
+<td><p>This method is designed to allow dropping a fixed percent of outliers from the requested columns.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.filter_categorical_by_percent.html#BPt.Dataset.filter_categorical_by_percent" title="BPt.Dataset.filter_categorical_by_percent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.filter_categorical_by_percent</span></code></a>([…])</p></td>
+<td><p>This method is designed to allow performing outlier filting on categorical type variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.drop_cols.html#BPt.Dataset.drop_cols" title="BPt.Dataset.drop_cols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.drop_cols</span></code></a>([exclusions, inclusions, …])</p></td>
+<td><p>This method is designed to allow dropping columns based on some flexible arguments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.drop_nan_subjects.html#BPt.Dataset.drop_nan_subjects" title="BPt.Dataset.drop_nan_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.drop_nan_subjects</span></code></a>(scope[, inplace])</p></td>
+<td><p>This method is used for dropping all of the subjects which have NaN values for a given scope / column.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.drop_subjects_by_nan.html#BPt.Dataset.drop_subjects_by_nan" title="BPt.Dataset.drop_subjects_by_nan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.drop_subjects_by_nan</span></code></a>([threshold, …])</p></td>
+<td><p>This method is used for dropping subjects based on the amount of missing values found across a subset of columns as selected by scope.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.drop_cols_by_unique_val.html#BPt.Dataset.drop_cols_by_unique_val" title="BPt.Dataset.drop_cols_by_unique_val"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.drop_cols_by_unique_val</span></code></a>([threshold, …])</p></td>
+<td><p>This method will drop any columns with less than or equal to the number of unique values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.drop_cols_by_nan.html#BPt.Dataset.drop_cols_by_nan" title="BPt.Dataset.drop_cols_by_nan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.drop_cols_by_nan</span></code></a>([threshold, scope, …])</p></td>
+<td><p>This method is used for dropping columns based on the amount of missing values found across all subjects.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.drop_id_cols.html#BPt.Dataset.drop_id_cols" title="BPt.Dataset.drop_id_cols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.drop_id_cols</span></code></a>([scope, inplace])</p></td>
+<td><p>This method will drop any str-type / object type columns where the number of unique columns is equal to the length of the dataframe.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.drop_duplicate_cols.html#BPt.Dataset.drop_duplicate_cols" title="BPt.Dataset.drop_duplicate_cols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.drop_duplicate_cols</span></code></a>([scope, inplace])</p></td>
+<td><p>This method is used for checking to see if there are any columns loaded with duplicate values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.apply_inclusions.html#BPt.Dataset.apply_inclusions" title="BPt.Dataset.apply_inclusions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.apply_inclusions</span></code></a>(subjects[, inplace])</p></td>
+<td><p>This method will drop all subjects that do not overlap with the passed subjects to this function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.apply_exclusions.html#BPt.Dataset.apply_exclusions" title="BPt.Dataset.apply_exclusions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.apply_exclusions</span></code></a>(subjects[, inplace])</p></td>
+<td><p>This method will drop all subjects that overlap with the passed subjects to this function.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="plotting-viewing">
+<h2>Plotting / Viewing<a class="headerlink" href="#plotting-viewing" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.plot.html#BPt.Dataset.plot" title="BPt.Dataset.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.plot</span></code></a>(scope[, subjects, cut, …])</p></td>
+<td><p>This function creates plots for each of the passed columns (as specified by scope) seperately.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.show.html#BPt.Dataset.show" title="BPt.Dataset.show"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.show</span></code></a>(scope)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.show_nan_info.html#BPt.Dataset.show_nan_info" title="BPt.Dataset.show_nan_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.show_nan_info</span></code></a>(scope)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.info.html#BPt.Dataset.info" title="BPt.Dataset.info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.info</span></code></a>(scope)</p></td>
+<td><p>Print a concise summary of a DataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="dataset-test-split-methods">
+<h3>Dataset - Test Split Methods<a class="headerlink" href="#dataset-test-split-methods" title="Permalink to this headline">¶</a></h3>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.set_test_split.html#BPt.Dataset.set_test_split" title="BPt.Dataset.set_test_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.set_test_split</span></code></a>([size, subjects, …])</p></td>
+<td><p>Defines a set of subjects to be reserved as test subjects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.set_train_split.html#BPt.Dataset.set_train_split" title="BPt.Dataset.set_train_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.set_train_split</span></code></a>([size, subjects, …])</p></td>
+<td><p>Defines a set of subjects to be reserved as train subjects.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.save_test_split.html#BPt.Dataset.save_test_split" title="BPt.Dataset.save_test_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.save_test_split</span></code></a>(loc)</p></td>
+<td><p>Saves the currently defined test subjects in a text file with one subject / index per line.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.save_train_split.html#BPt.Dataset.save_train_split" title="BPt.Dataset.save_train_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.save_train_split</span></code></a>(loc)</p></td>
+<td><p>Saves the currently defined train subjects in a text file with one subject / index per line.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="index.html" title="previous page">API reference</a>
+    <a class='right-next' id="next-link" href="api/BPt.Dataset.html" title="next page">BPt.Dataset</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

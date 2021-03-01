@@ -1,0 +1,529 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BPt.ParamSearch &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BPt.ParamSearch.copy" href="BPt.ParamSearch.copy.html" />
+    <link rel="prev" title="BPt.Ensemble.set_params" href="BPt.Ensemble.set_params.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../index.html">
+    
+      <img src="../../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="../dataset.html">Dataset</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline.html">Pipelines</a>
+                </li>
+            
+          
+            
+  
+                <li class="active">
+                    <a href="../pipeline_pieces.html">Pipeline Pieces</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="BPt.Loader.html">BPt.Loader</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Imputer.html">BPt.Imputer</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Scaler.html">BPt.Scaler</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Transformer.html">BPt.Transformer</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.FeatSelector.html">BPt.FeatSelector</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Model.html">BPt.Model</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Ensemble.html">BPt.Ensemble</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="">BPt.ParamSearch</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../problem_spec.html">ProblemSpec</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../CV.html">CV</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../input_operations.html">Input Operations</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../dists.html">Parameter Distributions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../evaluate.html">Evaluate Functions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="bpt-paramsearch">
+<h1>BPt.ParamSearch<a class="headerlink" href="#bpt-paramsearch" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="BPt.ParamSearch">
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">ParamSearch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">search_type</span><span class="o">=</span><span class="default_value">'RandomSearch'</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">n_iter</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">scorer</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">weight_scorer</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mp_context</span><span class="o">=</span><span class="default_value">'loky'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">dask_ip</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">memmap_X</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">search_only_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">progress_loc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L1136-L1437"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.ParamSearch" title="Permalink to this definition">¶</a></dt>
+<dd><p>ParamSearch is special input object designed to be
+used with <a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> pr <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>.
+ParamSearch defines a hyperparameter search strategy.
+When passed to <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>,
+its search strategy is applied in the context of any set <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">Params</span></a>
+within the base pieces.
+Specifically, there must be at least one parameter search
+somewhere in the object ParamSearch is passed!</p>
+<p>All backend hyper-parameter searches make use of the
+&lt;<a class="reference external" href="https://github.com/facebookresearch/nevergrad">https://github.com/facebookresearch/nevergrad</a>&gt;`_ library.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>search_type</strong><span class="classifier">str, optional</span></dt><dd><p>The type of nevergrad hyper-parameter search to conduct. See
+<a class="reference internal" href="../../options/search_type_options/index.html#search-type-options"><span class="std std-ref">Search Types</span></a> for all avaliable options.
+Also you may further look into
+nevergrad’s experimental variants if you so choose,
+this parameter can accept
+those as well.</p>
+<p>New: You may pass ‘grid’ here in addition to the
+supported nevergrad searches. This will use sklearn’s
+GridSearch. Note in this case some of the other parameters
+are ignored, these are: weight_scorer, mp_context, dask_ip,
+memmap_X, search_only_params</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;RandomSearch&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>cv</strong><span class="classifier"><a class="reference internal" href="BPt.CV.html#BPt.CV" title="BPt.CV"><code class="xref py py-class docutils literal notranslate"><span class="pre">CV</span></code></a> or ‘default’, optional</span></dt><dd><p>This parameter defines the splits to be used
+internally
+&#64;TODO finish writing this doc</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>n_iter</strong><span class="classifier">int, optional</span></dt><dd><p>The number of hyper-parameters to try / budget
+of the underlying search algorithm.
+How well a hyper-parameter search works and how long
+it takes will be very dependent on this parameter
+and the defined internal CV strategy
+(via <cite>splits</cite> and <cite>n_repeats</cite>). In general, if too few
+choices are provided
+the algorithm will likely not select high
+performing hyperparameters, and alternatively
+if too high a value/budget is
+set, then you may find overfit/non-generalize
+hyper-parameter choices. Other factors which will influence
+the ‘right’ number of <cite>n_iter</cite> to specify are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><cite>search_type</cite></dt><dd><p>Depending on the underlying search type, it may
+take a bigger or smaller budget
+on average to find a good set of hyper-parameters</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>The dimension of the underlying search space</dt><dd><p>If you are only optimizing a few, say 2,
+underlying parameter distributions,
+this will require a far smaller budget then say a really
+high dimensional search space.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>The CV strategy</dt><dd><p>The CV strategy defined via <cite>splits</cite> and <cite>n_repeats</cite>
+may make it easier or harder to overfit when searching
+for hyper-parameters, thus conceptually
+a good choice of CV strategy can serve to increase
+the number <cite>n_iter</cite> you can use
+before overfitting, or conversely a bad choice may limit it.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Number of data points / subjects</dt><dd><p>Along with CV strategy, the number of data points/subjects
+will greatly influence
+how quickly you overfit, and therefore a
+good choice of <cite>n_iter</cite>.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Notably, one can always if they have the resources
+simply experiment with this parameter.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>scorer</strong><span class="classifier">str or ‘default’, optional</span></dt><dd><p>In order for a set of hyper-parameters to be evaluated,
+a single scorer must be defined.</p>
+<p>For a full list of supported scorers please view the
+scikit-learn docs at:
+<a class="reference external" href="https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules">https://scikit-learn.org/stable/modules/model_evaluation.html#the-scoring-parameter-defining-model-evaluation-rules</a></p>
+<p>If left as ‘default’, assign a reasonable scorer based on the
+passed problem type.</p>
+<ul class="simple">
+<li><p>‘regression’  : ‘explained_variance’</p></li>
+<li><p>‘binary’      : ‘matthews’</p></li>
+<li><p>‘categorical’ : ‘matthews’</p></li>
+</ul>
+<p>Be careful to make sure to select an appropriate scorer for
+the problem type.</p>
+<p>Only one value of <cite>scorer</cite> may be passed here.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>weight_scorer</strong><span class="classifier">bool or ‘default’, optional</span></dt><dd><p><cite>weight_scorer</cite> describes if the scorer of interest
+should be weighted by
+the number of subjects within each validation fold.
+So, for example, if
+a leave-out-group CV scheme is specified to <cite>splits</cite>,
+and the groups have
+drastically different numbers of subjects,
+then you may want to consider
+weighting the final average validation metric
+(as computed across in this case
+all groups used by themselves) by the number
+of subjects in each fold.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>mp_context</strong><span class="classifier">str, optional</span></dt><dd><p>When a hyper-parameter search is launched, there are different
+ways through python that the multi-processing can be launched
+(assuming n_jobs &gt; 1). Occassionally some choices can lead to
+unexpected errors.</p>
+<p>Choices are:</p>
+<ul class="simple">
+<li><p>‘loky’: Create and use the python library loky backend.</p></li>
+<li><p>‘fork’: Python default fork mp_context</p></li>
+<li><p>‘forkserver’: Python default forkserver mp_context</p></li>
+<li><p>‘spawn’: Python default spawn mp_context</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;loky&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int or ‘default’, optional</span></dt><dd><p>The number of cores to be used for the
+search. In general, this parameter
+should be left as ‘default’, which will set it
+based on the n_jobs as set in the problem spec-
+and will attempt to automatically change this
+value if say in the context of nesting.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>random_state</strong><span class="classifier">int or ‘default’, optional</span></dt><dd><p>If left as ‘default’ will set to the value
+set in the ProblemSpec. Otherwise, can
+set a specific value here.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>dask_ip</strong><span class="classifier">str or None, optional</span></dt><dd><p>If None, default, then ignore this parameter..</p>
+<p>For experimental Dask support.
+This should be the ip of a created dask
+cluster. A dask Client object will be created
+and passed this ip in order to connect to the cluster.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>memmap_X</strong><span class="classifier">bool, optional</span></dt><dd><p>When passing large memory arrays in each parameter search,
+it can be useful as a memory reduction technique to pass
+numpy memmap’ed arrays. This solves an issue where
+the loky backend will not properly pass too large arrays.</p>
+<p>Warning: This can slow down code, and only reduces the actual
+memory consumption of each job by a little bit.</p>
+<p>Note: If passing a dask_ip, this option will be skipped,
+as if using the dask backend, then large X’s will be
+pre-scattered instead.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>search_only_params</strong><span class="classifier">dict or None, optional</span></dt><dd><p>In some rare cases, it may be the case that you want
+to specify that certain parameters be passed only during
+the nested parameter searches. A dict of parameters
+can be passed here to accomplish that. For example,
+if passing:</p>
+<p>search_only_params = {‘svm classifier__probability’: False}</p>
+<p>And assuming that the default / selecting parameter for this svm
+classifier for probability is True by default,
+then only when exploring
+nested hyper-parameter options will
+probability be set to False, but
+when fitting the final model with the best
+parameters found from the search,
+it will revert back to the default,
+i.e., in this case probability = True.</p>
+<p>Note: this may be a little bit tricky to use as
+you need to know how to represent the parameters correctly!</p>
+<p>To ignore this parameter / option.
+simply keep the default value of None</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">int, optional</span></dt><dd><p>Controls the verbosity: the higher, the more messages.
+By default, no verbosity, i.e., 0.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>progress_loc</strong><span class="classifier">None or str, optional</span></dt><dd><p>Optional parameter, will append to a text file
+after every completed tested parameter.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.ParamSearch.copy.html#BPt.ParamSearch.copy" title="BPt.ParamSearch.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>This method returns a deepcopy of the base object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.ParamSearch.get_params.html#BPt.ParamSearch.get_params" title="BPt.ParamSearch.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</p></td>
+<td><p>Get parameters for this estimator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.ParamSearch.set_params.html#BPt.ParamSearch.set_params" title="BPt.ParamSearch.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
+<td><p>Set the parameters of this estimator.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="BPt.Ensemble.set_params.html" title="previous page">BPt.Ensemble.set_params</a>
+    <a class='right-next' id="next-link" href="BPt.ParamSearch.copy.html" title="next page">BPt.ParamSearch.copy</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

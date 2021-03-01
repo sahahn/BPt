@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pipeline Options &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Loaders" href="loaders.html" />
+    <link rel="prev" title="Default Options" href="../index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../index.html">
+    
+      <img src="../../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../reference/index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+        
+        
+          
+            
+  
+                <li class="active">
+                    <a href="">Pipeline Options</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="loaders.html">Loaders</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="imputers.html">Imputers</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="scalers.html">Scalers</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="transformers.html">Transformers</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="selectors.html">Feat Selectors</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="models.html">Models</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="ensembles.html">Ensemble Types</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="scorers.html">Scorers</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../search_type_options/index.html">Search Type Options</a>
+                </li>
+            
+          
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="pipeline-options">
+<span id="id1"></span><h1>Pipeline Options<a class="headerlink" href="#pipeline-options" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="loaders.html">Loaders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#identity">“identity”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#surface-rois">“surface rois”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#volume-rois">“volume rois”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders.html#connectivity">“connectivity”</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="imputers.html">Imputers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="imputers.html#mean">“mean”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imputers.html#median">“median”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imputers.html#most-frequent">“most frequent”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imputers.html#constant">“constant”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imputers.html#iterative">“iterative”</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="scalers.html">Scalers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scalers.html#standard">“standard”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalers.html#minmax">“minmax”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalers.html#maxabs">“maxabs”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalers.html#robust">“robust”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalers.html#yeo">“yeo”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalers.html#boxcox">“boxcox”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalers.html#winsorize">“winsorize”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalers.html#quantile-norm">“quantile norm”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalers.html#quantile-uniform">“quantile uniform”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalers.html#normalize">“normalize”</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="transformers.html">Transformers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#pca">“pca”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#sparse-pca">“sparse pca”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#mini-batch-sparse-pca">“mini batch sparse pca”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#factor-analysis">“factor analysis”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#dictionary-learning">“dictionary learning”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#mini-batch-dictionary-learning">“mini batch dictionary learning”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#fast-ica">“fast ica”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#incremental-pca">“incremental pca”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#kernel-pca">“kernel pca”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#nmf">“nmf”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#truncated-svd">“truncated svd”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#one-hot-encoder">“one hot encoder”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformers.html#dummy-coder">“dummy coder”</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="selectors.html">Feat Selectors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="selectors.html#binary">binary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="selectors.html#regression">regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="selectors.html#categorical">categorical</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models.html#binary">binary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#regression">regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#categorical">categorical</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ensembles.html">Ensemble Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ensembles.html#binary">binary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensembles.html#regression">regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensembles.html#categorical">categorical</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scorers.html#binary">binary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scorers.html#regression">regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scorers.html#categorical">categorical</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="../index.html" title="previous page">Default Options</a>
+    <a class='right-next' id="next-link" href="loaders.html" title="next page">Loaders</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

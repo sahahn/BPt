@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BPt.Ensemble &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BPt.Ensemble.build" href="BPt.Ensemble.build.html" />
+    <link rel="prev" title="BPt.Model.set_params" href="BPt.Model.set_params.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../index.html">
+    
+      <img src="../../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="../dataset.html">Dataset</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline.html">Pipelines</a>
+                </li>
+            
+          
+            
+  
+                <li class="active">
+                    <a href="../pipeline_pieces.html">Pipeline Pieces</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="BPt.Loader.html">BPt.Loader</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Imputer.html">BPt.Imputer</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Scaler.html">BPt.Scaler</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Transformer.html">BPt.Transformer</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.FeatSelector.html">BPt.FeatSelector</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Model.html">BPt.Model</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="">BPt.Ensemble</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.ParamSearch.html">BPt.ParamSearch</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../problem_spec.html">ProblemSpec</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../CV.html">CV</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../input_operations.html">Input Operations</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../dists.html">Parameter Distributions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../evaluate.html">Evaluate Functions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="bpt-ensemble">
+<h1>BPt.Ensemble<a class="headerlink" href="#bpt-ensemble" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="BPt.Ensemble">
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Ensemble</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">models</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">param_search</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_scaler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">base_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">single_estimator</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">n_jobs_type</span><span class="o">=</span><span class="default_value">'ensemble'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L917-L1133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Ensemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Ensemble object is valid base
+<a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> (or <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>) piece, designed
+to be passed as input to the <cite>model</cite> parameter
+of <a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a>, or
+to its own models parameters.</p>
+<p>This class is used to create a variety ensembled models,
+typically based on
+<a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> pieces.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>obj</strong><span class="classifier">str</span></dt><dd><p>Each str passed to ensemble refers to a type of ensemble to train,
+based on also the passed input to the <cite>models</cite> parameter,
+and also the
+additional parameters passed when initializing Ensemble.</p>
+<p>See <a class="reference internal" href="../../options/pipeline_options/ensembles.html#ensemble-types"><span class="std std-ref">Ensemble Types</span></a> to see all
+avaliable options for ensembles.</p>
+<p>Passing custom objects here, while technically possible,
+is not currently full supported.
+That said, there are just certain assumptions that
+the custom object must meet in order to work, specifically,
+they should have similar input params to other similar existing
+ensembles, e.g., in the case the <cite>single_estimator</cite> is False
+and <cite>needs_split</cite> is also False, then the passed object needs
+to be able to accept an input parameter <cite>estimators</cite>,
+which accepts a list of (str, estimator) tuples.
+Whereas if needs_split is still False,
+but single_estimator is True, then the passed object needs
+to support an init param of <cite>base_estimator</cite>,
+which accepts a single estimator.</p>
+</dd>
+<dt><strong>models</strong><span class="classifier"><a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, <a class="reference internal" href="#BPt.Ensemble" title="BPt.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ensemble</span></code></a> or list of</span></dt><dd><p>The <cite>models</cite> parameter is designed to accept any single model-like
+pipeline parameter object, i.e.,
+<a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> or even another <a class="reference internal" href="#BPt.Ensemble" title="BPt.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ensemble</span></code></a>.
+The passed pieces here will be used along with the
+requested ensemble object to
+create the requested ensemble.</p>
+<p>See <a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> for how to create a valid base model(s)
+to pass as input here.</p>
+</dd>
+<dt><strong>params</strong><span class="classifier">int, str or dict of <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">params</span></a>, optional</span></dt><dd><p><cite>params</cite> sets as associated distribution of hyper-parameters
+for this ensemble object. These parameters will be used only
+in the context of a hyper-parameter search.
+Notably, these <cite>params</cite> refer to the ensemble obj itself,
+params for base <cite>models</cite> should be passed
+accordingly when creating the base models.
+Preset param distributions are listed at <a class="reference internal" href="../../options/pipeline_options/ensembles.html#ensemble-types"><span class="std std-ref">Ensemble Types</span></a>,
+under each of the options for ensemble objs.</p>
+<p>You can read more about generally about
+hyper-parameter distributions as associated with
+objects at <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">Params</span></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a>, optional</span></dt><dd><p><cite>scope</cite> determines on which subset of features the specified
+ensemble model
+should work on. See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more
+information on how scopes can
+be specified.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>param_search</strong><span class="classifier"><a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, None, optional</span></dt><dd><p>If None, by default, this will be a base ensemble model.
+Alternatively, by passing a <a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a> instance here,
+it specifies that this model should be wrapped in a
+Nevergrad hyper-parameter search object.</p>
+<p>This can be useful to create Model’s which have
+a nested hyper-parameter tuning independent from the
+other pipeline steps.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>target_scaler</strong><span class="classifier">Scaler, None, optional</span></dt><dd><p>Still somewhat experimental, can pass
+a Scaler object here and have this model
+perform target scaling + reverse scaling.</p>
+<p>scope in the passed scaler is ignored.</p>
+<p>Note: Has not been fully tested in
+complicated nesting cases, e.g., if Model is
+wrapping a nested Pipeline, this param will
+likely break.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>base_model</strong><span class="classifier"><a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, None, optional</span></dt><dd><p>In the case that an ensemble is passed which has
+the parameter <cite>final_estimator</cite> (not base model!),
+for example in the case of stacking,
+then you may pass a Model type
+object here to be used as that final estimator.</p>
+<p>Otherwise, by default this will be left as None,
+and if the requested ensemble has the final_estimator
+parameter, then it will pass None to the object
+(which is typically for setting the default).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>cv</strong><span class="classifier"><a class="reference internal" href="BPt.CV.html#BPt.CV" title="BPt.CV"><code class="xref py py-class docutils literal notranslate"><span class="pre">CV</span></code></a> or None, optional</span></dt><dd><p>Used for passing custom nested internal CV split behavior to
+ensembles which employ splits, e.g., stacking.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>single_estimator</strong><span class="classifier">bool, optional</span></dt><dd><p>The parameter <cite>single_estimator</cite> is used to let the
+Ensemble object know if the <cite>models</cite> must be a single estimator.
+This is used for ensemble types
+that requires an init param <cite>base_estimator</cite>.
+In the case that multiple models
+are passed to <cite>models</cite>, but <cite>single_estimator</cite> is True,
+then the models will automatically
+be wrapped in a voting ensemble,
+thus creating one single estimator.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>n_jobs_type</strong><span class="classifier">‘ensemble’ or ‘models’, optional</span></dt><dd><p>Valid options are either ‘ensemble’ or ‘models’.</p>
+<p>This parameter controls how the total n_jobs are distributed, if
+‘ensemble’, then the n_jobs will be used all in the ensemble object
+and every instance within the sub-models set to n_jobs = 1.
+Alternatively, if passed ‘models’, then the ensemble
+object will not be multi-processed, i.e.,
+will be set to n_jobs = 1, and the n_jobs will
+be distributed to each base model.</p>
+<p>If you are training a stacking regressor for example
+with n_jobs = 16, and you have 16+ models, then ‘ensemble’
+is likely a good choice here. If instead you have only
+3 base models, and one or more of those 3 could benefit from
+a higher n_jobs, then setting n_jobs_type to ‘models’ might
+give a speed-up.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;ensemble&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>extra_params</strong><span class="classifier"><a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a></span></dt><dd><p>See <a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a></p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Ensemble.build.html#BPt.Ensemble.build" title="BPt.Ensemble.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>(dataset[, problem_spec])</p></td>
+<td><p>This method is used to convert a single pipeline piece into the base sklearn style object used in the pipeline.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Ensemble.copy.html#BPt.Ensemble.copy" title="BPt.Ensemble.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>This method returns a deepcopy of the base object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Ensemble.get_params.html#BPt.Ensemble.get_params" title="BPt.Ensemble.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</p></td>
+<td><p>Get parameters for this estimator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Ensemble.set_params.html#BPt.Ensemble.set_params" title="BPt.Ensemble.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
+<td><p>Set the parameters of this estimator.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="BPt.Model.set_params.html" title="previous page">BPt.Model.set_params</a>
+    <a class='right-next' id="next-link" href="BPt.Ensemble.build.html" title="next page">BPt.Ensemble.build</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

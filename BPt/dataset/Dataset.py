@@ -1609,9 +1609,14 @@ class Dataset(pd.DataFrame):
             by the passed problem_spec.
         '''
 
+        try:
+            ps_subjects = problem_spec.subjects
+        except AttributeError:
+            ps_subjects = 'all'
+
         return self.get_Xy(problem_spec,
                            subjects=Intersection([subjects,
-                                                  problem_spec.subjects]),
+                                                  ps_subjects]),
                            **problem_spec_params)
 
     def get_test_Xy(self, problem_spec='default', subjects='test',
@@ -1679,9 +1684,15 @@ class Dataset(pd.DataFrame):
             Series with the the test target values as requested
             by the passed problem_spec.
         '''
+
+        try:
+            ps_subjects = problem_spec.subjects
+        except AttributeError:
+            ps_subjects = 'all'
+
         return self.get_Xy(problem_spec,
                            subjects=Intersection([subjects,
-                                                  problem_spec.subjects]),
+                                                  ps_subjects]),
                            **problem_spec_params)
 
     def _repr_html_(self):

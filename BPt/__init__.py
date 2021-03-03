@@ -11,6 +11,7 @@ from .main.funcs import (get_estimator, cross_validate,
 
 from .main.input_operations import (Select, Duplicate, Pipe, Value_Subset,
                                     Intersection)
+from .main.BPtEvaluator import BPtEvaluator
 from . import p
 
 __author__ = "sahahn"
@@ -23,4 +24,5 @@ __all__ = ["Dataset", "Loader",
            "Duplicate", "Pipe", "Value_Subset",
            "CV", "CVStrategy", "Intersection",
            "cross_validate", "cross_val_score", "evaluate",
-           'p', "Feat_Selector", 'ModelPipeline', 'Pipeline']
+           'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',
+           'BPtEvaluator']

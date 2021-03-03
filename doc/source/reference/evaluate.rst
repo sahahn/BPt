@@ -3,10 +3,21 @@
 .. _api.evaluate:
 
 ===================
-Evaluate Functions
+Evaluate
 ===================
 
 .. currentmodule:: BPt
+
+Get Estimator
+~~~~~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: api/
+
+   get_estimator
+
+Evaluate Functions
+~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api/
@@ -14,3 +25,12 @@ Evaluate Functions
    evaluate
    cross_validate
    cross_val_score
+
+
+BPt Evaluator
+~~~~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: api/
+
+   BPtEvaluator   

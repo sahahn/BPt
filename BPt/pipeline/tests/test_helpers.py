@@ -1,4 +1,5 @@
-from ..helpers import to_memmap, from_memmap, get_grid_params, is_ng
+from ..helpers import (to_memmap, from_memmap, get_grid_params,
+                       is_ng, update_mapping)
 import numpy as np
 import os
 from ...default.params.Params import Choice, TransitionChoice, Scalar
@@ -67,3 +68,46 @@ def test_is_ng():
     assert is_ng(ng.p.TransitionChoice([1, 2]))
     assert is_ng(ng.p.Scalar())
     assert is_ng(ng.p.Log(init=1))
+
+
+def test_update_mapping_base():
+
+    mapping = {1: 1}
+    new_mapping = {}
+
+    update_mapping(mapping, new_mapping)
+    assert mapping[1] == 1
+    assert len(mapping) == 1
+
+
+def test_update_mapping_simple():
+
+    mapping = {0: 0, 1: 1}
+    new_mapping = {0: 1, 1: 0}
+    update_mapping(mapping, new_mapping)
+
+    assert len(mapping) == 2
+    assert mapping[0] == 1
+    assert mapping[1] == 0
+
+
+def test_update_mapping_lists():
+
+    mapping = {0: [0, 1], 1: [2, 3]}
+    new_mapping = {1: [11], 2: [22]}
+    update_mapping(mapping, new_mapping)
+
+    # Sorts
+    assert mapping[0] == [0, 11]
+    assert mapping[1] == [3, 22]
+    assert len(mapping) == 2
+
+
+def test_update_mapping_none():
+
+    mapping = {0: None}
+    new_mapping = {0: 1}
+    update_mapping(mapping, new_mapping)
+
+    assert mapping[0] is None
+    assert len(mapping) == 1

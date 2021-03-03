@@ -2,7 +2,7 @@ from ...pipeline.BPtSearchCV import BPtGridSearchCV
 from ..input import ModelPipeline, Model, CV, Pipeline, Scaler, ParamSearch
 from ...dataset.Dataset import Dataset
 from ...default.params.Params import Choice
-from ..funcs import evaluate, cross_val_score
+from ..funcs import evaluate, cross_val_score, _sk_check_y
 from nose.tools import assert_raises
 import pandas as pd
 import numpy as np
@@ -19,6 +19,18 @@ def get_fake_dataset():
     fake = fake.set_role('3', 'target')
 
     return fake
+
+
+def test_sk_check_y():
+
+    # Make sure passes
+    y = pd.Series([1, 2, 3])
+    _sk_check_y(y)
+
+    # Fails
+    y = pd.Series([1, 2, np.nan])
+    with assert_raises(RuntimeError):
+        _sk_check_y(y)
 
 
 def test_evaluate_match_cross_val_score():

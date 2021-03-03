@@ -29,7 +29,6 @@ def is_ng(p):
 
 
 def get_grid_params(params):
-    print(params)
 
     # Set grid params
     grid_params = {}

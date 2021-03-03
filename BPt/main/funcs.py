@@ -1,6 +1,7 @@
 from .input import Model, Pipeline, ProblemSpec, CV
 from copy import deepcopy
 import numpy as np
+import pandas as pd
 from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..default.options.scorers import process_scorers
 from .BPtEvaluator import BPtEvaluator
@@ -151,6 +152,32 @@ def pipeline_check(pipeline, **extra_params):
     return pipe
 
 
+def _problem_spec_target_check(ps, dataset):
+
+    # Get target col from dataset, this also
+    # makes sure scopes and roles are updated.
+    targets = dataset.get_cols('target')
+
+    # Check for no targets
+    if len(targets) == 0:
+        raise IndexError('The passed Dataset is not valid. '
+                         'It must have atleast one target defined.')
+
+    # Update target, if passed as int, treat as index
+    if isinstance(ps.target, int):
+        try:
+            ps.target = targets[ps.target]
+        except IndexError:
+            raise IndexError('target index: ' + repr(ps.target) +
+                             ' is out of range, only ' + repr(len(targets)) +
+                             ' targets are defined.')
+
+    # If not int, then raise error if invalid or keep as is
+    if ps.target not in targets:
+        raise IndexError('Passed target: ' + repr(ps.target) + ' does ' +
+                         'not have role target or is not loaded.')
+
+
 def problem_spec_check(problem_spec, dataset, **extra_params):
 
     # If attr checked, then means the passed
@@ -175,22 +202,9 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
     # Proc params
     ps._proc_checks()
 
-    # Get target col from dataset
-    targets = dataset.get_cols('target')
-
-    # Update target, if passed as int
-    # otherwise assume correct
-    if isinstance(ps.target, int):
-        try:
-            ps.target = targets[ps.target]
-        except IndexError:
-            raise IndexError('target index: ' + repr(ps.target) +
-                             ' is out of range, only ' + repr(len(targets)) +
-                             ' targets are defined.')
-    else:
-        if ps.target not in targets:
-            raise IndexError('Passed target: ' + repr(ps.target) + ' does ' +
-                             'not have role target or is not loaded.')
+    # Get target col from dataset, sets target
+    # in ps in place.
+    _problem_spec_target_check(ps, dataset)
 
     # Replace problem_spec type w/ correct if passed short hands
     pt = ps.problem_type
@@ -219,10 +233,10 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
 
 @doc(**_base_docs)
 def get_estimator(pipeline, dataset,
-                  problem_spec='default', **extra_params):
+                  problem_spec='default',
+                  **extra_params):
     '''Get a sklearn compatible :ref:`estimator<develop>` from a
-    :class:`Pipeline` (or :class:`ModelPipeline`),
-    :class:`Dataset` and :class:`ProblemSpec`.
+    :class:`Pipeline`, :class:`Dataset` and :class:`ProblemSpec`.
 
     Parameters
     -----------
@@ -241,10 +255,48 @@ def get_estimator(pipeline, dataset,
         It will be either of type BPtPipeline or a BPtPipeline
         wrapped in a search CV object.
 
-    Notes
-    ------
-    This function can be used together with Dataset method
-    :func:`get_Xy <Dataset.get_Xy>` and it's variants.
+    Examples
+    ----------
+    This example shows how this function can be
+    used with Dataset method
+    :func:`get_Xy <Dataset.get_Xy>`.
+
+    First we will setup a dataset and a pipeline.
+
+    .. ipython:: python
+
+        import BPt as bp
+
+        data = bp.Dataset()
+        data['1'] = [1, 2, 3]
+        data['2'] = [2, 3, 4]
+        data['3'] = [5, 6, 7]
+        data.set_role('3', 'target', inplace=True)
+        data
+
+        pipeline = bp.Pipeline([bp.Scaler('standard'), bp.Model('linear')])
+        pipeline
+
+    Next we can use get_estimator and
+    also convert the dataset into a traditional sklearn-style
+    X, y input. Note that we are using just the default values
+    for problem spec.
+
+    .. ipython:: python
+
+        X, y = data.get_Xy()
+        X.shape, y.shape
+
+        estimator = bp.get_estimator(pipeline, data)
+
+    Now we can use this estimator as we would any other sklearn
+    style estimator.
+
+    .. ipython:: python
+
+        estimator.fit(X, y)
+        estimator.score(X, y)
+
     '''
 
     # @TODO add verbose option?
@@ -432,8 +484,8 @@ def _preproc_param_search(object, ps):
     return True
 
 
-def _sk_prep(pipeline, dataset, problem_spec='default',
-             cv=5, **extra_params):
+def _eval_prep(pipeline, dataset, problem_spec='default',
+               cv=5, **extra_params):
     '''Internal helper function return the different pieces
     needed by sklearn functions'''
 
@@ -490,6 +542,16 @@ def _sk_prep(pipeline, dataset, problem_spec='default',
     setattr(sk_cv, 'n_repeats', n_repeats)
 
     return estimator, X, y, ps, sk_cv
+
+
+def _sk_check_y(y):
+
+    if pd.isnull(y).any():
+        raise RuntimeError('NaNs are not supported with '
+                           'the sklearn compatable evaluate functions. '
+                           'See function evaluate instead, which supports '
+                           'missing target values, or drop subjects with '
+                           'missing target values from the dataset.')
 
 
 @doc(**_eval_docs)
@@ -561,8 +623,11 @@ def cross_val_score(pipeline, dataset,
 
     # Get sk compat pieces
     estimator, X, y, ps, sk_cv =\
-        _sk_prep(pipeline=pipeline, dataset=dataset,
-                 problem_spec=problem_spec, cv=cv, **extra_params)
+        _eval_prep(pipeline=pipeline, dataset=dataset,
+                   problem_spec=problem_spec, cv=cv, **extra_params)
+
+    # Make sure no NaN's in y
+    _sk_check_y(y)
 
     # Just take first scorer if dict
     if isinstance(ps.scorer, dict):
@@ -659,8 +724,11 @@ def cross_validate(pipeline, dataset,
 
     # Get sk compat pieces
     estimator, X, y, ps, sk_cv =\
-        _sk_prep(pipeline=pipeline, dataset=dataset,
-                 problem_spec=problem_spec, cv=cv, **extra_params)
+        _eval_prep(pipeline=pipeline, dataset=dataset,
+                   problem_spec=problem_spec, cv=cv, **extra_params)
+
+    # Make sure no NaN's in y.
+    _sk_check_y(y)
 
     from sklearn.model_selection import cross_validate
     return cross_validate(estimator=estimator, X=X, y=y, scoring=ps.scorer,
@@ -727,7 +795,9 @@ def evaluate(pipeline, dataset,
         check 'val_subjs' in the evaluator.
 
     store_estimators : bool, optional
-        Skip.
+        If True, then the returned :class:`BPtEstimator`
+        will store the fitted estimators from evaluation
+        under :data:`BPt.BPtEvaluator.estimators`
 
         ::
 
@@ -761,12 +831,21 @@ def evaluate(pipeline, dataset,
     cross_val_score : Similar sklearn style function.
     cross_validate : Similar sklearn style function.
 
+    Notes
+    ------
+    This function supports predictions on an underlying
+    target with missing values. It does this by automatically
+    moving any data points with a NaN in the target to the validation
+    set (keeping in mind this is done after the fold is computed by CV,
+    so final size may vary). While subjects with missing values will
+    obviously not contribute to the validation score, as long as `store_preds`
+    is set to True, predictions will still be made for these subjects.
     '''
 
     # Base process each component
     estimator, X, y, ps, sk_cv =\
-        _sk_prep(pipeline=pipeline, dataset=dataset,
-                 problem_spec=problem_spec, cv=cv, **extra_params)
+        _eval_prep(pipeline=pipeline, dataset=dataset,
+                   problem_spec=problem_spec, cv=cv, **extra_params)
 
     # Check decode feat_names arg
     encoders = None

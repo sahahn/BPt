@@ -1,4 +1,4 @@
-from autogluon import TabularPrediction as task
+from autogluon.tabular import TabularPredictor as task
 from sklearn.utils.validation import check_is_fitted
 from sklearn.base import BaseEstimator
 

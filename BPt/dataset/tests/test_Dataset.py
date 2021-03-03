@@ -610,6 +610,30 @@ def test_get_Xy_alt():
     assert np.array_equal(y, np.array([.2, .3]).astype('float64'))
 
 
+def test_get_Xy_train_default_ps():
+
+    df = get_fake_dataset()
+    df.set_role('3', 'target', inplace=True)
+    df.set_test_split(subjects=[0], inplace=True)
+
+    X, y = df.get_train_Xy()
+
+    assert X.shape == (2, 2)
+    assert len(y) == 2
+
+
+def test_get_Xy_test_default_ps():
+
+    df = get_fake_dataset()
+    df.set_role('3', 'target', inplace=True)
+    df.set_test_split(subjects=[0], inplace=True)
+
+    X, y = df.get_test_Xy()
+
+    assert X.shape == (1, 2)
+    assert len(y) == 1
+
+
 def test_invalid_names():
 
     df = Dataset()

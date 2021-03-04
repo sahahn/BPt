@@ -9,7 +9,7 @@ from ..helpers.ML_Helpers import conv_to_list
 from .helpers import (base_load_subjects, proc_file_input, verbose_print)
 from ..main.input_operations import Intersection, Value_Subset
 from pandas.util._decorators import doc
-import warnings
+import os
 
 # @TODO Look into pandas finalize
 # https://github.com/pandas-dev/pandas/blob/ce3e57b44932e7131968b9bcca97c1391cb6b532/pandas/core/generic.py#L5422
@@ -877,7 +877,7 @@ class Dataset(pd.DataFrame):
         for col in columns:
             saved_scopes.update(self.scopes[col])
 
-        # If int or flot, cast to str.
+        # If int or float, cast to str.
         if isinstance(scope, int) or isinstance(scope, float):
             scope = str(scope)
 
@@ -1053,7 +1053,7 @@ class Dataset(pd.DataFrame):
             valid when the passed col/column is a 'data file'.
             In that case, this specifies the number of cores
             to use in loading and applying the reduce_func to each
-            data file. This can provide a signifigant speed up when
+            data file. This can provide a significant speed up when
             passed the number of avaliable cores, but can sometimes
             be memory intensive depending on the underlying size of the file.
 
@@ -1450,10 +1450,56 @@ class Dataset(pd.DataFrame):
             # Set scope
             self.add_scope(file, 'data file', inplace=True)
 
+    def consolidate_data_files(self, save_dr, scope='data file',
+                               cast_to=None, replace_with=False):
+        '''Just save stacked datafiles.
+
+        If replace with, does in place'''
+
+        # @TODO clean up and add docstrings.
+
+        self._check_file_mapping()
+
+        # Make sure save_dr exists
+        os.makedirs(save_dr, exist_ok=True)
+
+        cols = self.get_cols(scope)
+
+        # @TODO re-write as multi-processed
+
+        # For each subj / data point
+        for index in self.index:
+
+            subj_data = []
+            for key in cols:
+                int_key = self.loc[index, key]
+                subj_data.append(self.file_mapping[int_key].load())
+
+            # Stack the subj data with extra columns at last axis
+            subj_data = np.stack(subj_data, axis=-1)
+
+            # Optional cast to dtype
+            if cast_to is not None:
+                subj_data = subj_data.astype(cast_to)
+
+            # Save as name of index in save loc
+            save_loc = os.path.join(save_dr, str(index) + '.npy')
+            np.save(save_loc, subj_data)
+
+        # If replace with
+        if replace_with is not None:
+
+            # Drop existing cols
+            self.drop(cols, axis=1, inplace=True)
+
+            # Add new
+            self.add_data_files({replace_with: os.listdir(save_dr)},
+                                file_to_subject='auto', inplace=True)
+
     def _get_next_ind(self):
 
         if len(self.file_mapping) > 0:
-            return np.nanmax(self.file_mapping.keys()) + 1
+            return np.nanmax(list(self.file_mapping.keys())) + 1
         else:
             return 0
 

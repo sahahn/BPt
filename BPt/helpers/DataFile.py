@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 
-class Data_File():
+class DataFile():
 
     def __init__(self, loc, load_func):
 
@@ -27,7 +27,7 @@ class Data_File():
         return hash(self.loc)
 
     def __deepcopy__(self, memo):
-        return Data_File(deepcopy(self.loc, memo), self.load_func)
+        return DataFile(deepcopy(self.loc, memo), self.load_func)
 
 
 def mp_load(files, reduce_funcs):

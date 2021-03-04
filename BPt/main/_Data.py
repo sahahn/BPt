@@ -10,8 +10,7 @@ import os
 from joblib import wrap_non_picklable_objects
 
 from ..helpers.VARS import is_f2b
-from ..helpers.Data_Scopes import Data_Scopes
-from ..helpers.Data_File import Data_File
+from ..helpers.DataFile import DataFile
 from ..helpers.Data_Helpers import (auto_data_type,
                                     process_binary_input,
                                     process_ordinal_input,
@@ -649,7 +648,7 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
         Data_Files represent a path to a saved file, which means you must
         also provide some information on how to load the saved file.
         This parameter is where that loading function should be passed.
-        The passed `load_func` will be used on each Data_File individually
+        The passed `load_func` will be used on each DataFile individually
         and whatever the output of the function is will be passed to
         `loaders` directly in modelling.
 
@@ -787,8 +786,8 @@ def Load_Data_Files(self, loc=None, df=None, files=None,
     for col in data:
         for subject in data.index:
 
-            data_file = Data_File(data.at[subject, col], wrapped_load_func)
-            file_mapping[cnt] = data_file
+            DataFile = DataFile(data.at[subject, col], wrapped_load_func)
+            file_mapping[cnt] = DataFile
 
             data.at[subject, col] = cnt
             cnt += 1
@@ -3471,9 +3470,6 @@ def Prepare_All_Data(self, merge='default', low_memory_mode='default'):
         self.all_data = pd.merge(self.all_data, dfs[i],
                                  on=self.subject_id, how=load_params['merge'])
 
-    # Set data keys, covars, strat, ect...
-    self._set_data_scopes()
-
     self._print('Final data (w/ target) for modeling loaded shape:',
                 self.all_data.shape)
 
@@ -3520,16 +3516,6 @@ def _get_cat_keys(self):
             pass
 
     return cat_keys
-
-
-def _set_data_scopes(self):
-
-    self.Data_Scopes = Data_Scopes(data_keys=list(self.data),
-                                   data_file_keys=self.data_file_keys,
-                                   cat_keys=self._get_cat_keys(),
-                                   strat_keys=list(self.strat),
-                                   covars_keys=list(self.covars),
-                                   file_mapping=self.file_mapping)
 
 
 def _get_base_targets_names(self):

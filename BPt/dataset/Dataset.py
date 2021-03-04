@@ -3,7 +3,7 @@ import numpy as np
 from itertools import product
 
 from joblib import wrap_non_picklable_objects
-from ..helpers.Data_File import Data_File, load_data_file_proxy
+from ..helpers.DataFile import DataFile, load_data_file_proxy
 from copy import copy, deepcopy
 from ..helpers.ML_Helpers import conv_to_list
 from .helpers import (base_load_subjects, proc_file_input, verbose_print)
@@ -549,7 +549,7 @@ class Dataset(pd.DataFrame):
         self._check_roles()
         return self.roles
 
-    @doc(inplace=_shared_docs['inplace'], scope=_shared_docs['scope'])
+    @doc(**_sip_docs)
     def set_role(self, scope, role, inplace=False):
         '''This method is used to set a role for
         either a single column or multiple, as set
@@ -1426,7 +1426,7 @@ class Dataset(pd.DataFrame):
             for subject in series.index:
 
                 # Create data file and add to file mapping
-                data_file = Data_File(series[subject], wrapped_load_func)
+                data_file = DataFile(series[subject], wrapped_load_func)
                 self.file_mapping[cnt] = data_file
 
                 # Replace cnt index in data

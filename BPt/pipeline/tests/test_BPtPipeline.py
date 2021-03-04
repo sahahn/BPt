@@ -84,7 +84,7 @@ def run_pipe_with_loader_ts(cache_loc=None):
     steps = []
 
     # Loader - transform (5, 2) to (5, 8)
-    # as each data_file contains np.zeros((2, 2))
+    # as each DataFile contains np.zeros((2, 2))
     file_mapping = get_fake_mapping(100)
     loader = BPtLoader(estimator=Identity(),
                        inds=[0, 1],

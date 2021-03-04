@@ -1,5 +1,5 @@
 import numpy as np
-from ..Data_File import Data_File, mp_single_load, load_data_file_proxy
+from ..DataFile import DataFile, mp_single_load, load_data_file_proxy
 import tempfile
 import pandas as pd
 import os
@@ -13,7 +13,7 @@ def get_fake_data_file():
     data = np.arange(1, 10)
     np.save(file_loc, data)
 
-    df = Data_File(loc=file_loc, load_func=np.load)
+    df = DataFile(loc=file_loc, load_func=np.load)
 
     return df
 

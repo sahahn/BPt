@@ -191,8 +191,10 @@ BPt.Dataset
       Dataset.set_axis
       Dataset.set_flags
       Dataset.set_index
+      Dataset.set_non_input
       Dataset.set_role
       Dataset.set_roles
+      Dataset.set_target
       Dataset.set_test_split
       Dataset.set_train_split
       Dataset.shift

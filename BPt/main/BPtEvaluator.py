@@ -135,6 +135,11 @@ class BPtEvaluator():
 
     @property
     def scores(self):
+        '''This property stores the scores for
+        each scorer as a dictionary of lists, where
+        the keys are the names of the scorer and the list
+        represents the score obtained for each fold, where each
+        index corresponds to to a fold of cross validation.'''
         return self._scores
 
     @scores.setter
@@ -143,6 +148,9 @@ class BPtEvaluator():
 
     @property
     def ps(self):
+        '''A saved and pre-processed version of the problem_spec
+        used (with any extra_params applied) when running this
+        instance of Evaluator.'''
         return self._ps
 
     @ps.setter
@@ -151,6 +159,31 @@ class BPtEvaluator():
 
     @property
     def feat_names(self):
+        '''The features names corresponding to any measures of
+        feature importance, stored as a list of lists, where the top
+        level list represents each fold of cross validation.
+
+        This parameter may be especially useful when pipeline
+        objects such as transformers or feature selectors are used
+        as these can drastically change the features passed to an
+        eventual model.
+
+        The values stored here may change
+        based on the passed
+        value of the `decode_feat_names` parameter from
+        :func:`evaluate`.
+
+        For example the feat_names from a 3-fold cross-validation
+        with input features ['feat1', 'feat2', 'feat3'] with
+        feature selection as a piece of the pipeline may look like:
+
+        ::
+
+            self.feat_names = [['feat1', 'feat2'],
+                               ['feat2', 'feat3'],
+                               ['feat1', 'feat2']]
+
+        '''
         return self._feat_names
 
     @feat_names.setter
@@ -158,23 +191,39 @@ class BPtEvaluator():
         self._feat_names = feat_names
 
     @property
-    def val_subjs(self):
-        return self._val_subjs
+    def val_indxs(self):
+        '''This parameter stores the validation subjects / index
+        used in every fold of the cross-validation. It can be
+        useful in some cases
+        to check to see exactly what cross-validation was applied.'''
+        return self._val_indxs
 
-    @val_subjs.setter
-    def val_subjs(self, val_subjs):
-        self._val_subjs = val_subjs
+    @val_indxs.setter
+    def val_indxs(self, val_indxs):
+        self._val_indxs = val_indxs
 
     @property
-    def train_subjs(self):
-        return self._train_subjs
+    def train_indxs(self):
+        '''This parameter stores the training subjects / index
+        used in every fold of the cross-validation. It can be
+        useful in some cases
+        to check to see exactly what cross-validation was applied.'''
+        return self._train_indxs
 
-    @train_subjs.setter
-    def train_subjs(self, train_subjs):
-        self._train_subjs = train_subjs
+    @train_indxs.setter
+    def train_indxs(self, train_indxs):
+        self._train_indxs = train_indxs
 
     @property
     def timing(self):
+        '''This property stores information on
+        the fit and scoring times, if requested by the
+        original call to :func:`evaluate`.
+        This parameter is a dictionary with two keys,
+        'fit_time' and 'score_time'.
+        Each key stores the time in seconds as a list of
+        values for each of the evaluation folds.
+       '''
         return self._timing
 
     @timing.setter
@@ -183,6 +232,26 @@ class BPtEvaluator():
 
     @property
     def preds(self):
+        '''If the parameter `store_preds` is set to True when
+        calling :func:`evaluate`, then this parameter will store the
+        predictions from every evaluate fold.
+
+        The parameter preds is a dictionary, where raw predictions made
+        can be accessed by the key 'predict'. Values are stored as list
+        corresponding to each evaluation fold.
+
+        In the case where other predict-like functions are avaliable, e.g.,
+        in the case of a binary problem, where it may be desirable to
+        see the predicted probability, then the those predictions
+        will be made avaliable under the name of the underlying predict
+        function. In this case, that is self.preds['predict_proba'].
+        It will also store results from 'predict' as well.
+
+        self.preds also will store under 'y_true' a list, where
+        each element of the list corresponds to the corresponding
+        true target values for the predictions made.
+        '''
+
         return self._preds
 
     @preds.setter
@@ -191,6 +260,17 @@ class BPtEvaluator():
 
     @property
     def estimators(self):
+        '''If the parameter `store_estimators` is set to True when
+        calling :func:`evaluate`, then this parameter will store the fitted
+        estimator in a list. Where each element of the list corresponds to one
+        of the validation folds.
+
+        For example to access the fitted estimator from this first
+        fold ::
+
+            first_est = self.estimators[0]
+
+        '''
         return self._estimators
 
     @estimators.setter
@@ -222,7 +302,7 @@ class BPtEvaluator():
         self.scores = {scorer_str: [] for scorer_str in self.ps.scorer}
 
         # Save train and test subjs
-        self.train_subjs, self.val_subjs = [], []
+        self.train_indxs, self.val_indxs = [], []
 
         # Save final feat names
         self.feat_names = []
@@ -309,8 +389,8 @@ class BPtEvaluator():
     def _eval_fold(self, X_tr, y_tr, X_val, y_val):
 
         # Keep track of subjects in each fold
-        self.train_subjs.append(X_tr.index)
-        self.val_subjs.append(X_val.index)
+        self.train_indxs.append(X_tr.index)
+        self.val_indxs.append(X_val.index)
 
         # Get clone of estimator to fit
         estimator_ = clone(self.estimator)
@@ -396,8 +476,8 @@ class BPtEvaluator():
             self.mean_scores[scorer_key] = np.mean(scores)
 
             # Compute scores weighted by number of subjs
-            weights = [len(self.val_subjs[i])
-                       for i in range(len(self.val_subjs))]
+            weights = [len(self.val_indxs[i])
+                       for i in range(len(self.val_indxs))]
             self.weighted_mean_scores[scorer_key] =\
                 np.average(scores, weights=weights)
 
@@ -447,7 +527,7 @@ class BPtEvaluator():
         if self.timing is not None:
             saved_attrs.append('timing')
 
-        saved_attrs += ['train_subjs', 'val_subjs', 'feat_names', 'ps',
+        saved_attrs += ['train_indxs', 'val_indxs', 'feat_names', 'ps',
                         'mean_scores', 'std_scores',
                         'weighted_mean_scores', 'scores']
 
@@ -483,20 +563,20 @@ class BPtEvaluator():
     def feature_importances_(self):
         '''This property stores the mean values
         across fitted estimators assuming each fitted estimator
-        has a non empty feature_importances_ attribute.'''
+        has a non empty `feature_importances_` attribute.'''
 
         self._estimators_check()
         return get_mean_fis(self.estimators, 'feature_importances_')
 
     def get_feature_importances(self):
-        '''This function returns each feature_importances_
+        '''This function returns each `feature_importances_`
         value across fitted estimators. If None have this parameter,
         it will return a list of None.
 
         Returns
         --------
         feature_importances : list
-            A list of feature_importances_ where each element
+            A list of `feature_importances_` where each element
             in the list refers to a fold from the evaluation.
         '''
 
@@ -550,7 +630,7 @@ class BPtEvaluator():
         the same category 1 across folds.
 
         If for some reason some folds have a model with feature
-        importances and other coef_ they will still all be averaged
+        importances and other `coef_` they will still all be averaged
         together, so make sure that this parameter is only used when
         all of the underlying models across folds should have comparable
         feature importances.
@@ -579,7 +659,7 @@ class BPtEvaluator():
         or `feature_importance_` parameters.
 
         In the case that the underlying feature importances
-        or coefs_ are not flat, e.g., in the case
+        or `coefs_` are not flat, e.g., in the case
         of a one versus rest categorical model, then a list
         multiple DataFrames will be returned, one for each class.
         The order of the list will correspond to the order of classes.
@@ -618,8 +698,8 @@ class BPtEvaluator():
         # Get the X and y df's, without any subjects with missing
         # target values for this fold
         X_val_df, y_val_df =\
-            get_non_nan_Xy(X_df.loc[self.val_subjs[fold]],
-                           y_df.loc[self.val_subjs[fold]])
+            get_non_nan_Xy(X_df.loc[self.val_indxs[fold]],
+                           y_df.loc[self.val_indxs[fold]])
 
         # Base as array, and all feat names
         X_trans, feat_names = np.array(X_val_df), list(X_val_df)

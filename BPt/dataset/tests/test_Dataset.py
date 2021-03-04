@@ -97,6 +97,20 @@ def test_check_scopes():
     assert not df._is_category('2')
 
 
+def test_set_target_inplace():
+
+    df = get_fake_dataset()
+    df.set_target('1', inplace=True)
+    assert(set(df.get_cols('target')) == set(['1']))
+
+
+def test_set_non_input_inplace():
+
+    df = get_fake_dataset()
+    df.set_non_input('2', inplace=True)
+    assert(set(df.get_cols('non input')) == set(['2']))
+
+
 def test_set_role_inplace():
 
     df = get_fake_dataset()

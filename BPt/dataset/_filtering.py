@@ -1,6 +1,8 @@
 import numpy as np
 from itertools import combinations
 from .helpers import proc_fop
+from pandas.util._decorators import doc
+from .Dataset import _sip_docs
 
 
 def _drop_subjects(self, subjects):
@@ -11,6 +13,7 @@ def _drop_subjects(self, subjects):
         self._print('Dropped Rows:', subjects, level=2)
 
 
+@doc(**_sip_docs)
 def drop_nan_subjects(self, scope, inplace=False):
     '''This method is used for
     dropping all of the subjects which have NaN
@@ -18,17 +21,10 @@ def drop_nan_subjects(self, scope, inplace=False):
 
     Parameters
     ----------
-    scope : :ref:`Scope`
-        The BPt style :ref:`Scope` input that will be
-        used to determine which column names to drop
-        subjects with missing values by.
+    {scope}
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -113,6 +109,7 @@ def apply_exclusions(self, subjects, inplace=False):
         self.drop(list(to_drop), axis=0, inplace=True)
 
 
+@doc(**_sip_docs)
 def drop_subjects_by_nan(self, threshold=.5, scope='all', inplace=False):
     '''This method is used for dropping subjects based on
     the amount of missing values found across a subset of
@@ -135,24 +132,13 @@ def drop_subjects_by_nan(self, threshold=.5, scope='all', inplace=False):
 
             default = .5
 
-    scope : :ref:`Scope`, optional
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to check for if a subject should be dropped
-        or not.
-
-        By default this is set to 'all' and will check across
-        all loaded subjects.
-
+    {scope}
         ::
 
             default = 'all'
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -207,6 +193,7 @@ def _drop_cols(self, to_drop):
         self._print('Dropped Columns:', to_drop, level=2)
 
 
+@doc(**_sip_docs)
 def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
                                reduce_func=np.mean, n_jobs=1, inplace=False):
     '''This method is designed to allow dropping a fixed percent of outliers
@@ -253,12 +240,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
 
             default = 1
 
-    scope : :ref:`Scope`, optional
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to percent this outlier filtering by.
-
-        By default this is set to only the 'float' style data.
-
+    {scope}
         ::
 
             default = 'float'
@@ -280,7 +262,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
         that it is, the function should accept as input
         the data from one data file, and should return a single
         scalar value. For example, the default value is
-        numpy's mean function, which returns one value.
+        :func:`numpy.mean`, which returns one value.
 
         ::
 
@@ -291,7 +273,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
         valid when the passed col/column is a 'data file'.
         In that case, this specifies the number of cores
         to use in loading and applying the reduce_func to each
-        data file. This can provide a signifigant speed up when
+        data file. This can provide a significant speed up when
         passed the number of avaliable cores, but can sometimes
         be memory intensive depending on the underlying size of the file.
 
@@ -299,12 +281,8 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
 
             default = 1
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -358,6 +336,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
     self._check_file_mapping()
 
 
+@doc(**_sip_docs)
 def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
                            reduce_func=np.mean, n_jobs=1, inplace=False):
     '''This method is designed to allow dropping outliers
@@ -397,12 +376,7 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
 
             default = 10
 
-    scope : :ref:`Scope`, optional
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to percent this outlier filtering by.
-
-        By default this is set to only the 'float' style data.
-
+    {scope}
         ::
 
             default = 'float'
@@ -435,7 +409,7 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
         valid when the passed col/column is a 'data file'.
         In that case, this specifies the number of cores
         to use in loading and applying the reduce_func to each
-        data file. This can provide a signifigant speed up when
+        data file. This can provide a significant speed up when
         passed the number of avaliable cores, but can sometimes
         be memory intensive depending on the underlying size of the file.
 
@@ -443,12 +417,8 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
 
             default = 1
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -503,9 +473,10 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
     self._check_file_mapping()
 
 
+@doc(**_sip_docs)
 def filter_categorical_by_percent(self, drop_percent=1, scope='category',
                                   drop=True, inplace=False):
-    '''This method is designed to allow performing outlier filting
+    '''This method is designed to allow performing outlier filtering
     on categorical type variables. Note that this method assume
     all columns passed are of type 'category', and they if not already
     will be cast first to pandas data type 'category'.
@@ -534,15 +505,10 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
 
         In this case any data points within the
         relevant categories as specified by scope
-        with a category constituing less than 1% of total
-        vali data points will be dropped (or set to NaN if drop=False).
+        with a category constituting less than 1% of total
+        valid data points will be dropped (or set to NaN if drop=False).
 
-    scope : :ref:`Scope`, optional
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to percent this outlier filtering by.
-
-        By default this is set to only the 'category' style data.
-
+    {scope}
         ::
 
             default = 'category'
@@ -558,12 +524,7 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
 
             default = True
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
-
-        ::
-
-            default = False
+    {inplace}
 
     '''
 
@@ -609,6 +570,7 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
         self._drop_subjects(all_to_drop)
 
 
+@doc(**_sip_docs)
 def drop_id_cols(self, scope='all', inplace=False):
     '''This method will drop any str-type / object type columns
     where the number of unique columns is equal
@@ -616,23 +578,13 @@ def drop_id_cols(self, scope='all', inplace=False):
 
     Parameters
     ----------
-    scope : :ref:`Scope`, optional
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to check.
-
-        By default this is set to 'all' and will check all
-        loaded columns
-
+    {scope}
         ::
 
             default = 'all'
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -651,28 +603,19 @@ def drop_id_cols(self, scope='all', inplace=False):
     self._drop_cols(to_drop)
 
 
+@doc(**_sip_docs)
 def drop_duplicate_cols(self, scope='all', inplace=False):
     '''This method is used for checking to see if there are
     any columns loaded with duplicate values. If there is, then
     one of the duplicates will be dropped.
 
-    scope : :ref:`Scope`, optional
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to check.
-
-        By default this is set to 'all' and will check all
-        loaded columns
-
+    {scope}
         ::
 
             default = 'all'
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -689,6 +632,7 @@ def drop_duplicate_cols(self, scope='all', inplace=False):
     self._drop_cols(to_drop)
 
 
+@doc(**_sip_docs)
 def drop_cols(self, exclusions=None,
               inclusions=None,
               scope='all', inplace=False):
@@ -719,25 +663,13 @@ def drop_cols(self, exclusions=None,
         see if outside of the passed inclusions here.)
 
 
-    scope : :ref:`Scope`, optional
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to apply the combination of exclusions
-        and inclusions to. This is allows for performing inclusions
-        or exclusions on a subset of columns.
-
-        By default this is set to 'all' and will consider all
-        loaded columns.
-
+    {scope}
         ::
 
             default = 'all'
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -764,6 +696,7 @@ def drop_cols(self, exclusions=None,
     self._drop_cols(to_drop)
 
 
+@doc(**_sip_docs)
 def drop_cols_by_unique_val(self, threshold=1, scope='all',
                             dropna=True, inplace=False):
     '''This method will drop any columns with less than or equal to
@@ -786,13 +719,7 @@ def drop_cols_by_unique_val(self, threshold=1, scope='all',
 
             default = 1
 
-    scope : :ref:`Scope`, optional
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to check for under the unique value threshold.
-
-        By default this is set to 'all' and will check all
-        loaded columns
-
+    {scope}
         ::
 
             default = 'all'
@@ -807,12 +734,7 @@ def drop_cols_by_unique_val(self, threshold=1, scope='all',
 
             default = True
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
-
-        ::
-
-            default = False
+    {inplace}
     '''
 
     if not inplace:
@@ -833,6 +755,7 @@ def drop_cols_by_unique_val(self, threshold=1, scope='all',
     self._drop_cols(to_drop)
 
 
+@doc(**_sip_docs)
 def drop_cols_by_nan(self, threshold=.5, scope='all', inplace=False):
     '''This method is used for dropping columns based on
     the amount of missing values found across all subjects.
@@ -860,23 +783,13 @@ def drop_cols_by_nan(self, threshold=.5, scope='all', inplace=False):
 
             default = .5
 
-    scope : :ref:`Scope`, optional
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to check for under the NaN value threshold.
-
-        By default this is set to 'all' and will check all
-        loaded columns
-
+    {scope}
         ::
 
             default = 'all'
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
-
-            default = False
     '''
 
     if not inplace:

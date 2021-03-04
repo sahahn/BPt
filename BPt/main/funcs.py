@@ -6,8 +6,9 @@ from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..default.options.scorers import process_scorers
 from .BPtEvaluator import BPtEvaluator
 from sklearn.model_selection import check_cv
-from ..main.input_operations import Intersection
+from .input_operations import Intersection
 from pandas.util._decorators import doc
+from ..shared_docs import _shared_docs
 
 
 _base_docs = {}
@@ -49,32 +50,11 @@ _base_docs[
         parameter subjects to select a subset of subjects.
     """
 
-_base_docs[
-    "problem_spec"
-] = """problem_spec : :class:`ProblemSpec` or 'default', optional
-        This parameter accepts an instance of the
-        params class :class:`ProblemSpec`.
-        The ProblemSpec is essentially a wrapper
-        around commonly used
-        parameters needs to define the context
-        the model pipeline should be evaluated in.
-        It includes parameters like problem_type, scorer, n_jobs,
-        random_state, etc...
-
-        See :class:`ProblemSpec` for more information
-        and for how to create an instance of this object.
-
-        If left as 'default', then will initialize a
-        ProblemSpec with default params.
-
-        ::
-
-            default = 'default'
-"""
+_base_docs["problem_spec"] = _shared_docs['problem_spec']
 
 _base_docs[
     "extra_params"
-] = """ extra_params : problem_spec or pipeline params, optional
+] = """extra_params : problem_spec or pipeline params, optional
         You may pass as extra arguments to this function any pipeline
         or problem_spec argument as python kwargs style value pairs.
 
@@ -774,57 +754,68 @@ def evaluate(pipeline, dataset,
             default = True
 
     store_preds : bool, optional
-        If set to True, store raw predictions
-        in the 'preds' parameter of the returned
-        object. This will be a dictionary where
-        each dictionary key corresponds to
-        a valid predict function for the base model,
-        for example self.preds will hold
-        a dictionary with ::
+        If set to True, the returned :class:`BPtEvaluator` will store
+        the saved predictions under :data:`BPt.BPtEvaluator.preds`.
+        This includes a saved copy of the true target values as well.
 
-            [fold0_preds, fold1_preds, ...]
+        If False, the `preds` parameter will be empty and it
+        will not be possible to use some related functions.
 
-        And the value in the dict is a list
-        (each element corresponding to each fold)
-        of numpy arrays with the raw predictions.
+        ::
 
-        Note: if store_preds is set to True, then
-        also will stored the corresponding ground
-        truth labels under dictionary key 'y_true' in
-        preds. Or to see corresponding subjects / index,
-        check 'val_subjs' in the evaluator.
+            default = False
 
     store_estimators : bool, optional
-        If True, then the returned :class:`BPtEstimator`
+        If True, then the returned :class:`BPtEvaluator`
         will store the fitted estimators from evaluation
-        under :data:`BPt.BPtEvaluator.estimators`
+        under :data:`BPt.BPtEvaluator.estimators`.
+
+        If False, the `estimators` parameter will be empty,
+        and it will not be possible to access measures of
+        feature importance as well.
+
 
         ::
 
             default = True
 
     store_timing : bool, optional
-        Skip.
+        If True, then the returned :class:`BPtEvaluator`
+        will store the time it took to fit and score the pipeline
+        under :data:`BPt.BPtEvaluator.timing`.
 
         ::
 
             default = True
 
     decode_feat_names : bool, optional
-        Skip.
+        If True, then the :data:`BPt.BPtEvaluator.feat_names`
+        as computed during evaluation will try to use the original
+        values as first loaded to inform their naming. Note that
+        this is only relevant assuming that :class:`Dataset` was
+        used to encode one or more columns in the first place.
 
         ::
 
             default = True
 
     progress_loc : str or None, optional
-        Skip.
+        This parameter is not currently implemented.
 
         ::
 
             default = None
 
     {extra_params}
+
+    Returns
+    ---------
+    evaluator : :class:`BPtEvaluator`
+        Returns an instance of the :class:`BPtEvaluator`
+        class. This object stores a wealth of information,
+        including the scores from this evaluation as well
+        as other utilities including functions for calculating
+        feature importances from trained models.
 
     See Also
     ---------

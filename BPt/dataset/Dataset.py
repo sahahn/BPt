@@ -8,12 +8,31 @@ from copy import copy, deepcopy
 from ..helpers.ML_Helpers import conv_to_list
 from .helpers import (base_load_subjects, proc_file_input, verbose_print)
 from ..main.input_operations import Intersection, Value_Subset
+from pandas.util._decorators import doc
 
 # @TODO Look into pandas finalize
 # https://github.com/pandas-dev/pandas/blob/ce3e57b44932e7131968b9bcca97c1391cb6b532/pandas/core/generic.py#L5422
 
 # @TODO Customize the appearance of Dataset class, e.g.
 # add to repr and to_html, etc...
+
+_shared_docs = {}
+_shared_docs['scope'] = """scope : :ref:`Scope`
+            A BPt style :ref:`Scope` used to select a subset of
+            column(s) in which to apply the current function to.
+            See :ref:`Scope` for more information on how this
+            can be applied.
+"""
+
+_shared_docs['inplace'] = """inplace : bool, optional
+            If True, perform the current function inplace and return None.
+
+            ::
+
+                default = False
+
+"""
+_sip_docs = _shared_docs.copy()
 
 
 class Dataset(pd.DataFrame):
@@ -76,7 +95,8 @@ class Dataset(pd.DataFrame):
 
     @property
     def reserved_roles(self):
-        '''The dataset class has three fixed roles,
+        '''The dataset class has three fixed and therefore
+        reserved (i.e., cannot be set as a scope) roles,
         these are ::
 
             ['data', 'target', 'non input']
@@ -212,7 +232,8 @@ class Dataset(pd.DataFrame):
                         'were cast to str', level=0)
 
         # Check if any columns have the same name as a reserved scope
-        reserved_overlap = set(self.columns).intersection(self.reservered_scopes)
+        reserved_overlap = set(self.columns).intersection(
+            self.reservered_scopes)
         if len(reserved_overlap) > 0:
             raise RuntimeError('The columns: ' + repr(reserved_overlap) + ' '
                                'overlap with reserved saved names! '
@@ -528,6 +549,7 @@ class Dataset(pd.DataFrame):
         self._check_roles()
         return self.roles
 
+    @doc(inplace=_shared_docs['inplace'], scope=_shared_docs['scope'])
     def set_role(self, scope, role, inplace=False):
         '''This method is used to set a role for
         either a single column or multiple, as set
@@ -537,9 +559,7 @@ class Dataset(pd.DataFrame):
 
         Parameters
         ----------
-        scope : :ref:`Scope`
-            A BPt style :ref:`Scope` used to select a subset of
-            column in which to set with the passed role.
+        {scope}
 
         role : :ref:`Role`
             A valid role in which to set all columns
@@ -550,12 +570,8 @@ class Dataset(pd.DataFrame):
             See :ref:`Role` for more information on how
             each role differs.
 
-        inplace : bool, optional
-            If True, do operation inplace and return None.
+        {inplace}
 
-            ::
-
-                default = False
         '''
 
         if not inplace:
@@ -601,6 +617,56 @@ class Dataset(pd.DataFrame):
         # Set for each passed scope - all in place
         for scope, role in zip(scopes_to_roles, scopes_to_roles.values()):
             [self._set_role(col, role) for col in self._get_cols(scope)]
+
+    def set_target(self, scope, inplace=False):
+        '''This method is used to set
+        either a single column, or multiple, specifically
+        with role `target`. This function is simply
+        a helper wrapper around :func:`Dataset.set_role`.
+
+        See :ref:`Role` for more information
+        about how roles are used within BPt.
+
+        Parameters
+        ----------
+        scope : :ref:`Scope`
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to set with role `target`.
+
+        inplace : bool, optional
+            If True, do operation inplace and return None.
+
+            ::
+
+                default = False
+        '''
+
+        self.set_role(scope=scope, role='target', inplace=inplace)
+
+    def set_non_input(self, scope, inplace=False):
+        '''This method is used to set
+        either a single column, or multiple, specifically
+        with role `non input`. This function is simply
+        a helper wrapper around :func:`Dataset.set_role`.
+
+        See :ref:`Role` for more information
+        about how roles are used within BPt.
+
+        Parameters
+        ----------
+        scope : :ref:`Scope`
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to set with role `non input`.
+
+        inplace : bool, optional
+            If True, do operation inplace and return None.
+
+            ::
+
+                default = False
+        '''
+
+        self.set_role(scope=scope, role='non input', inplace=inplace)
 
     def _set_role(self, col, role):
         '''Internal function for setting a single columns role.'''

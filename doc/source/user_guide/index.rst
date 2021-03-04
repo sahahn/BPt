@@ -16,6 +16,7 @@ Guides
 
     why_bpt
     loading_data
+    test_split
     example1
 
 Key Concept References

@@ -11,6 +11,28 @@ from ..pipeline.constructors import (LoaderConstructor, ImputerConstructor,
                                      FeatSelectorConstructor, ModelConstructor)
 
 import warnings
+from pandas.util._decorators import doc
+
+_piece_docs = {}
+
+_piece_docs[
+    "cache_loc"
+] = """cache_loc : str, Path or None, optional
+        This parameter can optionally be set to a
+        str or path representing the location in which
+        this object will be cached after fitting.
+
+        If set, the python library joblib is used
+        to cache a copy after fitting and in the case
+        that a cached copy already exists will load from
+        that copy instead of re-fitting the base object.
+        To skip this option, keep as the default argument of None.
+
+        ::
+
+            default = None
+
+    """
 
 
 def proc_all(base_obj):
@@ -175,24 +197,28 @@ class Piece(Params, Check):
         is mostly used to investigate pieces and is not necessarily
         designed to produce independently usable pieces.
 
-        Warning: For now this method will not work when the base
+        For now this method will not work when the base
         obj is a custom object.
 
         Parameters
-        ----------
+        -----------
         dataset : :class:`Dataset`
             The Dataset in which the pipeline should be initialized
             according to. For example, pipeline's can include Scopes,
             these need a reference Dataset.
 
+            Something something
+
         problem_spec : :class:`ProblemSpec` or 'default', optional
-            `problem_spec` accepts an instance of the
+            This parameter accepts an instance of the
             params class :class:`ProblemSpec`.
-            This object is essentially a wrapper around commonly used
+            The ProblemSpec is essentially a wrapper
+            around commonly used
             parameters needs to define the context
             the model pipeline should be evaluated in.
             It includes parameters like problem_type, scorer, n_jobs,
             random_state, etc...
+
             See :class:`ProblemSpec` for more information
             and for how to create an instance of this object.
 
@@ -201,15 +227,16 @@ class Piece(Params, Check):
 
             ::
 
-                default = 'default'
+                default = "default"
 
         problem_spec_params : :class:`ProblemSpec` params, optional
-            You may also pass any valid parameter value pairs here.
-            These are passed in kwargs style, e.g.
+            You may also pass any valid problem spec argument-value pairs here,
+            in order to override a value in the passed :class:`ProblemSpec`.
+            Overriding params should be passed in kwargs style, for example:
 
             ::
 
-                build(problem_type='binary')
+                func(..., problem_type='binary')
 
         Returns
         -------
@@ -236,7 +263,9 @@ class Piece(Params, Check):
 
             import BPt as bp
 
-            dataset = bp.Dataset(data={'col1': [1, 2], 'col2': [3, 4]})
+            dataset = bp.Dataset()
+            dataset['col1'] = [1, 2]
+            dataset['col2'] = [3, 4]
             dataset.set_role('col2', 'target', inplace=True)
             dataset
 
@@ -442,6 +471,7 @@ class Loader(Piece):
         self._check_args()
 
 
+@doc(cache_loc=_piece_docs['cache_loc'])
 class Imputer(Piece):
     '''If there is any missing data (NaN's), then an imputation strategy
     is likely necessary (with some expections, i.e., a final model which
@@ -509,16 +539,7 @@ class Imputer(Piece):
 
             default = 'all'
 
-    cache_loc : str, Path or None, optional
-        An optional path in which this Piece should be
-        cached after fitting. This is typically useful in
-        cases where fitting the base object takes a long time.
-
-        To skip this option, keep at the default argument of None.
-
-        ::
-
-            default = None
+    {cache_loc}
 
     base_model : :class:`Model`, :class:`Ensemble` or None, optional
         If 'iterative' is passed to obj, then a base_model is required in
@@ -538,7 +559,7 @@ class Imputer(Piece):
         float-type features, you will want to use a 'regression' type
         base model.
 
-        Choices are {'binary', 'regression', 'categorical'} or 'default'.
+        Choices are 'binary', 'regression', 'categorical' or 'default'.
         If 'default', then the following behavior will be applied:
         If all columns within the passed scope of this Imputer object
         have scope / data type 'category', then the problem

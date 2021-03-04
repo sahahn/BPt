@@ -111,7 +111,6 @@ def add_new_categories(existing, new_values):
     # Add in place
     existing.cat.add_categories(list(to_add), inplace=True)
 
-
 def get_str_round(val, places=3):
 
     if isinstance(val, int):

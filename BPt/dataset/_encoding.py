@@ -117,7 +117,7 @@ def _base_binarize(self, col, drop):
 
 def binarize(self, scope, threshold, replace=True, drop=True, inplace=False):
     '''This method contains a utilities for binarizing a variable.
-    These are dichatomizing an existing variable with parameter
+    These are dichotomizing an existing variable with parameter
     threshold, and applying binarization via two thresholds
     (essentially chopping out the middle of the distribution).
 

@@ -9,6 +9,7 @@ from ..helpers.ML_Helpers import conv_to_list
 from .helpers import (base_load_subjects, proc_file_input, verbose_print)
 from ..main.input_operations import Intersection, Value_Subset
 from pandas.util._decorators import doc
+import warnings
 
 # @TODO Look into pandas finalize
 # https://github.com/pandas-dev/pandas/blob/ce3e57b44932e7131968b9bcca97c1391cb6b532/pandas/core/generic.py#L5422
@@ -766,6 +767,17 @@ class Dataset(pd.DataFrame):
         # Check if category
         if scope_val == 'category':
             self.scopes[col].add(scope_val)
+
+            # If already categorical, skip
+            if self[col].dtype.name == 'category':
+                return
+
+            # Special case, if converting from bool to category
+            if self[col].dtype.name == 'bool':
+
+                # Need to cast to int first as intermediate
+                self[col] = self[col].astype('int')
+
             self[col] = self[col].astype('category')
             self[col].cat.as_ordered(inplace=True)
 
@@ -1777,6 +1789,8 @@ class Dataset(pd.DataFrame):
             display_scope = scope[0].upper() + scope[1:]
             if display_scope == 'Target' and len(cols) > 1:
                 display_scope = 'Targets'
+            elif display_scope == 'Non input':
+                display_scope = 'Non Input'
 
             if len(cols) > 0:
                 html += template.format(display_scope,

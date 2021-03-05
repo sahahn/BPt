@@ -2,14 +2,17 @@ import pandas as pd
 import numpy as np
 from itertools import product
 
-from joblib import wrap_non_picklable_objects
+
 from ..helpers.DataFile import DataFile, load_data_file_proxy
 from copy import copy, deepcopy
 from ..helpers.ML_Helpers import conv_to_list
-from .helpers import (base_load_subjects, proc_file_input, verbose_print)
+from .helpers import (base_load_subjects, proc_file_input,
+                      verbose_print, mp_consol_save, wrap_load_func)
 from ..main.input_operations import Intersection, Value_Subset
 from pandas.util._decorators import doc
 import os
+import shutil
+from joblib import Parallel, delayed
 
 # @TODO Look into pandas finalize
 # https://github.com/pandas-dev/pandas/blob/ce3e57b44932e7131968b9bcca97c1391cb6b532/pandas/core/generic.py#L5422
@@ -34,6 +37,38 @@ _shared_docs['inplace'] = """inplace : bool, optional
 
 """
 _sip_docs = _shared_docs.copy()
+
+_shared_docs['load_func'] = """load_func : python function, optional
+            Fundamentally columns of type 'data file' represent
+            a path to a saved file, which means you must
+            also provide some information on how to load the saved file.
+            This parameter is where that loading function should be passed.
+            The passed `load_func` will be called on each file individually
+            and whatever the output of the function is will be passed to
+            the different loading functions.
+
+            You might need to pass a user defined custom function
+            in some cases, e.g., you want to use :func:`numpy.load`,
+            but then also np.stack. Just wrap those two functions in one,
+            and pass the new function.
+
+            ::
+
+                def my_wrapper(x):
+                    return np.stack(np.load(x))
+
+            In this case though, it is reccomended that
+            you define this function in a separate file from
+            where the main script will be run (for ease of caching)
+
+            By default this function assumes data files are passed
+            as numpy arrays.
+
+            ::
+
+                default = np.load
+
+"""
 
 
 class Dataset(pd.DataFrame):
@@ -1006,7 +1041,7 @@ class Dataset(pd.DataFrame):
         return sorted(inds)
 
     def get_values(self, col, dropna=True, decode_values=False,
-                   reduce_func=np.mean, n_jobs=1):
+                   reduce_func=np.mean, n_jobs=-1):
         '''This method is used to obtain the either normally loaded and
         stored values from a passed column, or in the case of a data file
         column, the data file proxy values will be loaded. There is likewise
@@ -1057,9 +1092,11 @@ class Dataset(pd.DataFrame):
             passed the number of avaliable cores, but can sometimes
             be memory intensive depending on the underlying size of the file.
 
+            If set to -1, will try to automatically use all avaliable cores.
+
             ::
 
-                default = 1
+                default = -1
 
         Returns
         ---------
@@ -1079,7 +1116,7 @@ class Dataset(pd.DataFrame):
                                 reduce_func=reduce_func, n_jobs=n_jobs)
 
     def _get_values(self, col, dropna=True, decode_values=False,
-                    reduce_func=np.mean, n_jobs=1):
+                    reduce_func=np.mean, n_jobs=-1):
 
         # Extract base series depending on if dropna
         if dropna:
@@ -1256,9 +1293,10 @@ class Dataset(pd.DataFrame):
         self._check_file_mapping()
         return self.file_mapping
 
+    @doc(load_func=_shared_docs['load_func'], inplace=_shared_docs['inplace'])
     def add_data_files(self, files, file_to_subject,
                        load_func=np.load, inplace=False):
-        '''This method is the main way of adding columns of type
+        '''This method allows adding columns of type
         'data file' to the Dataset class.
 
         Parameters
@@ -1281,8 +1319,9 @@ class Dataset(pd.DataFrame):
 
             ::
 
-                files = {'feat1': ['f1/subj_0.npy', 'f1/subj_1.npy'],
-                         'feat2': ['f2/subj_0.npy', 'f2/subj_1.npy']}
+                files = dict()
+                files['feat1'] = ['f1/subj_0.npy', 'f1/subj_1.npy']
+                files['feat2'] = ['f2/subj_0.npy', 'f2/subj_1.npy']
 
                 def file_to_subject_func(file):
                     subject = file.split('/')[1].replace('.npy', '')
@@ -1290,8 +1329,9 @@ class Dataset(pd.DataFrame):
 
                 file_to_subject = file_to_subject_func
                 # or
-                file_to_subject = {'feat1': file_to_subject_func,
-                                   'feat2': file_to_subject_func}
+                file_to_subject = dict()
+                file_to_subject['feat1'] = file_to_subject_func
+                file_to_subject['feat2'] = file_to_subject_func
 
             In this example, subjects are loaded as 'subj_0' and 'subj_1',
             and they have associated loaded data files 'feat1' and 'feat2'.
@@ -1312,8 +1352,9 @@ class Dataset(pd.DataFrame):
 
                 file_to_subject = file_to_subject_func
                 # or
-                file_to_subject = {'feat1': file_to_subject_func,
-                                   'feat2': file_to_subject_func}
+                file_to_subject = dict()
+                file_to_subject['feat1'] = file_to_subject_func
+                file_to_subject['feat2'] = file_to_subject_func
 
             You may also pass the custom str 'auto' to
             specify that the subject name should be the base
@@ -1331,10 +1372,11 @@ class Dataset(pd.DataFrame):
                 data.set_index(['subject', 'event'], inplace=True)
 
                 # Only one feature
-                files = {'feat1': ['f1/s0_e0.npy',
-                                   'f1/s0_e1.npy',
-                                   'f1/s1_e0.npy',
-                                   'f1/s1_e1.npy']}
+                files = dict()
+                files['feat1'] = ['f1/s0_e0.npy',
+                                  'f1/s0_e1.npy',
+                                  'f1/s1_e0.npy',
+                                  'f1/s1_e1.npy']
 
                 def file_to_subject_func(file):
 
@@ -1360,42 +1402,9 @@ class Dataset(pd.DataFrame):
 
             While this is a bit longer than the previous case, it is flexible.
 
-        load_func : python function, optional
-            Fundamentally columns of type 'data file' represent
-            a path to a saved file, which means you must
-            also provide some information on how to load the saved file.
-            This parameter is where that loading function should be passed.
-            The passed `load_func` will be called on each file individually
-            and whatever the output of the function is will be passed to
-            the different loading functions.
+        {load_func}
 
-            You might need to pass a user defined custom function
-            in some cases, e.g., you want to use np.load,
-            but then also np.stack. Just wrap those two functions in one,
-            and pass the new function.
-
-            ::
-
-                def my_wrapper(x):
-                    return np.stack(np.load(x))
-
-            In this case though, it is reccomended that
-            you define this function in a separate file from
-            where the main script will be run (for ease of caching)
-
-            By default this function assumes data files are passed
-            as numpy arrays.
-
-            ::
-
-                default = np.load
-
-        inplace : bool, optional
-            If True, do operation inplace and return None.
-
-            ::
-
-                default = False
+        {inplace}
 
         See Also
         --------
@@ -1405,20 +1414,8 @@ class Dataset(pd.DataFrame):
         if not inplace:
             return self._inplace('add_data_files', locals())
 
-        # Wrap load_func here if needed.
-        if load_func.__module__ == '__main__':
-            wrapped_load_func = wrap_non_picklable_objects(load_func)
-            self._print('Warning: Passed load_func was defined within the',
-                        '__main__ namespace and therefore has been '
-                        'cloud wrapped.',
-                        'The function will still work, but it is '
-                        'reccomended to',
-                        'define this function in a separate file, '
-                        'and then import',
-                        'it , otherwise loader caching will be limited',
-                        'in utility!', level=0)
-        else:
-            wrapped_load_func = load_func
+        # Wrap load func if needed
+        wrapped_load_func = wrap_load_func(load_func, _print=self._print)
 
         # Init if needed
         self._check_file_mapping()
@@ -1426,65 +1423,205 @@ class Dataset(pd.DataFrame):
         # Get dict of key to files
         file_series = proc_file_input(files, file_to_subject)
 
-        # Get next file mapping ind
-        cnt = self._get_next_ind()
-
         # For each column
         for file in file_series:
 
             # For each subject, fill in with Data File
             series = file_series[file]
+            self._series_to_data_file(col=file, series=series,
+                                      load_func=wrapped_load_func)
 
-            for subject in series.index:
+    @doc(**_sip_docs, load_func=_shared_docs['load_func'])
+    def to_data_file(self, scope,
+                     load_func=np.load,
+                     inplace=False):
+        '''This method can be used to cast any existing columns
+        where the values are file paths, to a data file.
 
-                # Create data file and add to file mapping
-                data_file = DataFile(series[subject], wrapped_load_func)
-                self.file_mapping[cnt] = data_file
+        Parameters
+        ----------
+        {scope}
 
-                # Replace cnt index in data
-                self.at[subject, file] = cnt
+        {load_func}
 
-                # Increment
-                cnt += 1
+        {inplace}
 
-            # Set scope
-            self.add_scope(file, 'data file', inplace=True)
+        Examples
+        ----------
+        This method can be used as a the primary way to prepare data files.
+        We will perform a simple example here.
 
-    def consolidate_data_files(self, save_dr, scope='data file',
-                               cast_to=None, replace_with=False):
-        '''Just save stacked datafiles.
+        .. ipython:: python
 
-        If replace with, does in place'''
+            import BPt as bp
+            data = bp.Dataset()
+            data['files'] = ['loc1.npy', 'loc2.npy']
+            data
 
-        # @TODO clean up and add docstrings.
+        We now have a :class:`Dataset`, but out column 'files' is not
+        quite ready, as by default it won't know what to do with str.
+        To get it to treat it as as a data file we will cast it.
 
+        .. ipython:: python
+
+            data = data.to_data_file('files')
+            data
+
+        What's happened here? Now it doesn't show paths anymore, but instead
+        shows integers. That's actually the desired behavior though, we
+        can check it out in file_mapping.
+
+        .. ipython:: python
+
+            data.file_mapping
+
+        The file_mapping is then used internally with :class:`Loader`
+        to load objects on the fly.
+
+        '''
+
+        if not inplace:
+            return self._inplace('to_data_file', locals())
+
+        # Wrap load func if needed
+        wrapped_load_func = wrap_load_func(load_func, _print=self._print)
+
+        # Init if needed
         self._check_file_mapping()
+
+        # Cast to data file
+        for col in self.get_cols(scope):
+            self._series_to_data_file(col=col, series=self[col],
+                                      load_func=wrapped_load_func)
+
+    def _series_to_data_file(self, col, series, load_func):
+
+        # Get next file mapping ind
+        cnt = self._get_next_ind()
+
+        for subject in series.index:
+
+            # Create data file and add to file mapping
+            data_file = DataFile(series[subject], load_func)
+            self.file_mapping[cnt] = data_file
+
+            # Replace cnt index in data
+            self.at[subject, col] = cnt
+
+            # Increment
+            cnt += 1
+
+        # Set scope
+        self.add_scope(col, 'data file', inplace=True)
+
+    @doc(scope=_shared_docs['scope'])
+    def consolidate_data_files(self, save_dr, replace_with=None,
+                               scope='data file', cast_to=None,
+                               clear_existing='fail', n_jobs=-1):
+        '''This function is designed as helper to consolidate all
+        or a subset of the loaded data files into one column. While this
+        removes information, in can provide a speed up in terms of downstream
+        loading and reduce the number of files cached when using
+        :class:`Loader`.
+
+        This method assumes that the underlying data files
+        can be stacked with ::
+
+            np.stack(data, axis=-1)
+
+        After they have been loaded. If this is not the case,
+        then this function will break.
+
+        Parameters
+        -----------
+        save_dr : str or Path
+            The file directory in which to
+            save the consolidated files. If it
+            doesn't exist, then it will be created.
+
+        replace_with : str or None, optional
+            By default, if replace_with is left
+            as None, then just a saved version of
+            the files will be made. Instead,
+            if a column name passed as a str is passed,
+            then the original data files which were
+            consolidated will be deleted, and the new
+            consolidated column loaded instead.
+
+            ::
+
+                default = None
+
+        {scope}
+            ::
+
+                default = 'data file'
+
+        cast_to : None or numpy dtype, optional
+            If not None, then this should be a
+            numpy dtype in which the stacked data
+            will be cast to before saving.
+
+            ::
+
+                default = None
+
+        clear_existing : bool or 'fail', optional
+            If True, then if the save dr already
+            has files in it, delete them. If False,
+            just overwrite them.
+
+            If 'fail' then if there
+            are already files in the save directory,
+            raise an error.
+
+            ::
+
+                default = 'fail'
+
+        n_jobs : int, optional
+            The number of jobs to use while stacking
+            and saving each file.
+
+            If -1, then will try to use all avaliable cpu's.
+
+            ::
+
+                default == -1
+
+        '''
+
+        # Make sure file mapping up to date
+        self._check_file_mapping()
+
+        # If clear existing and exists
+        if clear_existing is True:
+            if os.path.exists(save_dr):
+                self._print('Removing existing save directory:',
+                            str(save_dr), level=0)
+                shutil.rmtree(save_dr)
 
         # Make sure save_dr exists
         os.makedirs(save_dr, exist_ok=True)
 
+        # If Fail.
+        if clear_existing == 'fail':
+            existing_files = len(os.listdir(save_dr))
+            if existing_files > 0:
+                raise RuntimeError('The save directory ' +
+                                   str(save_dr) + ' is not empty.'
+                                   ' Either change clear_existing or provide '
+                                   'a new save_dr.')
+
+        # Get cols in scope
         cols = self.get_cols(scope)
 
-        # @TODO re-write as multi-processed
-
         # For each subj / data point
-        for index in self.index:
-
-            subj_data = []
-            for key in cols:
-                int_key = self.loc[index, key]
-                subj_data.append(self.file_mapping[int_key].load())
-
-            # Stack the subj data with extra columns at last axis
-            subj_data = np.stack(subj_data, axis=-1)
-
-            # Optional cast to dtype
-            if cast_to is not None:
-                subj_data = subj_data.astype(cast_to)
-
-            # Save as name of index in save loc
-            save_loc = os.path.join(save_dr, str(index) + '.npy')
-            np.save(save_loc, subj_data)
+        saved_locs = Parallel(n_jobs=n_jobs)(delayed(mp_consol_save)(
+            data_files=[self.file_mapping[self.loc[index, key]]
+                        for key in cols],
+            index=index, cast_to=cast_to, save_dr=save_dr)
+            for index in self.index)
 
         # If replace with
         if replace_with is not None:
@@ -1492,9 +1629,38 @@ class Dataset(pd.DataFrame):
             # Drop existing cols
             self.drop(cols, axis=1, inplace=True)
 
-            # Add new
-            self.add_data_files({replace_with: os.listdir(save_dr)},
-                                file_to_subject='auto', inplace=True)
+            # Create new series and add as new col
+            self[replace_with] = pd.Series(saved_locs, index=self.index)
+
+            # Cast to data file
+            self.to_data_file(scope=replace_with,
+                              inplace=True)
+
+    def update_data_file_paths(self, old, new):
+        '''Go through and update saved file paths within
+        :data:`Dataset.file_mapping`. This function can be used
+        when the underlying location of the data files has changed, or
+        perhaps when loading a saved dataset on a different device.
+
+        Note the old and new parameters work the same as those
+        in the base python :func:`string.replace`.
+
+        Parameters
+        -----------
+        old : str
+            The substring in which to replace every instance found
+            in every saved file path with new.
+
+        new : str
+            The substring in which to replace old with in
+            every substring found.
+        '''
+
+        self._check_file_mapping()
+
+        for file_ind in self.file_mapping:
+            self.file_mapping[file_ind].loc =\
+                self.file_mapping[file_ind].loc.replace(old, new)
 
     def _get_next_ind(self):
 
@@ -1950,3 +2116,5 @@ class Dataset(pd.DataFrame):
                              drop_cols,
                              drop_cols_by_unique_val,
                              drop_cols_by_nan)
+
+

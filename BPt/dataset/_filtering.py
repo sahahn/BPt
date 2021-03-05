@@ -195,7 +195,7 @@ def _drop_cols(self, to_drop):
 
 @doc(**_sip_docs)
 def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
-                               reduce_func=np.mean, n_jobs=1, inplace=False):
+                               reduce_func=np.mean, n_jobs=-1, inplace=False):
     '''This method is designed to allow dropping a fixed percent of outliers
     from the requested columns. This method is designed to work
     on float type / cont. variables.
@@ -279,7 +279,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
 
         ::
 
-            default = 1
+            default = -1
 
     {inplace}
 
@@ -338,7 +338,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
 
 @doc(**_sip_docs)
 def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
-                           reduce_func=np.mean, n_jobs=1, inplace=False):
+                           reduce_func=np.mean, n_jobs=-1, inplace=False):
     '''This method is designed to allow dropping outliers
     from the requested columns based on comparisons with that columns
     standard deviation.
@@ -415,7 +415,7 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
 
         ::
 
-            default = 1
+            default = -1
 
     {inplace}
 

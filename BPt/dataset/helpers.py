@@ -3,6 +3,7 @@ import numpy as np
 import glob
 import os
 import warnings
+from joblib import wrap_non_picklable_objects
 
 
 def proc_fop(fop):
@@ -156,3 +157,41 @@ def verbose_print(self, *args, **kwargs):
         # Use base print for rest
         else:
             print(flush=True, *args, **kwargs)
+
+
+def mp_consol_save(data_files, index, cast_to, save_dr):
+
+    # Load the subjects data
+    subj_data = [df.load() for df in data_files]
+
+    # Stack the subj data with extra columns at last axis
+    subj_data = np.stack(subj_data, axis=-1)
+
+    # Optional cast to dtype
+    if cast_to is not None:
+        subj_data = subj_data.astype(cast_to)
+
+    # Save as name of index in save loc
+    save_loc = os.path.join(save_dr, str(index) + '.npy')
+    np.save(save_loc, subj_data)
+
+    return save_loc
+
+
+def wrap_load_func(load_func, _print):
+
+    if load_func.__module__ == '__main__':
+        wrapped_load_func = wrap_non_picklable_objects(load_func)
+        _print('Warning: Passed load_func was defined within the',
+               '__main__ namespace and therefore has been '
+               'cloud wrapped.',
+               'The function will still work, but it is '
+               'reccomended to',
+               'define this function in a separate file, '
+               'and then import',
+               'it , otherwise loader caching will be limited',
+               'in utility!', level=0)
+    else:
+        wrapped_load_func = load_func
+
+    return wrapped_load_func

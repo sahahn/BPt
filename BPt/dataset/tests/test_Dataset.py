@@ -1,3 +1,4 @@
+import shutil
 import numpy as np
 import pandas as pd
 import tempfile
@@ -10,6 +11,32 @@ from .datasets import (get_fake_dataset, get_fake_dataset2,
                        get_fake_multi_index_dataset, get_fake_dataset4,
                        get_fake_dataset5, get_full_dataset)
 from ..Dataset import Dataset
+import pickle
+
+
+def test_pickle():
+
+    df = get_full_dataset()
+
+    temp_dr = tempfile.gettempdir()
+    loc = os.path.join(temp_dr, 'temp.pkl')
+
+    with open(loc, 'wb') as f:
+        pickle.dump(df, f)
+
+    with open(loc, 'rb') as f:
+        df2 = pickle.load(f)
+
+    assert len(df.test_subjects) == len(df2.test_subjects)
+
+    # Clean up when done
+    os.remove(loc)
+
+    # Test pandas to_pickle
+    df.to_pickle(loc)
+    q = pd.read_pickle(loc)
+    assert len(df.test_subjects) == len(q.test_subjects)
+    assert isinstance(q, Dataset)
 
 
 def test_indexing():
@@ -232,7 +259,7 @@ def test_add_data_files():
     assert 'c_2' in df.file_mapping[2].loc
 
 
-def test_data_files_integration():
+def setup_datafiles():
 
     df = get_fake_dataset()
 
@@ -255,6 +282,43 @@ def test_data_files_integration():
     df = df.add_data_files(files=files,
                            file_to_subject=file_to_subject,
                            load_func=np.load)
+
+    return df
+
+
+def test_data_files_consolidate():
+
+    df = setup_datafiles()
+    assert df.file_mapping[0].load().shape == (2,)
+
+    df['data_files2'] = df['data_files'].copy()
+    df.add_scope('data_files2', 'data file', inplace=True)
+
+    temp_dr = tempfile.gettempdir()
+    save_dr = os.path.join(temp_dr, 'save_consol')
+
+    if os.path.exists(save_dr):
+        shutil.rmtree(save_dr)
+
+    df.consolidate_data_files(save_dr, replace_with='test',
+                              scope='data file', cast_to=None,
+                              clear_existing='fail', n_jobs=-1)
+
+    assert len(df.file_mapping) == 3
+    assert df.shape == (3, 4)
+    assert df.file_mapping[0].load().shape == ((2, 2))
+
+    # Should fail if try again
+    with assert_raises(RuntimeError):
+        df.consolidate_data_files(save_dr, replace_with='test',
+                                  scope='data file', cast_to=None,
+                                  clear_existing='fail', n_jobs=-1)
+
+
+def test_data_files_integration():
+
+    df = setup_datafiles()
+
     assert len(df['data_files']) == 3
     assert df.loc[0, 'data_files'] == 0
     assert df.loc[2, 'data_files'] == 2

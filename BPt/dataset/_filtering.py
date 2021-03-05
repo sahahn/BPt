@@ -2,7 +2,7 @@ import numpy as np
 from itertools import combinations
 from .helpers import proc_fop
 from pandas.util._decorators import doc
-from .Dataset import _sip_docs
+from .Dataset import _sip_docs, _file_docs
 
 
 def _drop_subjects(self, subjects):
@@ -193,7 +193,7 @@ def _drop_cols(self, to_drop):
         self._print('Dropped Columns:', to_drop, level=2)
 
 
-@doc(**_sip_docs)
+@doc(**_sip_docs, **_file_docs)
 def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
                                reduce_func=np.mean, n_jobs=-1, inplace=False):
     '''This method is designed to allow dropping a fixed percent of outliers
@@ -256,30 +256,9 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
 
             default = True
 
-    reduce_func : python function, optional
-        The passed python function will be applied only if
-        the requested col/column is a 'data file'. In the case
-        that it is, the function should accept as input
-        the data from one data file, and should return a single
-        scalar value. For example, the default value is
-        :func:`numpy.mean`, which returns one value.
+    {reduce_func}
 
-        ::
-
-            default = np.mean
-
-    n_jobs : int, optional
-        As with reduce_func, this parameter is only
-        valid when the passed col/column is a 'data file'.
-        In that case, this specifies the number of cores
-        to use in loading and applying the reduce_func to each
-        data file. This can provide a significant speed up when
-        passed the number of avaliable cores, but can sometimes
-        be memory intensive depending on the underlying size of the file.
-
-        ::
-
-            default = -1
+    {n_jobs}
 
     {inplace}
 
@@ -336,7 +315,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
     self._check_file_mapping()
 
 
-@doc(**_sip_docs)
+@doc(**_sip_docs, **_file_docs)
 def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
                            reduce_func=np.mean, n_jobs=-1, inplace=False):
     '''This method is designed to allow dropping outliers
@@ -392,30 +371,9 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
 
             default = True
 
-    reduce_func : python function, optional
-        The passed python function will be applied only if
-        the requested col/column is a 'data file'. In the case
-        that it is, the function should accept as input
-        the data from one data file, and should return a single
-        scalar value. For example, the default value is
-        numpy's mean function, which returns one value.
+    {reduce_func}
 
-        ::
-
-            default = np.mean
-
-    n_jobs : int, optional
-        As with reduce_func, this parameter is only
-        valid when the passed col/column is a 'data file'.
-        In that case, this specifies the number of cores
-        to use in loading and applying the reduce_func to each
-        data file. This can provide a significant speed up when
-        passed the number of avaliable cores, but can sometimes
-        be memory intensive depending on the underlying size of the file.
-
-        ::
-
-            default = -1
+    {n_jobs}
 
     {inplace}
 

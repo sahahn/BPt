@@ -19,6 +19,8 @@ class DataFile():
 
     def reduce(self, reduce_func):
 
+        print('reduce')
+
         # Init cache if not already
         if not hasattr(self, '_cached_reduce'):
             self._cached_reduce = {}

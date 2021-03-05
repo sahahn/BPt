@@ -70,6 +70,38 @@ _shared_docs['load_func'] = """load_func : python function, optional
 
 """
 
+_file_docs = {}
+_file_docs['reduce_func'] = '''reduce_func : python function, optional
+            The passed python function will be applied only if
+            the requested col/column is a 'data file'. In the case
+            that it is, the function should accept as input
+            the data from one data file, and should return a single
+            scalar value. For example, the default value is
+            numpy's mean function, which returns one value.
+
+            ::
+
+                default = np.mean
+
+'''
+
+_file_docs['n_jobs'] = '''n_jobs : int, optional
+            As with reduce_func, this parameter is only
+            valid when the passed col/column is a 'data file'.
+            In that case, this specifies the number of cores
+            to use in loading and applying the reduce_func to each
+            data file. This can provide a significant speed up when
+            passed the number of avaliable cores, but can sometimes
+            be memory intensive depending on the underlying size of the file.
+
+            If set to -1, will try to automatically use all avaliable cores.
+
+            ::
+
+                default = -1
+
+'''
+
 
 class Dataset(pd.DataFrame):
     '''The BPt Dataset class is the main class used for preparing data
@@ -1039,7 +1071,8 @@ class Dataset(pd.DataFrame):
                 self._get_cols(scope, limit_to=data_cols)]
 
         return sorted(inds)
-
+    
+    @doc(**_file_docs)
     def get_values(self, col, dropna=True, decode_values=False,
                    reduce_func=np.mean, n_jobs=-1):
         '''This method is used to obtain the either normally loaded and
@@ -1071,32 +1104,9 @@ class Dataset(pd.DataFrame):
 
                 default = False
 
-        reduce_func : python function, optional
-            The passed python function will be applied only if
-            the requested col/column is a 'data file'. In the case
-            that it is, the function should accept as input
-            the data from one data file, and should return a single
-            scalar value. For example, the default value is
-            numpy's mean function, which returns one value.
+        {reduce_func}
 
-            ::
-
-                default = np.mean
-
-        n_jobs : int, optional
-            As with reduce_func, this parameter is only
-            valid when the passed col/column is a 'data file'.
-            In that case, this specifies the number of cores
-            to use in loading and applying the reduce_func to each
-            data file. This can provide a significant speed up when
-            passed the number of avaliable cores, but can sometimes
-            be memory intensive depending on the underlying size of the file.
-
-            If set to -1, will try to automatically use all avaliable cores.
-
-            ::
-
-                default = -1
+        {n_jobs}
 
         Returns
         ---------

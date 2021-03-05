@@ -25,6 +25,8 @@ setup(name='brain-pred-toolbox',
           'loky',
           'nose',
       ],
+      extra_requires={
+          'extra': ['lightgbm>3', 'sweetviz>2']},
       test_suite='nose.collector',
       tests_require=['nose', 'coverage'],
       zip_safe=False)

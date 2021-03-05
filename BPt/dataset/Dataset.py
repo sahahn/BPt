@@ -1071,7 +1071,7 @@ class Dataset(pd.DataFrame):
                 self._get_cols(scope, limit_to=data_cols)]
 
         return sorted(inds)
-    
+
     @doc(**_file_docs)
     def get_values(self, col, dropna=True, decode_values=False,
                    reduce_func=np.mean, n_jobs=-1):

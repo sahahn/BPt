@@ -19,8 +19,6 @@ class DataFile():
 
     def reduce(self, reduce_func):
 
-        print('reduce')
-
         # Init cache if not already
         if not hasattr(self, '_cached_reduce'):
             self._cached_reduce = {}
@@ -94,7 +92,7 @@ def load_data_file_proxy(values, reduce_func, file_mapping, n_jobs=1):
     file_splits = [v_func(split) for split in splits]
 
     # Load w/ joblib Parallel
-    output = Parallel(n_jobs=n_jobs)(delayed(mp_single_load)(
+    output = Parallel(n_jobs=n_jobs, backend="threading")(delayed(mp_single_load)(
                       files=files, reduce_func=reduce_func)
                       for files in file_splits)
 

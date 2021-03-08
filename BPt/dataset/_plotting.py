@@ -151,7 +151,7 @@ def _plot_float(self, col, subjs, print_info=True, **plot_args):
     plt.xlabel('Values')
     plt.title(str(col) + ' Distribution')
 
-    if show:
+    if plot_args['show']:
         plt.show()
 
     return info
@@ -190,7 +190,7 @@ def _plot_category(self, col, subjs, print_info=True, **plot_args):
     plt.title(str(col) + ' Distribution')
 
     # If show, call show
-    if show:
+    if plot_args['show']:
         plt.show()
 
     return info
@@ -332,7 +332,7 @@ def plot_bivar(self, col1, col2, subjects='all',
         else:
             self._plot_float_float(col1, col2, subjs=subjs, **plot_args)
 
-    if show:
+    if plot_args['show']:
         plt.show()
 
 

@@ -191,28 +191,28 @@ class BPtEvaluator():
         self._feat_names = feat_names
 
     @property
-    def val_indxs(self):
+    def val_indices(self):
         '''This parameter stores the validation subjects / index
         used in every fold of the cross-validation. It can be
         useful in some cases
         to check to see exactly what cross-validation was applied.'''
-        return self._val_indxs
+        return self._val_indices
 
-    @val_indxs.setter
-    def val_indxs(self, val_indxs):
-        self._val_indxs = val_indxs
+    @val_indices.setter
+    def val_indices(self, val_indices):
+        self._val_indices = val_indices
 
     @property
-    def train_indxs(self):
+    def train_indices(self):
         '''This parameter stores the training subjects / index
         used in every fold of the cross-validation. It can be
         useful in some cases
         to check to see exactly what cross-validation was applied.'''
-        return self._train_indxs
+        return self._train_indices
 
-    @train_indxs.setter
-    def train_indxs(self, train_indxs):
-        self._train_indxs = train_indxs
+    @train_indices.setter
+    def train_indices(self, train_indices):
+        self._train_indices = train_indices
 
     @property
     def timing(self):
@@ -302,7 +302,7 @@ class BPtEvaluator():
         self.scores = {scorer_str: [] for scorer_str in self.ps.scorer}
 
         # Save train and test subjs
-        self.train_indxs, self.val_indxs = [], []
+        self.train_indices, self.val_indices = [], []
 
         # Save final feat names
         self.feat_names = []
@@ -389,8 +389,8 @@ class BPtEvaluator():
     def _eval_fold(self, X_tr, y_tr, X_val, y_val):
 
         # Keep track of subjects in each fold
-        self.train_indxs.append(X_tr.index)
-        self.val_indxs.append(X_val.index)
+        self.train_indices.append(X_tr.index)
+        self.val_indices.append(X_val.index)
 
         # Get clone of estimator to fit
         estimator_ = clone(self.estimator)
@@ -476,8 +476,8 @@ class BPtEvaluator():
             self.mean_scores[scorer_key] = np.mean(scores)
 
             # Compute scores weighted by number of subjs
-            weights = [len(self.val_indxs[i])
-                       for i in range(len(self.val_indxs))]
+            weights = [len(self.val_indices[i])
+                       for i in range(len(self.val_indices))]
             self.weighted_mean_scores[scorer_key] =\
                 np.average(scores, weights=weights)
 
@@ -527,7 +527,7 @@ class BPtEvaluator():
         if self.timing is not None:
             saved_attrs.append('timing')
 
-        saved_attrs += ['train_indxs', 'val_indxs', 'feat_names', 'ps',
+        saved_attrs += ['train_indices', 'val_indices', 'feat_names', 'ps',
                         'mean_scores', 'std_scores',
                         'weighted_mean_scores', 'scores']
 
@@ -698,8 +698,8 @@ class BPtEvaluator():
         # Get the X and y df's, without any subjects with missing
         # target values for this fold
         X_val_df, y_val_df =\
-            get_non_nan_Xy(X_df.loc[self.val_indxs[fold]],
-                           y_df.loc[self.val_indxs[fold]])
+            get_non_nan_Xy(X_df.loc[self.val_indices[fold]],
+                           y_df.loc[self.val_indices[fold]])
 
         # Base as array, and all feat names
         X_trans, feat_names = np.array(X_val_df), list(X_val_df)

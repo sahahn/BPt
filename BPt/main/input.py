@@ -34,6 +34,39 @@ _piece_docs[
 
     """
 
+_piece_docs[
+    "params"
+] = """params : int, str or dict of :ref:`params<Params>`, optional
+        `params` can be used to set an associated distribution
+        of hyper-parameters, fixed parameters or combination of.
+
+        Preset parameter options can be found distributions are
+        listed for each choice of params with the corresponding
+        obj at :ref:`Pipeline Options<pipeline_options>`.
+
+        More information on how this parameter
+        works can be found at :ref:`Params`.
+
+        ::
+
+            default = 0
+"""
+
+_piece_docs[
+    "scope"
+] = """scope : :ref:`Scope`, optional
+        `scope` determines the subset of
+        features / columns in which this object
+        should operate on within the created pipeline.
+
+        For example, by specifying scope = 'float', then
+        this object will only operate on columns with scope
+        float.
+
+        See :ref:`Scope` for more information on
+        how scopes can be specified.
+"""
+
 
 def proc_all(base_obj):
 
@@ -307,14 +340,13 @@ class Piece(Params, Check):
         return objs[0], params
 
 
+@doc(scope=_piece_docs['scope'], params=_piece_docs['params'])
 class Loader(Piece):
-    ''' Loader refers to transformations which operate on Data_Files.
-    See: :func:`add_data_files <Dataset.add_data_files>`
-    in the :class:`Dataset` class.
-    They in essence take in saved file locations, and after some series
-    of transformations pass on compatible features.
+    ''' Loader refers to transformations which operate on :ref:`data_files`.
+    They in essence take in saved file locations and after some series
+    of specified transformations pass on compatible features.
 
-    Importantly, the Loader object can operate in two ways. Either
+    The Loader object can operate in two ways. Either
     the Loader can define operations which are computed on
     single files independently, or load and pass on data
     to the defined `obj` as a list, where each element of
@@ -346,7 +378,7 @@ class Loader(Piece):
         might constitute loading in say 3D neuroimaging data,
         and passing on features as extracted by ROI.
 
-    behav : {'single', 'all'}, optional
+    behav : 'single' or 'all', optional
         The Loader object can operate under two different
         behaviors, corresponding to operations which can
         be done for each subject's Data File independently ('single')
@@ -371,7 +403,7 @@ class Loader(Piece):
         into memory, but allows for using information from the rest
         of the group split. For example we would need to set Loader
         to 'all' if we wanted to use
-        https://nilearn.github.io/modules/generated/nilearn.connectome.ConnectivityMeasure.html
+        :class:`nilearn.connectome.ConnectivityMeasure`
         with parameter kind = "tangent" as this transformer requires
         information from the rest of the loaded subjects when training.
         On the otherhand, if we used kind = "correlation",
@@ -383,38 +415,9 @@ class Loader(Piece):
 
             default = 'single'
 
+    {params}
 
-    params : int, str or dict of :ref:`params<Params>`, optional
-        `params` determines optionally if the distribution
-        of hyper-parameters to
-        potentially search over for this loader. Preset param
-        distributions are
-        listed for each choice of obj at :ref:`Loaders`,
-        and you can read more on
-        how params work more generally at :ref:`Params`.
-
-        If obj is passed as :class:`Pipe`, see :class:`Pipe`
-        for an example on how different
-        corresponding params can be passed to each piece individually.
-
-        ::
-
-            default = 0
-
-    scope : :ref:`Scope`, optional
-        `scope` determines on which subset of
-        features the specified loader
-        should transform.
-
-        See :ref:`Scope` for more information on
-        how scopes can be specified.
-
-        Warning: If using behav = 'all', then the loader
-        can only operate on a scope referring to a single fixed column!
-
-        You will likely want to pass either a single custom key
-        based column, or the default preset scope of 'data file'.
-
+    {scope}
         ::
 
             default = 'data file'
@@ -447,6 +450,27 @@ class Loader(Piece):
 
     extra_params : :ref:`extra_params`
         See :ref:`extra_params`
+
+    Notes
+    --------
+    If obj is passed as :class:`Pipe`, see :class:`Pipe`
+    for an example on how different
+    corresponding params can be passed
+    to each piece individually.
+
+    See Also
+    ---------
+    Dataset.add_data_files : For adding data files to :class:`Dataset`.
+
+    Examples
+    -----------
+    A basic example is shown below:
+
+    .. ipython:: python
+
+        import BPt as bp
+        loader = bp.Loader(obj='identity')
+        loader
     '''
 
     _constructor = LoaderConstructor
@@ -751,6 +775,7 @@ class Transformer(Piece):
         self._check_args()
 
 
+@doc(params=_piece_docs['params'], cache_loc=_piece_docs['cache_loc'])
 class FeatSelector(Piece):
     ''' FeatSelector is a base piece of
     :class:`ModelPipeline` or :class:`Pipeline`, which is designed
@@ -764,21 +789,11 @@ class FeatSelector(Piece):
         for all avaliable options. Notably, if 'rfe' is passed, then a
         base model must also be passed!
 
-        See :ref:`Pipeline Objects<pipeline_objects>` to read more about pipeline objects
+        See :ref:`Pipeline Objects<pipeline_objects>` to read more
+        about pipeline objects
         in general.
 
-    params : int, str or dict of :ref:`params<Params>`, optional
-        `params` set an associated distribution of hyper-parameters to
-        potentially search over with this FeatSelector.
-        Preset param distributions are
-        listed for each choice of params with the corresponding
-        obj at :ref:`Feat Selectors`,
-        and you can read more on how params
-        work more generally at :ref:`Params`.
-
-        ::
-
-            default = 0
+    {params}
 
     scope : :ref:`Scope`, optional
         `scope` determines on which subset of features the specified
@@ -790,16 +805,7 @@ class FeatSelector(Piece):
 
             default = 'all'
 
-    cache_loc : str, Path or None, optional
-        An optional path in which this Piece should be
-        cached after fitting. This is typically useful in
-        cases where fitting the base object takes a long time.
-
-        To skip this option, keep at the default argument of None.
-
-        ::
-
-            default = None
+    {cache_loc}
 
     base_model : :class:`Model`, :class:`Ensemble` or None, optional
         If 'rfe' is passed to obj, then a base_model is required in
@@ -1156,7 +1162,7 @@ class Ensemble(Model):
 
 class ParamSearch(Params):
     ''' ParamSearch is special input object designed to be
-    used with :class:`ModelPipeline` pr :class:`Pipeline`.
+    used with :class:`ModelPipeline` or :class:`Pipeline`.
     ParamSearch defines a hyperparameter search strategy.
     When passed to :class:`Pipeline`,
     its search strategy is applied in the context of any set :ref:`Params`

@@ -2,7 +2,7 @@ import numpy as np
 from itertools import combinations
 from .helpers import proc_fop
 from pandas.util._decorators import doc
-from .Dataset import _sip_docs, _file_docs
+from .Dataset import _shared_docs, _sip_docs, _file_docs
 
 
 def _drop_subjects(self, subjects):
@@ -36,6 +36,11 @@ def drop_nan_subjects(self, scope, inplace=False):
         self._drop_subjects(nan_subjects)
 
 
+_si_docs = {'subjects': _shared_docs['subjects'],
+            'inplace': _shared_docs['inplace']}
+
+
+@doc(**_si_docs)
 def apply_inclusions(self, subjects, inplace=False):
     '''This method will drop all subjects
     that do not overlap with the passed subjects to
@@ -46,21 +51,10 @@ def apply_inclusions(self, subjects, inplace=False):
 
     Parameters
     -----------
-    subjects : :ref:`Subjects`
-        This argument can be any of the BPt accepted
-        subject style inputs. E.g., None, 'nan' for subjects
-        with any nan data, the str location of a file
-        formatted with one subject per line, or directly an
-        array-like of subjects, to name some options.
+    {subjects}
 
-        See :ref:`Subjects` for all options.
+    {inplace}
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
-
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -74,6 +68,7 @@ def apply_inclusions(self, subjects, inplace=False):
         self.drop(list(to_drop), axis=0, inplace=True)
 
 
+@doc(**_si_docs)
 def apply_exclusions(self, subjects, inplace=False):
     '''This method will drop all subjects
     that overlap with the passed subjects to
@@ -81,21 +76,10 @@ def apply_exclusions(self, subjects, inplace=False):
 
     Parameters
     -----------
-    subjects : :ref:`Subjects`
-        This argument can be any of the BPt accepted
-        subject style inputs. E.g., None, 'nan' for subjects
-        with any nan data, the str location of a file
-        formatted with one subject per line, or directly an
-        array-like of subjects, to name some options.
+    {subjects}
 
-        See :ref:`Subjects` for all options.
+    {inplace}
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
-
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -193,7 +177,10 @@ def _drop_cols(self, to_drop):
         self._print('Dropped Columns:', to_drop, level=2)
 
 
-@doc(**_sip_docs, **_file_docs)
+_outlier_docs = {**_sip_docs, **_file_docs, 'drop': _shared_docs['drop']}
+
+
+@doc(**_outlier_docs)
 def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
                                reduce_func=np.mean, n_jobs=-1, inplace=False):
     '''This method is designed to allow dropping a fixed percent of outliers
@@ -245,16 +232,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
 
             default = 'float'
 
-    drop : bool, optional
-        By default this function will drop any subject's that are
-        determined as outliers. On the otherhand, you
-        may instead set specific outlier values as NaN values instead.
-        To do this, you can pass drop=False here, and now those specific
-        values identified as outliers will be replaced with NaN.
-
-        ::
-
-            default = True
+    {drop}
 
     {reduce_func}
 
@@ -315,7 +293,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
     self._check_file_mapping()
 
 
-@doc(**_sip_docs, **_file_docs)
+@doc(**_outlier_docs)
 def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
                            reduce_func=np.mean, n_jobs=-1, inplace=False):
     '''This method is designed to allow dropping outliers
@@ -360,22 +338,54 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
 
             default = 'float'
 
-    drop : bool, optional
-        By default this function will drop any subject's that are
-        determined as outliers. On the otherhand, you
-        may instead set specific outlier values as NaN values instead.
-        To do this, you can pass drop=False here, and now those specific
-        values identified as outliers will be replaced with NaN.
-
-        ::
-
-            default = True
+    {drop}
 
     {reduce_func}
 
     {n_jobs}
 
     {inplace}
+
+    Examples
+    ----------
+
+    If we define a dataset, we can check the std.
+
+    .. ipython:: python
+
+        import BPt as bp
+        import numpy as np
+        data = bp.Dataset()
+        data.verbose = 1
+        data['1'] = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+        np.std(data['1']), np.mean(data['1'])
+
+    We can now see how different thresholds work.
+
+    .. ipython:: python
+
+        # This won't drop anything
+        data.filter_outliers_by_std(n_std=2)
+
+        # This will
+        data.filter_outliers_by_std(n_std=1)
+
+    What if there was more than one column?
+
+    .. ipython:: python
+
+        data['2'] = [1, 1, 1, 1, 10, 1, 1, 1, 1, 1]
+
+        # Now a subject will be dropped
+        data.filter_outliers_by_std(n_std=2)
+        data.filter_outliers_by_std(n_std=1)
+
+    We can also apply it only to one column, and instead of dropping
+    subjects, replace outliers with NaN's
+
+    .. ipython:: python
+
+        data.filter_outliers_by_std(n_std=1, scope='1', drop=False)
 
     '''
 
@@ -431,7 +441,7 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
     self._check_file_mapping()
 
 
-@doc(**_sip_docs)
+@doc(**_sip_docs, drop=_shared_docs['drop'])
 def filter_categorical_by_percent(self, drop_percent=1, scope='category',
                                   drop=True, inplace=False):
     '''This method is designed to allow performing outlier filtering
@@ -471,16 +481,7 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
 
             default = 'category'
 
-    drop : bool, optional
-        By default this function will drop any subject's that are
-        determined as outliers. On the otherhand, you
-        may instead set specific outlier values as NaN values instead.
-        To do this, you can pass drop=False here, and now those specific
-        values identified as outliers will be replaced with NaN.
-
-        ::
-
-            default = True
+    {drop}
 
     {inplace}
 
@@ -591,9 +592,11 @@ def drop_duplicate_cols(self, scope='all', inplace=False):
 
 
 @doc(**_sip_docs)
-def drop_cols(self, exclusions=None,
+def drop_cols(self,
+              exclusions=None,
               inclusions=None,
-              scope='all', inplace=False):
+              scope='all',
+              inplace=False):
     '''This method is designed to allow
     dropping columns based on some flexible arguments.
     Essentially, exclusions, inclusions and scope are
@@ -605,6 +608,8 @@ def drop_cols(self, exclusions=None,
     by scope and EITHER in the passed exclusions columns or
     not in the passed inclusions columns, drop that column.
 
+    Parameters
+    ------------
     exclusions : :ref:`Scope`, optional
         A BPt style :ref:`Scope` used to select a subset of
         columns in which if a column is in the selected
@@ -620,13 +625,29 @@ def drop_cols(self, exclusions=None,
         set, then only those columns within scope will be checked to
         see if outside of the passed inclusions here.)
 
-
     {scope}
         ::
 
             default = 'all'
 
     {inplace}
+
+    Examples
+    ---------
+
+    Given the below dataset, we could try dropping some different columns.
+    Each drop will be done on a copy of the Dataset.
+
+    .. ipython:: python
+
+        import BPt as bp
+        data = bp.Dataset(columns=['cat1', 'cat2', 'cat3', 'dog1', 'dog2'])
+        list(data)
+
+        list(data.drop_cols(exclusions='cat'))
+        list(data.drop_cols(exclusions='2', scope='cat'))
+        list(data.drop_cols(inclusions=['1', '2'], scope='cat'))
+        list(data.drop_cols(inclusions='dog'))
 
     '''
 

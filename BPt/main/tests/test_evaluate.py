@@ -91,8 +91,8 @@ def test_evaluate_regression_dt():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_indxs) == 5
-    assert len(evaluator.val_indxs) == 5
+    assert len(evaluator.train_indices) == 5
+    assert len(evaluator.val_indices) == 5
 
 
 def get_fake_category_dataset():
@@ -311,8 +311,8 @@ def test_evaluate_with_resid():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_indxs) == 5
-    assert len(evaluator.val_indxs) == 5
+    assert len(evaluator.train_indices) == 5
+    assert len(evaluator.val_indices) == 5
 
 
 def test_evaluate_with_resid_param_search():
@@ -361,8 +361,8 @@ def test_evaluate_with_resid_param_search():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_indxs) == 5
-    assert len(evaluator.val_indxs) == 5
+    assert len(evaluator.train_indices) == 5
+    assert len(evaluator.val_indices) == 5
 
 
 def test_evaluate_with_resid_grid_search():
@@ -414,6 +414,6 @@ def test_evaluate_with_resid_grid_search():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_indxs) == 5
-    assert len(evaluator.val_indxs) == 5
+    assert len(evaluator.train_indices) == 5
+    assert len(evaluator.val_indices) == 5
 

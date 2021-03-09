@@ -1,24 +1,11 @@
 import pandas as pd
 import numpy as np
-from itertools import product
-
-
-from ..helpers.DataFile import DataFile, load_data_file_proxy
+from ..helpers.DataFile import load_data_file_proxy
 from copy import copy, deepcopy
-from ..helpers.ML_Helpers import conv_to_list
-from .helpers import (base_load_subjects, proc_file_input,
-                      verbose_print, mp_consol_save, wrap_load_func)
-from ..main.input_operations import Intersection, Value_Subset
+from .helpers import (verbose_print)
+from ..main.input_operations import Intersection
 from pandas.util._decorators import doc
-import os
-import shutil
-from joblib import Parallel, delayed
 
-# @TODO Look into pandas finalize
-# https://github.com/pandas-dev/pandas/blob/ce3e57b44932e7131968b9bcca97c1391cb6b532/pandas/core/generic.py#L5422
-
-# @TODO Customize the appearance of Dataset class, e.g.
-# add to repr and to_html, etc...
 
 _shared_docs = {}
 _shared_docs['scope'] = """scope : :ref:`Scope`
@@ -102,6 +89,29 @@ _file_docs['n_jobs'] = '''n_jobs : int, optional
 
 '''
 
+_shared_docs['drop'] = '''drop : bool, optional
+        By default this function will drop any subjects / index that are
+        determined to be outliers. On the otherhand, you
+        may instead set specific outlier values as NaN values instead.
+        To do this, set drop=False. Now those specific
+        values identified as outliers will be replaced with NaN.
+
+        ::
+
+            default = True
+
+'''
+
+_shared_docs['subjects'] = '''subjects : :ref:`Subjects`
+        This argument can be any of the BPt accepted
+        subject style inputs. E.g., None, 'nan' for subjects
+        with any nan data, the str location of a file
+        formatted with one subject per line, or directly an
+        array-like of subjects, to name some options.
+
+        See :ref:`Subjects` for all options.
+'''
+
 
 class Dataset(pd.DataFrame):
     '''The BPt Dataset class is the main class used for preparing data
@@ -156,10 +166,6 @@ class Dataset(pd.DataFrame):
     @property
     def _constructor(self):
         return Dataset
-
-    @property
-    def __constructorsliced(self):
-        return pd.Series
 
     @property
     def reserved_roles(self):
@@ -385,220 +391,6 @@ class Dataset(pd.DataFrame):
         for col in remove_scope:
             self._remove_scope(col, 'category')
 
-    def _apply_only_level(self, subjects, only_level):
-
-        # If only level not None and MultiIndex - only keep
-        if isinstance(self.index, pd.MultiIndex) and only_level is not None:
-            drop_names = list(self.index.names)
-            drop_names.remove(self.index.names[only_level])
-            subjects = subjects.droplevel(drop_names)
-
-        return set(list(subjects))
-
-    def _get_nan_loaded_subjects(self, only_level):
-
-        # Get nan subjects
-        nan_subjects = self[pd.isnull(self[:]).any(axis=1)].index
-
-        # Apply only level + convert to sat
-        nan_subjects = self._apply_only_level(nan_subjects, only_level)
-
-        return nan_subjects
-
-    def _get_value_subset_loaded_subjects(self, subjects, only_level):
-
-        if subjects.name not in list(self):
-            raise KeyError('Passed Value_Subset name: ' +
-                           repr(subjects.name) +
-                           ' is not loaded')
-
-        # Get the relevant series
-        data = self.get_values(subjects.name, dropna=False,
-                               decode_values=subjects.decode_values)
-
-        # Extract the values as list
-        values = conv_to_list(subjects.values)
-
-        # Get subjects by values
-        loaded_subjects = data[data.isin(values)].index
-
-        # Apply only level + convert to set
-        loaded_subjects =\
-            self._apply_only_level(loaded_subjects, only_level)
-
-        return loaded_subjects
-
-    def _get_base_loaded_subjects(self, subjects, only_level):
-
-        loaded_subjects = base_load_subjects(subjects)
-
-        # In multi-index case
-        if isinstance(self.index, pd.MultiIndex):
-
-            # If want multi-index returned
-            if only_level is None:
-                loaded_subjects = set(self.loc[loaded_subjects].index)
-
-        # Non multi-index case try to cast to correct type
-        else:
-
-            dtype = self.index.dtype.name
-            if 'int' in dtype:
-                loaded_subjects = {int(s) for s in loaded_subjects}
-            elif 'float' in dtype:
-                loaded_subjects = {float(s) for s in loaded_subjects}
-            elif dtype == 'object':
-                loaded_subjects = {str(s) for s in loaded_subjects}
-            else:
-                raise RuntimeError('Index data type:' + dtype + ' '
-                                   'is not currently supported!')
-
-        return loaded_subjects
-
-    def _return_subjects_as(self, subjects, return_as, only_level):
-
-        if return_as == 'set':
-            return subjects
-
-        # If not set, treat as pandas index or flat index case
-        subjects = sorted(list(subjects))
-
-        # If not multi index, just cast and return
-        if not isinstance(self.index, pd.MultiIndex):
-            return pd.Index(data=subjects, name=self.index.name)
-
-        # Multi index case, with only level
-        if only_level is not None:
-            return pd.Index(data=subjects,
-                            name=self.index.names[only_level])
-
-        # RConvert to multi index
-        subjects = list(map(tuple, subjects))
-        multi_index = pd.MultiIndex.from_tuples(
-            subjects, names=self.index.names)
-
-        if return_as == 'flat index':
-            return multi_index.to_flat_index()
-        else:
-            return multi_index
-
-    def get_subjects(self, subjects, return_as='set', only_level=None):
-        '''Method to get a set of subjects, from
-        a set of already loaded ones, or from a saved location.
-
-        Parameters
-        -----------
-        subjects : :ref:`subjects`
-            This argument can be any of the BPt accepted
-            :ref:`Subjects` style inputs.
-            E.g., None, 'nan' for subjects
-            with any nan data, the str location of a file
-            formatted with one subject per line, or directly an
-            array-like of subjects, to name some options.
-
-            See :ref:`Subjects` for all options.
-
-        return_as : {'set', 'index', 'flat index'}, optional
-            - If 'set', return as set of subjects.
-            - If 'index', return as sorted pandas index.
-            - If 'flat index', will return as sorted pandas index
-                i.e., the same output as index, when not MultiIndex,
-                but when MultiIndex, will return the index as a flat
-                Index of tuples.
-
-        only_level : int or None, optional
-            This parameter is only relevant when the
-            underlying index is a MultiIndex.
-
-            Note: this param is not relevant
-            when using special tuple style input for subjects.
-
-            ::
-
-                default = None
-
-        Returns
-        ----------
-        subjects : {set, pd.Index, pd.MultiIndex}
-            Based on value of return_as, returns as
-            a set of subjects, sorted pandas Index, or sorted
-            pandas MultiIndex
-        '''
-
-        # input validation
-        if return_as not in ['set', 'index', 'flat index']:
-            raise TypeError('Invalid parameter passed to return as!')
-
-        # Check for passed intersection case
-        if isinstance(subjects, Intersection):
-
-            subjects_list =\
-                [self.get_subjects(s, return_as='set', only_level=only_level)
-                 for s in subjects]
-
-            loaded_subjects = set.intersection(*subjects_list)
-
-            # Return as requested
-            return self._return_subjects_as(loaded_subjects,
-                                            return_as=return_as,
-                                            only_level=only_level)
-
-        if isinstance(subjects, tuple):
-
-            if len(subjects) != len(self.index.names):
-                raise RuntimeError('Passed special tuple must match the '
-                                   'number of MultiIndex levels.')
-
-            # Proc each ind seperately
-            inds = []
-            for i, subject_arg in enumerate(subjects):
-                inds.append(self.get_subjects(subject_arg,
-                                              return_as='set',
-                                              only_level=i))
-            # Create set of sets
-            loaded_subjects = set(product(*inds))
-
-            # Return as requested, note only_level fixed as None
-            return self._return_subjects_as(loaded_subjects,
-                                            return_as=return_as,
-                                            only_level=None)
-
-        # Check if None
-        if subjects is None:
-            loaded_subjects = set()
-
-        # Check for special keywords
-        elif isinstance(subjects, str) and subjects == 'nan':
-            loaded_subjects =\
-                self._get_nan_loaded_subjects(only_level=only_level)
-
-        elif isinstance(subjects, str) and subjects == 'all':
-            loaded_subjects =\
-                self._apply_only_level(self.index, only_level)
-
-        elif isinstance(subjects, str) and subjects == 'train':
-            if not hasattr(self, 'train_subjects') or self.train_subjects is None:
-                raise RuntimeError('Train subjects undefined')
-            loaded_subjects = set(self.train_subjects)
-
-        elif isinstance(subjects, str) and subjects == 'test':
-            if not hasattr(self, 'test_subjects') or self.test_subjects is None:
-                raise RuntimeError('Test subjects undefined')
-            loaded_subjects = set(self.test_subjects)
-
-        # Check for Value Subset or Values Subset
-        elif isinstance(subjects, Value_Subset):
-            loaded_subjects =\
-                self._get_value_subset_loaded_subjects(subjects,
-                                                       only_level=only_level)
-        else:
-            loaded_subjects =\
-                self._get_base_loaded_subjects(subjects, only_level=only_level)
-
-        # Return based on return as value
-        return self._return_subjects_as(loaded_subjects, return_as,
-                                        only_level=only_level)
-
     def get_roles(self):
         ''' This function can be
         used to get a dictionary with the currently
@@ -662,10 +454,16 @@ class Dataset(pd.DataFrame):
 
         Parameters
         -----------
-        scope_to_roles: dict of :ref:`Scope` to :ref:`Role`
+        scope_to_roles : dict of :ref:`Scope` to :ref:`Role`
             A python dictionary with keys as :ref:`Scope`
             and their corresponding value's as the :ref:`Role`
             in which those columns should take.
+
+            For example ::
+
+                scope_to_roles = dict()
+                scope_to_roles['col1'] = 'target'
+                scope_to_roles['col2'] = 'non input'
 
         inplace : bool, optional
             If True, do operation inplace and return None.
@@ -743,10 +541,6 @@ class Dataset(pd.DataFrame):
             raise AttributeError(
                 'Passed role "' + str(role) + '" must be one of ' +
                 str(self.reserved_roles))
-
-        # If col is int or float, cast
-        if isinstance(col, int) or isinstance(col, float):
-            col = str(col)
 
         # Set as role
         self.roles[col] = role
@@ -826,10 +620,6 @@ class Dataset(pd.DataFrame):
             self._add_scope(col, scope_val)
 
     def _add_scope(self, col, scope_val):
-
-        # If col is int or float, cast
-        if isinstance(col, int) or isinstance(col, float):
-            col = str(col)
 
         # Check if category
         if scope_val == 'category':
@@ -1288,397 +1078,6 @@ class Dataset(pd.DataFrame):
         self._print('Categorical variables in dataset:',
                     self._get_cols(scope='category'), level=2)
 
-    def get_file_mapping(self):
-        '''This function is used to access the
-        up to date file mapping.
-
-        Returns
-        --------
-        file_mapping : dict
-            Return a dictionary with keys as
-            integer's loaded in the Dataset referring
-            to Data Files.
-        '''
-
-        self._check_file_mapping()
-        return self.file_mapping
-
-    @doc(load_func=_shared_docs['load_func'], inplace=_shared_docs['inplace'])
-    def add_data_files(self, files, file_to_subject,
-                       load_func=np.load, inplace=False):
-        '''This method allows adding columns of type
-        'data file' to the Dataset class.
-
-        Parameters
-        ----------
-        files : dict
-            This argument must be passed as a python dict.
-            Specifically, a python dictionary should be passed where
-            each key refers to the name of that feature / column of data files
-            to load, and the value is either a list-like of
-            str file paths, or a single globbing str which will
-            be used to determine the files.
-
-            In addition to this parameter, you must also pass a
-            python function to the file_to_subject param,
-            which specifies how to convert from passed
-            file path, to a subject name.
-
-            E.g., consider the example below, where 2 subjects files are
-            loaded for 'feat1' and feat2':
-
-            ::
-
-                files = dict()
-                files['feat1'] = ['f1/subj_0.npy', 'f1/subj_1.npy']
-                files['feat2'] = ['f2/subj_0.npy', 'f2/subj_1.npy']
-
-                def file_to_subject_func(file):
-                    subject = file.split('/')[1].replace('.npy', '')
-                    return subject
-
-                file_to_subject = file_to_subject_func
-                # or
-                file_to_subject = dict()
-                file_to_subject['feat1'] = file_to_subject_func
-                file_to_subject['feat2'] = file_to_subject_func
-
-            In this example, subjects are loaded as 'subj_0' and 'subj_1',
-            and they have associated loaded data files 'feat1' and 'feat2'.
-
-        file_to_subject : python function, dict of or 'auto'
-            You must pass some way of mapping file names
-            to their corresponding subject. The flexible way
-            to do this is by passing a python function
-            which takes in a file path, and returns the relevant subject for
-            that file path. If just one function is passed, it will be used
-            for to load all dictionary entries, alternatively you can pass
-            a matching dictionary of funcs, allowing for different funcs
-            for each feature to load.
-
-            See the example in files, e.g.,
-
-            ::
-
-                file_to_subject = file_to_subject_func
-                # or
-                file_to_subject = dict()
-                file_to_subject['feat1'] = file_to_subject_func
-                file_to_subject['feat2'] = file_to_subject_func
-
-            You may also pass the custom str 'auto' to
-            specify that the subject name should be the base
-            file name with the extension removed. For example
-            if the path is '/some/path/subj16.npy' then the auto
-            subject will be 'subj16'.
-
-            In the case that the underlying index is a MultiIndex, this
-            function should be designed to return the subject in correct
-            tuple form. E.g.,
-
-            ::
-
-                # The underlying dataset is indexed by subject and event
-                data.set_index(['subject', 'event'], inplace=True)
-
-                # Only one feature
-                files = dict()
-                files['feat1'] = ['f1/s0_e0.npy',
-                                  'f1/s0_e1.npy',
-                                  'f1/s1_e0.npy',
-                                  'f1/s1_e1.npy']
-
-                def file_to_subject_func(file):
-
-                    # This selects the substring
-                    # at the last part seperated by the '/'
-                    # so e.g. the stub, 's0_e0.npy', 's0_e1.npy', etc...
-                    subj_split = file.split('/')[-1]
-
-                    # This removes the .npy from the end, so
-                    # stubs == 's0_e0', 's0_e1', etc...
-                    subj_split = subj_split.replace('.npy', '')
-
-                    # Set the subject name as the first part
-                    # and the eventname as the second part
-                    subj_name = subj_split.split('_')[0]
-                    event_name = subj_split.split('_')[1]
-
-                    # Lastly put it into the correct return style
-                    # This is tuple style e.g., ('s0', 'e0'), ('s0', 'e1')
-                    ind = (subj_name, eventname)
-
-                    return ind
-
-            While this is a bit longer than the previous case, it is flexible.
-
-        {load_func}
-
-        {inplace}
-
-        See Also
-        --------
-        get_file_mapping : Returns the raw file mapping.
-        '''
-
-        if not inplace:
-            return self._inplace('add_data_files', locals())
-
-        # Wrap load func if needed
-        wrapped_load_func = wrap_load_func(load_func, _print=self._print)
-
-        # Init if needed
-        self._check_file_mapping()
-
-        # Get dict of key to files
-        file_series = proc_file_input(files, file_to_subject)
-
-        # For each column
-        for file in file_series:
-
-            # For each subject, fill in with Data File
-            series = file_series[file]
-            self._series_to_data_file(col=file, series=series,
-                                      load_func=wrapped_load_func)
-
-    @doc(**_sip_docs, load_func=_shared_docs['load_func'])
-    def to_data_file(self, scope,
-                     load_func=np.load,
-                     inplace=False):
-        '''This method can be used to cast any existing columns
-        where the values are file paths, to a data file.
-
-        Parameters
-        ----------
-        {scope}
-
-        {load_func}
-
-        {inplace}
-
-        Examples
-        ----------
-        This method can be used as a the primary way to prepare data files.
-        We will perform a simple example here.
-
-        .. ipython:: python
-
-            import BPt as bp
-            data = bp.Dataset()
-            data['files'] = ['loc1.npy', 'loc2.npy']
-            data
-
-        We now have a :class:`Dataset`, but out column 'files' is not
-        quite ready, as by default it won't know what to do with str.
-        To get it to treat it as as a data file we will cast it.
-
-        .. ipython:: python
-
-            data = data.to_data_file('files')
-            data
-
-        What's happened here? Now it doesn't show paths anymore, but instead
-        shows integers. That's actually the desired behavior though, we
-        can check it out in file_mapping.
-
-        .. ipython:: python
-
-            data.file_mapping
-
-        The file_mapping is then used internally with :class:`Loader`
-        to load objects on the fly.
-
-        '''
-
-        if not inplace:
-            return self._inplace('to_data_file', locals())
-
-        # Wrap load func if needed
-        wrapped_load_func = wrap_load_func(load_func, _print=self._print)
-
-        # Init if needed
-        self._check_file_mapping()
-
-        # Cast to data file
-        for col in self.get_cols(scope):
-            self._series_to_data_file(col=col, series=self[col],
-                                      load_func=wrapped_load_func)
-
-    def _series_to_data_file(self, col, series, load_func):
-
-        # Get next file mapping ind
-        cnt = self._get_next_ind()
-
-        for subject in series.index:
-
-            # Create data file and add to file mapping
-            data_file = DataFile(series[subject], load_func)
-            self.file_mapping[cnt] = data_file
-
-            # Replace cnt index in data
-            self.at[subject, col] = cnt
-
-            # Increment
-            cnt += 1
-
-        # Set scope
-        self.add_scope(col, 'data file', inplace=True)
-
-    @doc(scope=_shared_docs['scope'])
-    def consolidate_data_files(self, save_dr, replace_with=None,
-                               scope='data file', cast_to=None,
-                               clear_existing='fail', n_jobs=-1):
-        '''This function is designed as helper to consolidate all
-        or a subset of the loaded data files into one column. While this
-        removes information, in can provide a speed up in terms of downstream
-        loading and reduce the number of files cached when using
-        :class:`Loader`.
-
-        This method assumes that the underlying data files
-        can be stacked with ::
-
-            np.stack(data, axis=-1)
-
-        After they have been loaded. If this is not the case,
-        then this function will break.
-
-        Parameters
-        -----------
-        save_dr : str or Path
-            The file directory in which to
-            save the consolidated files. If it
-            doesn't exist, then it will be created.
-
-        replace_with : str or None, optional
-            By default, if replace_with is left
-            as None, then just a saved version of
-            the files will be made. Instead,
-            if a column name passed as a str is passed,
-            then the original data files which were
-            consolidated will be deleted, and the new
-            consolidated column loaded instead.
-
-            ::
-
-                default = None
-
-        {scope}
-            ::
-
-                default = 'data file'
-
-        cast_to : None or numpy dtype, optional
-            If not None, then this should be a
-            numpy dtype in which the stacked data
-            will be cast to before saving.
-
-            ::
-
-                default = None
-
-        clear_existing : bool or 'fail', optional
-            If True, then if the save dr already
-            has files in it, delete them. If False,
-            just overwrite them.
-
-            If 'fail' then if there
-            are already files in the save directory,
-            raise an error.
-
-            ::
-
-                default = 'fail'
-
-        n_jobs : int, optional
-            The number of jobs to use while stacking
-            and saving each file.
-
-            If -1, then will try to use all avaliable cpu's.
-
-            ::
-
-                default == -1
-
-        '''
-
-        # Make sure file mapping up to date
-        self._check_file_mapping()
-
-        # If clear existing and exists
-        if clear_existing is True:
-            if os.path.exists(save_dr):
-                self._print('Removing existing save directory:',
-                            str(save_dr), level=0)
-                shutil.rmtree(save_dr)
-
-        # Make sure save_dr exists
-        os.makedirs(save_dr, exist_ok=True)
-
-        # If Fail.
-        if clear_existing == 'fail':
-            existing_files = len(os.listdir(save_dr))
-            if existing_files > 0:
-                raise RuntimeError('The save directory ' +
-                                   str(save_dr) + ' is not empty.'
-                                   ' Either change clear_existing or provide '
-                                   'a new save_dr.')
-
-        # Get cols in scope
-        cols = self.get_cols(scope)
-
-        # For each subj / data point
-        saved_locs = Parallel(n_jobs=n_jobs)(delayed(mp_consol_save)(
-            data_files=[self.file_mapping[self.loc[index, key]]
-                        for key in cols],
-            index=index, cast_to=cast_to, save_dr=save_dr)
-            for index in self.index)
-
-        # If replace with
-        if replace_with is not None:
-
-            # Drop existing cols
-            self.drop(cols, axis=1, inplace=True)
-
-            # Create new series and add as new col
-            self[replace_with] = pd.Series(saved_locs, index=self.index)
-
-            # Cast to data file
-            self.to_data_file(scope=replace_with,
-                              inplace=True)
-
-    def update_data_file_paths(self, old, new):
-        '''Go through and update saved file paths within
-        :data:`Dataset.file_mapping`. This function can be used
-        when the underlying location of the data files has changed, or
-        perhaps when loading a saved dataset on a different device.
-
-        Note the old and new parameters work the same as those
-        in the base python :func:`string.replace`.
-
-        Parameters
-        -----------
-        old : str
-            The substring in which to replace every instance found
-            in every saved file path with new.
-
-        new : str
-            The substring in which to replace old with in
-            every substring found.
-        '''
-
-        self._check_file_mapping()
-
-        for file_ind in self.file_mapping:
-            self.file_mapping[file_ind].loc =\
-                self.file_mapping[file_ind].loc.replace(old, new)
-
-    def _get_next_ind(self):
-
-        if len(self.file_mapping) > 0:
-            return np.nanmax(list(self.file_mapping.keys())) + 1
-        else:
-            return 0
-
     def _get_problem_type(self, col):
         '''Return the default problem type for a given column.'''
 
@@ -2073,6 +1472,21 @@ class Dataset(pd.DataFrame):
         html = html[:-6] + extra_info + html[-6:]
 
         return html
+
+    from ._subjects import (_apply_only_level,
+                            _get_nan_loaded_subjects,
+                            _get_value_subset_loaded_subjects,
+                            _get_base_loaded_subjects,
+                            _return_subjects_as,
+                            get_subjects)
+
+    from ._data_files import (get_file_mapping,
+                              add_data_files,
+                              to_data_file,
+                              _series_to_data_file,
+                              consolidate_data_files,
+                              update_data_file_paths,
+                              _get_next_ind)
 
     from ._plotting import (plot,
                             show,

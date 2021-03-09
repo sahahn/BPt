@@ -41,8 +41,8 @@ BPt.BPtEvaluator
       BPtEvaluator.scores
       BPtEvaluator.std_scores
       BPtEvaluator.timing
-      BPtEvaluator.train_indxs
-      BPtEvaluator.val_indxs
+      BPtEvaluator.train_indices
+      BPtEvaluator.val_indices
       BPtEvaluator.weighted_mean_scores
 
 

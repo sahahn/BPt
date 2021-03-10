@@ -13,7 +13,7 @@ from .main.input_operations import (Select, Duplicate, Pipe, Value_Subset,
                                     Intersection)
 from .main.BPtEvaluator import BPtEvaluator
 from . import p
-from pandas import from_pickle
+from pandas import read_pickle
 
 __author__ = "sahahn"
 __version__ = "2"
@@ -26,4 +26,4 @@ __all__ = ["Dataset", "Loader",
            "CV", "CVStrategy", "Intersection",
            "cross_validate", "cross_val_score", "evaluate",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',
-           'BPtEvaluator', 'from_pickle']
+           'BPtEvaluator', 'read_pickle']

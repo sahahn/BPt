@@ -115,8 +115,9 @@ class Constructor():
 
     def get_inds(self, scope):
 
-        # @ TODO ADD warning when a scope returns None here
-        return self.dataset._get_data_inds(self.spec['scope'], scope)
+        # @ TODO ADD warning when a scope returns None here?
+        return self.dataset._get_data_inds(ps_scope=self.spec['scope'],
+                                           scope=scope)
 
     def process(self, params):
         '''params is a list of Param piece classes, or potentially a list
@@ -291,13 +292,9 @@ class Constructor():
 
                         # Only change to categorical
                         # if all cols within scope are categorical
-                        limit_to =\
-                            self.dataset._get_cols('data',
-                                                   limit_to=self.spec['scope'])
-
-                        all_cat = self.dataset._is_category(params[i].scope,
-                                                            limit_to=limit_to,
-                                                            check_scopes=False)
+                        all_cat = self.dataset._is_data_cat(
+                            ps_scope=self.spec['scope'],
+                            scope=params[i].scope)
 
                         if all_cat:
                             model_spec['problem_type'] = 'categorical'
@@ -719,6 +716,8 @@ class LoaderConstructor(Constructor):
         for named_obj, param in zip(passed_loaders, params):
 
             # Get inds from scope
+            # special case for loader, don't want
+            # to pass Ellipsis for now.
             inds = self.get_inds(param.scope)
 
             # Unpack to name and object

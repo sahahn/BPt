@@ -410,3 +410,88 @@ def test_invalid_names():
 
     with assert_raises(RuntimeError):
         df._check_cols()
+
+
+def get_data_inds_df():
+
+    df = Dataset(columns=['d1', 'd2', 'd3', 'n1',
+                          'n2', 'c1', 'c2', 't1', 't2'])
+
+    df.add_scope('c', 'category', inplace=True)
+    df.set_target('t', inplace=True)
+    df.set_non_input('n', inplace=True)
+
+    return df
+
+
+def test_get_data_inds_empty():
+
+    df = get_data_inds_df()
+
+    # All of these should return nothing
+    inds = df._get_data_inds(ps_scope='float', scope='category')
+    assert len(inds) == 0
+
+    inds = df._get_data_inds(ps_scope='float', scope='non input')
+    assert len(inds) == 0
+
+    inds = df._get_data_inds(ps_scope='float', scope=['c1'])
+    assert len(inds) == 0
+
+    inds = df._get_data_inds(ps_scope='float', scope=['c1', 'c2'])
+    assert len(inds) == 0
+
+
+def test_get_data_inds():
+
+    df = get_data_inds_df()
+
+    # Based on sorting, should be:
+    inds = df._get_data_inds(ps_scope='all', scope='category')
+    assert inds == [0, 1]
+
+    inds = df._get_data_inds(ps_scope='all', scope='float')
+    assert inds == [2, 3, 4]
+
+
+def test_get_data_cols():
+
+    df = get_data_inds_df()
+
+    cols = df._get_data_cols('all')
+    assert len(cols) == 5
+
+    cols = df._get_data_cols('category')
+    assert cols == ['c1', 'c2']
+
+    cols = df._get_data_cols('float')
+    assert cols == ['d1', 'd2', 'd3']
+
+    cols = df._get_data_cols(['d1', 'd2'])
+    assert cols == ['d1', 'd2']
+
+    # Sort should work
+    cols = df._get_data_cols(['d2', 'd1'])
+    assert cols == ['d1', 'd2']
+
+    # Should remove repeats
+    cols = df._get_data_cols(['d1', 'd2', 'd2', 'd2'])
+    assert cols == ['d1', 'd2']
+
+
+def test_is_data_cat():
+
+    df = get_data_inds_df()
+
+    all_cat = df._is_data_cat(ps_scope='all', scope='category')
+    assert all_cat
+
+    all_cat = df._is_data_cat(ps_scope='all', scope=['c1', 'd2'])
+    assert not all_cat
+
+    all_cat = df._is_data_cat(ps_scope='all', scope=['d2'])
+    assert not all_cat
+
+    # In the case of an invalid scope, should return False
+    all_cat = df._is_data_cat(ps_scope='category', scope='d2')
+    assert not all_cat

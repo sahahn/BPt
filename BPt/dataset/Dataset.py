@@ -723,16 +723,68 @@ class Dataset(pd.DataFrame):
         except KeyError:
             pass
 
-    def _get_cols(self, scope, limit_to=None):
+    def _get_reserved_cols(self, scope, columns):
+        '''If passed here then we know the
+        passed scope is one the options.'''
 
-        if limit_to is None:
-            columns = self.columns
+        if scope == 'all':
+            return list(columns)
+
+        elif scope == 'data float':
+            return [col for col in columns if
+                    'category' not in self.scopes[col] and
+                    'data file' not in self.scopes[col] and
+                    self.roles[col] == 'data']
+
+        elif scope == 'target float':
+            return [col for col in columns if
+                    'category' not in self.scopes[col] and
+                    'data file' not in self.scopes[col] and
+                    self.roles[col] == 'target']
+
+        elif scope == 'float':
+            return [col for col in columns if
+                    'category' not in self.scopes[col] and
+                    'data file' not in self.scopes[col]]
+
+        elif scope == 'category':
+            return [col for col in columns if
+                    'category' in self.scopes[col]]
+
+        elif scope == 'data category':
+            return [col for col in columns if
+                    'category' in self.scopes[col] and
+                    self.roles[col] == 'data']
+
+        elif scope == 'target category':
+            return [col for col in columns if
+                    'category' in self.scopes[col] and
+                    self.roles[col] == 'target']
+
+        elif scope == 'data':
+            return [col for col in columns if
+                    self.roles[col] == 'data']
+
+        elif scope == 'target':
+            return [col for col in columns if
+                    self.roles[col] == 'target']
+
+        elif scope == 'non input':
+            return [col for col in columns if
+                    self.roles[col] == 'non input']
+
+        elif scope == 'data file':
+            return [col for col in columns if
+                    'data file' in self.scopes[col]]
+
         else:
-            columns = self._get_cols(limit_to, limit_to=None)
+            raise RuntimeError('Should be impossible to reach here.')
 
-        saved_scopes = set()
-        for col in columns:
-            saved_scopes.update(self.scopes[col])
+    def _g_cols(self, scope, columns, saved_scopes):
+        '''This method is used internally to avoid
+        some repeated actions.
+
+        It will return columns as a list.'''
 
         # If int or float, cast to str.
         if isinstance(scope, int) or isinstance(scope, float):
@@ -740,78 +792,55 @@ class Dataset(pd.DataFrame):
 
         # Check is passed scope is reserved
         if isinstance(scope, str):
+
+            # First case, check if reserved scope
             if scope in self.reservered_scopes:
+                return self._get_reserved_cols(scope, columns)
 
-                if scope == 'all':
-                    return list(columns)
-
-                # Float refers to essentially not category and not data file
-                elif scope == 'data float':
-                    return [col for col in columns if
-                            'category' not in self.scopes[col] and
-                            'data file' not in self.scopes[col] and
-                            self.roles[col] == 'data']
-
-                elif scope == 'target float':
-                    return [col for col in columns if
-                            'category' not in self.scopes[col] and
-                            'data file' not in self.scopes[col] and
-                            self.roles[col] == 'target']
-
-                elif scope == 'float':
-                    return [col for col in columns if
-                            'category' not in self.scopes[col] and
-                            'data file' not in self.scopes[col]]
-
-                elif scope == 'category':
-                    return [col for col in columns if
-                            'category' in self.scopes[col]]
-
-                elif scope == 'data category':
-                    return [col for col in columns if
-                            'category' in self.scopes[col] and
-                            self.roles[col] == 'data']
-
-                elif scope == 'target category':
-                    return [col for col in columns if
-                            'category' in self.scopes[col] and
-                            self.roles[col] == 'target']
-
-                elif scope == 'data':
-                    return [col for col in columns if
-                            self.roles[col] == 'data']
-
-                elif scope == 'target':
-                    return [col for col in columns if
-                            self.roles[col] == 'target']
-
-                elif scope == 'non input':
-                    return [col for col in columns if
-                            self.roles[col] == 'non input']
-
-                elif scope == 'data file':
-                    return [col for col in columns if
-                            'data file' in self.scopes[col]]
-
-            # Check if passed scope is a loaded column
+            # Next case is if the passed scope
+            # is a valid column.
             elif scope in columns:
                 return [scope]
 
             # Check if a saved scope
-            elif scope in saved_scopes:
+            if scope in saved_scopes:
                 return [col for col in columns if
                         scope in self.scopes[col]]
 
-            # Do a search, see if passed scope is a stub of any strings
-            else:
-                return [col for col in columns if
-                        scope in col]
+            # Last string case is a stub search
+            return [col for col in columns if scope in col]
 
+        # If scope not str, assume iterable, and call recursively
+        # on each iterable. If not iterable, will fail
         cols = []
         for scp in scope:
-            cols += self._get_cols(scp)
+            cols += self._g_cols(scp, columns, saved_scopes)
 
-        return sorted(list(set(cols)))
+        # In the case that scope was an iterable, their exists
+        # the possibility for overlapping columns.
+        # Cast to set and back to list to remove these
+        return list(set(cols))
+
+    def _get_cols(self, scope, limit_to=None):
+
+        # Set columns to check within based on if
+        # limit_to is passed
+        if limit_to is None:
+            columns = self.columns
+        else:
+            columns = self._get_cols(limit_to, limit_to=None)
+
+        # Get the set of saved valid scopes for these columns
+        saved_scopes = set()
+        for col in columns:
+            saved_scopes.update(self.scopes[col])
+
+        # Get columns from internal g_cols func
+        cols = self._g_cols(scope, columns, saved_scopes)
+
+        # For maximum reproducibility and reliable behavior
+        # always return the sorted columns.
+        return sorted(cols)
 
     def get_cols(self, scope, limit_to=None):
         '''This method is the main internal and external
@@ -850,17 +879,43 @@ class Dataset(pd.DataFrame):
 
         return self._get_cols(scope=scope, limit_to=limit_to)
 
-    def _get_data_inds(self, ps_scope, scope='all'):
+    def _get_data_cols(self, ps_scope):
+        return self._get_cols('data', limit_to=ps_scope)
+
+    def _get_data_inds(self, ps_scope, scope):
         '''This function always limits first by the data cols,
         then ps_scope refers to the problem_spec scope, and
         lastly scope can be used to specify of subset of those columns'''
 
-        data_cols = self._get_cols('data', limit_to=ps_scope)
+        # Get data cols, these are the ordered columns
+        # actually passed to an evaluate function
+        data_cols = self._get_data_cols(ps_scope)
 
+        # If scope is 'all', data inds
+        if scope == 'all':
+            return list(range(len(data_cols)))
+
+        # Otherwise, get subset of inds, then return sorted
         inds = [data_cols.index(k) for k in
                 self._get_cols(scope, limit_to=data_cols)]
 
         return sorted(inds)
+
+    def _is_data_cat(self, ps_scope, scope):
+
+        # Get data cols
+        data_cols = self._get_data_cols(ps_scope)
+
+        # Check if all are categorical cat
+        # In the case where the underlying scope
+        # is nothing, return False
+        try:
+            all_cat = self._is_category(scope, limit_to=data_cols,
+                                        check_scopes=False)
+        except KeyError:
+            all_cat = False
+
+        return all_cat
 
     @doc(**_file_docs)
     def get_values(self, col, dropna=True, decode_values=False,
@@ -1234,7 +1289,7 @@ class Dataset(pd.DataFrame):
         subjects = sorted(self.get_subjects(ps.subjects, return_as='set'))
 
         # Get X cols
-        X_cols = self._get_cols('data', limit_to=ps.scope)
+        X_cols = self._get_data_cols(ps.scope)
 
         # Get X as pandas df subset, y as Series
         X = pd.DataFrame(self.loc[subjects, X_cols]).astype(ps.base_dtype)

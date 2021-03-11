@@ -44,8 +44,8 @@ class BPtEvaluator():
                  store_preds=False,
                  store_estimators=False,
                  store_timing=False,
-                 progress_loc=None,
-                 verbose=0):
+                 eval_verbose=0,
+                 progress_loc=None):
 
         # Save base
         self.estimator = estimator
@@ -72,7 +72,7 @@ class BPtEvaluator():
 
         # @TODO Add in progress loc func.
         self.progress_loc = progress_loc
-        self.verbose = verbose
+        self.verbose = eval_verbose
 
     @property
     def mean_scores(self):
@@ -652,7 +652,7 @@ class BPtEvaluator():
         # Categorical case
         return [fi.mean() for fi in fis]
 
-    def get_fis(self):
+    def get_fis(self, mean=False, abs=False):
         '''This method will return a pandas DataFrame with
         each row a fold, and each column a feature if
         the underlying model supported either the `coef_`
@@ -664,14 +664,48 @@ class BPtEvaluator():
         multiple DataFrames will be returned, one for each class.
         The order of the list will correspond to the order of classes.
 
+        Parameters
+        -----------
+        mean : bool, optional
+            If True, return the mean value
+            across evaluation folds as a pandas Series.
+            Any features with a mean value of 0 will
+            also be excluded. Otherwise, if default
+            of False, return raw values for each fold
+            as a Dataframe.
+
+            ::
+
+                default = False
+
+        abs : bool, optional
+            If the feature importances
+            should be absolute values
+            or not.
+
+            ::
+
+                default = False
+
         Returns
         --------
-        fis : pandas DataFrame
-            A pandas DataFrame with each row the
-            feature importances from an evaluation fold,
-            unless the underlying feature importances
-            are categorical, in which a list of DataFrames
-            will be returned.
+        fis : pandas DataFrame or Series
+            Assuming mean=False, the
+            a pandas DataFrame where each row contains the
+            feature importances from an evaluation fold (unless the underlying
+            feature importances are categorical, in which a list of DataFrames
+            will be returned.)
+
+            If mean=True, then a pandas Series (or in the case of
+            underlying categorical feature importances, list of)
+            will be returned, with the mean value from each fold
+            and all features with a value of 0 excluded.
+
+            Note: To get the mean values without zero's excluded,
+            just call .mean() on the result of this method
+            with mean=False.
+
+
         '''
 
         # @TODO handle multi-class case ...
@@ -691,7 +725,25 @@ class BPtEvaluator():
             else:
                 fis.appends(None)
 
-        return fis_to_df(fis)
+        base = fis_to_df(fis)
+
+        # Proc. abs arg
+        if abs:
+            if isinstance(base, list):
+                base = [b.abs() for b in base]
+            else:
+                base = base.abs()
+
+        # If not mean, return as is
+        if not mean:
+            return base
+
+        # Categorical mean case
+        if isinstance(base, list):
+            return [mean_no_zeros(b) for b in base]
+
+        # Base mean case
+        return mean_no_zeros(base)
 
     def _get_val_fold_Xy(self, estimator, X_df, y_df, fold, just_model=True):
 
@@ -890,3 +942,9 @@ def fis_to_df(fis):
         dfs.append(pd.DataFrame([fi[c] for fi in fis]))
 
     return dfs
+
+
+def mean_no_zeros(df):
+
+    mean = df.mean()
+    return mean[mean != 0]

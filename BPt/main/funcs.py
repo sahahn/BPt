@@ -865,6 +865,7 @@ def evaluate(pipeline, dataset,
              store_estimators=True,
              store_timing=True,
              decode_feat_names=True,
+             eval_verbose=0,
              progress_loc=None,
              **extra_params):
     ''' This method is used to evaluate a model pipeline
@@ -936,6 +937,17 @@ def evaluate(pipeline, dataset,
 
             default = True
 
+    eval_verbose : int, optional
+        The requested verbosity of the evaluator.
+        0 or greater means just warnings, 1 or greater
+        for some info and 2 and greater for even more.
+
+        Set to negative values to mute warnings.
+
+        ::
+
+            default = 0
+
     progress_loc : str or None, optional
         This parameter is not currently implemented.
 
@@ -977,7 +989,9 @@ def evaluate(pipeline, dataset,
               'store_preds': store_preds,
               'store_estimators': store_estimators,
               'store_timing': store_timing,
-              'progress_loc': progress_loc}
+              'eval_verbose': eval_verbose,
+              'progress_loc': progress_loc,
+              }
 
     # Get the estimator and problem spec, w/ option for returned
     # value as a CompareDict
@@ -993,6 +1007,9 @@ def evaluate(pipeline, dataset,
     # Compare dict case
     evaluators = CompareDict()
     for key in estimator_ps:
+
+        if eval_verbose >= 1:
+            print('Running Compare:', key, flush=True)
 
         # Unpack
         c_estimator, c_ps = estimator_ps[key]

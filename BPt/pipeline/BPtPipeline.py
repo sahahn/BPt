@@ -112,6 +112,12 @@ class BPtPipeline(Pipeline):
                 X = cloned_transformer.fit_transform(X=X, y=y,
                                                      **fit_trans_params)
 
+                # Print if an estimator is skipped, if verbose
+                if cloned_transformer.estimator_ is None:
+                    if self.verbose >= 1:
+                        print('Skipping Step:', name, 'due to empty scope.',
+                              flush=True)
+
                 # Replace the transformer of the step with the
                 # cloned and now fitted transformer
                 self.steps[step_idx] = (name, cloned_transformer)

@@ -223,12 +223,27 @@ class BPtEvaluator():
         'fit_time' and 'score_time'.
         Each key stores the time in seconds as a list of
         values for each of the evaluation folds.
-       '''
+        '''
         return self._timing
 
     @timing.setter
     def timing(self, timing):
         self._timing = timing
+
+    @property
+    def mean_timing(self):
+        '''This property stores information on
+        the fit and scoring times, if requested by the
+        original call to :func:`evaluate`.
+        This parameter is a dictionary with two keys,
+        'fit_time' and 'score_time'.
+        Each key stores the mean time in seconds across folds.
+        '''
+        return self._mean_timing
+
+    @mean_timing.setter
+    def mean_timing(self, mean_timing):
+        self._mean_timing = mean_timing
 
     @property
     def preds(self):
@@ -490,6 +505,13 @@ class BPtEvaluator():
                                     (self.n_repeats_, self.n_splits_))
                 self.std_scores[scorer_key + '_macro'] =\
                     np.std(np.mean(scores, axis=1))
+
+        # Add mean timing
+        if self.timing is not None:
+            self.mean_timing = {}
+
+            for time_key in self.timing:
+                self.mean_timing[time_key] = np.mean(self.timing[time_key])
 
     def get_preds_dfs(self):
         '''This function can be used to return the raw predictions

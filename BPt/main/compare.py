@@ -1,5 +1,7 @@
+from .BPtEvaluator import BPtEvaluator
 from .input_operations import BPtInputMixIn
 from copy import deepcopy
+import pandas as pd
 
 
 def clean_str(in_str):
@@ -30,6 +32,21 @@ def str_to_options(option):
     # Otherwise multiple
     return [str_to_option(opt_str)
             for opt_str in option.split(', ')]
+
+
+def add_scores(cols, evaluator, attr_name):
+
+    if not hasattr(evaluator, attr_name):
+        return
+
+    attr = getattr(evaluator, attr_name)
+    for key in attr:
+        val = attr[key]
+
+        try:
+            cols[attr_name + '_' + key].append(val)
+        except KeyError:
+            cols[attr_name + '_' + key] = [val]
 
 
 class Option(BPtInputMixIn):
@@ -249,6 +266,40 @@ class CompareDict(dict):
 
     def __str__(self):
         return self.__repr__()
+
+    def summary(self):
+
+        # Get example value to base summary on
+        ex = self.__getitem__(list(self.keys())[0])
+
+        # if evaluation results
+        if isinstance(ex, BPtEvaluator):
+            return self._evaluator_summary()
+
+        # @TODO add more options
+
+    def _evaluator_summary(self):
+
+        keys = list(self.keys())
+        repr_key = keys[0]
+        option_keys = [o.key for o in repr_key.options]
+        cols = {key: [] for key in option_keys}
+
+        for key in list(self.keys()):
+
+            for o in key.options:
+                cols[o.key].append(o.name)
+
+            # Add values
+            evaluator = self[key]
+            add_scores(cols, evaluator, attr_name='mean_scores')
+            add_scores(cols, evaluator, attr_name='std_scores')
+            add_scores(cols, evaluator, attr_name='mean_timing')
+
+        summary = pd.DataFrame.from_dict(cols)
+        summary = summary.set_index(option_keys)
+
+        return summary
 
 
 def _make_compare_copies(objs, key, compare):

@@ -77,8 +77,8 @@ def test_evaluate_regression_dt():
                          problem_type='regression')
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -132,8 +132,8 @@ def test_evaluate_categorical_dt():
                          problem_type='categorical')
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -209,8 +209,8 @@ def test_evaluate_binary():
                          problem_type='binary')
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -297,8 +297,8 @@ def test_evaluate_with_resid():
     assert np.sum(evaluator.scores['r2']) == np.sum(cv_scores)
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -347,8 +347,8 @@ def test_evaluate_with_resid_param_search():
     assert np.sum(evaluator.scores['r2']) == np.sum(cv_scores)
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -400,8 +400,8 @@ def test_evaluate_with_resid_grid_search():
     assert np.sum(evaluator.scores['r2']) == np.sum(cv_scores)
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()

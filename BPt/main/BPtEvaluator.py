@@ -68,7 +68,7 @@ class BPtEvaluator():
         # If store timing
         self.timing = None
         if store_timing:
-            self.timing = {'fit_time': [], 'score_time': []}
+            self.timing = {'fit': [], 'score': []}
 
         # @TODO Add in progress loc func.
         self.progress_loc = progress_loc
@@ -220,7 +220,7 @@ class BPtEvaluator():
         the fit and scoring times, if requested by the
         original call to :func:`evaluate`.
         This parameter is a dictionary with two keys,
-        'fit_time' and 'score_time'.
+        'fit' and 'score'.
         Each key stores the time in seconds as a list of
         values for each of the evaluation folds.
         '''
@@ -236,7 +236,7 @@ class BPtEvaluator():
         the fit and scoring times, if requested by the
         original call to :func:`evaluate`.
         This parameter is a dictionary with two keys,
-        'fit_time' and 'score_time'.
+        'fit' and 'score'.
         Each key stores the mean time in seconds across folds.
         '''
         return self._mean_timing
@@ -418,17 +418,17 @@ class BPtEvaluator():
         start_time = time.time()
 
         estimator_.fit(X=X_tr, y=np.array(y_tr))
-        fit_time = time.time() - start_time
+        fit = time.time() - start_time
 
         # Score estimator
         start_time = time.time()
         self._score_estimator(estimator_, X_val, y_val)
-        score_time = time.time() - start_time
+        score = time.time() - start_time
 
         # Store timing if requested
         if self.timing is not None:
-            self.timing['fit_time'].append(fit_time)
-            self.timing['score_time'].append(score_time)
+            self.timing['fit'].append(fit)
+            self.timing['score'].append(score)
 
         # Save preds
         self._save_preds(estimator_, X_val, y_val)

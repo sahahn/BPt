@@ -1,6 +1,7 @@
 import pandas as pd
 from ..residualizer import LinearResidualizer
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.linear_model import LinearRegression
 import numpy as np
 
 
@@ -24,7 +25,7 @@ def test_base():
     # Mean of all 1's col should be 1
     assert model.means_[0] == 1
     assert isinstance(model.encoder_, OneHotEncoder)
-    assert len(model.estimators_) == 5
+    assert isinstance(model.estimator_, LinearRegression)
 
     Xt = model.transform(X, transform_index=[0, 1, 2])
     assert Xt.shape == (3, 5)

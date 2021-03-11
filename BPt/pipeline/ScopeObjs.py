@@ -265,6 +265,10 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
 
     def _proc_new_names(self, feat_names, base_name=None, encoders=None):
 
+        # If skip, return passed names as is
+        if self.estimator_ is None:
+            return feat_names
+
         # If all, return as is
         if self.inds_ is Ellipsis:
             return feat_names

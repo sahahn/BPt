@@ -1,3 +1,4 @@
+from BPt.main.BPtEvaluator import BPtEvaluator
 from ...pipeline.BPtSearchCV import BPtGridSearchCV
 from ..input import ModelPipeline, Model, CV, Pipeline, Scaler, ParamSearch
 from ...dataset.Dataset import Dataset
@@ -7,6 +8,8 @@ from nose.tools import assert_raises
 import pandas as pd
 import numpy as np
 from ...extensions import LinearResidualizer
+from ..compare import Compare, Option, CompareDict
+from sklearn.tree import DecisionTreeClassifier
 
 
 def get_fake_dataset():
@@ -417,3 +420,25 @@ def test_evaluate_with_resid_grid_search():
     assert len(evaluator.train_indices) == 5
     assert len(evaluator.val_indices) == 5
 
+
+def test_evaluate_compare():
+
+    dataset = get_fake_binary_dataset()
+
+    pipe1 = ModelPipeline(model=Model('dt'))
+    pipe2 = ModelPipeline(model=Model('linear'))
+
+    pipe = Compare([Option(pipe1, 'pipe1'),
+                    Option(pipe2, 'pipe2')])
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='binary')
+
+    assert isinstance(evaluator, CompareDict)
+
+    e1 = evaluator['pipe1']
+    assert isinstance(e1, BPtEvaluator)
+    e1_model = e1.estimators[0].steps[-1][1].estimator
+    assert isinstance(e1_model, DecisionTreeClassifier)

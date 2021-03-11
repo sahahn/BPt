@@ -61,6 +61,10 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
 
     def _proc_new_names(self, feat_names, base_name=None, encoders=None):
 
+        # If skip, return passed names as is
+        if self.estimator_ is None:
+            return feat_names
+
         # Get base new names from parent class
         new_names = super()._proc_new_names(feat_names)
 

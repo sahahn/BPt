@@ -970,16 +970,50 @@ def evaluate(pipeline, dataset,
     is set to True, predictions will still be made for these subjects.
     '''
 
-    estimator, ps =\
+    params = {'cv': cv,
+              'extra_params': extra_params,
+              'decode_feat_names': decode_feat_names,
+              'progress_bar': progress_bar,
+              'store_preds': store_preds,
+              'store_estimators': store_estimators,
+              'store_timing': store_timing,
+              'progress_loc': progress_loc}
+
+    # Get the estimator and problem spec, w/ option for returned
+    # value as a CompareDict
+    estimator_ps =\
         _initial_prep(pipeline, dataset, problem_spec,
                       error_if_compare=False, **extra_params)
 
-    # Base process each component
-    estimator, X, y, ps, sk_cv =\
-        _sk_prep(pipeline=pipeline, dataset=dataset,
-                 problem_spec=problem_spec, cv=cv, **extra_params)
+    # Base case
+    if not isinstance(estimator_ps, CompareDict):
+        estimator, ps = estimator_ps
+        return _evaluate(estimator=estimator, dataset=dataset, ps=ps, **params)
 
-    # Check decode feat_names arg
+    # Compare dict case
+    evaluators = CompareDict()
+    for key in estimator_ps:
+
+        # Unpack
+        c_estimator, c_ps = estimator_ps[key]
+
+        # Evaluate this option
+        evaluator = _evaluate(estimator=c_estimator,
+                              dataset=dataset, ps=c_ps, **params)
+
+        # Add to compare dict
+        evaluators[key] = evaluator
+
+    return evaluators
+
+
+def _evaluate(estimator, dataset, ps, cv, extra_params,
+              decode_feat_names, **verbose_args):
+
+    estimator, X, y, ps, sk_cv =\
+        _eval_prep(estimator, ps, dataset, cv, **extra_params)
+
+    # Check decode feat_names arg, ifTrue, pass along encoders
     encoders = None
     if decode_feat_names:
         encoders = dataset.encoders
@@ -987,11 +1021,7 @@ def evaluate(pipeline, dataset,
     # Init evaluator
     evaluator = BPtEvaluator(estimator=estimator, ps=ps,
                              encoders=encoders,
-                             progress_bar=progress_bar,
-                             store_preds=store_preds,
-                             store_estimators=store_estimators,
-                             store_timing=store_timing,
-                             progress_loc=progress_loc)
+                             **verbose_args)
 
     # Call evaluate on the evaluator
     evaluator._evaluate(X, y, sk_cv)

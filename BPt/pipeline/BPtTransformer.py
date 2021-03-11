@@ -89,6 +89,10 @@ class BPtTransformer(ScopeTransformer):
 
     def _proc_new_names(self, feat_names, base_name, encoders=None):
 
+        # If skip, return passed names as is
+        if self.estimator_ is None:
+            return feat_names
+
         # Check for one hot encoder
         if isinstance(self.estimator_, OneHotEncoder):
             new_names =\

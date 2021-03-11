@@ -9,6 +9,7 @@ from sklearn.model_selection import check_cv
 from .input_operations import Intersection
 from pandas.util._decorators import doc
 from ..shared_docs import _shared_docs
+from .compare import (_compare_check, CompareDict, _merge_compare, Compare)
 
 
 _base_docs = {}
@@ -100,10 +101,35 @@ _eval_docs[
 """
 
 
-def pipeline_check(pipeline, **extra_params):
+def pipeline_check(pipeline, error_if_compare=True, **extra_params):
 
     # Make deep copy
     pipe = deepcopy(pipeline)
+
+    # First check here for compare
+    if isinstance(pipe, Compare):
+        if error_if_compare:
+            raise RuntimeError("This function can't accept Compare arguments!")
+
+        new_pipeline = CompareDict()
+        for option in pipe.options:
+            option.key = 'pipeline'
+
+            # Get the checked version of the pipeline
+            # passing along all extra args to each
+            checked_pipe = _base_pipeline_check(option.value, **extra_params)
+
+            # Save this option in the dict
+            new_pipeline[option] = checked_pipe
+
+        # Return as compare dict
+        return new_pipeline
+
+    # Otherwise, base check
+    return _base_pipeline_check(pipe, **extra_params)
+
+
+def _base_pipeline_check(pipe, **extra_params):
 
     # If passed pipeline is not Pipeline or ModelPipeline
     # then make input as Pipeline around model
@@ -158,12 +184,17 @@ def _problem_spec_target_check(ps, dataset):
                          'not have role target or is not loaded.')
 
 
-def problem_spec_check(problem_spec, dataset, **extra_params):
+def problem_spec_check(problem_spec, dataset, error_if_compare=True,
+                       **extra_params):
 
     # If attr checked, then means the passed
     # problem_spec has already been checked and is already
     # a proc'ed and ready copy.
     if hasattr(problem_spec, '_checked') and getattr(problem_spec, '_checked'):
+        return problem_spec
+
+    # Or is the problem spec is already a CompareDict.
+    if isinstance(problem_spec, CompareDict):
         return problem_spec
 
     # Check if problem_spec is left as default
@@ -178,6 +209,24 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
     valid_params = {key: extra_params[key] for key in extra_params
                     if key in possible_params}
     ps.set_params(**valid_params)
+
+    # Check for any Compare
+    ps = _compare_check(ps)
+
+    # If ps is now a dict, it means there was atleast one Compare
+    if isinstance(ps, CompareDict):
+
+        if error_if_compare:
+            raise RuntimeError("This function can't accept Compare arguments!")
+
+        return CompareDict({key: _base_ps_check(ps[key], dataset)
+                            for key in ps})
+
+    # Otherwise perform base check as usual
+    return _base_ps_check(ps, dataset)
+
+
+def _base_ps_check(ps, dataset):
 
     # Proc params
     ps._proc_checks()
@@ -279,21 +328,40 @@ def get_estimator(pipeline, dataset,
 
     '''
 
-    # @TODO add verbose option?
-    dataset._check_sr()
+    # Use initial prep
+    estimator_ps = _initial_prep(pipeline, dataset, problem_spec,
+                                 error_if_compare=(True, False),
+                                 **extra_params)
 
-    # Check passed input - note: returns deep copies
-    pipe = pipeline_check(pipeline, **extra_params)
-    ps = problem_spec_check(problem_spec, dataset, **extra_params)
+    # Reduce estimator_ps to just estimator related
+    if isinstance(estimator_ps, CompareDict):
 
-    # Get the actual pipeline
-    model, _ = _get_pipeline(pipe, ps, dataset)
+        # Return compare dict w/ only estimator, not estimator_ps tuple
+        return CompareDict({key: estimator_ps[key][0] for key in estimator_ps})
 
-    return model
+    # Otherwise, can just return first element of the tuple
+    return estimator_ps[0]
+
+
+def get_pipeline(pipeline, problem_spec, dataset, error_if_compare=True):
+
+    # Run compare check
+    pipeline = _compare_check(pipeline)
+    if isinstance(pipeline, CompareDict):
+        if error_if_compare:
+            raise RuntimeError("This function can't accept Compare arguments!")
+
+        return CompareDict({key: _get_pipeline(
+            pipeline[key], problem_spec, dataset)[0]
+             for key in pipeline})
+
+    # Otherwise, base
+    return _get_pipeline(pipeline, problem_spec, dataset)[0]
 
 
 def _get_pipeline(pipeline, problem_spec, dataset,
                   has_search=False):
+    '''Both pipeline and problem_spec should not be CompareDicts.'''
 
     # If has search is False, means this is the top level
     # or the top level didn't have a search
@@ -464,18 +532,87 @@ def _preproc_param_search(object, ps):
     return True
 
 
-def _eval_prep(pipeline, dataset, problem_spec='default',
-               cv=5, **extra_params):
-    '''Internal helper function return the different pieces
-    needed by sklearn functions'''
+def _initial_prep(pipeline, dataset, problem_spec,
+                  error_if_compare=True, **extra_params):
 
-    # Get proc'ed problem spec, then passed proc'ed version
+    # error if compare can be bool or tuple of bool's
+    if isinstance(error_if_compare, tuple):
+        eic_ps, eic_pipe = error_if_compare
+    else:
+        eic_ps, eic_pipe = error_if_compare, error_if_compare
+
+    # Get proc'ed problem spec, w/ possibility that it is
+    # returned as a CompareDict.
     ps = problem_spec_check(problem_spec=problem_spec, dataset=dataset,
-                            **extra_params)
+                            error_if_compare=eic_ps, **extra_params)
 
-    # Get estimator
-    estimator = get_estimator(pipeline=pipeline, dataset=dataset,
-                              problem_spec=ps, **extra_params)
+    # Want to get pipe, with possibility that returned pipe is CompareDict
+    pipe = pipeline_check(pipeline, error_if_compare=eic_pipe,
+                          **extra_params)
+
+    # Get the actual pipeline as an estimator
+    # where both pipe and ps can be CompareDicts and
+    # CompareDicts can still live inside the pipe params
+
+    # Handle if ps if CompareDict and / or pipe is CompareDict
+    merged_compare = _merge_compare(pipe=pipe, ps=ps)
+
+    # Base case first
+    if not isinstance(merged_compare, CompareDict):
+
+        # Unpack
+        c_pipe, c_ps = merged_compare
+
+        # Get the estimator
+        estimator = get_pipeline(c_pipe, c_ps,
+                                 dataset, error_if_compare=eic_pipe)
+
+        # If estimator is CompareDict, need to add in problem_spec
+        # So compare dict stores tuples of estimator problem spec.
+        if isinstance(estimator, CompareDict):
+            return CompareDict({key: (estimator[key], deepcopy(c_ps))
+                               for key in estimator})
+
+        # Otherwise, return as is
+        return (estimator, c_ps)
+
+    # CompareDict case
+    estimator_ps = CompareDict()
+    for key in merged_compare:
+
+        # Get this sub-model
+        c_pipe, c_ps = merged_compare[key]
+        estimator = get_pipeline(c_pipe, c_ps, dataset,
+                                 error_if_compare=eic_pipe)
+
+        # est is either Pipeline or CompareDict
+        # If compare dict, add the combination.
+        if isinstance(estimator, CompareDict):
+            for e_key in estimator:
+                estimator_ps[[key, e_key]] =\
+                    (deepcopy(estimator[e_key]), deepcopy(c_ps))
+
+        # Otherwise, add as is.
+        else:
+            estimator_ps[key] = (estimator, c_ps)
+
+    # Return the compare dict
+    return estimator_ps
+
+
+def _sk_prep(pipeline, dataset, problem_spec='default',
+             cv=5, **extra_params):
+
+    estimator, ps = _initial_prep(pipeline, dataset, problem_spec,
+                                  error_if_compare=True,
+                                  **extra_params)
+
+    return _eval_prep(estimator, ps, dataset, cv, **extra_params)
+
+
+def _eval_prep(estimator, ps, dataset,
+               cv=5, **extra_params):
+    '''Internal helper function.'''
 
     # Get X and y
     X, y = dataset.get_Xy(problem_spec=ps, **extra_params)
@@ -603,8 +740,8 @@ def cross_val_score(pipeline, dataset,
 
     # Get sk compat pieces
     estimator, X, y, ps, sk_cv =\
-        _eval_prep(pipeline=pipeline, dataset=dataset,
-                   problem_spec=problem_spec, cv=cv, **extra_params)
+        _sk_prep(pipeline=pipeline, dataset=dataset,
+                 problem_spec=problem_spec, cv=cv, **extra_params)
 
     # Make sure no NaN's in y
     _sk_check_y(y)
@@ -704,8 +841,8 @@ def cross_validate(pipeline, dataset,
 
     # Get sk compat pieces
     estimator, X, y, ps, sk_cv =\
-        _eval_prep(pipeline=pipeline, dataset=dataset,
-                   problem_spec=problem_spec, cv=cv, **extra_params)
+        _sk_prep(pipeline=pipeline, dataset=dataset,
+                 problem_spec=problem_spec, cv=cv, **extra_params)
 
     # Make sure no NaN's in y.
     _sk_check_y(y)
@@ -833,10 +970,14 @@ def evaluate(pipeline, dataset,
     is set to True, predictions will still be made for these subjects.
     '''
 
+    estimator, ps =\
+        _initial_prep(pipeline, dataset, problem_spec,
+                      error_if_compare=False, **extra_params)
+
     # Base process each component
     estimator, X, y, ps, sk_cv =\
-        _eval_prep(pipeline=pipeline, dataset=dataset,
-                   problem_spec=problem_spec, cv=cv, **extra_params)
+        _sk_prep(pipeline=pipeline, dataset=dataset,
+                 problem_spec=problem_spec, cv=cv, **extra_params)
 
     # Check decode feat_names arg
     encoders = None

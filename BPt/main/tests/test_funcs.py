@@ -13,6 +13,7 @@ from sklearn.linear_model import Ridge
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.preprocessing import RobustScaler
 import numpy as np
+from ..compare import CompareDict, Options, Compare, Option
 
 
 def test_no_overlap_param_names():
@@ -43,6 +44,28 @@ def test_pipeline_check():
     assert isinstance(mp, Pipeline)
 
 
+def test_pipeline_check_compare():
+
+    mp_params = Compare([Model('ridge'), Model('elastic')])
+    mp = pipeline_check(mp_params, error_if_compare=False)
+
+    assert isinstance(mp, CompareDict)
+    assert len(mp) == 2
+
+    mp_params = Compare([Option(Model('ridge'), 'ridge'),
+                         Option(Model('elastic'), 'elastic')])
+    mp = pipeline_check(mp_params, error_if_compare=False)
+
+    assert isinstance(mp, CompareDict)
+    assert len(mp) == 2
+
+    pipe = mp["pipeline=ridge"]
+    assert isinstance(pipe, Pipeline)
+
+    pipe = mp["pipeline=elastic"]
+    assert isinstance(pipe, Pipeline)
+
+
 def test_pipeline_check_extra_args():
 
     mp_params = ModelPipeline(imputers=None,
@@ -52,7 +75,7 @@ def test_pipeline_check_extra_args():
     assert mp.imputers is None
 
     mp = pipeline_check(mp_params, imputers=Imputer('mean'),
-                              ignore='ignore')
+                        ignore='ignore')
     assert mp.imputers is not None
     assert isinstance(mp, ModelPipeline)
 
@@ -65,6 +88,7 @@ def get_fake_dataset():
     fake['2'] = [4, 5, 6]
     fake['3'] = [7, 8, 9]
     fake = fake.set_role('3', 'target')
+    fake._check_sr()
 
     return fake
 
@@ -88,6 +112,75 @@ def get_checked_ps():
     ps = problem_spec_check(p, dataset)
 
     return ps
+
+
+def test_problem_spec_compare_fail():
+
+    dataset = get_fake_dataset()
+    p = ProblemSpec(scope=Compare(['all', 'float']))
+
+    with assert_raises(RuntimeError):
+        problem_spec_check(p, dataset, error_if_compare=True)
+
+    problem_spec_check(p, dataset, error_if_compare=False)
+
+
+def test_problem_spec_compare():
+
+    dataset = get_fake_dataset()
+    dataset._check_sr()
+
+    # Default names
+    p = ProblemSpec(scope=Compare(['all', 'float']))
+    ps = problem_spec_check(p, dataset, error_if_compare=False)
+
+    assert isinstance(ps, CompareDict)
+    assert len(ps) == 2
+
+    assert ps["scope='all'"].scope == 'all'
+    assert ps["scope='float'"].scope == 'float'
+    assert ps[Options(scope='all')].scope == 'all'
+    assert ps[Options(scope='float')].scope == 'float'
+
+    # Custom names
+    compare_scopes = Compare([Option('all', 'all'),
+                              Option('float', '2')])
+    p = ProblemSpec(scope=compare_scopes)
+    ps = problem_spec_check(p, dataset, error_if_compare=False)
+    assert ps["scope=all"].scope == 'all'
+    assert ps["scope=2"].scope == 'float'
+
+
+def test_problem_spec_multiple_compares():
+
+    dataset = get_fake_dataset()
+    dataset._check_sr()
+
+    # Default names
+    p = ProblemSpec(scope=Compare(['all', 'float']),
+                    subjects=Compare(['all', 'train', 'test']))
+    ps = problem_spec_check(p, dataset, error_if_compare=False)
+
+    assert isinstance(ps, dict)
+    assert len(ps) == 6
+
+    assert ps["scope='all', subjects='all'"].scope == 'all'
+    assert ps["scope='all', subjects='all'"].subjects == 'all'
+    assert ps["scope='all', subjects='train'"].scope == 'all'
+    assert ps["scope='all', subjects='train'"].subjects == 'train'
+    assert ps["scope='float', subjects='test'"].scope == 'float'
+    assert ps["scope='float', subjects='train'"].subjects == 'train'
+
+    ft = ps[Options(scope='float', subjects='train')]
+    assert ft.scope == 'float'
+    assert ft.subjects == 'train'
+
+    subset = ps["scope='float'"]
+    assert isinstance(subset, CompareDict)
+    assert len(subset) == 3
+
+    with assert_raises(KeyError):
+        ps['nonsense']
 
 
 def test_problem_spec_check():
@@ -216,7 +309,7 @@ def test_preproc_pipeline():
     data.copy_as_non_input('1', '4', inplace=True)
     data.copy_as_non_input('1', '5', inplace=True)
 
-    # Removpe category, and make sure dtype changes
+    # Remove category, and make sure dtype changes
     data = data.remove_scope('5', 'category')
     assert data['5'].dtype.name != 'category'
 
@@ -251,7 +344,7 @@ def test_get_estimator_simple_case():
                          scalers=None, verbose=1)
     est = get_estimator(pipeline=pipe, dataset=data, problem_spec=ps)
 
-    # Should be BPtpipeline output
+    # Should be BPt pipeline output
     assert isinstance(est, BPtPipeline)
 
     # Make sure verbose arg propergates
@@ -461,3 +554,74 @@ def test_get_param_wrapped_model():
     param_dists = search_est.param_distributions
     assert isinstance(param_dists, dict)
     assert len(param_dists) > 0
+
+
+def test_get_estimator_compare1():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    pipe = Pipeline([
+        Model(obj=Compare(['random forest',
+                           'ridge']))])
+
+    est = get_estimator(pipeline=pipe, dataset=data,
+                        problem_spec=ps)
+
+    assert isinstance(est, CompareDict)
+    assert isinstance(est["'random forest'"], BPtPipeline)
+    assert isinstance(est["random forest"], BPtPipeline)
+
+
+def test_get_estimator_compare_fail():
+
+    ps = ProblemSpec(scope=Compare(['all', 'float']))
+    data = get_fake_dataset()
+
+    pipe = Pipeline([
+        Model(obj=Compare(['random forest',
+                           'ridge']))])
+
+    with assert_raises(RuntimeError):
+        get_estimator(pipeline=pipe, dataset=data,
+                      problem_spec=ps)
+
+
+def test_get_estimator_compare_merge():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    pipe1 = Pipeline([
+        Model(obj=Compare(['random forest',
+                           'ridge']))])
+
+    pipe2 = Pipeline([
+        Model(obj=Compare(['elastic',
+                           'ridge']))])
+
+    pipe = Compare([Option(pipe1, 'pipe1'),
+                    Option(pipe2, 'pipe2')])
+
+    est = get_estimator(pipeline=pipe, dataset=data,
+                        problem_spec=ps)
+
+    assert isinstance(est, CompareDict)
+    print(est)
+    assert len(est) == 4
+
+    # Make sure smart index work
+    assert len(est['pipe1']) == 2
+    assert len(est['pipe2']) == 2
+
+    p1 = est[Options(pipeline='pipe1',
+                     steps__0__obj='random forest')]
+    assert isinstance(p1, BPtPipeline)
+    assert isinstance(p1.steps[-1][1].estimator, RandomForestRegressor)
+    assert p1.steps[-1][1].estimator.n_jobs == 2
+    assert p1.steps[-1][1].estimator.random_state == 1
+
+    p2 = est["pipeline=pipe1, steps__0__obj=ridge"]
+    assert isinstance(p2, BPtPipeline)
+    assert isinstance(p2.steps[-1][1].estimator, Ridge)
+    assert p2.steps[-1][1].estimator.random_state == 1

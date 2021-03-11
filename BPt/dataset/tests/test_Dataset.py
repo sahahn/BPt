@@ -420,6 +420,7 @@ def get_data_inds_df():
     df.add_scope('c', 'category', inplace=True)
     df.set_target('t', inplace=True)
     df.set_non_input('n', inplace=True)
+    df._check_sr()
 
     return df
 
@@ -495,3 +496,14 @@ def test_is_data_cat():
     # In the case of an invalid scope, should return False
     all_cat = df._is_data_cat(ps_scope='category', scope='d2')
     assert not all_cat
+
+
+def test_get_cols_limit_to():
+
+    df = get_data_inds_df()
+
+    cols = df._get_cols('category', limit_to=['c1'])
+    assert cols == ['c1']
+
+    cols = df._get_cols('category', limit_to=['data file'])
+    assert len(cols) == 0

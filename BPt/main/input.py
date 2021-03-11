@@ -1,4 +1,5 @@
 from copy import deepcopy
+from numpy.lib.shape_base import split
 from sklearn.base import BaseEstimator
 from ..default.helpers import proc_input, conv_to_list
 
@@ -1618,6 +1619,52 @@ class Pipeline(Params):
         if not is_na:
             self.imputers = None
 
+    def get_params(self, deep=True):
+
+        params = super().get_params(deep=deep)
+
+        if deep:
+            for param_key in list(params):
+                if isinstance(params[param_key], list):
+                    for i, step in enumerate(params[param_key]):
+
+                        # Skip non objects
+                        if not hasattr(step, 'get_params'):
+                            continue
+
+                        # Get step params
+                        step_params = step.get_params(deep=True)
+
+                        # Add parameter
+                        for key in step_params:
+                            new_key = param_key + '__' + str(i) + '__' + key
+                            params[new_key] = step_params[key]
+
+        return params
+
+    def set_params(self, **params):
+
+        for key in params:
+            value = params[key]
+
+            split_key = key.split('__')
+            last_key = split_key[-1]
+
+            obj = self
+            for key_piece in split_key[:-1]:
+
+                # If int
+                try:
+                    indx = int(key_piece)
+                    obj = obj[indx]
+
+                # If parameter
+                except ValueError:
+                    obj = getattr(obj, key_piece)
+
+            # Set value
+            setattr(obj, last_key, value)
+
 
 class ModelPipeline(Pipeline):
     '''The ModelPipeline class is used to create BPtPipeline's.
@@ -1819,7 +1866,6 @@ class ModelPipeline(Pipeline):
         '''
         return ['loaders', 'imputers', 'scalers',
                 'transformers', 'feat_selectors', 'model']
-
 
     def __init__(self,
                  loaders=None, imputers='default',
@@ -2477,6 +2523,7 @@ def depreciate(func):
 @depreciate
 class Feat_Selector():
     new_class = FeatSelector
+
 
 @depreciate
 class Param_Search():

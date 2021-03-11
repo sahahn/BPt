@@ -35,7 +35,12 @@ def test_iterative_imputer():
 
     base_trans = objs[0][1]
     assert isinstance(base_trans, ScopeTransformer)
-    assert base_trans.inds == [1, 2]
+
+    assert base_trans.inds == dataset._get_data_inds('all', 'category')
+
+    # Since inds are based on sorted col names
+    # we know this should be 0, 1
+    assert base_trans.inds == [0, 1]
 
     it_imputer = base_trans.estimator
     assert isinstance(it_imputer, IterativeImputer)

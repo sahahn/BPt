@@ -72,7 +72,7 @@ class LinearResidualizer(BaseEstimator, TransformerMixin):
     _needs_transform_index = True
 
     def __init__(self, to_resid_df, demean=True,
-                 dummy_code=True, fit_intercept=False):
+                 dummy_code=True, fit_intercept=True):
 
         self.to_resid_df = to_resid_df
         self.demean = demean
@@ -164,6 +164,21 @@ class LinearResidualizer(BaseEstimator, TransformerMixin):
 
         self._check_args()
 
+        # If NaN, use NaN fit
+        if np.isnan(X).any():
+            return self._nan_fit(X, covars)
+
+        # Fit linear regression
+        self.estimator_ = LinearRegression(fit_intercept=self.fit_intercept)
+        self.estimator_.fit(covars, X)
+
+        # Save score
+        self.score_ = self.estimator_.score(covars, X)
+
+        return self
+
+    def _nan_fit(self, X, covars):
+
         # For each feature seperately
         self.estimators_ = []
         for i in range(X.shape[1]):
@@ -188,6 +203,25 @@ class LinearResidualizer(BaseEstimator, TransformerMixin):
         return self
 
     def _transform(self, X, covars):
+
+        # if fit with NaN's
+        if hasattr(self, 'estimators_'):
+            return self._nan_transform(X, covars)
+
+        # Otherwise use estimator
+        # The difference is the real value
+        # minus the predicted value
+        dif = X - self.estimator_.predict(covars)
+
+        # Set resid as either diff or diff + intercept
+        resid = dif
+
+        if self.fit_intercept:
+            resid += self.estimator_.intercept_
+
+        return resid
+
+    def _nan_transform(self, X, covars):
 
         # Init empty resid array of NaN's
         resid = np.empty(shape=X.shape)
@@ -228,4 +262,3 @@ class LinearResidualizer(BaseEstimator, TransformerMixin):
 
         covars = self._transform_covars(X, index=fit_index, fit=True)
         return self._fit(X, covars)._transform(X, covars)
-

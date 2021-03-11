@@ -29,7 +29,6 @@ def is_ng(p):
 
 
 def get_grid_params(params):
-    print(params)
 
     # Set grid params
     grid_params = {}
@@ -85,7 +84,7 @@ def is_array_like(in_val):
 
 def proc_mapping(indx, mapping):
 
-    # Special case, if passed indx of Ellipsis
+    # Special case, if passed index of Ellipsis
     # return as is.
     if indx is Ellipsis:
         return indx
@@ -126,21 +125,24 @@ def update_mapping(mapping, new_mapping):
     # In case where new_mapping is empty,
     # return the original mapping as is
     if len(new_mapping) == 0:
-        return mapping
+        return
 
     # Go through the mapping and update each key with the new mapping
     for key in mapping:
-
         val = mapping[key]
 
+        # In case of list
         if isinstance(val, list):
 
+            # Generate a new list of values
             new_vals = []
             for v in val:
 
+                # If the value is valid / in the new mapping
                 if v in new_mapping:
-
                     new_val = new_mapping[v]
+
+                    # Case where the new values is also a list
                     if isinstance(new_val, list):
                         new_vals += new_val
                     else:
@@ -149,14 +151,23 @@ def update_mapping(mapping, new_mapping):
                 else:
                     new_vals.append(v)
 
+            # Treat as set to remove duplicates
             as_set = set(new_vals)
 
+            # Don't keep None's if any in list
             try:
                 as_set.remove(None)
             except KeyError:
                 pass
 
-            mapping[key] = sorted(list(as_set))
+            # Exists case where None was the only element in the
+            # list, in that case just set to None
+            if len(as_set) == 0:
+                mapping[key] = None
+            
+            # Otherwise set as list in sorted order
+            else:
+                mapping[key] = sorted(list(as_set))
 
         # Assume int if not list
         else:

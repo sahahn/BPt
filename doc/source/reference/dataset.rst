@@ -29,8 +29,6 @@ Base
    Dataset.set_role
    Dataset.set_roles
    Dataset.get_roles
-   Dataset.add_data_files
-   Dataset.get_file_mapping
    Dataset.copy
    Dataset.auto_detect_categorical
    Dataset.get_Xy
@@ -50,6 +48,18 @@ Encoding
    Dataset.nan_to_class
    Dataset.copy_as_non_input
    Dataset.add_unique_overlap
+
+Data Files
+~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: api/
+
+   Dataset.add_data_files
+   Dataset.to_data_file
+   Dataset.consolidate_data_files
+   Dataset.update_data_file_paths
+   Dataset.get_file_mapping
 
 
 Filtering & Drop

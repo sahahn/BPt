@@ -64,3 +64,31 @@ The latest development version of BPt can also optionally be installed from gith
             </div>
         </div>
     </div>
+
+
+=================
+Extra Libraries
+=================
+
+BPt has a number of other optional requirements, then when installed allow using more default options. These are not
+added as required libraries for a few reasons, either to keep the number of dependencies down, or because sometimes
+installation of these libraries is non-trivial.
+
+The different extension libraries can be downloaded with ::
+    
+    pip install brain-pred-toolbox[extra]
+
+Though note, some may not download properly via pip depending on your operating system.
+
+Different extension libraries are listed below:
+
+
+lightgbm
+~~~~~~~~~~~
+
+See https://lightgbm.readthedocs.io/en/latest/Python-Intro.html.
+This is a library designed to perform extreme gradient boosting. It
+is offered under :ref:`Models` under reserved keys 'light gbm' and 'lgbm'.
+
+
+

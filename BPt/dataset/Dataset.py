@@ -1,19 +1,116 @@
 import pandas as pd
 import numpy as np
-from itertools import product
-
-from joblib import wrap_non_picklable_objects
-from ..helpers.Data_File import Data_File, load_data_file_proxy
+from ..helpers.DataFile import load_data_file_proxy
 from copy import copy, deepcopy
-from ..helpers.ML_Helpers import conv_to_list
-from .helpers import (base_load_subjects, proc_file_input, verbose_print)
-from ..main.input_operations import Intersection, Value_Subset
+from .helpers import (verbose_print)
+from ..main.input_operations import Intersection
+from pandas.util._decorators import doc
 
-# @TODO Look into pandas finalize
-# https://github.com/pandas-dev/pandas/blob/ce3e57b44932e7131968b9bcca97c1391cb6b532/pandas/core/generic.py#L5422
 
-# @TODO Customize the appearance of Dataset class, e.g.
-# add to repr and to_html, etc...
+_shared_docs = {}
+_shared_docs['scope'] = """scope : :ref:`Scope`
+            A BPt style :ref:`Scope` used to select a subset of
+            column(s) in which to apply the current function to.
+            See :ref:`Scope` for more information on how this
+            can be applied.
+"""
+
+_shared_docs['inplace'] = """inplace : bool, optional
+            If True, perform the current function inplace and return None.
+
+            ::
+
+                default = False
+
+"""
+_sip_docs = _shared_docs.copy()
+
+_shared_docs['load_func'] = """load_func : python function, optional
+            Fundamentally columns of type 'data file' represent
+            a path to a saved file, which means you must
+            also provide some information on how to load the saved file.
+            This parameter is where that loading function should be passed.
+            The passed `load_func` will be called on each file individually
+            and whatever the output of the function is will be passed to
+            the different loading functions.
+
+            You might need to pass a user defined custom function
+            in some cases, e.g., you want to use :func:`numpy.load`,
+            but then also np.stack. Just wrap those two functions in one,
+            and pass the new function.
+
+            ::
+
+                def my_wrapper(x):
+                    return np.stack(np.load(x))
+
+            In this case though, it is reccomended that
+            you define this function in a separate file from
+            where the main script will be run (for ease of caching)
+
+            By default this function assumes data files are passed
+            as numpy arrays.
+
+            ::
+
+                default = np.load
+
+"""
+
+_file_docs = {}
+_file_docs['reduce_func'] = '''reduce_func : python function, optional
+            The passed python function will be applied only if
+            the requested col/column is a 'data file'. In the case
+            that it is, the function should accept as input
+            the data from one data file, and should return a single
+            scalar value. For example, the default value is
+            numpy's mean function, which returns one value.
+
+            ::
+
+                default = np.mean
+
+'''
+
+_file_docs['n_jobs'] = '''n_jobs : int, optional
+            As with reduce_func, this parameter is only
+            valid when the passed col/column is a 'data file'.
+            In that case, this specifies the number of cores
+            to use in loading and applying the reduce_func to each
+            data file. This can provide a significant speed up when
+            passed the number of avaliable cores, but can sometimes
+            be memory intensive depending on the underlying size of the file.
+
+            If set to -1, will try to automatically use all avaliable cores.
+
+            ::
+
+                default = -1
+
+'''
+
+_shared_docs['drop'] = '''drop : bool, optional
+        By default this function will drop any subjects / index that are
+        determined to be outliers. On the otherhand, you
+        may instead set specific outlier values as NaN values instead.
+        To do this, set drop=False. Now those specific
+        values identified as outliers will be replaced with NaN.
+
+        ::
+
+            default = True
+
+'''
+
+_shared_docs['subjects'] = '''subjects : :ref:`Subjects`
+        This argument can be any of the BPt accepted
+        subject style inputs. E.g., None, 'nan' for subjects
+        with any nan data, the str location of a file
+        formatted with one subject per line, or directly an
+        array-like of subjects, to name some options.
+
+        See :ref:`Subjects` for all options.
+'''
 
 
 class Dataset(pd.DataFrame):
@@ -71,12 +168,9 @@ class Dataset(pd.DataFrame):
         return Dataset
 
     @property
-    def __constructorsliced(self):
-        return pd.Series
-
-    @property
     def reserved_roles(self):
-        '''The dataset class has three fixed roles,
+        '''The dataset class has three fixed and therefore
+        reserved (i.e., cannot be set as a scope) roles,
         these are ::
 
             ['data', 'target', 'non input']
@@ -212,7 +306,8 @@ class Dataset(pd.DataFrame):
                         'were cast to str', level=0)
 
         # Check if any columns have the same name as a reserved scope
-        reserved_overlap = set(self.columns).intersection(self.reservered_scopes)
+        reserved_overlap = set(self.columns).intersection(
+            self.reservered_scopes)
         if len(reserved_overlap) > 0:
             raise RuntimeError('The columns: ' + repr(reserved_overlap) + ' '
                                'overlap with reserved saved names! '
@@ -296,220 +391,6 @@ class Dataset(pd.DataFrame):
         for col in remove_scope:
             self._remove_scope(col, 'category')
 
-    def _apply_only_level(self, subjects, only_level):
-
-        # If only level not None and MultiIndex - only keep
-        if isinstance(self.index, pd.MultiIndex) and only_level is not None:
-            drop_names = list(self.index.names)
-            drop_names.remove(self.index.names[only_level])
-            subjects = subjects.droplevel(drop_names)
-
-        return set(list(subjects))
-
-    def _get_nan_loaded_subjects(self, only_level):
-
-        # Get nan subjects
-        nan_subjects = self[pd.isnull(self[:]).any(axis=1)].index
-
-        # Apply only level + convert to sat
-        nan_subjects = self._apply_only_level(nan_subjects, only_level)
-
-        return nan_subjects
-
-    def _get_value_subset_loaded_subjects(self, subjects, only_level):
-
-        if subjects.name not in list(self):
-            raise KeyError('Passed Value_Subset name: ' +
-                           repr(subjects.name) +
-                           ' is not loaded')
-
-        # Get the relevant series
-        data = self.get_values(subjects.name, dropna=False,
-                               decode_values=subjects.decode_values)
-
-        # Extract the values as list
-        values = conv_to_list(subjects.values)
-
-        # Get subjects by values
-        loaded_subjects = data[data.isin(values)].index
-
-        # Apply only level + convert to set
-        loaded_subjects =\
-            self._apply_only_level(loaded_subjects, only_level)
-
-        return loaded_subjects
-
-    def _get_base_loaded_subjects(self, subjects, only_level):
-
-        loaded_subjects = base_load_subjects(subjects)
-
-        # In multi-index case
-        if isinstance(self.index, pd.MultiIndex):
-
-            # If want multi-index returned
-            if only_level is None:
-                loaded_subjects = set(self.loc[loaded_subjects].index)
-
-        # Non multi-index case try to cast to correct type
-        else:
-
-            dtype = self.index.dtype.name
-            if 'int' in dtype:
-                loaded_subjects = {int(s) for s in loaded_subjects}
-            elif 'float' in dtype:
-                loaded_subjects = {float(s) for s in loaded_subjects}
-            elif dtype == 'object':
-                loaded_subjects = {str(s) for s in loaded_subjects}
-            else:
-                raise RuntimeError('Index data type:' + dtype + ' '
-                                   'is not currently supported!')
-
-        return loaded_subjects
-
-    def _return_subjects_as(self, subjects, return_as, only_level):
-
-        if return_as == 'set':
-            return subjects
-
-        # If not set, treat as pandas index or flat index case
-        subjects = sorted(list(subjects))
-
-        # If not multi index, just cast and return
-        if not isinstance(self.index, pd.MultiIndex):
-            return pd.Index(data=subjects, name=self.index.name)
-
-        # Multi index case, with only level
-        if only_level is not None:
-            return pd.Index(data=subjects,
-                            name=self.index.names[only_level])
-
-        # RConvert to multi index
-        subjects = list(map(tuple, subjects))
-        multi_index = pd.MultiIndex.from_tuples(
-            subjects, names=self.index.names)
-
-        if return_as == 'flat index':
-            return multi_index.to_flat_index()
-        else:
-            return multi_index
-
-    def get_subjects(self, subjects, return_as='set', only_level=None):
-        '''Method to get a set of subjects, from
-        a set of already loaded ones, or from a saved location.
-
-        Parameters
-        -----------
-        subjects : :ref:`subjects`
-            This argument can be any of the BPt accepted
-            :ref:`Subjects` style inputs.
-            E.g., None, 'nan' for subjects
-            with any nan data, the str location of a file
-            formatted with one subject per line, or directly an
-            array-like of subjects, to name some options.
-
-            See :ref:`Subjects` for all options.
-
-        return_as : {'set', 'index', 'flat index'}, optional
-            - If 'set', return as set of subjects.
-            - If 'index', return as sorted pandas index.
-            - If 'flat index', will return as sorted pandas index
-                i.e., the same output as index, when not MultiIndex,
-                but when MultiIndex, will return the index as a flat
-                Index of tuples.
-
-        only_level : int or None, optional
-            This parameter is only relevant when the
-            underlying index is a MultiIndex.
-
-            Note: this param is not relevant
-            when using special tuple style input for subjects.
-
-            ::
-
-                default = None
-
-        Returns
-        ----------
-        subjects : {set, pd.Index, pd.MultiIndex}
-            Based on value of return_as, returns as
-            a set of subjects, sorted pandas Index, or sorted
-            pandas MultiIndex
-        '''
-
-        # input validation
-        if return_as not in ['set', 'index', 'flat index']:
-            raise TypeError('Invalid parameter passed to return as!')
-
-        # Check for passed intersection case
-        if isinstance(subjects, Intersection):
-
-            subjects_list =\
-                [self.get_subjects(s, return_as='set', only_level=only_level)
-                 for s in subjects]
-
-            loaded_subjects = set.intersection(*subjects_list)
-
-            # Return as requested
-            return self._return_subjects_as(loaded_subjects,
-                                            return_as=return_as,
-                                            only_level=only_level)
-
-        if isinstance(subjects, tuple):
-
-            if len(subjects) != len(self.index.names):
-                raise RuntimeError('Passed special tuple must match the '
-                                   'number of MultiIndex levels.')
-
-            # Proc each ind seperately
-            inds = []
-            for i, subject_arg in enumerate(subjects):
-                inds.append(self.get_subjects(subject_arg,
-                                              return_as='set',
-                                              only_level=i))
-            # Create set of sets
-            loaded_subjects = set(product(*inds))
-
-            # Return as requested, note only_level fixed as None
-            return self._return_subjects_as(loaded_subjects,
-                                            return_as=return_as,
-                                            only_level=None)
-
-        # Check if None
-        if subjects is None:
-            loaded_subjects = set()
-
-        # Check for special keywords
-        elif isinstance(subjects, str) and subjects == 'nan':
-            loaded_subjects =\
-                self._get_nan_loaded_subjects(only_level=only_level)
-
-        elif isinstance(subjects, str) and subjects == 'all':
-            loaded_subjects =\
-                self._apply_only_level(self.index, only_level)
-
-        elif isinstance(subjects, str) and subjects == 'train':
-            if not hasattr(self, 'train_subjects') or self.train_subjects is None:
-                raise RuntimeError('Train subjects undefined')
-            loaded_subjects = set(self.train_subjects)
-
-        elif isinstance(subjects, str) and subjects == 'test':
-            if not hasattr(self, 'test_subjects') or self.test_subjects is None:
-                raise RuntimeError('Test subjects undefined')
-            loaded_subjects = set(self.test_subjects)
-
-        # Check for Value Subset or Values Subset
-        elif isinstance(subjects, Value_Subset):
-            loaded_subjects =\
-                self._get_value_subset_loaded_subjects(subjects,
-                                                       only_level=only_level)
-        else:
-            loaded_subjects =\
-                self._get_base_loaded_subjects(subjects, only_level=only_level)
-
-        # Return based on return as value
-        return self._return_subjects_as(loaded_subjects, return_as,
-                                        only_level=only_level)
-
     def get_roles(self):
         ''' This function can be
         used to get a dictionary with the currently
@@ -528,6 +409,7 @@ class Dataset(pd.DataFrame):
         self._check_roles()
         return self.roles
 
+    @doc(**_sip_docs)
     def set_role(self, scope, role, inplace=False):
         '''This method is used to set a role for
         either a single column or multiple, as set
@@ -537,9 +419,7 @@ class Dataset(pd.DataFrame):
 
         Parameters
         ----------
-        scope : :ref:`Scope`
-            A BPt style :ref:`Scope` used to select a subset of
-            column in which to set with the passed role.
+        {scope}
 
         role : :ref:`Role`
             A valid role in which to set all columns
@@ -550,12 +430,8 @@ class Dataset(pd.DataFrame):
             See :ref:`Role` for more information on how
             each role differs.
 
-        inplace : bool, optional
-            If True, do operation inplace and return None.
+        {inplace}
 
-            ::
-
-                default = False
         '''
 
         if not inplace:
@@ -578,10 +454,16 @@ class Dataset(pd.DataFrame):
 
         Parameters
         -----------
-        scope_to_roles: dict of :ref:`Scope` to :ref:`Role`
+        scope_to_roles : dict of :ref:`Scope` to :ref:`Role`
             A python dictionary with keys as :ref:`Scope`
             and their corresponding value's as the :ref:`Role`
             in which those columns should take.
+
+            For example ::
+
+                scope_to_roles = dict()
+                scope_to_roles['col1'] = 'target'
+                scope_to_roles['col2'] = 'non input'
 
         inplace : bool, optional
             If True, do operation inplace and return None.
@@ -602,6 +484,56 @@ class Dataset(pd.DataFrame):
         for scope, role in zip(scopes_to_roles, scopes_to_roles.values()):
             [self._set_role(col, role) for col in self._get_cols(scope)]
 
+    def set_target(self, scope, inplace=False):
+        '''This method is used to set
+        either a single column, or multiple, specifically
+        with role `target`. This function is simply
+        a helper wrapper around :func:`Dataset.set_role`.
+
+        See :ref:`Role` for more information
+        about how roles are used within BPt.
+
+        Parameters
+        ----------
+        scope : :ref:`Scope`
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to set with role `target`.
+
+        inplace : bool, optional
+            If True, do operation inplace and return None.
+
+            ::
+
+                default = False
+        '''
+
+        self.set_role(scope=scope, role='target', inplace=inplace)
+
+    def set_non_input(self, scope, inplace=False):
+        '''This method is used to set
+        either a single column, or multiple, specifically
+        with role `non input`. This function is simply
+        a helper wrapper around :func:`Dataset.set_role`.
+
+        See :ref:`Role` for more information
+        about how roles are used within BPt.
+
+        Parameters
+        ----------
+        scope : :ref:`Scope`
+            A BPt style :ref:`Scope` used to select a subset of
+            columns in which to set with role `non input`.
+
+        inplace : bool, optional
+            If True, do operation inplace and return None.
+
+            ::
+
+                default = False
+        '''
+
+        self.set_role(scope=scope, role='non input', inplace=inplace)
+
     def _set_role(self, col, role):
         '''Internal function for setting a single columns role.'''
 
@@ -609,10 +541,6 @@ class Dataset(pd.DataFrame):
             raise AttributeError(
                 'Passed role "' + str(role) + '" must be one of ' +
                 str(self.reserved_roles))
-
-        # If col is int or float, cast
-        if isinstance(col, int) or isinstance(col, float):
-            col = str(col)
 
         # Set as role
         self.roles[col] = role
@@ -693,13 +621,20 @@ class Dataset(pd.DataFrame):
 
     def _add_scope(self, col, scope_val):
 
-        # If col is int or float, cast
-        if isinstance(col, int) or isinstance(col, float):
-            col = str(col)
-
         # Check if category
         if scope_val == 'category':
             self.scopes[col].add(scope_val)
+
+            # If already categorical, skip
+            if self[col].dtype.name == 'category':
+                return
+
+            # Special case, if converting from bool to category
+            if self[col].dtype.name == 'bool':
+
+                # Need to cast to int first as intermediate
+                self[col] = self[col].astype('int')
+
             self[col] = self[col].astype('category')
             self[col].cat.as_ordered(inplace=True)
 
@@ -788,95 +723,124 @@ class Dataset(pd.DataFrame):
         except KeyError:
             pass
 
-    def _get_cols(self, scope, limit_to=None):
+    def _get_reserved_cols(self, scope, columns):
+        '''If passed here then we know the
+        passed scope is one the options.'''
 
-        if limit_to is None:
-            columns = self.columns
+        if scope == 'all':
+            return list(columns)
+
+        elif scope == 'data float':
+            return [col for col in columns if
+                    'category' not in self.scopes[col] and
+                    'data file' not in self.scopes[col] and
+                    self.roles[col] == 'data']
+
+        elif scope == 'target float':
+            return [col for col in columns if
+                    'category' not in self.scopes[col] and
+                    'data file' not in self.scopes[col] and
+                    self.roles[col] == 'target']
+
+        elif scope == 'float':
+            return [col for col in columns if
+                    'category' not in self.scopes[col] and
+                    'data file' not in self.scopes[col]]
+
+        elif scope == 'category':
+            return [col for col in columns if
+                    'category' in self.scopes[col]]
+
+        elif scope == 'data category':
+            return [col for col in columns if
+                    'category' in self.scopes[col] and
+                    self.roles[col] == 'data']
+
+        elif scope == 'target category':
+            return [col for col in columns if
+                    'category' in self.scopes[col] and
+                    self.roles[col] == 'target']
+
+        elif scope == 'data':
+            return [col for col in columns if
+                    self.roles[col] == 'data']
+
+        elif scope == 'target':
+            return [col for col in columns if
+                    self.roles[col] == 'target']
+
+        elif scope == 'non input':
+            return [col for col in columns if
+                    self.roles[col] == 'non input']
+
+        elif scope == 'data file':
+            return [col for col in columns if
+                    'data file' in self.scopes[col]]
+
         else:
-            columns = self._get_cols(limit_to, limit_to=None)
+            raise RuntimeError('Should be impossible to reach here.')
 
-        saved_scopes = set()
-        for col in columns:
-            saved_scopes.update(self.scopes[col])
+    def _g_cols(self, scope, columns, saved_scopes):
+        '''This method is used internally to avoid
+        some repeated actions.
 
-        # If int or flot, cast to str.
+        It will return columns as a list.'''
+
+        # If int or float, cast to str.
         if isinstance(scope, int) or isinstance(scope, float):
             scope = str(scope)
 
         # Check is passed scope is reserved
         if isinstance(scope, str):
+
+            # First case, check if reserved scope
             if scope in self.reservered_scopes:
+                return self._get_reserved_cols(scope, columns)
 
-                if scope == 'all':
-                    return list(columns)
-
-                # Float refers to essentially not category and not data file
-                elif scope == 'data float':
-                    return [col for col in columns if
-                            'category' not in self.scopes[col] and
-                            'data file' not in self.scopes[col] and
-                            self.roles[col] == 'data']
-
-                elif scope == 'target float':
-                    return [col for col in columns if
-                            'category' not in self.scopes[col] and
-                            'data file' not in self.scopes[col] and
-                            self.roles[col] == 'target']
-
-                elif scope == 'float':
-                    return [col for col in columns if
-                            'category' not in self.scopes[col] and
-                            'data file' not in self.scopes[col]]
-
-                elif scope == 'category':
-                    return [col for col in columns if
-                            'category' in self.scopes[col]]
-
-                elif scope == 'data category':
-                    return [col for col in columns if
-                            'category' in self.scopes[col] and
-                            self.roles[col] == 'data']
-
-                elif scope == 'target category':
-                    return [col for col in columns if
-                            'category' in self.scopes[col] and
-                            self.roles[col] == 'target']
-
-                elif scope == 'data':
-                    return [col for col in columns if
-                            self.roles[col] == 'data']
-
-                elif scope == 'target':
-                    return [col for col in columns if
-                            self.roles[col] == 'target']
-
-                elif scope == 'non input':
-                    return [col for col in columns if
-                            self.roles[col] == 'non input']
-
-                elif scope == 'data file':
-                    return [col for col in columns if
-                            'data file' in self.scopes[col]]
-
-            # Check if passed scope is a loaded column
+            # Next case is if the passed scope
+            # is a valid column.
             elif scope in columns:
                 return [scope]
 
             # Check if a saved scope
-            elif scope in saved_scopes:
+            if scope in saved_scopes:
                 return [col for col in columns if
                         scope in self.scopes[col]]
 
-            # Do a search, see if passed scope is a stub of any strings
-            else:
-                return [col for col in columns if
-                        scope in col]
+            # Last string case is a stub search
+            return [col for col in columns if scope in col]
 
+        # If scope not str, assume iterable, and call recursively
+        # on each iterable. If not iterable, will fail
         cols = []
         for scp in scope:
-            cols += self._get_cols(scp)
+            cols += self._g_cols(scp, columns, saved_scopes)
 
-        return sorted(list(set(cols)))
+        # In the case that scope was an iterable, their exists
+        # the possibility for overlapping columns.
+        # Cast to set and back to list to remove these
+        return list(set(cols))
+
+    def _get_cols(self, scope, limit_to=None):
+
+        # Set columns to check within based on if
+        # limit_to is passed
+        if limit_to is None:
+            columns = self.columns
+        else:
+            columns = self._get_cols(limit_to, limit_to=None)
+
+        # Get the set of saved valid scopes for these columns
+        saved_scopes = set()
+        for col in columns:
+            saved_scopes.update(self.scopes[col])
+
+        # Get columns from internal g_cols func
+        cols = self._g_cols(scope, columns, saved_scopes)
+
+        # For maximum reproducibility and reliable behavior
+        # always return the sorted columns.
+        return sorted(cols)
 
     def get_cols(self, scope, limit_to=None):
         '''This method is the main internal and external
@@ -915,20 +879,47 @@ class Dataset(pd.DataFrame):
 
         return self._get_cols(scope=scope, limit_to=limit_to)
 
-    def _get_data_inds(self, ps_scope, scope='all'):
+    def _get_data_cols(self, ps_scope):
+        return self._get_cols('data', limit_to=ps_scope)
+
+    def _get_data_inds(self, ps_scope, scope):
         '''This function always limits first by the data cols,
         then ps_scope refers to the problem_spec scope, and
         lastly scope can be used to specify of subset of those columns'''
 
-        data_cols = self._get_cols('data', limit_to=ps_scope)
+        # Get data cols, these are the ordered columns
+        # actually passed to an evaluate function
+        data_cols = self._get_data_cols(ps_scope)
 
+        # If scope is 'all', data inds
+        if scope == 'all':
+            return list(range(len(data_cols)))
+
+        # Otherwise, get subset of inds, then return sorted
         inds = [data_cols.index(k) for k in
                 self._get_cols(scope, limit_to=data_cols)]
 
         return sorted(inds)
 
+    def _is_data_cat(self, ps_scope, scope):
+
+        # Get data cols
+        data_cols = self._get_data_cols(ps_scope)
+
+        # Check if all are categorical cat
+        # In the case where the underlying scope
+        # is nothing, return False
+        try:
+            all_cat = self._is_category(scope, limit_to=data_cols,
+                                        check_scopes=False)
+        except KeyError:
+            all_cat = False
+
+        return all_cat
+
+    @doc(**_file_docs)
     def get_values(self, col, dropna=True, decode_values=False,
-                   reduce_func=np.mean, n_jobs=1):
+                   reduce_func=np.mean, n_jobs=-1):
         '''This method is used to obtain the either normally loaded and
         stored values from a passed column, or in the case of a data file
         column, the data file proxy values will be loaded. There is likewise
@@ -958,30 +949,9 @@ class Dataset(pd.DataFrame):
 
                 default = False
 
-        reduce_func : python function, optional
-            The passed python function will be applied only if
-            the requested col/column is a 'data file'. In the case
-            that it is, the function should accept as input
-            the data from one data file, and should return a single
-            scalar value. For example, the default value is
-            numpy's mean function, which returns one value.
+        {reduce_func}
 
-            ::
-
-                default = np.mean
-
-        n_jobs : int, optional
-            As with reduce_func, this parameter is only
-            valid when the passed col/column is a 'data file'.
-            In that case, this specifies the number of cores
-            to use in loading and applying the reduce_func to each
-            data file. This can provide a signifigant speed up when
-            passed the number of avaliable cores, but can sometimes
-            be memory intensive depending on the underlying size of the file.
-
-            ::
-
-                default = 1
+        {n_jobs}
 
         Returns
         ---------
@@ -1001,7 +971,7 @@ class Dataset(pd.DataFrame):
                                 reduce_func=reduce_func, n_jobs=n_jobs)
 
     def _get_values(self, col, dropna=True, decode_values=False,
-                    reduce_func=np.mean, n_jobs=1):
+                    reduce_func=np.mean, n_jobs=-1):
 
         # Extract base series depending on if dropna
         if dropna:
@@ -1163,222 +1133,6 @@ class Dataset(pd.DataFrame):
         self._print('Categorical variables in dataset:',
                     self._get_cols(scope='category'), level=2)
 
-    def get_file_mapping(self):
-        '''This function is used to access the
-        up to date file mapping.
-
-        Returns
-        --------
-        file_mapping : dict
-            Return a dictionary with keys as
-            integer's loaded in the Dataset referring
-            to Data Files.
-        '''
-
-        self._check_file_mapping()
-        return self.file_mapping
-
-    def add_data_files(self, files, file_to_subject,
-                       load_func=np.load, inplace=False):
-        '''This method is the main way of adding columns of type
-        'data file' to the Dataset class.
-
-        Parameters
-        ----------
-        files : dict
-            This argument must be passed as a python dict.
-            Specifically, a python dictionary should be passed where
-            each key refers to the name of that feature / column of data files
-            to load, and the value is either a list-like of
-            str file paths, or a single globbing str which will
-            be used to determine the files.
-
-            In addition to this parameter, you must also pass a
-            python function to the file_to_subject param,
-            which specifies how to convert from passed
-            file path, to a subject name.
-
-            E.g., consider the example below, where 2 subjects files are
-            loaded for 'feat1' and feat2':
-
-            ::
-
-                files = {'feat1': ['f1/subj_0.npy', 'f1/subj_1.npy'],
-                         'feat2': ['f2/subj_0.npy', 'f2/subj_1.npy']}
-
-                def file_to_subject_func(file):
-                    subject = file.split('/')[1].replace('.npy', '')
-                    return subject
-
-                file_to_subject = file_to_subject_func
-                # or
-                file_to_subject = {'feat1': file_to_subject_func,
-                                   'feat2': file_to_subject_func}
-
-            In this example, subjects are loaded as 'subj_0' and 'subj_1',
-            and they have associated loaded data files 'feat1' and 'feat2'.
-
-        file_to_subject : python function, dict of or 'auto'
-            You must pass some way of mapping file names
-            to their corresponding subject. The flexible way
-            to do this is by passing a python function
-            which takes in a file path, and returns the relevant subject for
-            that file path. If just one function is passed, it will be used
-            for to load all dictionary entries, alternatively you can pass
-            a matching dictionary of funcs, allowing for different funcs
-            for each feature to load.
-
-            See the example in files, e.g.,
-
-            ::
-
-                file_to_subject = file_to_subject_func
-                # or
-                file_to_subject = {'feat1': file_to_subject_func,
-                                   'feat2': file_to_subject_func}
-
-            You may also pass the custom str 'auto' to
-            specify that the subject name should be the base
-            file name with the extension removed. For example
-            if the path is '/some/path/subj16.npy' then the auto
-            subject will be 'subj16'.
-
-            In the case that the underlying index is a MultiIndex, this
-            function should be designed to return the subject in correct
-            tuple form. E.g.,
-
-            ::
-
-                # The underlying dataset is indexed by subject and event
-                data.set_index(['subject', 'event'], inplace=True)
-
-                # Only one feature
-                files = {'feat1': ['f1/s0_e0.npy',
-                                   'f1/s0_e1.npy',
-                                   'f1/s1_e0.npy',
-                                   'f1/s1_e1.npy']}
-
-                def file_to_subject_func(file):
-
-                    # This selects the substring
-                    # at the last part seperated by the '/'
-                    # so e.g. the stub, 's0_e0.npy', 's0_e1.npy', etc...
-                    subj_split = file.split('/')[-1]
-
-                    # This removes the .npy from the end, so
-                    # stubs == 's0_e0', 's0_e1', etc...
-                    subj_split = subj_split.replace('.npy', '')
-
-                    # Set the subject name as the first part
-                    # and the eventname as the second part
-                    subj_name = subj_split.split('_')[0]
-                    event_name = subj_split.split('_')[1]
-
-                    # Lastly put it into the correct return style
-                    # This is tuple style e.g., ('s0', 'e0'), ('s0', 'e1')
-                    ind = (subj_name, eventname)
-
-                    return ind
-
-            While this is a bit longer than the previous case, it is flexible.
-
-        load_func : python function, optional
-            Fundamentally columns of type 'data file' represent
-            a path to a saved file, which means you must
-            also provide some information on how to load the saved file.
-            This parameter is where that loading function should be passed.
-            The passed `load_func` will be called on each file individually
-            and whatever the output of the function is will be passed to
-            the different loading functions.
-
-            You might need to pass a user defined custom function
-            in some cases, e.g., you want to use np.load,
-            but then also np.stack. Just wrap those two functions in one,
-            and pass the new function.
-
-            ::
-
-                def my_wrapper(x):
-                    return np.stack(np.load(x))
-
-            In this case though, it is reccomended that
-            you define this function in a separate file from
-            where the main script will be run (for ease of caching)
-
-            By default this function assumes data files are passed
-            as numpy arrays.
-
-            ::
-
-                default = np.load
-
-        inplace : bool, optional
-            If True, do operation inplace and return None.
-
-            ::
-
-                default = False
-
-        See Also
-        --------
-        get_file_mapping : Returns the raw file mapping.
-        '''
-
-        if not inplace:
-            return self._inplace('add_data_files', locals())
-
-        # Wrap load_func here if needed.
-        if load_func.__module__ == '__main__':
-            wrapped_load_func = wrap_non_picklable_objects(load_func)
-            self._print('Warning: Passed load_func was defined within the',
-                        '__main__ namespace and therefore has been '
-                        'cloud wrapped.',
-                        'The function will still work, but it is '
-                        'reccomended to',
-                        'define this function in a separate file, '
-                        'and then import',
-                        'it , otherwise loader caching will be limited',
-                        'in utility!', level=0)
-        else:
-            wrapped_load_func = load_func
-
-        # Init if needed
-        self._check_file_mapping()
-
-        # Get dict of key to files
-        file_series = proc_file_input(files, file_to_subject)
-
-        # Get next file mapping ind
-        cnt = self._get_next_ind()
-
-        # For each column
-        for file in file_series:
-
-            # For each subject, fill in with Data File
-            series = file_series[file]
-
-            for subject in series.index:
-
-                # Create data file and add to file mapping
-                data_file = Data_File(series[subject], wrapped_load_func)
-                self.file_mapping[cnt] = data_file
-
-                # Replace cnt index in data
-                self.at[subject, file] = cnt
-
-                # Increment
-                cnt += 1
-
-            # Set scope
-            self.add_scope(file, 'data file', inplace=True)
-
-    def _get_next_ind(self):
-
-        if len(self.file_mapping) > 0:
-            return np.nanmax(self.file_mapping.keys()) + 1
-        else:
-            return 0
-
     def _get_problem_type(self, col):
         '''Return the default problem type for a given column.'''
 
@@ -1535,7 +1289,7 @@ class Dataset(pd.DataFrame):
         subjects = sorted(self.get_subjects(ps.subjects, return_as='set'))
 
         # Get X cols
-        X_cols = self._get_cols('data', limit_to=ps.scope)
+        X_cols = self._get_data_cols(ps.scope)
 
         # Get X as pandas df subset, y as Series
         X = pd.DataFrame(self.loc[subjects, X_cols]).astype(ps.base_dtype)
@@ -1609,9 +1363,14 @@ class Dataset(pd.DataFrame):
             by the passed problem_spec.
         '''
 
+        try:
+            ps_subjects = problem_spec.subjects
+        except AttributeError:
+            ps_subjects = 'all'
+
         return self.get_Xy(problem_spec,
                            subjects=Intersection([subjects,
-                                                  problem_spec.subjects]),
+                                                  ps_subjects]),
                            **problem_spec_params)
 
     def get_test_Xy(self, problem_spec='default', subjects='test',
@@ -1679,9 +1438,15 @@ class Dataset(pd.DataFrame):
             Series with the the test target values as requested
             by the passed problem_spec.
         '''
+
+        try:
+            ps_subjects = problem_spec.subjects
+        except AttributeError:
+            ps_subjects = 'all'
+
         return self.get_Xy(problem_spec,
                            subjects=Intersection([subjects,
-                                                  problem_spec.subjects]),
+                                                  ps_subjects]),
                            **problem_spec_params)
 
     def _repr_html_(self):
@@ -1700,6 +1465,8 @@ class Dataset(pd.DataFrame):
             display_scope = scope[0].upper() + scope[1:]
             if display_scope == 'Target' and len(cols) > 1:
                 display_scope = 'Targets'
+            elif display_scope == 'Non input':
+                display_scope = 'Non Input'
 
             if len(cols) > 0:
                 html += template.format(display_scope,
@@ -1761,6 +1528,21 @@ class Dataset(pd.DataFrame):
 
         return html
 
+    from ._subjects import (_apply_only_level,
+                            _get_nan_loaded_subjects,
+                            _get_value_subset_loaded_subjects,
+                            _get_base_loaded_subjects,
+                            _return_subjects_as,
+                            get_subjects)
+
+    from ._data_files import (get_file_mapping,
+                              add_data_files,
+                              to_data_file,
+                              _series_to_data_file,
+                              consolidate_data_files,
+                              update_data_file_paths,
+                              _get_next_ind)
+
     from ._plotting import (plot,
                             show,
                             show_nan_info,
@@ -1813,3 +1595,5 @@ class Dataset(pd.DataFrame):
                              drop_cols,
                              drop_cols_by_unique_val,
                              drop_cols_by_nan)
+
+

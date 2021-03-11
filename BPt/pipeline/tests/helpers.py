@@ -1,7 +1,7 @@
 import os
 import tempfile
 import numpy as np
-from ...helpers.Data_File import Data_File
+from ...helpers.DataFile import DataFile
 from ...main.input import ProblemSpec
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection._base import SelectorMixin
@@ -101,7 +101,7 @@ def get_fake_mapping(n):
 
         np.save(loc, data)
 
-        mapping[i] = Data_File(loc=loc, load_func=np.load)
+        mapping[i] = DataFile(loc=loc, load_func=np.load)
 
     return mapping
 

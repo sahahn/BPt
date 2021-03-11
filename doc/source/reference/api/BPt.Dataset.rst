@@ -46,6 +46,7 @@ BPt.Dataset
       Dataset.combine
       Dataset.combine_first
       Dataset.compare
+      Dataset.consolidate_data_files
       Dataset.convert_dtypes
       Dataset.copy
       Dataset.copy_as_non_input
@@ -191,8 +192,10 @@ BPt.Dataset
       Dataset.set_axis
       Dataset.set_flags
       Dataset.set_index
+      Dataset.set_non_input
       Dataset.set_role
       Dataset.set_roles
+      Dataset.set_target
       Dataset.set_test_split
       Dataset.set_train_split
       Dataset.shift
@@ -215,6 +218,7 @@ BPt.Dataset
       Dataset.to_binary
       Dataset.to_clipboard
       Dataset.to_csv
+      Dataset.to_data_file
       Dataset.to_dict
       Dataset.to_excel
       Dataset.to_feather
@@ -243,6 +247,7 @@ BPt.Dataset
       Dataset.tz_localize
       Dataset.unstack
       Dataset.update
+      Dataset.update_data_file_paths
       Dataset.value_counts
       Dataset.var
       Dataset.where

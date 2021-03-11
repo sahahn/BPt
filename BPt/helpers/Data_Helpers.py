@@ -13,7 +13,7 @@ from operator import add
 from functools import reduce
 import warnings
 import pandas as pd
-from ..helpers.Data_File import load_data_file_proxies
+from ..helpers.DataFile import load_data_file_proxies
 
 
 def auto_data_type(col):

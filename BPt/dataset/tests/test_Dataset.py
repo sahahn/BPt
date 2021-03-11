@@ -3,13 +3,78 @@ import pandas as pd
 import tempfile
 import os
 from nose.tools import assert_raises
-from ...main.input_operations import Value_Subset, Intersection
+from ...main.input_operations import Intersection
 from ...main.input import ProblemSpec
 from ..helpers import base_load_subjects, save_subjects
-from .datasets import (get_fake_dataset, get_fake_dataset2,
-                       get_fake_multi_index_dataset, get_fake_dataset4,
+from .datasets import (get_fake_dataset, 
+                       get_fake_multi_index_dataset,
                        get_fake_dataset5, get_full_dataset)
 from ..Dataset import Dataset
+import pickle
+
+
+def test_check_cols():
+
+    data = Dataset()
+    data.verbose = -1
+    data[1] = [1, 2, 3]
+    data[2] = [1, 2, 3]
+
+    data._check_cols()
+    assert 1 not in data
+    assert 2 not in data
+    assert '1' in data
+    assert '2' in data
+
+
+def test_get_roles():
+
+    df = get_fake_dataset()
+    df.set_role('1', 'target', inplace=True)
+    roles = df.get_roles()
+    assert roles['1'] == 'target'
+    assert roles['2'] == 'data'
+
+
+def test_set_role_fail():
+
+    df = get_fake_dataset()
+
+    with assert_raises(AttributeError):
+        df.set_role('1', 'not real role')
+
+
+def test_set_role_int_col():
+
+    df = get_fake_dataset()
+    df.set_role(1, 'target', inplace=True)
+    roles = df.get_roles()
+    assert roles['1'] == 'target'
+
+
+def test_pickle():
+
+    df = get_full_dataset()
+
+    temp_dr = tempfile.gettempdir()
+    loc = os.path.join(temp_dr, 'temp.pkl')
+
+    with open(loc, 'wb') as f:
+        pickle.dump(df, f)
+
+    with open(loc, 'rb') as f:
+        df2 = pickle.load(f)
+
+    assert len(df.test_subjects) == len(df2.test_subjects)
+
+    # Clean up when done
+    os.remove(loc)
+
+    # Test pandas to_pickle
+    df.to_pickle(loc)
+    q = pd.read_pickle(loc)
+    assert len(df.test_subjects) == len(q.test_subjects)
+    assert isinstance(q, Dataset)
 
 
 def test_indexing():
@@ -83,6 +148,29 @@ def test_remove_scope_inplace():
     assert df.scopes['1'] != set(['a'])
 
 
+def test_to_category_from_bool():
+
+    df = Dataset()
+    df['1'] = [True, False]
+    df['1'] = df['1'].astype('bool')
+
+    assert df['1'].dtype.name == 'bool'
+
+    df.add_scope('1', 'category', inplace=True)
+    assert df['1'].dtype.name == 'category'
+
+
+def test_add_multiple_scopes():
+
+    df = get_fake_dataset()
+    df = df.add_scope('1', ['a', 'b', 'c'])
+
+    scopes = df.get_scopes()
+    assert 'a' in scopes['1']
+    assert 'b' in scopes['1']
+    assert 'c' in scopes['1']
+
+
 def test_check_scopes():
 
     df = get_fake_dataset()
@@ -95,6 +183,20 @@ def test_check_scopes():
     df._check_scopes()
     assert 'category' not in df.scopes['2']
     assert not df._is_category('2')
+
+
+def test_set_target_inplace():
+
+    df = get_fake_dataset()
+    df.set_target('1', inplace=True)
+    assert(set(df.get_cols('target')) == set(['1']))
+
+
+def test_set_non_input_inplace():
+
+    df = get_fake_dataset()
+    df.set_non_input('2', inplace=True)
+    assert(set(df.get_cols('non input')) == set(['2']))
 
 
 def test_set_role_inplace():
@@ -186,282 +288,6 @@ def test_auto_detect_categorical_inplace():
     assert cat_cols == ['1', '2', '3', '4']
 
 
-def test_add_data_files():
-
-    df = get_fake_dataset()
-
-    def file_to_subject(i):
-        return int(i.split('_')[-1])
-
-    files = {'q': ['a_0', 'b_1', 'c_2']}
-
-    df = df.add_data_files(files=files,
-                           file_to_subject=file_to_subject,
-                           load_func=np.load)
-
-    assert len(df['q']) == 3
-    assert df.loc[2, 'q'] == 2
-
-    assert 'a_0' in df.file_mapping[0].loc
-    assert 'b_1' in df.file_mapping[1].loc
-    assert 'c_2' in df.file_mapping[2].loc
-
-    # Test in place
-    df = get_fake_dataset()
-    df.add_data_files(files=files,
-                      file_to_subject=file_to_subject,
-                      load_func=np.load, inplace=True)
-    assert len(df['q']) == 3
-    assert df.loc[2, 'q'] == 2
-    assert 'a_0' in df.file_mapping[0].loc
-    assert 'b_1' in df.file_mapping[1].loc
-    assert 'c_2' in df.file_mapping[2].loc
-
-
-def test_data_files_integration():
-
-    df = get_fake_dataset()
-
-    def file_to_subject(i):
-        return int(i.split('/')[-1].replace('.npy', ''))
-
-    temp_dr = tempfile.gettempdir()
-    locs = []
-    for i in range(3):
-        loc = os.path.join(temp_dr, str(i) + '.npy')
-        locs.append(loc)
-
-        data = np.zeros(shape=2)
-        data[:] = i
-        np.save(loc, data)
-
-    files = {'data_files': locs}
-
-    # Test add data files
-    df = df.add_data_files(files=files,
-                           file_to_subject=file_to_subject,
-                           load_func=np.load)
-    assert len(df['data_files']) == 3
-    assert df.loc[0, 'data_files'] == 0
-    assert df.loc[2, 'data_files'] == 2
-
-    # Test get values
-    values = df.get_values(col='data_files', reduce_func=np.mean)
-    assert values.loc[0] == 0
-    assert values.loc[1] == 1
-    assert values.loc[2] == 2
-
-    values = df.get_values(col='data_files', reduce_func=np.max, n_jobs=2)
-    assert values.loc[0] == 0
-    assert values.loc[1] == 1
-    assert values.loc[2] == 2
-
-    # Test auto detect categorical
-    df = df.auto_detect_categorical()
-    cat_cols = df.get_cols(scope='category')
-    assert cat_cols == ['2', '3']
-
-    # This also tests copy
-    df_copy = df.copy(deep=True)
-
-    # Drop outliers by std, should drop all by 1
-    df_copy.filter_outliers_by_std(n_std=.5, scope='data file',
-                                   drop=True, reduce_func=np.mean,
-                                   n_jobs=1, inplace=True)
-
-    # Make sure self._check_file_mapping works
-    assert len(df_copy.file_mapping) == 1
-    assert 1 in df_copy.file_mapping
-    assert len(df_copy) == 1
-    assert len(df.file_mapping) == 3
-
-    # Try drop = False
-    df_copy = df.copy(deep=True)
-    df_copy = df_copy.filter_outliers_by_std(n_std=.5, scope='data file',
-                                             drop=False, reduce_func=np.mean,
-                                             n_jobs=1)
-
-    assert np.nan in df_copy.file_mapping
-    assert len(df_copy.file_mapping) == 2
-    assert 1 in df_copy.file_mapping
-    assert len(df_copy) == 3
-
-
-def test_get_subjects_None():
-
-    df = get_fake_dataset()
-
-    subjects = df.get_subjects(None, return_as='set')
-    assert len(subjects) == 0
-
-    subjects = df.get_subjects(None, return_as='index')
-    assert len(subjects) == 0
-
-    subjects = df.get_subjects(None, return_as='flat index')
-    assert len(subjects) == 0
-
-
-def test_get_subjects_intersection():
-
-    df = get_fake_dataset4()
-    assert len(df.get_subjects('all')) == 6
-    assert len(df.get_subjects([1, 2])) == 2
-
-    subjs = df.get_subjects(Intersection([[1, 2]]))
-    assert len(subjs) == 2
-
-    subjs = df.get_subjects(Intersection([[1, 2], [2, 3]]))
-    assert len(subjs) == 1
-
-    subjs = df.get_subjects(Intersection([[1, 2], [2, 3], [4, 5]]))
-    assert len(subjs) == 0
-
-    subjs = df.get_subjects(Intersection([[1, 2], [2, 3], [2, 3]]))
-    assert len(subjs) == 1
-
-
-def test_get_subjects_nan():
-
-    # Subject id == 0 is only one with NaN
-    df = get_fake_dataset()
-    index_dtype = df.index.dtype.name
-
-    subjects = df.get_subjects('nan', return_as='set')
-    assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
-    subj = subjects.pop()
-    assert subj == 0
-    assert isinstance(subj, int)
-
-    subjects = df.get_subjects('nan', return_as='flat index')
-    assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
-    assert subjects[0] == 0
-    assert subjects[0].dtype == index_dtype
-
-    subjects = df.get_subjects('nan', return_as='index')
-    assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
-    assert subjects[0] == 0
-    assert subjects[0].dtype == index_dtype
-
-    # Dataset with no Nan's
-    df = get_fake_dataset2()
-    subjects = df.get_subjects('nan', return_as='set')
-    assert len(subjects) == 0
-
-
-def test_get_subjects_value_subset():
-
-    df = get_fake_dataset()
-
-    # Int column test 1 value
-    vs = Value_Subset(name='1', values=1, decode_values=False)
-    subjects = df.get_subjects(vs, return_as='set')
-    assert len(subjects) == 1
-    assert subjects.pop() == 0
-
-    # Int column test 2 values
-    vs = Value_Subset(name='1', values=[1, 2], decode_values=False)
-    subjects = df.get_subjects(vs, return_as='set')
-    assert len(subjects) == 2
-
-    # Str column test 1 value
-    vs = Value_Subset(name='2', values=['6'], decode_values=False)
-    subjects = df.get_subjects(vs, return_as='set')
-    assert len(subjects) == 1
-    assert subjects.pop() == 0
-
-    # Str column test 2 values
-    vs = Value_Subset(name='2', values=['6', '7'], decode_values=False)
-    subjects = df.get_subjects(vs, return_as='set')
-    assert len(subjects) == 2
-
-    # Str / cat column test extra values
-    vs = Value_Subset(name='2', values=['6', '7', '9'], decode_values=False)
-    subjects = df.get_subjects(vs, return_as='set')
-    assert len(subjects) == 2
-
-    # Column w/ nan
-    vs = Value_Subset(name='3', values=np.nan, decode_values=False)
-    subjects = df.get_subjects(vs, return_as='set')
-    assert len(subjects) == 1
-    assert subjects.pop() == 0
-
-    # Column w/ nan 2 values
-    vs = Value_Subset(name='3', values=[np.nan, 2], decode_values=False)
-    subjects = df.get_subjects(vs, return_as='set')
-    assert len(subjects) == 2
-    assert df.loc[subjects].shape == (2, 3)
-
-    # Bad name col
-    vs = Value_Subset(name=1, values=[np.nan, 2], decode_values=False)
-    with assert_raises(KeyError):
-        subjects = df.get_subjects(vs, return_as='set')
-
-    # Bad input
-    with assert_raises(ValueError):
-        vs = Value_Subset(name=[1, 2], values=2)
-
-
-def test_get_subjects_base():
-
-    df = get_fake_dataset()
-
-    subjs = [0]
-    subjects = df.get_subjects(subjs, return_as='set')
-    assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
-
-    subjs = ['0']
-    subjects = df.get_subjects(subjs, return_as='set')
-    assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
-
-    subjs = np.array([0])
-    subjects = df.get_subjects(subjs, return_as='set')
-    assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
-
-    subjs = pd.Index(data=[0], name=df.index.name)
-    subjects = df.get_subjects(subjs, return_as='set')
-    assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
-
-    subjs = pd.Index(data=np.array([0, 2]), name=df.index.name)
-    subjects = df.get_subjects(subjs, return_as='index')
-    assert len(subjects) == 2
-    assert df.loc[subjects].shape == (2, 3)
-    assert np.array_equal(np.array([0, 2]), subjects)
-
-    subjects = df.get_subjects(subjs, return_as='flat index')
-    assert len(subjects) == 2
-    assert df.loc[subjects].shape == (2, 3)
-    assert np.array_equal(np.array([0, 2]), subjects)
-
-
-def test_get_subjects_base_file():
-
-    df = get_fake_dataset()
-
-    temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
-    with open(temp_loc, 'w') as f:
-        f.write('0\n')
-
-    subjects = df.get_subjects(temp_loc, return_as='set')
-    assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
-
-    temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
-    with open(temp_loc, 'w') as f:
-        f.write('0\n')
-        f.write('1\n')
-
-    subjects = df.get_subjects(temp_loc, return_as='set')
-    assert len(subjects) == 2
-    assert df.loc[subjects].shape == (2, 3)
-
-
 def test_multi_index_load_save():
 
     df = get_fake_multi_index_dataset()
@@ -472,69 +298,6 @@ def test_multi_index_load_save():
 
     for ind in df.index:
         assert ind in subjs
-
-
-def test_multi_index_get_subjects():
-
-    df = get_fake_multi_index_dataset()
-
-    subjs = df.get_subjects(subjects=None)
-    assert len(subjs) == 0
-
-    subjs = df.get_subjects(subjects=['s1'])
-    assert len(subjs) == 2
-    assert ('s1', 'e1') in subjs
-    assert ('s1', 'e2') in subjs
-
-    subjs = df.get_subjects(subjects=['s1'], only_level=0)
-    assert len(subjs) == 1
-    assert 's1' in subjs
-
-    subjs = df.get_subjects(subjects=['s1'], return_as='index',
-                            only_level=0)
-    assert 's1' in subjs
-    assert subjs.name == 'subj'
-
-    subjs = df.get_subjects(subjects=['s1'], return_as='index',
-                            only_level=None)
-    assert ('s1', 'e1') in subjs
-    assert ('s1', 'e2') in subjs
-    assert subjs.names == ['subj', 'event']
-
-    subjs = df.get_subjects(subjects=(['s1', 's2'], ['e1']),
-                            return_as='set')
-
-    assert len(subjs) == 2
-    assert ('s1', 'e1') in subjs
-    assert ('s2', 'e1') in subjs
-
-    subjs = df.get_subjects(subjects=('all', ['e1']),
-                            return_as='set')
-    assert len(subjs) == 3
-    assert df.loc[subjs].shape == (3, 3)
-
-
-def test_multi_index_add_data_files():
-
-    df = get_fake_multi_index_dataset()
-
-    def file_to_subject(i):
-
-        subj = i.split('_')[1]
-        event = i.split('_')[2]
-
-        return (subj, event)
-
-    # Leave c_s3_e2' as NaN
-    files = {'files': ['a_s1_e1', 'a_s1_e2',
-                       'b_s2_e1', 'b_s2_e2', 'c_s3_e1']}
-
-    df = df.add_data_files(files=files,
-                           file_to_subject=file_to_subject,
-                           load_func=np.load)
-
-    assert len(df['files']) == 6
-    assert 'a_s1_e1' in df.file_mapping[0].loc
 
 
 def test_get_Xy_base():
@@ -610,6 +373,30 @@ def test_get_Xy_alt():
     assert np.array_equal(y, np.array([.2, .3]).astype('float64'))
 
 
+def test_get_Xy_train_default_ps():
+
+    df = get_fake_dataset()
+    df.set_role('3', 'target', inplace=True)
+    df.set_test_split(subjects=[0], inplace=True)
+
+    X, y = df.get_train_Xy()
+
+    assert X.shape == (2, 2)
+    assert len(y) == 2
+
+
+def test_get_Xy_test_default_ps():
+
+    df = get_fake_dataset()
+    df.set_role('3', 'target', inplace=True)
+    df.set_test_split(subjects=[0], inplace=True)
+
+    X, y = df.get_test_Xy()
+
+    assert X.shape == (1, 2)
+    assert len(y) == 1
+
+
 def test_invalid_names():
 
     df = Dataset()
@@ -623,3 +410,100 @@ def test_invalid_names():
 
     with assert_raises(RuntimeError):
         df._check_cols()
+
+
+def get_data_inds_df():
+
+    df = Dataset(columns=['d1', 'd2', 'd3', 'n1',
+                          'n2', 'c1', 'c2', 't1', 't2'])
+
+    df.add_scope('c', 'category', inplace=True)
+    df.set_target('t', inplace=True)
+    df.set_non_input('n', inplace=True)
+    df._check_sr()
+
+    return df
+
+
+def test_get_data_inds_empty():
+
+    df = get_data_inds_df()
+
+    # All of these should return nothing
+    inds = df._get_data_inds(ps_scope='float', scope='category')
+    assert len(inds) == 0
+
+    inds = df._get_data_inds(ps_scope='float', scope='non input')
+    assert len(inds) == 0
+
+    inds = df._get_data_inds(ps_scope='float', scope=['c1'])
+    assert len(inds) == 0
+
+    inds = df._get_data_inds(ps_scope='float', scope=['c1', 'c2'])
+    assert len(inds) == 0
+
+
+def test_get_data_inds():
+
+    df = get_data_inds_df()
+
+    # Based on sorting, should be:
+    inds = df._get_data_inds(ps_scope='all', scope='category')
+    assert inds == [0, 1]
+
+    inds = df._get_data_inds(ps_scope='all', scope='float')
+    assert inds == [2, 3, 4]
+
+
+def test_get_data_cols():
+
+    df = get_data_inds_df()
+
+    cols = df._get_data_cols('all')
+    assert len(cols) == 5
+
+    cols = df._get_data_cols('category')
+    assert cols == ['c1', 'c2']
+
+    cols = df._get_data_cols('float')
+    assert cols == ['d1', 'd2', 'd3']
+
+    cols = df._get_data_cols(['d1', 'd2'])
+    assert cols == ['d1', 'd2']
+
+    # Sort should work
+    cols = df._get_data_cols(['d2', 'd1'])
+    assert cols == ['d1', 'd2']
+
+    # Should remove repeats
+    cols = df._get_data_cols(['d1', 'd2', 'd2', 'd2'])
+    assert cols == ['d1', 'd2']
+
+
+def test_is_data_cat():
+
+    df = get_data_inds_df()
+
+    all_cat = df._is_data_cat(ps_scope='all', scope='category')
+    assert all_cat
+
+    all_cat = df._is_data_cat(ps_scope='all', scope=['c1', 'd2'])
+    assert not all_cat
+
+    all_cat = df._is_data_cat(ps_scope='all', scope=['d2'])
+    assert not all_cat
+
+    # In the case of an invalid scope, should return False
+    all_cat = df._is_data_cat(ps_scope='category', scope='d2')
+    assert not all_cat
+
+
+def test_get_cols_limit_to():
+
+    df = get_data_inds_df()
+
+    cols = df._get_cols('category', limit_to=['c1'])
+    assert cols == ['c1']
+
+    cols = df._get_cols('category', limit_to=['data file'])
+    assert len(cols) == 0

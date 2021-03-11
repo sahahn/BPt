@@ -158,7 +158,7 @@ def Set_Default_ML_Verbosity(
 
     save_to_logs : bool, optional
         If True, then when possible, and with the selected model
-        verbosity options, verbosity ouput will be saved to the
+        verbosity options, verbosity output will be saved to the
         log file.
 
         if 'default', and not already defined, set to False.

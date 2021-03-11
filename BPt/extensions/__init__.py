@@ -14,7 +14,7 @@ except ImportError:
         pass
 
 from .MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
-from .RandomParcels import RandomParcels
+from .random_parcellation import RandomParcellation
 from .Scalers import Winsorizer
 from .residualizer import LinearResidualizer
 
@@ -22,4 +22,5 @@ __all__ = ['RFEWrapper',
            'FeatureSelector',
            'Identity', 'SurfLabels', 'Connectivity', 'MLPRegressor_Wrapper',
            'MLPClassifier_Wrapper', 'LinearResidualizer',
-           'RandomParcels', 'Winsorizer', 'ThresholdNetworkMeasures', 'SurfMaps']
+           'RandomParcellation', 'Winsorizer',
+           'ThresholdNetworkMeasures', 'SurfMaps']

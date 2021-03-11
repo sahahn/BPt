@@ -22,9 +22,9 @@ def get_trans_chunk(transformer, data_files, func):
     '''This function is designed to be used for multi-processing'''
 
     X_trans_chunk = []
-    for data_file in data_files:
-        loc = data_file.loc
-        load_func = data_file.load_func
+    for DataFile in data_files:
+        loc = DataFile.loc
+        load_func = DataFile.load_func
         trans_data = func(clone(transformer), load_func, loc)
         X_trans_chunk.append(trans_data)
 
@@ -228,6 +228,10 @@ class BPtLoader(ScopeTransformer):
 
     def _proc_new_names(self, feat_names, base_name, encoders=None):
 
+        # If skip, return passed names as is
+        if self.estimator_ is None:
+            return feat_names
+
         # If base loader has stored feat names, use those.
         if hasattr(self.estimator_, 'feat_names_'):
             return getattr(self.estimator_, 'feat_names_')
@@ -390,8 +394,8 @@ class BPtListLoader(BPtLoader):
 
         X_col_loaded = []
         for key in X_col:
-            data_file = self.file_mapping[int(key)]
-            data = data_file.load()
+            DataFile = self.file_mapping[int(key)]
+            data = DataFile.load()
             X_col_loaded.append(data)
 
         return X_col_loaded

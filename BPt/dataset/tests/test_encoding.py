@@ -3,6 +3,7 @@ import pandas as pd
 from nose.tools import assert_raises
 from .datasets import (get_fake_dataset, get_fake_dataset7,
                        get_fake_multi_index_dataset)
+from ..Dataset import Dataset
 
 
 def test_add_unique_overlap():
@@ -64,6 +65,15 @@ def test_to_binary_object():
     assert 0 not in df.index
     assert 1 in df.index
     assert df.shape == (6, 2)
+
+
+def test_to_binary_from_bool():
+
+    df = Dataset()
+    df['1'] = [True, False, True, True]
+    df['1'] = df['1'].astype('bool')
+    df = df.to_binary('1')
+    assert len(pd.unique(df['1'])) == 2
 
 
 def test_to_binary():

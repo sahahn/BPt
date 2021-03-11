@@ -1,12 +1,15 @@
+from BPt.main.BPtEvaluator import BPtEvaluator
 from ...pipeline.BPtSearchCV import BPtGridSearchCV
 from ..input import ModelPipeline, Model, CV, Pipeline, Scaler, ParamSearch
 from ...dataset.Dataset import Dataset
 from ...default.params.Params import Choice
-from ..funcs import evaluate, cross_val_score
+from ..funcs import evaluate, cross_val_score, _sk_check_y
 from nose.tools import assert_raises
 import pandas as pd
 import numpy as np
 from ...extensions import LinearResidualizer
+from ..compare import Compare, Option, CompareDict
+from sklearn.tree import DecisionTreeClassifier
 
 
 def get_fake_dataset():
@@ -19,6 +22,18 @@ def get_fake_dataset():
     fake = fake.set_role('3', 'target')
 
     return fake
+
+
+def test_sk_check_y():
+
+    # Make sure passes
+    y = pd.Series([1, 2, 3])
+    _sk_check_y(y)
+
+    # Fails
+    y = pd.Series([1, 2, np.nan])
+    with assert_raises(RuntimeError):
+        _sk_check_y(y)
 
 
 def test_evaluate_match_cross_val_score():
@@ -62,8 +77,8 @@ def test_evaluate_regression_dt():
                          problem_type='regression')
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -79,8 +94,8 @@ def test_evaluate_regression_dt():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_subjs) == 5
-    assert len(evaluator.val_subjs) == 5
+    assert len(evaluator.train_indices) == 5
+    assert len(evaluator.val_indices) == 5
 
 
 def get_fake_category_dataset():
@@ -117,8 +132,8 @@ def test_evaluate_categorical_dt():
                          problem_type='categorical')
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -194,8 +209,8 @@ def test_evaluate_binary():
                          problem_type='binary')
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -282,8 +297,8 @@ def test_evaluate_with_resid():
     assert np.sum(evaluator.scores['r2']) == np.sum(cv_scores)
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -299,8 +314,8 @@ def test_evaluate_with_resid():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_subjs) == 5
-    assert len(evaluator.val_subjs) == 5
+    assert len(evaluator.train_indices) == 5
+    assert len(evaluator.val_indices) == 5
 
 
 def test_evaluate_with_resid_param_search():
@@ -332,8 +347,8 @@ def test_evaluate_with_resid_param_search():
     assert np.sum(evaluator.scores['r2']) == np.sum(cv_scores)
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -349,8 +364,8 @@ def test_evaluate_with_resid_param_search():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_subjs) == 5
-    assert len(evaluator.val_subjs) == 5
+    assert len(evaluator.train_indices) == 5
+    assert len(evaluator.val_indices) == 5
 
 
 def test_evaluate_with_resid_grid_search():
@@ -385,8 +400,8 @@ def test_evaluate_with_resid_grid_search():
     assert np.sum(evaluator.scores['r2']) == np.sum(cv_scores)
 
     assert len(evaluator.scores) > 0
-    assert len(evaluator.timing['fit_time']) > 0
-    assert len(evaluator.timing['score_time']) > 0
+    assert len(evaluator.timing['fit']) > 0
+    assert len(evaluator.timing['score']) > 0
     evaluator._estimators_check()
 
     fis_df = evaluator.get_fis()
@@ -402,6 +417,28 @@ def test_evaluate_with_resid_grid_search():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_subjs) == 5
-    assert len(evaluator.val_subjs) == 5
+    assert len(evaluator.train_indices) == 5
+    assert len(evaluator.val_indices) == 5
 
+
+def test_evaluate_compare():
+
+    dataset = get_fake_binary_dataset()
+
+    pipe1 = ModelPipeline(model=Model('dt'))
+    pipe2 = ModelPipeline(model=Model('linear'))
+
+    pipe = Compare([Option(pipe1, 'pipe1'),
+                    Option(pipe2, 'pipe2')])
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='binary')
+
+    assert isinstance(evaluator, CompareDict)
+
+    e1 = evaluator['pipe1']
+    assert isinstance(e1, BPtEvaluator)
+    e1_model = e1.estimators[0].steps[-1][1].estimator
+    assert isinstance(e1_model, DecisionTreeClassifier)

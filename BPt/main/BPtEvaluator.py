@@ -31,6 +31,9 @@ def get_non_nan_Xy(X, y):
 
 
 class BPtEvaluator():
+    '''This class is returned from calls to :func:`evaluate`,
+    and can be used to store information from evaluate, or
+    compute additional feature importances.'''
 
     # Add verbose print
     _print = verbose_print
@@ -41,8 +44,8 @@ class BPtEvaluator():
                  store_preds=False,
                  store_estimators=False,
                  store_timing=False,
-                 progress_loc=None,
-                 verbose=0):
+                 eval_verbose=0,
+                 progress_loc=None):
 
         # Save base
         self.estimator = estimator
@@ -65,11 +68,229 @@ class BPtEvaluator():
         # If store timing
         self.timing = None
         if store_timing:
-            self.timing = {'fit_time': [], 'score_time': []}
+            self.timing = {'fit': [], 'score': []}
 
         # @TODO Add in progress loc func.
         self.progress_loc = progress_loc
-        self.verbose = verbose
+        self.verbose = eval_verbose
+
+    @property
+    def mean_scores(self):
+        '''This parameter stores the mean scores as
+        a dictionary of values, where each dictionary
+        is indexed by the name of the scorer, and the dictionary value
+        is the mean score for that scorer.'''
+        return self._mean_scores
+
+    @mean_scores.setter
+    def mean_scores(self, mean_scores):
+        self._mean_scores = mean_scores
+
+    @property
+    def std_scores(self):
+        '''This parameter stores the standard deviation scores as
+        a dictionary of values, where each dictionary
+        is indexed by the name of the scorer, and value
+        contains the standard deviation across evaluation folds
+        for that scorer.
+
+        The default scorer key stores the micro standard
+        deviation, but in the case that macro standard deviation differs,
+        i.e., in the case of multiple repeats in an evaluation, then
+        a separate macro standard deviation will be stored under
+        the name of the scorer with _macro appended to the key.
+
+        For example if a 3-fold twice repeated evaluation was
+        run, with just r2 as the scorer, this parameter might
+        look something like:
+
+        ::
+
+            self.std_scores = {'r2': .5, 'r2_macro': .01}
+
+        '''
+        return self._std_scores
+
+    @std_scores.setter
+    def std_scores(self, std_scores):
+        self._std_scores = std_scores
+
+    @property
+    def weighted_mean_scores(self):
+        '''This property stores the mean scores
+        across evaluation folds (simmilar to
+        :data:`mean_scores<BPtEvaluator.mean_scores>`),
+        but weighted by the
+        number of subjects / datapoints in each fold.
+
+        It is scores as a dictionary indexed by the name
+        of the scorer as the key, where values are
+        the weighted mean score.
+        '''
+        return self._weighted_mean_scores
+
+    @weighted_mean_scores.setter
+    def weighted_mean_scores(self, weighted_mean_scores):
+        self._weighted_mean_scores = weighted_mean_scores
+
+    @property
+    def scores(self):
+        '''This property stores the scores for
+        each scorer as a dictionary of lists, where
+        the keys are the names of the scorer and the list
+        represents the score obtained for each fold, where each
+        index corresponds to to a fold of cross validation.'''
+        return self._scores
+
+    @scores.setter
+    def scores(self, scores):
+        self._scores = scores
+
+    @property
+    def ps(self):
+        '''A saved and pre-processed version of the problem_spec
+        used (with any extra_params applied) when running this
+        instance of Evaluator.'''
+        return self._ps
+
+    @ps.setter
+    def ps(self, ps):
+        self._ps = ps
+
+    @property
+    def feat_names(self):
+        '''The features names corresponding to any measures of
+        feature importance, stored as a list of lists, where the top
+        level list represents each fold of cross validation.
+
+        This parameter may be especially useful when pipeline
+        objects such as transformers or feature selectors are used
+        as these can drastically change the features passed to an
+        eventual model.
+
+        The values stored here may change
+        based on the passed
+        value of the `decode_feat_names` parameter from
+        :func:`evaluate`.
+
+        For example the feat_names from a 3-fold cross-validation
+        with input features ['feat1', 'feat2', 'feat3'] with
+        feature selection as a piece of the pipeline may look like:
+
+        ::
+
+            self.feat_names = [['feat1', 'feat2'],
+                               ['feat2', 'feat3'],
+                               ['feat1', 'feat2']]
+
+        '''
+        return self._feat_names
+
+    @feat_names.setter
+    def feat_names(self, feat_names):
+        self._feat_names = feat_names
+
+    @property
+    def val_indices(self):
+        '''This parameter stores the validation subjects / index
+        used in every fold of the cross-validation. It can be
+        useful in some cases
+        to check to see exactly what cross-validation was applied.'''
+        return self._val_indices
+
+    @val_indices.setter
+    def val_indices(self, val_indices):
+        self._val_indices = val_indices
+
+    @property
+    def train_indices(self):
+        '''This parameter stores the training subjects / index
+        used in every fold of the cross-validation. It can be
+        useful in some cases
+        to check to see exactly what cross-validation was applied.'''
+        return self._train_indices
+
+    @train_indices.setter
+    def train_indices(self, train_indices):
+        self._train_indices = train_indices
+
+    @property
+    def timing(self):
+        '''This property stores information on
+        the fit and scoring times, if requested by the
+        original call to :func:`evaluate`.
+        This parameter is a dictionary with two keys,
+        'fit' and 'score'.
+        Each key stores the time in seconds as a list of
+        values for each of the evaluation folds.
+        '''
+        return self._timing
+
+    @timing.setter
+    def timing(self, timing):
+        self._timing = timing
+
+    @property
+    def mean_timing(self):
+        '''This property stores information on
+        the fit and scoring times, if requested by the
+        original call to :func:`evaluate`.
+        This parameter is a dictionary with two keys,
+        'fit' and 'score'.
+        Each key stores the mean time in seconds across folds.
+        '''
+        return self._mean_timing
+
+    @mean_timing.setter
+    def mean_timing(self, mean_timing):
+        self._mean_timing = mean_timing
+
+    @property
+    def preds(self):
+        '''If the parameter `store_preds` is set to True when
+        calling :func:`evaluate`, then this parameter will store the
+        predictions from every evaluate fold.
+
+        The parameter preds is a dictionary, where raw predictions made
+        can be accessed by the key 'predict'. Values are stored as list
+        corresponding to each evaluation fold.
+
+        In the case where other predict-like functions are avaliable, e.g.,
+        in the case of a binary problem, where it may be desirable to
+        see the predicted probability, then the those predictions
+        will be made avaliable under the name of the underlying predict
+        function. In this case, that is self.preds['predict_proba'].
+        It will also store results from 'predict' as well.
+
+        self.preds also will store under 'y_true' a list, where
+        each element of the list corresponds to the corresponding
+        true target values for the predictions made.
+        '''
+
+        return self._preds
+
+    @preds.setter
+    def preds(self, preds):
+        self._preds = preds
+
+    @property
+    def estimators(self):
+        '''If the parameter `store_estimators` is set to True when
+        calling :func:`evaluate`, then this parameter will store the fitted
+        estimator in a list. Where each element of the list corresponds to one
+        of the validation folds.
+
+        For example to access the fitted estimator from this first
+        fold ::
+
+            first_est = self.estimators[0]
+
+        '''
+        return self._estimators
+
+    @estimators.setter
+    def estimators(self, estimators):
+        self._estimators = estimators
 
     def _set_progress_bar(self, progress_bar):
 
@@ -96,7 +317,7 @@ class BPtEvaluator():
         self.scores = {scorer_str: [] for scorer_str in self.ps.scorer}
 
         # Save train and test subjs
-        self.train_subjs, self.val_subjs = [], []
+        self.train_indices, self.val_indices = [], []
 
         # Save final feat names
         self.feat_names = []
@@ -183,8 +404,8 @@ class BPtEvaluator():
     def _eval_fold(self, X_tr, y_tr, X_val, y_val):
 
         # Keep track of subjects in each fold
-        self.train_subjs.append(X_tr.index)
-        self.val_subjs.append(X_val.index)
+        self.train_indices.append(X_tr.index)
+        self.val_indices.append(X_val.index)
 
         # Get clone of estimator to fit
         estimator_ = clone(self.estimator)
@@ -197,17 +418,17 @@ class BPtEvaluator():
         start_time = time.time()
 
         estimator_.fit(X=X_tr, y=np.array(y_tr))
-        fit_time = time.time() - start_time
+        fit = time.time() - start_time
 
         # Score estimator
         start_time = time.time()
         self._score_estimator(estimator_, X_val, y_val)
-        score_time = time.time() - start_time
+        score = time.time() - start_time
 
         # Store timing if requested
         if self.timing is not None:
-            self.timing['fit_time'].append(fit_time)
-            self.timing['score_time'].append(score_time)
+            self.timing['fit'].append(fit)
+            self.timing['score'].append(score)
 
         # Save preds
         self._save_preds(estimator_, X_val, y_val)
@@ -270,8 +491,8 @@ class BPtEvaluator():
             self.mean_scores[scorer_key] = np.mean(scores)
 
             # Compute scores weighted by number of subjs
-            weights = [len(self.val_subjs[i])
-                       for i in range(len(self.val_subjs))]
+            weights = [len(self.val_indices[i])
+                       for i in range(len(self.val_indices))]
             self.weighted_mean_scores[scorer_key] =\
                 np.average(scores, weights=weights)
 
@@ -285,7 +506,23 @@ class BPtEvaluator():
                 self.std_scores[scorer_key + '_macro'] =\
                     np.std(np.mean(scores, axis=1))
 
+        # Add mean timing
+        if self.timing is not None:
+            self.mean_timing = {}
+
+            for time_key in self.timing:
+                self.mean_timing[time_key] = np.mean(self.timing[time_key])
+
     def get_preds_dfs(self):
+        '''This function can be used to return the raw predictions
+        made during evaluation as a list of pandas Dataframes.
+
+        Returns
+        ---------
+        df : list of pandas.DataFrame
+            list of dataframe's per fold, where each DataFrame
+            contains predictions made.
+        '''
 
         # @TODO
         # Have to handle the different cases for different classes
@@ -312,7 +549,7 @@ class BPtEvaluator():
         if self.timing is not None:
             saved_attrs.append('timing')
 
-        saved_attrs += ['train_subjs', 'val_subjs', 'feat_names', 'ps',
+        saved_attrs += ['train_indices', 'val_indices', 'feat_names', 'ps',
                         'mean_scores', 'std_scores',
                         'weighted_mean_scores', 'scores']
 
@@ -346,11 +583,24 @@ class BPtEvaluator():
 
     @property
     def feature_importances_(self):
+        '''This property stores the mean values
+        across fitted estimators assuming each fitted estimator
+        has a non empty `feature_importances_` attribute.'''
 
         self._estimators_check()
         return get_mean_fis(self.estimators, 'feature_importances_')
 
     def get_feature_importances(self):
+        '''This function returns each `feature_importances_`
+        value across fitted estimators. If None have this parameter,
+        it will return a list of None.
+
+        Returns
+        --------
+        feature_importances : list
+            A list of `feature_importances_` where each element
+            in the list refers to a fold from the evaluation.
+        '''
 
         self._estimators_check()
         return [estimator.feature_importances_
@@ -358,10 +608,10 @@ class BPtEvaluator():
 
     @property
     def coef_(self):
-        '''This attribute represents the mean coef_ as
+        '''This attribute represents the mean `coef_` as
         a numpy array across all folds. This parameter will only
-        be avaliable if all estimators have a non null coef_ parameter
-        and each returns the same shape. See fis_ for a more flexible
+        be avaliable if all estimators have a non null `coef_` parameter
+        and each returns the same shape. See `fis_` for a more flexible
         version of this parameter that can handle when there
         are differing numbers of features.'''
 
@@ -369,6 +619,16 @@ class BPtEvaluator():
         return get_mean_fis(self.estimators, 'coef_')
 
     def get_coefs(self):
+        '''This function returns each `coef_`
+        value across fitted estimators. If None have this parameter,
+        it will return a list of None.
+
+        Returns
+        --------
+        coefs : list
+            A list of `coef_` where each element
+            in the list refers to a fold from the evaluation.
+        '''
 
         self._estimators_check()
         return [estimator.coef_
@@ -376,22 +636,23 @@ class BPtEvaluator():
 
     @property
     def fis_(self):
-        '''This property will return the mean value
-        across each fold of the CV for either the coef_
-        or feature_importance_ parameter. Note: 
+        '''This property stores the mean value
+        across each fold of the CV for either the `coef_`
+        or `feature_importance_` parameter.
 
-        Warnings:
-        - If a feature is not present in all folds,
+        Warnings
+        ---------
+        If a feature is not present in all folds,
         then it's mean value will be computed from only the
         folds in which it was present.
 
-        - When using transformers, for example one hot encoder,
+        When using transformers, for example one hot encoder,
         since the encoding is done on the fly, there is no
         guarantee that 'one hot encoder category_1' is actually
         the same category 1 across folds.
 
-        - If for some reason some folds have a model with feature
-        importances and other coef_ they will still all be averaged
+        If for some reason some folds have a model with feature
+        importances and other `coef_` they will still all be averaged
         together, so make sure that this parameter is only used when
         all of the underlying models across folds should have comparable
         feature importances.
@@ -403,7 +664,7 @@ class BPtEvaluator():
 
         self._estimators_check()
 
-        # Grab fi's as Dataframe or list of
+        # Grab fis as Dataframe or list of
         fis = self.get_fis()
 
         # Base case
@@ -413,17 +674,60 @@ class BPtEvaluator():
         # Categorical case
         return [fi.mean() for fi in fis]
 
-    def get_fis(self):
-        '''This will return a pandas DataFrame with
+    def get_fis(self, mean=False, abs=False):
+        '''This method will return a pandas DataFrame with
         each row a fold, and each column a feature if
-        the underlying model supported either the coef_
-        or feature_importance_ parameters.
+        the underlying model supported either the `coef_`
+        or `feature_importance_` parameters.
 
         In the case that the underlying feature importances
-        or coefs_ are not flat, e.g., in the case
+        or `coefs_` are not flat, e.g., in the case
         of a one versus rest categorical model, then a list
         multiple DataFrames will be returned, one for each class.
         The order of the list will correspond to the order of classes.
+
+        Parameters
+        -----------
+        mean : bool, optional
+            If True, return the mean value
+            across evaluation folds as a pandas Series.
+            Any features with a mean value of 0 will
+            also be excluded. Otherwise, if default
+            of False, return raw values for each fold
+            as a Dataframe.
+
+            ::
+
+                default = False
+
+        abs : bool, optional
+            If the feature importances
+            should be absolute values
+            or not.
+
+            ::
+
+                default = False
+
+        Returns
+        --------
+        fis : pandas DataFrame or Series
+            Assuming mean=False, the
+            a pandas DataFrame where each row contains the
+            feature importances from an evaluation fold (unless the underlying
+            feature importances are categorical, in which a list of DataFrames
+            will be returned.)
+
+            If mean=True, then a pandas Series (or in the case of
+            underlying categorical feature importances, list of)
+            will be returned, with the mean value from each fold
+            and all features with a value of 0 excluded.
+
+            Note: To get the mean values without zero's excluded,
+            just call .mean() on the result of this method
+            with mean=False.
+
+
         '''
 
         # @TODO handle multi-class case ...
@@ -443,15 +747,33 @@ class BPtEvaluator():
             else:
                 fis.appends(None)
 
-        return fis_to_df(fis)
+        base = fis_to_df(fis)
+
+        # Proc. abs arg
+        if abs:
+            if isinstance(base, list):
+                base = [b.abs() for b in base]
+            else:
+                base = base.abs()
+
+        # If not mean, return as is
+        if not mean:
+            return base
+
+        # Categorical mean case
+        if isinstance(base, list):
+            return [mean_no_zeros(b) for b in base]
+
+        # Base mean case
+        return mean_no_zeros(base)
 
     def _get_val_fold_Xy(self, estimator, X_df, y_df, fold, just_model=True):
 
         # Get the X and y df's, without any subjects with missing
         # target values for this fold
         X_val_df, y_val_df =\
-            get_non_nan_Xy(X_df.loc[self.val_subjs[fold]],
-                           y_df.loc[self.val_subjs[fold]])
+            get_non_nan_Xy(X_df.loc[self.val_indices[fold]],
+                           y_df.loc[self.val_indices[fold]])
 
         # Base as array, and all feat names
         X_trans, feat_names = np.array(X_val_df), list(X_val_df)
@@ -472,8 +794,8 @@ class BPtEvaluator():
                                just_model=True, return_as='dfs',
                                n_jobs=1, random_state='default'):
         '''This function computes the permutation feature importances
-        from the base scikit-learn function permutation_importance:
-        https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance
+        from the base scikit-learn function
+        :func:`sklearn.inspection.permutation_importance`
 
         Parameters
         -----------
@@ -494,7 +816,7 @@ class BPtEvaluator():
             or a callable.
 
             If left as 'default' will use the first scorer defined when
-            evaluating the model.
+            evaluating the underlying estimator.
 
             ::
 
@@ -562,7 +884,6 @@ class BPtEvaluator():
 
         # @TODO in case of just_model = False, won't pass along
         # transform_index correctly to scorer.
-
 
         from sklearn.inspection import permutation_importance
 
@@ -643,3 +964,9 @@ def fis_to_df(fis):
         dfs.append(pd.DataFrame([fi[c] for fi in fis]))
 
     return dfs
+
+
+def mean_no_zeros(df):
+
+    mean = df.mean()
+    return mean[mean != 0]

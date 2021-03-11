@@ -1,5 +1,6 @@
-from ..constructors import add_estimator_to_params, FeatSelectorConstructor
-from ...main.input import FeatSelector, Model
+from ..constructors import (add_estimator_to_params, FeatSelectorConstructor,
+                            ScalerConstructor)
+from ...main.input import FeatSelector, Model, Scaler
 from ..BPtFeatureSelector import BPtFeatureSelector
 from .helpers import get_fake_data_dataset
 
@@ -104,3 +105,21 @@ def test_feature_selectors_submodel():
     # Each param should start with name estimator, estimator
     for key in params:
         assert key.startswith('__'.join([name, 'estimator', 'estimator']))
+
+
+def test_empty_scope():
+
+    data_keys = ['0', '1']
+    dataset = get_fake_data_dataset(data_keys=data_keys)
+    spec = {'problem_type': 'binary', 'random_state': None,
+            'n_jobs': 1, 'scope': 'all'}
+
+    sc = ScalerConstructor(dataset=dataset, spec=spec,
+                           user_passed_objs={})
+
+    in_params = Scaler('robust', scope='category')
+    objs, params = sc.process(in_params)
+    _, obj = objs[0]
+
+    assert len(obj.inds) == 0
+    assert len(params) == 0

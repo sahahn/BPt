@@ -1,12 +1,15 @@
 from .input import Model, Pipeline, ProblemSpec, CV
 from copy import deepcopy
 import numpy as np
+import pandas as pd
 from ..pipeline.BPtPipelineConstructor import get_pipe
 from ..default.options.scorers import process_scorers
 from .BPtEvaluator import BPtEvaluator
 from sklearn.model_selection import check_cv
-from ..main.input_operations import Intersection
+from .input_operations import Intersection
 from pandas.util._decorators import doc
+from ..shared_docs import _shared_docs
+from .compare import (_compare_check, CompareDict, _merge_compare, Compare)
 
 
 _base_docs = {}
@@ -48,32 +51,11 @@ _base_docs[
         parameter subjects to select a subset of subjects.
     """
 
-_base_docs[
-    "problem_spec"
-] = """problem_spec : :class:`ProblemSpec` or 'default', optional
-        This parameter accepts an instance of the
-        params class :class:`ProblemSpec`.
-        The ProblemSpec is essentially a wrapper
-        around commonly used
-        parameters needs to define the context
-        the model pipeline should be evaluated in.
-        It includes parameters like problem_type, scorer, n_jobs,
-        random_state, etc...
-
-        See :class:`ProblemSpec` for more information
-        and for how to create an instance of this object.
-
-        If left as 'default', then will initialize a
-        ProblemSpec with default params.
-
-        ::
-
-            default = 'default'
-"""
+_base_docs["problem_spec"] = _shared_docs['problem_spec']
 
 _base_docs[
     "extra_params"
-] = """ extra_params : problem_spec or pipeline params, optional
+] = """extra_params : problem_spec or pipeline params, optional
         You may pass as extra arguments to this function any pipeline
         or problem_spec argument as python kwargs style value pairs.
 
@@ -119,10 +101,35 @@ _eval_docs[
 """
 
 
-def pipeline_check(pipeline, **extra_params):
+def pipeline_check(pipeline, error_if_compare=True, **extra_params):
 
     # Make deep copy
     pipe = deepcopy(pipeline)
+
+    # First check here for compare
+    if isinstance(pipe, Compare):
+        if error_if_compare:
+            raise RuntimeError("This function can't accept Compare arguments!")
+
+        new_pipeline = CompareDict()
+        for option in pipe.options:
+            option.key = 'pipeline'
+
+            # Get the checked version of the pipeline
+            # passing along all extra args to each
+            checked_pipe = _base_pipeline_check(option.value, **extra_params)
+
+            # Save this option in the dict
+            new_pipeline[option] = checked_pipe
+
+        # Return as compare dict
+        return new_pipeline
+
+    # Otherwise, base check
+    return _base_pipeline_check(pipe, **extra_params)
+
+
+def _base_pipeline_check(pipe, **extra_params):
 
     # If passed pipeline is not Pipeline or ModelPipeline
     # then make input as Pipeline around model
@@ -151,12 +158,43 @@ def pipeline_check(pipeline, **extra_params):
     return pipe
 
 
-def problem_spec_check(problem_spec, dataset, **extra_params):
+def _problem_spec_target_check(ps, dataset):
+
+    # Get target col from dataset, this also
+    # makes sure scopes and roles are updated.
+    targets = dataset.get_cols('target')
+
+    # Check for no targets
+    if len(targets) == 0:
+        raise IndexError('The passed Dataset is not valid. '
+                         'It must have atleast one target defined.')
+
+    # Update target, if passed as int, treat as index
+    if isinstance(ps.target, int):
+        try:
+            ps.target = targets[ps.target]
+        except IndexError:
+            raise IndexError('target index: ' + repr(ps.target) +
+                             ' is out of range, only ' + repr(len(targets)) +
+                             ' targets are defined.')
+
+    # If not int, then raise error if invalid or keep as is
+    if ps.target not in targets:
+        raise IndexError('Passed target: ' + repr(ps.target) + ' does ' +
+                         'not have role target or is not loaded.')
+
+
+def problem_spec_check(problem_spec, dataset, error_if_compare=True,
+                       **extra_params):
 
     # If attr checked, then means the passed
     # problem_spec has already been checked and is already
     # a proc'ed and ready copy.
     if hasattr(problem_spec, '_checked') and getattr(problem_spec, '_checked'):
+        return problem_spec
+
+    # Or is the problem spec is already a CompareDict.
+    if isinstance(problem_spec, CompareDict):
         return problem_spec
 
     # Check if problem_spec is left as default
@@ -172,25 +210,30 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
                     if key in possible_params}
     ps.set_params(**valid_params)
 
+    # Check for any Compare
+    ps = _compare_check(ps)
+
+    # If ps is now a dict, it means there was atleast one Compare
+    if isinstance(ps, CompareDict):
+
+        if error_if_compare:
+            raise RuntimeError("This function can't accept Compare arguments!")
+
+        return CompareDict({key: _base_ps_check(ps[key], dataset)
+                            for key in ps})
+
+    # Otherwise perform base check as usual
+    return _base_ps_check(ps, dataset)
+
+
+def _base_ps_check(ps, dataset):
+
     # Proc params
     ps._proc_checks()
 
-    # Get target col from dataset
-    targets = dataset.get_cols('target')
-
-    # Update target, if passed as int
-    # otherwise assume correct
-    if isinstance(ps.target, int):
-        try:
-            ps.target = targets[ps.target]
-        except IndexError:
-            raise IndexError('target index: ' + repr(ps.target) +
-                             ' is out of range, only ' + repr(len(targets)) +
-                             ' targets are defined.')
-    else:
-        if ps.target not in targets:
-            raise IndexError('Passed target: ' + repr(ps.target) + ' does ' +
-                             'not have role target or is not loaded.')
+    # Get target col from dataset, sets target
+    # in ps in place.
+    _problem_spec_target_check(ps, dataset)
 
     # Replace problem_spec type w/ correct if passed short hands
     pt = ps.problem_type
@@ -219,10 +262,10 @@ def problem_spec_check(problem_spec, dataset, **extra_params):
 
 @doc(**_base_docs)
 def get_estimator(pipeline, dataset,
-                  problem_spec='default', **extra_params):
+                  problem_spec='default',
+                  **extra_params):
     '''Get a sklearn compatible :ref:`estimator<develop>` from a
-    :class:`Pipeline` (or :class:`ModelPipeline`),
-    :class:`Dataset` and :class:`ProblemSpec`.
+    :class:`Pipeline`, :class:`Dataset` and :class:`ProblemSpec`.
 
     Parameters
     -----------
@@ -241,27 +284,84 @@ def get_estimator(pipeline, dataset,
         It will be either of type BPtPipeline or a BPtPipeline
         wrapped in a search CV object.
 
-    Notes
-    ------
-    This function can be used together with Dataset method
-    :func:`get_Xy <Dataset.get_Xy>` and it's variants.
+    Examples
+    ----------
+    This example shows how this function can be
+    used with Dataset method
+    :func:`get_Xy <Dataset.get_Xy>`.
+
+    First we will setup a dataset and a pipeline.
+
+    .. ipython:: python
+
+        import BPt as bp
+
+        data = bp.Dataset()
+        data['1'] = [1, 2, 3]
+        data['2'] = [2, 3, 4]
+        data['3'] = [5, 6, 7]
+        data.set_role('3', 'target', inplace=True)
+        data
+
+        pipeline = bp.Pipeline([bp.Scaler('standard'), bp.Model('linear')])
+        pipeline
+
+    Next we can use get_estimator and
+    also convert the dataset into a traditional sklearn-style
+    X, y input. Note that we are using just the default values
+    for problem spec.
+
+    .. ipython:: python
+
+        X, y = data.get_Xy()
+        X.shape, y.shape
+
+        estimator = bp.get_estimator(pipeline, data)
+
+    Now we can use this estimator as we would any other sklearn
+    style estimator.
+
+    .. ipython:: python
+
+        estimator.fit(X, y)
+        estimator.score(X, y)
+
     '''
 
-    # @TODO add verbose option?
-    dataset._check_sr()
+    # Use initial prep
+    estimator_ps = _initial_prep(pipeline, dataset, problem_spec,
+                                 error_if_compare=(True, False),
+                                 **extra_params)
 
-    # Check passed input - note: returns deep copies
-    pipe = pipeline_check(pipeline, **extra_params)
-    ps = problem_spec_check(problem_spec, dataset, **extra_params)
+    # Reduce estimator_ps to just estimator related
+    if isinstance(estimator_ps, CompareDict):
 
-    # Get the actual pipeline
-    model, _ = _get_pipeline(pipe, ps, dataset)
+        # Return compare dict w/ only estimator, not estimator_ps tuple
+        return CompareDict({key: estimator_ps[key][0] for key in estimator_ps})
 
-    return model
+    # Otherwise, can just return first element of the tuple
+    return estimator_ps[0]
+
+
+def get_pipeline(pipeline, problem_spec, dataset, error_if_compare=True):
+
+    # Run compare check
+    pipeline = _compare_check(pipeline)
+    if isinstance(pipeline, CompareDict):
+        if error_if_compare:
+            raise RuntimeError("This function can't accept Compare arguments!")
+
+        return CompareDict({key: _get_pipeline(
+            pipeline[key], problem_spec, dataset)[0]
+             for key in pipeline})
+
+    # Otherwise, base
+    return _get_pipeline(pipeline, problem_spec, dataset)[0]
 
 
 def _get_pipeline(pipeline, problem_spec, dataset,
                   has_search=False):
+    '''Both pipeline and problem_spec should not be CompareDicts.'''
 
     # If has search is False, means this is the top level
     # or the top level didn't have a search
@@ -432,18 +532,87 @@ def _preproc_param_search(object, ps):
     return True
 
 
+def _initial_prep(pipeline, dataset, problem_spec,
+                  error_if_compare=True, **extra_params):
+
+    # error if compare can be bool or tuple of bool's
+    if isinstance(error_if_compare, tuple):
+        eic_ps, eic_pipe = error_if_compare
+    else:
+        eic_ps, eic_pipe = error_if_compare, error_if_compare
+
+    # Get proc'ed problem spec, w/ possibility that it is
+    # returned as a CompareDict.
+    ps = problem_spec_check(problem_spec=problem_spec, dataset=dataset,
+                            error_if_compare=eic_ps, **extra_params)
+
+    # Want to get pipe, with possibility that returned pipe is CompareDict
+    pipe = pipeline_check(pipeline, error_if_compare=eic_pipe,
+                          **extra_params)
+
+    # Get the actual pipeline as an estimator
+    # where both pipe and ps can be CompareDicts and
+    # CompareDicts can still live inside the pipe params
+
+    # Handle if ps if CompareDict and / or pipe is CompareDict
+    merged_compare = _merge_compare(pipe=pipe, ps=ps)
+
+    # Base case first
+    if not isinstance(merged_compare, CompareDict):
+
+        # Unpack
+        c_pipe, c_ps = merged_compare
+
+        # Get the estimator
+        estimator = get_pipeline(c_pipe, c_ps,
+                                 dataset, error_if_compare=eic_pipe)
+
+        # If estimator is CompareDict, need to add in problem_spec
+        # So compare dict stores tuples of estimator problem spec.
+        if isinstance(estimator, CompareDict):
+            return CompareDict({key: (estimator[key], deepcopy(c_ps))
+                               for key in estimator})
+
+        # Otherwise, return as is
+        return (estimator, c_ps)
+
+    # CompareDict case
+    estimator_ps = CompareDict()
+    for key in merged_compare:
+
+        # Get this sub-model
+        c_pipe, c_ps = merged_compare[key]
+        estimator = get_pipeline(c_pipe, c_ps, dataset,
+                                 error_if_compare=eic_pipe)
+
+        # est is either Pipeline or CompareDict
+        # If compare dict, add the combination.
+        if isinstance(estimator, CompareDict):
+            for e_key in estimator:
+                estimator_ps[[key, e_key]] =\
+                    (deepcopy(estimator[e_key]), deepcopy(c_ps))
+
+        # Otherwise, add as is.
+        else:
+            estimator_ps[key] = (estimator, c_ps)
+
+    # Return the compare dict
+    return estimator_ps
+
+
 def _sk_prep(pipeline, dataset, problem_spec='default',
              cv=5, **extra_params):
-    '''Internal helper function return the different pieces
-    needed by sklearn functions'''
 
-    # Get proc'ed problem spec, then passed proc'ed version
-    ps = problem_spec_check(problem_spec=problem_spec, dataset=dataset,
-                            **extra_params)
+    estimator, ps = _initial_prep(pipeline, dataset, problem_spec,
+                                  error_if_compare=True,
+                                  **extra_params)
 
-    # Get estimator
-    estimator = get_estimator(pipeline=pipeline, dataset=dataset,
-                              problem_spec=ps, **extra_params)
+    return _eval_prep(estimator, ps, dataset, cv, **extra_params)
+
+
+def _eval_prep(estimator, ps, dataset,
+               cv=5, **extra_params):
+    '''Internal helper function.'''
 
     # Get X and y
     X, y = dataset.get_Xy(problem_spec=ps, **extra_params)
@@ -490,6 +659,16 @@ def _sk_prep(pipeline, dataset, problem_spec='default',
     setattr(sk_cv, 'n_repeats', n_repeats)
 
     return estimator, X, y, ps, sk_cv
+
+
+def _sk_check_y(y):
+
+    if pd.isnull(y).any():
+        raise RuntimeError('NaNs are not supported with '
+                           'the sklearn compatable evaluate functions. '
+                           'See function evaluate instead, which supports '
+                           'missing target values, or drop subjects with '
+                           'missing target values from the dataset.')
 
 
 @doc(**_eval_docs)
@@ -563,6 +742,9 @@ def cross_val_score(pipeline, dataset,
     estimator, X, y, ps, sk_cv =\
         _sk_prep(pipeline=pipeline, dataset=dataset,
                  problem_spec=problem_spec, cv=cv, **extra_params)
+
+    # Make sure no NaN's in y
+    _sk_check_y(y)
 
     # Just take first scorer if dict
     if isinstance(ps.scorer, dict):
@@ -662,6 +844,9 @@ def cross_validate(pipeline, dataset,
         _sk_prep(pipeline=pipeline, dataset=dataset,
                  problem_spec=problem_spec, cv=cv, **extra_params)
 
+    # Make sure no NaN's in y.
+    _sk_check_y(y)
+
     from sklearn.model_selection import cross_validate
     return cross_validate(estimator=estimator, X=X, y=y, scoring=ps.scorer,
                           cv=sk_cv, n_jobs=sk_n_jobs, verbose=verbose,
@@ -680,6 +865,7 @@ def evaluate(pipeline, dataset,
              store_estimators=True,
              store_timing=True,
              decode_feat_names=True,
+             eval_verbose=0,
              progress_loc=None,
              **extra_params):
     ''' This method is used to evaluate a model pipeline
@@ -706,49 +892,64 @@ def evaluate(pipeline, dataset,
             default = True
 
     store_preds : bool, optional
-        If set to True, store raw predictions
-        in the 'preds' parameter of the returned
-        object. This will be a dictionary where
-        each dictionary key corresponds to
-        a valid predict function for the base model,
-        for example self.preds will hold
-        a dictionary with ::
+        If set to True, the returned :class:`BPtEvaluator` will store
+        the saved predictions under :data:`BPt.BPtEvaluator.preds`.
+        This includes a saved copy of the true target values as well.
 
-            [fold0_preds, fold1_preds, ...]
+        If False, the `preds` parameter will be empty and it
+        will not be possible to use some related functions.
 
-        And the value in the dict is a list
-        (each element corresponding to each fold)
-        of numpy arrays with the raw predictions.
+        ::
 
-        Note: if store_preds is set to True, then
-        also will stored the corresponding ground
-        truth labels under dictionary key 'y_true' in
-        preds. Or to see corresponding subjects / index,
-        check 'val_subjs' in the evaluator.
+            default = False
 
     store_estimators : bool, optional
-        Skip.
+        If True, then the returned :class:`BPtEvaluator`
+        will store the fitted estimators from evaluation
+        under :data:`BPt.BPtEvaluator.estimators`.
+
+        If False, the `estimators` parameter will be empty,
+        and it will not be possible to access measures of
+        feature importance as well.
+
 
         ::
 
             default = True
 
     store_timing : bool, optional
-        Skip.
+        If True, then the returned :class:`BPtEvaluator`
+        will store the time it took to fit and score the pipeline
+        under :data:`BPt.BPtEvaluator.timing`.
 
         ::
 
             default = True
 
     decode_feat_names : bool, optional
-        Skip.
+        If True, then the :data:`BPt.BPtEvaluator.feat_names`
+        as computed during evaluation will try to use the original
+        values as first loaded to inform their naming. Note that
+        this is only relevant assuming that :class:`Dataset` was
+        used to encode one or more columns in the first place.
 
         ::
 
             default = True
 
+    eval_verbose : int, optional
+        The requested verbosity of the evaluator.
+        0 or greater means just warnings, 1 or greater
+        for some info and 2 and greater for even more.
+
+        Set to negative values to mute warnings.
+
+        ::
+
+            default = 0
+
     progress_loc : str or None, optional
-        Skip.
+        This parameter is not currently implemented.
 
         ::
 
@@ -756,19 +957,80 @@ def evaluate(pipeline, dataset,
 
     {extra_params}
 
+    Returns
+    ---------
+    evaluator : :class:`BPtEvaluator`
+        Returns an instance of the :class:`BPtEvaluator`
+        class. This object stores a wealth of information,
+        including the scores from this evaluation as well
+        as other utilities including functions for calculating
+        feature importances from trained models.
+
     See Also
     ---------
     cross_val_score : Similar sklearn style function.
     cross_validate : Similar sklearn style function.
 
+    Notes
+    ------
+    This function supports predictions on an underlying
+    target with missing values. It does this by automatically
+    moving any data points with a NaN in the target to the validation
+    set (keeping in mind this is done after the fold is computed by CV,
+    so final size may vary). While subjects with missing values will
+    obviously not contribute to the validation score, as long as `store_preds`
+    is set to True, predictions will still be made for these subjects.
     '''
 
-    # Base process each component
-    estimator, X, y, ps, sk_cv =\
-        _sk_prep(pipeline=pipeline, dataset=dataset,
-                 problem_spec=problem_spec, cv=cv, **extra_params)
+    params = {'cv': cv,
+              'extra_params': extra_params,
+              'decode_feat_names': decode_feat_names,
+              'progress_bar': progress_bar,
+              'store_preds': store_preds,
+              'store_estimators': store_estimators,
+              'store_timing': store_timing,
+              'eval_verbose': eval_verbose,
+              'progress_loc': progress_loc,
+              }
 
-    # Check decode feat_names arg
+    # Get the estimator and problem spec, w/ option for returned
+    # value as a CompareDict
+    estimator_ps =\
+        _initial_prep(pipeline, dataset, problem_spec,
+                      error_if_compare=False, **extra_params)
+
+    # Base case
+    if not isinstance(estimator_ps, CompareDict):
+        estimator, ps = estimator_ps
+        return _evaluate(estimator=estimator, dataset=dataset, ps=ps, **params)
+
+    # Compare dict case
+    evaluators = CompareDict()
+    for key in estimator_ps:
+
+        if eval_verbose >= 1:
+            print('Running Compare:', key, flush=True)
+
+        # Unpack
+        c_estimator, c_ps = estimator_ps[key]
+
+        # Evaluate this option
+        evaluator = _evaluate(estimator=c_estimator,
+                              dataset=dataset, ps=c_ps, **params)
+
+        # Add to compare dict
+        evaluators[key] = evaluator
+
+    return evaluators
+
+
+def _evaluate(estimator, dataset, ps, cv, extra_params,
+              decode_feat_names, **verbose_args):
+
+    estimator, X, y, ps, sk_cv =\
+        _eval_prep(estimator, ps, dataset, cv, **extra_params)
+
+    # Check decode feat_names arg, ifTrue, pass along encoders
     encoders = None
     if decode_feat_names:
         encoders = dataset.encoders
@@ -776,11 +1038,7 @@ def evaluate(pipeline, dataset,
     # Init evaluator
     evaluator = BPtEvaluator(estimator=estimator, ps=ps,
                              encoders=encoders,
-                             progress_bar=progress_bar,
-                             store_preds=store_preds,
-                             store_estimators=store_estimators,
-                             store_timing=store_timing,
-                             progress_loc=progress_loc)
+                             **verbose_args)
 
     # Call evaluate on the evaluator
     evaluator._evaluate(X, y, sk_cv)

@@ -10,107 +10,9 @@ import inspect
 from ..default.params.default_params import get_base_params, proc_params
 from ..default.params.Params import Params
 from copy import deepcopy
-from ..main.input_operations import BPtInputMixIn, Select
+from ..main.input_operations import Select
 from joblib import hash as joblib_hash
-
-
-def compute_micro_macro(scores, n_repeats, n_splits, weights=None):
-    '''Compute and return scores, as computed from a repeated k-fold.
-
-    Parameters
-    ----------
-    scores : list or array-like
-        Should contain all of the scores
-        and have a length of `n_repeats` * `n_splits`
-
-    n_repeats : int
-        The number of repeats
-
-    n_splits : int
-        The number of splits per repeat
-
-    Returns
-    ----------
-    float
-        The mean macro score
-
-    float
-        The standard deviation of the micro score
-
-    float
-        The standard deviation of the macro score
-    '''
-
-    r_scores = np.reshape(np.array(scores), (n_repeats, n_splits))
-
-    if weights is None:
-        macro_scores = np.mean(r_scores, axis=1)
-    else:
-        r_weights = np.reshape(np.array(weights), (n_repeats, n_splits))
-        macro_scores = np.average(r_scores, weights=r_weights, axis=1)
-
-    return (np.mean(macro_scores), np.std(scores), np.std(macro_scores))
-
-
-def is_array_like(in_val):
-
-    if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
-     (not isinstance(in_val, dict)) and (not hasattr(in_val, 'fit')) and \
-     (not hasattr(in_val, 'transform')):
-        return True
-    else:
-        return False
-
-
-def conv_to_list(in_val, amt=1):
-
-    if in_val is None:
-        return None
-
-    if not is_array_like(in_val) or isinstance(in_val, BPtInputMixIn):
-        in_val = [in_val for i in range(amt)]
-
-    return in_val
-
-
-def proc_input(in_vals):
-    '''Performs common preproc on a list of str's or
-    a single str.'''
-
-    if isinstance(in_vals, list):
-        for i in range(len(in_vals)):
-            in_vals[i] = proc_str_input(in_vals[i])
-    else:
-        in_vals = proc_str_input(in_vals)
-
-    return in_vals
-
-
-def proc_str_input(in_str):
-
-    if not isinstance(in_str, str):
-        return in_str
-
-    # Make sure lower-case
-    in_str = in_str.lower()
-
-    # Remove regressor or classifier
-    chunk_replace_dict = {' regressor': '',
-                          ' classifier': ''}
-    for chunk in chunk_replace_dict:
-        in_str = in_str.replace(chunk, chunk_replace_dict[chunk])
-
-    return in_str
-
-
-def user_passed_param_check(params, obj_str, search_type):
-
-    if isinstance(params, dict):
-        if search_type is None:
-            return deepcopy(params), {}
-        else:
-            return {}, deepcopy(proc_params(params, prepend=obj_str))
-    return {}, {}
+from ..util import is_array_like
 
 
 def proc_extra_params(extra_params, non_search_params, params=None):
@@ -166,12 +68,12 @@ def get_obj_and_params(obj_str, OBJS, extra_params, params):
 
     # Process rest of params by search type, and w.r.t to extra params
     non_search_params, params =\
-        process_params_by_type(obj, obj_str, base_params, extra_params)
+        process_params_by_type(obj_str, base_params, extra_params)
 
     return obj, non_search_params, params
 
 
-def process_params_by_type(obj, obj_str, base_params, extra_params):
+def process_params_by_type(obj_str, base_params, extra_params):
     '''base params is either a dict or 0'''
 
     non_search_params, params = {}, {}
@@ -479,76 +381,3 @@ def get_a_by_type(avaliable, in_strs, problem_type):
             avaliable_by_type[s] = s
 
     return avaliable_by_type
-
-
-def param_len_check(names, params, _print=print):
-
-    if isinstance(params, dict) and len(names) == 1:
-        return params
-
-    try:
-
-        if len(params) > len(names):
-            _print('Warning! More params passed than objs')
-            _print('Extra params have been truncated.')
-            return params[:len(names)]
-
-    # If non list params here
-    except TypeError:
-        return [0 for i in range(len(names))]
-
-    while len(names) != len(params):
-        params.append(0)
-
-    return params
-
-
-def replace_model_name(base_estimator_params):
-
-    new = {}
-
-    for key in base_estimator_params:
-        value = base_estimator_params[key]
-
-        split_key = key.split('__')
-        split_key[0] = 'estimator'
-
-        new_key = '__'.join(split_key)
-        new[new_key] = value
-
-    return new
-
-
-def get_avaliable_run_name(name, model_pipeline):
-
-    if hasattr(model_pipeline, 'model'):
-        model = model_pipeline.model
-    else:
-        model = model_pipeline
-
-    if name is None or name == 'default':
-
-        if isinstance(model, Select):
-            name = 'select'
-        elif isinstance(model, list):
-            name = 'special'
-        elif hasattr(model, 'obj'):
-            if isinstance(model.obj, str):
-                name = model.obj
-            else:
-                name = 'Custom'
-        else:
-            name = 'Custom'
-
-    return name
-
-def set_n_jobs(obj, n_jobs):
-
-    # Call recursively for list
-    if isinstance(obj, list) or isinstance(obj, tuple):
-        for o in obj:
-            set_n_jobs(o, n_jobs)
-
-    # Check and set for n_jobs
-    if hasattr(obj, 'n_jobs'):
-        setattr(obj, 'n_jobs', n_jobs)

@@ -1,17 +1,7 @@
 from copy import deepcopy
 import numpy as np
-from ..main.input_operations import BPtInputMixIn
 import inspect
-
-
-def is_array_like(in_val):
-
-    if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
-     (not isinstance(in_val, dict)) and (not hasattr(in_val, 'fit')) and \
-     (not hasattr(in_val, 'transform')):
-        return True
-    else:
-        return False
+from ..util import is_array_like
 
 
 def args_repr(args, kwargs):
@@ -62,12 +52,12 @@ def get_obj_and_params(obj_str, OBJS, extra_params, params):
 
     # Process rest of params by search type, and w.r.t to extra params
     non_search_params, params =\
-        process_params_by_type(obj, obj_str, base_params, extra_params)
+        process_params_by_type(obj_str, base_params, extra_params)
 
     return obj, non_search_params, params
 
 
-def process_params_by_type(obj, obj_str, base_params, extra_params):
+def process_params_by_type(obj_str, base_params, extra_params):
     '''base params is either a dict or 0'''
 
     from .params.Params import Params
@@ -118,20 +108,9 @@ def proc_extra_params(extra_params, non_search_params, params=None):
     return non_search_params, params
 
 
-def conv_to_list(in_val, amt=1):
-
-    if in_val is None:
-        return None
-
-    if not is_array_like(in_val) or isinstance(in_val, BPtInputMixIn):
-        in_val = [in_val for i in range(amt)]
-
-    return in_val
-
-
 def proc_type_dep_str(in_strs, avaliable, problem_type):
     '''Helper function to perform str correction on
-    underlying proble type dependent input, e.g., for
+    underlying problem type dependent input, e.g., for
     ensemble_types, and to update extra params
     and check to make sure input is valid ect...'''
 

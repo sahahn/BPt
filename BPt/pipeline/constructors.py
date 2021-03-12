@@ -1,9 +1,9 @@
 from BPt.pipeline.BPtFeatureSelector import BPtFeatureSelector
 from ..main.input_operations import Pipe, Select
 
-from ..helpers.ML_Helpers import (proc_type_dep_str, param_len_check,
-                                  conv_to_list,
-                                  process_params_by_type, replace_model_name)
+from .helpers import (param_len_check, replace_model_name)
+from ..default.helpers import process_params_by_type, proc_type_dep_str
+from ..util import conv_to_list
 
 from .ScopeObjs import ScopeTransformer
 from .BPtModel import BPtModel
@@ -230,8 +230,7 @@ class Constructor():
 
         # Proc as necc. user passed params
         extra_user_obj_params, user_obj_params =\
-            process_params_by_type(obj=user_obj,
-                                   obj_str=name,
+            process_params_by_type(obj_str=name,
                                    base_params=deepcopy(param),
                                    extra_params=extra_params)
 

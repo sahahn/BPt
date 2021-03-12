@@ -36,6 +36,7 @@ BPt.BPtEvaluator
       BPtEvaluator.feature_importances_
       BPtEvaluator.fis_
       BPtEvaluator.mean_scores
+      BPtEvaluator.mean_timing
       BPtEvaluator.preds
       BPtEvaluator.ps
       BPtEvaluator.scores

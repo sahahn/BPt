@@ -17,6 +17,7 @@ This is the API reference
    problem_spec
    CV
    input_operations
+   compare
    dists
    evaluate
    extensions

@@ -2,6 +2,7 @@ import tempfile
 import random
 import numpy as np
 import os
+from ..util import is_array_like
 
 
 def to_memmap(X):
@@ -70,16 +71,6 @@ def get_mean_fis(estimators, prop):
 
     # Return as mean
     return np.mean(np.array(fis), axis=0)
-
-
-def is_array_like(in_val):
-
-    if hasattr(in_val, '__len__') and (not isinstance(in_val, str)) and \
-     (not isinstance(in_val, dict)) and (not hasattr(in_val, 'fit')) and \
-     (not hasattr(in_val, 'transform')):
-        return True
-
-    return False
 
 
 def proc_mapping(indx, mapping):
@@ -189,3 +180,53 @@ def get_reverse_mapping(mapping):
             reverse_mapping[key] = m
 
     return reverse_mapping
+
+
+def param_len_check(names, params, _print=print):
+
+    if isinstance(params, dict) and len(names) == 1:
+        return params
+
+    try:
+
+        if len(params) > len(names):
+            _print('Warning! More params passed than objs')
+            _print('Extra params have been truncated.')
+            return params[:len(names)]
+
+    # If non list params here
+    except TypeError:
+        return [0 for i in range(len(names))]
+
+    while len(names) != len(params):
+        params.append(0)
+
+    return params
+
+
+def replace_model_name(base_estimator_params):
+
+    new = {}
+
+    for key in base_estimator_params:
+        value = base_estimator_params[key]
+
+        split_key = key.split('__')
+        split_key[0] = 'estimator'
+
+        new_key = '__'.join(split_key)
+        new[new_key] = value
+
+    return new
+
+
+def set_n_jobs(obj, n_jobs):
+
+    # Call recursively for list
+    if isinstance(obj, list) or isinstance(obj, tuple):
+        for o in obj:
+            set_n_jobs(o, n_jobs)
+
+    # Check and set for n_jobs
+    if hasattr(obj, 'n_jobs'):
+        setattr(obj, 'n_jobs', n_jobs)

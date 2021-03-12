@@ -1,5 +1,5 @@
 from .BPtPipeline import BPtPipeline
-from ..helpers.ML_Helpers import is_array_like
+from ..util import is_array_like
 from .BPtSearchCV import get_search_cv
 
 

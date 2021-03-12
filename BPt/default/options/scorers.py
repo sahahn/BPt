@@ -1,6 +1,7 @@
 from sklearn.metrics import SCORERS
 import sklearn.metrics as M
-from ..helpers import conv_to_list, proc_type_dep_str
+from ..helpers import proc_type_dep_str
+from ...util import conv_to_list
 from joblib import wrap_non_picklable_objects
 
 AVALIABLE = {

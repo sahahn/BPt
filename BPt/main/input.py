@@ -1,7 +1,7 @@
 from copy import deepcopy
-from numpy.lib.shape_base import split
 from sklearn.base import BaseEstimator
-from ..default.helpers import proc_input, conv_to_list
+from ..default.helpers import proc_input
+from ..util import conv_to_list
 
 from ..main.input_operations import (Pipe, Select,
                                      BPtInputMixIn, Value_Subset, Duplicate)
@@ -339,6 +339,17 @@ class Piece(Params, Check):
         # Return the objs and params
         objs, params = constructor.process(self)
         return objs[0], params
+
+    def _get_param_names(self):
+
+        param_names = super()._get_param_names()
+
+        if hasattr(self, 'extra_params'):
+            ep = getattr(self, 'extra_params')
+            if isinstance(ep, dict) and len(ep) > 0:
+                param_names += ['extra_params']
+
+        return param_names
 
 
 @doc(scope=_piece_docs['scope'], params=_piece_docs['params'])

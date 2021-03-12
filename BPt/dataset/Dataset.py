@@ -1295,6 +1295,15 @@ class Dataset(pd.DataFrame):
         X = pd.DataFrame(self.loc[subjects, X_cols]).astype(ps.base_dtype)
         y = self.loc[subjects, ps.target].astype('float64')
 
+        # Add warning for unique n subjs
+        n_unique_index = len(pd.unique(X.index))
+        if n_unique_index != len(X):
+            self._print('The number of unique index rows (',
+                        str(n_unique_index),
+                        ') does not match the number of rows (',
+                        str(len(X)), ').', 
+                        'There may be duplicate subjects / index.', level=0)
+
         return X, y
 
     def get_train_Xy(self, problem_spec='default',

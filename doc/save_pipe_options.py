@@ -1,8 +1,49 @@
-from BPt.helpers.ML_Helpers import get_objects_by_type, get_objects
-
 import BPt.default.options as o
 from BPt.default.params.default_params import PARAMS
 from BPt.helpers.Docstring_Helpers import get_name, get_scorer_name
+
+
+def get_avaliable_by_type(AVALIABLE):
+
+    avaliable_by_type = {}
+
+    for pt in AVALIABLE:
+
+        avaliable_by_type[pt] = set()
+        for select in AVALIABLE[pt]:
+            avaliable_by_type[pt].add(AVALIABLE[pt][select])
+
+        avaliable_by_type[pt] = list(avaliable_by_type[pt])
+        avaliable_by_type[pt].sort()
+
+    return avaliable_by_type
+
+
+def get_objects_by_type(problem_type, AVALIABLE=None, OBJS=None):
+
+    avaliable_by_type = get_avaliable_by_type(AVALIABLE)
+
+    objs = []
+    for obj_str in avaliable_by_type[problem_type]:
+
+        if 'basic ensemble' not in obj_str:
+            obj = OBJS[obj_str][0]
+            obj_params = OBJS[obj_str][1]
+            objs.append((obj_str, obj, obj_params))
+
+    return objs
+
+
+def get_objects(OBJS):
+
+    objs = []
+    for obj_str in OBJS:
+
+        obj = OBJS[obj_str][0]
+        obj_params = OBJS[obj_str][1]
+        objs.append((obj_str, obj, obj_params))
+
+    return objs
 
 
 def main_category(lines, name):

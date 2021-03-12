@@ -1,6 +1,6 @@
 from sklearn.pipeline import Pipeline
 import numpy as np
-from ..helpers.ML_Helpers import hash
+from .helpers import pipe_hash
 from joblib import load, dump
 import pandas as pd
 from sklearn.utils.metaestimators import if_delegate_has_method
@@ -144,9 +144,9 @@ class BPtPipeline(Pipeline):
 
             # Compute the hash for this fit
             # Store as an attribute
-            self.hash_ = hash([X, y, mapping,
-                               fit_index, fit_params],
-                              self.steps)
+            self.hash_ = pipe_hash([X, y, mapping,
+                                   fit_index, fit_params],
+                                   self.steps)
 
             # Check if hash exists - if it does load
             if os.path.exists(self._get_hash_loc()):

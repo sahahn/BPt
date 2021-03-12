@@ -2,7 +2,11 @@ import tempfile
 import random
 import numpy as np
 import os
+import inspect
+from copy import deepcopy
+from joblib import hash as joblib_hash
 from ..util import is_array_like
+from ..default.params.Params import Params
 
 
 def to_memmap(X):
@@ -155,7 +159,7 @@ def update_mapping(mapping, new_mapping):
             # list, in that case just set to None
             if len(as_set) == 0:
                 mapping[key] = None
-            
+
             # Otherwise set as list in sorted order
             else:
                 mapping[key] = sorted(list(as_set))
@@ -230,3 +234,84 @@ def set_n_jobs(obj, n_jobs):
     # Check and set for n_jobs
     if hasattr(obj, 'n_jobs'):
         setattr(obj, 'n_jobs', n_jobs)
+
+
+def get_possible_params(estimator, method):
+
+    if not hasattr(estimator, method):
+        return []
+
+    pos_params = dict(inspect.getmembers(getattr(estimator, method).__code__))
+    return pos_params['co_varnames']
+
+
+def check_replace(objs):
+
+    if isinstance(objs, list):
+        return [check_replace(o) for o in objs]
+
+    if isinstance(objs, set):
+        new_set = set()
+        for o in objs:
+            new_set.add(check_replace(o))
+        return new_set
+
+    if isinstance(objs, tuple):
+        return tuple([check_replace(o) for o in objs])
+
+    if isinstance(objs, dict):
+        return {k: check_replace(objs[k]) for k in objs}
+
+    if hasattr(objs, 'get_params'):
+        for param in objs.get_params(deep=False):
+            new_value = check_replace(getattr(objs, param))
+            setattr(objs, param, new_value)
+
+        # Also if has n_jobs replace all with fixed 1
+        if hasattr(objs, 'n_jobs'):
+            setattr(objs, 'n_jobs', 1)
+        if hasattr(objs, 'fix_n_jobs'):
+            setattr(objs, 'fix_n_jobs', 1)
+        if hasattr(objs, '_n_jobs'):
+            try:
+                setattr(objs, '_n_jobs', 1)
+            except AttributeError:
+                pass
+        if hasattr(objs, 'n_jobs_'):
+            try:
+                setattr(objs, 'n_jobs_', 1)
+            except AttributeError:
+                pass
+
+        # Return objs as changed in place
+        return objs
+
+    # If nevergrad / params convert to repr
+    if isinstance(objs, Params):
+        return repr(objs)
+
+    # Return identity otherwise
+    return objs
+
+
+def pipe_hash(objs, steps):
+    '''Expects a list'''
+
+    # Make copy with nevergrad / params dists replaced by repr
+    hash_steps = check_replace(deepcopy(steps))
+
+    # Hash steps and objs separate, then combine
+    hash_str1 = joblib_hash(objs, hash_name='md5')
+    hash_str2 = joblib_hash(hash_steps, hash_name='md5')
+
+    return hash_str1 + hash_str2
+
+
+def replace_with_in_params(params, original, replace):
+
+    new_params = {}
+
+    for key in params:
+        new_params[key.replace(original, replace)] = params[key]
+
+    return new_params

@@ -1,7 +1,6 @@
 
 from copy import deepcopy
-from ..helpers.ML_Helpers import replace_with_in_params
-from .helpers import set_n_jobs
+from .helpers import set_n_jobs, replace_with_in_params
 
 from sklearn.ensemble import (StackingRegressor, StackingClassifier,
                               VotingClassifier, VotingRegressor)

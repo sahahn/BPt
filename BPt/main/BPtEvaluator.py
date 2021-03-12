@@ -1,23 +1,11 @@
 import pandas as pd
 import numpy as np
-from tqdm import tqdm
-from tqdm.notebook import tqdm as tqdm_notebook
+from tqdm.auto import tqdm
 from sklearn.base import clone
 import time
 from ..dataset.helpers import verbose_print
 from ..pipeline.helpers import get_mean_fis
 from sklearn.utils import Bunch
-
-
-def is_notebook():
-
-    try:
-        shell = get_ipython().__class__.__name__
-        if shell == 'ZMQInteractiveShell':
-            return True
-    except NameError:
-        pass
-    return False
 
 
 def get_non_nan_Xy(X, y):
@@ -296,8 +284,6 @@ class BPtEvaluator():
 
         if not progress_bar:
             self.progress_bar = None
-        elif is_notebook():
-            self.progress_bar = tqdm_notebook
         else:
             self.progress_bar = tqdm
 

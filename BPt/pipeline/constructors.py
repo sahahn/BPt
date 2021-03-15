@@ -856,7 +856,8 @@ class EnsembleConstructor(TypeConstructor):
     name = 'ensembles'
 
     def _process(self, params):
-        from ..default.options import get_ensemble_and_params, AVALIABLE
+        from ..default.options.ensembles import (get_ensemble_and_params,
+                                                 AVALIABLE)
         self.AVAILABLE = AVALIABLE
 
         return self._base_type_process(params,

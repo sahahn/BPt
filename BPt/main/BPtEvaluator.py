@@ -7,6 +7,10 @@ from ..dataset.helpers import verbose_print
 from ..pipeline.helpers import get_mean_fis
 from sklearn.utils import Bunch
 
+# @TODO
+# 1. Store permutation FI's in object after call
+# 2. Add methods for plot feature importance's ?
+
 
 def get_non_nan_Xy(X, y):
 
@@ -16,6 +20,40 @@ def get_non_nan_Xy(X, y):
         X, y = X.loc[non_nan_subjs], y.loc[non_nan_subjs]
 
     return X, y
+
+
+def fi_to_series(fi, feat_names):
+
+    # Base flat case
+    if len(fi.shape) == 1:
+        return pd.Series(fi, index=feat_names)
+
+    # Categorical case
+    series = []
+    for class_fi in fi:
+        series.append(pd.Series(class_fi, index=feat_names))
+
+    return series
+
+
+def fis_to_df(fis):
+
+    # Base case - assume that first element is representative
+    if isinstance(fis[0], pd.Series):
+        return pd.DataFrame(fis)
+
+    # Categorical case
+    dfs = []
+    for c in range(len(fis[0])):
+        dfs.append(pd.DataFrame([fi[c] for fi in fis]))
+
+    return dfs
+
+
+def mean_no_zeros(df):
+
+    mean = df.mean()
+    return mean[mean != 0]
 
 
 class BPtEvaluator():
@@ -924,35 +962,3 @@ class BPtEvaluator():
                      importances_std=fis_to_df(std_series))
 
 
-def fi_to_series(fi, feat_names):
-
-    # Base flat case
-    if len(fi.shape) == 1:
-        return pd.Series(fi, index=feat_names)
-
-    # Categorical case
-    series = []
-    for class_fi in fi:
-        series.append(pd.Series(class_fi, index=feat_names))
-
-    return series
-
-
-def fis_to_df(fis):
-
-    # Base case - assume that first element is representative
-    if isinstance(fis[0], pd.Series):
-        return pd.DataFrame(fis)
-
-    # Categorical case
-    dfs = []
-    for c in range(len(fis[0])):
-        dfs.append(pd.DataFrame([fi[c] for fi in fis]))
-
-    return dfs
-
-
-def mean_no_zeros(df):
-
-    mean = df.mean()
-    return mean[mean != 0]

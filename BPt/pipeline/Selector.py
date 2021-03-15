@@ -1,17 +1,14 @@
 from sklearn.utils.metaestimators import _BaseComposition
 from sklearn.utils.metaestimators import if_delegate_has_method
 from ..default.params.Params import Dict, Choice
-from .base import _get_est_fit_params
-
-# @TODO Figure out best way to make selector work with
-# downstream objects which might need special fit arguments,
-# e.g., should this class use the bpt fit and have all tags?
+from .base import _get_est_fit_params, _get_est_trans_params
 
 
 class Selector(_BaseComposition):
 
     _needs_mapping = True
     _needs_fit_index = True
+    _needs_transform_indes = True
 
     def __init__(self, estimators, to_use=0):
         self.estimators = estimators
@@ -56,7 +53,16 @@ class Selector(_BaseComposition):
 
     @if_delegate_has_method(delegate='example_estimator_')
     def transform(self, *args, **kwargs):
-        return self.estimator_.transform(*args, **kwargs)
+
+        if 'transform_index' in kwargs:
+            transform_index = kwargs.pop('transform_index')
+        else:
+            transform_index = None
+
+        tranform_params = _get_est_trans_params(self.estimator,
+                                                transform_index)
+
+        return self.estimator_.transform(*args, **tranform_params)
 
     @if_delegate_has_method(delegate='example_estimator_')
     def fit_resample(self, *args, **kwargs):

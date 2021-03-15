@@ -8,6 +8,7 @@ from .BPtEvaluator import BPtEvaluator
 from sklearn.model_selection import check_cv
 from .input_operations import Intersection
 from pandas.util._decorators import doc
+from .CV import inds_from_names
 from ..shared_docs import _shared_docs
 from .compare import (_compare_check, CompareDict, _merge_compare, Compare)
 
@@ -651,6 +652,9 @@ def _eval_prep(estimator, ps, dataset,
 
         # Set as single iterable.
         sk_cv = [(train, test)]
+        
+        # Set as actual index
+        sk_cv = inds_from_names(dataset.index, sk_cv)
 
     # Cast explicitly to sklearn style cv from either user
     # passed input or inds

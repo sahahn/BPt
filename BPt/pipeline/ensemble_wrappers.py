@@ -58,7 +58,7 @@ def voting_fit(self, X, y, sample_weight=None, mapping=None,
 def stacking_fit(self, X, y, sample_weight=None, mapping=None,
                  fit_index=None, **kwargs):
 
-    # Validate final estimastor
+    # Validate final estimator
     self._validate_final_estimator()
 
     # Fit self.estimators_ on all data
@@ -109,6 +109,11 @@ def stacking_fit(self, X, y, sample_weight=None, mapping=None,
                                           other_params=sample_weight_params)
                       for est in all_estimators]
 
+    # Catch rare error - TODO come up with fix
+    if X.shape[0] == X.shape[1]:
+        raise RuntimeError('Same numbers of data points and ',
+                           'features can lead to error.')
+
     # Make the cross validated internal predictions to train
     # the final_estimator
     predictions = Parallel(n_jobs=self.n_jobs)(
@@ -128,7 +133,7 @@ def stacking_fit(self, X, y, sample_weight=None, mapping=None,
         if est != 'drop'
     ]
 
-    # @TODO make sure train data index is concat'ed correctly
+    # @TODO make sure train data index is concatenated correctly
     X_meta = self._concatenate_predictions(X, predictions)
     _fit_single_estimator(self.final_estimator_, X_meta, y,
                           sample_weight=sample_weight,

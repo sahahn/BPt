@@ -50,6 +50,39 @@ def add_scores(cols, evaluator, attr_name):
 
 
 class Option(BPtInputMixIn):
+    '''This is a special BPt input class designed
+    to be used with :class:`Compare`. It is used as
+    a formal way to represent comparison options.
+
+    Parameters
+    ----------
+    value : option value
+        The explicit value in which the parameter
+        it is passed to will take.
+
+    name : str or 'repr', optional
+        The name of this value, where this name
+        is used to index the :class:`CompareDict`
+        of results.
+
+        If left as default value of 'repr' then
+        a str representation of the value will
+        be automatically created.
+
+        ::
+
+            default = 'repr'
+
+    key : str or None, optional
+        This parameter should typically not be
+        set directly. It is instead inferred by the
+        context in which the option is eventually used.
+
+        ::
+
+            default = None
+
+    '''
 
     def __init__(self, value, name='repr', key=None):
 
@@ -97,6 +130,31 @@ class Option(BPtInputMixIn):
 
 
 class Compare(BPtInputMixIn):
+    '''This is a special BPt input class which
+    can be used as a helper to more easily run comparison
+    analysis between a few choice of parameters.
+
+    Parameters
+    ------------
+    options : list of values or :class:`Option`
+        This parameter should be a list of options
+        in which to try each one of. You may pass
+        these options either directly as values, for example ::
+
+            options = ['option1', 'option2']
+
+        Or as instances of :class:`Option`. This
+        second strategy is reccomended when the underlying
+        options are objects or something more complex then strings,
+        for example between two :class:`Pipeline` ::
+
+            pipe1 = bp.Pipeline([bp.Model('elastic')])
+            pipe2 = bp.Pipeline([bp.Model('ridge')])
+
+            options = [bp.Option(pipe1, name='pipe1'),
+                       bp.Option(pipe2, name='pipe2')]
+
+    '''
 
     def __init__(self, options):
 
@@ -212,6 +270,10 @@ class Options():
 
 
 class CompareDict(dict):
+    '''This object is simmilar to a python dictionary,
+    but is used to stored results from analyses run using
+    :class:`Compare`.
+    '''
 
     def _cast_to_options(self, k):
 
@@ -268,6 +330,9 @@ class CompareDict(dict):
         return self.__repr__()
 
     def summary(self):
+        '''Return a pandas DataFrame with summary
+        information as broken down by all of the different
+        original :class:`Compare` options.'''
 
         # Get example value to base summary on
         ex = self.__getitem__(list(self.keys())[0])

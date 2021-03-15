@@ -1,5 +1,5 @@
 from sklearn.base import BaseEstimator
-from ..helpers.ML_Helpers import get_possible_params
+from .helpers import get_possible_params
 
 
 def _needs(estimator, flag, attr, method):

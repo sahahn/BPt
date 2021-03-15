@@ -130,6 +130,7 @@ class ScopeObj(BPtBase):
         # Process the passed mapping, sets self.inds_
         if mapping is None:
             mapping = {}
+
         self._proc_mapping(mapping)
 
         # If no inds to map, skip by setting estimator to None

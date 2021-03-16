@@ -188,27 +188,34 @@ def _problem_spec_target_check(ps, dataset):
 def problem_spec_check(problem_spec, dataset, error_if_compare=True,
                        **extra_params):
 
-    # If attr checked, then means the passed
-    # problem_spec has already been checked and is already
-    # a proc'ed and ready copy.
-    if hasattr(problem_spec, '_checked') and getattr(problem_spec, '_checked'):
-        return problem_spec
-
-    # Or is the problem spec is already a CompareDict.
+    # If problem spec is already a CompareDict.
+    # Return as is
     if isinstance(problem_spec, CompareDict):
         return problem_spec
 
-    # Check if problem_spec is left as default
-    if problem_spec == 'default':
-        problem_spec = ProblemSpec()
-
-    # Set ps to copy of problem spec and init
+    # Set ps to copy of problem spec
     ps = deepcopy(problem_spec)
 
-    # Apply any passed valid extra params
+    # Check if problem_spec is left as default
+    if ps == 'default':
+        ps = ProblemSpec()
+
+    # Check for any override params
     possible_params = ProblemSpec._get_param_names()
     valid_params = {key: extra_params[key] for key in extra_params
                     if key in possible_params}
+
+    # If any override params - reset checked
+    if len(valid_params) > 0:
+        ps._checked = False
+
+    # If attr checked, then means the passed
+    # problem_spec has already been checked and is already
+    # a proc'ed and ready copy.
+    if hasattr(ps, '_checked') and getattr(ps, '_checked'):
+        return ps
+
+    # Set any overlap params
     ps.set_params(**valid_params)
 
     # Check for any Compare
@@ -652,7 +659,7 @@ def _eval_prep(estimator, ps, dataset,
 
         # Set as single iterable.
         sk_cv = [(train, test)]
-        
+
         # Set as actual index
         sk_cv = inds_from_names(dataset.index, sk_cv)
 

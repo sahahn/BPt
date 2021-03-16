@@ -104,6 +104,10 @@ def get_scorers_by_type(problem_type):
 
 def process_scorers(in_scorers, problem_type):
 
+    # If already correct scorers dict.
+    if isinstance(in_scorers, dict):
+        return in_scorers
+
     # Check for default case
     if in_scorers == 'default':
         in_scorers = default_scorers[problem_type]
@@ -111,7 +115,7 @@ def process_scorers(in_scorers, problem_type):
     # get scorer_strs as initially list
     scorer_strs = conv_to_list(in_scorers)
 
-    scorers, to_weight, cnt = {}, {}, 0
+    scorers, cnt = {}, 0
     for m in range(len(scorer_strs)):
 
         if isinstance(scorer_strs[m], str):

@@ -42,7 +42,6 @@ def test_get_grid_params():
               '4': Scalar(lower=1, upper=2).set_integer_casting()}
 
     grid_params = get_grid_params(params)
-    print(grid_params)
 
     assert grid_params['1'] == [1, 2, 3]
     assert grid_params['2'] == [1, 2]

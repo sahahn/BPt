@@ -117,8 +117,6 @@ def proc_mapping(indx, mapping):
 
 def update_mapping(mapping, new_mapping):
 
-    print(mapping)
-
     # In case where new_mapping is empty,
     # return the original mapping as is
     if len(new_mapping) == 0:

@@ -7,6 +7,7 @@ from ..BPtFeatureSelector import BPtFeatureSelector
 from .helpers import get_fake_data_dataset
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.compose import TransformedTargetRegressor
+from sklearn.ensemble import AdaBoostRegressor
 
 
 def test_add_estimator_to_params():
@@ -239,4 +240,25 @@ def test_ensemble_nested_stacking():
     assert isinstance(nested_ests[1][1], BPtModel)
     assert isinstance(nested_ests[1][1].estimator, RandomForestRegressor)
 
+    assert len(params) == 0
+
+
+def test_ensemble_se():
+
+    data_keys = ['0', '1']
+    dataset = get_fake_data_dataset(data_keys=data_keys)
+
+    spec = {'problem_type': 'regression', 'random_state': None,
+            'n_jobs': 2, 'scope': 'all'}
+
+    mc = ModelConstructor(dataset=dataset, spec=spec, user_passed_objs={})
+    in_params = Ensemble(obj='adaboost',
+                         models=Model('random forest'),
+                         single_estimator=True)
+
+    objs, params = mc.process(in_params)
+    _, obj = objs[0]
+
+    assert isinstance(obj, BPtModel)
+    assert isinstance(obj.estimator, AdaBoostRegressor)
     assert len(params) == 0

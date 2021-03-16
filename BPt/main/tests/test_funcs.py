@@ -525,6 +525,18 @@ def test_get_estimator_with_scope():
     assert model.inds == [0]
 
 
+def test_get_binary_estimator_default_ps():
+
+    data = get_fake_dataset()
+    data = data.binarize('3', threshold=8)
+    pipe = Model('random forest')
+    est = get_estimator(pipeline=pipe, dataset=data)
+
+    assert isinstance(est, BPtPipeline)
+    assert isinstance(est.steps[0][1], BPtModel)
+    assert isinstance(est.steps[0][1].estimator,  RandomForestClassifier)
+
+
 def test_get_param_wrapped_model():
 
     ps = get_checked_ps()

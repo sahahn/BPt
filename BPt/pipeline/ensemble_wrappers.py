@@ -256,7 +256,7 @@ class EnsembleWrapper():
                       final_estimator=None,
                       final_estimator_params=None):
 
-        # If no ensembling is passed, return either the 1 model,
+        # If no ensemble is passed, return either the 1 model,
         # or a voting wrapper
         if ensemble is None or len(ensemble) == 0:
             return self._basic_ensemble(models=models,

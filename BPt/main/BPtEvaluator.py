@@ -976,4 +976,62 @@ class BPtEvaluator():
         return Bunch(importances_mean=fis_to_df(mean_series),
                      importances_std=fis_to_df(std_series))
 
+    def get_X_transform_df(self, dataset, fold=0, subjects='tr'):
+        ''' This method is used as a helper for getting the transformed
+        input data for one of the saved models run during evaluate.
 
+        Parameters
+        -----------
+        dataset : :class:`Dataset`
+            The instance of the Dataset class originally passed to
+            :func:`evaluate`. Note: if you pass a different dataset,
+            you may get unexpected behavior.
+
+        fold : int, optional
+            The corresponding fold of the trained
+            estimator to use.
+
+        subjects : 'tr', 'val' or :ref:`Subjects`, optional
+            The subjects data in which to return. As
+            either special strings 'tr' for train subjects
+            in the corresponding fold. Special str
+            'val' for the validation subjects in the
+            selected for or lastly any valid
+            :ref:`Subjects` style input.
+
+        Returns
+        ----------
+        X_trans_df : pandas DataFrame
+            The transformed features in a DataFrame,
+            according to the saved estimator from a fold,
+            for the specified subjects.
+
+            If kept as the default of subjects == 'tr',
+            then these represent the feature values as
+            passed to trained the actual model component
+            of the pipeline.
+        '''
+
+        self._estimators_check()
+
+        # Estimator from the fold
+        estimator = self.estimators[fold]
+
+        if subjects == 'tr':
+            subjects = self.train_indices[fold]
+        elif subjects == 'val':
+            subjects = self.val_indices[fold]
+
+        # Get feature names from fold
+        feat_names = self.feat_names[fold]
+
+        # Get as X
+        X_fold, _ = dataset.get_Xy(problem_spec=self.ps,
+                                   subjects=subjects)
+
+        # Transform the data up to right before it gets passed to the
+        # elastic net
+        X_trans_fold = estimator.transform(X_fold)
+
+        # Put the data in a dataframe with associated feature names
+        return pd.DataFrame(X_trans_fold, columns=feat_names)

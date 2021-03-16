@@ -283,6 +283,10 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         # Load labels
         self.labels_ = load_surf(self.labels)
 
+        if len(self.labels.shape) > 1:
+            raise RuntimeError('The passed labels array must be flat, ' +
+                               ' i.e., a single dimension')
+
         # Mask labels if mask
         if self.mask_ is not None:
 
@@ -400,10 +404,13 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         self._check_fitted()
 
         if len(X.shape) == 2 and (X.shape[0] == X.shape[1]):
-            warnings.warn('X was passed with the same length',
-                          ' in each dimension, ',
-                          'Assuming that axis=0 is the data dimension',
+            warnings.warn('X was passed with the same length' +
+                          ' in each dimension, ' +
+                          'Assuming that axis=0 is the data dimension' +
                           ' w/ vertex values')
+
+        if len(X.shape) > 2:
+            raise RuntimeError('The shape of X can be at most 2 dimensions.')
 
         # The data dimension is just the dimension with
         # the same len as the label
@@ -543,9 +550,9 @@ class SurfMaps(BaseEstimator, TransformerMixin):
 
             data = np.array([1, 1, 5, 5])
             maps = np.array([[0, 1],
-                                [0, 2],
-                                [1, 0],
-                                [1, 0]])
+                             [0, 2],
+                             [1, 0],
+                             [1, 0]])
 
             ls_sol = [5. , 0.6]
             average_sol = [5, 1]
@@ -626,6 +633,13 @@ class SurfMaps(BaseEstimator, TransformerMixin):
 
         # Save dtype
         self.dtype_ = X.dtype
+
+        # Warn if non-float
+        if 'float' not in self.dtype_.name:
+            warnings.warn('The original datatype is non-float, ' +
+                          'this may lead to rounding errors! ' +
+                          'Pass data as type float to ensure ' +
+                          'the results of transform are not truncated.')
 
         # Make the maps if passed mask set to 0 in those spots
         if self.mask_ is not None:
@@ -737,16 +751,16 @@ class SurfMaps(BaseEstimator, TransformerMixin):
             X = X.T
 
         # Set strategy if auto
-        strategy = self.strategy
-        if strategy == 'auto':
-            strategy = 'ls'
+        self.strategy_ = self.strategy
+        if self.strategy_ == 'auto':
+            self.strategy_ = 'ls'
             if np.all(self.maps_ >= 0):
-                strategy = 'average'
+                self.strategy_ = 'average'
 
         # Run the correct transform based on strategy
-        if strategy == 'ls':
+        if self.strategy_ == 'ls':
             X_trans = self._transform_ls(X)
-        elif strategy == 'average':
+        elif self.strategy_ == 'average':
             X_trans = self._transform_average(X)
         else:
             X_trans = None
@@ -810,14 +824,26 @@ class SurfMaps(BaseEstimator, TransformerMixin):
         if self.vectorize:
             X_trans = X_trans.reshape(self.original_shape_)
 
-        # For ls should be something like
-        # np.dot(region_signals, maps.T)
+        if self.strategy_ == 'ls':
+            return np.dot(X_trans, self.maps_.T)
 
-        # For inverse transform weighted average,
-        # make sure to include check for sum(weights) == 0
-        # and to fill in that spot with zeros
+        elif self.strategy_ == 'average':
+            raise RuntimeError('Cannot calculate reverse of average.')
 
-        raise RuntimeError('Not Implemented Yet')
+            est_weights = lstsq(self.maps_.T, X_trans)[0]
+
+            X = []
+            for m in range(self.maps_.shape[1]):
+
+                mp = self.maps_[:, m]
+                mp_sum = np.sum(mp)
+                if mp_sum == 0:
+                    pass
+
+                X.append(X_trans[m, ] * mp * est_weights)
+                print(est_weights)
+
+            print(X)
 
 
 # Create wrapper for nilearn connectivity measure to make it
@@ -1019,7 +1045,10 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
     def _threshold_check(self, X):
 
         while np.sum(self._apply_threshold(X)) == 0:
-            print('warning setting threshold lower', self.threshold)
+            warnings.warn('Setting threshold lower than: ' +
+                          str(self.threshold) + '. As, otherwise no edges ' +
+                          'will be set. New threshold = ' +
+                          str(self.threshold - .01))
             self.threshold -= .01
 
     def transform(self, X):

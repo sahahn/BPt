@@ -185,6 +185,13 @@ def test_check_scopes():
     assert not df._is_category('2')
 
 
+def test_is_category():
+
+    df = get_fake_dataset()
+    assert df._is_category('2')
+    assert not df._is_category('all')
+
+
 def test_set_target_inplace():
 
     df = get_fake_dataset()

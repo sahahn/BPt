@@ -3,7 +3,6 @@ import numpy as np
 import tempfile
 import os
 from nose.tools import assert_raises
-from scipy.linalg import lstsq
 
 
 def test_identity():

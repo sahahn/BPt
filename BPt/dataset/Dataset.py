@@ -733,19 +733,16 @@ class Dataset(pd.DataFrame):
         elif scope == 'data float':
             return [col for col in columns if
                     'category' not in self.scopes[col] and
-                    'data file' not in self.scopes[col] and
                     self.roles[col] == 'data']
 
         elif scope == 'target float':
             return [col for col in columns if
                     'category' not in self.scopes[col] and
-                    'data file' not in self.scopes[col] and
                     self.roles[col] == 'target']
 
         elif scope == 'float':
             return [col for col in columns if
-                    'category' not in self.scopes[col] and
-                    'data file' not in self.scopes[col]]
+                    'category' not in self.scopes[col]]
 
         elif scope == 'category':
             return [col for col in columns if

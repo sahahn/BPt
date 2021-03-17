@@ -360,14 +360,30 @@ class Constructor():
             if hasattr(obj, 'random_state'):
                 setattr(obj, 'random_state', self.spec['random_state'])
 
-            # Proc scope
-            scope = input_params[i].scope
+            if hasattr(input_params[i], 'scope'):
 
-            # Sets to either inds or Ellipsis if all
-            inds = self._check_scope_all(scope)
+                # Proc scope
+                scope = input_params[i].scope
 
-            # Get scope name
-            scope_name = get_scope_name(scope)
+                # Sets to either inds or Ellipsis if all
+                inds = self._check_scope_all(scope)
+
+                # Get scope name
+                scope_name = get_scope_name(scope)
+
+            elif hasattr(input_params[i], 'scopes'):
+
+                # Proc scope
+                scopes = input_params[i].scopes
+
+                # Sets to either inds or Ellipsis if all
+                inds = [self._check_scope_all(scope) for scope in scopes]
+
+                # Get scope name
+                scope_name = ''
+
+            else:
+                raise RuntimeError('No scope or scopes in object')
 
             if hasattr(input_params[i], 'cache_loc'):
                 cache_loc = getattr(input_params[i], 'cache_loc')
@@ -437,7 +453,7 @@ class ModelConstructor(TypeConstructor):
         ensemble_mask = np.array([hasattr(params[i], 'models')
                                   for i in range(len(params))])
 
-        # Seperate non-ensemble objs and obj_params
+        # Separate non-ensemble objs and obj_params
         non_ensemble_params = [i for idx, i in enumerate(params)
                                if not ensemble_mask[idx]]
 
@@ -469,7 +485,7 @@ class ModelConstructor(TypeConstructor):
 
     def _process_ensembles(self, params, ensemble_mask):
 
-        # Seperate the ensemble params from all passed params
+        # Separate the ensemble params from all passed params
         ensemble_params = [i for idx, i in enumerate(params)
                            if ensemble_mask[idx]]
 
@@ -677,7 +693,7 @@ class LoaderConstructor(Constructor):
         cnt = 0
         for p_params, ind in zip(pipe_params, np.where(pipe_mask)[0]):
 
-            # Need to move objs and params to seperate objs to pass along
+            # Need to move objs and params to separate objs to pass along
             p_sep_params = []
             for o, p in zip(p_params.obj, p_params.params):
                 base = deepcopy(p_params)
@@ -771,7 +787,7 @@ class ImputerConstructor(Constructor):
         objs, obj_params =\
             self.replace_base_estimator(objs, obj_params, params)
 
-        # Wrap in col_transformer for scope
+        # Make col version
         return self._make_col_version(objs, obj_params, params,
                                       Wrapper=ScopeTransformer)
 
@@ -805,7 +821,7 @@ class ScalerConstructor(Constructor):
             self._get_objs_and_params(get_scaler_and_params,
                                       params)
 
-        # Wrap in col_transformer for scope
+        # Wrap
         return self._make_col_version(objs, obj_params, params,
                                       Wrapper=ScopeTransformer)
 

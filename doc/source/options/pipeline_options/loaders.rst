@@ -47,7 +47,7 @@ Additionally, a link to the original models documentation as well as the impleme
 "connectivity"
 **************
 
-  Base Class Documentation: :class:`BPt.extensions.Loaders.Connectivity`
+  Base Class Documentation: :class:`BPt.extensions.Loaders.SingleConnectivityMeasure`
 
   Param Distributions
 

@@ -9,10 +9,14 @@ from ..default.options.scorers import process_scorer
 from .CV import get_bpt_cv
 from ..pipeline.constructors import (LoaderConstructor, ImputerConstructor,
                                      ScalerConstructor, TransformerConstructor,
-                                     FeatSelectorConstructor, ModelConstructor)
+                                     FeatSelectorConstructor, ModelConstructor,
+                                     CustomConstructor)
 
 import warnings
 from pandas.util._decorators import doc
+from sklearn.utils.estimator_checks import check_estimator
+from sklearn.pipeline import _name_estimators
+
 
 _piece_docs = {}
 
@@ -953,6 +957,40 @@ class Model(Piece):
         self._check_args()
 
 
+class Custom(Piece):
+    '''Wrapper around pieces passed
+    as valid sklearn estimator.'''
+
+    _constructor = CustomConstructor
+
+    def __init__(self, step):
+
+        # Save step
+        self.step = step
+
+    def _get_step(self):
+
+        # If already tuple return as is
+        if isinstance(self.step, tuple):
+            step = self.step
+
+        # Otherwise, get as tuple
+        else:
+            step = _name_estimators([self.step])[0]
+
+        # Change name if needed
+        name, obj = step[0], step[1]
+
+        # Return step
+        return (name, obj)
+
+    def __repr__(self):
+        return self.step.__repr__()
+
+    def __str__(self):
+        return self.step.__str__()
+
+
 class Ensemble(Model):
     '''The Ensemble object is valid base
     :class:`ModelPipeline` (or :class:`Pipeline`) piece, designed
@@ -1475,9 +1513,30 @@ class ParamSearch(Params):
             raise IOError(
                 'weight_scorer within Param Search cannot be list-like')
 
-# @TODO Add compatibility for custom objects in the Pipeline
-# as passed via scikit-learn pipeline style. Allowing for mixing
-# BPt objects and native sklearn.
+
+def check_if_sklearn_step(step):
+
+    # Skip def. not valid cases
+    if isinstance(step, Piece):
+        return False
+    elif isinstance(step, str):
+        return False
+
+    # If Tuple
+    if isinstance(step, tuple):
+        est = step[1]
+
+    # Otherwise assume directly as obj
+    else:
+        est = step
+
+    # Use sklearn base check
+    try:
+        check_estimator(est)
+    except AttributeError:
+        return False
+
+    return True
 
 
 class Pipeline(Params):
@@ -1491,22 +1550,93 @@ class Pipeline(Params):
     -----------
     steps : list of :ref:`Pipeline Objects<pipeline_objects>`
         Input here is a list of :ref:`Pipeline Objects<pipeline_objects>`
-        that can be in any order as long as there is only
+        or custom valid sklearn-compliant objects / pipeline steps.
+        These can be in any order as long as there is only
         one :class:`Model` or :class:`Ensemble`
-        and it is at the end of the list. This excludes
-        any nested model-type classes!
+        and it is at the end of the list, i.e., the last step.
+        Note this constraint excludes any nested models.
 
-        Each step must be a valid Pipeline object, for
-        example:
+        The base behavior is to use all valid Pipeline objects,
+        for example:
 
         ::
 
             Pipeline(steps=[Imputer('mean'),
                             Scaler('robust'),
-                            Model('elastic')])
+                            Model('elastic')
+                            ])
 
         Would create a pipeline with mean imputation, robust scaling
-        and an elastic net.
+        and an elastic net, all using the BPt style custom objects.
+
+        This object can also work with :class:`sklearn.pipeline.Pipeline`
+        style steps. Or a mix of BPt style and sklearn style, for example:
+
+        ::
+
+            from sklearn.linear import Ridge
+
+            Pipeline(steps=[Imputer('mean'),
+                            Scaler('robust'),
+                            ('ridge regression', Ridge())
+                            ])
+
+        You may also pass sklearn objects directly instead of as
+        a tuple, i.e., in the :func:`sklearn.pipeline.make_pipeline`
+        input style. For example:
+
+        ::
+
+            from sklearn.linear import Ridge
+            Pipeline(steps=[Ridge()])
+
+        Note: Passing objects in this sklearn-style means
+        that they will essentially have a scope of 'all'
+        and no associated hyper-parameter distributions.
+
+     param_search : :class:`ParamSearch` or None, optional
+        A :class:`ParamSearch` can be provided specifying that
+        a nested hyper-parameter search be constructed across
+        all valid param distributions (as set within each piece).
+
+        If a parameter search is passed, it is required
+        that atleast one piece have a relevant hyper-parameter
+        distribution (i.e., as set in a pieces `params`).
+
+        If param search is None, any defined parameter distributions
+        will be ignored, though any static parameters specified via
+        `params` will still be set.
+
+        Note: The input wrapper :class:`Select`,
+        is acts a hyper-parameter distribution
+        and therefore requires a search to be passed here.
+
+        ::
+
+            default = None
+
+    cache_loc : Path str or None, optional
+        Optional parameter specifying a directory
+        in which full BPt pipeline's should
+        be cached after fitting. This may be useful
+        in some contexts. If desired,
+        pass the location of the directory in
+        which to store this cache.
+
+        ::
+
+            default = None
+
+    verbose : int, optional
+        If greater than 0, print statements about
+        the current progress of the pipeline during fitting.
+
+        ::
+
+            default = 0
+
+
+
     '''
     def __init__(self, steps, param_search=None, cache_loc=None, verbose=0):
         self.steps = steps
@@ -1517,6 +1647,9 @@ class Pipeline(Params):
         self._proc_checks()
 
     def _proc_checks(self):
+
+        # Check for any custom passed steps
+        self._check_for_custom()
 
         # Check last step
         self._check_last_step()
@@ -1531,6 +1664,14 @@ class Pipeline(Params):
         # Proc input
         self.steps = self._proc_input(self.steps)
 
+    def _check_for_custom(self):
+
+        for i, step in enumerate(self.steps):
+
+            # If is custom estimator, wrap in Custom
+            if check_if_sklearn_step(step):
+                self.steps[i] = Custom(step)
+
     def _check_last_step(self):
 
         if not isinstance(self.steps, list):
@@ -1543,8 +1684,8 @@ class Pipeline(Params):
         if isinstance(self.steps[-1], str):
             self.steps[-1] = Model(self.steps[-1])
 
-        # If last step isn't model, raise error
-        if not isinstance(self.steps[-1], Model):
+        # If last step isn't model - or custom, raise error
+        if not isinstance(self.steps[-1], (Model, Custom)):
             raise RuntimeError('The last step must be a Model.')
 
     def _validate_input(self):
@@ -1819,25 +1960,21 @@ class ModelPipeline(Pipeline):
 
             default =  'default'
 
-    param_search : :class:`ParamSearch` or None, optional
+     param_search : :class:`ParamSearch` or None, optional
         A :class:`ParamSearch` can be provided specifying that
         a nested hyper-parameter search be constructed across
-        all valid param distributions set across all pieces.
+        all valid param distributions (as set within each piece).
 
-        To use a parameter search requires at least one piece
-        to have a distribution of parameters.
-        You can set specific piece to a distribution of
-        parameters with the parameter `params`.
+        If a parameter search is passed, it is required
+        that atleast one piece have a relevant hyper-parameter
+        distribution (i.e., as set in a pieces `params`).
 
-        If param search is None, any defined distributions
+        If param search is None, any defined parameter distributions
         will be ignored, though any static parameters specified via
-        `params` will still be used. If :class:`ParamSearch`
-        then they will instead be used along with the
-        strategy defined in the passed
-        :class:`ParamSearch` to conduct a nested hyper-param search.
+        `params` will still be set.
 
-        Note: The input wrapper type :class:`Select`,
-        is fundamentally a hyper-parameter distribution
+        Note: The input wrapper :class:`Select`,
+        is acts a hyper-parameter distribution
         and therefore requires a search to be passed here.
 
         ::

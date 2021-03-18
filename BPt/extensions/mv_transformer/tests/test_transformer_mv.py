@@ -174,6 +174,7 @@ def test_basic_pipeline_integration():
 
     assert len(est.steps) == 3
     assert isinstance(est.steps[1][1], BPtTransformerMV)
+    assert isinstance(est.steps[1][1].estimator, CCA)
 
     # Get data
     X, y = data.get_Xy()
@@ -215,6 +216,7 @@ def test_pipeline_with_search_integration():
     est = search_est.estimator
     assert len(est.steps) == 3
     assert isinstance(est.steps[1][1], BPtTransformerMV)
+    assert isinstance(est.steps[1][1].estimator, CCA)
 
     # Get data
     X, y = data.get_Xy()

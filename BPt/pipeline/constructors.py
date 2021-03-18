@@ -16,6 +16,7 @@ from .Selector import selector_wrapper
 from sklearn.compose import TransformedTargetRegressor
 from .BPtSearchCV import wrap_param_search
 from .ensemble_wrappers import EnsembleWrapper
+from collections import defaultdict
 
 import numpy as np
 
@@ -909,3 +910,42 @@ class EnsembleConstructor(TypeConstructor):
 
         return VotingClassifier(models, voting='soft',
                                 n_jobs=self.spec['n_jobs'])
+
+
+class CustomConstructor():
+
+    name = 'custom'
+
+    def __init__(self, *args, **kwargs):
+        '''Compat.'''
+        pass
+
+    def process(self, params):
+        '''params is passed as a list with all the custom objects.
+        No returned param dists either.'''
+
+        # Extract steps
+        objs = [param._get_step() for param in params]
+        names = [name for name, _ in objs]
+        estimators = [est for _, est in objs]
+
+        # Get counts for each name
+        namecount = defaultdict(int)
+        for name in names:
+            namecount[name] += 1
+
+        # Remove any with unique names
+        for k, v in list(namecount.items()):
+            if v == 1:
+                del namecount[k]
+
+        # Proc new names
+        for i in reversed(range(len(estimators))):
+            name = names[i]
+            if name in namecount:
+                names[i] += "-%d" % namecount[name]
+                namecount[name] -= 1
+
+        objs = list(zip(names, estimators))
+
+        return objs, {}

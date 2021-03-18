@@ -3,7 +3,7 @@ from ...pipeline.BPtSearchCV import NevergradSearchCV
 from ...pipeline.ScopeObjs import ScopeTransformer
 from ...pipeline.BPtModel import BPtModel
 from ..input import (Model, ModelPipeline, Pipeline, CV, Scaler,
-                     ProblemSpec, ParamSearch, Imputer)
+                     ProblemSpec, ParamSearch, Imputer, Transformer)
 from ..funcs import (pipeline_check, problem_spec_check, get_estimator,
                      _preproc_pipeline, _preproc_param_search)
 from ..CV import BPtCV
@@ -637,3 +637,40 @@ def test_get_estimator_compare_merge():
     assert isinstance(p2, BPtPipeline)
     assert isinstance(p2.steps[-1][1].estimator, Ridge)
     assert p2.steps[-1][1].estimator.random_state == 1
+
+
+def test_get_estimator_pipeline_with_custom_steps_base():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    trans = Transformer('one hot encoder', scope='all')
+    model = Ridge()
+
+    pipe = Pipeline(steps=[trans, model])
+    est = get_estimator(pipeline=pipe, dataset=data, problem_spec=ps)
+
+    assert isinstance(est, BPtPipeline)
+    assert isinstance(est.steps[1][1], Ridge)
+
+
+def test_get_estimator_pipeline_with_custom_steps_naming():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    scalers = [RobustScaler(), RobustScaler(), ('rs', RobustScaler())]
+    model = Ridge()
+
+    pipe = Pipeline(steps=scalers + [model])
+    est = get_estimator(pipeline=pipe, dataset=data, problem_spec=ps)
+
+    assert isinstance(est, BPtPipeline)
+    assert isinstance(est.steps[-1][1], Ridge)
+
+    r1 = est.steps[0][0]
+    r2 = est.steps[1][0]
+    r3 = est.steps[2][0]
+    assert r1 != r2
+    assert r1 != r3
+    assert r2 != r3

@@ -1,4 +1,5 @@
 from .BPtPipeline import BPtPipeline
+from ..main.input import Custom
 from ..util import is_array_like
 from .BPtSearchCV import get_search_cv
 
@@ -34,6 +35,10 @@ def _check_for_user_passed(objs, cnt, up):
             # base obj
             if hasattr(objs, 'obj'):
                 objs.obj, cnt = _check_for_user_passed(objs.obj, cnt, up)
+
+            # Skip custom
+            elif isinstance(objs, Custom):
+                pass
 
             # Now, we assume any single obj that gets here, if not
             # a str is user passed custom obj

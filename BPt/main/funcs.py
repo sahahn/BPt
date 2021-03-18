@@ -666,7 +666,11 @@ def _eval_prep(estimator, ps, dataset,
     # Cast explicitly to sklearn style cv from either user
     # passed input or inds
     is_classifier = ps.problem_type != 'regression'
-    sk_cv = check_cv(cv=sk_cv, y=y, classifier=is_classifier)
+
+    # Pass y along only if no NaN's in y.
+    sk_cv = check_cv(cv=sk_cv, y=None if pd.isnull(y).any() else y,
+                     classifier=is_classifier)
+
     setattr(sk_cv, 'n_repeats', n_repeats)
 
     return estimator, X, y, ps, sk_cv

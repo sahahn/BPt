@@ -9,9 +9,9 @@ LOADERS = {
 # If nilearn dependencies
 try:
     from nilearn.input_data import NiftiLabelsMasker
-    from ...extensions.loaders import Connectivity
+    from ...extensions.loaders import SingleConnectivityMeasure
     LOADERS['volume rois'] = (NiftiLabelsMasker, ['default'])
-    LOADERS['connectivity'] = (Connectivity, ['default'])
+    LOADERS['connectivity'] = (SingleConnectivityMeasure, ['default'])
 
 except ImportError:
     pass

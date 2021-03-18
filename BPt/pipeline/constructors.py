@@ -189,6 +189,31 @@ class Constructor():
     def _process(self, params):
         return [], {}
 
+    def _get_obj_param(self, get_func, param):
+
+        # Unpack
+        name, param_str = param.obj, param.params
+        extra_params = param.extra_params
+
+        # Custom case
+        if 'Custom ' in name:
+            return self._get_user_passed_obj_params(name, param_str,
+                                                    extra_params)
+
+        # Get original number of feat keys
+        # just used for special feature selector case right now.
+        num_feat_keys = 0
+        if hasattr(param, 'scope'):
+            num_feat_keys = len(self.get_inds(param.scope))
+
+        # Get obj from func, where any un-needed params
+        # are just not used.
+        obj = get_func(name, extra_params, param_str,
+                       random_state=self.spec['random_state'],
+                       num_feat_keys=num_feat_keys)
+
+        return (name, obj)
+
     def _get_objs_and_params(self, get_func, params):
         '''Helper function to grab scaler / feat_selectors and
         their relevant parameter grids'''
@@ -196,27 +221,7 @@ class Constructor():
         # Make the object + params based on passed settings
         objs_and_params = []
         for param in params:
-
-            name, param_str = param.obj, param.params
-            extra_params = param.extra_params
-
-            if 'Custom ' in name:
-                objs_and_params.append(
-                    self._get_user_passed_obj_params(name, param_str,
-                                                     extra_params))
-
-            else:
-
-                # Set the original number of feat keys based on the
-                # original scope
-                num_feat_keys = len(self.get_inds(param.scope))
-
-                objs_and_params.append(
-                    (name, get_func(name, extra_params,
-                                    param_str,
-                                    random_state=self.spec['random_state'],
-                                    num_feat_keys=num_feat_keys)
-                     ))
+            objs_and_params.append(self._get_obj_param(get_func, param))
 
         # Perform extra proc, to split into objs and merged param dict
         objs, params = self._proc_objs_and_params(objs_and_params)

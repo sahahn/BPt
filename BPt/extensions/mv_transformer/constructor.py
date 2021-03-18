@@ -3,12 +3,12 @@ from ...pipeline.constructors import Constructor
 
 class MVTransformerConstructor(Constructor):
 
-    name = 'mv_transformers'
+    name = 'transformers_mv'
 
     def _process(self, params):
 
         from .options import get_mv_transformer_and_params
-        from .MVTransformer import MVTransformer
+        from .transformer import BPtTransformerMV
 
         # Then call get objs and params
         objs, obj_params =\
@@ -16,4 +16,4 @@ class MVTransformerConstructor(Constructor):
                                       params)
 
         return self._make_col_version(objs, obj_params,
-                                      params, Wrapper=MVTransformer)
+                                      params, Wrapper=BPtTransformerMV)

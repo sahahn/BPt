@@ -1,11 +1,10 @@
-from ...pipeline.helpers import get_obj_and_params
+from ...default.helpers import get_obj_and_params
 
 
 MV_TRANSFORMERS = {}
 
 try:
     from mvlearn.embed import CCA
-
     MV_TRANSFORMERS['cca'] = (CCA, ['base mv'])
 
 

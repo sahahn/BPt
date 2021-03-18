@@ -1475,6 +1475,10 @@ class ParamSearch(Params):
             raise IOError(
                 'weight_scorer within Param Search cannot be list-like')
 
+# @TODO Add compatibility for custom objects in the Pipeline
+# as passed via scikit-learn pipeline style. Allowing for mixing
+# BPt objects and native sklearn.
+
 
 class Pipeline(Params):
     '''This class is used to create flexible BPt style pipeline's.

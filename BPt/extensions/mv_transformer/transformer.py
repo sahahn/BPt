@@ -10,7 +10,7 @@ def _fit_estimator(estimator, Xs, y=None, **fit_params):
     return estimator
 
 
-class MVTransformer(BPtTransformer):
+class BPtTransformerMV(BPtTransformer):
 
     def _proc_mapping(self, mapping):
         '''self.inds_ will be the same for compat. but view_inds_
@@ -48,19 +48,7 @@ class MVTransformer(BPtTransformer):
                              Xs=[X[:, inds] for inds in self.view_inds_],
                              y=y, **fit_params)
 
-    def transform(self, X, transform_index=None):
-        '''For now, no need to pass along transform_index, just keep
-        for compat.'''
+    def _transform(self, X, **trans_params):
 
-        # If None, pass along as is
-        if self.estimator_ is None:
-            return X
-
-        X_trans = self.estimator_.transform(
-            Xs=[X[:, inds] for inds in self.view_inds_])
-
-        # Save number of output features after X_trans
-        self.n_trans_feats_ = X_trans.shape[1]
-
-        # Return stacked X_trans with rest inds
-        return np.hstack([X_trans, X[:, self.rest_inds_]])
+        return self.estimator_.transform(
+            Xs=[X[:, inds] for inds in self.view_inds_], **trans_params)

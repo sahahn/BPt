@@ -87,7 +87,7 @@ def get_special_selector(feat_selector, feat_selector_params, random_state,
 
 def get_feat_selector_and_params(feat_selector_str, extra_params, params,
                                  random_state, num_feat_keys):
-    '''Returns a scaler based on proced str indicator input,
+    '''Returns a scaler based on proc'ed str indicator input,
 
     Parameters
     ----------

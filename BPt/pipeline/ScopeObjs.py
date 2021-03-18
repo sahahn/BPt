@@ -216,14 +216,19 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         trans_params = _get_est_trans_params(self.estimator_,
                                              transform_index=transform_index)
 
-        # Get X_trans - if self.inds_ is Ellipsis, just selects all
-        X_trans = self.estimator_.transform(X=X[:, self.inds_], **trans_params)
+        # Get X_trans
+        X_trans = self._transform(X, **trans_params)
 
         # Save number of output features after X_trans
         self.n_trans_feats_ = X_trans.shape[1]
 
         # Return stacked X_trans with rest inds
         return np.hstack([X_trans, X[:, self.rest_inds_]])
+
+    def _transform(self, X, **trans_params):
+
+        # if self.inds_ is Ellipsis, just selects all
+        return self.estimator_.transform(X=X[:, self.inds_], **trans_params)
 
     def fit_transform(self, X, y=None, mapping=None,
                       fit_index=None, transform_index=None,

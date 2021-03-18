@@ -20,7 +20,8 @@ from .residualizer import LinearResidualizer
 
 __all__ = ['RFEWrapper',
            'FeatureSelector',
-           'Identity', 'SurfLabels', 'SingleConnectivityMeasure', 'MLPRegressor_Wrapper',
+           'Identity', 'SurfLabels', 'SingleConnectivityMeasure',
+           'MLPRegressor_Wrapper',
            'MLPClassifier_Wrapper', 'LinearResidualizer',
            'RandomParcellation', 'Winsorizer',
            'ThresholdNetworkMeasures', 'SurfMaps']

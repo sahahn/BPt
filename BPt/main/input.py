@@ -756,7 +756,7 @@ class Transformer(Piece):
 
         ::
 
-            default = 'float'
+            default = 'data'
 
     cache_loc : str, Path or None, optional
         An optional path in which this Piece should be
@@ -775,7 +775,7 @@ class Transformer(Piece):
 
     _constructor = TransformerConstructor
 
-    def __init__(self, obj, params=0, scope='float', cache_loc=None,
+    def __init__(self, obj, params=0, scope='data', cache_loc=None,
                  **extra_params):
 
         self.obj = obj

@@ -283,7 +283,7 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         # Load labels
         self.labels_ = load_surf(self.labels)
 
-        if len(self.labels.shape) > 1:
+        if len(self.labels_.shape) > 1:
             raise RuntimeError('The passed labels array must be flat, ' +
                                ' i.e., a single dimension')
 

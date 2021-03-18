@@ -1,7 +1,6 @@
 from ...pipeline.helpers import proc_mapping
 from ...pipeline.BPtTransformer import BPtTransformer
 from sklearn.utils.validation import check_memory
-import numpy as np
 
 
 def _fit_estimator(estimator, Xs, y=None, **fit_params):

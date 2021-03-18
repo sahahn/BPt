@@ -18,6 +18,7 @@ from .random_parcellation import RandomParcellation
 from .Scalers import Winsorizer
 from .residualizer import LinearResidualizer
 
+
 __all__ = ['RFEWrapper',
            'FeatureSelector',
            'Identity', 'SurfLabels', 'SingleConnectivityMeasure',

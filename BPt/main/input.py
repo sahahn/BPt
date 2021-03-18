@@ -122,12 +122,6 @@ class Check():
         if hasattr(self, 'obj') and hasattr(self, 'params'):
             self._check_obj_and_params()
 
-        if hasattr(self, 'scope'):
-            self._check_scope()
-
-        if hasattr(self, 'extra_params'):
-            self._check_extra_params()
-
         if hasattr(self, 'base_model'):
             self._check_base_model()
 
@@ -187,24 +181,6 @@ class Check():
                                   'params is either a list or Pipe with the ',
                                   'same length as',
                                   'self.obj')
-
-    def _check_scope(self):
-
-        pass
-        # Nothing to check as of right now
-        # scope = getattr(self, 'scope')
-
-    def _check_extra_params(self):
-
-        # Skip for now
-        return
-
-        extra_params = getattr(self, 'extra_params')
-        if extra_params is None:
-            return
-
-        elif not isinstance(extra_params, dict):
-            raise IOError('extra params must be a dict!')
 
     def _check_base_model(self):
 
@@ -1563,8 +1539,7 @@ class Pipeline(Params):
 
             Pipeline(steps=[Imputer('mean'),
                             Scaler('robust'),
-                            Model('elastic')
-                            ])
+                            Model('elastic')])
 
         Would create a pipeline with mean imputation, robust scaling
         and an elastic net, all using the BPt style custom objects.
@@ -1578,8 +1553,7 @@ class Pipeline(Params):
 
             Pipeline(steps=[Imputer('mean'),
                             Scaler('robust'),
-                            ('ridge regression', Ridge())
-                            ])
+                            ('ridge regression', Ridge())])
 
         You may also pass sklearn objects directly instead of as
         a tuple, i.e., in the :func:`sklearn.pipeline.make_pipeline`
@@ -1634,6 +1608,20 @@ class Pipeline(Params):
         ::
 
             default = 0
+
+    Notes
+    -------
+    This class differs from :class:`sklearn.pipeline.Pipeline`
+    most drastically in that
+    this class is not itself directly a complaint estimator
+    (i.e., an object with fit and predict methods).
+    Instead, this object represents a flexible set of input pieces,
+    that can all vary depending on the eventual :class:`Dataset`
+    and :class:`ProblemSpec` they are used in the context of.
+    This means that instances of this class can be easily
+    re-used across different data and setups, for example
+    with different underlying problem_types (running a binary and then
+    a regression version).
 
 
 

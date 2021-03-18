@@ -507,7 +507,7 @@ class Dataset(pd.DataFrame):
                 default = False
         '''
 
-        self.set_role(scope=scope, role='target', inplace=inplace)
+        return self.set_role(scope=scope, role='target', inplace=inplace)
 
     def set_non_input(self, scope, inplace=False):
         '''This method is used to set
@@ -532,7 +532,7 @@ class Dataset(pd.DataFrame):
                 default = False
         '''
 
-        self.set_role(scope=scope, role='non input', inplace=inplace)
+        return self.set_role(scope=scope, role='non input', inplace=inplace)
 
     def _set_role(self, col, role):
         '''Internal function for setting a single columns role.'''

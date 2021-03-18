@@ -199,11 +199,28 @@ def test_set_target_inplace():
     assert(set(df.get_cols('target')) == set(['1']))
 
 
+def test_set_target():
+
+    df = get_fake_dataset()
+    df = df.set_target('1')
+    assert(set(df.get_cols('target')) == set(['1']))
+
+
+def test_set_non_input():
+
+    df = get_fake_dataset()
+    df = df.set_non_input('2')
+    assert(set(df.get_cols('non input')) == set(['2']))
+
+
 def test_set_non_input_inplace():
 
     df = get_fake_dataset()
     df.set_non_input('2', inplace=True)
     assert(set(df.get_cols('non input')) == set(['2']))
+
+    df = df.set_non_input('2', inplace=True)
+    assert df is None
 
 
 def test_set_role_inplace():

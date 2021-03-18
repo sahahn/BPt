@@ -2,9 +2,9 @@ from .FeatSelectors import RFEWrapper, FeatureSelector
 from .loaders import Identity, SurfLabels, SurfMaps
 
 try:
-    from .loaders import Connectivity
+    from .loaders import SingleConnectivityMeasure
 except ImportError:
-    class Connectivity():
+    class SingleConnectivityMeasure():
         pass
 
 try:
@@ -20,7 +20,7 @@ from .residualizer import LinearResidualizer
 
 __all__ = ['RFEWrapper',
            'FeatureSelector',
-           'Identity', 'SurfLabels', 'Connectivity', 'MLPRegressor_Wrapper',
+           'Identity', 'SurfLabels', 'SingleConnectivityMeasure', 'MLPRegressor_Wrapper',
            'MLPClassifier_Wrapper', 'LinearResidualizer',
            'RandomParcellation', 'Winsorizer',
            'ThresholdNetworkMeasures', 'SurfMaps']

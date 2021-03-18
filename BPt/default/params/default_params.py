@@ -7,6 +7,8 @@ from .imputer_params import P as imputer_params
 from .scaler_params import P as scaler_params
 from .transformer_params import P as transformer_params
 
+# Extensions
+from ...extensions.mv_transformer.mv_transformer_params import P as mv_params
 
 PARAMS = {}
 PARAMS.update(model_params)
@@ -15,6 +17,7 @@ PARAMS.update(feat_selector_params)
 PARAMS.update(scaler_params)
 PARAMS.update(imputer_params)
 PARAMS.update(transformer_params)
+PARAMS.update(mv_params)
 
 
 def get_base_params(str_indicator):

@@ -1,10 +1,4 @@
 from ...pipeline.constructors import Constructor
-from .MVTransformer import MVTransformer
-
-
-def get_mv_transformer_and_params():
-
-    return None
 
 
 class MVTransformerConstructor(Constructor):
@@ -12,6 +6,9 @@ class MVTransformerConstructor(Constructor):
     name = 'mv_transformers'
 
     def _process(self, params):
+
+        from .options import get_mv_transformer_and_params
+        from .MVTransformer import MVTransformer
 
         # Then call get objs and params
         objs, obj_params =\

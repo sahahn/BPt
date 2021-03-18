@@ -7,6 +7,7 @@ from ..pipeline.helpers import proc_mapping
 # @TODO I think this is updated in a new version of scikit-learn, if so
 # remove and change dependency.
 
+
 class RFEWrapper(RFE):
     def fit(self, X, y):
         '''Override the fit function from base

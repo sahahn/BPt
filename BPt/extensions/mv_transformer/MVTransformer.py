@@ -13,6 +13,8 @@ def _fit_estimator(estimator, Xs, y=None, **fit_params):
 class MVTransformer(BPtTransformer):
 
     def _proc_mapping(self, mapping):
+        '''self.inds_ will be the same for compat. but view_inds_
+        will be used for fit.'''
 
         # Save a copy of the passed mapping
         self.mapping_ = mapping.copy()
@@ -29,6 +31,8 @@ class MVTransformer(BPtTransformer):
         return self
 
     def _fit(self, X, y=None, **fit_params):
+        '''Override this function from ScopeObjs parent class almost exactly
+        as is, but passing Xs instead of X.'''
 
         # Get correct fit function as either with memory
         # caching, or just as is, if no cache loc passed.
@@ -45,6 +49,8 @@ class MVTransformer(BPtTransformer):
                              y=y, **fit_params)
 
     def transform(self, X, transform_index=None):
+        '''For now, no need to pass along transform_index, just keep
+        for compat.'''
 
         # If None, pass along as is
         if self.estimator_ is None:

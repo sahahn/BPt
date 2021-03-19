@@ -353,25 +353,6 @@ def test_get_Xy_base():
                           np.array([14, 15]).astype('float32'))
     assert np.array_equal(y, np.array([.4, .5]).astype('float64'))
 
-    X, y = df.get_train_Xy(ps)
-    assert isinstance(X, pd.DataFrame)
-    assert isinstance(y, pd.Series)
-
-    X, y = np.array(X), np.array(y)
-    assert X.shape == (3, 3)
-    assert np.array_equal(X[:, 0], np.array([1, 2, 3]).astype('float32'))
-    assert np.array_equal(X[:, 2],
-                          np.array([11, 12, 13]).astype('float32'))
-    assert np.array_equal(y, np.array([.1, .2, .3]).astype('float64'))
-
-    X, y = df.get_test_Xy(ps)
-    X, y = np.array(X), np.array(y)
-    assert X.shape == (2, 3)
-    assert np.array_equal(X[:, 0], np.array([4, 5]).astype('float32'))
-    assert np.array_equal(X[:, 2],
-                          np.array([14, 15]).astype('float32'))
-    assert np.array_equal(y, np.array([.4, .5]).astype('float64'))
-
 
 def test_get_Xy_alt():
 
@@ -395,30 +376,6 @@ def test_get_Xy_alt():
     assert np.array_equal(X[:, 1],
                           np.array([12, 13]).astype('float32'))
     assert np.array_equal(y, np.array([.2, .3]).astype('float64'))
-
-
-def test_get_Xy_train_default_ps():
-
-    df = get_fake_dataset()
-    df.set_role('3', 'target', inplace=True)
-    df.set_test_split(subjects=[0], inplace=True)
-
-    X, y = df.get_train_Xy()
-
-    assert X.shape == (2, 2)
-    assert len(y) == 2
-
-
-def test_get_Xy_test_default_ps():
-
-    df = get_fake_dataset()
-    df.set_role('3', 'target', inplace=True)
-    df.set_test_split(subjects=[0], inplace=True)
-
-    X, y = df.get_test_Xy()
-
-    assert X.shape == (1, 2)
-    assert len(y) == 1
 
 
 def test_invalid_names():

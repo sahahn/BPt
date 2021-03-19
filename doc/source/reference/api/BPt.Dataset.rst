@@ -100,8 +100,6 @@ BPt.Dataset
       Dataset.get_roles
       Dataset.get_scopes
       Dataset.get_subjects
-      Dataset.get_test_Xy
-      Dataset.get_train_Xy
       Dataset.get_values
       Dataset.groupby
       Dataset.gt

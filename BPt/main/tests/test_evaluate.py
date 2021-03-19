@@ -481,11 +481,52 @@ def test_evaluate_step_compare():
     assert isinstance(evaluator, CompareDict)
 
 
+def test_evaluate_step_compare_mp():
+
+    dataset = get_fake_dataset()
+    pipe = ModelPipeline(model=Compare([Model('dt'), Model('linear')]))
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='regression')
+    assert isinstance(evaluator, CompareDict)
+
+
 def test_evaluate_step_compare2():
 
     dataset = get_fake_dataset()
     pipe = Pipeline(steps=[Compare([Scaler('standard'), Scaler('robust')]),
                            Model('dt')])
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='regression')
+    assert isinstance(evaluator, CompareDict)
+
+
+def test_evaluate_step_compare2_mp():
+
+    dataset = get_fake_dataset()
+    pipe = ModelPipeline(scalers=Compare([Scaler('standard'),
+                                          Scaler('robust')]),
+                         model=Model('dt'))
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='regression')
+    assert isinstance(evaluator, CompareDict)
+
+
+def test_evaluate_step_compare2_mp2():
+
+    dataset = get_fake_dataset()
+    pipe = ModelPipeline(scalers=[Scaler('standard'),
+                                  Compare([Scaler('standard'),
+                                           Scaler('robust')])],
+                         model=Model('dt'))
 
     evaluator = evaluate(pipeline=pipe,
                          dataset=dataset,
@@ -517,4 +558,3 @@ def test_evaluator_get_X_transform_df():
         assert '2' in X_val_trans
 
         assert len(X_tr_trans) + len(X_val_trans) == len(dataset)
-

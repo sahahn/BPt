@@ -47,7 +47,7 @@ class BPtTransformerMV(BPtTransformer):
                              Xs=[X[:, inds] for inds in self.view_inds_],
                              y=y, **fit_params)
 
-    def _transform(self, X, **trans_params):
+    def _est_transform(self, X, **trans_params):
 
         return self.estimator_.transform(
             Xs=[X[:, inds] for inds in self.view_inds_], **trans_params)

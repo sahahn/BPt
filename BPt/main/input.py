@@ -1552,6 +1552,49 @@ def check_if_sklearn_step(step):
     return True
 
 
+def add_nested_deep_params(params):
+    '''When passed shallow params, get
+    nested deep params w/ possibility for
+    list.'''
+
+    for param_key in list(params):
+        value = params[param_key]
+
+        # If parameter value is list
+        if isinstance(value, list):
+            for i, step in enumerate(value):
+
+                # Compare case
+                if isinstance(step, Compare):
+                    params[param_key + '__' + str(i)] = step
+                    continue
+
+                # Skip non objects
+                if not hasattr(step, 'get_params'):
+                    continue
+
+                # Get step params
+                step_params = step.get_params(deep=True)
+
+                # Add parameter
+                for key in step_params:
+                    new_key = param_key + '__' + str(i) + '__' + key
+                    params[new_key] = step_params[key]
+
+        # Otherwise, check for nested
+        else:
+
+            # Skip non objects
+            if not hasattr(value, 'get_params'):
+                continue
+
+            # Get value params if object
+            value_params = value.get_params(deep=True)
+
+            for key in value_params:
+                params[param_key + '__' + key] = value_params[key]
+
+
 class Pipeline(Params):
     '''This class is used to create flexible BPt style pipeline's.
 
@@ -1808,42 +1851,7 @@ class Pipeline(Params):
 
         # Then proc if deep
         if deep:
-            for param_key in list(params):
-                value = params[param_key]
-
-                # If parameter value is list
-                if isinstance(value, list):
-                    for i, step in enumerate(value):
-
-                        # Compare case
-                        if isinstance(step, Compare):
-                            params[param_key + '__' + str(i)] = step
-                            continue
-
-                        # Skip non objects
-                        if not hasattr(step, 'get_params'):
-                            continue
-
-                        # Get step params
-                        step_params = step.get_params(deep=True)
-
-                        # Add parameter
-                        for key in step_params:
-                            new_key = param_key + '__' + str(i) + '__' + key
-                            params[new_key] = step_params[key]
-
-                # Otherwise, check for nested
-                else:
-
-                    # Skip non objects
-                    if not hasattr(value, 'get_params'):
-                        continue
-
-                    # Get value params if object
-                    value_params = value.get_params(deep=True)
-
-                    for key in value_params:
-                        params[param_key + '__' + key] = value_params[key]
+            add_nested_deep_params(params)
 
         return params
 
@@ -1851,7 +1859,7 @@ class Pipeline(Params):
 
         for key in params:
             value = params[key]
-            
+
             # Get last key
             split_key = key.split('__')
             last_key = split_key[-1]

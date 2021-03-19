@@ -21,13 +21,15 @@ class ScopeObj(BPtBase):
     # Override
     _required_parameters = ["estimator", "inds"]
 
-    def __init__(self, estimator, inds, cache_loc=None):
+    def __init__(self, estimator, inds, passthrough=False, cache_loc=None):
 
         # Set estimator
         super().__init__(estimator=estimator)
 
         # These are the index to restrict scope to
         self.inds = inds
+
+        self.passthrough = passthrough
 
         # This is the optional cache_loc for memory
         self.cache_loc = cache_loc
@@ -200,6 +202,14 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
             ind = self.rest_inds_[c]
             self.out_mapping_[ind] = len(self.inds_) + c
 
+        # Passthrough case
+        if self.passthrough:
+
+            # Need to update out_mapping_ to reflect that
+            # each ind in self.inds_, now maps also to
+            # len()
+            pass
+
         # Update the original mapping, this is the mapping which
         # will be passed to the next piece of the pipeline
         update_mapping(mapping, self.out_mapping_)
@@ -217,15 +227,20 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
                                              transform_index=transform_index)
 
         # Get X_trans
-        X_trans = self._transform(X, **trans_params)
+        X_trans = self._est_transform(X, **trans_params)
 
         # Save number of output features after X_trans
         self.n_trans_feats_ = X_trans.shape[1]
 
+        # Passthrough case
+        if self.passthrough:
+            return np.hstack([X_trans, X[:, self.rest_inds_],
+                              X[:, self.inds_]])
+
         # Return stacked X_trans with rest inds
         return np.hstack([X_trans, X[:, self.rest_inds_]])
 
-    def _transform(self, X, **trans_params):
+    def _est_transform(self, X, **trans_params):
 
         # if self.inds_ is Ellipsis, just selects all
         return self.estimator_.transform(X=X[:, self.inds_], **trans_params)

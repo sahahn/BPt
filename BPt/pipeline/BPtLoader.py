@@ -320,7 +320,7 @@ class BPtLoader(ScopeTransformer):
         # Now need to do two things, it is assumed the output from loader
         # cannot be put in a standard X array, but also
         # in the case with multiple loaders, we still need to return
-        # An otherwise inversed X, we will just set values to 0 in this version
+        # An otherwise inverted X, we will just set values to 0 in this version
         reverse_rest_inds = proc_mapping(self.rest_inds_, self.out_mapping_)
 
         all_inds_len = len(self.inds_) + len(self.rest_inds_)

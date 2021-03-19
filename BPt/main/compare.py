@@ -91,7 +91,13 @@ class Option(BPtInputMixIn):
         # The name is either by default
         # the representation or a custom name.
         if name == 'repr':
-            self.name = clean_str(repr(value))
+
+            if hasattr(self.value, 'obj') and \
+             isinstance(getattr(self.value, 'obj'), str):
+                self.name = clean_str(getattr(self.value, 'obj'))
+            else:
+                self.name = clean_str(repr(value))
+
         else:
             self.name = clean_str(name)
 
@@ -168,6 +174,13 @@ class Compare(BPtInputMixIn):
             # Otherwise, add as is
             else:
                 self.options.append(option)
+
+    def _check_args(self):
+        '''If called here, then Compare is made
+        up of pipeline pieces.'''
+
+        for option in self.options:
+            option.value._check_args()
 
 
 class Options():

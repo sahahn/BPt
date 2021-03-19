@@ -1,3 +1,4 @@
+from .compare import Compare
 from copy import deepcopy
 from sklearn.base import BaseEstimator
 from ..default.helpers import proc_input
@@ -105,6 +106,40 @@ class Params(BaseEstimator):
     def copy(self):
         '''This method returns a deepcopy of the base object.'''
         return deepcopy(self)
+
+    def get_params(self, deep=True):
+
+        params = super().get_params(deep=deep)
+
+        if 'extra_params' in params and deep:
+            extra_params = params.pop('extra_params')
+            params.update(extra_params)
+
+        return params
+
+    def set_params(self, **params):
+
+        # If no extra params
+        if not hasattr(self, 'extra_params'):
+            return super().set_params(**params)
+
+        # Possible extra params case
+        # Get base, no extra param keys
+        base_keys = super().get_params().keys()
+
+        # Set any base params
+        base_params = {key: params[key] for key in params
+                       if key in base_keys}
+        super().set_params(**base_params)
+
+        # Calculate any extra params to set
+        extra_params = {key: params[key] for key in params
+                        if key not in base_keys}
+
+        # Update extra params
+        self.extra_params.update(extra_params)
+
+        return self
 
 
 class Check():
@@ -1495,6 +1530,8 @@ def check_if_sklearn_step(step):
     # Skip def. not valid cases
     if isinstance(step, Piece):
         return False
+    if isinstance(step, Compare):
+        return False
     elif isinstance(step, str):
         return False
 
@@ -1673,7 +1710,7 @@ class Pipeline(Params):
             self.steps[-1] = Model(self.steps[-1])
 
         # If last step isn't model - or custom, raise error
-        if not isinstance(self.steps[-1], (Model, Custom)):
+        if not isinstance(self.steps[-1], (Model, Custom, Compare)):
             raise RuntimeError('The last step must be a Model.')
 
     def _validate_input(self):
@@ -1683,9 +1720,10 @@ class Pipeline(Params):
         # Validate steps
         for step in self.steps:
 
-            if not isinstance(step, Piece):
+            if not isinstance(step, (Piece, Compare)):
                 raise RuntimeError('passed step:' + repr(step) +
-                                   ' is not a valid Pipeline Piece.')
+                                   ' is not a valid Pipeline Piece / '
+                                   'input wrapper')
 
             # Check input args in case anything changed
             step._check_args()
@@ -1765,12 +1803,22 @@ class Pipeline(Params):
 
     def get_params(self, deep=True):
 
-        params = super().get_params(deep=deep)
+        # Base behav get top level
+        params = super().get_params(deep=False)
 
+        # Then proc if deep
         if deep:
             for param_key in list(params):
-                if isinstance(params[param_key], list):
-                    for i, step in enumerate(params[param_key]):
+                value = params[param_key]
+
+                # If parameter value is list
+                if isinstance(value, list):
+                    for i, step in enumerate(value):
+
+                        # Compare case
+                        if isinstance(step, Compare):
+                            params[param_key + '__' + str(i)] = step
+                            continue
 
                         # Skip non objects
                         if not hasattr(step, 'get_params'):
@@ -1784,13 +1832,27 @@ class Pipeline(Params):
                             new_key = param_key + '__' + str(i) + '__' + key
                             params[new_key] = step_params[key]
 
+                # Otherwise, check for nested
+                else:
+
+                    # Skip non objects
+                    if not hasattr(value, 'get_params'):
+                        continue
+
+                    # Get value params if object
+                    value_params = value.get_params(deep=True)
+
+                    for key in value_params:
+                        params[param_key + '__' + key] = value_params[key]
+
         return params
 
     def set_params(self, **params):
 
         for key in params:
             value = params[key]
-
+            
+            # Get last key
             split_key = key.split('__')
             last_key = split_key[-1]
 
@@ -1806,8 +1868,20 @@ class Pipeline(Params):
                 except ValueError:
                     obj = getattr(obj, key_piece)
 
-            # Set value
-            setattr(obj, last_key, value)
+            # Set value via set params if avaliable / not self
+            if obj != self and hasattr(obj, 'set_params'):
+                obj.set_params(**{last_key: value})
+                return self
+
+            # Check if last key is int
+            try:
+                indx = int(last_key)
+                obj[indx] = value
+
+            except ValueError:
+                setattr(obj, last_key, value)
+
+            return self
 
 
 class ModelPipeline(Pipeline):

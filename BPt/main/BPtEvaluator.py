@@ -4,6 +4,7 @@ from tqdm import tqdm
 from tqdm.notebook import tqdm as tqdm_notebook
 from sklearn.base import clone
 import time
+import warnings
 from ..dataset.helpers import verbose_print
 from ..pipeline.helpers import get_mean_fis
 from sklearn.utils import Bunch
@@ -340,6 +341,19 @@ class BPtEvaluator():
         else:
             self.progress_bar = tqdm
 
+    def _eval(self, X, y, cv):
+
+        # If verbose is lower than -1,
+        # then don't show any warnings no matter the source.
+        if self.verbose < -1:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self._evaluate(X, y, cv)
+
+        # Otherwise, base behavior
+        else:
+            self._evaluate(X, y, cv)
+
     def _evaluate(self, X, y, cv):
         '''cv is passed as raw index, X and y as dataframes.'''
 
@@ -351,6 +365,12 @@ class BPtEvaluator():
                         'target values will be skipped during training and '
                         'scoring. Predictions will still be made for any',
                         'in validation folds (if store_preds=True).')
+
+        # Verbose info.
+        self._print('Predicting target =', str(self.ps.target), level=1)
+        self._print('Using scope =', str(self.ps.scope), 'defining a total of',
+                    str(X.shape)[1], 'features.', level=1)
+        self._print(f'Evaluating {len(X)} total data points.', level=1)
 
         # Init scores as dictionary of lists
         self.scores = {scorer_str: [] for scorer_str in self.ps.scorer}
@@ -452,22 +472,26 @@ class BPtEvaluator():
         # Check for if any missing targets in the training set
         # If so, skip those subjects
         X_tr, y_tr = get_non_nan_Xy(X_tr, y_tr)
+        self._print('Train shape =', X_tr.shape,
+                    '(number of data points x number of feature)',
+                    level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()
 
         estimator_.fit(X=X_tr, y=np.array(y_tr))
-        fit = time.time() - start_time
+        fit_time = time.time() - start_time
+        self._print(f'Fit fold in {fit_time:.3f} seconds.', level=1)
 
         # Score estimator
         start_time = time.time()
         self._score_estimator(estimator_, X_val, y_val)
-        score = time.time() - start_time
+        score_time = time.time() - start_time
 
         # Store timing if requested
         if self.timing is not None:
-            self.timing['fit'].append(fit)
-            self.timing['score'].append(score)
+            self.timing['fit'].append(fit_time)
+            self.timing['score'].append(score_time)
 
         # Save preds
         self._save_preds(estimator_, X_val, y_val)
@@ -492,6 +516,7 @@ class BPtEvaluator():
                                                X_val,
                                                np.array(y_val))
             self.scores[scorer_str].append(score)
+            self._print(scorer_str + ':', str(score), level=1)
 
     def _save_preds(self, estimator, X_val, y_val):
 
@@ -565,6 +590,7 @@ class BPtEvaluator():
 
         # @TODO
         # Have to handle the different cases for different classes
+        raise RuntimeError('Not yet implemented.')
         pass
 
     def __repr__(self):
@@ -606,7 +632,6 @@ class BPtEvaluator():
 
         rep += 'Saved Attributes: ' + repr(saved_attrs) + '\n\n'
         rep += 'Avaliable Methods: ' + repr(avaliable_methods) + '\n\n'
-
         rep += 'Evaluated with:\n' + repr(self.ps) + '\n'
 
         return rep
@@ -977,7 +1002,7 @@ class BPtEvaluator():
                      importances_std=fis_to_df(std_series))
 
     def get_X_transform_df(self, dataset, fold=0, subjects='tr'):
-        ''' This method is used as a helper for getting the transformed
+        '''This method is used as a helper for getting the transformed
         input data for one of the saved models run during evaluate.
 
         Parameters

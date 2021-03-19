@@ -19,9 +19,21 @@ def test_pipeline_check_duplicate():
 def test_pipeline_proc_input():
 
     pipe = Pipeline(steps=[Model('SOmeThing_reGressor')])
-    print(pipe)
-
     assert pipe.steps[0].obj == 'something'
+
+
+def test_get_piece_params():
+
+    t = Transformer('fake', extra='something')
+    params = t.get_params()
+    assert params['extra'] == 'something'
+
+    t.set_params(extra=5)
+    params2 = t.get_params()
+    assert params2['extra'] == 5
+
+    with assert_raises(AttributeError):
+        t.extra
 
 
 def test_modelpipeline_check_duplicate():

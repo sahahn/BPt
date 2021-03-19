@@ -31,6 +31,46 @@ def test_scope_transformer_2():
     assert st.rest_inds_ == [1, 2]
 
 
+def test_scope_transformer_passthrough():
+
+    to_ones = ToFixedTransformer(to=1)
+    st = ScopeTransformer(estimator=to_ones,
+                          inds=[0, 1, 2, 3, 4],
+                          passthrough=True,
+                          cache_loc=None)
+    X = np.zeros((10, 5))
+    X_trans = st.fit_transform(X)
+    assert np.all(X_trans[:, :5] == 1)
+    assert np.all(X_trans[:, 5:] == 0)
+
+    assert len(st.inds) == 5
+    assert len(st.mapping_) == 0
+
+
+def test_scope_transformer_passthrough_mapping():
+
+    to_ones = ToFixedTransformer(to=1)
+    st = ScopeTransformer(estimator=to_ones,
+                          inds=[0, 1, 2, 3, 4],
+                          passthrough=True,
+                          cache_loc=None)
+
+    mapping = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    X = np.zeros((10, 5))
+    X_trans = st.fit_transform(X, mapping=mapping)
+    assert np.all(X_trans[:, :5] == 1)
+    assert np.all(X_trans[:, 5:] == 0)
+    assert len(st.inds) == 5
+
+    assert len(mapping) == 5
+    assert 0 in mapping[0]
+    assert 5 in mapping[0]
+    assert 4 in mapping[4]
+    assert 9 in mapping[4]
+
+    assert st.out_mapping_ == mapping
+
+
 def test_scope_transformer_pass_val_index():
 
     class Trans(ToFixedTransformer):

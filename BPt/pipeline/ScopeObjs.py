@@ -207,8 +207,18 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
 
             # Need to update out_mapping_ to reflect that
             # each ind in self.inds_, now maps also to
-            # len()
-            pass
+            # len(self.inds_) + len(self.rest_inds_)
+            t = len(self.inds_) + len(self.rest_inds_)
+            for i in range(len(self.inds_)):
+
+                extra = i + t
+                loc = self.inds_[i]
+                current = self.out_mapping_[loc]
+
+                if not isinstance(current, list):
+                    current = [current]
+
+                self.out_mapping_[loc] = current + [extra]
 
         # Update the original mapping, this is the mapping which
         # will be passed to the next piece of the pipeline

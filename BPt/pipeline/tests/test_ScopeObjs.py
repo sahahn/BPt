@@ -71,6 +71,63 @@ def test_scope_transformer_passthrough_mapping():
     assert st.out_mapping_ == mapping
 
 
+def test_scope_transformer_passthrough_mapping2():
+
+    to_ones = ToFixedTransformer(to=1)
+    st = ScopeTransformer(estimator=to_ones,
+                          inds=[0, 1, 2, 3, 4],
+                          passthrough=True,
+                          cache_loc=None)
+
+    mapping = {0: 4, 1: 1, 2: 2, 3: 3, 4: 0}
+    X = np.zeros((10, 5))
+    X_trans = st.fit_transform(X, mapping=mapping)
+    assert np.all(X_trans[:, :5] == 1)
+    assert np.all(X_trans[:, 5:] == 0)
+    assert len(st.inds) == 5
+
+    assert len(mapping) == 5
+    assert 0 in mapping[4]
+    assert 5 in mapping[4]
+    assert 4 in mapping[0]
+    assert 9 in mapping[0]
+
+
+def test_scope_transformer_passthrough_mapping3():
+
+    to_ones = ToFixedTransformer(to=1)
+    st = ScopeTransformer(estimator=to_ones,
+                          inds=[0],
+                          passthrough=True,
+                          cache_loc=None)
+
+    mapping = {0: [0, 1, 2], 1: [0, 1, 2], 2: [0, 1, 2],
+               3: 3, 4: 4}
+    X = np.zeros((10, 5))
+    X[:, 3] = 3
+    X[:, 4] = 4
+
+    X_trans = st.fit_transform(X, mapping=mapping)
+    assert np.all(X_trans[:, :3] == 1)
+    assert np.all(X_trans[:, 5:] == 0)
+    assert np.all(X_trans[:, 3] == 3)
+    assert np.all(X_trans[:, 4] == 4)
+    assert len(st.inds) == 1
+    assert len(st.inds_) == 3
+
+    assert len(mapping[0]) == 6
+    assert len(mapping[1]) == 6
+    assert len(mapping[2]) == 6
+
+    assert mapping[3] == 3
+    assert mapping[4] == 4
+
+    assert 0 in st.out_mapping_[0]
+    assert 5 in st.out_mapping_[0]
+    assert 2 in st.out_mapping_[2]
+    assert 7 in st.out_mapping_[2]
+
+
 def test_scope_transformer_pass_val_index():
 
     class Trans(ToFixedTransformer):

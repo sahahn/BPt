@@ -1159,23 +1159,23 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
         X_t = X.copy()
         if self.threshold_type == 'abs':
             X_t = np.abs(X_t)
-        elif self.threshold_type == 'neg':
-            X_t = X_t * -1
 
         # If Value
         if self.threshold_method == 'value':
+            if self.threshold_type == 'neg':
+                return np.where(X_t <= self.threshold, 1, 0)
             return np.where(X_t >= self.threshold, 1, 0)
 
         elif self.threshold_method == 'density':
 
             top_n = round(len(X_t) * self.threshold) - 1
-            print(top_n)
 
             # If less than 0, set to 0
             if top_n < 0:
                 top_n = 0
 
-            thresh = sorted(np.triu(X_t).flatten(), reverse=True)[top_n]
+            reverse = False if self.threshold_type == 'neg' else True
+            thresh = sorted(np.triu(X_t).flatten(), reverse=reverse)[top_n]
             return np.where(X_t >= thresh, 1, 0)
 
         raise RuntimeError(str(self.threshold_method) + ' not a valid.')

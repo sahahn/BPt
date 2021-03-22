@@ -3,7 +3,6 @@ import numpy as np
 from ..helpers.DataFile import load_data_file_proxy
 from copy import copy, deepcopy
 from .helpers import (verbose_print)
-from ..main.input_operations import Intersection
 from pandas.util._decorators import doc
 
 
@@ -1392,9 +1391,10 @@ class Dataset(pd.DataFrame):
                               _get_next_ind)
 
     from ._plotting import (plot,
-                            show,
-                            show_nan_info,
-                            info,
+                            nan_info,
+                            _cont_info,
+                            _cat_info,
+                            summary,
                             plot_bivar,
                             _plot_cat_cat,
                             _plot_cat_float,
@@ -1443,5 +1443,3 @@ class Dataset(pd.DataFrame):
                              drop_cols,
                              drop_cols_by_unique_val,
                              drop_cols_by_nan)
-
-

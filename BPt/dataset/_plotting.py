@@ -3,22 +3,340 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 from pandas.util._decorators import doc
-from .Dataset import _file_docs
+import os
+from .Dataset import _file_docs, _shared_docs
+
+_plot_docs = _file_docs.copy()
+_plot_docs['scope'] = _shared_docs['scope']
+_plot_docs['subjects'] = _shared_docs['subjects']
 
 
-def show(self, scope):
+_plot_docs['decode_values'] = '''decode_values : bool, optional
+        When handling categorical variables
+        that have been encoded through a BPt
+        dataset method, e.g., :func:`Dataset.ordinalize`,
+        then you may optionally either use either
+        the original categorical values before encoding
+        with decode_values = True, or use the current
+        internal values with decode_values = False.
+
+        ::
+
+            default = True
+'''
+
+
+def nan_info(self, scope):
     pass
 
 
-def show_nan_info(self, scope):
-    pass
+def _save_docx(df, filename, decimals=3):
+
+    import docx
+
+    # Reset index
+    df.index.name = 'columns'
+    df = df.reset_index()
+
+    if os.path.exists(filename):
+        doc = docx.Document(filename)
+    else:
+        doc = docx.Document()
+
+    t = doc.add_table(df.shape[0]+1, df.shape[1])
+
+    # For each column
+    for j in range(df.shape[-1]):
+
+        # Add header
+        t.cell(0, j).text = df.columns[j]
+
+        # Check if column is type is float
+        col = list(df)[j]
+        is_float = 'float' in df[col].dtype.name.lower()
+
+        for i in range(df.shape[0]):
+
+            # Get value
+            value = df.values[i, j]
+
+            # Round if float
+            if is_float:
+                value = np.round(value, decimals=decimals)
+
+            # Set value
+            t.cell(i+1, j).text = str(value)
+
+    doc.save(filename)
 
 
-def info(self, scope):
-    pass
+def _cont_info(self, cont_cols, subjs, measures, **extra_args):
+
+    # Init info df
+    info_df = pd.DataFrame(index=pd.Series(cont_cols))
+
+    # For each float column in scope
+    for col in cont_cols:
+
+        # Get the values as a series
+        values, info =\
+            self._get_plot_values(col, subjs,
+                                  print_info=False,
+                                  **extra_args)
+
+        # Compute each measure
+        for measure in measures:
+
+            if measure == 'mean':
+                info_df.loc[col, measure] = values.mean()
+
+            elif measure == 'max':
+                info_df.loc[col, measure] = values.max()
+
+            elif measure == 'min':
+                info_df.loc[col, measure] = values.min()
+
+            elif measure == 'skew':
+                info_df.loc[col, measure] = values.skew()
+
+            elif measure == 'kurtosis':
+                info_df.loc[col, measure] = values.kurtosis()
+
+            elif measure == 'count':
+                info_df.loc[col, measure] = info['n']
+                info_df[measure] = info_df[measure].astype(pd.Int64Dtype())
+
+            elif measure == 'nan count':
+                info_df.loc[col, measure] = int(info['n_nan'])
+                info_df[measure] = info_df[measure].astype(pd.Int64Dtype())
+
+            else:
+                pass
+
+    return info_df
 
 
-@doc(**_file_docs)
+def _cat_info(self, cat_cols, subjs, cat_measures, **extra_args):
+
+    # Init info df
+    info_df = pd.DataFrame()
+
+    # For each column
+    for col in cat_cols:
+
+        # Get the values as a series
+        values, info =\
+            self._get_plot_values(col, subjs,
+                                  print_info=False,
+                                  **extra_args)
+
+        # Compute the unique categories + their counts
+        cats, counts = np.unique(values, return_counts=True)
+
+        # Add each requested measure
+        for measure in cat_measures:
+
+            # @TODO add skip if too many categories.
+
+            # Add first the whole column summary
+            if measure == 'count':
+                info_df.loc[col, measure] = info['n']
+                info_df[measure] = info_df[measure].astype(pd.Int64Dtype())
+
+            elif measure == 'freq':
+                info_df.loc[col, measure] = 1
+
+            elif measure == 'nan count':
+                info_df.loc[col, measure] = int(info['n_nan'])
+                info_df[measure] = info_df[measure].astype(pd.Int64Dtype())
+
+            else:
+                pass
+
+            # Now for each unique cat
+            for cat, cnt in zip(cats, counts):
+                name = col + '=' + repr(cat)
+
+                if measure == 'count':
+                    info_df.loc[name, measure] = cnt
+
+                elif measure == 'freq':
+                    info_df.loc[name, measure] = cnt / info['n']
+
+                elif measure == 'nan count':
+                    info_df.loc[name, measure] = 0
+
+                else:
+                    pass
+
+    return info_df
+
+
+@doc(**_plot_docs)
+def summary(self, scope,
+            subjects='all',
+            measures=['count', 'nan count',
+                      'mean', 'max',
+                      'min', 'skew', 'kurtosis'],
+            cat_measures=['count', 'freq', 'nan count'],
+            decode_values=True,
+            save_file=None,
+            save_decimals=3,
+            reduce_func=np.mean,
+            n_jobs=-1):
+    '''This method is used to generate a summary across
+    some data.
+
+    Parameters
+    ------------
+    {scope}
+
+    {subjects}
+
+    measures : list of str, optional
+        The summary measures which should
+        be computed for any float /  continuous type
+        columns within the passed scope.
+
+        Valid options are:
+
+        - 'count'
+            Calculates the number of non-missing data points
+            for each column.
+
+        - 'nan count'
+            Calculates the number of missing data points in
+            this column, which are excluded from other statistics.
+
+        - 'mean'
+            Calculates the mean value for each column.
+
+        - 'max'
+            Calculates the maximum value for each column.
+
+        - 'min'
+            Calculates the minimum value for each column.
+
+        - 'skew'
+            Calculates the skew for each column.
+
+        - 'kurtosis'
+            Calculates the kurtosis for each column.
+
+        These values should be passed as a list.
+
+        ::
+
+            default =  ['count', 'nan count',
+                        'mean', 'max', 'min',
+                        'skew', 'kurtosis']
+
+    cat_measures : list of str, optional
+        These measures will be used to compute statistics
+        for every categorical column within the passed scope.
+        Likewise, these measures will be used to compute statistics
+        by each unique class value for each categorical measure.
+
+        Valid options are:
+
+        - 'count'
+            Calculates the number of non-missing data points
+            for each column and unique value.
+
+        - 'freq'
+            Calculate the percentage of values that
+            each unique value makes up. Note:
+            for column measures this will always be 1.
+
+        - 'nan count'
+            Calculates the number of missing data points in
+            this column, which are excluded from other statistics.
+            Note: For class values this will always be 0.
+
+
+        These values should be passed as a list.
+
+        ::
+
+            default =  ['count', 'freq', 'nan count']
+
+    {decode_values}
+
+    save_file : None or str, optional
+        You may optionally save this info
+        description to a docx file in a table.
+        If set to a str, this string should
+        be the path to a docx file, where if it
+        exists, the table will be added, and if it
+        doesn't, the table with summary stats
+        will be created as a new file.
+
+        Keep as None, to skip this option.
+
+        ::
+
+            default = None
+
+    save_decimals : int, optional
+        If save_file is not None, then this
+        parameter sets the number of decimal
+        points to which values in the saved
+        table will be rounded to.
+
+        ::
+
+            default = 3
+
+    {reduce_func}
+
+    {n_jobs}
+
+    Returns
+    ------------
+    cont_info_df : pandas DataFrame
+        A dataframe containing the summary statistics
+        as computed for any float / continuous type
+        data. If None, then this DataFrame will be empty.
+
+        This corresponds to the measures argument.
+
+    cat_info_df : pandas DataFrame
+        A dataframe containing the summary statistics
+        as computed for any categorical type
+        data. If None, then this DataFrame will be empty.
+
+        This corresponds to the cat_measures argument.
+    '''
+
+    extra_args = {'decode_values': decode_values,
+                  'reduce_func': reduce_func,
+                  'n_jobs': n_jobs}
+
+    # Get cols and subjects
+    cols = self.get_cols(scope)
+    subjs = self.get_subjects(subjects)
+
+    # Compute for just the non-categorical columns
+    cont_cols = [col for col in cols if 'category' not in self.scopes[col]]
+    cont_info_df = _cont_info(self, cont_cols, subjs, measures, **extra_args)
+
+    # Compute for just categorical columns
+    cat_cols = [col for col in cols if 'category' in self.scopes[col]]
+    cat_info_df = _cat_info(self, cat_cols, subjs, cat_measures, **extra_args)
+
+    # If save is not None
+    if save_file is not None:
+
+        if len(cont_info_df) > 0:
+            _save_docx(cont_info_df, save_file, decimals=save_decimals)
+
+        if len(cat_info_df) > 0:
+            _save_docx(cat_info_df, save_file, decimals=save_decimals)
+
+    return cont_info_df, cat_info_df
+
+
+@doc(**_plot_docs)
 def plot(self, scope,
          subjects='all',
          cut=0,
@@ -32,21 +350,9 @@ def plot(self, scope,
 
     Parameters
     -----------
-    subjects : :ref:`Subjects`, optional
-        Optionally restrict the plot to only a subset of
-        subjects. This argument can be any of the BPt accepted
-        :ref:`Subjects` style inputs.
+    {scope}
 
-        E.g., None, 'nan' for subjects
-        with any nan data, 'train', the str location of a file
-        formatted with one subject per line, or directly an
-        array-like of subjects, to name some options.
-
-        See :ref:`Subjects` for all options.
-
-        ::
-
-            default = 'all'
+    {subjects}
 
     decode_values : bool, optional
         When plotting categorical variables

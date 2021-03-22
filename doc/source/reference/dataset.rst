@@ -87,9 +87,8 @@ Plotting / Viewing
    :toctree: api/
 
    Dataset.plot
-   Dataset.show
-   Dataset.show_nan_info
-   Dataset.info
+   Dataset.nan_info
+   Dataset.summary
 
 ********************************
 Dataset - Test Split Methods

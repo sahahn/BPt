@@ -141,6 +141,7 @@ BPt.Dataset
       Dataset.mode
       Dataset.mul
       Dataset.multiply
+      Dataset.nan_info
       Dataset.nan_to_class
       Dataset.ne
       Dataset.nlargest
@@ -197,8 +198,6 @@ BPt.Dataset
       Dataset.set_test_split
       Dataset.set_train_split
       Dataset.shift
-      Dataset.show
-      Dataset.show_nan_info
       Dataset.skew
       Dataset.slice_shift
       Dataset.sort_index
@@ -209,6 +208,7 @@ BPt.Dataset
       Dataset.sub
       Dataset.subtract
       Dataset.sum
+      Dataset.summary
       Dataset.swapaxes
       Dataset.swaplevel
       Dataset.tail

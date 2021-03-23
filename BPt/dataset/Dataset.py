@@ -139,6 +139,9 @@ class Dataset(pd.DataFrame):
         df['1'] = [1, 2, 3]
         data = bp.Dataset(df)
         data
+
+    .. versionadded:: 2.0.0
+
     '''
 
     _metadata = ['roles', 'scopes', 'encoders', 'file_mapping',

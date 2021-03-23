@@ -393,12 +393,13 @@ def consolidate_data_files(self, save_dr, replace_with=None,
 
 def update_data_file_paths(self, old, new):
     '''Go through and update saved file paths within
-    :data:`Dataset.file_mapping`. This function can be used
+    the Datasets file mapping attribute.
+    This function can be used
     when the underlying location of the data files has changed, or
     perhaps when loading a saved dataset on a different device.
 
     Note the old and new parameters work the same as those
-    in the base python :func:`string.replace`.
+    in the base python string.replace method.
 
     Parameters
     -----------

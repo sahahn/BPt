@@ -27,7 +27,7 @@ _plot_docs['decode_values'] = '''decode_values : bool, optional
 
 
 def nan_info(self, scope):
-    
+
     '''
     na_counts = data.isna().sum().sort_values(ascending=False)
 
@@ -477,6 +477,17 @@ def plot(self, scope,
 
     {n_jobs}
 
+    Examples
+    ---------
+    This example shows plotting a float feature.
+
+    .. plot::
+        :context: close-figs
+
+        data = bp.Dataset()
+        data['1'] = [.1, .1, .2, .2, .3, .3, .4, .4, .5, .5]
+        data.plot(scope='1')
+
     '''
 
     plot_args = {'cut': cut,
@@ -742,7 +753,8 @@ def _plot_cat_float(self, cat_col, float_col, subjs, **plot_args):
 
 """
 Note sure if want to re-create this given how buggy it is, but here is
-reference old code. 
+reference old code.
+
 def Show_Data_Dist(self, data_subset='SHOW_ALL',
                    num_feats=20, feats='random',
                    reduce_func=None,

@@ -11,7 +11,7 @@ Additionally, a link to the original models documentation as well as the impleme
 "identity"
 **********
 
-  Base Class Documentation: :class:`BPt.extensions.Loaders.Identity`
+  Base Class Documentation: :class:`BPt.extensions.loaders.Identity`
 
   Param Distributions
 
@@ -23,7 +23,7 @@ Additionally, a link to the original models documentation as well as the impleme
 "surface rois"
 **************
 
-  Base Class Documentation: :class:`BPt.extensions.Loaders.SurfLabels`
+  Base Class Documentation: :class:`BPt.extensions.loaders.SurfLabels`
 
   Param Distributions
 
@@ -47,7 +47,7 @@ Additionally, a link to the original models documentation as well as the impleme
 "connectivity"
 **************
 
-  Base Class Documentation: :class:`BPt.extensions.Loaders.SingleConnectivityMeasure`
+  Base Class Documentation: :class:`BPt.extensions.loaders.Connectivity`
 
   Param Distributions
 

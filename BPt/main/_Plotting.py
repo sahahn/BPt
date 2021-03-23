@@ -11,7 +11,6 @@ import math
 import os
 from IPython.display import display, HTML
 from matplotlib.animation import FuncAnimation
-from ..helpers.DataFile import load_data_file_proxies
 
 from ..helpers.Data_Helpers import get_original_cat_names
 

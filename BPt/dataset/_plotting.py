@@ -27,7 +27,66 @@ _plot_docs['decode_values'] = '''decode_values : bool, optional
 
 
 def nan_info(self, scope):
-    pass
+    
+    '''
+    na_counts = data.isna().sum().sort_values(ascending=False)
+
+    if na_counts.sum() > 0:
+        self._print('Loaded NaN Info:')
+        self._print('There are:', na_counts.sum(), 'total missing values')
+
+        u_counts, c_counts = np.unique(na_counts, return_counts=True)
+        u_counts, c_counts = u_counts[1:], c_counts[1:]
+
+        inds = c_counts.argsort()
+        u_counts = u_counts[inds[::-1]]
+        c_counts = c_counts[inds[::-1]]
+
+        for u, c in zip(u_counts, c_counts):
+            if c > 1:
+
+                keys = list(na_counts[na_counts == u].index)
+                substrs = get_top_substrs(keys)
+
+                self._print(c, ' columns found with ', u, ' missing values',
+                            ' (column name overlap: ', substrs, ')', sep='')
+
+        self._print()
+
+    def substrs(x):
+        return {x[i:i+j] for i in range(len(x)) for j in range(len(x) - i + 1)}
+
+
+    def find_substr(data):
+
+        s = substrs(data[0])
+
+        for val in data[1:]:
+            s.intersection_update(substrs(val))
+
+        try:
+            mx = max(s, key=len)
+
+        except ValueError:
+            mx = ''
+
+        return mx
+
+
+    def get_top_substrs(keys):
+
+        found = []
+        top = find_substr(keys)
+
+        while len(top) > 1:
+            found.append(top)
+
+            keys = [k.replace(top, '') for k in keys]
+            top = find_substr(keys)
+
+        return found
+
+    '''
 
 
 def _save_docx(df, filename, decimals=3):

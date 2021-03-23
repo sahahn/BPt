@@ -1,7 +1,7 @@
 import os
 import tempfile
 import numpy as np
-from ...helpers.DataFile import DataFile
+from ...dataset.DataFile import DataFile
 from ...main.input import ProblemSpec
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_selection._base import SelectorMixin

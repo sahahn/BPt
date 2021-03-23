@@ -72,6 +72,9 @@ def _save_docx(df, filename, decimals=3):
 
 def _cont_info(self, cont_cols, subjs, measures, **extra_args):
 
+    if len(cont_cols) == 0:
+        return pd.DataFrame()
+
     # Init info df
     info_df = pd.DataFrame(index=pd.Series(cont_cols))
 
@@ -96,6 +99,12 @@ def _cont_info(self, cont_cols, subjs, measures, **extra_args):
             elif measure == 'min':
                 info_df.loc[col, measure] = values.min()
 
+            elif measure == 'std':
+                info_df.loc[col, measure] = values.std()
+
+            elif measure == 'var':
+                info_df.loc[col, measure] = values.var()
+
             elif measure == 'skew':
                 info_df.loc[col, measure] = values.skew()
 
@@ -117,6 +126,9 @@ def _cont_info(self, cont_cols, subjs, measures, **extra_args):
 
 
 def _cat_info(self, cat_cols, subjs, cat_measures, **extra_args):
+
+    if len(cat_cols) == 0:
+        return pd.DataFrame()
 
     # Init info df
     info_df = pd.DataFrame()
@@ -177,7 +189,8 @@ def summary(self, scope,
             subjects='all',
             measures=['count', 'nan count',
                       'mean', 'max',
-                      'min', 'skew', 'kurtosis'],
+                      'min', 'std', 'var',
+                      'skew', 'kurtosis'],
             cat_measures=['count', 'freq', 'nan count'],
             decode_values=True,
             save_file=None,
@@ -217,6 +230,12 @@ def summary(self, scope,
         - 'min'
             Calculates the minimum value for each column.
 
+        - 'std'
+            Calculates the standard deviation for each column.
+
+        - 'var'
+            Calculates the variance for each column.
+
         - 'skew'
             Calculates the skew for each column.
 
@@ -229,6 +248,7 @@ def summary(self, scope,
 
             default =  ['count', 'nan count',
                         'mean', 'max', 'min',
+                        'std', 'var',
                         'skew', 'kurtosis']
 
     cat_measures : list of str, optional
@@ -354,18 +374,7 @@ def plot(self, scope,
 
     {subjects}
 
-    decode_values : bool, optional
-        When plotting categorical variables
-        that have been encoded through a BPt
-        dataset method, e.g., :func:`Dataset.ordinalize`,
-        then you may optionally either plot
-        the original categorical values before encoding
-        with decode_values = True, or use the current
-        internal values with decode_values = False.
-
-        ::
-
-            default = True
+    {decode_values}
 
     cut : float, optional
         Only for plotting non-categorical variables.
@@ -537,7 +546,8 @@ def _print_plot_info(self, col, info):
     self._print(level=1)
 
 
-@doc(**_file_docs)
+@doc(**_file_docs, subjects=_shared_docs['subjects'],
+     decode_values=_plot_docs['decode_values'])
 def plot_bivar(self, col1, col2, subjects='all',
                decode_values=True, show=True, reduce_func=np.mean,
                n_jobs=-1):
@@ -555,34 +565,9 @@ def plot_bivar(self, col1, col2, subjects='all',
         The name of the second loaded column
         in which to plot against col1.
 
-    subjects : :ref:`Subjects`, optional
-        Optionally restrict the plot to only a subset of
-        subjects. This argument can be any of the BPt accepted
-        :ref:`Subjects` style inputs.
+    {subjects}
 
-        E.g., None, 'nan' for subjects
-        with any nan data, 'train', the str location of a file
-        formatted with one subject per line, or directly an
-        array-like of subjects, to name some options.
-
-        See :ref:`Subjects` for all options.
-
-        ::
-
-            default = 'all'
-
-    decode_values : bool, optional
-        When plotting categorical variables
-        that have been encoded through a BPt
-        dataset method, e.g., :func:`Dataset.ordinalize`,
-        then you may optionally either plot
-        the original categorical values before encoding
-        with decode_values = True, or use the current
-        internal values with decode_values = False.
-
-        ::
-
-            default = True
+    {decode_values}
 
     show : bool, optional
         If plt.show() from matplotlib should

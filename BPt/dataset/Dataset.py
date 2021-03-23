@@ -1291,7 +1291,7 @@ class Dataset(pd.DataFrame):
             self._print('The number of unique index rows (',
                         str(n_unique_index),
                         ') does not match the number of rows (',
-                        str(len(X)), ').', 
+                        str(len(X)), ').',
                         'There may be duplicate subjects / index.', level=0)
 
         return X, y

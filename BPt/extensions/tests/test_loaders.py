@@ -261,7 +261,6 @@ def test_threshold_network_measures_neg():
                   [-.5, 0, 0, 0]])
 
     thresh_X = nm._apply_threshold(X)
-    print(thresh_X)
     assert np.sum(thresh_X) == 4
     assert thresh_X[0][-1] == 1
     assert thresh_X[0][1] == 0

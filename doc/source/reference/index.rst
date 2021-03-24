@@ -21,3 +21,4 @@ This is the API reference
    dists
    evaluate
    extensions
+   util

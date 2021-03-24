@@ -3,7 +3,7 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 from pandas.util._decorators import doc
-import os
+from ..util import save_docx_table
 from .Dataset import _file_docs, _shared_docs
 
 _plot_docs = _file_docs.copy()
@@ -89,47 +89,7 @@ def nan_info(self, scope):
     '''
 
 
-def _save_docx(df, filename, decimals=3):
-
-    import docx
-
-    # Reset index
-    df.index.name = 'columns'
-    df = df.reset_index()
-
-    if os.path.exists(filename):
-        doc = docx.Document(filename)
-    else:
-        doc = docx.Document()
-
-    t = doc.add_table(df.shape[0]+1, df.shape[1])
-
-    # For each column
-    for j in range(df.shape[-1]):
-
-        # Add header
-        t.cell(0, j).text = df.columns[j]
-
-        # Check if column is type is float
-        col = list(df)[j]
-        is_float = 'float' in df[col].dtype.name.lower()
-
-        for i in range(df.shape[0]):
-
-            # Get value
-            value = df.values[i, j]
-
-            # Round if float
-            if is_float:
-                value = np.round(value, decimals=decimals)
-
-            # Set value
-            t.cell(i+1, j).text = str(value)
-
-    doc.save(filename)
-
-
-def _cont_info(self, cont_cols, subjs, measures, **extra_args):
+def _cont_info(self, cont_cols, subjs, measures, decimals, **extra_args):
 
     if len(cont_cols) == 0:
         return pd.DataFrame()
@@ -149,8 +109,15 @@ def _cont_info(self, cont_cols, subjs, measures, **extra_args):
         # Compute each measure
         for measure in measures:
 
+            measure = measure.replace('+-', '±')
+
             if measure == 'mean':
                 info_df.loc[col, measure] = values.mean()
+
+            elif measure == 'mean ± std':
+                mean = str(np.round(values.mean(), decimals))
+                std = str(np.round(values.std(), decimals))
+                info_df.loc[col, measure] = f'{mean} ± {std}'
 
             elif measure == 'max':
                 info_df.loc[col, measure] = values.max()
@@ -179,7 +146,7 @@ def _cont_info(self, cont_cols, subjs, measures, **extra_args):
                 info_df[measure] = info_df[measure].astype(pd.Int64Dtype())
 
             else:
-                pass
+                raise RuntimeError('Invaid measure: ', measure)
 
     return info_df
 
@@ -253,7 +220,7 @@ def summary(self, scope,
             cat_measures=['count', 'freq', 'nan count'],
             decode_values=True,
             save_file=None,
-            save_decimals=3,
+            decimals=3,
             reduce_func=np.mean,
             n_jobs=-1):
     '''This method is used to generate a summary across
@@ -300,6 +267,10 @@ def summary(self, scope,
 
         - 'kurtosis'
             Calculates the kurtosis for each column.
+
+        - 'mean +- std'
+            Return the mean and std as str rounded
+            to decimals as mean ± std.
 
         These values should be passed as a list.
 
@@ -356,11 +327,15 @@ def summary(self, scope,
 
             default = None
 
-    save_decimals : int, optional
+    decimals : int, optional
         If save_file is not None, then this
         parameter sets the number of decimal
         points to which values in the saved
         table will be rounded to.
+
+        This parameter will also be used in the case
+        that a special str measure is requested,
+        e.g., mean +- std.
 
         ::
 
@@ -397,7 +372,8 @@ def summary(self, scope,
 
     # Compute for just the non-categorical columns
     cont_cols = [col for col in cols if 'category' not in self.scopes[col]]
-    cont_info_df = _cont_info(self, cont_cols, subjs, measures, **extra_args)
+    cont_info_df = _cont_info(self, cont_cols, subjs, measures,
+                              decimals, **extra_args)
 
     # Compute for just categorical columns
     cat_cols = [col for col in cols if 'category' in self.scopes[col]]
@@ -407,10 +383,12 @@ def summary(self, scope,
     if save_file is not None:
 
         if len(cont_info_df) > 0:
-            _save_docx(cont_info_df, save_file, decimals=save_decimals)
+            cont_info_df.index.name = 'columns'
+            save_docx_table(cont_info_df, save_file, decimals=decimals)
 
         if len(cat_info_df) > 0:
-            _save_docx(cat_info_df, save_file, decimals=save_decimals)
+            cat_info_df.index.name = 'columns'
+            save_docx_table(cat_info_df, save_file, decimals=decimals)
 
     return cont_info_df, cat_info_df
 

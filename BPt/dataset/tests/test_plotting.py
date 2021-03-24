@@ -52,6 +52,19 @@ def test_summary_cat_col():
     assert df2.loc['class=2', 'nan count'] == 0
 
 
+def test_summary_float_col_mean_std():
+
+    df = get_fake_dataset()
+
+    df1, df2 =\
+        df.summary(scope='val1',
+                   measures=['mean +- std'])
+
+    assert len(df2) == 0
+    print(df1)
+    assert df1.loc['val1', 'mean ± std'] == '1.32 ± 1.545'
+
+
 def test_summary_float_col():
 
     df = get_fake_dataset()

@@ -39,12 +39,14 @@ SELECTORS = {
     'univariate selection r': (SelectPercentile,
                                ['base univar fs regression',
                                 'univar fs regression dist',
-                                'univar fs regression dist2']),
+                                'univar fs r keep more',
+                                'univar fs r keep less']),
 
     'univariate selection c': (SelectPercentile,
                                ['base univar fs classifier',
                                 'univar fs classifier dist',
-                                'univar fs classifier dist2']),
+                                'univar fs c keep more',
+                                'univar fs c keep less']),
 
     'rfe': (RFEWrapper, ['base rfe', 'rfe num feats dist']),
 

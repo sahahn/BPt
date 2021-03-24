@@ -1,4 +1,5 @@
-from ..input import ModelPipeline, Pipeline, Transformer, Model
+from ..input import (ModelPipeline, Pipeline, Transformer,
+                     Model, ParamSearch, FeatSelector)
 from ..input_operations import Duplicate
 from sklearn.linear_model import LinearRegression
 from nose.tools import assert_raises
@@ -83,3 +84,12 @@ def test_pipeline_with_sklearn_native_input():
     pipe3 = Pipeline(steps=[Transformer('nonsense'),
                      ('my_model', LinearRegression())])
     assert pipe3.steps[1]._get_step()[0] == 'my_model'
+
+
+def test_get_pipe():
+
+    random_search = ParamSearch('RandomSearch', n_iter=60)
+    u_feat = FeatSelector('univariate selection', params=2)
+    svm = Model('svm', params=1)
+    svm_search_pipe = Pipeline(steps=[u_feat, svm], param_search=random_search)
+    Model(svm_search_pipe)

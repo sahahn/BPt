@@ -1,5 +1,4 @@
-class BPtInputMixIn():
-    pass
+from ..util import BPtInputMixIn
 
 
 class Select(list, BPtInputMixIn):

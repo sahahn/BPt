@@ -444,6 +444,20 @@ def test_evaluate_compare():
     assert isinstance(e1_model, DecisionTreeClassifier)
 
 
+def test_evaluate_compare_ps():
+
+    dataset = get_fake_binary_dataset()
+
+    pipe = ModelPipeline(model=Model('dt'))
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         problem_type=Compare(['binary', 'regression']),
+                         progress_bar=False)
+
+    assert isinstance(evaluator, CompareDict)
+
+
 def test_evaluate_extra_params_compare():
 
     dataset = get_fake_dataset()

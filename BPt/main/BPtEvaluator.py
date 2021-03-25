@@ -85,7 +85,8 @@ class BPtEvaluator():
                  store_estimators=False,
                  store_timing=False,
                  eval_verbose=0,
-                 progress_loc=None):
+                 progress_loc=None,
+                 compare_bars=None):
 
         # Save base
         self.estimator = estimator
@@ -113,6 +114,7 @@ class BPtEvaluator():
         # @TODO Add in progress loc func.
         self.progress_loc = progress_loc
         self.verbose = eval_verbose
+        self.compare_bars = compare_bars
 
     @property
     def mean_scores(self):
@@ -394,9 +396,8 @@ class BPtEvaluator():
             # Increment progress bars
             progress_bars = self._incr_progress_bars(progress_bars)
 
-        # Close progress bars
-        for bar in progress_bars:
-            bar.close()
+        # Clean up progress bars
+        self._finish_progress_bars(progress_bars)
 
         # Compute and score mean and stds
         self._compute_summary_scores()
@@ -420,15 +421,39 @@ class BPtEvaluator():
         if self.progress_bar is None:
             return []
 
+        # If passed compare bars is int, init top level bar
+        if isinstance(self.compare_bars, int):
+
+            # Init and set as new
+            compare_bar = self.progress_bar(total=self.compare_bars,
+                                            desc='Compare')
+            self.compare_bars = [compare_bar]
+
+        # If already init'ed
+        elif isinstance(self.compare_bars, list):
+
+            # Return all but last compare bar
+            return self.compare_bars[:-1]
+
+        bars = []
+
         # If 1 repeat, then just folds progress bar
         if self.n_repeats_ == 1:
             folds_bar = self.progress_bar(total=self.n_splits_, desc='Folds')
-            return [folds_bar]
+            bars = [folds_bar]
 
         # Otherwise folds and repeats bars - init repeats bar first, so on top
-        repeats_bar = self.progress_bar(total=self.n_repeats_, desc='Repeats')
-        folds_bar = self.progress_bar(total=self.n_splits_, desc='Folds')
-        return [folds_bar, repeats_bar]
+        else:
+            repeats_bar = self.progress_bar(total=self.n_repeats_,
+                                            desc='Repeats')
+            folds_bar = self.progress_bar(total=self.n_splits_, desc='Folds')
+            bars = [folds_bar, repeats_bar]
+
+        # If compare bars was init'ed this run
+        if self.compare_bars is not None:
+            self.compare_bars = bars + self.compare_bars
+
+        return bars
 
     def _incr_progress_bars(self, progress_bars):
 
@@ -459,6 +484,27 @@ class BPtEvaluator():
         folds_bar.refresh()
         repeats_bar.refresh()
         return [folds_bar, repeats_bar]
+
+    def _finish_progress_bars(self, progress_bars):
+
+        # Close progress bars
+        if self.compare_bars is None:
+            for bar in progress_bars:
+                bar.close()
+
+            return
+
+        # Otherwise compare bars case
+        # Reset
+        for bar in progress_bars:
+            bar.n = 0
+            bar.refresh()
+
+        # Increment and refresh compare
+        self.compare_bars[-1].n += 1
+        self.compare_bars[-1].refresh()
+
+        return
 
     def _eval_fold(self, X_tr, y_tr, X_val, y_val):
 

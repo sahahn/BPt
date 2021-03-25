@@ -621,15 +621,14 @@ def _sk_prep(pipeline, dataset, problem_spec='default',
                                   error_if_compare=True,
                                   **extra_params)
 
-    return _eval_prep(estimator, ps, dataset, cv, **extra_params)
+    return _eval_prep(estimator, ps, dataset, cv)
 
 
-def _eval_prep(estimator, ps, dataset,
-               cv=5, **extra_params):
+def _eval_prep(estimator, ps, dataset, cv=5):
     '''Internal helper function.'''
 
-    # Get X and y
-    X, y = dataset.get_Xy(problem_spec=ps, **extra_params)
+    # Get X and y - ps should already be init'ed
+    X, y = dataset.get_Xy(problem_spec=ps)
 
     # Save if has n_repeats
     n_repeats = 1
@@ -1008,7 +1007,6 @@ def evaluate(pipeline, dataset,
     '''
 
     params = {'cv': cv,
-              'extra_params': extra_params,
               'decode_feat_names': decode_feat_names,
               'progress_bar': progress_bar,
               'store_preds': store_preds,
@@ -1029,6 +1027,12 @@ def evaluate(pipeline, dataset,
         estimator, ps = estimator_ps
         return _evaluate(estimator=estimator, dataset=dataset, ps=ps, **params)
 
+    # Set at start to number of runs
+    if progress_bar:
+        compare_bars = len(estimator_ps)
+    else:
+        compare_bars = None
+
     # Compare dict case
     evaluators = CompareDict()
     for key in estimator_ps:
@@ -1041,21 +1045,35 @@ def evaluate(pipeline, dataset,
 
         # Evaluate this option
         evaluator = _evaluate(estimator=c_estimator,
-                              dataset=dataset, ps=c_ps, **params)
+                              dataset=dataset, ps=c_ps,
+                              compare_bars=compare_bars,
+                              **params)
+
+        # Update compare bars to be the the compare bars
+        # set by last run
+        compare_bars = evaluator.compare_bars
 
         # Add to compare dict
         evaluators[key] = evaluator
 
+    # Close compare bars
+    if compare_bars is not None:
+        for bar in compare_bars:
+            bar.n = bar.total
+            bar.refresh()
+            bar.close()
+
     return evaluators
 
 
-def _evaluate(estimator, dataset, ps, cv, extra_params,
-              decode_feat_names, **verbose_args):
+def _evaluate(estimator, dataset, ps, cv,
+              decode_feat_names, compare_bars=None,
+              **verbose_args):
 
     estimator, X, y, ps, sk_cv =\
-        _eval_prep(estimator, ps, dataset, cv, **extra_params)
+        _eval_prep(estimator, ps, dataset, cv)
 
-    # Check decode feat_names arg, ifTrue, pass along encoders
+    # Check decode feat_names arg, if True, pass along encoders
     encoders = None
     if decode_feat_names:
         encoders = dataset.encoders
@@ -1063,6 +1081,7 @@ def _evaluate(estimator, dataset, ps, cv, extra_params,
     # Init evaluator
     evaluator = BPtEvaluator(estimator=estimator, ps=ps,
                              encoders=encoders,
+                             compare_bars=compare_bars,
                              **verbose_args)
 
     # Call eval on the evaluator

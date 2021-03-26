@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
   
@@ -174,14 +180,6 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
-                        </li>
-                    
-                        <li class="">
                             <a href="BPt.Dataset.copy.html">BPt.Dataset.copy</a>
                         </li>
                     
@@ -191,14 +189,6 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_train_Xy.html">BPt.Dataset.get_train_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_test_Xy.html">BPt.Dataset.get_test_Xy</a>
                         </li>
                     
                         <li class="">
@@ -227,6 +217,26 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_data_file.html">BPt.Dataset.to_data_file</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.consolidate_data_files.html">BPt.Dataset.consolidate_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.update_data_file_paths.html">BPt.Dataset.update_data_file_paths</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
                         </li>
                     
                         <li class="">
@@ -282,15 +292,11 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show.html">BPt.Dataset.show</a>
+                            <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show_nan_info.html">BPt.Dataset.show_nan_info</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.info.html">BPt.Dataset.info</a>
+                            <a href="BPt.Dataset.summary.html">BPt.Dataset.summary</a>
                         </li>
                     
                         <li class="">
@@ -345,19 +351,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -397,22 +415,24 @@
 <h1>BPt.Dataset.drop_id_cols<a class="headerlink" href="#bpt-dataset-drop-id-cols" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.drop_id_cols">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_id_cols</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L612-L651"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_id_cols" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_id_cols</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L532-L562"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_id_cols" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method will drop any str-type / object type columns
 where the number of unique columns is equal
 to the length of the dataframe.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a>, optional</span></dt><dd><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
-columns in which to check.</p>
-<p>By default this is set to ‘all’ and will check all
-loaded columns</p>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
+<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
+</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, do operation inplace and return None.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>

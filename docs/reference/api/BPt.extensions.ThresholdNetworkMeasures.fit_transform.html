@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -169,13 +175,19 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
@@ -201,7 +213,17 @@
                             <a href="BPt.extensions.ThresholdNetworkMeasures.html">BPt.extensions.ThresholdNetworkMeasures</a>
                         </li>
                     
+                        <li class="">
+                            <a href="BPt.extensions.RandomParcellation.html">BPt.extensions.RandomParcellation</a>
+                        </li>
+                    
                     </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -241,8 +263,25 @@
 <h1>BPt.extensions.ThresholdNetworkMeasures.fit_transform<a class="headerlink" href="#bpt-extensions-thresholdnetworkmeasures-fit-transform" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.extensions.ThresholdNetworkMeasures.fit_transform">
-<code class="sig-prename descclassname">ThresholdNetworkMeasures.</code><code class="sig-name descname">fit_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L1002-L1004"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.ThresholdNetworkMeasures.fit_transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Temp.</p>
+<code class="sig-prename descclassname">ThresholdNetworkMeasures.</code><code class="sig-name descname">fit_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L1137-L1154"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.ThresholdNetworkMeasures.fit_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit, then transform a passed 2D numpy correlation matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">numpy array</span></dt><dd><p>A 2D numpy array representing an input correlation
+matrix.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>X_trans</strong><span class="classifier">numpy array</span></dt><dd><p>Returns a flat array of length number of
+measures in parameter to_compute, representing
+the calculated network statistics.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

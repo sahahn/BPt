@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BPt.ValueSubset &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BPt.Intersection" href="BPt.Intersection.html" />
+    <link rel="prev" title="BPt.Duplicate.sort" href="BPt.Duplicate.sort.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../index.html">
+    
+      <img src="../../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="../dataset.html">Dataset</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline.html">Pipelines</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline_pieces.html">Pipeline Pieces</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../problem_spec.html">ProblemSpec</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../CV.html">CV</a>
+                </li>
+            
+          
+            
+  
+                <li class="active">
+                    <a href="../input_operations.html">Input Operations</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="BPt.Select.html">BPt.Select</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Duplicate.html">BPt.Duplicate</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="">BPt.ValueSubset</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Intersection.html">BPt.Intersection</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Pipe.html">BPt.Pipe</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../dists.html">Parameter Distributions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../evaluate.html">Evaluate</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="bpt-valuesubset">
+<h1>BPt.ValueSubset<a class="headerlink" href="#bpt-valuesubset" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="BPt.ValueSubset">
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">ValueSubset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">values</span></em>, <em class="sig-param"><span class="n">decode_values</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input_operations.py#L204-L307"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.ValueSubset" title="Permalink to this definition">¶</a></dt>
+<dd><p>ValueSubset is special wrapper class for BPt designed to work with
+<a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> style input. It is used to select a subset of subjects
+based on a loaded column’s value.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>The name of the loaded column in <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>
+in which the values refer to.</p>
+<p>In the case of selecting values from
+an overlap of multiple columns, you can
+first create a new overlap column.
+See method <a class="reference internal" href="BPt.Dataset.add_unique_overlap.html#BPt.Dataset.add_unique_overlap" title="BPt.Dataset.add_unique_overlap"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.add_unique_overlap()</span></code></a>,
+then pass the name of the overlap column here.</p>
+</dd>
+<dt><strong>values</strong><span class="classifier">str, float or list of</span></dt><dd><p>This parameter refers to either a single or
+list of values in which if the loaded
+subject has the value, or one of the values,
+in the column selected
+via name, then that subject will be selected.</p>
+</dd>
+<dt><strong>decode_values</strong><span class="classifier">bool, optional</span></dt><dd><p>This parameter is boolean flag which represents if encoded
+values should be
+used or not. What this asks is that should the actual
+ordinal post encoded
+value be specified, or the should the value be
+set based on the original
+encoded name.</p>
+<p>This parameter is only relevant assuming the underlying
+name column was encoding using an encoding method
+from <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>, for example <a class="reference internal" href="BPt.Dataset.to_binary.html#BPt.Dataset.to_binary" title="BPt.Dataset.to_binary"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.to_binary()</span></code></a>
+or <a class="reference internal" href="BPt.Dataset.ordinalize.html#BPt.Dataset.ordinalize" title="BPt.Dataset.ordinalize"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.ordinalize()</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>This wrapper can be used as follows, just specify an object as</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ValueSubset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Where name is the name of a loaded non input categorical column / feature,
+and value is the subset of values from that column to select subjects by.
+E.g., if you wanted to select just subjects of a specific sex,
+and assuming the variable was properly loaded,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which would specify only subjects with ‘sex’ equal to 0.
+You may also optionally pass more than one value to values, E.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="n">Values_Subset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;site&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Would select the subset of subjects from sites 0, 1 and 5.</p>
+<p>We can also consider using the decode_values parameter.
+For example, let’s say sex originally had values ‘M’ and ‘F’
+and then <a class="reference internal" href="BPt.Dataset.binarize.html#BPt.Dataset.binarize" title="BPt.Dataset.binarize"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.binarize()</span></code></a> was used to
+transform the values internally to 0 and 1.
+If decode_values is set
+as the default value of False,
+then you must pass value = 0 or 1, but
+if decode_values = True,
+then it allows passing value = ‘M’ or ‘F’. E.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="BPt.Duplicate.sort.html" title="previous page">BPt.Duplicate.sort</a>
+    <a class='right-next' id="next-link" href="BPt.Intersection.html" title="next page">BPt.Intersection</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

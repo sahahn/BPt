@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
   
@@ -174,14 +180,6 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
-                        </li>
-                    
-                        <li class="">
                             <a href="BPt.Dataset.copy.html">BPt.Dataset.copy</a>
                         </li>
                     
@@ -191,14 +189,6 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_train_Xy.html">BPt.Dataset.get_train_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_test_Xy.html">BPt.Dataset.get_test_Xy</a>
                         </li>
                     
                         <li class="">
@@ -227,6 +217,26 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_data_file.html">BPt.Dataset.to_data_file</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.consolidate_data_files.html">BPt.Dataset.consolidate_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.update_data_file_paths.html">BPt.Dataset.update_data_file_paths</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
                         </li>
                     
                         <li class="">
@@ -282,15 +292,11 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show.html">BPt.Dataset.show</a>
+                            <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show_nan_info.html">BPt.Dataset.show_nan_info</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.info.html">BPt.Dataset.info</a>
+                            <a href="BPt.Dataset.summary.html">BPt.Dataset.summary</a>
                         </li>
                     
                         <li class="">
@@ -345,19 +351,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -397,7 +415,7 @@
 <h1>BPt.Dataset.plot_bivar<a class="headerlink" href="#bpt-dataset-plot-bivar" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.plot_bivar">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">plot_bivar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">col1</span></em>, <em class="sig-param"><span class="n">col2</span></em>, <em class="sig-param"><span class="n">subjects</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">decode_values</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_plotting.py#L220-L310"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.plot_bivar" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">plot_bivar</code><span class="sig-paren">(</span><em class="sig-param">col1</em>, <em class="sig-param">col2</em>, <em class="sig-param">subjects='all'</em>, <em class="sig-param">decode_values=True</em>, <em class="sig-param">show=True</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=-1</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_plotting.py#L597-L675"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.plot_bivar" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method can be used to plot the relationship
 between two variables. Different types of plots will
 be used based on the types of the underlying variables.</p>
@@ -410,22 +428,17 @@ which to plot against col2.</p>
 <dt><strong>col2</strong><span class="classifier">str</span></dt><dd><p>The name of the second loaded column
 in which to plot against col1.</p>
 </dd>
-<dt><strong>subjects</strong><span class="classifier"><a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a>, optional</span></dt><dd><p>Optionally restrict the plot to only a subset of
-subjects. This argument can be any of the BPt accepted
-<a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> style inputs.</p>
-<p>E.g., None, ‘nan’ for subjects
-with any nan data, ‘train’, the str location of a file
+<dt><strong>subjects</strong><span class="classifier"><a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a></span></dt><dd><p>This argument can be any of the BPt accepted
+subject style inputs. E.g., None, ‘nan’ for subjects
+with any nan data, the str location of a file
 formatted with one subject per line, or directly an
 array-like of subjects, to name some options.</p>
 <p>See <a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> for all options.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
-</pre></div>
-</div>
 </dd>
-<dt><strong>decode_values</strong><span class="classifier">bool, optional</span></dt><dd><p>When plotting categorical variables
+<dt><strong>decode_values</strong><span class="classifier">bool, optional</span></dt><dd><p>When handling categorical variables
 that have been encoded through a BPt
 dataset method, e.g., <a class="reference internal" href="BPt.Dataset.ordinalize.html#BPt.Dataset.ordinalize" title="BPt.Dataset.ordinalize"><code class="xref py py-func docutils literal notranslate"><span class="pre">Dataset.ordinalize()</span></code></a>,
-then you may optionally either plot
+then you may optionally either use either
 the original categorical values before encoding
 with decode_values = True, or use the current
 internal values with decode_values = False.</p>
@@ -437,6 +450,28 @@ internal values with decode_values = False.</p>
 be called after plotting each column within
 the passed scope.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>reduce_func</strong><span class="classifier">python function, optional</span></dt><dd><p>The passed python function will be applied only if
+the requested col/column is a ‘data file’. In the case
+that it is, the function should accept as input
+the data from one data file, and should return a single
+scalar value. For example, the default value is
+numpy’s mean function, which returns one value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier">int, optional</span></dt><dd><p>As with reduce_func, this parameter is only
+valid when the passed col/column is a ‘data file’.
+In that case, this specifies the number of cores
+to use in loading and applying the reduce_func to each
+data file. This can provide a significant speed up when
+passed the number of avaliable cores, but can sometimes
+be memory intensive depending on the underlying size of the file.</p>
+<p>If set to -1, will try to automatically use all avaliable cores.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 </pre></div>
 </div>
 </dd>

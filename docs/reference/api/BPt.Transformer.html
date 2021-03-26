@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -124,6 +128,8 @@
     
   
     <ul class="nav bd-sidenav">
+        
+        
         
         
         
@@ -205,19 +211,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -257,9 +275,9 @@
 <h1>BPt.Transformer<a class="headerlink" href="#bpt-transformer" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.Transformer">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Transformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'float'</span></em>, <em class="sig-param"><span class="n">cache_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L651-L730"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Transformer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Transformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'data'</span></em>, <em class="sig-param"><span class="n">cache_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L751-L806"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Transformer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Transformer is base optional component of the
-<a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> or <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> class.
+<a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> or <a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> classes.
 Transformers define any type of transformation to the loaded
 data which may change the number
 of features in a non-simple way (i.e., conceptually distinct
@@ -282,35 +300,78 @@ cloneable via sklearn’s clone function).</p>
 <p>See <a class="reference internal" href="../../user_guide/pipeline_objects.html#pipeline-objects"><span class="std std-ref">Pipeline Objects</span></a> to read more about
 pipeline objects in general.</p>
 </dd>
-<dt><strong>params</strong><span class="classifier">int, str or dict of <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">params</span></a>, optional</span></dt><dd><p><cite>params</cite> determines optionally if the distribution of
-hyper-parameters to potentially search over for this transformer.
-Preset param distributions are listed for each choice of obj
-at <a class="reference internal" href="../../options/pipeline_options/transformers.html#transformers"><span class="std std-ref">Transformers</span></a>, and you can read more on
-how params work more generally at <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">Params</span></a>.</p>
+<dt><strong>params</strong><span class="classifier">int, str or dict of <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">params</span></a>, optional</span></dt><dd><div class="line-block">
+<div class="line">The parameter <cite>params</cite> can be used to set an associated distribution
+of hyper-parameters, fixed parameters or combination of.</div>
+</div>
+<div class="line-block">
+<div class="line">Preset parameter options can be found distributions are
+listed for each choice of params with the corresponding
+obj at <a class="reference internal" href="../../options/pipeline_options/index.html#pipeline-options"><span class="std std-ref">Pipeline Options</span></a>.</div>
+</div>
+<div class="line-block">
+<div class="line">More information on how this parameter
+works can be found at <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">Params</span></a>.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">0</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a>, optional</span></dt><dd><p><cite>scope</cite> determines on which subset of features
-the specified transformer
-should transform. See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information
-on how scopes can
-be specified.</p>
-<p>Specifically, it may be useful to consider the use of
-<a class="reference internal" href="BPt.Duplicate.html#BPt.Duplicate" title="BPt.Duplicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Duplicate</span></code></a> here.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a>, optional</span></dt><dd><blockquote>
+<div><div class="line-block">
+<div class="line">The <cite>scope</cite> parameter determines the subset of
+features / columns in which this object
+should operate on within the created pipeline. For example,
+by specifying scope = ‘float’, then
+this object will only operate on columns with scope
+float.</div>
+</div>
+<div class="line-block">
+<div class="line">See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on
+how scopes can be specified.</div>
+</div>
+</div></blockquote>
+<div class="line-block">
+<div class="line">It may in some cases be useful to consider the use of
+<a class="reference internal" href="BPt.Duplicate.html#BPt.Duplicate" title="BPt.Duplicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Duplicate</span></code></a> here.</div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;data&#39;</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>cache_loc</strong><span class="classifier">str, Path or None, optional</span></dt><dd><p>An optional path in which this Piece should be
-cached after fitting. This is typically useful in
-cases where fitting the base object takes a long time.</p>
-<p>To skip this option, keep at the default argument of None.</p>
+<dt><strong>cache_loc</strong><span class="classifier">str, Path or None, optional</span></dt><dd><div class="line-block">
+<div class="line">This parameter can optionally be set to a
+str or path representing the location in which
+this object will be cached after fitting.
+To skip this option, keep as the default argument of None.</div>
+</div>
+<div class="line-block">
+<div class="line">If set, the python library joblib is used
+to cache a copy after fitting and in the case
+that a cached copy already exists will load from
+that copy instead of re-fitting the base object.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>extra_params</strong><span class="classifier"><a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a></span></dt><dd><p>See <a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a></p>
+<dt><strong>extra_params</strong><span class="classifier"><a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a></span></dt><dd><div class="line-block">
+<div class="line">You may pass additional kwargs style arguments
+for this piece as <a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a>. Any values
+passed here will be used to try and set that value
+in the requested obj.</div>
+</div>
+<div class="line-block">
+<div class="line">Any parameter value pairs
+specified here will take priority over any
+set via params. For example, lets say in
+the object we are initializing, ‘fake obj’ it has a parameter
+called size, and we want it fixed as 10, we can specify that with:</div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="s1">&#39;fake obj&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a> for more information.</p>
 </dd>
 </dl>
 </dd>

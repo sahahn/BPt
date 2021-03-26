@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
   
@@ -174,14 +180,6 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
-                        </li>
-                    
-                        <li class="">
                             <a href="BPt.Dataset.copy.html">BPt.Dataset.copy</a>
                         </li>
                     
@@ -191,14 +189,6 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_train_Xy.html">BPt.Dataset.get_train_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_test_Xy.html">BPt.Dataset.get_test_Xy</a>
                         </li>
                     
                         <li class="">
@@ -227,6 +217,26 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_data_file.html">BPt.Dataset.to_data_file</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.consolidate_data_files.html">BPt.Dataset.consolidate_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.update_data_file_paths.html">BPt.Dataset.update_data_file_paths</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
                         </li>
                     
                         <li class="">
@@ -282,15 +292,11 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show.html">BPt.Dataset.show</a>
+                            <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show_nan_info.html">BPt.Dataset.show_nan_info</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.info.html">BPt.Dataset.info</a>
+                            <a href="BPt.Dataset.summary.html">BPt.Dataset.summary</a>
                         </li>
                     
                         <li class="">
@@ -345,19 +351,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -397,9 +415,9 @@
 <h1>BPt.Dataset.binarize<a class="headerlink" href="#bpt-dataset-binarize" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.binarize">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">binarize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">threshold</span></em>, <em class="sig-param"><span class="n">replace</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">drop</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L118-L217"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.binarize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">binarize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">threshold</span></em>, <em class="sig-param"><span class="n">replace</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">drop</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L119-L218"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.binarize" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method contains a utilities for binarizing a variable.
-These are dichatomizing an existing variable with parameter
+These are dichotomizing an existing variable with parameter
 threshold, and applying binarization via two thresholds
 (essentially chopping out the middle of the distribution).</p>
 <p>Note: This function will not work on data files.</p>
@@ -427,9 +445,9 @@ be set to 1. Note these equalities are strictly less than
 or greater than, e.g., not less than or equal to.</p>
 </dd>
 <dt><strong>replace</strong><span class="classifier">bool, optional</span></dt><dd><p>This parameter controls if the original columns
-should be replaced with their binarized version, when
+should be replaced with their binary version, when
 set to True, and if set to False will add a new
-binarized column as well as leave the original column.
+binary column as well as leave the original column.
 The new columns will share the name of the original
 columns but with ‘_binary’ appended.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>

@@ -327,7 +327,12 @@ def main():
         args.verbosity,
         args.warnings_are_errors,
     )
-    return getattr(builder, args.command)()
+
+    getattr(builder, args.command)()
+
+    shutil.rmtree('../docs/')
+    shutil.copytree('build/html/', '../docs/')
+    return
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Evaluate Functions &#8212; BPt 2 documentation</title>
+    <title>Evaluate &#8212; BPt 2 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -41,7 +41,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="BPt.evaluate" href="api/BPt.evaluate.html" />
+    <link rel="next" title="BPt.get_estimator" href="api/BPt.get_estimator.html" />
     <link rel="prev" title="BPt.p.Instrumentation.to_grid" href="api/BPt.p.Instrumentation.to_grid.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -66,6 +66,10 @@
         
         <li class="nav-item ">
             <a class="nav-link" href="../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
         </li>
         
         <li class="nav-item ">
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -169,6 +175,12 @@
           
             
                 <li class="">
+                    <a href="compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="dists.html">Parameter Distributions</a>
                 </li>
             
@@ -176,8 +188,12 @@
             
   
                 <li class="active">
-                    <a href="">Evaluate Functions</a>
+                    <a href="">Evaluate</a>
                     <ul>
+                    
+                        <li class="">
+                            <a href="api/BPt.get_estimator.html">BPt.get_estimator</a>
+                        </li>
                     
                         <li class="">
                             <a href="api/BPt.evaluate.html">BPt.evaluate</a>
@@ -191,6 +207,10 @@
                             <a href="api/BPt.cross_val_score.html">BPt.cross_val_score</a>
                         </li>
                     
+                        <li class="">
+                            <a href="api/BPt.BPtEvaluator.html">BPt.BPtEvaluator</a>
+                        </li>
+                    
                     </ul>
                 </li>
             
@@ -198,6 +218,12 @@
             
                 <li class="">
                     <a href="extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="util.html">Util</a>
                 </li>
             
           
@@ -216,9 +242,24 @@
           
           <div class="d-none d-xl-block col-xl-2 bd-toc">
               
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
 
 <nav id="bd-toc-nav">
     <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#get-estimator" class="nav-link">Get Estimator</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#evaluate-functions" class="nav-link">Evaluate Functions</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#bpt-evaluator" class="nav-link">BPt Evaluator</a>
+        </li>
     
     </ul>
 </nav>
@@ -233,8 +274,24 @@
               
               <div>
                 
-  <div class="section" id="evaluate-functions">
-<span id="api-evaluate"></span><h1>Evaluate Functions<a class="headerlink" href="#evaluate-functions" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="evaluate">
+<span id="api-evaluate"></span><h1>Evaluate<a class="headerlink" href="#evaluate" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="get-estimator">
+<h2>Get Estimator<a class="headerlink" href="#get-estimator" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.get_estimator.html#BPt.get_estimator" title="BPt.get_estimator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_estimator</span></code></a>(pipeline, dataset[, problem_spec])</p></td>
+<td><p>Get a sklearn compatible <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v0.24)"><span class="xref std std-ref">estimator</span></a> from a <a class="reference internal" href="api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>, <a class="reference internal" href="api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> and <a class="reference internal" href="api/BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="evaluate-functions">
+<h2>Evaluate Functions<a class="headerlink" href="#evaluate-functions" title="Permalink to this headline">¶</a></h2>
 <table class="longtable table autosummary">
 <colgroup>
 <col style="width: 10%" />
@@ -253,6 +310,21 @@
 </tbody>
 </table>
 </div>
+<div class="section" id="bpt-evaluator">
+<h2>BPt Evaluator<a class="headerlink" href="#bpt-evaluator" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>(estimator, ps[, encoders, …])</p></td>
+<td><p>This class is returned from calls to <a class="reference internal" href="api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, and can be used to store information from evaluate, or compute additional feature importances.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
 
               </div>
@@ -261,7 +333,7 @@
               <div class='prev-next-bottom'>
                 
     <a class='left-prev' id="prev-link" href="api/BPt.p.Instrumentation.to_grid.html" title="previous page">BPt.p.Instrumentation.to_grid</a>
-    <a class='right-next' id="next-link" href="api/BPt.evaluate.html" title="next page">BPt.evaluate</a>
+    <a class='right-next' id="next-link" href="api/BPt.get_estimator.html" title="next page">BPt.get_estimator</a>
 
               </div>
               

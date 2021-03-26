@@ -68,6 +68,10 @@
             <a class="nav-link" href="../installation/index.html">Installation</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
         <li class="nav-item active">
             <a class="nav-link" href="index.html">User Guide</a>
         </li>
@@ -128,6 +132,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -138,6 +144,18 @@
             
                 <li class="">
                     <a href="loading_data.html">Loading Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="saving_data.html">Saving Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="test_split.html">Test Split</a>
                 </li>
             
           
@@ -301,9 +319,7 @@ before with:</p>
 <span class="gp">In [10]: </span><span class="n">scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;robust&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;quantile_range&#39;</span><span class="p">:</span> <span class="n">quantile_range</span><span class="p">})</span>
 
 <span class="gp">In [11]: </span><span class="n">scaler</span>
-<span class="gh">Out[11]: </span><span class="go"></span>
-<span class="go">Scaler(obj=&#39;robust&#39;,</span>
-<span class="go">       params={&#39;quantile_range&#39;: Choice([(5, 95), (10, 90), (15, 85)])})</span>
+<span class="gh">Out[11]: </span><span class="go">Scaler(obj=&#39;robust&#39;, params={&#39;quantile_range&#39;: Choice([(5, 95), (10, 90), (15, 85)])})</span>
 </pre></div>
 </div>
 <p>See <a class="reference internal" href="params.html#params"><span class="std std-ref">Params</span></a> for more information on how to set Parameters.</p>

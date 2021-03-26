@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -124,6 +128,8 @@
     
   
     <ul class="nav bd-sidenav">
+        
+        
         
         
         
@@ -205,19 +211,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -257,12 +275,12 @@
 <h1>BPt.Ensemble.build<a class="headerlink" href="#bpt-ensemble-build" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Ensemble.build">
-<code class="sig-prename descclassname">Ensemble.</code><code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">problem_spec_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L172-L278"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Ensemble.build" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Ensemble.</code><code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">problem_spec_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L199-L312"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Ensemble.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used to convert a single pipeline piece into
 the base sklearn style object used in the pipeline. This method
 is mostly used to investigate pieces and is not necessarily
 designed to produce independently usable pieces.</p>
-<p>Warning: For now this method will not work when the base
+<p>For now this method will not work when the base
 obj is a custom object.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -270,25 +288,28 @@ obj is a custom object.</p>
 <dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></span></dt><dd><p>The Dataset in which the pipeline should be initialized
 according to. For example, pipeline’s can include Scopes,
 these need a reference Dataset.</p>
+<p>Something something</p>
 </dd>
-<dt><strong>problem_spec</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> or ‘default’, optional</span></dt><dd><p><cite>problem_spec</cite> accepts an instance of the
+<dt><strong>problem_spec</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> or ‘default’, optional</span></dt><dd><p>This parameter accepts an instance of the
 params class <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.
-This object is essentially a wrapper around commonly used
+The ProblemSpec is essentially a wrapper
+around commonly used
 parameters needs to define the context
 the model pipeline should be evaluated in.
 It includes parameters like problem_type, scorer, n_jobs,
-random_state, etc…
-See <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> for more information
+random_state, etc…</p>
+<p>See <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> for more information
 and for how to create an instance of this object.</p>
 <p>If left as ‘default’, then will initialize a
 ProblemSpec with default params.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>problem_spec_params</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> params, optional</span></dt><dd><p>You may also pass any valid parameter value pairs here.
-These are passed in kwargs style, e.g.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">build</span><span class="p">(</span><span class="n">problem_type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+<dt><strong>problem_spec_params</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> params, optional</span></dt><dd><p>You may also pass any valid problem spec argument-value pairs here,
+in order to override a value in the passed <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.
+Overriding params should be passed in kwargs style, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">problem_type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd>
@@ -315,32 +336,37 @@ of the valid <a class="reference internal" href="../pipeline_pieces.html#api-pip
 as used here).</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
 
-<span class="gp">In [2]: </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]})</span>
+<span class="gp">In [2]: </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
 
-<span class="gp">In [3]: </span><span class="n">dataset</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;col2&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">In [3]: </span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 
-<span class="gp">In [4]: </span><span class="n">dataset</span>
-<span class="gh">Out[4]: </span><span class="go"></span>
+<span class="gp">In [4]: </span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;col2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+
+<span class="gp">In [5]: </span><span class="n">dataset</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;col2&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="gp">In [6]: </span><span class="n">dataset</span>
+<span class="gh">Out[6]: </span><span class="go"></span>
 <span class="go">   col1  col2</span>
 <span class="go">0     1     3</span>
 <span class="go">1     2     4</span>
+<span class="go">2     3     5</span>
 
-<span class="gp">In [5]: </span><span class="n">piece</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;ridge&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">In [7]: </span><span class="n">piece</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;ridge&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="gp">In [6]: </span><span class="n">piece</span>
-<span class="gh">Out[6]: </span><span class="go">Model(obj=&#39;ridge&#39;, params=1)</span>
+<span class="gp">In [8]: </span><span class="n">piece</span>
+<span class="gh">Out[8]: </span><span class="go">Model(obj=&#39;ridge&#39;, params=1)</span>
 </pre></div>
 </div>
 <p>We can call build from the piece</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="n">estimator</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">estimator</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
 
-<span class="gp">In [8]: </span><span class="n">estimator</span>
-<span class="gh">Out[8]: </span><span class="go"></span>
+<span class="gp">In [10]: </span><span class="n">estimator</span>
+<span class="gh">Out[10]: </span><span class="go"></span>
 <span class="go">(&#39;ridge regressor&#39;,</span>
-<span class="go"> BPtModel(estimator=Ridge(max_iter=1000, random_state=1, solver=&#39;lsqr&#39;), inds=&#39;all&#39;))</span>
+<span class="go"> BPtModel(estimator=Ridge(max_iter=100, random_state=1, solver=&#39;lsqr&#39;), inds=&#39;all&#39;))</span>
 
-<span class="gp">In [9]: </span><span class="n">params</span>
-<span class="gh">Out[9]: </span><span class="go">{&#39;ridge regressor__estimator__alpha&#39;: Log(lower=0.001, upper=100000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.001, 100000.0, full_range_sampling=True)}</span>
+<span class="gp">In [11]: </span><span class="n">params</span>
+<span class="gh">Out[11]: </span><span class="go">{&#39;ridge regressor__estimator__alpha&#39;: Log(lower=0.001, upper=100000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.001, 100000.0, full_range_sampling=True)}</span>
 </pre></div>
 </div>
 </dd></dl>

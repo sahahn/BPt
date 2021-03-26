@@ -41,7 +41,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Extension Classes" href="../extensions.html" />
+    <link rel="next" title="BPt.BPtEvaluator" href="BPt.BPtEvaluator.html" />
     <link rel="prev" title="BPt.cross_validate" href="BPt.cross_validate.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -66,6 +66,10 @@
         
         <li class="nav-item ">
             <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
         </li>
         
         <li class="nav-item ">
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -169,6 +175,12 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
@@ -176,8 +188,12 @@
             
   
                 <li class="active">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                     <ul>
+                    
+                        <li class="">
+                            <a href="BPt.get_estimator.html">BPt.get_estimator</a>
+                        </li>
                     
                         <li class="">
                             <a href="BPt.evaluate.html">BPt.evaluate</a>
@@ -191,6 +207,10 @@
                             <a href="">BPt.cross_val_score</a>
                         </li>
                     
+                        <li class="">
+                            <a href="BPt.BPtEvaluator.html">BPt.BPtEvaluator</a>
+                        </li>
+                    
                     </ul>
                 </li>
             
@@ -198,6 +218,12 @@
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -237,7 +263,7 @@
 <h1>BPt.cross_val_score<a class="headerlink" href="#bpt-cross-val-score" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="BPt.cross_val_score">
-<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">cross_val_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">sk_n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">fit_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_score</span><span class="o">=</span><span class="default_value">nan</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L495-L574"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.cross_val_score" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">cross_val_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">sk_n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">fit_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_score</span><span class="o">=</span><span class="default_value">nan</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L694-L776"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.cross_val_score" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function is a BPt compatible wrapper around
 <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html#sklearn.model_selection.cross_val_score" title="(in scikit-learn v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.cross_val_score()</span></code></a></p>
 <dl class="field-list">
@@ -277,7 +303,7 @@ random_state, etc…</p>
 and for how to create an instance of this object.</p>
 <p>If left as ‘default’, then will initialize a
 ProblemSpec with default params.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
 </pre></div>
 </div>
 </dd>
@@ -323,14 +349,12 @@ or instead of.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>error_score</strong><span class="classifier">‘raise’ or numeric, optional</span></dt><dd><blockquote>
-<div><p>Base sklearn func parameter.</p>
+<dt><strong>error_score</strong><span class="classifier">‘raise’ or numeric, optional</span></dt><dd><p>Base sklearn func parameter.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 </pre></div>
 </div>
-</div></blockquote>
-<dl>
-<dt>extra_params<span class="classifier">problem_spec or pipeline params, optional</span></dt><dd><p>You may pass as extra arguments to this function any pipeline
+</dd>
+<dt><strong>extra_params</strong><span class="classifier">problem_spec or pipeline params, optional</span></dt><dd><p>You may pass as extra arguments to this function any pipeline
 or problem_spec argument as python kwargs style value pairs.</p>
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">target</span><span class="o">=</span><span class="mi">1</span>
@@ -341,8 +365,6 @@ in the passed problem_spec. Or for example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">=</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;ridge&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 </dd>
 </dl>
 </dd>
@@ -367,7 +389,7 @@ in the passed problem_spec. Or for example:</p>
               <div class='prev-next-bottom'>
                 
     <a class='left-prev' id="prev-link" href="BPt.cross_validate.html" title="previous page">BPt.cross_validate</a>
-    <a class='right-next' id="next-link" href="../extensions.html" title="next page">Extension Classes</a>
+    <a class='right-next' id="next-link" href="BPt.BPtEvaluator.html" title="next page">BPt.BPtEvaluator</a>
 
               </div>
               

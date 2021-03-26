@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -177,19 +183,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -229,7 +247,7 @@
 <h1>BPt.ProblemSpec<a class="headerlink" href="#bpt-problemspec" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.ProblemSpec">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">ProblemSpec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scorer</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">subjects</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">problem_type</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">base_dtype</span><span class="o">=</span><span class="default_value">'float32'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L2048-L2250"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.ProblemSpec" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">ProblemSpec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scorer</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">subjects</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">problem_type</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">base_dtype</span><span class="o">=</span><span class="default_value">'float32'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L2313-L2522"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.ProblemSpec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Problem Spec is defined as an object encapsulating the set of
 parameters used by different <a class="reference internal" href="../evaluate.html#api-evaluate"><span class="std std-ref">Evaluation Functions</span></a></p>
 <dl class="field-list">
@@ -354,6 +372,12 @@ different results, even with the same
 random seed, e.g., some model optimizations,
 then you might still not get
 exact replicability.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There are some good arguments to be made for not using a
+fixed seed in some cases. See:
+<a class="reference external" href="https://scikit-learn.org/stable/common_pitfalls.html#controlling-randomness">https://scikit-learn.org/stable/common_pitfalls.html#controlling-randomness</a></p>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
 </div>

@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -169,13 +175,19 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
@@ -201,7 +213,17 @@
                             <a href="BPt.extensions.ThresholdNetworkMeasures.html">BPt.extensions.ThresholdNetworkMeasures</a>
                         </li>
                     
+                        <li class="">
+                            <a href="BPt.extensions.RandomParcellation.html">BPt.extensions.RandomParcellation</a>
+                        </li>
+                    
                     </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -241,7 +263,7 @@
 <h1>BPt.extensions.SurfMaps<a class="headerlink" href="#bpt-extensions-surfmaps" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.extensions.SurfMaps">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.extensions.</code><code class="sig-name descname">SurfMaps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">maps</span></em>, <em class="sig-param"><span class="n">strategy</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vectorize</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L477-L820"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.SurfMaps" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.extensions.</code><code class="sig-name descname">SurfMaps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">maps</span></em>, <em class="sig-param"><span class="n">strategy</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vectorize</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L484-L905"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.SurfMaps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract signals from overlapping labels.</p>
 <p>This class functions similar to
 <a class="reference external" href="https://nilearn.github.io/modules/generated/nilearn.input_data.NiftiMapsMasker.html#nilearn.input_data.NiftiMapsMasker" title="(in Nilearn)"><code class="xref py py-class docutils literal notranslate"><span class="pre">nilearn.input_data.NiftiMapsMasker</span></code></a>, except
@@ -280,9 +302,9 @@ consider an example. Let’s say the
 fit data X, and maps are</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="n">maps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
 </pre></div>
 </div>
 <p>In this case, the ‘ls’ method would
@@ -296,9 +318,9 @@ handle negative values well.</p>
 weights to</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="n">maps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
-                    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
 
 <span class="n">ls_sol</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.</span> <span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
 <span class="n">average_sol</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
@@ -345,6 +367,74 @@ then the output will be 1D regardless of this parameter.</p>
 </dd>
 </dl>
 </div>
+<p class="rubric">Examples</p>
+<p>First let’s define an example set of probabilistic maps, we
+will assume there are just 5 features in our data, and we will
+define 6 total maps.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="gp">In [2]: </span><span class="kn">from</span> <span class="nn">BPt.extensions</span> <span class="kn">import</span> <span class="n">SurfMaps</span>
+
+<span class="go"># This should have shape number of features x number of maps!</span>
+<span class="gp">In [3]: </span><span class="n">prob_maps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">   ...: </span>                      <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">   ...: </span>                      <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">   ...: </span>                      <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">   ...: </span>                      <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">   ...: </span>
+
+<span class="gp">In [4]: </span><span class="n">prob_maps</span><span class="o">.</span><span class="n">shape</span>
+<span class="gh">Out[4]: </span><span class="go">(5, 6)</span>
+</pre></div>
+</div>
+<p>Next we can define some input data to use with these maps.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">data1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+
+<span class="gp">In [6]: </span><span class="n">data1</span>
+<span class="gh">Out[6]: </span><span class="go">array([0., 1., 2., 3., 4.])</span>
+
+<span class="gp">In [7]: </span><span class="n">data2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+
+<span class="gp">In [8]: </span><span class="n">data2</span>
+<span class="gh">Out[8]: </span><span class="go">array([1., 1., 1., 1., 1.])</span>
+</pre></div>
+</div>
+<p>Now let’s define the actual object and use it to transform the data.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">sm</span> <span class="o">=</span> <span class="n">SurfMaps</span><span class="p">(</span><span class="n">maps</span><span class="o">=</span><span class="n">prob_maps</span><span class="p">)</span>
+
+<span class="gp">In [10]: </span><span class="n">sm</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span>
+<span class="gh">Out[10]: </span><span class="go"></span>
+<span class="go">array([1.42857143, 1.71428571, 2.        , 2.28571429, 2.57142857,</span>
+<span class="go">       2.        ])</span>
+
+<span class="gp">In [11]: </span><span class="n">sm</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data2</span><span class="p">)</span>
+<span class="gh">Out[11]: </span><span class="go">array([1., 1., 1., 1., 1., 1.])</span>
+</pre></div>
+</div>
+<p>Okay so what is going on when we transform this data? Basically we are
+just taking weighted averages for each one of the defined maps. We could
+also explicitly change the strategy from ‘auto’ to ‘ls’ which would
+take the least squares solution instead.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="n">sm</span> <span class="o">=</span> <span class="n">SurfMaps</span><span class="p">(</span><span class="n">maps</span><span class="o">=</span><span class="n">prob_maps</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;ls&#39;</span><span class="p">)</span>
+
+<span class="gp">In [13]: </span><span class="n">data_trans</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span>
+
+<span class="gp">In [14]: </span><span class="n">data_trans</span>
+<span class="gh">Out[14]: </span><span class="go"></span>
+<span class="go">array([-0.74074074, -0.24074074,  0.25925926,  0.75925926,  1.25925926,</span>
+<span class="go">        0.18518519])</span>
+</pre></div>
+</div>
+<p>While a little less intuitive, the least squares solution allows
+us to reverse the feature transformation (although not always exactly)</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [15]: </span><span class="n">sm</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">data_trans</span><span class="p">)</span>
+<span class="gh">Out[15]: </span><span class="go"></span>
+<span class="go">array([-1.11022302e-15,  1.00000000e+00,  2.00000000e+00,  3.00000000e+00,</span>
+<span class="go">        4.00000000e+00])</span>
+</pre></div>
+</div>
+<p>This can be useful in the say the case of converting back downstream
+calculated feature importance to the original data space.</p>
 <p class="rubric">Methods</p>
 <table class="longtable table autosummary">
 <colgroup>

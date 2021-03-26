@@ -41,7 +41,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="BPt.Dataset.get_test_Xy" href="BPt.Dataset.get_test_Xy.html" />
+    <link rel="next" title="BPt.Dataset.get_values" href="BPt.Dataset.get_values.html" />
     <link rel="prev" title="BPt.Dataset.get_scopes" href="BPt.Dataset.get_scopes.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -66,6 +66,10 @@
         
         <li class="nav-item ">
             <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
         </li>
         
         <li class="nav-item ">
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
   
@@ -174,14 +180,6 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
-                        </li>
-                    
-                        <li class="">
                             <a href="BPt.Dataset.copy.html">BPt.Dataset.copy</a>
                         </li>
                     
@@ -191,14 +189,6 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_train_Xy.html">BPt.Dataset.get_train_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_test_Xy.html">BPt.Dataset.get_test_Xy</a>
                         </li>
                     
                         <li class="">
@@ -227,6 +217,26 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_data_file.html">BPt.Dataset.to_data_file</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.consolidate_data_files.html">BPt.Dataset.consolidate_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.update_data_file_paths.html">BPt.Dataset.update_data_file_paths</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
                         </li>
                     
                         <li class="">
@@ -282,15 +292,11 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show.html">BPt.Dataset.show</a>
+                            <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show_nan_info.html">BPt.Dataset.show_nan_info</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.info.html">BPt.Dataset.info</a>
+                            <a href="BPt.Dataset.summary.html">BPt.Dataset.summary</a>
                         </li>
                     
                         <li class="">
@@ -345,19 +351,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -397,26 +415,37 @@
 <h1>BPt.Dataset.get_subjects<a class="headerlink" href="#bpt-dataset-get-subjects" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.get_subjects">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">get_subjects</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subjects</span></em>, <em class="sig-param"><span class="n">return_as</span><span class="o">=</span><span class="default_value">'set'</span></em>, <em class="sig-param"><span class="n">only_level</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L396-L511"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.get_subjects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">get_subjects</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subjects</span></em>, <em class="sig-param"><span class="n">return_as</span><span class="o">=</span><span class="default_value">'set'</span></em>, <em class="sig-param"><span class="n">only_level</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_subjects.py#L112-L233"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.get_subjects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to get a set of subjects, from
 a set of already loaded ones, or from a saved location.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
 <dt><strong>subjects</strong><span class="classifier"><a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a></span></dt><dd><p>This argument can be any of the BPt accepted
-<a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> style inputs.
-E.g., None, ‘nan’ for subjects
+subject style inputs. E.g., None, ‘nan’ for subjects
 with any nan data, the str location of a file
 formatted with one subject per line, or directly an
 array-like of subjects, to name some options.</p>
 <p>See <a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> for all options.</p>
 </dd>
-<dt><strong>return_as</strong><span class="classifier">{‘set’, ‘index’, ‘flat index’}, optional</span></dt><dd><ul class="simple">
-<li><p>If ‘set’, return as set of subjects.</p></li>
-<li><p>If ‘index’, return as sorted pandas index.</p></li>
+<dt><strong>return_as</strong><span class="classifier">[‘set’, ‘index’, ‘flat index’], optional</span></dt><dd><ul class="simple">
 <li><dl class="simple">
-<dt>If ‘flat index’, will return as sorted pandas index</dt><dd><p>i.e., the same output as index, when not MultiIndex,
-but when MultiIndex, will return the index as a flat
+<dt>‘set’</dt><dd><p>Return as set of subjects.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘index’</dt><dd><p>Return as sorted <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.Index.html#pandas.Index" title="(in pandas v1.2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Index</span></code></a>,
+or if underlying multi-index as a
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.MultiIndex.html#pandas.MultiIndex" title="(in pandas v1.2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.MultiIndex</span></code></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘flat index’</dt><dd><p>Return as sorted <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.Index.html#pandas.Index" title="(in pandas v1.2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Index</span></code></a>,
+note that if not an underlying multi-index
+this will return the same result as
+‘index’, when MultiIndex, will return the index as a flat
 Index of tuples.</p>
 </dd>
 </dl>
@@ -434,10 +463,12 @@ when using special tuple style input for subjects.</p>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>subjects</strong><span class="classifier">{set, pd.Index, pd.MultiIndex}</span></dt><dd><p>Based on value of return_as, returns as
-a set of subjects, sorted pandas Index, or sorted
-pandas MultiIndex</p>
+<dd class="field-even"><dl>
+<dt><strong>subjects</strong><span class="classifier">set, <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.Index.html#pandas.Index" title="(in pandas v1.2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Index</span></code></a> or <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.MultiIndex.html#pandas.MultiIndex" title="(in pandas v1.2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.MultiIndex</span></code></a></span></dt><dd><p>Based on value of return_as, returns as
+a set of subjects, sorted <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.Index.html#pandas.Index" title="(in pandas v1.2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Index</span></code></a>,
+sorted <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.MultiIndex.html#pandas.MultiIndex" title="(in pandas v1.2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.MultiIndex</span></code></a> or flattened and
+sorted <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.Index.html#pandas.Index" title="(in pandas v1.2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.Index</span></code></a> representing a
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.MultiIndex.html#pandas.MultiIndex" title="(in pandas v1.2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.MultiIndex</span></code></a>.</p>
 </dd>
 </dl>
 </dd>
@@ -453,7 +484,7 @@ pandas MultiIndex</p>
               <div class='prev-next-bottom'>
                 
     <a class='left-prev' id="prev-link" href="BPt.Dataset.get_scopes.html" title="previous page">BPt.Dataset.get_scopes</a>
-    <a class='right-next' id="next-link" href="BPt.Dataset.get_test_Xy.html" title="next page">BPt.Dataset.get_test_Xy</a>
+    <a class='right-next' id="next-link" href="BPt.Dataset.get_values.html" title="next page">BPt.Dataset.get_values</a>
 
               </div>
               

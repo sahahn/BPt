@@ -11,6 +11,7 @@ Default Options
 
    pipeline_options/index
    search_type_options/index
+   default_pipelines
 
 
 

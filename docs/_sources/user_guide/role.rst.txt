@@ -10,8 +10,11 @@ Role
 
 There are three possible roles in the :class:`Dataset` class / BPt. These are
 'data', 'target' and 'non input'. By default, all loaded columns will be treated with
-role 'data' until set differently. Roles are set through methods :func:`set_role <Dataset.set_role>`
-and :func:`set_roles <Dataset.set_roles>`.
+role 'data' until set differently. Roles are set through
+methods :func:`set_role <Dataset.set_role>`
+and :func:`set_roles <Dataset.set_roles>`. Or through dedicated
+helper methods :func:`set_target <Dataset.set_target>` and
+:func:`set_non_input <Dataset.set_non_input>`.
 
 The different roles are described below.
 

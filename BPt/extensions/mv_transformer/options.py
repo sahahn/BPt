@@ -1,4 +1,4 @@
-from ...default.helpers import get_obj_and_params
+from ...default.helpers import get_obj_and_params, all_from_objects
 
 
 MV_TRANSFORMERS = {}
@@ -18,3 +18,6 @@ def get_mv_transformer_and_params(trans_str, extra_params, params, **kwargs):
         get_obj_and_params(trans_str, MV_TRANSFORMERS, extra_params, params)
 
     return obj(**extra_obj_params), obj_params
+
+
+all_obj_keys = all_from_objects(MV_TRANSFORMERS)

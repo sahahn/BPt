@@ -1,4 +1,4 @@
-from ..helpers import get_obj_and_params
+from ..helpers import get_obj_and_params, all_from_avaliable
 
 from sklearn.ensemble import (BaggingClassifier, BaggingRegressor,
                               AdaBoostRegressor, AdaBoostClassifier)
@@ -69,3 +69,6 @@ def get_ensemble_and_params(ensemble_str, extra_params, params,
 
     # Slight tweak here, return tuple ensemble, extra_params
     return (ensemble, extra_ensemble_params), ensemble_params
+
+
+all_obj_keys = all_from_avaliable(AVALIABLE)

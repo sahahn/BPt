@@ -4,7 +4,7 @@ Feature_Selectors.py
 File with different Feature Selectors
 """
 from ..helpers import (get_possible_init_params,
-                       get_obj_and_params)
+                       get_obj_and_params, all_from_avaliable)
 from sklearn.feature_selection import SelectPercentile, VarianceThreshold
 from ...extensions.FeatSelectors import RFEWrapper, FeatureSelector
 import numpy as np
@@ -138,3 +138,6 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
 
     return (feat_selector(**extra_feat_selector_params),
             feat_selector_params)
+
+
+all_obj_keys = all_from_avaliable(AVALIABLE)

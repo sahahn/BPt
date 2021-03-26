@@ -20,7 +20,7 @@ from sklearn.linear_model import (LogisticRegression, ElasticNet,
                                   TweedieRegressor)
 
 from sklearn.svm import SVC, LinearSVR, SVR, LinearSVC
-from ..helpers import get_obj_and_params
+from ..helpers import get_obj_and_params, all_from_avaliable
 
 
 AVALIABLE = {
@@ -226,3 +226,6 @@ def get_base_model_and_params(model_type, extra_params, model_type_params,
         get_obj_and_params(model_type, MODELS, extra_params, model_type_params)
 
     return model(**extra_model_params), model_type_params
+
+
+all_obj_keys = all_from_avaliable(AVALIABLE)

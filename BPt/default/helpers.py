@@ -212,3 +212,36 @@ def get_possible_init_params(model):
     except AttributeError:
         pos_params = dict(inspect.getmembers(model.__init__.__code__))
         return pos_params['co_varnames']
+
+
+def all_from_avaliable(avaliable):
+
+    a = set()
+    for pt in avaliable:
+        for key in avaliable[pt]:
+            a.add(key)
+
+    return a
+
+
+def all_from_objects(objects):
+
+    a = set()
+    for key in objects:
+        a.add(key)
+
+    return a
+
+
+def coarse_any_obj_check(in_str):
+    from .options.all_keys import get_all_keys
+
+    all_keys = get_all_keys()
+
+    # Get proc str
+    proc_str = proc_str_input(in_str)
+
+    if proc_str not in all_keys:
+        raise RuntimeError('Passed obj=' + str(in_str) + ' does not '
+                           'correspond '
+                           'to any avaliable default options from BPt!')

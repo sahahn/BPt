@@ -1,4 +1,4 @@
-from ..helpers import get_obj_and_params
+from ..helpers import get_obj_and_params, all_from_objects
 from ...extensions.loaders import Identity, SurfLabels
 
 LOADERS = {
@@ -23,3 +23,6 @@ def get_loader_and_params(loader_str, extra_params, params, **kwargs):
         get_obj_and_params(loader_str, LOADERS, extra_params, params)
 
     return loader(**extra_loader_params), loader_params
+
+
+all_obj_keys = all_from_objects(LOADERS)

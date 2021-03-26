@@ -1,7 +1,7 @@
 from .compare import Compare, Option
 from copy import deepcopy
 from sklearn.base import BaseEstimator
-from ..default.helpers import proc_input
+from ..default.helpers import proc_input, coarse_any_obj_check
 from ..util import conv_to_list, BPtInputMixIn
 
 from ..main.input_operations import (Pipe, Select,
@@ -124,15 +124,17 @@ class Check():
         obj = getattr(self, 'obj')
 
         if obj is None:
-            raise IOError('passed obj cannot be None, to ignore',
-                          'the object itself',
-                          'set it within Pipeline to None,',
-                          ' not obj here.')
+            raise RuntimeError('Passed obj cannot be None')
 
         if isinstance(obj, list) and not isinstance(obj, Pipe):
-            raise IOError('You may only pass a list of objs with ',
-                          'special input',
-                          'Pipe()')
+            raise RuntimeError('You may not pass a list of objs')
+
+        # If str, then run a coarse general check
+        # that won't handle if the object is of the wrong
+        # problem type or for the wrong piece
+        # but should catch typos
+        if isinstance(obj, str):
+            coarse_any_obj_check(obj)
 
     def _check_params(self):
 

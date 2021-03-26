@@ -2,6 +2,7 @@ from ..input import (ModelPipeline, Pipeline, Transformer,
                      Model, ParamSearch, FeatSelector)
 from ..input_operations import Duplicate
 from sklearn.linear_model import LinearRegression
+from ...default.helpers import proc_str_input
 from nose.tools import assert_raises
 
 
@@ -19,8 +20,10 @@ def test_pipeline_check_duplicate():
 
 def test_pipeline_proc_input():
 
-    pipe = Pipeline(steps=[Model('SOmeThing_reGressor')])
-    assert pipe.steps[0].obj == 'something'
+    assert proc_str_input('SOmeThing_reGressor') == 'something'
+
+    with assert_raises(RuntimeError):
+        Pipeline(steps=[Model('SOmeThing_reGressor')])
 
 
 def test_get_piece_params():

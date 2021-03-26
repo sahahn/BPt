@@ -3,7 +3,7 @@ import pandas as pd
 import tempfile
 import os
 from nose.tools import assert_raises
-from ...main.input_operations import Value_Subset, Intersection
+from ...main.input_operations import ValueSubset, Intersection
 from .datasets import (get_fake_dataset, get_fake_dataset2,
                        get_fake_multi_index_dataset, get_fake_dataset4)
 
@@ -72,57 +72,57 @@ def test_get_subjects_nan():
     assert len(subjects) == 0
 
 
-def test_get_subjects_value_subset():
+def test_get_subjects_ValueSubset():
 
     df = get_fake_dataset()
 
     # Int column test 1 value
-    vs = Value_Subset(name='1', values=1, decode_values=False)
+    vs = ValueSubset(name='1', values=1, decode_values=False)
     subjects = df.get_subjects(vs, return_as='set')
     assert len(subjects) == 1
     assert subjects.pop() == 0
 
     # Int column test 2 values
-    vs = Value_Subset(name='1', values=[1, 2], decode_values=False)
+    vs = ValueSubset(name='1', values=[1, 2], decode_values=False)
     subjects = df.get_subjects(vs, return_as='set')
     assert len(subjects) == 2
 
     # Str column test 1 value
-    vs = Value_Subset(name='2', values=['6'], decode_values=False)
+    vs = ValueSubset(name='2', values=['6'], decode_values=False)
     subjects = df.get_subjects(vs, return_as='set')
     assert len(subjects) == 1
     assert subjects.pop() == 0
 
     # Str column test 2 values
-    vs = Value_Subset(name='2', values=['6', '7'], decode_values=False)
+    vs = ValueSubset(name='2', values=['6', '7'], decode_values=False)
     subjects = df.get_subjects(vs, return_as='set')
     assert len(subjects) == 2
 
     # Str / cat column test extra values
-    vs = Value_Subset(name='2', values=['6', '7', '9'], decode_values=False)
+    vs = ValueSubset(name='2', values=['6', '7', '9'], decode_values=False)
     subjects = df.get_subjects(vs, return_as='set')
     assert len(subjects) == 2
 
     # Column w/ nan
-    vs = Value_Subset(name='3', values=np.nan, decode_values=False)
+    vs = ValueSubset(name='3', values=np.nan, decode_values=False)
     subjects = df.get_subjects(vs, return_as='set')
     assert len(subjects) == 1
     assert subjects.pop() == 0
 
     # Column w/ nan 2 values
-    vs = Value_Subset(name='3', values=[np.nan, 2], decode_values=False)
+    vs = ValueSubset(name='3', values=[np.nan, 2], decode_values=False)
     subjects = df.get_subjects(vs, return_as='set')
     assert len(subjects) == 2
     assert df.loc[subjects].shape == (2, 3)
 
     # Bad name col
-    vs = Value_Subset(name=1, values=[np.nan, 2], decode_values=False)
+    vs = ValueSubset(name=1, values=[np.nan, 2], decode_values=False)
     with assert_raises(KeyError):
         subjects = df.get_subjects(vs, return_as='set')
 
     # Bad input
     with assert_raises(ValueError):
-        vs = Value_Subset(name=[1, 2], values=2)
+        vs = ValueSubset(name=[1, 2], values=2)
 
 
 def test_get_subjects_base():

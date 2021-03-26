@@ -3,7 +3,7 @@ BPt.Value\_Subset
 
 .. currentmodule:: BPt
 
-.. autoclass:: Value_Subset
+.. autoclass:: ValueSubset
 
    
 

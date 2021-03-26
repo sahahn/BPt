@@ -110,6 +110,10 @@ class Option(BPtInputMixIn):
         return hash(self.name) + hash(self.key)
 
     def __repr__(self):
+
+        if self.key is None:
+            return self.name
+
         return self.key + '=' + self.name
 
     def __str__(self):

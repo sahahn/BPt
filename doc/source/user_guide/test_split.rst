@@ -41,7 +41,7 @@ listing some examples here may be useful for cases when it is appropriate.
    that a testing set can be reserved to act as an extra test of generalizability.
    Additional constraints could be put on the this testing set, for example, if using
    subject's data from multiple sites, then the testing set could be defined with
-   :class:`Value_Subset` to be data from only an unseen site (or sites). In this case,
+   :class:`ValueSubset` to be data from only an unseen site (or sites). In this case,
    one could perform both cross-validation on the training set to establish the average
    generalizability of a modelling approach, in addition to training with the full training
    set and evaluating on the test set.

@@ -1402,7 +1402,7 @@ class Dataset(pd.DataFrame):
 
     from ._subjects import (_apply_only_level,
                             _get_nan_loaded_subjects,
-                            _get_value_subset_loaded_subjects,
+                            _get_ValueSubset_loaded_subjects,
                             _get_base_loaded_subjects,
                             _return_subjects_as,
                             get_subjects)

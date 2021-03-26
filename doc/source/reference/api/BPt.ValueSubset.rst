@@ -1,9 +1,9 @@
-BPt.Value\_Subset
-=================
+BPt.ValueSubset
+===============
 
 .. currentmodule:: BPt
 
-.. autoclass:: Value_Subset
+.. autoclass:: ValueSubset
 
    
 

@@ -1,6 +1,8 @@
+from BPt.pipeline.BPtPipeline import BPtPipeline
 from BPt.main.BPtEvaluator import BPtEvaluator
-from ...pipeline.BPtSearchCV import BPtGridSearchCV
+from ...pipeline.BPtSearchCV import BPtGridSearchCV, NevergradSearchCV
 from ..input import ModelPipeline, Model, CV, Pipeline, Scaler, ParamSearch
+from ..input_operations import Select
 from ...dataset.Dataset import Dataset
 from ...default.params.Params import Choice
 from ..funcs import evaluate, cross_val_score, _sk_check_y
@@ -10,6 +12,7 @@ import numpy as np
 from ...extensions import LinearResidualizer
 from ..compare import Compare, Option, CompareDict, Options
 from sklearn.tree import DecisionTreeClassifier
+from ...pipeline.Selector import Selector
 
 
 def get_fake_dataset():
@@ -572,3 +575,58 @@ def test_evaluator_get_X_transform_df():
         assert '2' in X_val_trans
 
         assert len(X_tr_trans) + len(X_val_trans) == len(dataset)
+
+
+def test_evaluate_pipeline_with_select():
+
+    select_scaler = Select([Scaler('standard'), Scaler('robust')])
+    select_model = Select([Model('linear'), Model('random forest')])
+
+    pipe = Pipeline([select_scaler, select_model],
+                    param_search=ParamSearch(n_iter=4))
+
+    dataset = get_fake_dataset()
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         cv=3)
+
+    assert isinstance(evaluator, BPtEvaluator)
+    search_est = evaluator.estimators[0]
+    assert isinstance(search_est, NevergradSearchCV)
+    best_est = search_est.best_estimator_
+    assert isinstance(best_est, BPtPipeline)
+    step0 = best_est.steps[0]
+    step1 = best_est.steps[1]
+    assert isinstance(step0[1], Selector)
+    assert isinstance(step1[1], Selector)
+    assert step0[1].estimator_ == step0[1].estimators[step0[1].to_use][1]
+    assert step1[1].estimator_ == step1[1].estimators[step1[1].to_use][1]
+
+
+def test_evaluate_modelpipeline_with_select():
+
+    select_scaler = Select([Scaler('standard'), Scaler('robust')])
+    select_model = Select([Model('linear'), Model('random forest')])
+
+    pipe = ModelPipeline(scalers=select_scaler,
+                         model=select_model,
+                         param_search=ParamSearch(n_iter=4))
+
+    dataset = get_fake_dataset()
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         cv=3)
+
+    assert isinstance(evaluator, BPtEvaluator)
+    search_est = evaluator.estimators[0]
+    assert isinstance(search_est, NevergradSearchCV)
+    best_est = search_est.best_estimator_
+    assert isinstance(best_est, BPtPipeline)
+    step0 = best_est.steps[0]
+    step1 = best_est.steps[1]
+    assert isinstance(step0[1], Selector)
+    assert isinstance(step1[1], Selector)
+    assert step0[1].estimator_ == step0[1].estimators[step0[1].to_use][1]
+    assert step1[1].estimator_ == step1[1].estimators[step1[1].to_use][1]

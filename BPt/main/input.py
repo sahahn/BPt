@@ -1,11 +1,11 @@
-from .compare import Compare
+from .compare import Compare, Option
 from copy import deepcopy
 from sklearn.base import BaseEstimator
 from ..default.helpers import proc_input
-from ..util import conv_to_list
+from ..util import conv_to_list, BPtInputMixIn
 
 from ..main.input_operations import (Pipe, Select,
-                                     BPtInputMixIn, Value_Subset, Duplicate)
+                                     ValueSubset, Duplicate)
 from ..default.options.scorers import process_scorer
 from .CV import get_bpt_cv
 from ..pipeline.constructors import (LoaderConstructor, ImputerConstructor,
@@ -267,8 +267,8 @@ class Piece(Params, Check):
             import BPt as bp
 
             dataset = bp.Dataset()
-            dataset['col1'] = [1, 2]
-            dataset['col2'] = [3, 4]
+            dataset['col1'] = [1, 2, 3]
+            dataset['col2'] = [3, 4, 5]
             dataset.set_role('col2', 'target', inplace=True)
             dataset
 
@@ -1078,6 +1078,9 @@ class Ensemble(Model):
         # Force passed models if not a list, into a list
         if not isinstance(models, list):
             models = [models]
+        if isinstance(models, Select):
+            models = [models]
+
         self.models = models
 
         self.params = params
@@ -1482,7 +1485,7 @@ def check_if_sklearn_step(step):
     # Skip def. not valid cases
     if isinstance(step, Piece):
         return False
-    if isinstance(step, Compare):
+    elif isinstance(step, BPtInputMixIn):
         return False
     elif isinstance(step, str):
         return False
@@ -1686,6 +1689,9 @@ class Pipeline(Params):
         if not isinstance(self.steps, list):
             raise TypeError('steps must be a list!')
 
+        if isinstance(self.steps, Select):
+            raise TypeError('steps cannot be Select')
+
         if len(self.steps) == 0:
             raise IndexError('steps cannot be empty!')
 
@@ -1693,9 +1699,27 @@ class Pipeline(Params):
         if isinstance(self.steps[-1], str):
             self.steps[-1] = Model(self.steps[-1])
 
+        # Make sure model
+        self._check_is_model(self.steps[-1])
+
+    def _check_is_model(self, step):
+
+        # If bpt mixin, extra cases
+        if isinstance(step, BPtInputMixIn):
+
+            if isinstance(step, Compare):
+                for option in step.options:
+                    assert isinstance(option, Option)
+
+            elif isinstance(step, Select):
+                [self._check_is_model(o) for o in step]
+
+            else:
+                raise RuntimeError(repr(step) + ' is not a valid Model')
+
         # If last step isn't model - or custom, raise error
-        if not isinstance(self.steps[-1], (Model, Custom, Compare)):
-            raise RuntimeError('The last step must be a Model.')
+        if not isinstance(self.steps[-1], (Model, Custom, BPtInputMixIn)):
+            raise RuntimeError(repr(step) + ' is not a valid Model')
 
     def _validate_input(self):
         '''Make sure all steps are Pieces, and param
@@ -1704,7 +1728,7 @@ class Pipeline(Params):
         # Validate steps
         for step in self.steps:
 
-            if not isinstance(step, (Piece, Compare)):
+            if not isinstance(step, (Piece, Compare, Select)):
                 raise RuntimeError('passed step:' + repr(step) +
                                    ' is not a valid Pipeline Piece / '
                                    'input wrapper')
@@ -1727,10 +1751,13 @@ class Pipeline(Params):
         if not isinstance(self.steps, list):
             self.steps = [self.steps]
             return
+        if isinstance(self.steps, Select):
+            self.steps = [self.steps]
+            return
 
         steps = []
         for step in self.steps:
-            if isinstance(step, list):
+            if isinstance(step, list) and not isinstance(step, Select):
                 for sub_step in step:
                     steps.append(sub_step)
             else:
@@ -2476,7 +2503,7 @@ class ProblemSpec(Params):
         _print('scorer =', self.scorer)
         _print('scope =', self.scope)
 
-        if isinstance(self.subjects, Value_Subset):
+        if isinstance(self.subjects, ValueSubset):
             _print('subjects =', self.subjects)
         elif len(self.subjects) < 50:
             _print('subjects =', self.subjects)

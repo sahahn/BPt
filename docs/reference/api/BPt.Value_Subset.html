@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Value_Subset &#8212; BPt 2 documentation</title>
+    <title>BPt.ValueSubset &#8212; BPt 2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -176,7 +176,7 @@
                         </li>
                     
                         <li class="active">
-                            <a href="">BPt.Value_Subset</a>
+                            <a href="">BPt.ValueSubset</a>
                         </li>
                     
                         <li class="">
@@ -242,11 +242,11 @@
               <div>
                 
   <div class="section" id="bpt-value-subset">
-<h1>BPt.Value_Subset<a class="headerlink" href="#bpt-value-subset" title="Permalink to this headline">¶</a></h1>
+<h1>BPt.ValueSubset<a class="headerlink" href="#bpt-value-subset" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="BPt.Value_Subset">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Value_Subset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">values</span></em>, <em class="sig-param"><span class="n">decode_values</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input_operations.py#L184-L287"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Value_Subset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Value_Subset is special wrapper class for BPt designed to work with
+<dt id="BPt.ValueSubset">
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">ValueSubset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">values</span></em>, <em class="sig-param"><span class="n">decode_values</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input_operations.py#L184-L287"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.ValueSubset" title="Permalink to this definition">¶</a></dt>
+<dd><p>ValueSubset is special wrapper class for BPt designed to work with
 <a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> style input. It is used to select a subset of subjects
 based on a loaded column’s value.</p>
 <dl class="field-list">
@@ -287,7 +287,7 @@ or <a class="reference internal" href="BPt.Dataset.ordinalize.html#BPt.Dataset.o
 <p class="rubric">Examples</p>
 <p>This wrapper can be used as follows, just specify an object as</p>
 <blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Value_Subset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ValueSubset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -295,7 +295,7 @@ or <a class="reference internal" href="BPt.Dataset.ordinalize.html#BPt.Dataset.o
 and value is the subset of values from that column to select subjects by.
 E.g., if you wanted to select just subjects of a specific sex,
 and assuming the variable was properly loaded,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="n">Value_Subset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Which would specify only subjects with ‘sex’ equal to 0.
@@ -313,7 +313,7 @@ as the default value of False,
 then you must pass value = 0 or 1, but
 if decode_values = True,
 then it allows passing value = ‘M’ or ‘F’. E.g.,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="n">Value_Subset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span> <span class="o">=</span> <span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

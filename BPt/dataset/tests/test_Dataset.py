@@ -488,3 +488,37 @@ def test_get_cols_limit_to():
 
     cols = df._get_cols('category', limit_to=['data file'])
     assert len(cols) == 0
+
+
+def test_get_problem_type_binary():
+
+    data = Dataset()
+    data['1'] = [0, 1, 1, 1]
+
+    assert data._get_problem_type('1') == 'binary'
+
+
+def test_get_problem_type_binary_error():
+
+    data = Dataset()
+    data['1'] = [1, 2, 2, 2]
+
+    with assert_raises(RuntimeError):
+        data._get_problem_type('1')
+
+
+def test_get_problem_type_categorical():
+
+    data = Dataset()
+    data['1'] = [0, 1, 2, 3]
+    data['1'] = data['1'].astype('category')
+
+    assert data._get_problem_type('1') == 'categorical'
+
+
+def test_get_problem_type_regression():
+
+    data = Dataset()
+    data['1'] = [0, 1, 2, 3]
+
+    assert data._get_problem_type('1') == 'regression'

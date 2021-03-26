@@ -370,6 +370,7 @@ class BPtEvaluator():
 
         # Verbose info.
         self._print('Predicting target =', str(self.ps.target), level=1)
+        self._print('Using problem_type =', str(self.ps.problem_type), level=1)
         self._print('Using scope =', str(self.ps.scope), 'defining a total of',
                     str(X.shape)[1], 'features.', level=1)
         self._print(f'Evaluating {len(X)} total data points.', level=1)

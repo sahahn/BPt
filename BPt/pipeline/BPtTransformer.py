@@ -142,7 +142,7 @@ class BPtTransformer(ScopeTransformer):
             if isinstance(cat, float):
                 cat = int(cat)
 
-            return name + '=' + repr(cat)
+            return str(name) + '=' + repr(cat)
 
         # Scope all case, set inds as identity
         # over all passed feat names

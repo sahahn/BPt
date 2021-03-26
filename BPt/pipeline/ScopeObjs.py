@@ -244,11 +244,20 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
 
         # Passthrough case
         if self.passthrough:
+
+            # If no rest inds, skip
+            if len(self.rest_inds_) == 0:
+                return np.hstack([X_trans, X[:, self.inds_]])
+
             return np.hstack([X_trans, X[:, self.rest_inds_],
                               X[:, self.inds_]])
 
         # Return stacked X_trans with rest inds
-        return np.hstack([X_trans, X[:, self.rest_inds_]])
+        if len(self.rest_inds_) > 0:
+            return np.hstack([X_trans, X[:, self.rest_inds_]])
+
+        # No rest inds, return directly
+        return X_trans
 
     def _est_transform(self, X, **trans_params):
 
@@ -266,33 +275,36 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
 
     def transform_df(self, df, base_name=None, encoders=None):
 
+        # Important: Operate on a copy of the data frame
+        df_copy = df.copy()
+
         # If None, pass along as is
         if self.estimator_ is None:
             return df
 
         # Get transfrom index from df
-        transform_index = df.index
+        transform_index = df_copy.index
 
         # Prepare as numpy array - make sure same as original passed dtype
-        X = np.array(df).astype(self.base_dtype_)
+        X = np.array(df_copy).astype(self.base_dtype_)
 
         # Transform data
         X_trans = self.transform(X, transform_index=transform_index)
 
         # Feat names are as is
-        feat_names = list(df)
+        feat_names = list(df_copy)
 
         # Process new names
         new_names = self._proc_new_names(feat_names, base_name,
                                          encoders=encoders)
 
-        # Fill in the new values directly to the passed df
+        # Fill in the new values directly to the passed df_copy
         for i, feat_name in enumerate(new_names):
-            df.loc[:, feat_name] = X_trans[:, i]
+            df_copy.loc[:, feat_name] = X_trans[:, i]
 
         # Return by re-ordering the df so that it matches
         # the order of new_names, and only with those included in new_names
-        return df.loc[:, new_names]
+        return df_copy.loc[:, new_names]
 
     def _proc_new_names(self, feat_names, base_name=None, encoders=None):
 

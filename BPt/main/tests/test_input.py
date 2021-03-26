@@ -26,6 +26,21 @@ def test_pipeline_proc_input():
         Pipeline(steps=[Model('SOmeThing_reGressor')])
 
 
+def test_coarse_check_fail():
+
+    with assert_raises(RuntimeError):
+        Model(obj='not real')
+
+    with assert_raises(RuntimeError):
+        FeatSelector(obj='nope')
+
+    with assert_raises(RuntimeError):
+        FeatSelector(obj='still fake')
+
+    with assert_raises(TypeError):
+        FeatSelector()
+
+
 def test_get_piece_params():
 
     t = Transformer('fake', extra='something')
@@ -63,7 +78,7 @@ def test_pipeline_bad_input():
         Pipeline([])
 
     with assert_raises(RuntimeError):
-        Pipeline([Transformer('nonsense')])
+        Pipeline([Transformer('fake')])
 
     with assert_raises(RuntimeError):
         Pipeline(['not real', Model('ridge')])
@@ -75,16 +90,16 @@ def test_pipeline_bad_input():
 def test_pipeline_with_sklearn_native_input():
     '''Test some naming behavior w/ saved class attribute'''
 
-    pipe = Pipeline(steps=[Transformer('nonsense'),
+    pipe = Pipeline(steps=[Transformer('fake'),
                     ('my_model', LinearRegression())])
     assert pipe.steps[1]._get_step()[0] == 'my_model'
 
-    pipe2 = Pipeline(steps=[Transformer('nonsense'),
+    pipe2 = Pipeline(steps=[Transformer('fake'),
                      ('my_model', LinearRegression())])
     assert pipe2.steps[1]._get_step()[0] == 'my_model'
 
     del pipe
-    pipe3 = Pipeline(steps=[Transformer('nonsense'),
+    pipe3 = Pipeline(steps=[Transformer('fake'),
                      ('my_model', LinearRegression())])
     assert pipe3.steps[1]._get_step()[0] == 'my_model'
 

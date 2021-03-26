@@ -1,7 +1,7 @@
 def get_all_keys():
 
     # Start with a few used for testing errors and whatnot
-    all_keys = set(['fake', 'nonsense', 'default'])
+    all_keys = set(['fake', 'default'])
 
     from .ensembles import all_obj_keys
     all_keys.update(all_obj_keys)

@@ -8,37 +8,37 @@ cls_weight = TransitionChoice([None, 'balanced'])
 
 # Logistic
 P['base logistic'] =\
-    {'max_iter': 1000,
+    {'max_iter': 100,
      'multi_class': 'auto',
      'penalty': 'none',
      'class_weight': None,
      'solver': 'lbfgs'}
 
 # Ridge classifier
-P['base ridge'] = {'max_iter': 1000,
+P['base ridge'] = {'max_iter': 100,
                    'penalty': 'l2',
                    'solver': 'saga'}
 
 P['ridge C'] =\
-    {'max_iter': 1000,
+    {'max_iter': 100,
      'solver': 'saga',
      'C': Log(lower=1e-5, upper=1e3),
      'class_weight': cls_weight}
 
 P['ridge C extra'] = P['ridge C'].copy()
 P['ridge C extra']['max_iter'] =\
-    Scalar(lower=1000, upper=10000).set_integer_casting()
+    Scalar(lower=100, upper=1000).set_integer_casting()
 P['ridge C extra']['tol'] = Log(lower=1e-6, upper=.01)
 
 # Ridge regressor
-P['base ridge regressor'] = {'max_iter': 1000,
+P['base ridge regressor'] = {'max_iter': 100,
                              'solver': 'lsqr'}
 
 P['ridge regressor dist'] = P['base ridge regressor'].copy()
 P['ridge regressor dist']['alpha'] = Log(lower=1e-3, upper=1e5)
 
 # Lasso regressor
-P['base lasso regressor'] = {'max_iter': 1000}
+P['base lasso regressor'] = {'max_iter': 100}
 P['lasso regressor dist'] = P['base lasso regressor'].copy()
 P['lasso regressor dist']['alpha'] = Log(lower=1e-5, upper=1e5)
 
@@ -53,7 +53,7 @@ P['lasso C']['class_weight'] = cls_weight
 
 P['lasso C extra'] = P['lasso C'].copy()
 P['lasso C extra']['max_iter'] =\
-    Scalar(lower=1000, upper=10000).set_integer_casting()
+    Scalar(lower=100, upper=1000).set_integer_casting()
 P['lasso C extra']['tol'] = Log(lower=1e-6, upper=.01)
 
 # Elastic net classifier
@@ -72,18 +72,18 @@ P['elastic clf v2']['C'] = Log(lower=1e-2, upper=1e5)
 
 P['elastic classifier extra'] = P['elastic classifier'].copy()
 P['elastic classifier extra']['max_iter'] =\
-    Scalar(lower=1000, upper=10000).set_integer_casting()
+    Scalar(lower=100, upper=1000).set_integer_casting()
 P['elastic classifier extra']['tol'] = Log(lower=1e-6, upper=.01)
 
 # Elastic net regression
-P['base elastic net'] = {'max_iter': 1000}
+P['base elastic net'] = {'max_iter': 100}
 P['elastic regression'] = P['base elastic net'].copy()
 P['elastic regression']['alpha'] = Log(lower=1e-5, upper=1e5)
 P['elastic regression']['l1_ratio'] = Scalar(lower=.01, upper=1)
 
 P['elastic regression extra'] = P['elastic regression'].copy()
 P['elastic regression extra']['max_iter'] =\
-    Scalar(lower=1000, upper=10000).set_integer_casting()
+    Scalar(lower=100, upper=1000).set_integer_casting()
 P['elastic regression extra']['tol'] = Log(lower=1e-6, upper=.01)
 
 # Other
@@ -298,14 +298,14 @@ P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
 P['mlp dist es 3 layer'] = P['mlp dist es 1 layer'].copy()
 P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
 
-P['base linear svc'] = {'max_iter': 1000}
+P['base linear svc'] = {'max_iter': 100}
 
 P['linear svc dist'] = P['base linear svc'].copy()
 P['linear svc dist']['C'] = Log(lower=1e-4, upper=1e4)
 P['linear svc dist']['class_weight'] = cls_weight
 
 P['base linear svr'] = {'loss': 'epsilon_insensitive',
-                        'max_iter': 1000}
+                        'max_iter': 100}
 
 P['linear svr dist'] = P['base linear svr'].copy()
 P['linear svr dist']['C'] = Log(lower=1e-4, upper=1e4)
@@ -324,7 +324,7 @@ P['sgd classifier big search'] =\
      'penalty': TransitionChoice(['l2', 'l1', 'elasticnet']),
      'alpha': Log(lower=1e-5, upper=1e2),
      'l1_ratio': Scalar(lower=.01, upper=1),
-     'max_iter': 1000,
+     'max_iter': 100,
      'learning_rate': lr_choice,
      'eta0': Log(lower=1e-6, upper=1e3),
      'power_t': Scalar(lower=.1, upper=.9),

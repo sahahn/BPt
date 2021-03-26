@@ -1137,10 +1137,32 @@ class Dataset(pd.DataFrame):
 
         self._check_scopes()
 
+        # Doesn't matter if column is categorical
+        # if just two unique values, assume binary
+        if self[col].nunique(dropna=True) == 2:
+
+            # Further, if not categorical, make sure values
+            # are 0 and 1.
+            if 'category' not in self.scopes[col]:
+                u_values = self.get_values(col, dropna=True).unique()
+                if 0 not in u_values or 1 not in u_values:
+                    raise RuntimeError(
+                        'Error determining default problem type: Requested'
+                        ' target column: ' + str(col) + ' has only two unique'
+                        ' values: ' + repr(u_values) + ', but they are not'
+                        ' categorical and not 0 and 1. Either change the'
+                        ' values / type of target column: ' + str(col) + ', '
+                        'or pass an explicit option to problem_type'
+                        ', e.g., problem_type="binary"')
+
+            self._print('Problem type auto-detected as binary', level=1)
+            return 'binary'
+
         if 'category' in self.scopes[col]:
-            if self[col].nunique(dropna=True) == 2:
-                return 'binary'
+            self._print('Problem type auto-detected as categorical', level=1)
             return 'categorical'
+
+        self._print('Problem type auto-detected as regression', level=1)
         return 'regression'
 
     def rename(self, **kwargs):

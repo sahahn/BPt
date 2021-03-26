@@ -210,7 +210,7 @@ def test_pipeline_with_search_integration():
     param_search = ParamSearch(n_iter=2)
     pipe = Pipeline([Scaler('standard'), mv_trans, Model('dt', params=1)],
                     param_search=param_search)
-    search_est = get_estimator(pipe, data, n_jobs=2)
+    search_est = get_estimator(pipe, data, problem_type='regression', n_jobs=2)
 
     # Some assertions about estimator
     est = search_est.estimator

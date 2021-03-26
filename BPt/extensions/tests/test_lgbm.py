@@ -7,6 +7,7 @@ def test_basic():
 
     X = np.ones((20, 20))
     y = np.ones((20))
+    y[:10] = 0
 
     # Just shouldn't fail
     regr = BPtLGBMRegressor()

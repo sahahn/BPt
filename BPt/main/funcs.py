@@ -994,16 +994,24 @@ def evaluate(pipeline, dataset,
     ---------
     cross_val_score : Similar sklearn style function.
     cross_validate : Similar sklearn style function.
+    Compare : Input class for specifying comparisons between
+        parameter options.
 
     Notes
     ------
-    This function supports predictions on an underlying
-    target with missing values. It does this by automatically
-    moving any data points with a NaN in the target to the validation
-    set (keeping in mind this is done after the fold is computed by CV,
-    so final size may vary). While subjects with missing values will
-    obviously not contribute to the validation score, as long as `store_preds`
-    is set to True, predictions will still be made for these subjects.
+    | This function can accept within the `pipeline` and `problem_spec`
+        parameters the special input :class:`Compare` class. This
+        option is designed for explicitly running evaluate multiple
+        times under different configurations.
+
+    | This function supports predictions on an underlying
+        target with missing values. It does this by automatically
+        moving any data points with a NaN in the target to the validation
+        set (keeping in mind this is done after the fold is computed by CV,
+        so final size may vary). While subjects with missing values will
+        obviously not contribute to the validation score,
+        as long as `store_preds`
+        is set to True, predictions will still be made for these subjects.
     '''
 
     params = {'cv': cv,
@@ -1016,7 +1024,8 @@ def evaluate(pipeline, dataset,
               'progress_loc': progress_loc,
               }
 
-    # Get the estimator and problem spec, w/ option for returned
+    # Get the estimator and problem spec,
+    # w/ option for returned
     # value as a CompareDict
     estimator_ps =\
         _initial_prep(pipeline, dataset, problem_spec,

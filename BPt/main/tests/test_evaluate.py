@@ -452,7 +452,7 @@ def test_evaluate_compare_ps():
 
     evaluator = evaluate(pipeline=pipe,
                          dataset=dataset,
-                         problem_type=Compare(['binary', 'regression']),
+                         scope=Compare(['1', '2']),
                          progress_bar=False)
 
     assert isinstance(evaluator, CompareDict)

@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.preprocessing import LabelEncoder, KBinsDiscretizer
-from .helpers import (add_new_categories, get_str_round)
+from .helpers import (add_new_categories, remove_unused_categories,
+                      get_str_round)
 from operator import add
 from functools import reduce
 
@@ -151,9 +152,9 @@ def binarize(self, scope, threshold, replace=True, drop=True, inplace=False):
 
     replace : bool, optional
         This parameter controls if the original columns
-        should be replaced with their binarized version, when
+        should be replaced with their binary version, when
         set to True, and if set to False will add a new
-        binarized column as well as leave the original column.
+        binary column as well as leave the original column.
         The new columns will share the name of the original
         columns but with '_binary' appended.
 
@@ -375,6 +376,7 @@ def _k_bin(self, col, n_bins, strategy):
 
     # Replace with new values in place
     self.loc[non_nan_subjects, col] = new_values
+    remove_unused_categories(self[col])
 
     # Create encoder information
     encoder = {}
@@ -476,6 +478,7 @@ def _ordinalize(self, col):
 
     # Replace values in place
     self.loc[non_nan_subjects, col] = new_values
+    remove_unused_categories(self[col])
 
     # Convert label encoder to encoder
     encoder = {}
@@ -542,8 +545,10 @@ def nan_to_class(self, scope='category', inplace=False):
 
         # Add nan class as next avaliable
         nan_class = np.max(values.astype(int)) + 1
+        
         add_new_categories(self[col], [nan_class])
         self.loc[nan_subjects, col] = nan_class
+        remove_unused_categories(self[col])
 
         # Update encoder entry with NaN
         self.encoders[col][nan_class] = np.nan

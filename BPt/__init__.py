@@ -9,7 +9,7 @@ from .main.input import (Loader, Imputer, Scaler,
 from .main.funcs import (get_estimator, cross_validate,
                          cross_val_score, evaluate)
 
-from .main.input_operations import (Select, Duplicate, Pipe, Value_Subset,
+from .main.input_operations import (Select, Duplicate, Pipe, ValueSubset,
                                     Intersection)
 from .main.compare import Compare, Option, CompareDict
 from .main.BPtEvaluator import BPtEvaluator
@@ -24,7 +24,7 @@ __all__ = ["Dataset", "Loader",
            "FeatSelector", "Model",
            "Ensemble", "Param_Search", "ParamSearch",
            "Model_Pipeline", "Problem_Spec", "ProblemSpec", "Select",
-           "Duplicate", "Pipe", "Value_Subset",
+           "Duplicate", "Pipe", "ValueSubset",
            "CV", "CVStrategy", "Intersection",
            "cross_validate", "cross_val_score", "evaluate",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',

@@ -106,4 +106,3 @@ BPt documentation
     reference/index
     options/index
     change_log/index
-    

@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.cross_validate" href="BPt.cross_validate.html" />
-    <link rel="prev" title="Evaluate Functions" href="../evaluate.html" />
+    <link rel="prev" title="BPt.get_estimator" href="BPt.get_estimator.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -66,6 +66,10 @@
         
         <li class="nav-item ">
             <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
         </li>
         
         <li class="nav-item ">
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -169,6 +175,12 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
@@ -176,8 +188,12 @@
             
   
                 <li class="active">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                     <ul>
+                    
+                        <li class="">
+                            <a href="BPt.get_estimator.html">BPt.get_estimator</a>
+                        </li>
                     
                         <li class="active">
                             <a href="">BPt.evaluate</a>
@@ -191,6 +207,10 @@
                             <a href="BPt.cross_val_score.html">BPt.cross_val_score</a>
                         </li>
                     
+                        <li class="">
+                            <a href="BPt.BPtEvaluator.html">BPt.BPtEvaluator</a>
+                        </li>
+                    
                     </ul>
                 </li>
             
@@ -198,6 +218,12 @@
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -237,7 +263,7 @@
 <h1>BPt.evaluate<a class="headerlink" href="#bpt-evaluate" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="BPt.evaluate">
-<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">progress_bar</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">store_preds</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">store_estimators</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">store_timing</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">decode_feat_names</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">progress_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L674-L789"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.evaluate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">progress_bar</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">store_preds</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">store_estimators</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">store_timing</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">decode_feat_names</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">eval_verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">progress_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L879-L1075"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used to evaluate a model pipeline
 with cross-validation.</p>
 <dl class="field-list">
@@ -277,7 +303,7 @@ random_state, etc…</p>
 and for how to create an instance of this object.</p>
 <p>If left as ‘default’, then will initialize a
 ProblemSpec with default params.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
 </pre></div>
 </div>
 </dd>
@@ -308,48 +334,59 @@ evaluation splits.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>store_preds</strong><span class="classifier">bool, optional</span></dt><dd><p>If set to True, store raw predictions
-in the ‘preds’ parameter of the returned
-object. This will be a dictionary where
-each dictionary key corresponds to
-a valid predict function for the base model,
-for example self.preds will hold
-a dictionary with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">fold0_preds</span><span class="p">,</span> <span class="n">fold1_preds</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<dt><strong>store_preds</strong><span class="classifier">bool, optional</span></dt><dd><p>If set to True, the returned <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a> will store
+the saved predictions under <a class="reference internal" href="BPt.BPtEvaluator.preds.html#BPt.BPtEvaluator.preds" title="BPt.BPtEvaluator.preds"><code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.BPtEvaluator.preds</span></code></a>.
+This includes a saved copy of the true target values as well.</p>
+<p>If False, the <cite>preds</cite> parameter will be empty and it
+will not be possible to use some related functions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
-<p>And the value in the dict is a list
-(each element corresponding to each fold)
-of numpy arrays with the raw predictions.</p>
-<p>Note: if store_preds is set to True, then
-also will stored the corresponding ground
-truth labels under dictionary key ‘y_true’ in
-preds. Or to see corresponding subjects / index,
-check ‘val_indices’ in the evaluator.</p>
 </dd>
-<dt><strong>store_estimators</strong><span class="classifier">bool, optional</span></dt><dd><p>Skip.</p>
+<dt><strong>store_estimators</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the returned <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>
+will store the fitted estimators from evaluation
+under <a class="reference internal" href="BPt.BPtEvaluator.estimators.html#BPt.BPtEvaluator.estimators" title="BPt.BPtEvaluator.estimators"><code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.BPtEvaluator.estimators</span></code></a>.</p>
+<p>If False, the <cite>estimators</cite> parameter will be empty,
+and it will not be possible to access measures of
+feature importance as well.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>store_timing</strong><span class="classifier">bool, optional</span></dt><dd><p>Skip.</p>
+<dt><strong>store_timing</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the returned <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>
+will store the time it took to fit and score the pipeline
+under <a class="reference internal" href="BPt.BPtEvaluator.timing.html#BPt.BPtEvaluator.timing" title="BPt.BPtEvaluator.timing"><code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.BPtEvaluator.timing</span></code></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>decode_feat_names</strong><span class="classifier">bool, optional</span></dt><dd><p>Skip.</p>
+<dt><strong>decode_feat_names</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the <a class="reference internal" href="BPt.BPtEvaluator.feat_names.html#BPt.BPtEvaluator.feat_names" title="BPt.BPtEvaluator.feat_names"><code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.BPtEvaluator.feat_names</span></code></a>
+as computed during evaluation will try to use the original
+values as first loaded to inform their naming. Note that
+this is only relevant assuming that <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> was
+used to encode one or more columns in the first place.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>progress_loc</strong><span class="classifier">str or None, optional</span></dt><dd><blockquote>
-<div><p>Skip.</p>
+<dt><strong>eval_verbose</strong><span class="classifier">int, optional</span></dt><dd><p>The requested verbosity of the evaluator.
+0 or greater means just warnings, 1 or greater
+for some info and 2 and greater for even more.</p>
+<p>Set to negative values to mute warnings.
+Specifically, setting to -1 will mute all
+warnings as generated by the call to evaluate,
+and even further, you can set to -2 or lower, which
+will mute all warnings regardless of where they are generated from.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>progress_loc</strong><span class="classifier">str or None, optional</span></dt><dd><p>This parameter is not currently implemented.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
-</div></blockquote>
-<dl>
-<dt>extra_params<span class="classifier">problem_spec or pipeline params, optional</span></dt><dd><p>You may pass as extra arguments to this function any pipeline
+</dd>
+<dt><strong>extra_params</strong><span class="classifier">problem_spec or pipeline params, optional</span></dt><dd><p>You may pass as extra arguments to this function any pipeline
 or problem_spec argument as python kwargs style value pairs.</p>
 <p>For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">target</span><span class="o">=</span><span class="mi">1</span>
@@ -363,6 +400,14 @@ in the passed problem_spec. Or for example:</p>
 </dd>
 </dl>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>evaluator</strong><span class="classifier"><a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a></span></dt><dd><p>Returns an instance of the <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>
+class. This object stores a wealth of information,
+including the scores from this evaluation as well
+as other utilities including functions for calculating
+feature importances from trained models.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -373,7 +418,26 @@ in the passed problem_spec. Or for example:</p>
 </dd>
 <dt><a class="reference internal" href="BPt.cross_validate.html#BPt.cross_validate" title="BPt.cross_validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_validate</span></code></a></dt><dd><p>Similar sklearn style function.</p>
 </dd>
+<dt><a class="reference internal" href="BPt.Compare.html#BPt.Compare" title="BPt.Compare"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Compare</span></code></a></dt><dd><p>Input class for specifying comparisons between parameter options.</p>
+</dd>
 </dl>
+</div>
+<p class="rubric">Notes</p>
+<div class="line-block">
+<div class="line">This function can accept within the <cite>pipeline</cite> and <cite>problem_spec</cite>
+parameters the special input <a class="reference internal" href="BPt.Compare.html#BPt.Compare" title="BPt.Compare"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compare</span></code></a> class. This
+option is designed for explicitly running evaluate multiple
+times under different configurations.</div>
+</div>
+<div class="line-block">
+<div class="line">This function supports predictions on an underlying
+target with missing values. It does this by automatically
+moving any data points with a NaN in the target to the validation
+set (keeping in mind this is done after the fold is computed by CV,
+so final size may vary). While subjects with missing values will
+obviously not contribute to the validation score,
+as long as <cite>store_preds</cite>
+is set to True, predictions will still be made for these subjects.</div>
 </div>
 </dd></dl>
 
@@ -385,7 +449,7 @@ in the passed problem_spec. Or for example:</p>
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="../evaluate.html" title="previous page">Evaluate Functions</a>
+    <a class='left-prev' id="prev-link" href="BPt.get_estimator.html" title="previous page">BPt.get_estimator</a>
     <a class='right-next' id="next-link" href="BPt.cross_validate.html" title="next page">BPt.cross_validate</a>
 
               </div>

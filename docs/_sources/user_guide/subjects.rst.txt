@@ -58,9 +58,9 @@ To select those three subjects.
   Select the set of test subjects as defined by a split in the Dataset, e.g.,
   :func:`set_test_split <BPt.Dataset.set_test_split>`.
 
-4. You can pass the special input wrapper :class:`Value_Subset`. This can be
+4. You can pass the special input wrapper :class:`ValueSubset`. This can be
 used to select subsets of subject by a column's
-value or values. See :class:`Value_Subset` for more
+value or values. See :class:`ValueSubset` for more
 information on how this input class is used.
 
 There also exists the case where you may wish for the underlying index of subjects to be a MultiIndex.
@@ -153,12 +153,12 @@ different values to `subjects` will return.
 
 One gotcha is that if we pass a single str value, it will be assumed to
 be a file path, so if we pass subjects='subj1', we will get an error.
-Let's try using :class:`Value_Subset` next.
+Let's try using :class:`ValueSubset` next.
 
 .. ipython:: python
 
-  data.get_subjects(bp.Value_Subset('col1', 1))
-  data.get_subjects(bp.Value_Subset('col1', [1, 2]))
+  data.get_subjects(bp.ValueSubset('col1', 1))
+  data.get_subjects(bp.ValueSubset('col1', [1, 2]))
 
 We can also use special reversed keywords.
 

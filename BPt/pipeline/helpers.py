@@ -114,10 +114,10 @@ def proc_mapping(indx, mapping):
     # Base case return indx
     return indx
 
+# @ TODO change lists in mapping interally to sets???
+
 
 def update_mapping(mapping, new_mapping):
-
-    print(mapping)
 
     # In case where new_mapping is empty,
     # return the original mapping as is

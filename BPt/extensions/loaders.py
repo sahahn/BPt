@@ -283,6 +283,10 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         # Load labels
         self.labels_ = load_surf(self.labels)
 
+        if len(self.labels_.shape) > 1:
+            raise RuntimeError('The passed labels array must be flat, ' +
+                               ' i.e., a single dimension')
+
         # Mask labels if mask
         if self.mask_ is not None:
 
@@ -400,10 +404,13 @@ class SurfLabels(BaseEstimator, TransformerMixin):
         self._check_fitted()
 
         if len(X.shape) == 2 and (X.shape[0] == X.shape[1]):
-            warnings.warn('X was passed with the same length',
-                          ' in each dimension, ',
-                          'Assuming that axis=0 is the data dimension',
+            warnings.warn('X was passed with the same length' +
+                          ' in each dimension, ' +
+                          'Assuming that axis=0 is the data dimension' +
                           ' w/ vertex values')
+
+        if len(X.shape) > 2:
+            raise RuntimeError('The shape of X can be at most 2 dimensions.')
 
         # The data dimension is just the dimension with
         # the same len as the label
@@ -524,9 +531,9 @@ class SurfMaps(BaseEstimator, TransformerMixin):
 
             data = np.array([1, 1, 5, 5])
             maps = np.array([[0, 0],
-                                [0, 0],
-                                [1, -1],
-                                [1, -1]])
+                             [0, 0],
+                             [1, -1],
+                             [1, -1]])
 
         In this case, the 'ls' method would
         yield region signals [2.5, -2.5], whereas
@@ -543,9 +550,9 @@ class SurfMaps(BaseEstimator, TransformerMixin):
 
             data = np.array([1, 1, 5, 5])
             maps = np.array([[0, 1],
-                                [0, 2],
-                                [1, 0],
-                                [1, 0]])
+                             [0, 2],
+                             [1, 0],
+                             [1, 0]])
 
             ls_sol = [5. , 0.6]
             average_sol = [5, 1]
@@ -589,6 +596,63 @@ class SurfMaps(BaseEstimator, TransformerMixin):
     -----------
     SurfLabels : For extracting static / non-probabilistic parcellations.
     nilearn.input_data.NiftiMapsMasker : For volumetric nifti data.
+
+    Examples
+    ----------
+    First let's define an example set of probabilistic maps, we
+    will assume there are just 5 features in our data, and we will
+    define 6 total maps.
+
+    .. ipython:: python
+
+        import numpy as np
+        from BPt.extensions import SurfMaps
+
+        # This should have shape number of features x number of maps!
+        prob_maps = np.array([[3, 1, 1, 1, 1, 1],
+                              [1, 3, 1, 1, 1, 1],
+                              [1, 1, 3, 1, 1, 1],
+                              [1, 1, 1, 3, 1, 1],
+                              [1, 1, 1, 1, 3, 1]])
+        prob_maps.shape
+
+    Next we can define some input data to use with these maps.
+
+    .. ipython:: python
+
+        data1 = np.arange(5, dtype='float')
+        data1
+        data2 = np.ones(5, dtype='float')
+        data2
+
+    Now let's define the actual object and use it to transform the data.
+
+    .. ipython:: python
+
+        sm = SurfMaps(maps=prob_maps)
+        sm.fit_transform(data1)
+        sm.fit_transform(data2)
+
+    Okay so what is going on when we transform this data? Basically we are
+    just taking weighted averages for each one of the defined maps. We could
+    also explicitly change the strategy from 'auto' to 'ls' which would
+    take the least squares solution instead.
+
+    .. ipython:: python
+
+        sm = SurfMaps(maps=prob_maps, strategy='ls')
+        data_trans = sm.fit_transform(data1)
+        data_trans
+
+    While a little less intuitive, the least squares solution allows
+    us to reverse the feature transformation (although not always exactly)
+
+    .. ipython:: python
+
+        sm.inverse_transform(data_trans)
+
+    This can be useful in the say the case of converting back downstream
+    calculated feature importance to the original data space.
     '''
 
     def __init__(self, maps, strategy='auto', mask=None, vectorize=True):
@@ -626,6 +690,13 @@ class SurfMaps(BaseEstimator, TransformerMixin):
 
         # Save dtype
         self.dtype_ = X.dtype
+
+        # Warn if non-float
+        if 'float' not in self.dtype_.name:
+            warnings.warn('The original datatype is non-float, ' +
+                          'this may lead to rounding errors! ' +
+                          'Pass data as type float to ensure ' +
+                          'the results of transform are not truncated.')
 
         # Make the maps if passed mask set to 0 in those spots
         if self.mask_ is not None:
@@ -737,16 +808,16 @@ class SurfMaps(BaseEstimator, TransformerMixin):
             X = X.T
 
         # Set strategy if auto
-        strategy = self.strategy
-        if strategy == 'auto':
-            strategy = 'ls'
+        self.strategy_ = self.strategy
+        if self.strategy_ == 'auto':
+            self.strategy_ = 'ls'
             if np.all(self.maps_ >= 0):
-                strategy = 'average'
+                self.strategy_ = 'average'
 
         # Run the correct transform based on strategy
-        if strategy == 'ls':
+        if self.strategy_ == 'ls':
             X_trans = self._transform_ls(X)
-        elif strategy == 'average':
+        elif self.strategy_ == 'average':
             X_trans = self._transform_average(X)
         else:
             X_trans = None
@@ -810,14 +881,48 @@ class SurfMaps(BaseEstimator, TransformerMixin):
         if self.vectorize:
             X_trans = X_trans.reshape(self.original_shape_)
 
-        # For ls should be something like
-        # np.dot(region_signals, maps.T)
+        if self.strategy_ == 'ls':
+            return np.dot(X_trans, self.maps_.T)
 
-        # For inverse transform weighted average,
-        # make sure to include check for sum(weights) == 0
-        # and to fill in that spot with zeros
+        elif self.strategy_ == 'average':
+            raise RuntimeError('Cannot calculate reverse of average.')
 
-        raise RuntimeError('Not Implemented Yet')
+            # Can maybe average over estimated .. ?
+            # rough idea below
+            est_weights = lstsq(self.maps_.T, X_trans)[0]
+
+            X = []
+            for m in range(self.maps_.shape[1]):
+
+                mp = self.maps_[:, m]
+                mp_sum = np.sum(mp)
+                if mp_sum == 0:
+                    pass
+
+                X.append(X_trans[m, ] * mp * est_weights)
+                print(est_weights)
+
+            print(X)
+
+
+def proc_X(X):
+
+    if not isinstance(X, list):
+        if len(np.shape(X)) == 2:
+            return [X]
+
+    return X
+
+
+def proc_X_trans(X_trans, vectorize):
+
+    if X_trans.shape[0] == 1:
+        X_trans = X_trans.reshape(X_trans.shape[1:])
+
+    if vectorize:
+        X_trans = X_trans.flatten()
+
+    return X_trans
 
 
 # Create wrapper for nilearn connectivity measure to make it
@@ -825,24 +930,18 @@ class SurfMaps(BaseEstimator, TransformerMixin):
 try:
     from nilearn.connectome import ConnectivityMeasure
 
-    class Connectivity(ConnectivityMeasure):
-
-        def proc_X(self, X):
-
-            if not isinstance(X, list):
-                if len(np.shape(X)) == 2:
-                    return [X]
-
-            return X
+    class SingleConnectivityMeasure(ConnectivityMeasure):
 
         def fit(self, X, y=None):
-            return super().fit(self.proc_X(X), y)
+            return super().fit(proc_X(X), y)
 
         def fit_transform(self, X, y=None):
-            return super().fit_transform(self.proc_X(X), y)
+            X_trans = super().fit_transform(proc_X(X), y)
+            return proc_X_trans(X_trans, self.vectorize)
 
         def transform(self, X):
-            return super().transform(self.proc_X(X))
+            X_trans = super().transform(proc_X(X))
+            return proc_X_trans(X_trans, self.vectorize)
 
 except ImportError:
     pass
@@ -873,12 +972,43 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
 
             default = .2
 
-    threshold_method : {'abs', 'pos', 'neg', 'density'}, optional
-        The type of threshold to apply in order to define edges.
+    threshold_type : {'abs', 'pos', 'neg'}
+        The type of thresholding, e.g., should the threshold
+        be applied to:
+
+        - 'abs'
+            The absolute value of the connections
+
+        - 'pos'
+            Only consider edges as passed the threshold if >= self.threshold
+
+        - 'neg'
+            Only consider edges as passed the if <= self.threshold
 
         ::
 
             default = 'abs'
+
+    threshold_method : {'value', 'density'}, optional
+        The method for thresholding. The two
+        defined options are either to define an edge
+        strictly by value, e.g., if threshold_type is 'abs',
+        and threshold is .2, then any connection greater than or
+        equal to .2 will be set as an edge.
+
+        Alternatively, you may specify that the threshold be
+        treated as a density. What this means is that if the threshold
+        is set to for example .2, then the top 20% of edges by weight
+        will be set as an edge, regardless of the actual value of the edge.
+
+        Note: The passed percentage will be considered
+        out of all of the the total possible edges in the adjacency matrix.
+        That includes both the upper and lower repeated triangles
+        if non-directional edges.
+
+        ::
+
+            default = 'value'
 
     to_compute : valid_measure or list of, optional
         Either a single str representing a network
@@ -908,6 +1038,7 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
         - 'transitivity':
             :func:`networkx.algorithms.cluster.transitivity`
 
+
         You may also select from one of the following
         averages of local measures:
 
@@ -936,11 +1067,15 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
 
     '''
 
+    # @TODO DIGRAPH CASE??
+
     def __init__(self, threshold=.2,
-                 threshold_method='abs',
+                 threshold_type='abs',
+                 threshold_method='value',
                  to_compute='avg_degree'):
 
         self.threshold = threshold
+        self.threshold_type = threshold_type
         self.threshold_method = threshold_method
         self.to_compute = to_compute
 
@@ -1000,33 +1135,76 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
         return self
 
     def fit_transform(self, X, y=None):
-        '''Temp.'''
+        '''Fit, then transform a passed 2D numpy correlation matrix.
+
+        Parameters
+        ----------
+        X : numpy array
+            A 2D numpy array representing an input correlation
+            matrix.
+
+        Returns
+        ---------
+        X_trans : numpy array
+            Returns a flat array of length number of
+            measures in parameter to_compute, representing
+            the calculated network statistics.
+        '''
+
         return self.fit(X, y).transform(X)
 
     def _apply_threshold(self, X):
 
-        if self.threshold_method == 'abs':
-            return np.where(np.abs(X) >= self.threshold, 1, 0)
-        elif self.threshold_method == 'pos':
-            return np.where(X[0] >= self.threshold, 1, 0)
-        elif self.threshold_method == 'neg':
-            return np.where(X[0] <= self.threshold, 1, 0)
+        # Process threshold type on copy of X
+        X_t = X.copy()
+        if self.threshold_type == 'abs':
+            X_t = np.abs(X_t)
+
+        # If Value
+        if self.threshold_method == 'value':
+            if self.threshold_type == 'neg':
+                return np.where(X_t <= self.threshold, 1, 0)
+            return np.where(X_t >= self.threshold, 1, 0)
+
         elif self.threshold_method == 'density':
-            top_n = round((len(np.triu(X).flatten())-len(X))/2*self.threshold)
-            thresh = sorted(np.triu(X).flatten(), reverse=True)[top_n]
-            return np.where(X >= thresh, 1, 0)
+
+            top_n = round(len(X_t) * self.threshold) - 1
+
+            # If less than 0, set to 0
+            if top_n < 0:
+                top_n = 0
+
+            reverse = False if self.threshold_type == 'neg' else True
+            thresh = sorted(np.triu(X_t).flatten(), reverse=reverse)[top_n]
+            return np.where(X_t >= thresh, 1, 0)
+
+        raise RuntimeError(str(self.threshold_method) + ' not a valid.')
 
     def _threshold_check(self, X):
 
         while np.sum(self._apply_threshold(X)) == 0:
-            print('warning setting threshold lower', self.threshold)
+            warnings.warn('Setting threshold lower than: ' +
+                          str(self.threshold) + '. As, otherwise no edges ' +
+                          'will be set. New threshold = ' +
+                          str(self.threshold - .01))
             self.threshold -= .01
 
     def transform(self, X):
-        '''Temp.'''
+        '''Transform a passed 2D numpy correlation matrix.
 
-        # Squeeze X
-        X = np.squeeze(X)
+        Parameters
+        ----------
+        X : numpy array
+            A 2D numpy array representing an input correlation
+            matrix.
+
+        Returns
+        ---------
+        X_trans : numpy array
+            Returns a flat array of length number of
+            measures in parameter to_compute, representing
+            the calculated network statistics.
+        '''
 
         # Make sure the specified threshold doesn't break everything
         self._threshold_check(X)

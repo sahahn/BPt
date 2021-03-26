@@ -32,8 +32,6 @@ Base
    Dataset.copy
    Dataset.auto_detect_categorical
    Dataset.get_Xy
-   Dataset.get_train_Xy
-   Dataset.get_test_Xy
 
 Encoding
 ~~~~~~~~~~~~~~~~~
@@ -89,9 +87,8 @@ Plotting / Viewing
    :toctree: api/
 
    Dataset.plot
-   Dataset.show
-   Dataset.show_nan_info
-   Dataset.info
+   Dataset.nan_info
+   Dataset.summary
 
 ********************************
 Dataset - Test Split Methods

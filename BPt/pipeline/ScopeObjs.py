@@ -21,13 +21,15 @@ class ScopeObj(BPtBase):
     # Override
     _required_parameters = ["estimator", "inds"]
 
-    def __init__(self, estimator, inds, cache_loc=None):
+    def __init__(self, estimator, inds, passthrough=False, cache_loc=None):
 
         # Set estimator
         super().__init__(estimator=estimator)
 
         # These are the index to restrict scope to
         self.inds = inds
+
+        self.passthrough = passthrough
 
         # This is the optional cache_loc for memory
         self.cache_loc = cache_loc
@@ -200,6 +202,24 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
             ind = self.rest_inds_[c]
             self.out_mapping_[ind] = len(self.inds_) + c
 
+        # Passthrough case
+        if self.passthrough:
+
+            # Need to update out_mapping_ to reflect that
+            # each ind in self.inds_, now maps also to
+            # len(self.inds_) + len(self.rest_inds_)
+            t = len(self.inds_) + len(self.rest_inds_)
+            for i in range(len(self.inds_)):
+
+                extra = i + t
+                loc = self.inds_[i]
+                current = self.out_mapping_[loc]
+
+                if not isinstance(current, list):
+                    current = [current]
+
+                self.out_mapping_[loc] = current + [extra]
+
         # Update the original mapping, this is the mapping which
         # will be passed to the next piece of the pipeline
         update_mapping(mapping, self.out_mapping_)
@@ -216,14 +236,33 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
         trans_params = _get_est_trans_params(self.estimator_,
                                              transform_index=transform_index)
 
-        # Get X_trans - if self.inds_ is Ellipsis, just selects all
-        X_trans = self.estimator_.transform(X=X[:, self.inds_], **trans_params)
+        # Get X_trans
+        X_trans = self._est_transform(X, **trans_params)
 
         # Save number of output features after X_trans
         self.n_trans_feats_ = X_trans.shape[1]
 
+        # Passthrough case
+        if self.passthrough:
+
+            # If no rest inds, skip
+            if len(self.rest_inds_) == 0:
+                return np.hstack([X_trans, X[:, self.inds_]])
+
+            return np.hstack([X_trans, X[:, self.rest_inds_],
+                              X[:, self.inds_]])
+
         # Return stacked X_trans with rest inds
-        return np.hstack([X_trans, X[:, self.rest_inds_]])
+        if len(self.rest_inds_) > 0:
+            return np.hstack([X_trans, X[:, self.rest_inds_]])
+
+        # No rest inds, return directly
+        return X_trans
+
+    def _est_transform(self, X, **trans_params):
+
+        # if self.inds_ is Ellipsis, just selects all
+        return self.estimator_.transform(X=X[:, self.inds_], **trans_params)
 
     def fit_transform(self, X, y=None, mapping=None,
                       fit_index=None, transform_index=None,
@@ -236,33 +275,36 @@ class ScopeTransformer(ScopeObj, TransformerMixin):
 
     def transform_df(self, df, base_name=None, encoders=None):
 
+        # Important: Operate on a copy of the data frame
+        df_copy = df.copy()
+
         # If None, pass along as is
         if self.estimator_ is None:
             return df
 
         # Get transfrom index from df
-        transform_index = df.index
+        transform_index = df_copy.index
 
         # Prepare as numpy array - make sure same as original passed dtype
-        X = np.array(df).astype(self.base_dtype_)
+        X = np.array(df_copy).astype(self.base_dtype_)
 
         # Transform data
         X_trans = self.transform(X, transform_index=transform_index)
 
         # Feat names are as is
-        feat_names = list(df)
+        feat_names = list(df_copy)
 
         # Process new names
         new_names = self._proc_new_names(feat_names, base_name,
                                          encoders=encoders)
 
-        # Fill in the new values directly to the passed df
+        # Fill in the new values directly to the passed df_copy
         for i, feat_name in enumerate(new_names):
-            df.loc[:, feat_name] = X_trans[:, i]
+            df_copy.loc[:, feat_name] = X_trans[:, i]
 
         # Return by re-ordering the df so that it matches
         # the order of new_names, and only with those included in new_names
-        return df.loc[:, new_names]
+        return df_copy.loc[:, new_names]
 
     def _proc_new_names(self, feat_names, base_name=None, encoders=None):
 

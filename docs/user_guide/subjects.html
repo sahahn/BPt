@@ -68,6 +68,10 @@
             <a class="nav-link" href="../installation/index.html">Installation</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
         <li class="nav-item active">
             <a class="nav-link" href="index.html">User Guide</a>
         </li>
@@ -128,6 +132,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -138,6 +144,18 @@
             
                 <li class="">
                     <a href="loading_data.html">Loading Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="saving_data.html">Saving Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="test_split.html">Test Split</a>
                 </li>
             
           
@@ -277,9 +295,9 @@ Select the set of train subjects as defined by a split in the Dataset, e.g.,
 Select the set of test subjects as defined by a split in the Dataset, e.g.,
 <a class="reference internal" href="../reference/api/BPt.Dataset.set_test_split.html#BPt.Dataset.set_test_split" title="BPt.Dataset.set_test_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_test_split</span></code></a>.</p></li>
 </ul>
-<p>4. You can pass the special input wrapper <a class="reference internal" href="../reference/api/BPt.Value_Subset.html#BPt.Value_Subset" title="BPt.Value_Subset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value_Subset</span></code></a>. This can be
+<p>4. You can pass the special input wrapper <a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a>. This can be
 used to select subsets of subject by a column’s
-value or values. See <a class="reference internal" href="../reference/api/BPt.Value_Subset.html#BPt.Value_Subset" title="BPt.Value_Subset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value_Subset</span></code></a> for more
+value or values. See <a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a> for more
 information on how this input class is used.</p>
 <p>There also exists the case where you may wish for the underlying index of subjects to be a MultiIndex.
 In this case, there is some extra functionality to discuss.
@@ -367,11 +385,11 @@ different values to <cite>subjects</cite> will return.</p>
 </div>
 <p>One gotcha is that if we pass a single str value, it will be assumed to
 be a file path, so if we pass subjects=’subj1’, we will get an error.
-Let’s try using <a class="reference internal" href="../reference/api/BPt.Value_Subset.html#BPt.Value_Subset" title="BPt.Value_Subset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Value_Subset</span></code></a> next.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">Value_Subset</span><span class="p">(</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+Let’s try using <a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a> next.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="gh">Out[10]: </span><span class="go">{&#39;subj1&#39;}</span>
 
-<span class="gp">In [11]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">Value_Subset</span><span class="p">(</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="gp">In [11]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
 <span class="gh">Out[11]: </span><span class="go">{&#39;subj1&#39;, &#39;subj2&#39;}</span>
 </pre></div>
 </div>

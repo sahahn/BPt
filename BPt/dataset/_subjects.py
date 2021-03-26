@@ -3,7 +3,7 @@ from pandas.util._decorators import doc
 from .Dataset import _shared_docs
 from .helpers import (base_load_subjects)
 from ..util import conv_to_list
-from ..main.input_operations import Intersection, Value_Subset
+from ..main.input_operations import Intersection, ValueSubset
 from itertools import product
 
 
@@ -29,10 +29,10 @@ def _get_nan_loaded_subjects(self, only_level):
     return nan_subjects
 
 
-def _get_value_subset_loaded_subjects(self, subjects, only_level):
+def _get_ValueSubset_loaded_subjects(self, subjects, only_level):
 
     if subjects.name not in list(self):
-        raise KeyError('Passed Value_Subset name: ' +
+        raise KeyError('Passed ValueSubset name: ' +
                        repr(subjects.name) +
                        ' is not loaded')
 
@@ -220,9 +220,9 @@ def get_subjects(self, subjects, return_as='set', only_level=None):
         loaded_subjects = set(self.test_subjects)
 
     # Check for Value Subset or Values Subset
-    elif isinstance(subjects, Value_Subset):
+    elif isinstance(subjects, ValueSubset):
         loaded_subjects =\
-            self._get_value_subset_loaded_subjects(subjects,
+            self._get_ValueSubset_loaded_subjects(subjects,
                                                    only_level=only_level)
     else:
         loaded_subjects =\

@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
-from ..helpers.DataFile import load_data_file_proxy
+from .DataFile import load_data_file_proxy
 from copy import copy, deepcopy
 from .helpers import (verbose_print)
-from ..main.input_operations import Intersection
 from pandas.util._decorators import doc
 
 
@@ -140,6 +139,9 @@ class Dataset(pd.DataFrame):
         df['1'] = [1, 2, 3]
         data = bp.Dataset(df)
         data
+
+    .. versionadded:: 2.0.0
+
     '''
 
     _metadata = ['roles', 'scopes', 'encoders', 'file_mapping',
@@ -507,7 +509,7 @@ class Dataset(pd.DataFrame):
                 default = False
         '''
 
-        self.set_role(scope=scope, role='target', inplace=inplace)
+        return self.set_role(scope=scope, role='target', inplace=inplace)
 
     def set_non_input(self, scope, inplace=False):
         '''This method is used to set
@@ -532,7 +534,7 @@ class Dataset(pd.DataFrame):
                 default = False
         '''
 
-        self.set_role(scope=scope, role='non input', inplace=inplace)
+        return self.set_role(scope=scope, role='non input', inplace=inplace)
 
     def _set_role(self, col, role):
         '''Internal function for setting a single columns role.'''
@@ -733,19 +735,16 @@ class Dataset(pd.DataFrame):
         elif scope == 'data float':
             return [col for col in columns if
                     'category' not in self.scopes[col] and
-                    'data file' not in self.scopes[col] and
                     self.roles[col] == 'data']
 
         elif scope == 'target float':
             return [col for col in columns if
                     'category' not in self.scopes[col] and
-                    'data file' not in self.scopes[col] and
                     self.roles[col] == 'target']
 
         elif scope == 'float':
             return [col for col in columns if
-                    'category' not in self.scopes[col] and
-                    'data file' not in self.scopes[col]]
+                    'category' not in self.scopes[col]]
 
         elif scope == 'category':
             return [col for col in columns if
@@ -1138,10 +1137,32 @@ class Dataset(pd.DataFrame):
 
         self._check_scopes()
 
+        # Doesn't matter if column is categorical
+        # if just two unique values, assume binary
+        if self[col].nunique(dropna=True) == 2:
+
+            # Further, if not categorical, make sure values
+            # are 0 and 1.
+            if 'category' not in self.scopes[col]:
+                u_values = self.get_values(col, dropna=True).unique()
+                if 0 not in u_values or 1 not in u_values:
+                    raise RuntimeError(
+                        'Error determining default problem type: Requested'
+                        ' target column: ' + str(col) + ' has only two unique'
+                        ' values: ' + repr(u_values) + ', but they are not'
+                        ' categorical and not 0 and 1. Either change the'
+                        ' values / type of target column: ' + str(col) + ', '
+                        'or pass an explicit option to problem_type'
+                        ', e.g., problem_type="binary"')
+
+            self._print('Problem type auto-detected as binary', level=1)
+            return 'binary'
+
         if 'category' in self.scopes[col]:
-            if self[col].nunique(dropna=True) == 2:
-                return 'binary'
+            self._print('Problem type auto-detected as categorical', level=1)
             return 'categorical'
+
+        self._print('Problem type auto-detected as regression', level=1)
         return 'regression'
 
     def rename(self, **kwargs):
@@ -1272,12 +1293,6 @@ class Dataset(pd.DataFrame):
         y : pandas Series
             Series with the the target values as requested
             by the passed problem_spec.
-
-        See Also
-        --------
-        get_train_Xy : Gets X and y for just the training set.
-        get_test_Xy : Gets X and y for just the testing set.
-
         '''
         from ..main.funcs import problem_spec_check
 
@@ -1301,162 +1316,10 @@ class Dataset(pd.DataFrame):
             self._print('The number of unique index rows (',
                         str(n_unique_index),
                         ') does not match the number of rows (',
-                        str(len(X)), ').', 
+                        str(len(X)), ').',
                         'There may be duplicate subjects / index.', level=0)
 
         return X, y
-
-    def get_train_Xy(self, problem_spec='default',
-                     subjects='train', **problem_spec_params):
-        '''This function is used to get a sklearn-style
-        grouping of input data (X) and target data (y)
-        from the Dataset for just the defined train set.
-        This function is a helper utility around :func:`Dataset.get_Xy`.
-
-        Parameters
-        -----------
-        problem_spec : :class:`ProblemSpec` or 'default', optional
-            This argument accepts an instance of the
-            params class :class:`ProblemSpec`.
-            This object is essentially a wrapper around commonly used
-            parameters needs to define the context
-            the model pipeline should be evaluated in.
-            It includes parameters like problem_type, scorer, n_jobs,
-            random_state, etc...
-
-            See :class:`ProblemSpec` for more information
-            and for how to create an instance of this object.
-
-            If left as 'default', then will initialize a
-            ProblemSpec with default params.
-
-            ::
-
-                default = 'default'
-
-        subjects : :ref:`Subjects`, optional
-            This function creates a wrapper around the problem spec
-            subjects as:
-
-            ::
-
-                subjects=Intersection([subjects, problem_spec.subjects])
-
-            Therefore this parameter should almost always be left
-            as 'train', otherwise it would deviate from the
-            meaning implied by the function name.
-
-            ::
-
-                default = 'train'
-
-        problem_spec_params : :class:`ProblemSpec` params, optional
-            You may also pass any valid parameter value pairs here,
-            e.g.
-
-            ::
-
-                get_train_Xy(problem_type='binary')
-
-            Note: you may not specify `subjects` within the
-            the problem spec through this parameter!
-
-        Returns
-        --------
-        X : pandas DataFrame
-            DataFrame with the train input data and columns as
-            specified by the passed problem_spec.
-
-        y : pandas Series
-            Series with the the train target values as requested
-            by the passed problem_spec.
-        '''
-
-        try:
-            ps_subjects = problem_spec.subjects
-        except AttributeError:
-            ps_subjects = 'all'
-
-        return self.get_Xy(problem_spec,
-                           subjects=Intersection([subjects,
-                                                  ps_subjects]),
-                           **problem_spec_params)
-
-    def get_test_Xy(self, problem_spec='default', subjects='test',
-                    **problem_spec_params):
-        '''This function is used to get a sklearn-style
-        grouping of input data (X) and target data (y)
-        from the Dataset for just the defined test set.
-        This function is a helper utility around :func:`Dataset.get_Xy`.
-
-        Parameters
-        -----------
-        problem_spec : :class:`ProblemSpec` or 'default', optional
-            This argument accepts an instance of the
-            params class :class:`ProblemSpec`.
-            This object is essentially a wrapper around commonly used
-            parameters needs to define the context
-            the model pipeline should be evaluated in.
-            It includes parameters like problem_type, scorer, n_jobs,
-            random_state, etc...
-
-            See :class:`ProblemSpec` for more information
-            and for how to create an instance of this object.
-
-            If left as 'default', then will initialize a
-            ProblemSpec with default params.
-
-            ::
-
-                default = 'default'
-
-        subjects : :ref:`Subjects`, optional
-            This function creates a wrapper around
-            the problem spec subjects as:
-
-            ::
-
-                subjects=Intersection([subjects, problem_spec.subjects])
-
-            Therefore this parameter should almost always be left
-            as 'test', otherwise it would deviate from the
-            meaning implied by the function name.
-
-            ::
-
-                default = 'test'
-
-        problem_spec_params : :class:`ProblemSpec` params, optional
-            You may also pass any valid parameter value pairs here,
-            e.g.
-
-            ::
-
-                get_test_Xy(problem_type='binary')
-
-            Note: you may not specify `subjects` within the
-            the problem spec through this parameter!
-
-        Returns
-        --------
-        X : pandas DataFrame
-            DataFrame with the test input data and columns as
-            specified by the passed problem_spec.
-
-        y : pandas Series
-            Series with the the test target values as requested
-            by the passed problem_spec.
-        '''
-
-        try:
-            ps_subjects = problem_spec.subjects
-        except AttributeError:
-            ps_subjects = 'all'
-
-        return self.get_Xy(problem_spec,
-                           subjects=Intersection([subjects,
-                                                  ps_subjects]),
-                           **problem_spec_params)
 
     def _repr_html_(self):
 
@@ -1539,7 +1402,7 @@ class Dataset(pd.DataFrame):
 
     from ._subjects import (_apply_only_level,
                             _get_nan_loaded_subjects,
-                            _get_value_subset_loaded_subjects,
+                            _get_ValueSubset_loaded_subjects,
                             _get_base_loaded_subjects,
                             _return_subjects_as,
                             get_subjects)
@@ -1553,9 +1416,10 @@ class Dataset(pd.DataFrame):
                               _get_next_ind)
 
     from ._plotting import (plot,
-                            show,
-                            show_nan_info,
-                            info,
+                            nan_info,
+                            _cont_info,
+                            _cat_info,
+                            summary,
                             plot_bivar,
                             _plot_cat_cat,
                             _plot_cat_float,
@@ -1604,5 +1468,3 @@ class Dataset(pd.DataFrame):
                              drop_cols,
                              drop_cols_by_unique_val,
                              drop_cols_by_nan)
-
-

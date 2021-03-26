@@ -112,6 +112,18 @@ def add_new_categories(existing, new_values):
     # Add in place
     existing.cat.add_categories(list(to_add), inplace=True)
 
+
+def remove_unused_categories(existing):
+
+    # This is only relevant for type category
+    if existing.dtype.name != 'category':
+        return
+
+    to_remove = set(existing.dtype.categories) - set(pd.unique(existing))
+    to_remove = to_remove - set([np.nan])
+    existing.cat.remove_categories(list(to_remove), inplace=True)
+
+
 def get_str_round(val, places=3):
 
     if isinstance(val, int):

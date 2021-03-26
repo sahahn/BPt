@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
   
@@ -173,14 +179,6 @@
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
                         </li>
                     
-                        <li class="active">
-                            <a href="">BPt.Dataset.add_data_files</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
-                        </li>
-                    
                         <li class="">
                             <a href="BPt.Dataset.copy.html">BPt.Dataset.copy</a>
                         </li>
@@ -191,14 +189,6 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_train_Xy.html">BPt.Dataset.get_train_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_test_Xy.html">BPt.Dataset.get_test_Xy</a>
                         </li>
                     
                         <li class="">
@@ -227,6 +217,26 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_data_file.html">BPt.Dataset.to_data_file</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.consolidate_data_files.html">BPt.Dataset.consolidate_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.update_data_file_paths.html">BPt.Dataset.update_data_file_paths</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
                         </li>
                     
                         <li class="">
@@ -282,15 +292,11 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show.html">BPt.Dataset.show</a>
+                            <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show_nan_info.html">BPt.Dataset.show_nan_info</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.info.html">BPt.Dataset.info</a>
+                            <a href="BPt.Dataset.summary.html">BPt.Dataset.summary</a>
                         </li>
                     
                         <li class="">
@@ -345,19 +351,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -397,8 +415,8 @@
 <h1>BPt.Dataset.add_data_files<a class="headerlink" href="#bpt-dataset-add-data-files" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.add_data_files">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">add_data_files</code><span class="sig-paren">(</span><em class="sig-param">files</em>, <em class="sig-param">file_to_subject</em>, <em class="sig-param">load_func=&lt;function load&gt;</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L1181-L1373"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.add_data_files" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method is the main way of adding columns of type
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">add_data_files</code><span class="sig-paren">(</span><em class="sig-param">files</em>, <em class="sig-param">file_to_subject</em>, <em class="sig-param">load_func=&lt;function load&gt;</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_data_files.py#L34-L172"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.add_data_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method allows adding columns of type
 ‘data file’ to the Dataset class.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -415,8 +433,9 @@ which specifies how to convert from passed
 file path, to a subject name.</p>
 <p>E.g., consider the example below, where 2 subjects files are
 loaded for ‘feat1’ and feat2’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;feat1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;f1/subj_0.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;f1/subj_1.npy&#39;</span><span class="p">],</span>
-         <span class="s1">&#39;feat2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;f2/subj_0.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;f2/subj_1.npy&#39;</span><span class="p">]}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">files</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">files</span><span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;f1/subj_0.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;f1/subj_1.npy&#39;</span><span class="p">]</span>
+<span class="n">files</span><span class="p">[</span><span class="s1">&#39;feat2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;f2/subj_0.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;f2/subj_1.npy&#39;</span><span class="p">]</span>
 
 <span class="k">def</span> <span class="nf">file_to_subject_func</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
     <span class="n">subject</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -424,8 +443,9 @@ loaded for ‘feat1’ and feat2’:</p>
 
 <span class="n">file_to_subject</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
 <span class="c1"># or</span>
-<span class="n">file_to_subject</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;feat1&#39;</span><span class="p">:</span> <span class="n">file_to_subject_func</span><span class="p">,</span>
-                   <span class="s1">&#39;feat2&#39;</span><span class="p">:</span> <span class="n">file_to_subject_func</span><span class="p">}</span>
+<span class="n">file_to_subject</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">file_to_subject</span><span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
+<span class="n">file_to_subject</span><span class="p">[</span><span class="s1">&#39;feat2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
 </pre></div>
 </div>
 <p>In this example, subjects are loaded as ‘subj_0’ and ‘subj_1’,
@@ -442,8 +462,9 @@ for each feature to load.</p>
 <p>See the example in files, e.g.,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_to_subject</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
 <span class="c1"># or</span>
-<span class="n">file_to_subject</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;feat1&#39;</span><span class="p">:</span> <span class="n">file_to_subject_func</span><span class="p">,</span>
-                   <span class="s1">&#39;feat2&#39;</span><span class="p">:</span> <span class="n">file_to_subject_func</span><span class="p">}</span>
+<span class="n">file_to_subject</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">file_to_subject</span><span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
+<span class="n">file_to_subject</span><span class="p">[</span><span class="s1">&#39;feat2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
 </pre></div>
 </div>
 <p>You may also pass the custom str ‘auto’ to
@@ -458,10 +479,11 @@ tuple form. E.g.,</p>
 <span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Only one feature</span>
-<span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;feat1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;f1/s0_e0.npy&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;f1/s0_e1.npy&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;f1/s1_e0.npy&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;f1/s1_e1.npy&#39;</span><span class="p">]}</span>
+<span class="n">files</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">files</span><span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;f1/s0_e0.npy&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;f1/s0_e1.npy&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;f1/s1_e0.npy&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;f1/s1_e1.npy&#39;</span><span class="p">]</span>
 
 <span class="k">def</span> <span class="nf">file_to_subject_func</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
 
@@ -496,7 +518,7 @@ The passed <cite>load_func</cite> will be called on each file individually
 and whatever the output of the function is will be passed to
 the different loading functions.</p>
 <p>You might need to pass a user defined custom function
-in some cases, e.g., you want to use np.load,
+in some cases, e.g., you want to use <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.load.html#numpy.load" title="(in NumPy v1.20)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.load()</span></code></a>,
 but then also np.stack. Just wrap those two functions in one,
 and pass the new function.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_wrapper</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -512,7 +534,7 @@ as numpy arrays.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, do operation inplace and return None.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
@@ -523,6 +545,8 @@ as numpy arrays.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><a class="reference internal" href="BPt.Dataset.to_data_file.html#BPt.Dataset.to_data_file" title="BPt.Dataset.to_data_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_data_file</span></code></a></dt><dd><p>Cast existing columns to type Data File.</p>
+</dd>
 <dt><a class="reference internal" href="BPt.Dataset.get_file_mapping.html#BPt.Dataset.get_file_mapping" title="BPt.Dataset.get_file_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_mapping</span></code></a></dt><dd><p>Returns the raw file mapping.</p>
 </dd>
 </dl>

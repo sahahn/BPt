@@ -68,6 +68,10 @@
             <a class="nav-link" href="../installation/index.html">Installation</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
         <li class="nav-item active">
             <a class="nav-link" href="index.html">User Guide</a>
         </li>
@@ -128,6 +132,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -138,6 +144,18 @@
             
                 <li class="">
                     <a href="loading_data.html">Loading Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="saving_data.html">Saving Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="test_split.html">Test Split</a>
                 </li>
             
           
@@ -233,8 +251,11 @@
 <span id="id1"></span><h1>Role<a class="headerlink" href="#role" title="Permalink to this headline">¶</a></h1>
 <p>There are three possible roles in the <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> class / BPt. These are
 ‘data’, ‘target’ and ‘non input’. By default, all loaded columns will be treated with
-role ‘data’ until set differently. Roles are set through methods <a class="reference internal" href="../reference/api/BPt.Dataset.set_role.html#BPt.Dataset.set_role" title="BPt.Dataset.set_role"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_role</span></code></a>
-and <a class="reference internal" href="../reference/api/BPt.Dataset.set_roles.html#BPt.Dataset.set_roles" title="BPt.Dataset.set_roles"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_roles</span></code></a>.</p>
+role ‘data’ until set differently. Roles are set through
+methods <a class="reference internal" href="../reference/api/BPt.Dataset.set_role.html#BPt.Dataset.set_role" title="BPt.Dataset.set_role"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_role</span></code></a>
+and <a class="reference internal" href="../reference/api/BPt.Dataset.set_roles.html#BPt.Dataset.set_roles" title="BPt.Dataset.set_roles"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_roles</span></code></a>. Or through dedicated
+helper methods <a class="reference internal" href="../reference/api/BPt.Dataset.set_target.html#BPt.Dataset.set_target" title="BPt.Dataset.set_target"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_target</span></code></a> and
+<a class="reference internal" href="../reference/api/BPt.Dataset.set_non_input.html#BPt.Dataset.set_non_input" title="BPt.Dataset.set_non_input"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_non_input</span></code></a>.</p>
 <p>The different roles are described below.</p>
 <ul class="simple">
 <li><dl class="simple">

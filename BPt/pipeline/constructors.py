@@ -16,6 +16,7 @@ from .Selector import selector_wrapper
 from sklearn.compose import TransformedTargetRegressor
 from .BPtSearchCV import wrap_param_search
 from .ensemble_wrappers import EnsembleWrapper
+from collections import defaultdict
 
 import numpy as np
 
@@ -189,6 +190,31 @@ class Constructor():
     def _process(self, params):
         return [], {}
 
+    def _get_obj_param(self, get_func, param):
+
+        # Unpack
+        name, param_str = param.obj, param.params
+        extra_params = param.extra_params
+
+        # Custom case
+        if 'Custom ' in name:
+            return self._get_user_passed_obj_params(name, param_str,
+                                                    extra_params)
+
+        # Get original number of feat keys
+        # just used for special feature selector case right now.
+        num_feat_keys = 0
+        if hasattr(param, 'scope'):
+            num_feat_keys = len(self.get_inds(param.scope))
+
+        # Get obj from func, where any un-needed params
+        # are just not used.
+        obj = get_func(name, extra_params, param_str,
+                       random_state=self.spec['random_state'],
+                       num_feat_keys=num_feat_keys)
+
+        return (name, obj)
+
     def _get_objs_and_params(self, get_func, params):
         '''Helper function to grab scaler / feat_selectors and
         their relevant parameter grids'''
@@ -196,27 +222,7 @@ class Constructor():
         # Make the object + params based on passed settings
         objs_and_params = []
         for param in params:
-
-            name, param_str = param.obj, param.params
-            extra_params = param.extra_params
-
-            if 'Custom ' in name:
-                objs_and_params.append(
-                    self._get_user_passed_obj_params(name, param_str,
-                                                     extra_params))
-
-            else:
-
-                # Set the original number of feat keys based on the
-                # original scope
-                num_feat_keys = len(self.get_inds(param.scope))
-
-                objs_and_params.append(
-                    (name, get_func(name, extra_params,
-                                    param_str,
-                                    random_state=self.spec['random_state'],
-                                    num_feat_keys=num_feat_keys)
-                     ))
+            objs_and_params.append(self._get_obj_param(get_func, param))
 
         # Perform extra proc, to split into objs and merged param dict
         objs, params = self._proc_objs_and_params(objs_and_params)
@@ -360,14 +366,30 @@ class Constructor():
             if hasattr(obj, 'random_state'):
                 setattr(obj, 'random_state', self.spec['random_state'])
 
-            # Proc scope
-            scope = input_params[i].scope
+            if hasattr(input_params[i], 'scope'):
 
-            # Sets to either inds or Ellipsis if all
-            inds = self._check_scope_all(scope)
+                # Proc scope
+                scope = input_params[i].scope
 
-            # Get scope name
-            scope_name = get_scope_name(scope)
+                # Sets to either inds or Ellipsis if all
+                inds = self._check_scope_all(scope)
+
+                # Get scope name
+                scope_name = get_scope_name(scope)
+
+            elif hasattr(input_params[i], 'scopes'):
+
+                # Proc scope
+                scopes = input_params[i].scopes
+
+                # Sets to either inds or Ellipsis if all
+                inds = [self._check_scope_all(scope) for scope in scopes]
+
+                # Get scope name
+                scope_name = ''
+
+            else:
+                raise RuntimeError('No scope or scopes in object')
 
             if hasattr(input_params[i], 'cache_loc'):
                 cache_loc = getattr(input_params[i], 'cache_loc')
@@ -437,7 +459,7 @@ class ModelConstructor(TypeConstructor):
         ensemble_mask = np.array([hasattr(params[i], 'models')
                                   for i in range(len(params))])
 
-        # Seperate non-ensemble objs and obj_params
+        # Separate non-ensemble objs and obj_params
         non_ensemble_params = [i for idx, i in enumerate(params)
                                if not ensemble_mask[idx]]
 
@@ -469,7 +491,7 @@ class ModelConstructor(TypeConstructor):
 
     def _process_ensembles(self, params, ensemble_mask):
 
-        # Seperate the ensemble params from all passed params
+        # Separate the ensemble params from all passed params
         ensemble_params = [i for idx, i in enumerate(params)
                            if ensemble_mask[idx]]
 
@@ -677,7 +699,7 @@ class LoaderConstructor(Constructor):
         cnt = 0
         for p_params, ind in zip(pipe_params, np.where(pipe_mask)[0]):
 
-            # Need to move objs and params to seperate objs to pass along
+            # Need to move objs and params to separate objs to pass along
             p_sep_params = []
             for o, p in zip(p_params.obj, p_params.params):
                 base = deepcopy(p_params)
@@ -771,7 +793,7 @@ class ImputerConstructor(Constructor):
         objs, obj_params =\
             self.replace_base_estimator(objs, obj_params, params)
 
-        # Wrap in col_transformer for scope
+        # Make col version
         return self._make_col_version(objs, obj_params, params,
                                       Wrapper=ScopeTransformer)
 
@@ -805,7 +827,7 @@ class ScalerConstructor(Constructor):
             self._get_objs_and_params(get_scaler_and_params,
                                       params)
 
-        # Wrap in col_transformer for scope
+        # Wrap
         return self._make_col_version(objs, obj_params, params,
                                       Wrapper=ScopeTransformer)
 
@@ -888,3 +910,42 @@ class EnsembleConstructor(TypeConstructor):
 
         return VotingClassifier(models, voting='soft',
                                 n_jobs=self.spec['n_jobs'])
+
+
+class CustomConstructor():
+
+    name = 'custom'
+
+    def __init__(self, *args, **kwargs):
+        '''Compat.'''
+        pass
+
+    def process(self, params):
+        '''params is passed as a list with all the custom objects.
+        No returned param dists either.'''
+
+        # Extract steps
+        objs = [param._get_step() for param in params]
+        names = [name for name, _ in objs]
+        estimators = [est for _, est in objs]
+
+        # Get counts for each name
+        namecount = defaultdict(int)
+        for name in names:
+            namecount[name] += 1
+
+        # Remove any with unique names
+        for k, v in list(namecount.items()):
+            if v == 1:
+                del namecount[k]
+
+        # Proc new names
+        for i in reversed(range(len(estimators))):
+            name = names[i]
+            if name in namecount:
+                names[i] += "-%d" % namecount[name]
+                namecount[name] -= 1
+
+        objs = list(zip(names, estimators))
+
+        return objs, {}

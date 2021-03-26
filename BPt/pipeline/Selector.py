@@ -8,7 +8,7 @@ class Selector(_BaseComposition):
 
     _needs_mapping = True
     _needs_fit_index = True
-    _needs_transform_indes = True
+    _needs_transform_index = True
 
     def __init__(self, estimators, to_use=0):
         self.estimators = estimators
@@ -59,7 +59,7 @@ class Selector(_BaseComposition):
         else:
             transform_index = None
 
-        tranform_params = _get_est_trans_params(self.estimator,
+        tranform_params = _get_est_trans_params(self.estimator_,
                                                 transform_index)
 
         return self.estimator_.transform(*args, **tranform_params)
@@ -97,6 +97,14 @@ class Selector(_BaseComposition):
     @if_delegate_has_method(delegate='estimator_')
     def inverse_transform(self, *args, **kwargs):
         return self.estimator_.inverse_transform(*args, **kwargs)
+
+    @if_delegate_has_method(delegate='estimator_')
+    def transform_df(self, *args, **kwargs):
+        return self.estimator_.transform_df(*args, **kwargs)
+
+    @if_delegate_has_method(delegate='estimator_')
+    def _proc_new_names(self, *args, **kwargs):
+        return self.estimator_._proc_new_names(*args, **kwargs)
 
     @property
     def _estimator_type(self):

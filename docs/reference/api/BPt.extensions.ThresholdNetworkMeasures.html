@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -169,13 +175,19 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
@@ -201,7 +213,17 @@
                             <a href="">BPt.extensions.ThresholdNetworkMeasures</a>
                         </li>
                     
+                        <li class="">
+                            <a href="BPt.extensions.RandomParcellation.html">BPt.extensions.RandomParcellation</a>
+                        </li>
+                    
                     </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -241,7 +263,7 @@
 <h1>BPt.extensions.ThresholdNetworkMeasures<a class="headerlink" href="#bpt-extensions-thresholdnetworkmeasures" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.extensions.ThresholdNetworkMeasures">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.extensions.</code><code class="sig-name descname">ThresholdNetworkMeasures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">threshold_method</span><span class="o">=</span><span class="default_value">'abs'</span></em>, <em class="sig-param"><span class="n">to_compute</span><span class="o">=</span><span class="default_value">'avg_degree'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L859-L1049"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.ThresholdNetworkMeasures" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.extensions.</code><code class="sig-name descname">ThresholdNetworkMeasures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">threshold_type</span><span class="o">=</span><span class="default_value">'abs'</span></em>, <em class="sig-param"><span class="n">threshold_method</span><span class="o">=</span><span class="default_value">'value'</span></em>, <em class="sig-param"><span class="n">to_compute</span><span class="o">=</span><span class="default_value">'avg_degree'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L958-L1227"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.ThresholdNetworkMeasures" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class is designed for thresholding and then extracting network
 measures from an input correlation matrix.</p>
 <dl class="field-list">
@@ -256,8 +278,43 @@ also changes how this threshold behaves.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>threshold_method</strong><span class="classifier">{‘abs’, ‘pos’, ‘neg’, ‘density’}, optional</span></dt><dd><p>The type of threshold to apply in order to define edges.</p>
+<dt><strong>threshold_type</strong><span class="classifier">{‘abs’, ‘pos’, ‘neg’}</span></dt><dd><p>The type of thresholding, e.g., should the threshold
+be applied to:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>‘abs’</dt><dd><p>The absolute value of the connections</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘pos’</dt><dd><p>Only consider edges as passed the threshold if &gt;= self.threshold</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘neg’</dt><dd><p>Only consider edges as passed the if &lt;= self.threshold</p>
+</dd>
+</dl>
+</li>
+</ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;abs&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>threshold_method</strong><span class="classifier">{‘value’, ‘density’}, optional</span></dt><dd><p>The method for thresholding. The two
+defined options are either to define an edge
+strictly by value, e.g., if threshold_type is ‘abs’,
+and threshold is .2, then any connection greater than or
+equal to .2 will be set as an edge.</p>
+<p>Alternatively, you may specify that the threshold be
+treated as a density. What this means is that if the threshold
+is set to for example .2, then the top 20% of edges by weight
+will be set as an edge, regardless of the actual value of the edge.</p>
+<p>Note: The passed percentage will be considered
+out of all of the the total possible edges in the adjacency matrix.
+That includes both the upper and lower repeated triangles
+if non-directional edges.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;value&#39;</span>
 </pre></div>
 </div>
 </dd>
@@ -380,7 +437,7 @@ averages of local measures:</p>
 <td><p>X is a 2d correlation matrix</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.fit_transform.html#BPt.extensions.ThresholdNetworkMeasures.fit_transform" title="BPt.extensions.ThresholdNetworkMeasures.fit_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_transform</span></code></a>(X[, y])</p></td>
-<td><p>Temp.</p></td>
+<td><p>Fit, then transform a passed 2D numpy correlation matrix.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.get_params.html#BPt.extensions.ThresholdNetworkMeasures.get_params" title="BPt.extensions.ThresholdNetworkMeasures.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</p></td>
 <td><p>Get parameters for this estimator.</p></td>
@@ -389,7 +446,7 @@ averages of local measures:</p>
 <td><p>Set the parameters of this estimator.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.extensions.ThresholdNetworkMeasures.transform.html#BPt.extensions.ThresholdNetworkMeasures.transform" title="BPt.extensions.ThresholdNetworkMeasures.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(X)</p></td>
-<td><p>Temp.</p></td>
+<td><p>Transform a passed 2D numpy correlation matrix.</p></td>
 </tr>
 </tbody>
 </table>

@@ -185,6 +185,13 @@ def test_check_scopes():
     assert not df._is_category('2')
 
 
+def test_is_category():
+
+    df = get_fake_dataset()
+    assert df._is_category('2')
+    assert not df._is_category('all')
+
+
 def test_set_target_inplace():
 
     df = get_fake_dataset()
@@ -192,11 +199,28 @@ def test_set_target_inplace():
     assert(set(df.get_cols('target')) == set(['1']))
 
 
+def test_set_target():
+
+    df = get_fake_dataset()
+    df = df.set_target('1')
+    assert(set(df.get_cols('target')) == set(['1']))
+
+
+def test_set_non_input():
+
+    df = get_fake_dataset()
+    df = df.set_non_input('2')
+    assert(set(df.get_cols('non input')) == set(['2']))
+
+
 def test_set_non_input_inplace():
 
     df = get_fake_dataset()
     df.set_non_input('2', inplace=True)
     assert(set(df.get_cols('non input')) == set(['2']))
+
+    df = df.set_non_input('2', inplace=True)
+    assert df is None
 
 
 def test_set_role_inplace():
@@ -329,25 +353,6 @@ def test_get_Xy_base():
                           np.array([14, 15]).astype('float32'))
     assert np.array_equal(y, np.array([.4, .5]).astype('float64'))
 
-    X, y = df.get_train_Xy(ps)
-    assert isinstance(X, pd.DataFrame)
-    assert isinstance(y, pd.Series)
-
-    X, y = np.array(X), np.array(y)
-    assert X.shape == (3, 3)
-    assert np.array_equal(X[:, 0], np.array([1, 2, 3]).astype('float32'))
-    assert np.array_equal(X[:, 2],
-                          np.array([11, 12, 13]).astype('float32'))
-    assert np.array_equal(y, np.array([.1, .2, .3]).astype('float64'))
-
-    X, y = df.get_test_Xy(ps)
-    X, y = np.array(X), np.array(y)
-    assert X.shape == (2, 3)
-    assert np.array_equal(X[:, 0], np.array([4, 5]).astype('float32'))
-    assert np.array_equal(X[:, 2],
-                          np.array([14, 15]).astype('float32'))
-    assert np.array_equal(y, np.array([.4, .5]).astype('float64'))
-
 
 def test_get_Xy_alt():
 
@@ -371,30 +376,6 @@ def test_get_Xy_alt():
     assert np.array_equal(X[:, 1],
                           np.array([12, 13]).astype('float32'))
     assert np.array_equal(y, np.array([.2, .3]).astype('float64'))
-
-
-def test_get_Xy_train_default_ps():
-
-    df = get_fake_dataset()
-    df.set_role('3', 'target', inplace=True)
-    df.set_test_split(subjects=[0], inplace=True)
-
-    X, y = df.get_train_Xy()
-
-    assert X.shape == (2, 2)
-    assert len(y) == 2
-
-
-def test_get_Xy_test_default_ps():
-
-    df = get_fake_dataset()
-    df.set_role('3', 'target', inplace=True)
-    df.set_test_split(subjects=[0], inplace=True)
-
-    X, y = df.get_test_Xy()
-
-    assert X.shape == (1, 2)
-    assert len(y) == 1
 
 
 def test_invalid_names():
@@ -507,3 +488,37 @@ def test_get_cols_limit_to():
 
     cols = df._get_cols('category', limit_to=['data file'])
     assert len(cols) == 0
+
+
+def test_get_problem_type_binary():
+
+    data = Dataset()
+    data['1'] = [0, 1, 1, 1]
+
+    assert data._get_problem_type('1') == 'binary'
+
+
+def test_get_problem_type_binary_error():
+
+    data = Dataset()
+    data['1'] = [1, 2, 2, 2]
+
+    with assert_raises(RuntimeError):
+        data._get_problem_type('1')
+
+
+def test_get_problem_type_categorical():
+
+    data = Dataset()
+    data['1'] = [0, 1, 2, 3]
+    data['1'] = data['1'].astype('category')
+
+    assert data._get_problem_type('1') == 'categorical'
+
+
+def test_get_problem_type_regression():
+
+    data = Dataset()
+    data['1'] = [0, 1, 2, 3]
+
+    assert data._get_problem_type('1') == 'regression'

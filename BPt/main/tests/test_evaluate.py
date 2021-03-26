@@ -1,6 +1,8 @@
+from BPt.pipeline.BPtPipeline import BPtPipeline
 from BPt.main.BPtEvaluator import BPtEvaluator
-from ...pipeline.BPtSearchCV import BPtGridSearchCV
+from ...pipeline.BPtSearchCV import BPtGridSearchCV, NevergradSearchCV
 from ..input import ModelPipeline, Model, CV, Pipeline, Scaler, ParamSearch
+from ..input_operations import Select
 from ...dataset.Dataset import Dataset
 from ...default.params.Params import Choice
 from ..funcs import evaluate, cross_val_score, _sk_check_y
@@ -8,8 +10,9 @@ from nose.tools import assert_raises
 import pandas as pd
 import numpy as np
 from ...extensions import LinearResidualizer
-from ..compare import Compare, Option, CompareDict
+from ..compare import Compare, Option, CompareDict, Options
 from sklearn.tree import DecisionTreeClassifier
+from ...pipeline.Selector import Selector
 
 
 def get_fake_dataset():
@@ -442,3 +445,188 @@ def test_evaluate_compare():
     assert isinstance(e1, BPtEvaluator)
     e1_model = e1.estimators[0].steps[-1][1].estimator
     assert isinstance(e1_model, DecisionTreeClassifier)
+
+
+def test_evaluate_compare_ps():
+
+    dataset = get_fake_binary_dataset()
+
+    pipe = ModelPipeline(model=Model('dt'))
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         scope=Compare(['1', '2']),
+                         progress_bar=False)
+
+    assert isinstance(evaluator, CompareDict)
+
+
+def test_evaluate_extra_params_compare():
+
+    dataset = get_fake_dataset()
+
+    pipe = ModelPipeline(model=Model('dt', max_depth=Compare([1, 2, 3])))
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='regression')
+
+    assert isinstance(evaluator, CompareDict)
+
+    # Try different index methods
+    e1 = evaluator['1']
+    e2 = evaluator['model__max_depth=2']
+    e3 = evaluator[Options(model__max_depth=3)]
+    e4 = evaluator[Options(max_depth=3)]
+    e5 = evaluator['max_depth=2']
+
+    # Make sure actually set extra param
+    es = [e1, e2, e3, e4, e5]
+    for md, e in zip([1, 2, 3, 3, 2], es):
+        assert e.estimators[0].steps[-1][1].estimator.max_depth == md
+
+
+def test_evaluate_step_compare():
+
+    dataset = get_fake_dataset()
+    pipe = Pipeline(steps=[Compare([Model('dt'), Model('linear')])])
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='regression')
+    assert isinstance(evaluator, CompareDict)
+
+
+def test_evaluate_step_compare_mp():
+
+    dataset = get_fake_dataset()
+    pipe = ModelPipeline(model=Compare([Model('dt'), Model('linear')]))
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='regression')
+    assert isinstance(evaluator, CompareDict)
+
+
+def test_evaluate_step_compare2():
+
+    dataset = get_fake_dataset()
+    pipe = Pipeline(steps=[Compare([Scaler('standard'), Scaler('robust')]),
+                           Model('dt')])
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='regression')
+    assert isinstance(evaluator, CompareDict)
+
+
+def test_evaluate_step_compare2_mp():
+
+    dataset = get_fake_dataset()
+    pipe = ModelPipeline(scalers=Compare([Scaler('standard'),
+                                          Scaler('robust')]),
+                         model=Model('dt'))
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='regression')
+    assert isinstance(evaluator, CompareDict)
+
+
+def test_evaluate_step_compare2_mp2():
+
+    dataset = get_fake_dataset()
+    pipe = ModelPipeline(scalers=[Scaler('standard'),
+                                  Compare([Scaler('standard'),
+                                           Scaler('robust')])],
+                         model=Model('dt'))
+
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='regression')
+    assert isinstance(evaluator, CompareDict)
+
+
+def test_evaluator_get_X_transform_df():
+
+    pipe = Pipeline([Scaler('standard'), Model('dt')])
+    dataset = get_fake_dataset()
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         cv=3)
+
+    for fold in [0, 1, 2]:
+        X_tr_trans = evaluator.get_X_transform_df(
+            dataset, fold=fold, subjects='tr')
+        assert X_tr_trans.sum().sum() == 0
+        assert '1' in X_tr_trans
+        assert '2' in X_tr_trans
+
+        X_val_trans = evaluator.get_X_transform_df(
+            dataset, fold=fold, subjects='val')
+        assert X_val_trans.sum().sum() == 0
+        assert '1' in X_val_trans
+        assert '2' in X_val_trans
+
+        assert len(X_tr_trans) + len(X_val_trans) == len(dataset)
+
+
+def test_evaluate_pipeline_with_select():
+
+    select_scaler = Select([Scaler('standard'), Scaler('robust')])
+    select_model = Select([Model('linear'), Model('random forest')])
+
+    pipe = Pipeline([select_scaler, select_model],
+                    param_search=ParamSearch(n_iter=4))
+
+    dataset = get_fake_dataset()
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         cv=3)
+
+    assert isinstance(evaluator, BPtEvaluator)
+    search_est = evaluator.estimators[0]
+    assert isinstance(search_est, NevergradSearchCV)
+    best_est = search_est.best_estimator_
+    assert isinstance(best_est, BPtPipeline)
+    step0 = best_est.steps[0]
+    step1 = best_est.steps[1]
+    assert isinstance(step0[1], Selector)
+    assert isinstance(step1[1], Selector)
+    assert step0[1].estimator_ == step0[1].estimators[step0[1].to_use][1]
+    assert step1[1].estimator_ == step1[1].estimators[step1[1].to_use][1]
+
+
+def test_evaluate_modelpipeline_with_select():
+
+    select_scaler = Select([Scaler('standard'), Scaler('robust')])
+    select_model = Select([Model('linear'), Model('random forest')])
+
+    pipe = ModelPipeline(scalers=select_scaler,
+                         model=select_model,
+                         param_search=ParamSearch(n_iter=4))
+
+    dataset = get_fake_dataset()
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         cv=3)
+
+    assert isinstance(evaluator, BPtEvaluator)
+    search_est = evaluator.estimators[0]
+    assert isinstance(search_est, NevergradSearchCV)
+    best_est = search_est.best_estimator_
+    assert isinstance(best_est, BPtPipeline)
+    step0 = best_est.steps[0]
+    step1 = best_est.steps[1]
+    assert isinstance(step0[1], Selector)
+    assert isinstance(step1[1], Selector)
+    assert step0[1].estimator_ == step0[1].estimators[step0[1].to_use][1]
+    assert step1[1].estimator_ == step1[1].estimators[step1[1].to_use][1]

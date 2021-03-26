@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -124,6 +128,8 @@
     
   
     <ul class="nav bd-sidenav">
+        
+        
         
         
         
@@ -205,19 +211,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -257,24 +275,27 @@
 <h1>BPt.Ensemble<a class="headerlink" href="#bpt-ensemble" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.Ensemble">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Ensemble</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">models</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">param_search</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_scaler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">base_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">single_estimator</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">n_jobs_type</span><span class="o">=</span><span class="default_value">'ensemble'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L917-L1133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Ensemble" title="Permalink to this definition">¶</a></dt>
-<dd><p>The Ensemble object is valid base
-<a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> (or <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>) piece, designed
-to be passed as input to the <cite>model</cite> parameter
-of <a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a>, or
-to its own models parameters.</p>
-<p>This class is used to create a variety ensembled models,
-typically based on
-<a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> pieces.</p>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Ensemble</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">models</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">param_search</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_scaler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">base_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">single_estimator</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">n_jobs_type</span><span class="o">=</span><span class="default_value">'ensemble'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L934-L1111"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Ensemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Ensemble object is a
+<a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> (or <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>) piece,
+designed to be passed as an estimator, the same
+as <a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>. This class is used to create
+a variety of different ensemble based estimators.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>obj</strong><span class="classifier">str</span></dt><dd><p>Each str passed to ensemble refers to a type of ensemble to train,
+<dt><strong>obj</strong><span class="classifier">str</span></dt><dd><div class="line-block">
+<div class="line">Each str passed to ensemble refers to a type of ensemble to train,
 based on also the passed input to the <cite>models</cite> parameter,
-and also the
-additional parameters passed when initializing Ensemble.</p>
-<p>See <a class="reference internal" href="../../options/pipeline_options/ensembles.html#ensemble-types"><span class="std std-ref">Ensemble Types</span></a> to see all
-avaliable options for ensembles.</p>
+and also the additional parameters passed when
+initializing this object.</div>
+</div>
+<div class="line-block">
+<div class="line">See <a class="reference internal" href="../../options/pipeline_options/ensembles.html#ensemble-types"><span class="std std-ref">Ensemble Types</span></a> to see all
+avaliable options for ensembles.</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>Passing custom objects here, while technically possible,
 is not currently full supported.
 That said, there are just certain assumptions that
@@ -288,114 +309,176 @@ Whereas if needs_split is still False,
 but single_estimator is True, then the passed object needs
 to support an init param of <cite>base_estimator</cite>,
 which accepts a single estimator.</p>
+</div>
 </dd>
-<dt><strong>models</strong><span class="classifier"><a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, <a class="reference internal" href="#BPt.Ensemble" title="BPt.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ensemble</span></code></a> or list of</span></dt><dd><p>The <cite>models</cite> parameter is designed to accept any single model-like
+<dt><strong>models</strong><span class="classifier"><a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, <a class="reference internal" href="#BPt.Ensemble" title="BPt.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ensemble</span></code></a> or list of</span></dt><dd><div class="line-block">
+<div class="line">The <cite>models</cite> parameter is designed to accept any single model-like
 pipeline parameter object, i.e.,
 <a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> or even another <a class="reference internal" href="#BPt.Ensemble" title="BPt.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ensemble</span></code></a>.
 The passed pieces here will be used along with the
 requested ensemble object to
-create the requested ensemble.</p>
-<p>See <a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> for how to create a valid base model(s)
-to pass as input here.</p>
+create the requested ensemble.</div>
+</div>
+<div class="line-block">
+<div class="line">See <a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> for how to create a valid base model(s)
+to pass as input here.</div>
+</div>
 </dd>
-<dt><strong>params</strong><span class="classifier">int, str or dict of <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">params</span></a>, optional</span></dt><dd><p><cite>params</cite> sets as associated distribution of hyper-parameters
-for this ensemble object. These parameters will be used only
-in the context of a hyper-parameter search.
-Notably, these <cite>params</cite> refer to the ensemble obj itself,
-params for base <cite>models</cite> should be passed
-accordingly when creating the base models.
-Preset param distributions are listed at <a class="reference internal" href="../../options/pipeline_options/ensembles.html#ensemble-types"><span class="std std-ref">Ensemble Types</span></a>,
-under each of the options for ensemble objs.</p>
-<p>You can read more about generally about
-hyper-parameter distributions as associated with
-objects at <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">Params</span></a>.</p>
+<dt><strong>params</strong><span class="classifier">int, str or dict of <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">params</span></a>, optional</span></dt><dd><div class="line-block">
+<div class="line">The parameter <cite>params</cite> can be used to set an associated distribution
+of hyper-parameters, fixed parameters or combination of.</div>
+</div>
+<div class="line-block">
+<div class="line">Preset parameter options can be found distributions are
+listed for each choice of params with the corresponding
+obj at <a class="reference internal" href="../../options/pipeline_options/index.html#pipeline-options"><span class="std std-ref">Pipeline Options</span></a>.</div>
+</div>
+<div class="line-block">
+<div class="line">More information on how this parameter
+works can be found at <a class="reference internal" href="../../user_guide/params.html#params"><span class="std std-ref">Params</span></a>.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">0</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a>, optional</span></dt><dd><p><cite>scope</cite> determines on which subset of features the specified
-ensemble model
-should work on. See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more
-information on how scopes can
-be specified.</p>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a>, optional</span></dt><dd><div class="line-block">
+<div class="line">The <cite>scope</cite> parameter determines the subset of
+features / columns in which this object
+should operate on within the created pipeline. For example,
+by specifying scope = ‘float’, then
+this object will only operate on columns with scope
+float.</div>
+</div>
+<div class="line-block">
+<div class="line">See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on
+how scopes can be specified.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>param_search</strong><span class="classifier"><a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, None, optional</span></dt><dd><p>If None, by default, this will be a base ensemble model.
-Alternatively, by passing a <a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a> instance here,
-it specifies that this model should be wrapped in a
-Nevergrad hyper-parameter search object.</p>
-<p>This can be useful to create Model’s which have
-a nested hyper-parameter tuning independent from the
-other pipeline steps.</p>
+<dt><strong>param_search</strong><span class="classifier"><a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, None, optional</span></dt><dd><p>This parameter optionally specifies that this object
+should be nested with a hyper-parameter search.</p>
+<p>If passed an instance of <a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, the
+underlying object, or components of the underlying
+object (if a pipeline) must have atleast one valid
+hyper-parameter distribution to search over.</p>
+<p>By default this parameter is set to None, which
+specifies no parameter search.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>target_scaler</strong><span class="classifier">Scaler, None, optional</span></dt><dd><p>Still somewhat experimental, can pass
-a Scaler object here and have this model
-perform target scaling + reverse scaling.</p>
-<p>scope in the passed scaler is ignored.</p>
-<p>Note: Has not been fully tested in
+<dt><strong>target_scaler</strong><span class="classifier"><a class="reference internal" href="BPt.Scaler.html#BPt.Scaler" title="BPt.Scaler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scaler</span></code></a>, None, optional</span></dt><dd><div class="line-block">
+<div class="line">Can optionally pass an instance of
+<a class="reference internal" href="BPt.Scaler.html#BPt.Scaler" title="BPt.Scaler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scaler</span></code></a> here to have properly
+nested target scaling / reverse scaling (before scoring)
+applied.</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This parameter is still experimental.
+It has not been fully tested in
 complicated nesting cases, e.g., if Model is
 wrapping a nested Pipeline, this param will
 likely break.</p>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>base_model</strong><span class="classifier"><a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, None, optional</span></dt><dd><p>In the case that an ensemble is passed which has
-the parameter <cite>final_estimator</cite> (not base model!),
+<dt><strong>base_model</strong><span class="classifier"><a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, None, optional</span></dt><dd><div class="line-block">
+<div class="line">In the case that an ensemble method which has
+the parameter <cite>final_estimator</cite> (not base model),
 for example in the case of stacking,
 then you may pass a Model type
-object here to be used as that final estimator.</p>
-<p>Otherwise, by default this will be left as None,
+object here to be used as that final estimator.</div>
+</div>
+<div class="line-block">
+<div class="line">Otherwise, by default this will be left as None,
 and if the requested ensemble has the final_estimator
 parameter, then it will pass None to the object
-(which is typically for setting the default).</p>
+(which is typically for setting the default).</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>cv</strong><span class="classifier"><a class="reference internal" href="BPt.CV.html#BPt.CV" title="BPt.CV"><code class="xref py py-class docutils literal notranslate"><span class="pre">CV</span></code></a> or None, optional</span></dt><dd><p>Used for passing custom nested internal CV split behavior to
-ensembles which employ splits, e.g., stacking.</p>
+<dt><strong>cv</strong><span class="classifier"><a class="reference internal" href="BPt.CV.html#BPt.CV" title="BPt.CV"><code class="xref py py-class docutils literal notranslate"><span class="pre">CV</span></code></a> or None, optional</span></dt><dd><div class="line-block">
+<div class="line">Used for passing custom nested internal
+CV split behavior to
+ensembles which employ splits, e.g., stacking.</div>
+</div>
+<div class="line-block">
+<div class="line">The passed input can be either an instance
+of <a class="reference internal" href="BPt.CV.html#BPt.CV" title="BPt.CV"><code class="xref py py-class docutils literal notranslate"><span class="pre">CV</span></code></a> or can be any valid
+scikit-learn style cv, e.g., the integer 5.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>single_estimator</strong><span class="classifier">bool, optional</span></dt><dd><p>The parameter <cite>single_estimator</cite> is used to let the
-Ensemble object know if the <cite>models</cite> must be a single estimator.
-This is used for ensemble types
+<dt><strong>single_estimator</strong><span class="classifier">bool, optional</span></dt><dd><div class="line-block">
+<div class="line">The parameter <cite>single_estimator</cite> is used to let the
+Ensemble object know if the passed <cite>models</cite>
+should be a single estimator, or in other words
+if the base ensemble object is expecting the input
+as just one estimator.</div>
+</div>
+<div class="line-block">
+<div class="line">This parameter is used for ensemble types
 that requires an init param <cite>base_estimator</cite>.
 In the case that multiple models
 are passed to <cite>models</cite>, but <cite>single_estimator</cite> is True,
 then the models will automatically
 be wrapped in a voting ensemble,
-thus creating one single estimator.</p>
+thus creating one single estimator.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>n_jobs_type</strong><span class="classifier">‘ensemble’ or ‘models’, optional</span></dt><dd><p>Valid options are either ‘ensemble’ or ‘models’.</p>
-<p>This parameter controls how the total n_jobs are distributed, if
+<dt><strong>n_jobs_type</strong><span class="classifier">‘ensemble’ or ‘models’, optional</span></dt><dd><div class="line-block">
+<div class="line">Valid options are either ‘ensemble’ or ‘models’.</div>
+</div>
+<div class="line-block">
+<div class="line">This parameter controls how the total n_jobs are distributed, if
 ‘ensemble’, then the n_jobs will be used all in the ensemble object
 and every instance within the sub-models set to n_jobs = 1.
 Alternatively, if passed ‘models’, then the ensemble
 object will not be multi-processed, i.e.,
 will be set to n_jobs = 1, and the n_jobs will
-be distributed to each base model.</p>
-<p>If you are training a stacking regressor for example
+be distributed to each base model.</div>
+</div>
+<div class="line-block">
+<div class="line">For example, if you are training a stacking regressor
 with n_jobs = 16, and you have 16+ models, then ‘ensemble’
 is likely a good choice here. If instead you have only
 3 base models, and one or more of those 3 could benefit from
 a higher n_jobs, then setting n_jobs_type to ‘models’ might
-give a speed-up.</p>
+give a speed-up.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;ensemble&#39;</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>extra_params</strong><span class="classifier"><a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a></span></dt><dd><p>See <a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a></p>
+<dt><strong>extra_params</strong><span class="classifier"><a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a></span></dt><dd><div class="line-block">
+<div class="line">You may pass additional kwargs style arguments
+for this piece as <a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a>. Any values
+passed here will be used to try and set that value
+in the requested obj.</div>
+</div>
+<div class="line-block">
+<div class="line">Any parameter value pairs
+specified here will take priority over any
+set via params. For example, lets say in
+the object we are initializing, ‘fake obj’ it has a parameter
+called size, and we want it fixed as 10, we can specify that with:</div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="s1">&#39;fake obj&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../../user_guide/extra_params.html#extra-params"><span class="std std-ref">Extra Params</span></a> for more information.</p>
 </dd>
 </dl>
 </dd>

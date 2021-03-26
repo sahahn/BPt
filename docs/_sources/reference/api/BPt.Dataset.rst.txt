@@ -46,6 +46,7 @@ BPt.Dataset
       Dataset.combine
       Dataset.combine_first
       Dataset.compare
+      Dataset.consolidate_data_files
       Dataset.convert_dtypes
       Dataset.copy
       Dataset.copy_as_non_input
@@ -99,8 +100,6 @@ BPt.Dataset
       Dataset.get_roles
       Dataset.get_scopes
       Dataset.get_subjects
-      Dataset.get_test_Xy
-      Dataset.get_train_Xy
       Dataset.get_values
       Dataset.groupby
       Dataset.gt
@@ -142,6 +141,7 @@ BPt.Dataset
       Dataset.mode
       Dataset.mul
       Dataset.multiply
+      Dataset.nan_info
       Dataset.nan_to_class
       Dataset.ne
       Dataset.nlargest
@@ -191,13 +191,13 @@ BPt.Dataset
       Dataset.set_axis
       Dataset.set_flags
       Dataset.set_index
+      Dataset.set_non_input
       Dataset.set_role
       Dataset.set_roles
+      Dataset.set_target
       Dataset.set_test_split
       Dataset.set_train_split
       Dataset.shift
-      Dataset.show
-      Dataset.show_nan_info
       Dataset.skew
       Dataset.slice_shift
       Dataset.sort_index
@@ -208,6 +208,7 @@ BPt.Dataset
       Dataset.sub
       Dataset.subtract
       Dataset.sum
+      Dataset.summary
       Dataset.swapaxes
       Dataset.swaplevel
       Dataset.tail
@@ -215,6 +216,7 @@ BPt.Dataset
       Dataset.to_binary
       Dataset.to_clipboard
       Dataset.to_csv
+      Dataset.to_data_file
       Dataset.to_dict
       Dataset.to_excel
       Dataset.to_feather
@@ -243,6 +245,7 @@ BPt.Dataset
       Dataset.tz_localize
       Dataset.unstack
       Dataset.update
+      Dataset.update_data_file_paths
       Dataset.value_counts
       Dataset.var
       Dataset.where

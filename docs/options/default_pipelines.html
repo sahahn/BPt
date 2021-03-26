@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Default Pipelines &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Change Log" href="../change_log/index.html" />
+    <link rel="prev" title="Misc." href="search_type_options/misc.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../index.html">
+    
+      <img src="../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../reference/index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="pipeline_options/index.html">Pipeline Options</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="search_type_options/index.html">Search Type Options</a>
+                </li>
+            
+          
+            
+                <li class="active">
+                    <a href="">Default Pipelines</a>
+                </li>
+            
+          
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="default-pipelines">
+<span id="id1"></span><h1>Default Pipelines<a class="headerlink" href="#default-pipelines" title="Permalink to this headline">¶</a></h1>
+<p>You may optionally consider using one of a number of fully pre-defined pipelines. These can
+be accessed though BPt.default.pipelines.</p>
+<p>We can see a list of all available as follows:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+
+<span class="gp">In [2]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">pipelines</span>
+
+<span class="gp">In [3]: </span><span class="n">pipelines</span>
+<span class="gh">Out[3]: </span><span class="go">[&#39;elastic_pipe&#39;, &#39;ridge_pipe&#39;, &#39;lgbm_pipe&#39;, &#39;svm_pipe&#39;, &#39;stacking_pipe&#39;]</span>
+</pre></div>
+</div>
+<p>These represent options which we can import, for example:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">elastic_pipe</span>
+
+<span class="gp">In [5]: </span><span class="n">elastic_pipe</span>
+<span class="gh">Out[5]: </span><span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1)])</span>
+</pre></div>
+</div>
+<p>We can go through and print each pipeline:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="k">for</span> <span class="n">pipeline</span> <span class="ow">in</span> <span class="n">pipelines</span><span class="p">:</span>
+<span class="gp">   ...: </span>    <span class="nb">print</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
+<span class="gp">   ...: </span>    <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;print(bp.default.pipelines.</span><span class="si">{</span><span class="n">pipeline</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+<span class="gp">   ...: </span>
+<span class="go">elastic_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1)])</span>
+<span class="go">ridge_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;ridge&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1)])</span>
+<span class="go">lgbm_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;lgbm&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1)])</span>
+<span class="go">svm_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), steps=[FeatSelector(obj=&#39;univariate selection&#39;, params=2), Model(obj=&#39;svm&#39;, params=1)]))])</span>
+<span class="go">stacking_pipe</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Ensemble(base_model=Model(obj=&#39;ridge&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1), models=[Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVS...ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1), Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), steps=[FeatSelector(obj=&#39;univariate selection&#39;, params=2), Model(obj=&#39;svm&#39;, params=1)])), Model(obj=&#39;lgbm&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1)], obj=&#39;stacking&#39;)])</span>
+</pre></div>
+</div>
+<p>Note also that the individual pieces which make up the default pipelines can be accessed as well.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">pieces</span>
+
+<span class="gp">In [8]: </span><span class="n">pieces</span>
+<span class="gh">Out[8]: </span><span class="go"></span>
+<span class="go">[&#39;m_imputer&#39;,</span>
+<span class="go"> &#39;c_imputer&#39;,</span>
+<span class="go"> &#39;r_scaler&#39;,</span>
+<span class="go"> &#39;ohe&#39;,</span>
+<span class="go"> &#39;random_search&#39;,</span>
+<span class="go"> &#39;elastic_search&#39;,</span>
+<span class="go"> &#39;lgbm_search&#39;,</span>
+<span class="go"> &#39;u_feat&#39;,</span>
+<span class="go"> &#39;svm&#39;,</span>
+<span class="go"> &#39;svm_search_pipe&#39;,</span>
+<span class="go"> &#39;svm_search&#39;,</span>
+<span class="go"> &#39;ridge_search&#39;,</span>
+<span class="go"> &#39;stacking&#39;]</span>
+
+<span class="go"># Look at some</span>
+<span class="gp">In [9]: </span><span class="n">bp</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">u_feat</span>
+<span class="gh">Out[9]: </span><span class="go">FeatSelector(obj=&#39;univariate selection&#39;, params=2)</span>
+
+<span class="gp">In [10]: </span><span class="n">bp</span><span class="o">.</span><span class="n">default</span><span class="o">.</span><span class="n">pipelines</span><span class="o">.</span><span class="n">svm</span>
+<span class="gh">Out[10]: </span><span class="go">Model(obj=&#39;svm&#39;, params=1)</span>
+</pre></div>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="search_type_options/misc.html" title="previous page">Misc.</a>
+    <a class='right-next' id="next-link" href="../change_log/index.html" title="next page">Change Log</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

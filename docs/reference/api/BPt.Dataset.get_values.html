@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.Dataset.groupby" href="BPt.Dataset.groupby.html" />
-    <link rel="prev" title="BPt.Dataset.get_train_Xy" href="BPt.Dataset.get_train_Xy.html" />
+    <link rel="prev" title="BPt.Dataset.get_subjects" href="BPt.Dataset.get_subjects.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -66,6 +66,10 @@
         
         <li class="nav-item ">
             <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
         </li>
         
         <li class="nav-item ">
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
   
@@ -174,14 +180,6 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
-                        </li>
-                    
-                        <li class="">
                             <a href="BPt.Dataset.copy.html">BPt.Dataset.copy</a>
                         </li>
                     
@@ -191,14 +189,6 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_train_Xy.html">BPt.Dataset.get_train_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_test_Xy.html">BPt.Dataset.get_test_Xy</a>
                         </li>
                     
                         <li class="">
@@ -227,6 +217,26 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_data_file.html">BPt.Dataset.to_data_file</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.consolidate_data_files.html">BPt.Dataset.consolidate_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.update_data_file_paths.html">BPt.Dataset.update_data_file_paths</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
                         </li>
                     
                         <li class="">
@@ -282,15 +292,11 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show.html">BPt.Dataset.show</a>
+                            <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show_nan_info.html">BPt.Dataset.show_nan_info</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.info.html">BPt.Dataset.info</a>
+                            <a href="BPt.Dataset.summary.html">BPt.Dataset.summary</a>
                         </li>
                     
                         <li class="">
@@ -345,19 +351,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -397,7 +415,7 @@
 <h1>BPt.Dataset.get_values<a class="headerlink" href="#bpt-dataset-get-values" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.get_values">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">get_values</code><span class="sig-paren">(</span><em class="sig-param">col</em>, <em class="sig-param">dropna=True</em>, <em class="sig-param">decode_values=False</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=1</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L930-L1001"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.get_values" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">get_values</code><span class="sig-paren">(</span><em class="sig-param">col</em>, <em class="sig-param">dropna=True</em>, <em class="sig-param">decode_values=False</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=-1</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L919-L970"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.get_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used to obtain the either normally loaded and
 stored values from a passed column, or in the case of a data file
 column, the data file proxy values will be loaded. There is likewise
@@ -436,10 +454,11 @@ numpy’s mean function, which returns one value.</p>
 valid when the passed col/column is a ‘data file’.
 In that case, this specifies the number of cores
 to use in loading and applying the reduce_func to each
-data file. This can provide a signifigant speed up when
+data file. This can provide a significant speed up when
 passed the number of avaliable cores, but can sometimes
 be memory intensive depending on the underlying size of the file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">1</span>
+<p>If set to -1, will try to automatically use all avaliable cores.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 </pre></div>
 </div>
 </dd>
@@ -465,7 +484,7 @@ depending on the nature of the requested column.</p>
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="BPt.Dataset.get_train_Xy.html" title="previous page">BPt.Dataset.get_train_Xy</a>
+    <a class='left-prev' id="prev-link" href="BPt.Dataset.get_subjects.html" title="previous page">BPt.Dataset.get_subjects</a>
     <a class='right-next' id="next-link" href="BPt.Dataset.groupby.html" title="next page">BPt.Dataset.groupby</a>
 
               </div>

@@ -69,6 +69,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -130,6 +134,8 @@
         
         
         
+        
+        
           
             
   
@@ -174,14 +180,6 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
-                        </li>
-                    
-                        <li class="">
                             <a href="BPt.Dataset.copy.html">BPt.Dataset.copy</a>
                         </li>
                     
@@ -191,14 +189,6 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_train_Xy.html">BPt.Dataset.get_train_Xy</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.get_test_Xy.html">BPt.Dataset.get_test_Xy</a>
                         </li>
                     
                         <li class="">
@@ -227,6 +217,26 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_data_file.html">BPt.Dataset.to_data_file</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.consolidate_data_files.html">BPt.Dataset.consolidate_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.update_data_file_paths.html">BPt.Dataset.update_data_file_paths</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
                         </li>
                     
                         <li class="active">
@@ -282,15 +292,11 @@
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show.html">BPt.Dataset.show</a>
+                            <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
                         <li class="">
-                            <a href="BPt.Dataset.show_nan_info.html">BPt.Dataset.show_nan_info</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="BPt.Dataset.info.html">BPt.Dataset.info</a>
+                            <a href="BPt.Dataset.summary.html">BPt.Dataset.summary</a>
                         </li>
                     
                         <li class="">
@@ -345,19 +351,31 @@
           
             
                 <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
                     <a href="../dists.html">Parameter Distributions</a>
                 </li>
             
           
             
                 <li class="">
-                    <a href="../evaluate.html">Evaluate Functions</a>
+                    <a href="../evaluate.html">Evaluate</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
                 </li>
             
           
@@ -397,7 +415,7 @@
 <h1>BPt.Dataset.filter_outliers_by_std<a class="headerlink" href="#bpt-dataset-filter-outliers-by-std" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.filter_outliers_by_std">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">filter_outliers_by_std</code><span class="sig-paren">(</span><em class="sig-param">n_std=10</em>, <em class="sig-param">scope='float'</em>, <em class="sig-param">drop=True</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L361-L503"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.filter_outliers_by_std" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">filter_outliers_by_std</code><span class="sig-paren">(</span><em class="sig-param">n_std=10</em>, <em class="sig-param">scope='float'</em>, <em class="sig-param">drop=True</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=-1</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L296-L441"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.filter_outliers_by_std" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is designed to allow dropping outliers
 from the requested columns based on comparisons with that columns
 standard deviation.</p>
@@ -430,17 +448,20 @@ that lower or upper bound.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a>, optional</span></dt><dd><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
-columns in which to percent this outlier filtering by.</p>
-<p>By default this is set to only the ‘float’ style data.</p>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
+<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
+</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>drop</strong><span class="classifier">bool, optional</span></dt><dd><p>By default this function will drop any subject’s that are
-determined as outliers. On the otherhand, you
+<dt><strong>drop</strong><span class="classifier">bool, optional</span></dt><dd><p>By default this function will drop any subjects / index that are
+determined to be outliers. On the otherhand, you
 may instead set specific outlier values as NaN values instead.
-To do this, you can pass drop=False here, and now those specific
+To do this, set drop=False. Now those specific
 values identified as outliers will be replaced with NaN.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
@@ -460,14 +481,15 @@ numpy’s mean function, which returns one value.</p>
 valid when the passed col/column is a ‘data file’.
 In that case, this specifies the number of cores
 to use in loading and applying the reduce_func to each
-data file. This can provide a signifigant speed up when
+data file. This can provide a significant speed up when
 passed the number of avaliable cores, but can sometimes
 be memory intensive depending on the underlying size of the file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">1</span>
+<p>If set to -1, will try to automatically use all avaliable cores.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, do operation inplace and return None.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
@@ -475,6 +497,97 @@ be memory intensive depending on the underlying size of the file.</p>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>If we define a dataset, we can check the std.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+
+<span class="gp">In [2]: </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="gp">In [3]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+
+<span class="gp">In [4]: </span><span class="n">data</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="gp">In [5]: </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+
+<span class="gp">In [6]: </span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">])</span>
+<span class="gh">Out[6]: </span><span class="go">(1.4142135623730951, 3.0)</span>
+</pre></div>
+</div>
+<p>We can now see how different thresholds work.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="go"># This won&#39;t drop anything</span>
+<span class="gp">In [7]: </span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gh">Out[7]: </span><span class="go"></span>
+<span class="go">   1</span>
+<span class="go">0  1</span>
+<span class="go">1  1</span>
+<span class="go">2  2</span>
+<span class="go">3  2</span>
+<span class="go">4  3</span>
+<span class="go">5  3</span>
+<span class="go">6  4</span>
+<span class="go">7  4</span>
+<span class="go">8  5</span>
+<span class="go">9  5</span>
+
+<span class="go"># This will</span>
+<span class="gp">In [8]: </span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">Dropped 4 Rows</span>
+<span class="gh">Out[8]: </span><span class="go"></span>
+<span class="go">   1</span>
+<span class="go">2  2</span>
+<span class="go">3  2</span>
+<span class="go">4  3</span>
+<span class="go">5  3</span>
+<span class="go">6  4</span>
+<span class="go">7  4</span>
+</pre></div>
+</div>
+<p>What if there was more than one column?</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="go"># Now a subject will be dropped</span>
+<span class="gp">In [10]: </span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">Dropped 1 Rows</span>
+<span class="gh">Out[10]: </span><span class="go"></span>
+<span class="go">   1  2</span>
+<span class="go">0  1  1</span>
+<span class="go">1  1  1</span>
+<span class="go">2  2  1</span>
+<span class="go">3  2  1</span>
+<span class="go">5  3  1</span>
+<span class="go">6  4  1</span>
+<span class="go">7  4  1</span>
+<span class="go">8  5  1</span>
+<span class="go">9  5  1</span>
+
+<span class="gp">In [11]: </span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">Dropped 5 Rows</span>
+<span class="gh">Out[11]: </span><span class="go"></span>
+<span class="go">   1  2</span>
+<span class="go">2  2  1</span>
+<span class="go">3  2  1</span>
+<span class="go">5  3  1</span>
+<span class="go">6  4  1</span>
+<span class="go">7  4  1</span>
+</pre></div>
+</div>
+<p>We can also apply it only to one column, and instead of dropping
+subjects, replace outliers with NaN’s</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gh">Out[12]: </span><span class="go"></span>
+<span class="go">     1   2</span>
+<span class="go">0  NaN   1</span>
+<span class="go">1  NaN   1</span>
+<span class="go">2  2.0   1</span>
+<span class="go">3  2.0   1</span>
+<span class="go">4  3.0  10</span>
+<span class="go">5  3.0   1</span>
+<span class="go">6  4.0   1</span>
+<span class="go">7  4.0   1</span>
+<span class="go">8  NaN   1</span>
+<span class="go">9  NaN   1</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

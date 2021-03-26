@@ -13,6 +13,6 @@ Input Operations
 
    Select
    Duplicate
-   Value_Subset
+   ValueSubset
    Intersection
    Pipe

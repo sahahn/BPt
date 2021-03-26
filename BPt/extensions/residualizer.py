@@ -262,3 +262,11 @@ class LinearResidualizer(BaseEstimator, TransformerMixin):
 
         covars = self._transform_covars(X, index=fit_index, fit=True)
         return self._fit(X, covars)._transform(X, covars)
+
+    def __repr__(self):
+
+        with pd.option_context('display.max_rows', 1,
+                               'display.max_columns', 1,
+                               'display.max_colwidth', 1):
+            rep = super().__repr__()
+        return rep

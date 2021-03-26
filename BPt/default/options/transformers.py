@@ -1,4 +1,4 @@
-from ..helpers import get_obj_and_params
+from ..helpers import get_obj_and_params, all_from_objects
 
 from sklearn.decomposition import (PCA, FactorAnalysis,
                                    MiniBatchDictionaryLearning,
@@ -34,3 +34,6 @@ def get_transformer_and_params(transformer_str, extra_params,
         get_obj_and_params(transformer_str, TRANSFORMERS, extra_params, params)
 
     return transformer(**extra_transformer_params), transformer_params
+
+
+all_obj_keys = all_from_objects(TRANSFORMERS)

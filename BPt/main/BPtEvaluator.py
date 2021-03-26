@@ -4,6 +4,7 @@ from tqdm import tqdm
 from tqdm.notebook import tqdm as tqdm_notebook
 from sklearn.base import clone
 import time
+import warnings
 from ..dataset.helpers import verbose_print
 from ..pipeline.helpers import get_mean_fis
 from sklearn.utils import Bunch
@@ -84,7 +85,8 @@ class BPtEvaluator():
                  store_estimators=False,
                  store_timing=False,
                  eval_verbose=0,
-                 progress_loc=None):
+                 progress_loc=None,
+                 compare_bars=None):
 
         # Save base
         self.estimator = estimator
@@ -112,6 +114,7 @@ class BPtEvaluator():
         # @TODO Add in progress loc func.
         self.progress_loc = progress_loc
         self.verbose = eval_verbose
+        self.compare_bars = compare_bars
 
     @property
     def mean_scores(self):
@@ -340,6 +343,19 @@ class BPtEvaluator():
         else:
             self.progress_bar = tqdm
 
+    def _eval(self, X, y, cv):
+
+        # If verbose is lower than -1,
+        # then don't show any warnings no matter the source.
+        if self.verbose < -1:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self._evaluate(X, y, cv)
+
+        # Otherwise, base behavior
+        else:
+            self._evaluate(X, y, cv)
+
     def _evaluate(self, X, y, cv):
         '''cv is passed as raw index, X and y as dataframes.'''
 
@@ -351,6 +367,13 @@ class BPtEvaluator():
                         'target values will be skipped during training and '
                         'scoring. Predictions will still be made for any',
                         'in validation folds (if store_preds=True).')
+
+        # Verbose info.
+        self._print('Predicting target =', str(self.ps.target), level=1)
+        self._print('Using problem_type =', str(self.ps.problem_type), level=1)
+        self._print('Using scope =', str(self.ps.scope), 'defining a total of',
+                    str(X.shape)[1], 'features.', level=1)
+        self._print(f'Evaluating {len(X)} total data points.', level=1)
 
         # Init scores as dictionary of lists
         self.scores = {scorer_str: [] for scorer_str in self.ps.scorer}
@@ -374,9 +397,8 @@ class BPtEvaluator():
             # Increment progress bars
             progress_bars = self._incr_progress_bars(progress_bars)
 
-        # Close progress bars
-        for bar in progress_bars:
-            bar.close()
+        # Clean up progress bars
+        self._finish_progress_bars(progress_bars)
 
         # Compute and score mean and stds
         self._compute_summary_scores()
@@ -400,15 +422,39 @@ class BPtEvaluator():
         if self.progress_bar is None:
             return []
 
+        # If passed compare bars is int, init top level bar
+        if isinstance(self.compare_bars, int):
+
+            # Init and set as new
+            compare_bar = self.progress_bar(total=self.compare_bars,
+                                            desc='Compare')
+            self.compare_bars = [compare_bar]
+
+        # If already init'ed
+        elif isinstance(self.compare_bars, list):
+
+            # Return all but last compare bar
+            return self.compare_bars[:-1]
+
+        bars = []
+
         # If 1 repeat, then just folds progress bar
         if self.n_repeats_ == 1:
             folds_bar = self.progress_bar(total=self.n_splits_, desc='Folds')
-            return [folds_bar]
+            bars = [folds_bar]
 
         # Otherwise folds and repeats bars - init repeats bar first, so on top
-        repeats_bar = self.progress_bar(total=self.n_repeats_, desc='Repeats')
-        folds_bar = self.progress_bar(total=self.n_splits_, desc='Folds')
-        return [folds_bar, repeats_bar]
+        else:
+            repeats_bar = self.progress_bar(total=self.n_repeats_,
+                                            desc='Repeats')
+            folds_bar = self.progress_bar(total=self.n_splits_, desc='Folds')
+            bars = [folds_bar, repeats_bar]
+
+        # If compare bars was init'ed this run
+        if self.compare_bars is not None:
+            self.compare_bars = bars + self.compare_bars
+
+        return bars
 
     def _incr_progress_bars(self, progress_bars):
 
@@ -440,6 +486,27 @@ class BPtEvaluator():
         repeats_bar.refresh()
         return [folds_bar, repeats_bar]
 
+    def _finish_progress_bars(self, progress_bars):
+
+        # Close progress bars
+        if self.compare_bars is None:
+            for bar in progress_bars:
+                bar.close()
+
+            return
+
+        # Otherwise compare bars case
+        # Reset
+        for bar in progress_bars:
+            bar.n = 0
+            bar.refresh()
+
+        # Increment and refresh compare
+        self.compare_bars[-1].n += 1
+        self.compare_bars[-1].refresh()
+
+        return
+
     def _eval_fold(self, X_tr, y_tr, X_val, y_val):
 
         # Keep track of subjects in each fold
@@ -452,22 +519,26 @@ class BPtEvaluator():
         # Check for if any missing targets in the training set
         # If so, skip those subjects
         X_tr, y_tr = get_non_nan_Xy(X_tr, y_tr)
+        self._print('Train shape =', X_tr.shape,
+                    '(number of data points x number of feature)',
+                    level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()
 
         estimator_.fit(X=X_tr, y=np.array(y_tr))
-        fit = time.time() - start_time
+        fit_time = time.time() - start_time
+        self._print(f'Fit fold in {fit_time:.3f} seconds.', level=1)
 
         # Score estimator
         start_time = time.time()
         self._score_estimator(estimator_, X_val, y_val)
-        score = time.time() - start_time
+        score_time = time.time() - start_time
 
         # Store timing if requested
         if self.timing is not None:
-            self.timing['fit'].append(fit)
-            self.timing['score'].append(score)
+            self.timing['fit'].append(fit_time)
+            self.timing['score'].append(score_time)
 
         # Save preds
         self._save_preds(estimator_, X_val, y_val)
@@ -492,6 +563,7 @@ class BPtEvaluator():
                                                X_val,
                                                np.array(y_val))
             self.scores[scorer_str].append(score)
+            self._print(scorer_str + ':', str(score), level=1)
 
     def _save_preds(self, estimator, X_val, y_val):
 
@@ -565,6 +637,7 @@ class BPtEvaluator():
 
         # @TODO
         # Have to handle the different cases for different classes
+        raise RuntimeError('Not yet implemented.')
         pass
 
     def __repr__(self):
@@ -606,7 +679,6 @@ class BPtEvaluator():
 
         rep += 'Saved Attributes: ' + repr(saved_attrs) + '\n\n'
         rep += 'Avaliable Methods: ' + repr(avaliable_methods) + '\n\n'
-
         rep += 'Evaluated with:\n' + repr(self.ps) + '\n'
 
         return rep
@@ -976,4 +1048,62 @@ class BPtEvaluator():
         return Bunch(importances_mean=fis_to_df(mean_series),
                      importances_std=fis_to_df(std_series))
 
+    def get_X_transform_df(self, dataset, fold=0, subjects='tr'):
+        '''This method is used as a helper for getting the transformed
+        input data for one of the saved models run during evaluate.
 
+        Parameters
+        -----------
+        dataset : :class:`Dataset`
+            The instance of the Dataset class originally passed to
+            :func:`evaluate`. Note: if you pass a different dataset,
+            you may get unexpected behavior.
+
+        fold : int, optional
+            The corresponding fold of the trained
+            estimator to use.
+
+        subjects : 'tr', 'val' or :ref:`Subjects`, optional
+            The subjects data in which to return. As
+            either special strings 'tr' for train subjects
+            in the corresponding fold. Special str
+            'val' for the validation subjects in the
+            selected for or lastly any valid
+            :ref:`Subjects` style input.
+
+        Returns
+        ----------
+        X_trans_df : pandas DataFrame
+            The transformed features in a DataFrame,
+            according to the saved estimator from a fold,
+            for the specified subjects.
+
+            If kept as the default of subjects == 'tr',
+            then these represent the feature values as
+            passed to trained the actual model component
+            of the pipeline.
+        '''
+
+        self._estimators_check()
+
+        # Estimator from the fold
+        estimator = self.estimators[fold]
+
+        if subjects == 'tr':
+            subjects = self.train_indices[fold]
+        elif subjects == 'val':
+            subjects = self.val_indices[fold]
+
+        # Get feature names from fold
+        feat_names = self.feat_names[fold]
+
+        # Get as X
+        X_fold, _ = dataset.get_Xy(problem_spec=self.ps,
+                                   subjects=subjects)
+
+        # Transform the data up to right before it gets passed to the
+        # elastic net
+        X_trans_fold = estimator.transform(X_fold)
+
+        # Put the data in a dataframe with associated feature names
+        return pd.DataFrame(X_trans_fold, columns=feat_names)

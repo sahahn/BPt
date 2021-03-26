@@ -4,7 +4,7 @@ Feature_Selectors.py
 File with different Feature Selectors
 """
 from ..helpers import (get_possible_init_params,
-                       get_obj_and_params)
+                       get_obj_and_params, all_from_avaliable)
 from sklearn.feature_selection import SelectPercentile, VarianceThreshold
 from ...extensions.FeatSelectors import RFEWrapper, FeatureSelector
 import numpy as np
@@ -39,12 +39,14 @@ SELECTORS = {
     'univariate selection r': (SelectPercentile,
                                ['base univar fs regression',
                                 'univar fs regression dist',
-                                'univar fs regression dist2']),
+                                'univar fs r keep more',
+                                'univar fs r keep less']),
 
     'univariate selection c': (SelectPercentile,
                                ['base univar fs classifier',
                                 'univar fs classifier dist',
-                                'univar fs classifier dist2']),
+                                'univar fs c keep more',
+                                'univar fs c keep less']),
 
     'rfe': (RFEWrapper, ['base rfe', 'rfe num feats dist']),
 
@@ -87,7 +89,7 @@ def get_special_selector(feat_selector, feat_selector_params, random_state,
 
 def get_feat_selector_and_params(feat_selector_str, extra_params, params,
                                  random_state, num_feat_keys):
-    '''Returns a scaler based on proced str indicator input,
+    '''Returns a scaler based on proc'ed str indicator input,
 
     Parameters
     ----------
@@ -136,3 +138,6 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
 
     return (feat_selector(**extra_feat_selector_params),
             feat_selector_params)
+
+
+all_obj_keys = all_from_avaliable(AVALIABLE)

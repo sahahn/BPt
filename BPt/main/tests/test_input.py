@@ -1,5 +1,8 @@
-from ..input import ModelPipeline, Pipeline, Transformer, Model
+from ..input import (ModelPipeline, Pipeline, Transformer,
+                     Model, ParamSearch, FeatSelector)
 from ..input_operations import Duplicate
+from sklearn.linear_model import LinearRegression
+from ...default.helpers import proc_str_input
 from nose.tools import assert_raises
 
 
@@ -17,10 +20,39 @@ def test_pipeline_check_duplicate():
 
 def test_pipeline_proc_input():
 
-    pipe = Pipeline(steps=[Model('SOmeThing_reGressor')])
-    print(pipe)
+    assert proc_str_input('SOmeThing_reGressor') == 'something'
 
-    assert pipe.steps[0].obj == 'something'
+    with assert_raises(RuntimeError):
+        Pipeline(steps=[Model('SOmeThing_reGressor')])
+
+
+def test_coarse_check_fail():
+
+    with assert_raises(RuntimeError):
+        Model(obj='not real')
+
+    with assert_raises(RuntimeError):
+        FeatSelector(obj='nope')
+
+    with assert_raises(RuntimeError):
+        FeatSelector(obj='still fake')
+
+    with assert_raises(TypeError):
+        FeatSelector()
+
+
+def test_get_piece_params():
+
+    t = Transformer('fake', extra='something')
+    params = t.get_params()
+    assert params['extra'] == 'something'
+
+    t.set_params(extra=5)
+    params2 = t.get_params()
+    assert params2['extra'] == 5
+
+    with assert_raises(AttributeError):
+        t.extra
 
 
 def test_modelpipeline_check_duplicate():
@@ -46,10 +78,36 @@ def test_pipeline_bad_input():
         Pipeline([])
 
     with assert_raises(RuntimeError):
-        Pipeline([Transformer('nonsense')])
+        Pipeline([Transformer('fake')])
 
     with assert_raises(RuntimeError):
-        Pipeline(['fgdf', Model('ridge')])
+        Pipeline(['not real', Model('ridge')])
 
     with assert_raises(RuntimeError):
-        Pipeline([Model('ridge')], param_search='sdfsdf')
+        Pipeline([Model('ridge')], param_search='bad param str')
+
+
+def test_pipeline_with_sklearn_native_input():
+    '''Test some naming behavior w/ saved class attribute'''
+
+    pipe = Pipeline(steps=[Transformer('fake'),
+                    ('my_model', LinearRegression())])
+    assert pipe.steps[1]._get_step()[0] == 'my_model'
+
+    pipe2 = Pipeline(steps=[Transformer('fake'),
+                     ('my_model', LinearRegression())])
+    assert pipe2.steps[1]._get_step()[0] == 'my_model'
+
+    del pipe
+    pipe3 = Pipeline(steps=[Transformer('fake'),
+                     ('my_model', LinearRegression())])
+    assert pipe3.steps[1]._get_step()[0] == 'my_model'
+
+
+def test_get_pipe():
+
+    random_search = ParamSearch('RandomSearch', n_iter=60)
+    u_feat = FeatSelector('univariate selection', params=2)
+    svm = Model('svm', params=1)
+    svm_search_pipe = Pipeline(steps=[u_feat, svm], param_search=random_search)
+    Model(svm_search_pipe)

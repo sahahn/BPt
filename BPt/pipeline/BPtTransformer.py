@@ -26,7 +26,7 @@ class BPtTransformer(ScopeTransformer):
         X_trans_inds = list(range(self.n_trans_feats_))
 
         # Many to many case, each ind is mapped
-        # to all output'ed X_trans_inds
+        # to all outputted X_trans_inds
         for i in self.inds_:
             self.out_mapping_[i] = X_trans_inds
 
@@ -142,7 +142,7 @@ class BPtTransformer(ScopeTransformer):
             if isinstance(cat, float):
                 cat = int(cat)
 
-            return name + '=' + repr(cat)
+            return str(name) + '=' + repr(cat)
 
         # Scope all case, set inds as identity
         # over all passed feat names

@@ -91,7 +91,13 @@ class Option(BPtInputMixIn):
         # The name is either by default
         # the representation or a custom name.
         if name == 'repr':
-            self.name = clean_str(repr(value))
+
+            if hasattr(self.value, 'obj') and \
+             isinstance(getattr(self.value, 'obj'), str):
+                self.name = clean_str(getattr(self.value, 'obj'))
+            else:
+                self.name = clean_str(repr(value))
+
         else:
             self.name = clean_str(name)
 
@@ -104,6 +110,10 @@ class Option(BPtInputMixIn):
         return hash(self.name) + hash(self.key)
 
     def __repr__(self):
+
+        if self.key is None:
+            return self.name
+
         return self.key + '=' + self.name
 
     def __str__(self):
@@ -154,6 +164,28 @@ class Compare(BPtInputMixIn):
             options = [bp.Option(pipe1, name='pipe1'),
                        bp.Option(pipe2, name='pipe2')]
 
+
+    Notes
+    ---------
+    | Usage of this object is designed to passed as input
+        to :func:`evaluate`. Only parameters within :func:`evaluate`
+        parameters `pipeline` and `problem_spec` (or their associated extra
+        params) can be passed Compare. That said, some options, while valid
+        may still make downstream intreptation more difficult, e.g., passing
+        problem_type with two different Compare values will work, but
+        will yield results with different metrics.
+
+    | When to use Compare? It may be tempting to use Compare to evaluate
+        different configurations of hyper-parameters, but in most cases
+        this type of fine-grained usage is discouraged. On a conceptual level,
+        the usage of Compare should be used to compare the actual underlying
+        topic of interest! For example, if it
+        of interest to the underlying research topic,
+        then Compare can be used between two different :class:`Pipeline`.
+        If instead this is not the key point of interest, but you still wish to
+        try two different, say, :class:`Model`, then you would be better off
+        nesting this choice as a hyper-parameter to optimize
+        (in this case see: :class:`Select`).
     '''
 
     def __init__(self, options):
@@ -168,6 +200,13 @@ class Compare(BPtInputMixIn):
             # Otherwise, add as is
             else:
                 self.options.append(option)
+
+    def _check_args(self):
+        '''If called here, then Compare is made
+        up of pipeline pieces.'''
+
+        for option in self.options:
+            option.value._check_args()
 
 
 class Options():

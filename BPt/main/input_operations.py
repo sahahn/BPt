@@ -1,5 +1,4 @@
-class BPtInputMixIn():
-    pass
+from ..util import BPtInputMixIn
 
 
 class Select(list, BPtInputMixIn):
@@ -45,6 +44,11 @@ class Select(list, BPtInputMixIn):
     it can be used on any of
     the base class:`Pipeline` piece params
     (i.e., every param but param_search and cache...).
+
+    Notes
+    -------
+    This object cannot be used to wrap custom objects.
+
     '''
 
     def __repr__(self):
@@ -52,6 +56,22 @@ class Select(list, BPtInputMixIn):
 
     def __str__(self):
         return self.__repr__()
+
+    def _check_args(self):
+
+        for option in self:
+            option._check_args()
+
+        # Make sure all constructors the same
+        if len(set([option._constructor for option in self])) != 1:
+            raise RuntimeError('Select must be composed '
+                               'of the same type of pieces!')
+
+    @property
+    def _constructor(self):
+
+        # We know all constructors are the same from _check_args
+        return self[0]._constructor
 
 
 class Duplicate(list, BPtInputMixIn):
@@ -181,8 +201,8 @@ class Pipe(list, BPtInputMixIn):
         return self.__repr__()
 
 
-class Value_Subset(BPtInputMixIn):
-    ''' Value_Subset is special wrapper class for BPt designed to work with
+class ValueSubset(BPtInputMixIn):
+    ''' ValueSubset is special wrapper class for BPt designed to work with
     :ref:`Subjects` style input. It is used to select a subset of subjects
     based on a loaded column's value.
 
@@ -230,7 +250,7 @@ class Value_Subset(BPtInputMixIn):
 
      ::
 
-        Value_Subset(name, values)
+        ValueSubset(name, values)
 
     Where name is the name of a loaded non input categorical column / feature,
     and value is the subset of values from that column to select subjects by.
@@ -239,7 +259,7 @@ class Value_Subset(BPtInputMixIn):
 
     ::
 
-        subjects = Value_Subset('sex', 0)
+        subjects = ValueSubset('sex', 0)
 
     Which would specify only subjects with 'sex' equal to 0.
     You may also optionally pass more than one value to values, E.g.,
@@ -262,7 +282,7 @@ class Value_Subset(BPtInputMixIn):
 
     ::
 
-        subjects = Value_Subset('sex', 'M', decode_values=True)
+        subjects = ValueSubset('sex', 'M', decode_values=True)
 
     '''
 
@@ -279,7 +299,7 @@ class Value_Subset(BPtInputMixIn):
             raise ValueError('decode_values must be a bool')
 
     def __repr__(self):
-        return 'Value_Subset(name=' + str(self.name) + ', value=' + \
+        return 'ValueSubset(name=' + str(self.name) + ', value=' + \
           str(self.value) + ', decode_values=' + \
           str(self.decode_values) + ')'
 

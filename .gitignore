@@ -24,6 +24,8 @@ Autogluon*
 logs.txt*
 *logs.*
 
+data/*
+
 Examples/Full_Examples/Sex*
 
 

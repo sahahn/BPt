@@ -132,3 +132,5 @@ Examples/Full_Examples/test.py
 Examples/Full_Examples/Sex/logs.txt
 .gitignore
 docs/conf.py
+Examples/Full_Examples/data/structure_diff.csv
+Examples/Full_Examples/site_by_drug.png

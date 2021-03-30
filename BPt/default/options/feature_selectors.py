@@ -56,8 +56,8 @@ SELECTORS = {
 }
 
 
-def get_special_selector(feat_selector, feat_selector_params, random_state,
-                         num_feat_keys):
+def get_special_selector(feat_selector, feat_selector_params,
+                         random_state, num_feat_keys):
 
     # Init feat selector with mask of random feats
     if random_state is None:
@@ -122,6 +122,11 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
 
     # Special behavior for selector...
     if feat_selector_str == 'selector':
+
+        # Move to params
+        if 'mask' in extra_feat_selector_params:
+            feat_selector_params['selector__mask'] =\
+                extra_feat_selector_params.pop('mask')
 
         feat_selector, feat_selector_params =\
             get_special_selector(feat_selector, feat_selector_params,

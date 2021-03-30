@@ -299,8 +299,8 @@ class ValueSubset(BPtInputMixIn):
             raise ValueError('decode_values must be a bool')
 
     def __repr__(self):
-        return 'ValueSubset(name=' + str(self.name) + ', value=' + \
-          str(self.value) + ', decode_values=' + \
+        return 'ValueSubset(name=' + str(self.name) + ', values=' + \
+          str(self.values) + ', decode_values=' + \
           str(self.decode_values) + ')'
 
     def __str__(self):

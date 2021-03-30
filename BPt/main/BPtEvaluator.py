@@ -372,7 +372,7 @@ class BPtEvaluator():
         self._print('Predicting target =', str(self.ps.target), level=1)
         self._print('Using problem_type =', str(self.ps.problem_type), level=1)
         self._print('Using scope =', str(self.ps.scope), 'defining a total of',
-                    str(X.shape)[1], 'features.', level=1)
+                    str(X.shape[1]), 'features.', level=1)
         self._print(f'Evaluating {len(X)} total data points.', level=1)
 
         # Init scores as dictionary of lists
@@ -630,15 +630,30 @@ class BPtEvaluator():
 
         Returns
         ---------
-        df : list of pandas.DataFrame
+        dfs : list of pandas.DataFrame
             list of dataframe's per fold, where each DataFrame
             contains predictions made.
         '''
 
         # @TODO
         # Have to handle the different cases for different classes
-        raise RuntimeError('Not yet implemented.')
-        pass
+
+        dfs = []
+
+        # For each fold
+        for fold_indx in range(len(self.val_indices)):
+
+            # Init df
+            df = pd.DataFrame(columns=list(self.preds),
+                              index=self.val_indices[fold_indx])
+
+            # Add each predict type as a column
+            for predict_type in self.preds:
+                df[predict_type] = self.preds[predict_type][fold_indx]
+
+            dfs.append(df)
+
+        return dfs
 
     def __repr__(self):
         rep = 'BPtEvaluator\n'

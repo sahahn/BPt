@@ -74,7 +74,10 @@ def get_mean_fis(estimators, prop):
         return None
 
     # Return as mean
-    return np.mean(np.array(fis), axis=0)
+    try:
+        return np.mean(np.array(fis), axis=0)
+    except ValueError:
+        return None
 
 
 def proc_mapping(indx, mapping):

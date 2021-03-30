@@ -195,6 +195,9 @@ def get_subjects(self, subjects, return_as='set', only_level=None):
                                         return_as=return_as,
                                         only_level=None)
 
+    # Compute all subjects at correct only level
+    all_subjects = self._apply_only_level(self.index, only_level)
+
     # Check if None
     if subjects is None:
         loaded_subjects = set()
@@ -205,24 +208,19 @@ def get_subjects(self, subjects, return_as='set', only_level=None):
             self._get_nan_loaded_subjects(only_level=only_level)
 
     elif isinstance(subjects, str) and subjects == 'all':
-        loaded_subjects =\
-            self._apply_only_level(self.index, only_level)
+        loaded_subjects = all_subjects
 
     elif isinstance(subjects, str) and subjects == 'train':
         if not hasattr(self, 'train_subjects') or self.train_subjects is None:
             raise RuntimeError('Train subjects undefined')
-
         loaded_subjects =\
-            self._get_base_loaded_subjects(self.train_subjects,
-                                           only_level=only_level)
+            self._apply_only_level(self.train_subjects, only_level)
 
     elif isinstance(subjects, str) and subjects == 'test':
         if not hasattr(self, 'test_subjects') or self.test_subjects is None:
             raise RuntimeError('Test subjects undefined')
-
         loaded_subjects =\
-            self._get_base_loaded_subjects(self.test_subjects,
-                                           only_level=only_level)
+            self._apply_only_level(self.test_subjects, only_level)
 
     # Check for Value Subset or Values Subset
     elif isinstance(subjects, ValueSubset):
@@ -232,6 +230,10 @@ def get_subjects(self, subjects, return_as='set', only_level=None):
     else:
         loaded_subjects =\
             self._get_base_loaded_subjects(subjects, only_level=only_level)
+
+    # loaded_subjects are a set here, though still need to only
+    # get the overlap of actually loaded subjects here
+    loaded_subjects.intersection_update(all_subjects)
 
     # Return based on return as value
     return self._return_subjects_as(loaded_subjects, return_as,

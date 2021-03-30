@@ -8,7 +8,8 @@ from ...main.input import ProblemSpec
 from ..helpers import base_load_subjects, save_subjects
 from .datasets import (get_fake_dataset, 
                        get_fake_multi_index_dataset,
-                       get_fake_dataset5, get_full_dataset)
+                       get_fake_dataset5, get_full_dataset,
+                       get_full_int_index_dataset)
 from ..Dataset import Dataset
 import pickle
 
@@ -354,6 +355,36 @@ def test_get_Xy_base():
     assert np.array_equal(y, np.array([.4, .5]).astype('float64'))
 
 
+def test_get_Xy_base_int_index():
+
+    df = get_full_int_index_dataset()
+    ps = ProblemSpec()
+
+    X, y = df.get_Xy(ps)
+    X, y = np.array(X), np.array(y)
+    assert X.shape == (5, 3)
+    assert np.array_equal(X[:, 0], np.array([1, 2, 3, 4, 5]).astype('float32'))
+    assert np.array_equal(X[:, 2],
+                          np.array([11, 12, 13, 14, 15]).astype('float32'))
+    assert np.array_equal(y, np.array([.1, .2, .3, .4, .5]).astype('float64'))
+
+    X, y = df.get_Xy(ps, subjects='train')
+    X, y = np.array(X), np.array(y)
+    assert X.shape == (3, 3)
+    assert np.array_equal(X[:, 0], np.array([1, 2, 3]).astype('float32'))
+    assert np.array_equal(X[:, 2],
+                          np.array([11, 12, 13]).astype('float32'))
+    assert np.array_equal(y, np.array([.1, .2, .3]).astype('float64'))
+
+    X, y = df.get_Xy(ps, subjects='test')
+    X, y = np.array(X), np.array(y)
+    assert X.shape == (2, 3)
+    assert np.array_equal(X[:, 0], np.array([4, 5]).astype('float32'))
+    assert np.array_equal(X[:, 2],
+                          np.array([14, 15]).astype('float32'))
+    assert np.array_equal(y, np.array([.4, .5]).astype('float64'))
+
+
 def test_get_Xy_alt():
 
     df = get_full_dataset()
@@ -369,6 +400,30 @@ def test_get_Xy_alt():
     assert np.array_equal(y, np.array([.2, .3, .4]).astype('float64'))
 
     X, y = df.get_Xy(ps, subjects=Intersection(['train', ['s2', 's3', 's4']]),
+                     ignore_me='ignore ignore')
+    X, y = np.array(X), np.array(y)
+    assert X.shape == (2, 2)
+    assert np.array_equal(X[:, 0], np.array([2, 3]).astype('float32'))
+    assert np.array_equal(X[:, 1],
+                          np.array([12, 13]).astype('float32'))
+    assert np.array_equal(y, np.array([.2, .3]).astype('float64'))
+
+
+def test_get_Xy_alt_int_index():
+
+    df = get_full_int_index_dataset()
+    ps = ProblemSpec(subjects=[2, 3, 4], scope=['1', '3'])
+
+    X, y = df.get_Xy(ps)
+    X, y = np.array(X), np.array(y)
+
+    assert X.shape == (3, 2)
+    assert np.array_equal(X[:, 0], np.array([2, 3, 4]).astype('float32'))
+    assert np.array_equal(X[:, 1],
+                          np.array([12, 13, 14]).astype('float32'))
+    assert np.array_equal(y, np.array([.2, .3, .4]).astype('float64'))
+
+    X, y = df.get_Xy(ps, subjects=Intersection(['train', [2, 3, 4]]),
                      ignore_me='ignore ignore')
     X, y = np.array(X), np.array(y)
     assert X.shape == (2, 2)

@@ -881,7 +881,7 @@ def evaluate(pipeline, dataset,
              problem_spec='default',
              cv=5,
              progress_bar=True,
-             store_preds=False,
+             store_preds=True,
              store_estimators=True,
              store_timing=True,
              decode_feat_names=True,
@@ -921,7 +921,7 @@ def evaluate(pipeline, dataset,
 
         ::
 
-            default = False
+            default = True
 
     store_estimators : bool, optional
         If True, then the returned :class:`BPtEvaluator`

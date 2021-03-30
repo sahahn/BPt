@@ -104,6 +104,25 @@ def get_full_dataset():
     return fake
 
 
+def get_full_int_index_dataset():
+
+    fake = Dataset()
+    fake['1'] = [1, 2, 3, 4, 5]
+    fake['2'] = [6, 7, 8, 9, 10]
+    fake['3'] = [11, 12, 13, 14, 15]
+    fake.add_scope('3', 'category', inplace=True)
+
+    fake['subj'] = [1, 2, 3, 4, 5]
+    fake.set_index('subj', inplace=True)
+
+    fake['targ'] = [.1, .2, .3, .4, .5]
+    fake = fake.set_role('targ', 'target')
+
+    fake = fake.set_test_split(subjects=[4, 5])
+
+    return fake
+
+
 def get_fake_multi_index_dataset():
 
     fake = Dataset()

@@ -29,7 +29,7 @@ def _get_nan_loaded_subjects(self, only_level):
     return nan_subjects
 
 
-def _get_ValueSubset_loaded_subjects(self, subjects, only_level):
+def _get_value_subset_loaded_subjects(self, subjects, only_level):
 
     if subjects.name not in list(self):
         raise KeyError('Passed ValueSubset name: ' +
@@ -154,7 +154,6 @@ def get_subjects(self, subjects, return_as='set', only_level=None):
         sorted :class:`pandas.MultiIndex` or flattened and
         sorted :class:`pandas.Index` representing a
         :class:`pandas.MultiIndex`.
-        
 
     '''
 
@@ -212,17 +211,23 @@ def get_subjects(self, subjects, return_as='set', only_level=None):
     elif isinstance(subjects, str) and subjects == 'train':
         if not hasattr(self, 'train_subjects') or self.train_subjects is None:
             raise RuntimeError('Train subjects undefined')
-        loaded_subjects = set(self.train_subjects)
+
+        loaded_subjects =\
+            self._get_base_loaded_subjects(self.train_subjects,
+                                           only_level=only_level)
 
     elif isinstance(subjects, str) and subjects == 'test':
         if not hasattr(self, 'test_subjects') or self.test_subjects is None:
             raise RuntimeError('Test subjects undefined')
-        loaded_subjects = set(self.test_subjects)
+
+        loaded_subjects =\
+            self._get_base_loaded_subjects(self.test_subjects,
+                                           only_level=only_level)
 
     # Check for Value Subset or Values Subset
     elif isinstance(subjects, ValueSubset):
         loaded_subjects =\
-            self._get_ValueSubset_loaded_subjects(subjects,
+            self._get_value_subset_loaded_subjects(subjects,
                                                    only_level=only_level)
     else:
         loaded_subjects =\

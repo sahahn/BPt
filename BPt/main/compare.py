@@ -2,6 +2,11 @@ from .BPtEvaluator import BPtEvaluator
 from .input_operations import BPtInputMixIn
 from copy import deepcopy
 import pandas as pd
+from .stats_helpers import corrected_std, compute_corrected_ttest
+from scipy.stats import t
+import numpy as np
+from itertools import combinations
+from math import factorial
 
 
 def clean_str(in_str):
@@ -376,11 +381,15 @@ class CompareDict(dict):
         # Get example value to base summary on
         ex = self.__getitem__(list(self.keys())[0])
 
+        # @TODO make sure all of same time
+
         # if evaluation results
         if isinstance(ex, BPtEvaluator):
             return self._evaluator_summary()
 
         # @TODO add more options
+
+        raise RuntimeError('Base options not comparable.')
 
     def _evaluator_summary(self):
 
@@ -404,6 +413,104 @@ class CompareDict(dict):
         summary = summary.set_index(option_keys)
 
         return summary
+
+    def pairwise_t_stats(self, metric='first'):
+
+        # @TODO clean up and add extra
+
+        ex_data_point = self.__getitem__(list(self.keys())[0])
+        metrics = list(ex_data_point.mean_scores)
+
+        # If metric is first
+        if metric == 'first':
+            metric = metrics[0]
+
+        # Make sure valid metric
+        if metric not in metrics:
+            raise RuntimeError(f'{metric} not in avaliable {metrics}')
+
+        n_comparisons = (
+            factorial(len(self))
+            / (factorial(2) * factorial(len(self) - 2))
+        )
+
+        pairwise_t_test = []
+        for model_i, model_k in combinations(self, 2):
+
+            # Grab scores
+            model_i_scores = np.array(self[model_i].scores[metric])
+            model_k_scores = np.array(self[model_k].scores[metric])
+
+            # Skip if equal
+            if np.array_equal(model_i_scores, model_k_scores):
+                continue
+
+            # Compute differences
+            differences = model_i_scores - model_k_scores
+
+            n = len(model_i_scores)
+            df = n - 1
+
+            # Use the mean train / test size
+            n_train = np.mean([len(ti) for ti in self[model_i].train_indices])
+            n_test = np.mean([len(ti) for ti in self[model_i].val_indices])
+
+            # Do t-test
+            t_stat, p_val =\
+                compute_corrected_ttest(differences, df, n_train, n_test)
+
+            # Implement Bonferroni correction
+            p_val *= n_comparisons
+
+            # Bonferroni can output p-values higher than 1
+            p_val = 1 if p_val > 1 else p_val
+
+            # Gen key entry names
+            mi_option_names = [o.name for o in model_i.options]
+            mk_option_names = [o.name for o in model_k.options]
+            opt_names = mi_option_names + mk_option_names
+
+            # Append
+            pairwise_t_test.append(opt_names + [t_stat, p_val])
+
+        ex = list(self)[0]
+        key_names = [str(o.key) for o in ex.options]
+        col_names = [key + ' (1)' for key in key_names] +\
+            [key + ' (2)' for key in key_names]
+
+        pairwise_comp_df = pd.DataFrame(
+            pairwise_t_test, columns=col_names + ['t_stat', 'p_val'])
+
+        return pairwise_comp_df
+
+    def pairwise_bayesian():
+        pass
+
+        '''
+        pairwise_bayesian = []
+
+        for model_i, model_k in combinations(range(len(model_scores)), 2):
+            model_i_scores = model_scores.iloc[model_i].values
+            model_k_scores = model_scores.iloc[model_k].values
+            differences = model_i_scores - model_k_scores
+            t_post = t(
+                df, loc=np.mean(differences),
+                scale=corrected_std(differences, n_train, n_test)
+            )
+            worse_prob = t_post.cdf(rope_interval[0])
+            better_prob = 1 - t_post.cdf(rope_interval[1])
+            rope_prob = t_post.cdf(rope_interval[1]) - t_post.cdf(rope_interval[0])
+
+            pairwise_bayesian.append([worse_prob, better_prob, rope_prob])
+
+        pairwise_bayesian_df = (pd.DataFrame(
+            pairwise_bayesian,
+            columns=['worse_prob', 'better_prob', 'rope_prob']
+        ).round(3))
+
+        pairwise_comp_df = pairwise_comp_df.join(pairwise_bayesian_df)
+        pairwise_comp_df
+        '''
 
 
 def _make_compare_copies(objs, key, compare):

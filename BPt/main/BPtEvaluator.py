@@ -8,6 +8,8 @@ import warnings
 from ..dataset.helpers import verbose_print
 from ..pipeline.helpers import get_mean_fis
 from sklearn.utils import Bunch
+from scipy.stats import t
+from .stats_helpers import corrected_std, compute_corrected_ttest
 
 
 def is_notebook():
@@ -371,7 +373,8 @@ class BPtEvaluator():
         # Verbose info.
         self._print('Predicting target =', str(self.ps.target), level=1)
         self._print('Using problem_type =', str(self.ps.problem_type), level=1)
-        self._print('Using scope =', str(self.ps.scope), 'defining a total of',
+        self._print('Using scope =', str(self.ps.scope),
+                    'defining an initial total of',
                     str(X.shape[1]), 'features.', level=1)
         self._print(f'Evaluating {len(X)} total data points.', level=1)
 
@@ -522,6 +525,9 @@ class BPtEvaluator():
         self._print('Train shape =', X_tr.shape,
                     '(number of data points x number of feature)',
                     level=1)
+        self._print('Val shape =', X_val.shape,
+                    '(number of data points x number of feature)',
+                    level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()
@@ -554,8 +560,14 @@ class BPtEvaluator():
 
     def _score_estimator(self, estimator_, X_val, y_val):
 
-        # Grab non-nan
+        # Grab Non-Nan
+        y_val_len = len(y_val)
         X_val, y_val = get_non_nan_Xy(X_val, y_val)
+
+        dif = y_val_len - len(y_val)
+        if dif > 0:
+            self._print(f'Skipping scoring {dif} Val data points for NaN.',
+                        level=1)
 
         # Save score for each scorer
         for scorer_str in self.ps.scorer:
@@ -569,6 +581,8 @@ class BPtEvaluator():
 
         if self.preds is None:
             return
+
+        self._print('Saving predictions on validation set.', level=2)
 
         for predict_func in ['predict', 'predict_proba', 'decision_function']:
 
@@ -591,6 +605,8 @@ class BPtEvaluator():
             self.preds['y_true'] = [np.array(y_val)]
 
     def _compute_summary_scores(self):
+
+        self._print('Computing summary scores.', level=2)
 
         self.mean_scores, self.std_scores = {}, {}
         self.weighted_mean_scores = {}
@@ -1122,3 +1138,98 @@ class BPtEvaluator():
 
         # Put the data in a dataframe with associated feature names
         return pd.DataFrame(X_trans_fold, columns=feat_names)
+
+    def compare(self, other, rope_interval=[-0.01, 0.01]):
+        '''In the case that the sizes of the training and validation sets
+        at each fold vary dramatically, it is unclear if this
+        statistics are still valid.
+        In that case, the mean train size and mean validation sizes
+        are employed when computing statistics.
+
+        Comparisons are made as self versus other, i.e., self - other.
+
+        Parameters
+        ------------
+        other : :class:`BPtEvaluator`
+
+
+        rope_interval : list or dict of
+            In the case that a dict is passed, the dictionary
+            keys should correspond to the name of scorers / metrics.
+        '''
+
+        equal_cv = True
+
+        # Make sure same number of folds
+        if len(self.train_indices) != len(other.train_indices):
+            equal_cv = False
+
+        # Make sure subjects from folds line up
+        for fold in range(len(self.train_indices)):
+            if not np.array_equal(self.train_indices[fold],
+                                  other.train_indices[fold]):
+                equal_cv = False
+
+            if not np.array_equal(self.val_indices[fold],
+                                  other.val_indices[fold]):
+                equal_cv = False
+
+        # Only compute for the overlapping metrics
+        overlap_metrics = set(list(self.mean_scores)).intersection(set(
+            list(other.mean_scores)))
+
+        # Init difference dataframe
+        dif_df = pd.DataFrame(index=list(overlap_metrics))
+
+        # Add base differences
+        for metric in overlap_metrics:
+
+            dif_df.loc[metric, 'mean_diff'] =\
+                self.mean_scores[metric] - other.mean_scores[metric]
+
+            dif_df.loc[metric, 'std_diff'] =\
+                self.std_scores[metric] - other.std_scores[metric]
+
+        # Only compute p-values if equal cv
+        if equal_cv:
+            for metric in overlap_metrics:
+
+                # Grab scores and other info
+                scores1 = np.array(self.scores[metric])
+                scores2 = np.array(other.scores[metric])
+
+                differences = scores1 - scores2
+                n = len(scores1)
+                df = n - 1
+
+                # Use the mean train / test size
+                n_train = np.mean([len(ti) for ti in self.train_indices])
+                n_test = np.mean([len(ti) for ti in self.val_indices])
+
+                # Frequentist Approach
+                t_stat, p_val = compute_corrected_ttest(differences, df,
+                                                        n_train, n_test)
+                dif_df.loc[metric, 't_stat'] = t_stat
+                dif_df.loc[metric, 'p_val'] = p_val
+
+                # Bayesian
+                t_post = t(df, loc=np.mean(differences),
+                           scale=corrected_std(differences, n_train, n_test))
+
+                # Passed as either list of two values or dict
+                if isinstance(rope_interval, dict):
+                    ri = rope_interval[metric]
+                else:
+                    ri = rope_interval
+
+                worse_prob = t_post.cdf(ri[0])
+                better_prob = 1 - t_post.cdf(ri[1])
+                rope_prob =\
+                    t_post.cdf(ri[1]) - t_post.cdf(ri[0])
+
+                # Add to dif_df
+                dif_df.loc[metric, 'better_prob'] = better_prob
+                dif_df.loc[metric, 'worse_prob'] = worse_prob
+                dif_df.loc[metric, 'rope_prob'] = rope_prob
+
+        return dif_df

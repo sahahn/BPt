@@ -968,6 +968,10 @@ def evaluate(pipeline, dataset,
         and even further, you can set to -2 or lower, which
         will mute all warnings regardless of where they are generated from.
 
+        Note: This parameter is called eval_verbose, as the
+        pipeline has an argument called `verbose`, which can be used
+        to set verbosity for the pipeline.
+
         ::
 
             default = 0

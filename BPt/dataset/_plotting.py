@@ -696,7 +696,7 @@ def _plot_cat_cat(self, col1, col2, subjs, **plot_args):
     ct_counts = ct_counts.reset_index(name='Count')
     ct_counts = ct_counts.pivot(index=col1, columns=col2, values='Count')
 
-    sns.heatmap(ct_counts, annot=True, cmap="YlGnBu")
+    sns.heatmap(ct_counts, annot=True, cmap="YlGnBu", fmt='g')
 
 
 def _plot_float_float(self, col1, col2, subjs, **plot_args):

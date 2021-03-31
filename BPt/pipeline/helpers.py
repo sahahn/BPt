@@ -63,6 +63,12 @@ def get_mean_fis(estimators, prop):
             if fi is None:
                 return None
 
+            # Try to squeeze values
+            try:
+                fi = fi.squeeze()
+            except AttributeError:
+                pass
+
             fis.append(fi)
 
         # If any don't, return None

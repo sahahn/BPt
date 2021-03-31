@@ -4,8 +4,9 @@ import tempfile
 import os
 from nose.tools import assert_raises
 from ...main.input_operations import ValueSubset, Intersection
-from .datasets import (get_fake_dataset, get_fake_dataset2,
-                       get_fake_multi_index_dataset, get_fake_dataset4)
+from .datasets import (get_fake_dataset, get_fake_dataset2, get_full_dataset,
+                       get_fake_multi_index_dataset, get_full_int_index_dataset,
+                       get_fake_dataset4)
 
 
 def test_get_subjects_None():
@@ -20,6 +21,36 @@ def test_get_subjects_None():
 
     subjects = df.get_subjects(None, return_as='flat index')
     assert len(subjects) == 0
+
+
+def test_get_subjects_tr_test_case():
+
+    df = get_full_dataset()
+
+    assert len(df.get_subjects('all')) == 5
+    assert len(df.get_subjects('train')) == 3
+    assert len(df.get_subjects('test')) == 2
+
+    # Make sure updates to dropped subjects
+    df = df.drop('s1')
+    assert len(df.get_subjects('train')) == 2
+    df = df.drop('s4')
+    assert len(df.get_subjects('test')) == 1
+
+
+def test_get_subjects_int_index_tr_test_case():
+
+    df = get_full_int_index_dataset()
+
+    assert len(df.get_subjects('all')) == 5
+    assert len(df.get_subjects('train')) == 3
+    assert len(df.get_subjects('test')) == 2
+
+    # Make sure updates to dropped subjects
+    df = df.drop(1)
+    assert len(df.get_subjects('train')) == 2
+    df = df.drop(4)
+    assert len(df.get_subjects('test')) == 1
 
 
 def test_get_subjects_intersection():

@@ -1155,14 +1155,14 @@ class Dataset(pd.DataFrame):
                         'or pass an explicit option to problem_type'
                         ', e.g., problem_type="binary"')
 
-            self._print('Problem type auto-detected as binary', level=1)
+            self._print('Problem type auto-detected as binary', level=2)
             return 'binary'
 
         if 'category' in self.scopes[col]:
-            self._print('Problem type auto-detected as categorical', level=1)
+            self._print('Problem type auto-detected as categorical', level=2)
             return 'categorical'
 
-        self._print('Problem type auto-detected as regression', level=1)
+        self._print('Problem type auto-detected as regression', level=2)
         return 'regression'
 
     def rename(self, **kwargs):
@@ -1402,7 +1402,7 @@ class Dataset(pd.DataFrame):
 
     from ._subjects import (_apply_only_level,
                             _get_nan_loaded_subjects,
-                            _get_ValueSubset_loaded_subjects,
+                            _get_value_subset_loaded_subjects,
                             _get_base_loaded_subjects,
                             _return_subjects_as,
                             get_subjects)

@@ -1,4 +1,4 @@
-from .FeatSelectors import RFEWrapper, FeatureSelector
+from .FeatSelectors import FeatureSelector
 from .loaders import Identity, SurfLabels, SurfMaps
 
 try:
@@ -19,8 +19,7 @@ from .Scalers import Winsorizer
 from .residualizer import LinearResidualizer
 
 
-__all__ = ['RFEWrapper',
-           'FeatureSelector',
+__all__ = ['FeatureSelector',
            'Identity', 'SurfLabels', 'SingleConnectivityMeasure',
            'MLPRegressor_Wrapper',
            'MLPClassifier_Wrapper', 'LinearResidualizer',

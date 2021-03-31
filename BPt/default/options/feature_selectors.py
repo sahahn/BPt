@@ -6,7 +6,8 @@ File with different Feature Selectors
 from ..helpers import (get_possible_init_params,
                        get_obj_and_params, all_from_avaliable)
 from sklearn.feature_selection import SelectPercentile, VarianceThreshold
-from ...extensions.FeatSelectors import RFEWrapper, FeatureSelector
+from ...extensions.FeatSelectors import FeatureSelector
+from sklearn.feature_selection import RFE
 import numpy as np
 from numpy.random import RandomState
 from ..params.Params import Array
@@ -48,7 +49,7 @@ SELECTORS = {
                                 'univar fs c keep more',
                                 'univar fs c keep less']),
 
-    'rfe': (RFEWrapper, ['base rfe', 'rfe num feats dist']),
+    'rfe': (RFE, ['base rfe', 'rfe num feats dist']),
 
     'variance threshold': (VarianceThreshold, ['default']),
 
@@ -56,8 +57,8 @@ SELECTORS = {
 }
 
 
-def get_special_selector(feat_selector, feat_selector_params, random_state,
-                         num_feat_keys):
+def get_special_selector(feat_selector, feat_selector_params,
+                         random_state, num_feat_keys):
 
     # Init feat selector with mask of random feats
     if random_state is None:
@@ -122,6 +123,11 @@ def get_feat_selector_and_params(feat_selector_str, extra_params, params,
 
     # Special behavior for selector...
     if feat_selector_str == 'selector':
+
+        # Move to params
+        if 'mask' in extra_feat_selector_params:
+            feat_selector_params['selector__mask'] =\
+                extra_feat_selector_params.pop('mask')
 
         feat_selector, feat_selector_params =\
             get_special_selector(feat_selector, feat_selector_params,

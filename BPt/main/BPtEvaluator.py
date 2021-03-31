@@ -40,11 +40,20 @@ def get_non_nan_Xy(X, y):
 
 def fi_to_series(fi, feat_names):
 
+    try:
+        fi = fi.squeeze()
+    except AttributeError:
+        pass
+
     # Base flat case
     if len(fi.shape) == 1:
         return pd.Series(fi, index=feat_names)
 
     # Categorical case
+    # @TODO is there a better way to have this?
+    # e.g., maybe explicitly by class value, see self.estimators[0].classes_
+    # could put it as another index level.
+
     series = []
     for class_fi in fi:
         series.append(pd.Series(class_fi, index=feat_names))

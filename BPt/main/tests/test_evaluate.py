@@ -1,7 +1,8 @@
 from BPt.pipeline.BPtPipeline import BPtPipeline
 from BPt.main.BPtEvaluator import BPtEvaluator
 from ...pipeline.BPtSearchCV import BPtGridSearchCV, NevergradSearchCV
-from ..input import ModelPipeline, Model, CV, Pipeline, Scaler, ParamSearch
+from ..input import (ModelPipeline, Model, CV, Pipeline, Scaler,
+                     ParamSearch, FeatSelector, Transformer)
 from ..input_operations import Select
 from ...dataset.Dataset import Dataset
 from ...default.params.Params import Choice
@@ -583,7 +584,7 @@ def test_evaluate_pipeline_with_select():
     select_model = Select([Model('linear'), Model('random forest')])
 
     pipe = Pipeline([select_scaler, select_model],
-                    param_search=ParamSearch(n_iter=4))
+                    param_search=ParamSearch(n_iter=2))
 
     dataset = get_fake_dataset()
     evaluator = evaluate(pipeline=pipe,
@@ -611,7 +612,7 @@ def test_evaluate_modelpipeline_with_select():
 
     pipe = ModelPipeline(scalers=select_scaler,
                          model=select_model,
-                         param_search=ParamSearch(n_iter=4))
+                         param_search=ParamSearch(n_iter=2))
 
     dataset = get_fake_dataset()
     evaluator = evaluate(pipeline=pipe,
@@ -630,3 +631,101 @@ def test_evaluate_modelpipeline_with_select():
     assert isinstance(step1[1], Selector)
     assert step0[1].estimator_ == step0[1].estimators[step0[1].to_use][1]
     assert step1[1].estimator_ == step1[1].estimators[step1[1].to_use][1]
+
+
+def test_evaluate_pipeline_with_custom_selector():
+
+    feat_selector = FeatSelector('selector', params=1)
+    model = Model('linear')
+
+    pipe = Pipeline(steps=[feat_selector, model],
+                    param_search=ParamSearch(n_iter=2))
+
+    dataset = get_fake_dataset()
+    evaluator = evaluate(pipeline=pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         cv=3)
+
+    est1 = evaluator.estimators[0]
+    assert isinstance(est1, NevergradSearchCV)
+
+    b_est1 = est1.best_estimator_
+    assert isinstance(b_est1, BPtPipeline)
+
+    selector = b_est1[0]
+    custom_sel = selector.estimator_
+
+    from ...extensions.FeatSelectors import FeatureSelector as FS
+    assert isinstance(custom_sel, FS)
+    assert len(custom_sel.mask) == 2
+    assert np.array_equal(custom_sel.mask, selector._get_support_mask())
+
+
+def run_fs_checks(evaluator):
+
+    est1 = evaluator.estimators[0]
+    assert isinstance(est1, NevergradSearchCV)
+
+    b_est1 = est1.best_estimator_
+    assert isinstance(b_est1, BPtPipeline)
+
+    ohe_tr = b_est1[0]
+    assert ohe_tr.mapping_ == {0: 0, 1: 1}
+    assert ohe_tr.out_mapping_ == {0: [0, 1], 1: 2}
+
+    sel = b_est1[1]
+    assert sel.mapping_ == {0: [0, 1], 1: 2}
+
+    custom_sel = sel.estimator_
+    assert custom_sel.mapping_ == {0: [0, 1], 1: 2}
+
+    # Should be same as map to same spot
+    msk = custom_sel.mask
+    assert msk[0] == msk[1]
+
+    if msk[0]:
+        assert sel.out_mapping_[0] == 0
+        assert sel.out_mapping_[1] == 1
+
+        if msk[2]:
+            assert sel.out_mapping_[2] == 2
+            assert len(evaluator.feat_names[0]) == 3
+        else:
+            assert sel.out_mapping_[2] is None
+            assert len(evaluator.feat_names[0]) == 2
+
+    else:
+        assert sel.out_mapping_[0] is None
+        assert sel.out_mapping_[1] is None
+        assert sel.out_mapping_[2] == 0
+        assert len(evaluator.feat_names[0]) == 1
+
+        if not msk[2]:
+            raise AssertionError('Mask all False!')
+
+
+def test_evaluate_pipeline_with_custom_selector_mapping():
+
+    fake = Dataset()
+
+    fake['1'] = np.ones((20))
+    fake['1'][:10] = 0
+    fake['2'] = np.ones((20))
+    fake['3'] = np.ones((20))
+    fake = fake.set_role('3', 'target')
+
+    ohe = Transformer('one hot encoder', scope='1')
+    feat_selector = FeatSelector('selector', params=1)
+    model = Model('linear')
+
+    pipe = Pipeline(steps=[ohe, feat_selector, model],
+                    param_search=ParamSearch(n_iter=1))
+
+    for rs in range(10):
+        evaluator = evaluate(pipeline=pipe,
+                             dataset=fake,
+                             random_state=rs,
+                             progress_bar=False,
+                             cv=3)
+        run_fs_checks(evaluator)

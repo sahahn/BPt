@@ -1,36 +1,13 @@
-from sklearn.feature_selection import RFE
+
 from sklearn.base import BaseEstimator
 from sklearn.feature_selection._base import SelectorMixin
 import numpy as np
 from ..pipeline.helpers import proc_mapping
 
-# @TODO I think this is updated in a new version of scikit-learn, if so
-# remove and change dependency.
-
-
-class RFEWrapper(RFE):
-    def fit(self, X, y):
-        '''Override the fit function from base
-           specifically allow passing in float % to keep.
-        '''
-
-        if isinstance(self.n_features_to_select, float):
-
-            if self.n_features_to_select > 1:
-                self.n_features_to_select = round(self.n_features_to_select)
-
-            else:
-                if self.n_features_to_select <= 0:
-                    self.n_features_to_select = 1
-
-                if self.n_features_to_select < 1:
-                    divide_by = self.n_features_to_select ** -1
-                    self.n_features_to_select = X.shape[1] // divide_by
-
-        return self._fit(X, y)
-
 
 class FeatureSelector(SelectorMixin, BaseEstimator):
+
+    _needs_mappings = True
 
     def __init__(self, mask='sets as random features'):
         ''' Custom BPt feature selector for
@@ -38,14 +15,12 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
 
         Parameters
         ----------
-        mask : {'sets as random features', 'sets as hyperparameters'}
+        mask : 'sets as random features' or 'sets as hyperparameters'
             - 'sets as random features': Use random features.
 
-            - 'sets as hyperparameters': Each feature is set as a \
-            hyperparameter, such that the parameter search can \
-            tune if each feature is included or not.
-
-
+            - 'sets as hyperparameters': Each feature is set as a
+                hyperparameter, such that the parameter search can
+                tune if each feature is included or not.
         '''
 
         self.mask = mask
@@ -80,6 +55,7 @@ class FeatureSelector(SelectorMixin, BaseEstimator):
 
             self.mask = np.zeros(max_ind+1, dtype='bool')
             self.mask[mask_1] = True
+
         return
 
     def fit(self, X, y=None, mapping=None):

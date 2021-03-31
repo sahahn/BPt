@@ -6,7 +6,8 @@ File with different Feature Selectors
 from ..helpers import (get_possible_init_params,
                        get_obj_and_params, all_from_avaliable)
 from sklearn.feature_selection import SelectPercentile, VarianceThreshold
-from ...extensions.FeatSelectors import RFEWrapper, FeatureSelector
+from ...extensions.FeatSelectors import FeatureSelector
+from sklearn.feature_selection import RFE
 import numpy as np
 from numpy.random import RandomState
 from ..params.Params import Array
@@ -48,7 +49,7 @@ SELECTORS = {
                                 'univar fs c keep more',
                                 'univar fs c keep less']),
 
-    'rfe': (RFEWrapper, ['base rfe', 'rfe num feats dist']),
+    'rfe': (RFE, ['base rfe', 'rfe num feats dist']),
 
     'variance threshold': (VarianceThreshold, ['default']),
 

@@ -97,9 +97,6 @@ def get_name(obj):
         if split.startswith('_'):
             name = name.replace('.' + split + '.', '.')
 
-    name = name.replace('BPt.extensions.FeatSelectors.RFEWrapper',
-                        'sklearn.feature_selection.RFE')
-
     return name
 
 

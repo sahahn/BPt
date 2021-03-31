@@ -63,6 +63,12 @@ def get_mean_fis(estimators, prop):
             if fi is None:
                 return None
 
+            # Try to squeeze values
+            try:
+                fi = fi.squeeze()
+            except AttributeError:
+                pass
+
             fis.append(fi)
 
         # If any don't, return None
@@ -74,10 +80,7 @@ def get_mean_fis(estimators, prop):
         return None
 
     # Return as mean
-    try:
-        return np.mean(np.array(fis), axis=0)
-    except ValueError:
-        return None
+    return np.mean(np.array(fis), axis=0)
 
 
 def proc_mapping(indx, mapping):

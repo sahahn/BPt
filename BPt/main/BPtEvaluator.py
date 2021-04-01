@@ -400,6 +400,9 @@ class BPtEvaluator():
         # Init progress bar / save and compute fold info from cv
         progress_bars = self._init_progress_bars(cv)
 
+        self._print('Using CV: ', cv,
+                    'to generate evaluation splits.', level=2)
+
         # Run each split
         for train_inds, val_inds in cv.split(X, y):
 
@@ -1195,6 +1198,48 @@ class BPtEvaluator():
             ::
 
                 default = [-0.01, 0.01]
+
+        Returns
+        -------
+        compare_df : pandas DataFrame
+            | The returned DataFrame will generate separate rows
+                for all overlapping metrics / scorers between the
+                evaluators being compared. Further, columns with
+                statistics of interest will be generated:
+
+                - 'mean_diff'
+                    The mean score minus other's mean score
+
+                - 'std_diff'
+                    The std minus other's std
+
+            | Further, only in the case that the cross-validation
+                folds are identical between the comparisons,
+                the following additional columns will be generated:
+
+                - 't_stat'
+                    Corrected paired ttest statistic.
+
+                - 'p_val'
+                    The p value for the corrected paired ttest statistic.
+
+                - 'better_prob'
+                    The probability that this evaluated option is better than
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
+                - 'worse_prob'
+                    The probability that this evaluated option is worse than
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
+                - 'rope_prob'
+                    The probability that this evaluated option is equivalent to
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
 
         '''
 

@@ -19,6 +19,8 @@ BPt.CompareDict
       CompareDict.get
       CompareDict.items
       CompareDict.keys
+      CompareDict.pairwise_bayesian
+      CompareDict.pairwise_t_stats
       CompareDict.pop
       CompareDict.popitem
       CompareDict.setdefault

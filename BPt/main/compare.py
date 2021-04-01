@@ -415,8 +415,51 @@ class CompareDict(dict):
         return summary
 
     def pairwise_t_stats(self, metric='first'):
+        '''This method performs pair-wise t-test
+        comparisons between all different options,
+        assuming this object holds instances of :class:`BPtEvaluator`.
+        The method used to generate t-test comparisons here is based off the
+        example code from:
+        https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_stats.html
 
-        # @TODO clean up and add extra
+        .. note::
+            In the case that the sizes of the training and validation sets
+            at each fold vary dramatically, it is unclear if this
+            statistics are still valid.
+            In that case, the mean train size and mean validation sizes
+            are employed when computing statistics.
+
+        Parameters
+        ----------
+        metric : str, optional
+            This method compares the metrics
+            produced for only one valid
+            metric / scorer. Notably
+            all :class:`BPtEvaluator` must have
+            been evaluated with respect to this
+            scorer. By default the reserved key, 'first'
+            indicates that just whatever scorer is first
+            should be used to produce the pairwise
+            t statistics.
+
+            ::
+
+                default = 'first'
+
+        Returns
+        --------
+        stats_df : pandas DataFrame
+            A DataFrame comparing all pairwise
+            combinations of the original :class:`Compare` options.
+            't_stat' and 'p_val' columns will be generated for
+            each comparison representing the corrected t_stat
+            for non-independence of folds and the corresponding
+            Bonferroni correctted p values (for multiple comparisons
+            from comparing all pairwise combinations). See the
+            referenced scikit-learn example for more information.
+        '''
+
+        # @TODO Clean up code and add error handling.
 
         ex_data_point = self.__getitem__(list(self.keys())[0])
         metrics = list(ex_data_point.mean_scores)
@@ -484,7 +527,7 @@ class CompareDict(dict):
         return pairwise_comp_df
 
     def pairwise_bayesian():
-        pass
+        '''This method has not yet been implemented'''
 
         '''
         pairwise_bayesian = []
@@ -511,6 +554,8 @@ class CompareDict(dict):
         pairwise_comp_df = pairwise_comp_df.join(pairwise_bayesian_df)
         pairwise_comp_df
         '''
+
+        return
 
 
 def _make_compare_copies(objs, key, compare):

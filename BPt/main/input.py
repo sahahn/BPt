@@ -17,7 +17,6 @@ import warnings
 from pandas.util._decorators import doc
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.pipeline import _name_estimators
-import pandas as pd
 
 
 def proc_all(base_obj):
@@ -89,11 +88,14 @@ class Params(BaseEstimator):
 
     def __repr__(self):
 
-        with pd.option_context('display.max_rows', 1,
-                               'display.max_columns', 1,
-                               'display.max_colwidth', 1):
-            rep = super().__repr__()
-        return rep
+        return super().__repr__()
+
+        # Not sure if really want this...
+        # with pd.option_context('display.max_rows', 1,
+        #                       'display.max_columns', 1,
+        #                       'display.max_colwidth', 1):
+        #    rep = super().__repr__()
+        # return rep
 
 
 class Check():
@@ -440,6 +442,7 @@ _piece_docs[
 
             default = None
 """
+
 
 @doc(**_base_docs)
 class Loader(Piece):

@@ -535,12 +535,8 @@ class BPtEvaluator():
         # Check for if any missing targets in the training set
         # If so, skip those subjects
         X_tr, y_tr = get_non_nan_Xy(X_tr, y_tr)
-        self._print('Train shape =', X_tr.shape,
-                    '(number of data points x number of feature)',
-                    level=1)
-        self._print('Val shape =', X_val.shape,
-                    '(number of data points x number of feature)',
-                    level=1)
+        self._print('Train size =', len(X_tr), level=1)
+        self._print('Val size =', len(X_val), level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()

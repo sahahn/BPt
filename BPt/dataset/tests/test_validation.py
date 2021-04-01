@@ -72,7 +72,7 @@ def test_proc_cv_strategy_groups():
     with assert_raises(RuntimeError):
         cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CVStrategy(groups='doesnt exist')
+    cv_params = CVStrategy(groups="doesn't exist")
     with assert_raises(KeyError):
         cv = df._proc_cv_strategy(cv_params)
 
@@ -97,7 +97,7 @@ def test_proc_cv_strategy_stratify():
     with assert_raises(RuntimeError):
         cv = df._proc_cv_strategy(cv_params)
 
-    cv_params = CVStrategy(stratify='doesnt exist')
+    cv_params = CVStrategy(stratify="doesn't exist")
     with assert_raises(KeyError):
         cv = df._proc_cv_strategy(cv_params)
 

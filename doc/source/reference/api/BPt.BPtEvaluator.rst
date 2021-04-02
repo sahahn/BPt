@@ -13,6 +13,7 @@ BPt.BPtEvaluator
    .. autosummary::
       :toctree:
       
+      BPtEvaluator.compare
       BPtEvaluator.get_X_transform_df
       BPtEvaluator.get_coefs
       BPtEvaluator.get_feature_importances

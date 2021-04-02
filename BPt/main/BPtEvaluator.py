@@ -15,6 +15,7 @@ from .stats_helpers import corrected_std, compute_corrected_ttest
 def is_notebook():
 
     try:
+        from IPython import get_ipython
         shell = get_ipython().__class__.__name__
         if shell == 'ZMQInteractiveShell':
             return True
@@ -40,11 +41,20 @@ def get_non_nan_Xy(X, y):
 
 def fi_to_series(fi, feat_names):
 
+    try:
+        fi = fi.squeeze()
+    except AttributeError:
+        pass
+
     # Base flat case
     if len(fi.shape) == 1:
         return pd.Series(fi, index=feat_names)
 
     # Categorical case
+    # @TODO is there a better way to have this?
+    # e.g., maybe explicitly by class value, see self.estimators[0].classes_
+    # could put it as another index level.
+
     series = []
     for class_fi in fi:
         series.append(pd.Series(class_fi, index=feat_names))
@@ -390,6 +400,9 @@ class BPtEvaluator():
         # Init progress bar / save and compute fold info from cv
         progress_bars = self._init_progress_bars(cv)
 
+        self._print('Using CV: ', cv,
+                    'to generate evaluation splits.', level=2)
+
         # Run each split
         for train_inds, val_inds in cv.split(X, y):
 
@@ -522,12 +535,8 @@ class BPtEvaluator():
         # Check for if any missing targets in the training set
         # If so, skip those subjects
         X_tr, y_tr = get_non_nan_Xy(X_tr, y_tr)
-        self._print('Train shape =', X_tr.shape,
-                    '(number of data points x number of feature)',
-                    level=1)
-        self._print('Val shape =', X_val.shape,
-                    '(number of data points x number of feature)',
-                    level=1)
+        self._print('Train size =', len(X_tr), level=1)
+        self._print('Val size =', len(X_val), level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()
@@ -1140,22 +1149,94 @@ class BPtEvaluator():
         return pd.DataFrame(X_trans_fold, columns=feat_names)
 
     def compare(self, other, rope_interval=[-0.01, 0.01]):
-        '''In the case that the sizes of the training and validation sets
-        at each fold vary dramatically, it is unclear if this
-        statistics are still valid.
-        In that case, the mean train size and mean validation sizes
-        are employed when computing statistics.
+        '''This method is designed to perform a statistical comparison
+        between the results from the evaluation stored in this object
+        and another instance of :class:`BPtEvaluator`. The statistics
+        produced here are explained in:
+        https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_stats.html
 
-        Comparisons are made as self versus other, i.e., self - other.
+        .. note::
+            In the case that the sizes of the training and validation sets
+            at each fold vary dramatically, it is unclear if this
+            statistics are still valid.
+            In that case, the mean train size and mean validation sizes
+            are employed when computing statistics.
 
         Parameters
         ------------
         other : :class:`BPtEvaluator`
-
+            Another instance of :class:`BPtEvaluator` in which
+            to compare which. The cross-validation used
+            should be the same in both instances, otherwise
+            statistics will not be generated.
 
         rope_interval : list or dict of
-            In the case that a dict is passed, the dictionary
-            keys should correspond to the name of scorers / metrics.
+            | This parameter allows for passing in a custom
+                region of practical equivalence interval (or rope interval)
+                a concept from bayesian statistics. If passed as
+                a list, this should be a list with two elements, describing
+                the difference in score which should be treated as two
+                models or runs being practically equivalent.
+
+            | Alternatively, in the case of multiple underlying
+                scorers / metrics. A dictionary, where keys correspond
+                to scorer / metric names can be passed with a separate
+                rope_interval for each. For example:
+
+            ::
+
+                rope_interval = {'explained_variance': [-0.01, 0.01],
+                                 'neg_mean_squared_error': [-1, 1]}
+
+            This example would define separate rope regions depending
+            on the metric.
+
+            ::
+
+                default = [-0.01, 0.01]
+
+        Returns
+        -------
+        compare_df : pandas DataFrame
+            | The returned DataFrame will generate separate rows
+                for all overlapping metrics / scorers between the
+                evaluators being compared. Further, columns with
+                statistics of interest will be generated:
+
+                - 'mean_diff'
+                    The mean score minus other's mean score
+
+                - 'std_diff'
+                    The std minus other's std
+
+            | Further, only in the case that the cross-validation
+                folds are identical between the comparisons,
+                the following additional columns will be generated:
+
+                - 't_stat'
+                    Corrected paired ttest statistic.
+
+                - 'p_val'
+                    The p value for the corrected paired ttest statistic.
+
+                - 'better_prob'
+                    The probability that this evaluated option is better than
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
+                - 'worse_prob'
+                    The probability that this evaluated option is worse than
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
+                - 'rope_prob'
+                    The probability that this evaluated option is equivalent to
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
         '''
 
         equal_cv = True
@@ -1177,6 +1258,11 @@ class BPtEvaluator():
         # Only compute for the overlapping metrics
         overlap_metrics = set(list(self.mean_scores)).intersection(set(
             list(other.mean_scores)))
+
+        for metric in overlap_metrics:
+            if np.array_equal(self.scores[metric], other.scores[metric]):
+                raise RuntimeError(
+                    f'Cannot compare as scores are identical for {metric}.')
 
         # Init difference dataframe
         dif_df = pd.DataFrame(index=list(overlap_metrics))

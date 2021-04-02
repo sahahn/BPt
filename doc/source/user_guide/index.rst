@@ -18,7 +18,6 @@ Guides
     loading_data
     saving_data
     test_split
-    example1
 
 Key Concept References
 -----------------------
@@ -34,3 +33,13 @@ Key Concept References
     pipeline_objects
     params
     extra_params
+
+
+Full Examples
+----------------
+
+.. toctree::
+    :maxdepth: 1
+    
+    bmi_full_example
+    dep_full_example

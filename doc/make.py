@@ -305,7 +305,8 @@ def main():
 
     if args.command not in cmds:
         joined = ", ".join(cmds)
-        raise ValueError(f"Unknown command {args.command}. Available options: {joined}")
+        raise ValueError(
+            f"Unknown command {args.command}. Available options: {joined}")
 
     # Below we update both os.environ and sys.path. The former is used by
     # external libraries (namely Sphinx) to compile this module and resolve
@@ -330,8 +331,11 @@ def main():
 
     getattr(builder, args.command)()
 
-    shutil.rmtree('../docs/')
-    shutil.copytree('build/html/', '../docs/')
+    if args.command == 'html':
+        print('Removing existing ../docs/ and adding copy of generated docs.')
+        shutil.rmtree('../docs/', ignore_errors=True)
+        shutil.copytree('build/html/', '../docs/')
+
     return
 
 

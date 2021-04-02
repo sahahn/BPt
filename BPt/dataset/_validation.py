@@ -4,7 +4,10 @@ import pandas as pd
 
 
 def _validate_cv_key(self, cv_key, name):
-    '''Various input validation. '''
+    '''Various input validation.'''
+
+    if cv_key not in list(self):
+        raise KeyError(f'Passed {cv_key} must be a specific loaded column')
 
     # Make sure categorical - scopes should already be checked
     if not self._is_category(cv_key, check_scopes=False):
@@ -155,7 +158,7 @@ def set_test_split(self, size=None, subjects=None,
 
         In the case that additional subjects are loaded here, i.e., ones
         not loaded in the current Dataset, they will be simply be ignored,
-        and the functional test set will constitue the overlap of
+        and the functional test set will constitute the overlap of
         valid subjects.
 
         Either this parameter or subjects should be used, not both

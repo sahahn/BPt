@@ -336,6 +336,9 @@ def main():
         shutil.rmtree('../docs/', ignore_errors=True)
         shutil.copytree('build/html/', '../docs/')
 
+        with open('../docs/.nojekyll', 'w') as f:
+            f.write('')
+
     return
 
 

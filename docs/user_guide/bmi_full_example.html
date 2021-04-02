@@ -1901,7 +1901,7 @@ ProblemSpec(n_jobs=8, random_state=10)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "40685a3e74f04503b0a1bb6887feef0d", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7bc2963d116a420fb9bfd817f1e8abfd", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
@@ -1981,7 +1981,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "e091ac0cf8a34742bc1586064fdfef42", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8c4a562ff3f44728b9479186f915c87a", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
@@ -2073,252 +2073,25 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "3c57a715c7374b5a946e7970f77f3f01", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8e24382785bc475cba1f55d219b142fa", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">KeyboardInterrupt</span>                         Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-20-e0dffbf54ffc&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> evaluator = bp.evaluate(pipeline=best_of_pipe,
-</span><span class="ansi-green-intense-fg ansi-bold">      2</span>                         dataset<span class="ansi-blue-fg">=</span>data<span class="ansi-blue-fg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">      3</span>                         problem_spec<span class="ansi-blue-fg">=</span>ps<span class="ansi-blue-fg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">      4</span>                         target<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;y2_bmi&#39;</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">      5</span>                         scope<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;brain&#39;</span><span class="ansi-blue-fg">,</span>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.011890555452472706, &#39;neg_mean_squared_error&#39;: -20.18717309468044}
+std_scores = {&#39;explained_variance&#39;: 0.007451431461277308, &#39;neg_mean_squared_error&#39;: 1.7376889033665959}
 
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/BPt/main/funcs.py</span> in <span class="ansi-cyan-fg">evaluate</span><span class="ansi-blue-fg">(pipeline, dataset, problem_spec, cv, progress_bar, store_preds, store_estimators, store_timing, decode_feat_names, eval_verbose, progress_loc, **extra_params)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1039</span>     <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> isinstance<span class="ansi-blue-fg">(</span>estimator_ps<span class="ansi-blue-fg">,</span> CompareDict<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   1040</span>         estimator<span class="ansi-blue-fg">,</span> ps <span class="ansi-blue-fg">=</span> estimator_ps
-<span class="ansi-green-fg">-&gt; 1041</span><span class="ansi-red-fg">         </span><span class="ansi-green-fg">return</span> _evaluate<span class="ansi-blue-fg">(</span>estimator<span class="ansi-blue-fg">=</span>estimator<span class="ansi-blue-fg">,</span> dataset<span class="ansi-blue-fg">=</span>dataset<span class="ansi-blue-fg">,</span> ps<span class="ansi-blue-fg">=</span>ps<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>params<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1042</span>
-<span class="ansi-green-intense-fg ansi-bold">   1043</span>     <span class="ansi-red-fg"># Set at start to number of runs</span>
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
 
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/BPt/main/funcs.py</span> in <span class="ansi-cyan-fg">_evaluate</span><span class="ansi-blue-fg">(estimator, dataset, ps, cv, decode_feat_names, compare_bars, **verbose_args)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1099</span>
-<span class="ansi-green-intense-fg ansi-bold">   1100</span>     <span class="ansi-red-fg"># Call eval on the evaluator</span>
-<span class="ansi-green-fg">-&gt; 1101</span><span class="ansi-red-fg">     </span>evaluator<span class="ansi-blue-fg">.</span>_eval<span class="ansi-blue-fg">(</span>X<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">,</span> sk_cv<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1102</span>
-<span class="ansi-green-intense-fg ansi-bold">   1103</span>     <span class="ansi-red-fg"># Return the BPtEvaluator object</span>
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
 
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/BPt/main/BPtEvaluator.py</span> in <span class="ansi-cyan-fg">_eval</span><span class="ansi-blue-fg">(self, X, y, cv)</span>
-<span class="ansi-green-intense-fg ansi-bold">    357</span>         <span class="ansi-red-fg"># Otherwise, base behavior</span>
-<span class="ansi-green-intense-fg ansi-bold">    358</span>         <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 359</span><span class="ansi-red-fg">             </span>self<span class="ansi-blue-fg">.</span>_evaluate<span class="ansi-blue-fg">(</span>X<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">,</span> cv<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    360</span>
-<span class="ansi-green-intense-fg ansi-bold">    361</span>     <span class="ansi-green-fg">def</span> _evaluate<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> X<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">,</span> cv<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/BPt/main/BPtEvaluator.py</span> in <span class="ansi-cyan-fg">_evaluate</span><span class="ansi-blue-fg">(self, X, y, cv)</span>
-<span class="ansi-green-intense-fg ansi-bold">    395</span>
-<span class="ansi-green-intense-fg ansi-bold">    396</span>             <span class="ansi-red-fg"># Eval</span>
-<span class="ansi-green-fg">--&gt; 397</span><span class="ansi-red-fg">             self._eval_fold(X.iloc[train_inds], y.iloc[train_inds],
-</span><span class="ansi-green-intense-fg ansi-bold">    398</span>                             X.iloc[val_inds], y.iloc[val_inds])
-<span class="ansi-green-intense-fg ansi-bold">    399</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/BPt/main/BPtEvaluator.py</span> in <span class="ansi-cyan-fg">_eval_fold</span><span class="ansi-blue-fg">(self, X_tr, y_tr, X_val, y_val)</span>
-<span class="ansi-green-intense-fg ansi-bold">    533</span>         start_time <span class="ansi-blue-fg">=</span> time<span class="ansi-blue-fg">.</span>time<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    534</span>
-<span class="ansi-green-fg">--&gt; 535</span><span class="ansi-red-fg">         </span>estimator_<span class="ansi-blue-fg">.</span>fit<span class="ansi-blue-fg">(</span>X<span class="ansi-blue-fg">=</span>X_tr<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">=</span>np<span class="ansi-blue-fg">.</span>array<span class="ansi-blue-fg">(</span>y_tr<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    536</span>         fit_time <span class="ansi-blue-fg">=</span> time<span class="ansi-blue-fg">.</span>time<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-</span> start_time
-<span class="ansi-green-intense-fg ansi-bold">    537</span>         self<span class="ansi-blue-fg">.</span>_print<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">f&#39;Fit fold in {fit_time:.3f} seconds.&#39;</span><span class="ansi-blue-fg">,</span> level<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/BPt/pipeline/BPtPipeline.py</span> in <span class="ansi-cyan-fg">fit</span><span class="ansi-blue-fg">(self, X, y, mapping, fit_index, **fit_params)</span>
-<span class="ansi-green-intense-fg ansi-bold">    192</span>
-<span class="ansi-green-intense-fg ansi-bold">    193</span>                 <span class="ansi-red-fg"># Fit the final estimator</span>
-<span class="ansi-green-fg">--&gt; 194</span><span class="ansi-red-fg">                 </span>self<span class="ansi-blue-fg">.</span>_final_estimator<span class="ansi-blue-fg">.</span>fit<span class="ansi-blue-fg">(</span>Xt<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>fit_params_last_step<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    195</span>
-<span class="ansi-green-intense-fg ansi-bold">    196</span>         <span class="ansi-red-fg"># If cache fit enabled, hash fitted pipe here</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/BPt/pipeline/ScopeObjs.py</span> in <span class="ansi-cyan-fg">fit</span><span class="ansi-blue-fg">(self, X, y, mapping, fit_index, **fit_params)</span>
-<span class="ansi-green-intense-fg ansi-bold">    157</span>
-<span class="ansi-green-intense-fg ansi-bold">    158</span>         <span class="ansi-red-fg"># Fit actual estimator with or without caching</span>
-<span class="ansi-green-fg">--&gt; 159</span><span class="ansi-red-fg">         </span>self<span class="ansi-blue-fg">.</span>_fit<span class="ansi-blue-fg">(</span>X<span class="ansi-blue-fg">=</span>X<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">=</span>y<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>pass_fit_params<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    160</span>
-<span class="ansi-green-intense-fg ansi-bold">    161</span>         <span class="ansi-red-fg"># Set as fitted</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/BPt/pipeline/ScopeObjs.py</span> in <span class="ansi-cyan-fg">_fit</span><span class="ansi-blue-fg">(self, X, y, **fit_params)</span>
-<span class="ansi-green-intense-fg ansi-bold">     75</span>
-<span class="ansi-green-intense-fg ansi-bold">     76</span>         <span class="ansi-red-fg"># Fit the estimator</span>
-<span class="ansi-green-fg">---&gt; 77</span><span class="ansi-red-fg">         self.estimator_ = _fit_estimator_c(estimator=self.estimator_,
-</span><span class="ansi-green-intense-fg ansi-bold">     78</span>                                            X<span class="ansi-blue-fg">=</span>X<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">:</span><span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">.</span>inds_<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">     79</span>                                            y=y, **fit_params)
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/BPt/pipeline/ScopeObjs.py</span> in <span class="ansi-cyan-fg">_fit_estimator</span><span class="ansi-blue-fg">(estimator, X, y, **fit_params)</span>
-<span class="ansi-green-intense-fg ansi-bold">     10</span> <span class="ansi-green-fg">def</span> _fit_estimator<span class="ansi-blue-fg">(</span>estimator<span class="ansi-blue-fg">,</span> X<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>fit_params<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">     11</span>
-<span class="ansi-green-fg">---&gt; 12</span><span class="ansi-red-fg">     </span>estimator<span class="ansi-blue-fg">.</span>fit<span class="ansi-blue-fg">(</span>X<span class="ansi-blue-fg">=</span>X<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">=</span>y<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>fit_params<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     13</span>     <span class="ansi-green-fg">return</span> estimator
-<span class="ansi-green-intense-fg ansi-bold">     14</span>
-
-<span class="ansi-green-fg">&lt;ipython-input-19-e48eb710ea4d&gt;</span> in <span class="ansi-cyan-fg">fit</span><span class="ansi-blue-fg">(self, X, y)</span>
-<span class="ansi-green-intense-fg ansi-bold">     12</span>     <span class="ansi-green-fg">def</span> fit<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> X<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">     13</span>
-<span class="ansi-green-fg">---&gt; 14</span><span class="ansi-red-fg">         scores = cross_validate(self.estimator, X, y, cv=self.cv,
-</span><span class="ansi-green-intense-fg ansi-bold">     15</span>                                 return_estimator=True)
-<span class="ansi-green-intense-fg ansi-bold">     16</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/utils/validation.py</span> in <span class="ansi-cyan-fg">inner_f</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
-<span class="ansi-green-intense-fg ansi-bold">     61</span>             extra_args <span class="ansi-blue-fg">=</span> len<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-</span> len<span class="ansi-blue-fg">(</span>all_args<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     62</span>             <span class="ansi-green-fg">if</span> extra_args <span class="ansi-blue-fg">&lt;=</span> <span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">---&gt; 63</span><span class="ansi-red-fg">                 </span><span class="ansi-green-fg">return</span> f<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     64</span>
-<span class="ansi-green-intense-fg ansi-bold">     65</span>             <span class="ansi-red-fg"># extra_args &gt; 0</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/model_selection/_validation.py</span> in <span class="ansi-cyan-fg">cross_validate</span><span class="ansi-blue-fg">(estimator, X, y, groups, scoring, cv, n_jobs, verbose, fit_params, pre_dispatch, return_train_score, return_estimator, error_score)</span>
-<span class="ansi-green-intense-fg ansi-bold">    244</span>     parallel = Parallel(n_jobs=n_jobs, verbose=verbose,
-<span class="ansi-green-intense-fg ansi-bold">    245</span>                         pre_dispatch=pre_dispatch)
-<span class="ansi-green-fg">--&gt; 246</span><span class="ansi-red-fg">     results = parallel(
-</span><span class="ansi-green-intense-fg ansi-bold">    247</span>         delayed(_fit_and_score)(
-<span class="ansi-green-intense-fg ansi-bold">    248</span>             clone<span class="ansi-blue-fg">(</span>estimator<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> X<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">,</span> scorers<span class="ansi-blue-fg">,</span> train<span class="ansi-blue-fg">,</span> test<span class="ansi-blue-fg">,</span> verbose<span class="ansi-blue-fg">,</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/parallel.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self, iterable)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1039</span>             <span class="ansi-red-fg"># remaining jobs.</span>
-<span class="ansi-green-intense-fg ansi-bold">   1040</span>             self<span class="ansi-blue-fg">.</span>_iterating <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">False</span>
-<span class="ansi-green-fg">-&gt; 1041</span><span class="ansi-red-fg">             </span><span class="ansi-green-fg">if</span> self<span class="ansi-blue-fg">.</span>dispatch_one_batch<span class="ansi-blue-fg">(</span>iterator<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   1042</span>                 self<span class="ansi-blue-fg">.</span>_iterating <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>_original_iterator <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">None</span>
-<span class="ansi-green-intense-fg ansi-bold">   1043</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/parallel.py</span> in <span class="ansi-cyan-fg">dispatch_one_batch</span><span class="ansi-blue-fg">(self, iterator)</span>
-<span class="ansi-green-intense-fg ansi-bold">    857</span>                 <span class="ansi-green-fg">return</span> <span class="ansi-green-fg">False</span>
-<span class="ansi-green-intense-fg ansi-bold">    858</span>             <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 859</span><span class="ansi-red-fg">                 </span>self<span class="ansi-blue-fg">.</span>_dispatch<span class="ansi-blue-fg">(</span>tasks<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    860</span>                 <span class="ansi-green-fg">return</span> <span class="ansi-green-fg">True</span>
-<span class="ansi-green-intense-fg ansi-bold">    861</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/parallel.py</span> in <span class="ansi-cyan-fg">_dispatch</span><span class="ansi-blue-fg">(self, batch)</span>
-<span class="ansi-green-intense-fg ansi-bold">    775</span>         <span class="ansi-green-fg">with</span> self<span class="ansi-blue-fg">.</span>_lock<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    776</span>             job_idx <span class="ansi-blue-fg">=</span> len<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_jobs<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-fg">--&gt; 777</span><span class="ansi-red-fg">             </span>job <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>_backend<span class="ansi-blue-fg">.</span>apply_async<span class="ansi-blue-fg">(</span>batch<span class="ansi-blue-fg">,</span> callback<span class="ansi-blue-fg">=</span>cb<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    778</span>             <span class="ansi-red-fg"># A job can complete so quickly than its callback is</span>
-<span class="ansi-green-intense-fg ansi-bold">    779</span>             <span class="ansi-red-fg"># called before we get here, causing self._jobs to</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/_parallel_backends.py</span> in <span class="ansi-cyan-fg">apply_async</span><span class="ansi-blue-fg">(self, func, callback)</span>
-<span class="ansi-green-intense-fg ansi-bold">    206</span>     <span class="ansi-green-fg">def</span> apply_async<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> func<span class="ansi-blue-fg">,</span> callback<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    207</span>         <span class="ansi-blue-fg">&#34;&#34;&#34;Schedule a func to be run&#34;&#34;&#34;</span>
-<span class="ansi-green-fg">--&gt; 208</span><span class="ansi-red-fg">         </span>result <span class="ansi-blue-fg">=</span> ImmediateResult<span class="ansi-blue-fg">(</span>func<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    209</span>         <span class="ansi-green-fg">if</span> callback<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    210</span>             callback<span class="ansi-blue-fg">(</span>result<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/_parallel_backends.py</span> in <span class="ansi-cyan-fg">__init__</span><span class="ansi-blue-fg">(self, batch)</span>
-<span class="ansi-green-intense-fg ansi-bold">    570</span>         <span class="ansi-red-fg"># Don&#39;t delay the application, to avoid keeping the input</span>
-<span class="ansi-green-intense-fg ansi-bold">    571</span>         <span class="ansi-red-fg"># arguments in memory</span>
-<span class="ansi-green-fg">--&gt; 572</span><span class="ansi-red-fg">         </span>self<span class="ansi-blue-fg">.</span>results <span class="ansi-blue-fg">=</span> batch<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    573</span>
-<span class="ansi-green-intense-fg ansi-bold">    574</span>     <span class="ansi-green-fg">def</span> get<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/parallel.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-intense-fg ansi-bold">    260</span>         <span class="ansi-red-fg"># change the default number of processes to -1</span>
-<span class="ansi-green-intense-fg ansi-bold">    261</span>         <span class="ansi-green-fg">with</span> parallel_backend<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_backend<span class="ansi-blue-fg">,</span> n_jobs<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>_n_jobs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 262</span><span class="ansi-red-fg">             return [func(*args, **kwargs)
-</span><span class="ansi-green-intense-fg ansi-bold">    263</span>                     for func, args, kwargs in self.items]
-<span class="ansi-green-intense-fg ansi-bold">    264</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/parallel.py</span> in <span class="ansi-cyan-fg">&lt;listcomp&gt;</span><span class="ansi-blue-fg">(.0)</span>
-<span class="ansi-green-intense-fg ansi-bold">    260</span>         <span class="ansi-red-fg"># change the default number of processes to -1</span>
-<span class="ansi-green-intense-fg ansi-bold">    261</span>         <span class="ansi-green-fg">with</span> parallel_backend<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_backend<span class="ansi-blue-fg">,</span> n_jobs<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>_n_jobs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 262</span><span class="ansi-red-fg">             return [func(*args, **kwargs)
-</span><span class="ansi-green-intense-fg ansi-bold">    263</span>                     for func, args, kwargs in self.items]
-<span class="ansi-green-intense-fg ansi-bold">    264</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/utils/fixes.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self, *args, **kwargs)</span>
-<span class="ansi-green-intense-fg ansi-bold">    220</span>     <span class="ansi-green-fg">def</span> __call__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    221</span>         <span class="ansi-green-fg">with</span> config_context<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">**</span>self<span class="ansi-blue-fg">.</span>config<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 222</span><span class="ansi-red-fg">             </span><span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">.</span>function<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/model_selection/_validation.py</span> in <span class="ansi-cyan-fg">_fit_and_score</span><span class="ansi-blue-fg">(estimator, X, y, scorer, train, test, verbose, parameters, fit_params, return_train_score, return_parameters, return_n_test_samples, return_times, return_estimator, split_progress, candidate_progress, error_score)</span>
-<span class="ansi-green-intense-fg ansi-bold">    591</span>             estimator<span class="ansi-blue-fg">.</span>fit<span class="ansi-blue-fg">(</span>X_train<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>fit_params<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    592</span>         <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 593</span><span class="ansi-red-fg">             </span>estimator<span class="ansi-blue-fg">.</span>fit<span class="ansi-blue-fg">(</span>X_train<span class="ansi-blue-fg">,</span> y_train<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>fit_params<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    594</span>
-<span class="ansi-green-intense-fg ansi-bold">    595</span>     <span class="ansi-green-fg">except</span> Exception <span class="ansi-green-fg">as</span> e<span class="ansi-blue-fg">:</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/linear_model/_coordinate_descent.py</span> in <span class="ansi-cyan-fg">fit</span><span class="ansi-blue-fg">(self, X, y)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1312</span>                 <span class="ansi-green-fg">for</span> this_l1_ratio<span class="ansi-blue-fg">,</span> this_alphas <span class="ansi-green-fg">in</span> zip<span class="ansi-blue-fg">(</span>l1_ratios<span class="ansi-blue-fg">,</span> alphas<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1313</span>                 for train, test in folds)
-<span class="ansi-green-fg">-&gt; 1314</span><span class="ansi-red-fg">         mse_paths = Parallel(n_jobs=self.n_jobs, verbose=self.verbose,
-</span><span class="ansi-green-intense-fg ansi-bold">   1315</span>                              **_joblib_parallel_args(prefer=&#34;threads&#34;))(jobs)
-<span class="ansi-green-intense-fg ansi-bold">   1316</span>         mse_paths <span class="ansi-blue-fg">=</span> np<span class="ansi-blue-fg">.</span>reshape<span class="ansi-blue-fg">(</span>mse_paths<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">(</span>n_l1_ratio<span class="ansi-blue-fg">,</span> len<span class="ansi-blue-fg">(</span>folds<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/parallel.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self, iterable)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1042</span>                 self<span class="ansi-blue-fg">.</span>_iterating <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>_original_iterator <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> <span class="ansi-green-fg">None</span>
-<span class="ansi-green-intense-fg ansi-bold">   1043</span>
-<span class="ansi-green-fg">-&gt; 1044</span><span class="ansi-red-fg">             </span><span class="ansi-green-fg">while</span> self<span class="ansi-blue-fg">.</span>dispatch_one_batch<span class="ansi-blue-fg">(</span>iterator<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   1045</span>                 <span class="ansi-green-fg">pass</span>
-<span class="ansi-green-intense-fg ansi-bold">   1046</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/parallel.py</span> in <span class="ansi-cyan-fg">dispatch_one_batch</span><span class="ansi-blue-fg">(self, iterator)</span>
-<span class="ansi-green-intense-fg ansi-bold">    857</span>                 <span class="ansi-green-fg">return</span> <span class="ansi-green-fg">False</span>
-<span class="ansi-green-intense-fg ansi-bold">    858</span>             <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 859</span><span class="ansi-red-fg">                 </span>self<span class="ansi-blue-fg">.</span>_dispatch<span class="ansi-blue-fg">(</span>tasks<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    860</span>                 <span class="ansi-green-fg">return</span> <span class="ansi-green-fg">True</span>
-<span class="ansi-green-intense-fg ansi-bold">    861</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/parallel.py</span> in <span class="ansi-cyan-fg">_dispatch</span><span class="ansi-blue-fg">(self, batch)</span>
-<span class="ansi-green-intense-fg ansi-bold">    775</span>         <span class="ansi-green-fg">with</span> self<span class="ansi-blue-fg">.</span>_lock<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    776</span>             job_idx <span class="ansi-blue-fg">=</span> len<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_jobs<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-fg">--&gt; 777</span><span class="ansi-red-fg">             </span>job <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>_backend<span class="ansi-blue-fg">.</span>apply_async<span class="ansi-blue-fg">(</span>batch<span class="ansi-blue-fg">,</span> callback<span class="ansi-blue-fg">=</span>cb<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    778</span>             <span class="ansi-red-fg"># A job can complete so quickly than its callback is</span>
-<span class="ansi-green-intense-fg ansi-bold">    779</span>             <span class="ansi-red-fg"># called before we get here, causing self._jobs to</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/_parallel_backends.py</span> in <span class="ansi-cyan-fg">apply_async</span><span class="ansi-blue-fg">(self, func, callback)</span>
-<span class="ansi-green-intense-fg ansi-bold">    206</span>     <span class="ansi-green-fg">def</span> apply_async<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> func<span class="ansi-blue-fg">,</span> callback<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    207</span>         <span class="ansi-blue-fg">&#34;&#34;&#34;Schedule a func to be run&#34;&#34;&#34;</span>
-<span class="ansi-green-fg">--&gt; 208</span><span class="ansi-red-fg">         </span>result <span class="ansi-blue-fg">=</span> ImmediateResult<span class="ansi-blue-fg">(</span>func<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    209</span>         <span class="ansi-green-fg">if</span> callback<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    210</span>             callback<span class="ansi-blue-fg">(</span>result<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/_parallel_backends.py</span> in <span class="ansi-cyan-fg">__init__</span><span class="ansi-blue-fg">(self, batch)</span>
-<span class="ansi-green-intense-fg ansi-bold">    570</span>         <span class="ansi-red-fg"># Don&#39;t delay the application, to avoid keeping the input</span>
-<span class="ansi-green-intense-fg ansi-bold">    571</span>         <span class="ansi-red-fg"># arguments in memory</span>
-<span class="ansi-green-fg">--&gt; 572</span><span class="ansi-red-fg">         </span>self<span class="ansi-blue-fg">.</span>results <span class="ansi-blue-fg">=</span> batch<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    573</span>
-<span class="ansi-green-intense-fg ansi-bold">    574</span>     <span class="ansi-green-fg">def</span> get<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/parallel.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-intense-fg ansi-bold">    260</span>         <span class="ansi-red-fg"># change the default number of processes to -1</span>
-<span class="ansi-green-intense-fg ansi-bold">    261</span>         <span class="ansi-green-fg">with</span> parallel_backend<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_backend<span class="ansi-blue-fg">,</span> n_jobs<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>_n_jobs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 262</span><span class="ansi-red-fg">             return [func(*args, **kwargs)
-</span><span class="ansi-green-intense-fg ansi-bold">    263</span>                     for func, args, kwargs in self.items]
-<span class="ansi-green-intense-fg ansi-bold">    264</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/joblib/parallel.py</span> in <span class="ansi-cyan-fg">&lt;listcomp&gt;</span><span class="ansi-blue-fg">(.0)</span>
-<span class="ansi-green-intense-fg ansi-bold">    260</span>         <span class="ansi-red-fg"># change the default number of processes to -1</span>
-<span class="ansi-green-intense-fg ansi-bold">    261</span>         <span class="ansi-green-fg">with</span> parallel_backend<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>_backend<span class="ansi-blue-fg">,</span> n_jobs<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>_n_jobs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 262</span><span class="ansi-red-fg">             return [func(*args, **kwargs)
-</span><span class="ansi-green-intense-fg ansi-bold">    263</span>                     for func, args, kwargs in self.items]
-<span class="ansi-green-intense-fg ansi-bold">    264</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/utils/fixes.py</span> in <span class="ansi-cyan-fg">__call__</span><span class="ansi-blue-fg">(self, *args, **kwargs)</span>
-<span class="ansi-green-intense-fg ansi-bold">    220</span>     <span class="ansi-green-fg">def</span> __call__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    221</span>         <span class="ansi-green-fg">with</span> config_context<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">**</span>self<span class="ansi-blue-fg">.</span>config<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">--&gt; 222</span><span class="ansi-red-fg">             </span><span class="ansi-green-fg">return</span> self<span class="ansi-blue-fg">.</span>function<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/linear_model/_coordinate_descent.py</span> in <span class="ansi-cyan-fg">_path_residuals</span><span class="ansi-blue-fg">(X, y, train, test, path, path_params, alphas, l1_ratio, X_order, dtype)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1125</span>     X_train = check_array(X_train, accept_sparse=&#39;csc&#39;, dtype=dtype,
-<span class="ansi-green-intense-fg ansi-bold">   1126</span>                           order=X_order)
-<span class="ansi-green-fg">-&gt; 1127</span><span class="ansi-red-fg">     </span>alphas<span class="ansi-blue-fg">,</span> coefs<span class="ansi-blue-fg">,</span> _ <span class="ansi-blue-fg">=</span> path<span class="ansi-blue-fg">(</span>X_train<span class="ansi-blue-fg">,</span> y_train<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>path_params<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1128</span>     <span class="ansi-green-fg">del</span> X_train<span class="ansi-blue-fg">,</span> y_train
-<span class="ansi-green-intense-fg ansi-bold">   1129</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/utils/validation.py</span> in <span class="ansi-cyan-fg">inner_f</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
-<span class="ansi-green-intense-fg ansi-bold">     61</span>             extra_args <span class="ansi-blue-fg">=</span> len<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-</span> len<span class="ansi-blue-fg">(</span>all_args<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     62</span>             <span class="ansi-green-fg">if</span> extra_args <span class="ansi-blue-fg">&lt;=</span> <span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">---&gt; 63</span><span class="ansi-red-fg">                 </span><span class="ansi-green-fg">return</span> f<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     64</span>
-<span class="ansi-green-intense-fg ansi-bold">     65</span>             <span class="ansi-red-fg"># extra_args &gt; 0</span>
-
-<span class="ansi-green-fg">~/anaconda3/envs/bpt/lib/python3.9/site-packages/sklearn/linear_model/_coordinate_descent.py</span> in <span class="ansi-cyan-fg">enet_path</span><span class="ansi-blue-fg">(X, y, l1_ratio, eps, n_alphas, alphas, precompute, Xy, copy_X, coef_init, verbose, return_n_iter, positive, check_input, **params)</span>
-<span class="ansi-green-intense-fg ansi-bold">    524</span>                 precompute = check_array(precompute, dtype=X.dtype.type,
-<span class="ansi-green-intense-fg ansi-bold">    525</span>                                          order=&#39;C&#39;)
-<span class="ansi-green-fg">--&gt; 526</span><span class="ansi-red-fg">             model = cd_fast.enet_coordinate_descent_gram(
-</span><span class="ansi-green-intense-fg ansi-bold">    527</span>                 coef_<span class="ansi-blue-fg">,</span> l1_reg<span class="ansi-blue-fg">,</span> l2_reg<span class="ansi-blue-fg">,</span> precompute<span class="ansi-blue-fg">,</span> Xy<span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">,</span> max_iter<span class="ansi-blue-fg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    528</span>                 tol, rng, random, positive)
-
-<span class="ansi-green-fg">sklearn/linear_model/_cd_fast.pyx</span> in <span class="ansi-cyan-fg">sklearn.linear_model._cd_fast.enet_coordinate_descent_gram</span><span class="ansi-blue-fg">()</span>
-
-<span class="ansi-red-fg">KeyboardInterrupt</span>:
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;brain&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, subjects=&#39;train&#39;, target=&#39;y2_bmi&#39;)
 </pre></div></div>
 </div>
 <p>Next, let’s run its corresponding ‘static’ counterpart.</p>
@@ -2343,7 +2116,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f74236e59d0348d68a6daefbfca4e191", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "58fc044c5bbc4d18a1fdbf77cb3ceea1", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
@@ -2419,9 +2192,18 @@ LinearResidualizer(to_resid_df=    time_diff
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Scaler(obj=LinearResidualizer(to_resid_df=    time_diff
-0   25
-..  ..
+Scaler(obj=LinearResidualizer(to_resid_df=      time_diff
+0            25
+1            24
+2            24
+3            23
+4            26
+...         ...
+2617         24
+2618         23
+2619         21
+2620         24
+2621         22
 
 [2511 rows x 1 columns]), scope=&#39;brain&#39;)
 </pre></div></div>
@@ -2449,9 +2231,18 @@ Scaler(obj=LinearResidualizer(to_resid_df=    time_diff
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 original steps: [Scaler(extra_params={&#39;quantile_range&#39;: (2, 98)}, obj=&#39;winsorize&#39;, scope=&#39;brain&#39;), Scaler(obj=&#39;standard&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(groups=&#39;b_rel_family_id&#39;)), n_iter=60), params=1)]
-resid steps: [Scaler(extra_params={&#39;quantile_range&#39;: (2, 98)}, obj=&#39;winsorize&#39;, scope=&#39;brain&#39;), Scaler(obj=&#39;standard&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Scaler(obj=LinearResidualizer(to_resid_df=    time_diff
-0   25
-..  ..
+resid steps: [Scaler(extra_params={&#39;quantile_range&#39;: (2, 98)}, obj=&#39;winsorize&#39;, scope=&#39;brain&#39;), Scaler(obj=&#39;standard&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Scaler(obj=LinearResidualizer(to_resid_df=      time_diff
+0            25
+1            24
+2            24
+3            23
+4            26
+...         ...
+2617         24
+2618         23
+2619         21
+2620         24
+2621         22
 
 [2511 rows x 1 columns]), scope=&#39;brain&#39;), Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(groups=&#39;b_rel_family_id&#39;)), n_iter=60), params=1)]
 </pre></div></div>
@@ -2478,7 +2269,7 @@ resid steps: [Scaler(extra_params={&#39;quantile_range&#39;: (2, 98)}, obj=&#39;
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ca81485a96b6453b879fcabef97adbb2", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ee105410127c4aba99bb96b19c560c42", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
@@ -2537,13 +2328,13 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "dbb0cf8bfcf54945963a7299951f69ee", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "eb6345063ae442eaa227d28c68052fce", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "58c42f414298487f8e6c1810ef8e5d55", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6c04ed9ed99e4a849518a9a501b8dc19", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
@@ -2606,8 +2397,8 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
       <td>-18.63043</td>
       <td>0.02043</td>
       <td>1.60705</td>
-      <td>2.73271</td>
-      <td>0.03996</td>
+      <td>2.36674</td>
+      <td>0.03439</td>
     </tr>
     <tr>
       <th>brain</th>
@@ -2615,8 +2406,8 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
       <td>-19.97986</td>
       <td>0.01186</td>
       <td>1.65734</td>
-      <td>8.76483</td>
-      <td>0.04266</td>
+      <td>8.67881</td>
+      <td>0.02694</td>
     </tr>
     <tr>
       <th>all</th>
@@ -2624,8 +2415,8 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
       <td>-19.18665</td>
       <td>0.01530</td>
       <td>1.59740</td>
-      <td>8.20863</td>
-      <td>0.03392</td>
+      <td>8.37871</td>
+      <td>0.04497</td>
     </tr>
     <tr>
       <th rowspan="3" valign="top">resid</th>
@@ -2634,8 +2425,8 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
       <td>-18.63043</td>
       <td>0.02043</td>
       <td>1.60705</td>
-      <td>2.81915</td>
-      <td>0.03498</td>
+      <td>2.84961</td>
+      <td>0.03162</td>
     </tr>
     <tr>
       <th>brain</th>
@@ -2643,8 +2434,8 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
       <td>-19.96367</td>
       <td>0.01203</td>
       <td>1.65617</td>
-      <td>8.27503</td>
-      <td>0.06246</td>
+      <td>8.29963</td>
+      <td>0.08293</td>
     </tr>
     <tr>
       <th>all</th>
@@ -2652,8 +2443,8 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
       <td>-19.17940</td>
       <td>0.01569</td>
       <td>1.59423</td>
-      <td>8.39014</td>
-      <td>0.07557</td>
+      <td>8.36900</td>
+      <td>0.06644</td>
     </tr>
   </tbody>
 </table>
@@ -2661,7 +2452,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 </div>
 <p>We can also try another method avaliable which will run a pairwise model ttest comparison between all options</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2670,7 +2461,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -2833,7 +2624,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 </div>
 <p>We can also explicitly compare two evaluators</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2853,28 +2644,100 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-        In the case that the sizes of the training and validation sets
-        at each fold vary dramatically, it is unclear if this
-        statistics are still valid.
-        In that case, the mean train size and mean validation sizes
-        are employed when computing statistics.
+        This method is designed to perform a statistical comparison
+        between the results from the evaluation stored in this object
+        and another instance of :class:`BPtEvaluator`. The statistics
+        produced here are explained in:
+        https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_stats.html
 
-        Comparisons are made as self versus other, i.e., self - other.
+        .. note::
+            In the case that the sizes of the training and validation sets
+            at each fold vary dramatically, it is unclear if this
+            statistics are still valid.
+            In that case, the mean train size and mean validation sizes
+            are employed when computing statistics.
 
         Parameters
         ------------
         other : :class:`BPtEvaluator`
-
+            Another instance of :class:`BPtEvaluator` in which
+            to compare which. The cross-validation used
+            should be the same in both instances, otherwise
+            statistics will not be generated.
 
         rope_interval : list or dict of
-            In the case that a dict is passed, the dictionary
-            keys should correspond to the name of scorers / metrics.
+            | This parameter allows for passing in a custom
+                region of practical equivalence interval (or rope interval)
+                a concept from bayesian statistics. If passed as
+                a list, this should be a list with two elements, describing
+                the difference in score which should be treated as two
+                models or runs being practically equivalent.
+
+            | Alternatively, in the case of multiple underlying
+                scorers / metrics. A dictionary, where keys correspond
+                to scorer / metric names can be passed with a separate
+                rope_interval for each. For example:
+
+            ::
+
+                rope_interval = {&#39;explained_variance&#39;: [-0.01, 0.01],
+                                 &#39;neg_mean_squared_error&#39;: [-1, 1]}
+
+            This example would define separate rope regions depending
+            on the metric.
+
+            ::
+
+                default = [-0.01, 0.01]
+
+        Returns
+        -------
+        compare_df : pandas DataFrame
+            | The returned DataFrame will generate separate rows
+                for all overlapping metrics / scorers between the
+                evaluators being compared. Further, columns with
+                statistics of interest will be generated:
+
+                - &#39;mean_diff&#39;
+                    The mean score minus other&#39;s mean score
+
+                - &#39;std_diff&#39;
+                    The std minus other&#39;s std
+
+            | Further, only in the case that the cross-validation
+                folds are identical between the comparisons,
+                the following additional columns will be generated:
+
+                - &#39;t_stat&#39;
+                    Corrected paired ttest statistic.
+
+                - &#39;p_val&#39;
+                    The p value for the corrected paired ttest statistic.
+
+                - &#39;better_prob&#39;
+                    The probability that this evaluated option is better than
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
+                - &#39;worse_prob&#39;
+                    The probability that this evaluated option is worse than
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
+                - &#39;rope_prob&#39;
+                    The probability that this evaluated option is equivalent to
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
 
 
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -2932,7 +2795,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 </div>
 <p>Okay so it looks like it ran all the different combinations, but how do we look at each indivudal evaluator / the full results?? There are few different ways to index the object storing the different evaluators, but its essentially a dictionary. We can index one run as follows:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2941,85 +2804,26 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[      predict   y_true
- 4    22.71660 27.77510
- 5    19.52105 19.72230
- 9    19.24147 19.04280
- 10   19.36510 19.75324
- 18   19.32277 16.83360
- ...       ...      ...
- 2598 21.15328 26.23569
- 2608 20.61308 16.11975
- 2610 21.90605 29.99017
- 2611 18.59519 19.38944
- 2618 19.53818 22.31384
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.08750025137203998, &#39;neg_mean_squared_error&#39;: -18.63043213787136}
+std_scores = {&#39;explained_variance&#39;: 0.0204257696433489, &#39;neg_mean_squared_error&#39;: 1.6070454784784487}
 
- [410 rows x 2 columns],
-       predict   y_true
- 1    20.47874 31.74616
- 8    22.58232 19.94162
- 11   20.01606 19.90839
- 19   19.32685 19.17211
- 22   22.23390 25.16647
- ...       ...      ...
- 2604 22.30865 20.13920
- 2606 18.78347 16.48343
- 2612 18.87883 22.72568
- 2617 19.16807 18.47943
- 2620 20.47948 16.02180
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
 
- [390 rows x 2 columns],
-       predict   y_true
- 3    22.47628 27.06019
- 7    20.56891 16.03695
- 24   21.87997 17.26178
- 28   18.70522 15.71670
- 30   18.87968 22.88707
- ...       ...      ...
- 2588 20.46326 18.02737
- 2600 19.94709 17.57168
- 2602 21.89065 18.19466
- 2613 22.02695 31.89111
- 2619 18.88894 17.16773
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
 
- [422 rows x 2 columns],
-       predict   y_true
- 12   22.56190 16.96662
- 14   23.17608 27.55931
- 27   20.25155 19.88263
- 43   23.21785 19.30627
- 44   19.24908 28.49177
- ...       ...      ...
- 2603 22.81647 30.71170
- 2614 20.23413 15.36605
- 2615 19.10702 21.69966
- 2616 18.77701 17.86247
- 2621 22.26887 14.69117
-
- [402 rows x 2 columns],
-       predict   y_true
- 2    20.67172 15.43814
- 13   20.54514 19.98009
- 16   21.40429 23.14630
- 17   18.69716 19.72230
- 31   19.71986 18.88125
- ...       ...      ...
- 2591 19.00897 16.11975
- 2594 20.09941 17.60978
- 2595 18.56864 16.22966
- 2596 21.63014 22.28154
- 2601 21.56255 26.12474
-
- [387 rows x 2 columns]]
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;covars&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, subjects=&#39;train&#39;, target=&#39;y2_bmi&#39;)
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -3029,9 +2833,56 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+b_demo_highest_education_categories=1            0.24071
+b_demo_highest_education_categories=2            0.45955
+b_demo_highest_education_categories=3            0.26963
+b_demo_highest_education_categories=4           -0.71133
+b_demo_highest_education_categories=5           -1.20322
+b_race_ethnicity_categories=1                   -0.72083
+b_race_ethnicity_categories=2                    0.84072
+b_race_ethnicity_categories=3                    0.78320
+b_race_ethnicity_categories=4                   -0.27170
+b_race_ethnicity_categories=5                   -0.00703
+b_sex=1                                          0.01196
+b_sex=2                                         -0.01194
+y2_mri_info_deviceserialnumber=&#39;HASH03db707f&#39;    0.72240
+y2_mri_info_deviceserialnumber=&#39;HASH11ad4ed5&#39;   -0.88266
+y2_mri_info_deviceserialnumber=&#39;HASH1314a204&#39;   -0.73021
+y2_mri_info_deviceserialnumber=&#39;HASH3935c89e&#39;   -0.05978
+y2_mri_info_deviceserialnumber=&#39;HASH4036a433&#39;   -0.00387
+y2_mri_info_deviceserialnumber=&#39;HASH4b0b8b05&#39;    0.03677
+y2_mri_info_deviceserialnumber=&#39;HASH4d1ed7b1&#39;    0.02080
+y2_mri_info_deviceserialnumber=&#39;HASH5ac2b20b&#39;    0.02204
+y2_mri_info_deviceserialnumber=&#39;HASH5b0cf1bb&#39;   -0.06402
+y2_mri_info_deviceserialnumber=&#39;HASH5b2fcf80&#39;   -0.01046
+y2_mri_info_deviceserialnumber=&#39;HASH65b39280&#39;    0.56189
+y2_mri_info_deviceserialnumber=&#39;HASH69f406fa&#39;    0.03348
+y2_mri_info_deviceserialnumber=&#39;HASH7911780b&#39;    0.34166
+y2_mri_info_deviceserialnumber=&#39;HASH7f91147d&#39;   -0.00444
+y2_mri_info_deviceserialnumber=&#39;HASH96a0c182&#39;   -0.10546
+y2_mri_info_deviceserialnumber=&#39;HASHa3e45734&#39;   -0.22419
+y2_mri_info_deviceserialnumber=&#39;HASHb640a1b8&#39;    0.05527
+y2_mri_info_deviceserialnumber=&#39;HASHc3bf3d9c&#39;    0.07478
+y2_mri_info_deviceserialnumber=&#39;HASHd422be27&#39;    0.17122
+y2_mri_info_deviceserialnumber=&#39;HASHd7cb4c6d&#39;   -0.37760
+y2_mri_info_deviceserialnumber=&#39;HASHdb2589d4&#39;   -0.01870
+y2_mri_info_deviceserialnumber=&#39;HASHe3ce02d3&#39;    0.07643
+y2_mri_info_deviceserialnumber=&#39;HASHe4f6957a&#39;    0.01405
+y2_mri_info_deviceserialnumber=&#39;HASHfeb7e81a&#39;   -0.13043
+b_agemos                                         0.40722
+pub_diff                                         0.29176
+dtype: float64
+</pre></div></div>
+</div>
 <p>Warning: This doesn’t mean that this mean features were selected! Remember this is the average over training 5 models, so it means that if a feature shows up it was selected at least once in one of the models!</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -3040,9 +2891,18 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([Options(pipeline=base, scope=covars), Options(pipeline=base, scope=brain), Options(pipeline=base, scope=all), Options(pipeline=resid, scope=covars), Options(pipeline=resid, scope=brain), Options(pipeline=resid, scope=all)])
+</pre></div></div>
+</div>
 <p>We can index multiple like this …</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -3050,8 +2910,39 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CompareDict({Options(pipeline=base, scope=covars): BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.08750025137203998, &#39;neg_mean_squared_error&#39;: -18.63043213787136}
+std_scores = {&#39;explained_variance&#39;: 0.0204257696433489, &#39;neg_mean_squared_error&#39;: 1.6070454784784487}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;covars&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, subjects=&#39;train&#39;, target=&#39;y2_bmi&#39;)
+, Options(pipeline=resid, scope=covars): BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.08750025137203998, &#39;neg_mean_squared_error&#39;: -18.63043213787136}
+std_scores = {&#39;explained_variance&#39;: 0.0204257696433489, &#39;neg_mean_squared_error&#39;: 1.6070454784784487}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;covars&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, subjects=&#39;train&#39;, target=&#39;y2_bmi&#39;)
+})
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -3059,6 +2950,73 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 <span class="n">evaluators</span><span class="p">[</span><span class="s1">&#39;covars&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>mean_scores_explained_variance</th>
+      <th>mean_scores_neg_mean_squared_error</th>
+      <th>std_scores_explained_variance</th>
+      <th>std_scores_neg_mean_squared_error</th>
+      <th>mean_timing_fit</th>
+      <th>mean_timing_score</th>
+    </tr>
+    <tr>
+      <th>pipeline</th>
+      <th>scope</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>base</th>
+      <th>covars</th>
+      <td>0.08750</td>
+      <td>-18.63043</td>
+      <td>0.02043</td>
+      <td>1.60705</td>
+      <td>2.36674</td>
+      <td>0.03439</td>
+    </tr>
+    <tr>
+      <th>resid</th>
+      <th>covars</th>
+      <td>0.08750</td>
+      <td>-18.63043</td>
+      <td>0.02043</td>
+      <td>1.60705</td>
+      <td>2.84961</td>
+      <td>0.03162</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
 </div>
 <p>Note the resid_pipeline just covars and normal pipeline did the same… this is good, since they are exactly the same.</p>
 <p>That will end this example.</p>

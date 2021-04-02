@@ -2059,7 +2059,7 @@ ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accu
 </div>
 <p>This does a little better. But only slightly. What if we also used this leave-out site strategy for the outer loop? This would be to address the issue that the outer CV has the same problem as the inner, where the validation set is overly specific and small in some folds.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2165,7 +2165,7 @@ Val shape = (60, 163) (number of data points x number of feature)
   mcc = cov_ytyp / np.sqrt(cov_ytyt * cov_ypyp)
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -2176,6 +2176,77 @@ roc_auc: 0.5039682539682541
 balanced_accuracy: 0.44047619047619047
 Train shape = (2313, 163) (number of data points x number of feature)
 Val shape = (66, 163) (number of data points x number of feature)
+Fit fold in 458.078 seconds.
+matthews: 0.053121271525973054
+roc_auc: 0.5089947089947089
+balanced_accuracy: 0.5253968253968253
+Train shape = (2310, 163) (number of data points x number of feature)
+Val shape = (69, 163) (number of data points x number of feature)
+Fit fold in 452.421 seconds.
+matthews: 0.2622746101092192
+roc_auc: 0.6256366723259762
+balanced_accuracy: 0.6294567062818336
+Train shape = (2242, 163) (number of data points x number of feature)
+Val shape = (137, 163) (number of data points x number of feature)
+Fit fold in 442.038 seconds.
+matthews: -0.11597093720775255
+roc_auc: 0.5342528735632184
+balanced_accuracy: 0.4574712643678161
+Train shape = (2338, 163) (number of data points x number of feature)
+Val shape = (41, 163) (number of data points x number of feature)
+Fit fold in 456.392 seconds.
+matthews: 0.2313602894352951
+roc_auc: 0.6515151515151514
+balanced_accuracy: 0.6257575757575757
+Train shape = (2352, 163) (number of data points x number of feature)
+Val shape = (27, 163) (number of data points x number of feature)
+Fit fold in 462.279 seconds.
+matthews: -0.12507270025494252
+roc_auc: 0.37912087912087916
+balanced_accuracy: 0.43956043956043955
+Train shape = (2301, 163) (number of data points x number of feature)
+Val shape = (78, 163) (number of data points x number of feature)
+Fit fold in 453.980 seconds.
+matthews: 0.12403989506994083
+roc_auc: 0.5671052631578948
+balanced_accuracy: 0.5565789473684211
+Train shape = (2279, 163) (number of data points x number of feature)
+Val shape = (100, 163) (number of data points x number of feature)
+Fit fold in 442.766 seconds.
+matthews: 0.06294058066909786
+roc_auc: 0.4231578947368421
+balanced_accuracy: 0.5368421052631579
+Train shape = (2320, 163) (number of data points x number of feature)
+Val shape = (59, 163) (number of data points x number of feature)
+Fit fold in 450.422 seconds.
+matthews: -0.005703586973049607
+roc_auc: 0.48160919540229885
+balanced_accuracy: 0.4982758620689655
+Train shape = (2345, 163) (number of data points x number of feature)
+Val shape = (34, 163) (number of data points x number of feature)
+Fit fold in 460.327 seconds.
+matthews: 0.10213764617139019
+roc_auc: 0.6423611111111112
+balanced_accuracy: 0.5451388888888888
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;matthews&#39;: 0.05405567645912566, &#39;roc_auc&#39;: 0.5360103823230292, &#39;balanced_accuracy&#39;: 0.5284061852113758}
+std_scores = {&#39;matthews&#39;: 0.14703361948297453, &#39;roc_auc&#39;: 0.0926704447511229, &#39;balanced_accuracy&#39;: 0.07192589246275141}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
 </pre></div></div>
 </div>
 <p>Seeing the results for each site seperately with the verbose option really makes some of the problem clear, namely that a number of small sites don’t seem to generalize well. This is simmilar to what we saw in the case of using leave-out-site with case-only subjects dropped, where we had a huge std in roc auc between folds.</p>

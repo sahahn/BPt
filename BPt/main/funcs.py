@@ -395,6 +395,7 @@ def _get_pipeline(pipeline, problem_spec, dataset,
             nested_pipe, nested_pipe_params =\
                 _get_pipeline(pipeline=obj.obj,
                               problem_spec=nested_ps,
+                              dataset=dataset,
                               has_search=has_search)
 
             # Set obj as nested pipeline
@@ -626,6 +627,20 @@ def _sk_prep(pipeline, dataset, problem_spec='default',
 
 def _eval_prep(estimator, ps, dataset, cv=5):
     '''Internal helper function.'''
+
+    # Check for subjects == 'default' in problem_spec
+    if ps.subjects == 'default':
+
+        # If a test set is defined
+        if dataset.test_subjects is not None:
+            if cv == 'test':
+                ps.subjects = 'all'
+            else:
+                ps.subjects = 'train'
+
+        # Otherwise, subjects = 'all' if no test set defined
+        else:
+            ps.subjects = 'all'
 
     # Get X and y - ps should already be init'ed
     X, y = dataset.get_Xy(problem_spec=ps)

@@ -2375,15 +2375,18 @@ class ProblemSpec(Params):
         specify the reserved keyword 'train' to
         specify that only the training subjects should be used.
 
-        If set to 'all' (as is by default),
-        all avaliable subjects will be used.
+        If set to 'default', special behavior will be
+        used where if a train/test split is defined then subjects
+        will be set to 'train' by default (unless cv='test', then subjects
+        will be set to 'all'). If a train/test split is not defined,
+        then subjects will be set to 'all'.
 
         See :ref:`Subjects` for more information
         of the different accepted BPt subject style inputs.
 
         ::
 
-            default = 'all'
+            default = 'default'
 
     problem_type : str or 'default', optional
         This parameter controls what type of machine learning
@@ -2465,7 +2468,7 @@ class ProblemSpec(Params):
 
     '''
     def __init__(self, target=0, scorer='default',
-                 scope='all', subjects='all',
+                 scope='all', subjects='default',
                  problem_type='default',
                  n_jobs=1, random_state=1,
                  base_dtype='float32'):

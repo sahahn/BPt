@@ -545,7 +545,7 @@ def nan_to_class(self, scope='category', inplace=False):
 
         # Add nan class as next avaliable
         nan_class = np.max(values.astype(int)) + 1
-        
+
         add_new_categories(self[col], [nan_class])
         self.loc[nan_subjects, col] = nan_class
         remove_unused_categories(self[col])

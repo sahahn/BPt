@@ -86,17 +86,6 @@ class Params(BaseEstimator):
 
         return self
 
-    def __repr__(self):
-
-        return super().__repr__()
-
-        # Not sure if really want this...
-        # with pd.option_context('display.max_rows', 1,
-        #                       'display.max_columns', 1,
-        #                       'display.max_colwidth', 1):
-        #    rep = super().__repr__()
-        # return rep
-
 
 class Check():
 

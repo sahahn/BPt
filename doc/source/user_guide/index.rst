@@ -43,3 +43,5 @@ Full Examples
     
     bmi_full_example
     dep_full_example
+    ssrt
+    waist_cm

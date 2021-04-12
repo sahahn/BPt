@@ -93,8 +93,7 @@ def _proc_cv_strategy(self, cv_params):
                           train_only=train_only_subjects)
 
     # If None
-    else:
-        return CVStrategy(train_only=train_only_subjects)
+    return CVStrategy(train_only=train_only_subjects)
 
 
 def _validate_split(self, size, subjects):

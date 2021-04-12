@@ -201,6 +201,17 @@ class BPtEvaluator():
         self._scores = scores
 
     @property
+    def score(self):
+        '''This property represents
+        a quick helper for accessing the mean scores
+        of whatever the first scorer is (in the case of
+        multiple scorers).
+        '''
+
+        first_scorer = list(self.mean_scores)[0]
+        return self.mean_scores[first_scorer]
+
+    @property
     def ps(self):
         '''A saved and pre-processed version of the problem_spec
         used (with any extra_params applied) when running this

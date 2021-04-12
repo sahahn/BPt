@@ -62,14 +62,19 @@ def get_top_substrs(keys):
 
 def nan_info(self, scope='all'):
 
+    # Get data based on passed scope
     cols = self.get_cols(scope)
     data = self[cols]
 
+    # Check for data files
+    self._data_file_fail_check(cols)
+
+    # Get NaN counts
     na_counts = data.isna().sum().sort_values(ascending=False)
 
     if na_counts.sum() > 0:
-        self._print('Loaded NaN Info:')
-        self._print('There are:', na_counts.sum(), 'total missing values')
+        print('Loaded NaN Info:')
+        print('There are:', na_counts.sum(), 'total missing values')
 
         u_counts, c_counts = np.unique(na_counts, return_counts=True)
         u_counts, c_counts = u_counts[1:], c_counts[1:]
@@ -84,10 +89,11 @@ def nan_info(self, scope='all'):
                 keys = list(na_counts[na_counts == u].index)
                 substrs = get_top_substrs(keys)
 
-                self._print(c, ' columns found with ', u, ' missing values',
-                            ' (column name overlap: ', substrs, ')', sep='')
+                print(c, ' columns found with ', u, ' missing values',
+                         ' (column name overlap: ', substrs, ')', sep='')
 
-        self._print()
+        print()
+
 
 def _cont_info(self, cont_cols, subjs, measures, decimals, **extra_args):
 

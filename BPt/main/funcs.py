@@ -429,6 +429,7 @@ def _get_pipeline(pipeline, problem_spec, dataset,
                     # Replace step
                     obj.steps[i] = new_step
 
+        # Recursive cases
         if isinstance(obj, list):
             [nested_check(o) for o in obj]
             return
@@ -441,7 +442,7 @@ def _get_pipeline(pipeline, problem_spec, dataset,
             [nested_check(obj[k]) for k in obj]
             return
 
-        if hasattr(obj, 'get_params'):
+        elif hasattr(obj, 'get_params'):
             for param in obj.get_params(deep=False):
                 try:
                     nested_check(getattr(obj, param))

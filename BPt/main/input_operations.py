@@ -1,4 +1,5 @@
 from ..util import BPtInputMixIn
+from copy import copy
 
 
 class Select(list, BPtInputMixIn):
@@ -66,6 +67,18 @@ class Select(list, BPtInputMixIn):
         if len(set([option._constructor for option in self])) != 1:
             raise RuntimeError('Select must be composed '
                                'of the same type of pieces!')
+
+    def _uniquify(self):
+
+        for i, option in enumerate(self):
+
+            # Recursive check first
+            if hasattr(option, '_uniquify'):
+                option._uniquify()
+
+            # Then replace with copy
+            self[i] = copy(option)
+
 
     @property
     def _constructor(self):

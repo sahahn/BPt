@@ -684,7 +684,14 @@ def test_get_estimator_stacking_default():
     from ...default.pipelines import stacking_pipe
 
     # Just want to make sure it doesn't break during construction
-    est = get_estimator(pipeline=stacking_pipe, dataset=data, problem_spec=ps)
+    est = get_estimator(pipeline=stacking_pipe, dataset=data,
+                        problem_spec=ps)
+    assert len(est.steps) == 5
+    
+    # Test for breaking behavior because of duplicates, i.e. does
+    # uniquify work.
+    est = get_estimator(pipeline=stacking_pipe, dataset=data,
+                        problem_spec=ps, problem_type='binary')
     assert len(est.steps) == 5
 
 

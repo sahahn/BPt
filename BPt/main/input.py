@@ -1,5 +1,5 @@
 from .compare import Compare, Option
-from copy import deepcopy
+from copy import deepcopy, copy
 from sklearn.base import BaseEstimator
 from ..default.helpers import proc_input, coarse_any_obj_check
 from ..util import conv_to_list, BPtInputMixIn
@@ -16,7 +16,7 @@ from ..pipeline.constructors import (LoaderConstructor, ImputerConstructor,
 import warnings
 from pandas.util._decorators import doc
 from sklearn.utils.estimator_checks import check_estimator
-from sklearn.pipeline import Pipeline, _name_estimators
+from sklearn.pipeline import _name_estimators
 
 
 def proc_all(base_obj):
@@ -28,6 +28,7 @@ def proc_all(base_obj):
     proc_name(base_obj, 'base_model')
     proc_name(base_obj, 'models')
     proc_name(base_obj, 'scorer')
+    proc_name(base_obj, 'target_scaler')
 
 
 def proc_name(base_obj, name):
@@ -44,6 +45,23 @@ def proc_name(base_obj, name):
 
         elif isinstance(obj, str):
             setattr(base_obj, name, proc_input(obj))
+
+
+def uniquify(obj):
+
+    for p_str in ['obj', 'base_model', 'models', 'target_scaler']:
+
+        if hasattr(obj, p_str):
+            p = getattr(obj, p_str)
+
+            # Recursive check first
+            if isinstance(p, list):
+                [uniquify(pp) for pp in p]
+            elif hasattr(p, '_uniquify'):
+                p._uniquify()
+
+            # Then set with copy
+            setattr(obj, p_str, copy(p))
 
 
 class Params(BaseEstimator):
@@ -312,6 +330,9 @@ class Piece(Params, Check):
                 param_names += ['extra_params']
 
         return param_names
+
+    def _uniquify(self):
+        uniquify(self)
 
 
 _piece_docs = {}
@@ -1076,7 +1097,6 @@ class Ensemble(Model):
             models = [models]
 
         self.models = models
-
         self.params = params
         self.scope = scope
         self.param_search = param_search
@@ -1663,6 +1683,9 @@ class Pipeline(Params):
         self.steps = self._proc_duplicates(self.steps)
         self._flatten_steps()
 
+        # Uniquify
+        self._uniquify()
+
         # Proc input
         self.steps = self._proc_input(self.steps)
 
@@ -1734,6 +1757,16 @@ class Pipeline(Params):
 
             # Check input args in case anything changed
             self.param_search._check_args()
+
+    def _uniquify(self):
+
+        # First call recursively
+        for step in self.steps:
+            if isinstance(step, (Piece, Pipeline, Compare, Select)):
+                step._uniquify()
+
+        # Then set steps with copy of steps
+        self.steps = [copy(step) for step in self.steps]
 
     def _check_args(self):
 
@@ -1853,7 +1886,6 @@ class Pipeline(Params):
                 setattr(obj, last_key, value)
 
             return self
-
 
 
 class ModelPipeline(Pipeline):
@@ -2129,6 +2161,20 @@ class ModelPipeline(Pipeline):
 
             setattr(self, param_name, new_params)
 
+    def _uniquify(self):
+
+        for param_name in self.fixed_piece_order:
+            params = getattr(self, param_name)
+
+            # Call recursively
+            if isinstance(params, list):
+                [p._uniquify() for p in params]
+            elif hasattr(params, '_uniquify'):
+                params._uniquify()
+
+            # Then set params with copy
+            setattr(self, param_name, copy(params))
+
     def _check_args(self, params):
 
         for p in params:
@@ -2202,6 +2248,9 @@ class ModelPipeline(Pipeline):
                       ' was set,',
                       'but will have no effect as it is not',
                       ' a valid parameter!')
+
+        # Uniquify
+        self._uniquify()
 
         # Check for duplicate scopes
         self._proc_all_pieces(self._proc_duplicates)

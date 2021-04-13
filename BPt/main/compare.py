@@ -1,9 +1,8 @@
 from .BPtEvaluator import BPtEvaluator
 from .input_operations import BPtInputMixIn
-from copy import deepcopy
+from copy import deepcopy, copy
 import pandas as pd
-from .stats_helpers import corrected_std, compute_corrected_ttest
-from scipy.stats import t
+from .stats_helpers import  compute_corrected_ttest
 import numpy as np
 from itertools import combinations
 from math import factorial
@@ -212,6 +211,17 @@ class Compare(BPtInputMixIn):
 
         for option in self.options:
             option.value._check_args()
+
+    def _uniquify(self):
+
+        for option in self.options:
+
+            # Recursive check first
+            if hasattr(option.value, '_uniquify'):
+                option.value._uniquify()
+
+            # Then replace with copy
+            option.value = copy(option.value)
 
 
 class Options():

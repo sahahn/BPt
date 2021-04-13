@@ -1,4 +1,4 @@
-from .input import Model, Pipeline, ProblemSpec, CV
+from .input import Ensemble, Model, Pipeline, ProblemSpec, CV
 from copy import deepcopy
 import numpy as np
 import pandas as pd
@@ -537,6 +537,10 @@ def _preproc_param_search(object, ps):
     # If None, return False and do nothing
     if param_search is None:
         return False
+
+    # If already processed, do nothing, but return True
+    if isinstance(param_search, dict):
+        return True
 
     # If a param search, apply ps and dataset + convert to dict
     as_dict = param_search._as_dict(ps=ps)

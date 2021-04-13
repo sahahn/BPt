@@ -674,3 +674,15 @@ def test_get_estimator_pipeline_with_custom_steps_naming():
     assert r1 != r2
     assert r1 != r3
     assert r2 != r3
+
+
+def test_get_estimator_stacking_default():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    from ...default.pipelines import stacking_pipe
+   
+    # Just want to make sure it doesn't break during construction
+    est = get_estimator(pipeline=stacking_pipe, dataset=data, problem_spec=ps)
+    assert len(est.steps) == 5

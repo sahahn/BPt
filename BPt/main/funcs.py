@@ -1,4 +1,4 @@
-from .input import Ensemble, Model, Pipeline, ProblemSpec, CV
+from .input import Model, Pipeline, ProblemSpec, CV, Custom
 from copy import deepcopy
 import numpy as np
 import pandas as pd
@@ -390,6 +390,7 @@ def _get_pipeline(pipeline, problem_spec, dataset,
     # nested model pipeline's
     def nested_check(obj):
 
+        # Case where pipeline is nested as an obj
         if hasattr(obj, 'obj') and isinstance(obj.obj, Pipeline):
 
             nested_pipe, nested_pipe_params =\
@@ -403,7 +404,30 @@ def _get_pipeline(pipeline, problem_spec, dataset,
 
             # Set obj's params as the nested_pipe_params
             setattr(obj, 'params', nested_pipe_params)
-            return
+
+        # Case where pipeline is passed as a step
+        elif hasattr(obj, 'steps'):
+            for i, step in enumerate(obj.steps):
+                if isinstance(step, Pipeline):
+
+                    # Call nested get pipeline
+                    nested_pipe, nested_pipe_params =\
+                        _get_pipeline(pipeline=step,
+                                      problem_spec=nested_ps,
+                                      dataset=dataset,
+                                      has_search=has_search)
+
+                    # If params to pass along, needs to be Model
+                    if len(nested_pipe_params) > 0:
+                        new_step = Model(nested_pipe,
+                                         params=nested_pipe_params)
+
+                    # Otherwise pass as custom
+                    else:
+                        new_step = Custom(nested_pipe)
+
+                    # Replace step
+                    obj.steps[i] = new_step
 
         if isinstance(obj, list):
             [nested_check(o) for o in obj]

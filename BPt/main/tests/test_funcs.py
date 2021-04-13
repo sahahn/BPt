@@ -682,7 +682,27 @@ def test_get_estimator_stacking_default():
     data = get_fake_dataset()
 
     from ...default.pipelines import stacking_pipe
-   
+
     # Just want to make sure it doesn't break during construction
     est = get_estimator(pipeline=stacking_pipe, dataset=data, problem_spec=ps)
     assert len(est.steps) == 5
+
+
+def test_nested_pipelines_new():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    pipe1 = Pipeline(steps=[Model('linear')])
+    pipe2 = Pipeline(steps=[pipe1])
+
+    est = get_estimator(pipeline=pipe2, dataset=data, problem_spec=ps)
+
+    assert isinstance(est, BPtPipeline)
+
+    # Make sure doesn't break on fit
+    X = np.ones((20, 20))
+    y = np.ones(20)
+    est.fit(X, y)
+
+    assert isinstance(est.steps[0][1], BPtPipeline)

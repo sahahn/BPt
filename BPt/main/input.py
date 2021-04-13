@@ -16,7 +16,7 @@ from ..pipeline.constructors import (LoaderConstructor, ImputerConstructor,
 import warnings
 from pandas.util._decorators import doc
 from sklearn.utils.estimator_checks import check_estimator
-from sklearn.pipeline import _name_estimators
+from sklearn.pipeline import Pipeline, _name_estimators
 
 
 def proc_all(base_obj):
@@ -1477,11 +1477,7 @@ class ParamSearch(Params):
 def check_if_sklearn_step(step):
 
     # Skip def. not valid cases
-    if isinstance(step, Piece):
-        return False
-    elif isinstance(step, BPtInputMixIn):
-        return False
-    elif isinstance(step, str):
+    if isinstance(step, (Piece, Pipeline, BPtInputMixIn, str)):
         return False
 
     # If Tuple
@@ -1712,7 +1708,8 @@ class Pipeline(Params):
                 raise RuntimeError(repr(step) + ' is not a valid Model')
 
         # If last step isn't model - or custom, raise error
-        if not isinstance(self.steps[-1], (Model, Custom, BPtInputMixIn)):
+        if not isinstance(self.steps[-1], (Model, Pipeline,
+                                           Custom, BPtInputMixIn)):
             raise RuntimeError(repr(step) + ' is not a valid Model')
 
     def _validate_input(self):
@@ -1722,12 +1719,11 @@ class Pipeline(Params):
         # Validate steps
         for step in self.steps:
 
-            if not isinstance(step, (Piece, Compare, Select)):
+            if not isinstance(step, (Piece, Pipeline, Compare, Select)):
                 raise RuntimeError('passed step:' + repr(step) +
                                    ' is not a valid Pipeline Piece / '
                                    'input wrapper')
 
-            # Check input args in case anything changed
             step._check_args()
 
         # Validate param search
@@ -1738,6 +1734,11 @@ class Pipeline(Params):
 
             # Check input args in case anything changed
             self.param_search._check_args()
+
+    def _check_args(self):
+
+        for step in self.steps:
+            step._check_args()
 
     def _flatten_steps(self):
 
@@ -1852,6 +1853,7 @@ class Pipeline(Params):
                 setattr(obj, last_key, value)
 
             return self
+
 
 
 class ModelPipeline(Pipeline):
@@ -2127,11 +2129,11 @@ class ModelPipeline(Pipeline):
 
             setattr(self, param_name, new_params)
 
-    def __check_args(self, params):
+    def _check_args(self, params):
 
         for p in params:
             if isinstance(p, list):
-                self.__check_args(p)
+                self._check_args(p)
             else:
                 p._check_args()
 
@@ -2209,7 +2211,7 @@ class ModelPipeline(Pipeline):
         proc_all(self.param_search)
 
         # Double check input args in case something changed
-        self._proc_all_pieces(self.__check_args)
+        self._proc_all_pieces(self._check_args)
 
         # Proc param search if not None
         if self.param_search is not None:

@@ -219,6 +219,18 @@
                 </li>
             
           
+            
+                <li class="">
+                    <a href="ssrt.html">Predict Stop Signal Response Time (SSRT)</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="waist_cm.html">Predict Waist Circumference with Diffusion Weighted Imaging</a>
+                </li>
+            
+          
         
         
         
@@ -300,6 +312,11 @@ Select the set of train subjects as defined by a split in the Dataset, e.g.,
 <li><p>‘test’
 Select the set of test subjects as defined by a split in the Dataset, e.g.,
 <a class="reference internal" href="../reference/api/BPt.Dataset.set_test_split.html#BPt.Dataset.set_test_split" title="BPt.Dataset.set_test_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_test_split</span></code></a>.</p></li>
+<li><p>‘default’
+This is the default subjects value for <a class="reference internal" href="../reference/api/BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>,
+it refers to special behavior where when evaluating if the passed dataset has
+a train/test split defined, and a cv value is passed that isn’t ‘test’, then
+subjects = ‘train’ will be used. Otherwise, subjects=’all’ will be used.</p></li>
 </ul>
 <p>4. You can pass the special input wrapper <a class="reference internal" href="../reference/api/BPt.ValueSubset.html#BPt.ValueSubset" title="BPt.ValueSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueSubset</span></code></a>. This can be
 used to select subsets of subject by a column’s

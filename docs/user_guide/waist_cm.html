@@ -1,0 +1,3038 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Predict Waist Circumference with Diffusion Weighted Imaging &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API reference" href="../reference/index.html" />
+    <link rel="prev" title="Predict Stop Signal Response Time (SSRT)" href="ssrt.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../index.html">
+    
+      <img src="../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../reference/index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="why_bpt.html">Why BPt?</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="loading_data.html">Loading Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="saving_data.html">Saving Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="test_split.html">Test Split</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="role.html">Role</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="scope.html">Scope</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="data_types.html">Data Types</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="data_files.html">Data Files</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="subjects.html">Subjects</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pipeline_objects.html">Pipeline Objects</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="params.html">Params</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="extra_params.html">Extra Params</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="bmi_full_example.html">Predict BMI From Change In Brain</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="dep_full_example.html">Predicting Substance Dependence from Multi-Site Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="ssrt.html">Predict Stop Signal Response Time (SSRT)</a>
+                </li>
+            
+          
+            
+                <li class="active">
+                    <a href="">Predict Waist Circumference with Diffusion Weighted Imaging</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Load-the-data-needed" class="nav-link">Load the data needed</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Define-a-Test-set." class="nav-link">Define a Test set.</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Evaluate-Different-Pipelines" class="nav-link">Evaluate Different Pipelines</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Compare" class="nav-link">Compare</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Applying-the-Test-Set" class="nav-link">Applying the Test Set</a>
+        </li>
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Predict-Waist-Circumference-with-Diffusion-Weighted-Imaging">
+<h1>Predict Waist Circumference with Diffusion Weighted Imaging<a class="headerlink" href="#Predict-Waist-Circumference-with-Diffusion-Weighted-Imaging" title="Permalink to this headline">¶</a></h1>
+<p>This notebook using diffusion weighted imaging data, and subjects waist circumference in cm from the ABCD Study. We will use as input feature derived Restriction spectrum imaging (RSI) from diffusion weighted images.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">simplefilter</span>
+<span class="kn">from</span> <span class="nn">sklearn.exceptions</span> <span class="kn">import</span> <span class="n">ConvergenceWarning</span>
+<span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">ConvergenceWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Load-the-data-needed">
+<h2>Load the data needed<a class="headerlink" href="#Load-the-data-needed" title="Permalink to this headline">¶</a></h2>
+<p>Data is loaded from a large csv file with all of the features from release 2 of the ABCD study.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">load_from_rds</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">eventname</span><span class="o">=</span><span class="s1">&#39;baseline_year_1_arm_1&#39;</span><span class="p">):</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/nda_rds_201.csv&#39;</span><span class="p">,</span>
+                       <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;src_subject_id&#39;</span><span class="p">,</span> <span class="s1">&#39;eventname&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">names</span><span class="p">,</span>
+                       <span class="n">na_values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;777&#39;</span><span class="p">,</span> <span class="mi">999</span><span class="p">,</span> <span class="s1">&#39;999&#39;</span><span class="p">,</span> <span class="mi">777</span><span class="p">])</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;eventname&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">eventname</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;src_subject_id&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;eventname&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Obsificate subject ID for public example</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+
+    <span class="c1"># Return as pandas DataFrame cast to BPt Dataset</span>
+    <span class="k">return</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># This way we can look at all column avaliable</span>
+<span class="n">all_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/nda_rds_201.csv&#39;</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">all_cols</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;subjectid&#39;,
+ &#39;src_subject_id&#39;,
+ &#39;eventname&#39;,
+ &#39;anthro_1_height_in&#39;,
+ &#39;anthro_2_height_in&#39;,
+ &#39;anthro_3_height_in&#39;,
+ &#39;anthro_height_calc&#39;,
+ &#39;anthro_weight_cast&#39;,
+ &#39;anthro_weight_a_location&#39;,
+ &#39;anthro_weight1_lb&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># The target variable</span>
+<span class="n">target_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;anthro_waist_cm&#39;</span><span class="p">]</span>
+
+<span class="c1"># non input feature - i.e., those that inform</span>
+<span class="n">non_input_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;rel_family_id&#39;</span><span class="p">]</span>
+
+<span class="c1"># We will use the fiber at dti measures</span>
+<span class="n">dti_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_cols</span> <span class="k">if</span> <span class="s1">&#39;_fiber.at&#39;</span> <span class="ow">in</span> <span class="n">c</span> <span class="ow">and</span> <span class="s1">&#39;rsi.&#39;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">]</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">dti_cols</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+294
+</pre></div></div>
+</div>
+<p>Now we can use the helper function defined at the start to load these features in as a Dataset</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">load_from_rds</span><span class="p">(</span><span class="n">target_cols</span> <span class="o">+</span> <span class="n">non_input_cols</span> <span class="o">+</span> <span class="n">dti_cols</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(11875, 297)
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># This is optional, but will print out some extra verbosity when using the dataset operations</span>
+<span class="n">data</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<p>The first step we will do is tell the dataset what roles the different columns are. See: <a class="reference external" href="https://sahahn.github.io/BPt/user_guide/role.html">https://sahahn.github.io/BPt/user_guide/role.html</a></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="n">target_cols</span><span class="p">)</span> <span class="c1"># Note we doing data = data.func()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_non_input</span><span class="p">(</span><span class="n">non_input_cols</span><span class="p">)</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dropped 2 Rows
+Dropped 6 Rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div style="float: left; padding: 10px;">
+        <h3>Data</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>dmri_rsi.n0_fiber.at_allfib.lh</th>
+      <th>dmri_rsi.n0_fiber.at_allfib.rh</th>
+      <th>dmri_rsi.n0_fiber.at_allfibers</th>
+      <th>dmri_rsi.n0_fiber.at_allfibnocc.lh</th>
+      <th>dmri_rsi.n0_fiber.at_allfibnocc.rh</th>
+      <th>dmri_rsi.n0_fiber.at_atr.lh</th>
+      <th>dmri_rsi.n0_fiber.at_atr.rh</th>
+      <th>dmri_rsi.n0_fiber.at_cc</th>
+      <th>dmri_rsi.n0_fiber.at_cgc.lh</th>
+      <th>dmri_rsi.n0_fiber.at_cgc.rh</th>
+      <th>...</th>
+      <th>dmri_rsi.vol_fiber.at_scs.lh</th>
+      <th>dmri_rsi.vol_fiber.at_scs.rh</th>
+      <th>dmri_rsi.vol_fiber.at_sifc.lh</th>
+      <th>dmri_rsi.vol_fiber.at_sifc.rh</th>
+      <th>dmri_rsi.vol_fiber.at_slf.lh</th>
+      <th>dmri_rsi.vol_fiber.at_slf.rh</th>
+      <th>dmri_rsi.vol_fiber.at_tslf.lh</th>
+      <th>dmri_rsi.vol_fiber.at_tslf.rh</th>
+      <th>dmri_rsi.vol_fiber.at_unc.lh</th>
+      <th>dmri_rsi.vol_fiber.at_unc.rh</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.327623</td>
+      <td>0.323420</td>
+      <td>0.325957</td>
+      <td>0.340559</td>
+      <td>0.332364</td>
+      <td>0.347837</td>
+      <td>0.336072</td>
+      <td>0.306803</td>
+      <td>0.311347</td>
+      <td>0.304854</td>
+      <td>...</td>
+      <td>23672.0</td>
+      <td>13056.0</td>
+      <td>9648.0</td>
+      <td>9528.0</td>
+      <td>10152.0</td>
+      <td>11504.0</td>
+      <td>8384.0</td>
+      <td>8024.0</td>
+      <td>4968.0</td>
+      <td>7176.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.325374</td>
+      <td>0.311465</td>
+      <td>0.319027</td>
+      <td>0.341213</td>
+      <td>0.326334</td>
+      <td>0.346651</td>
+      <td>0.335362</td>
+      <td>0.288124</td>
+      <td>0.326416</td>
+      <td>0.300990</td>
+      <td>...</td>
+      <td>33112.0</td>
+      <td>19256.0</td>
+      <td>11928.0</td>
+      <td>8688.0</td>
+      <td>13144.0</td>
+      <td>15344.0</td>
+      <td>10488.0</td>
+      <td>10936.0</td>
+      <td>6904.0</td>
+      <td>9480.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.305095</td>
+      <td>0.304357</td>
+      <td>0.305170</td>
+      <td>0.315477</td>
+      <td>0.312866</td>
+      <td>0.313972</td>
+      <td>0.316729</td>
+      <td>0.288742</td>
+      <td>0.289166</td>
+      <td>0.290347</td>
+      <td>...</td>
+      <td>28480.0</td>
+      <td>16016.0</td>
+      <td>13024.0</td>
+      <td>11960.0</td>
+      <td>13600.0</td>
+      <td>14880.0</td>
+      <td>11416.0</td>
+      <td>10592.0</td>
+      <td>6952.0</td>
+      <td>8736.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.316860</td>
+      <td>0.315238</td>
+      <td>0.316399</td>
+      <td>0.328251</td>
+      <td>0.327259</td>
+      <td>0.333998</td>
+      <td>0.318162</td>
+      <td>0.294008</td>
+      <td>0.297800</td>
+      <td>0.299230</td>
+      <td>...</td>
+      <td>29904.0</td>
+      <td>17968.0</td>
+      <td>12720.0</td>
+      <td>11336.0</td>
+      <td>13528.0</td>
+      <td>15672.0</td>
+      <td>11096.0</td>
+      <td>11816.0</td>
+      <td>5912.0</td>
+      <td>7336.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>11870</th>
+      <td>0.335741</td>
+      <td>0.336048</td>
+      <td>0.336372</td>
+      <td>0.349806</td>
+      <td>0.347732</td>
+      <td>0.349966</td>
+      <td>0.345692</td>
+      <td>0.312056</td>
+      <td>0.324054</td>
+      <td>0.336676</td>
+      <td>...</td>
+      <td>28328.0</td>
+      <td>15400.0</td>
+      <td>9656.0</td>
+      <td>10080.0</td>
+      <td>11312.0</td>
+      <td>13496.0</td>
+      <td>8728.0</td>
+      <td>9176.0</td>
+      <td>4960.0</td>
+      <td>7392.0</td>
+    </tr>
+    <tr>
+      <th>11871</th>
+      <td>0.320563</td>
+      <td>0.317525</td>
+      <td>0.319429</td>
+      <td>0.327302</td>
+      <td>0.322161</td>
+      <td>0.333086</td>
+      <td>0.315482</td>
+      <td>0.308554</td>
+      <td>0.299938</td>
+      <td>0.298093</td>
+      <td>...</td>
+      <td>23792.0</td>
+      <td>13632.0</td>
+      <td>9928.0</td>
+      <td>8912.0</td>
+      <td>9152.0</td>
+      <td>12288.0</td>
+      <td>7128.0</td>
+      <td>8912.0</td>
+      <td>5744.0</td>
+      <td>7376.0</td>
+    </tr>
+    <tr>
+      <th>11872</th>
+      <td>0.327051</td>
+      <td>0.325386</td>
+      <td>0.326522</td>
+      <td>0.340918</td>
+      <td>0.334854</td>
+      <td>0.345435</td>
+      <td>0.335610</td>
+      <td>0.305720</td>
+      <td>0.308630</td>
+      <td>0.330612</td>
+      <td>...</td>
+      <td>28640.0</td>
+      <td>16384.0</td>
+      <td>9496.0</td>
+      <td>11216.0</td>
+      <td>12168.0</td>
+      <td>12312.0</td>
+      <td>9520.0</td>
+      <td>8952.0</td>
+      <td>4568.0</td>
+      <td>9056.0</td>
+    </tr>
+    <tr>
+      <th>11873</th>
+      <td>0.323579</td>
+      <td>0.319377</td>
+      <td>0.321805</td>
+      <td>0.334945</td>
+      <td>0.329433</td>
+      <td>0.332200</td>
+      <td>0.334017</td>
+      <td>0.304399</td>
+      <td>0.303831</td>
+      <td>0.307037</td>
+      <td>...</td>
+      <td>26216.0</td>
+      <td>14672.0</td>
+      <td>9408.0</td>
+      <td>8872.0</td>
+      <td>10960.0</td>
+      <td>12584.0</td>
+      <td>8880.0</td>
+      <td>9176.0</td>
+      <td>3696.0</td>
+      <td>6168.0</td>
+    </tr>
+    <tr>
+      <th>11874</th>
+      <td>0.383537</td>
+      <td>0.371483</td>
+      <td>0.377822</td>
+      <td>0.394413</td>
+      <td>0.373486</td>
+      <td>0.404684</td>
+      <td>0.374435</td>
+      <td>0.366270</td>
+      <td>0.415342</td>
+      <td>0.418280</td>
+      <td>...</td>
+      <td>26544.0</td>
+      <td>15624.0</td>
+      <td>9904.0</td>
+      <td>10360.0</td>
+      <td>9904.0</td>
+      <td>12216.0</td>
+      <td>7712.0</td>
+      <td>8000.0</td>
+      <td>5208.0</td>
+      <td>8816.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>11867 rows × 294 columns</p>
+</div></div>
+<div style="float: left; padding: 10px;">
+        <h3>Target</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>anthro_waist_cm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>31.00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>30.50</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>26.75</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>23.50</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>30.00</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>11870</th>
+      <td>26.00</td>
+    </tr>
+    <tr>
+      <th>11871</th>
+      <td>30.00</td>
+    </tr>
+    <tr>
+      <th>11872</th>
+      <td>19.00</td>
+    </tr>
+    <tr>
+      <th>11873</th>
+      <td>25.00</td>
+    </tr>
+    <tr>
+      <th>11874</th>
+      <td>32.00</td>
+    </tr>
+  </tbody>
+</table>
+<p>11867 rows × 1 columns</p>
+</div></div>
+<div style="float: left; padding: 10px;">
+        <h3>Non Input</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>rel_family_id</th>
+      <th>sex</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>8780.0</td>
+      <td>F</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>10207.0</td>
+      <td>F</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>4720.0</td>
+      <td>M</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3804.0</td>
+      <td>M</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5358.0</td>
+      <td>M</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>11870</th>
+      <td>3791.0</td>
+      <td>M</td>
+    </tr>
+    <tr>
+      <th>11871</th>
+      <td>2441.0</td>
+      <td>F</td>
+    </tr>
+    <tr>
+      <th>11872</th>
+      <td>7036.0</td>
+      <td>F</td>
+    </tr>
+    <tr>
+      <th>11873</th>
+      <td>6681.0</td>
+      <td>F</td>
+    </tr>
+    <tr>
+      <th>11874</th>
+      <td>7588.0</td>
+      <td>F</td>
+    </tr>
+  </tbody>
+</table>
+<p>11867 rows × 2 columns</p>
+</div></div></div>
+</div>
+<p>A few things to note right off the bat.</p>
+<ol class="arabic simple">
+<li><p>The verbosity printed us out two statements, about dropping rows. This is due to a constraint on columns of role ‘non input’ that there cannot be any NaN / missing data, so those lines just say 2 NaN’s were found when loading the first non input column and 6 when loading the next.</p></li>
+<li><p>The values for sex are still ‘F’ and ‘M’, we will handle that next.</p></li>
+<li><p>Some columns with role data are missing values. We will handle that as well.</p></li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># We explicitly say this variable should be binary</span>
+<span class="n">data</span><span class="o">.</span><span class="n">to_binary</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># We will ordinalize rel_family_id too</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ordinalize</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;rel_family_id&#39;</span><span class="p">)</span>
+
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;non input&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div style="float: left; padding: 10px;">
+        <h3>Non Input</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>rel_family_id</th>
+      <th>sex</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>7321</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>8634</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3971</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3139</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4543</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>11870</th>
+      <td>3128</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>11871</th>
+      <td>2111</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>11872</th>
+      <td>5907</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>11873</th>
+      <td>5594</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>11874</th>
+      <td>6238</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>11867 rows × 2 columns</p>
+</div></div></div>
+</div>
+<p>Next let’s look into that NaN problem we saw before.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">nan_info</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Loaded NaN Info:
+There are: 332348 total missing values
+180 columns found with 1131 missing values (column name overlap: [&#39;dmri_rsi.n&#39;, &#39;_fiber.at_&#39;])
+66 columns found with 1130 missing values (column name overlap: [&#39;dmri_rsi.n&#39;, &#39;_fiber.at_&#39;])
+42 columns found with 1128 missing values (column name overlap: [&#39;dmri_rsi.vol_fiber.at_&#39;])
+6 columns found with 1133 missing values (column name overlap: [&#39;_fiber.at_cgh.lh&#39;, &#39;dmri_rsi.n&#39;])
+
+</pre></div></div>
+</div>
+<p>Seems like most of the missing data is missing for everyone, i.e., if the above info founds columns with only a few missing values, we might want to do something different, but this tells us that when data is missing it is missing for all columns.</p>
+<p>We just drop any subjects with any NaN data below across the target variable and the Data</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop_nan_subjects</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dropped 1145 Rows
+</pre></div></div>
+</div>
+<p>Another thing we need to worry about with data like this is corrupted data, i.e., data with values that don’t make sense due to a failure in the automatic processing pipeline. Let’s look at the target variable first, then the data.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+anthro_waist_cm: 10722 rows
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_waist_cm_18_1.png" src="../_images/user_guide_waist_cm_18_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(anthro_waist_cm    90.0
+ dtype: float64,
+ anthro_waist_cm    0.0
+ dtype: float64)
+</pre></div></div>
+</div>
+<p>Yeah I don’t know about that waist cm of 0 … The below code can be used to try different values of outliers to drop, since it is not by default applied in place.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">n_std</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dropped 33 Rows
+anthro_waist_cm: 10689 rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_waist_cm_20_1.png" src="../_images/user_guide_waist_cm_20_1.png" />
+</div>
+</div>
+<p>5 std seems okay, so let’s actually apply it.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">n_std</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dropped 33 Rows
+</pre></div></div>
+</div>
+<p>Let’s look at the distribution of skew values for the dti data</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">skew</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dmri_rsi.nd_fiber.at_fmaj       -2.420074
+dmri_rsi.nds2_fiber.at_fmaj     -2.287048
+dmri_rsi.nd_fiber.at_cst.lh     -2.213900
+dmri_rsi.nt_fiber.at_cst.lh     -2.198591
+dmri_rsi.nds2_fiber.at_fmin     -2.101969
+                                   ...
+dmri_rsi.nts2_fiber.at_cst.rh    0.992159
+dmri_rsi.n0s2_fiber.at_fmin      1.005677
+dmri_rsi.nts2_fiber.at_fmin      1.006378
+dmri_rsi.n0s2_fiber.at_cst.lh    1.072836
+dmri_rsi.nts2_fiber.at_cst.lh    1.090904
+Length: 294, dtype: float64
+</pre></div></div>
+</div>
+<p>Looks okay, let’s choose the variable with the most extreme skew to plot.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;dmri_rsi.nd_fiber.at_fmaj&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dmri_rsi.nd_fiber.at_fmaj: 10689 rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_waist_cm_26_1.png" src="../_images/user_guide_waist_cm_26_1.png" />
+</div>
+</div>
+<p>How about we apply just a strict criteria of say 10 std.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">n_std</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dropped 26 Rows
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Define-a-Test-set.">
+<h2>Define a Test set.<a class="headerlink" href="#Define-a-Test-set." title="Permalink to this headline">¶</a></h2>
+<p>In this example project we are going to test a bunch of different Machine Learning Pipeline’s. In order to avoid meta-issues of overfitting onto our dataset, we will therefore define a train-test split. The train set we will use to try different pipelines, then only with the best final pipeline will we use the test set.</p>
+<p>We will impose one extra constraint when applying the test split, namely that members of the same family, i.e., those with the same family id, stay in the same training or testing fold.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># We use this to say we want to preserve families</span>
+<span class="n">preserve_family</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">CVStrategy</span><span class="p">(</span><span class="n">groups</span><span class="o">=</span><span class="s1">&#39;rel_family_id&#39;</span><span class="p">)</span>
+
+<span class="c1"># Apply the test split</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_test_split</span><span class="p">(</span><span class="n">size</span><span class="o">=.</span><span class="mi">2</span><span class="p">,</span>
+                           <span class="n">cv_strategy</span><span class="o">=</span><span class="n">preserve_family</span><span class="p">,</span>
+                           <span class="n">random_state</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Performing test split on: 10663 subjects.
+random_state: 6
+Test split size: 0.2
+
+Performed train/test split
+Train size: 8562
+Test size:  2101
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div style="float: left; padding: 10px;">
+        <h3>Data</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>dmri_rsi.n0_fiber.at_allfib.lh</th>
+      <th>dmri_rsi.n0_fiber.at_allfib.rh</th>
+      <th>dmri_rsi.n0_fiber.at_allfibers</th>
+      <th>dmri_rsi.n0_fiber.at_allfibnocc.lh</th>
+      <th>dmri_rsi.n0_fiber.at_allfibnocc.rh</th>
+      <th>dmri_rsi.n0_fiber.at_atr.lh</th>
+      <th>dmri_rsi.n0_fiber.at_atr.rh</th>
+      <th>dmri_rsi.n0_fiber.at_cc</th>
+      <th>dmri_rsi.n0_fiber.at_cgc.lh</th>
+      <th>dmri_rsi.n0_fiber.at_cgc.rh</th>
+      <th>...</th>
+      <th>dmri_rsi.vol_fiber.at_scs.lh</th>
+      <th>dmri_rsi.vol_fiber.at_scs.rh</th>
+      <th>dmri_rsi.vol_fiber.at_sifc.lh</th>
+      <th>dmri_rsi.vol_fiber.at_sifc.rh</th>
+      <th>dmri_rsi.vol_fiber.at_slf.lh</th>
+      <th>dmri_rsi.vol_fiber.at_slf.rh</th>
+      <th>dmri_rsi.vol_fiber.at_tslf.lh</th>
+      <th>dmri_rsi.vol_fiber.at_tslf.rh</th>
+      <th>dmri_rsi.vol_fiber.at_unc.lh</th>
+      <th>dmri_rsi.vol_fiber.at_unc.rh</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">0</th>
+      <td>0.327623</td>
+      <td>0.323420</td>
+      <td>0.325957</td>
+      <td>0.340559</td>
+      <td>0.332364</td>
+      <td>0.347837</td>
+      <td>0.336072</td>
+      <td>0.306803</td>
+      <td>0.311347</td>
+      <td>0.304854</td>
+      <td>...</td>
+      <td>23672.0</td>
+      <td>13056.0</td>
+      <td>9648.0</td>
+      <td>9528.0</td>
+      <td>10152.0</td>
+      <td>11504.0</td>
+      <td>8384.0</td>
+      <td>8024.0</td>
+      <td>4968.0</td>
+      <td>7176.0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2</th>
+      <td>0.325374</td>
+      <td>0.311465</td>
+      <td>0.319027</td>
+      <td>0.341213</td>
+      <td>0.326334</td>
+      <td>0.346651</td>
+      <td>0.335362</td>
+      <td>0.288124</td>
+      <td>0.326416</td>
+      <td>0.300990</td>
+      <td>...</td>
+      <td>33112.0</td>
+      <td>19256.0</td>
+      <td>11928.0</td>
+      <td>8688.0</td>
+      <td>13144.0</td>
+      <td>15344.0</td>
+      <td>10488.0</td>
+      <td>10936.0</td>
+      <td>6904.0</td>
+      <td>9480.0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">3</th>
+      <td>0.305095</td>
+      <td>0.304357</td>
+      <td>0.305170</td>
+      <td>0.315477</td>
+      <td>0.312866</td>
+      <td>0.313972</td>
+      <td>0.316729</td>
+      <td>0.288742</td>
+      <td>0.289166</td>
+      <td>0.290347</td>
+      <td>...</td>
+      <td>28480.0</td>
+      <td>16016.0</td>
+      <td>13024.0</td>
+      <td>11960.0</td>
+      <td>13600.0</td>
+      <td>14880.0</td>
+      <td>11416.0</td>
+      <td>10592.0</td>
+      <td>6952.0</td>
+      <td>8736.0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">4</th>
+      <td>0.316860</td>
+      <td>0.315238</td>
+      <td>0.316399</td>
+      <td>0.328251</td>
+      <td>0.327259</td>
+      <td>0.333998</td>
+      <td>0.318162</td>
+      <td>0.294008</td>
+      <td>0.297800</td>
+      <td>0.299230</td>
+      <td>...</td>
+      <td>29904.0</td>
+      <td>17968.0</td>
+      <td>12720.0</td>
+      <td>11336.0</td>
+      <td>13528.0</td>
+      <td>15672.0</td>
+      <td>11096.0</td>
+      <td>11816.0</td>
+      <td>5912.0</td>
+      <td>7336.0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">5</th>
+      <td>0.323521</td>
+      <td>0.326741</td>
+      <td>0.325466</td>
+      <td>0.336003</td>
+      <td>0.335291</td>
+      <td>0.326243</td>
+      <td>0.337367</td>
+      <td>0.305382</td>
+      <td>0.311843</td>
+      <td>0.315721</td>
+      <td>...</td>
+      <td>23048.0</td>
+      <td>12032.0</td>
+      <td>9056.0</td>
+      <td>9248.0</td>
+      <td>9672.0</td>
+      <td>11048.0</td>
+      <td>7848.0</td>
+      <td>7520.0</td>
+      <td>5088.0</td>
+      <td>7448.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(249, 121, 93, .25)">11870</th>
+      <td>0.335741</td>
+      <td>0.336048</td>
+      <td>0.336372</td>
+      <td>0.349806</td>
+      <td>0.347732</td>
+      <td>0.349966</td>
+      <td>0.345692</td>
+      <td>0.312056</td>
+      <td>0.324054</td>
+      <td>0.336676</td>
+      <td>...</td>
+      <td>28328.0</td>
+      <td>15400.0</td>
+      <td>9656.0</td>
+      <td>10080.0</td>
+      <td>11312.0</td>
+      <td>13496.0</td>
+      <td>8728.0</td>
+      <td>9176.0</td>
+      <td>4960.0</td>
+      <td>7392.0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">11871</th>
+      <td>0.320563</td>
+      <td>0.317525</td>
+      <td>0.319429</td>
+      <td>0.327302</td>
+      <td>0.322161</td>
+      <td>0.333086</td>
+      <td>0.315482</td>
+      <td>0.308554</td>
+      <td>0.299938</td>
+      <td>0.298093</td>
+      <td>...</td>
+      <td>23792.0</td>
+      <td>13632.0</td>
+      <td>9928.0</td>
+      <td>8912.0</td>
+      <td>9152.0</td>
+      <td>12288.0</td>
+      <td>7128.0</td>
+      <td>8912.0</td>
+      <td>5744.0</td>
+      <td>7376.0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">11872</th>
+      <td>0.327051</td>
+      <td>0.325386</td>
+      <td>0.326522</td>
+      <td>0.340918</td>
+      <td>0.334854</td>
+      <td>0.345435</td>
+      <td>0.335610</td>
+      <td>0.305720</td>
+      <td>0.308630</td>
+      <td>0.330612</td>
+      <td>...</td>
+      <td>28640.0</td>
+      <td>16384.0</td>
+      <td>9496.0</td>
+      <td>11216.0</td>
+      <td>12168.0</td>
+      <td>12312.0</td>
+      <td>9520.0</td>
+      <td>8952.0</td>
+      <td>4568.0</td>
+      <td>9056.0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(249, 121, 93, .25)">11873</th>
+      <td>0.323579</td>
+      <td>0.319377</td>
+      <td>0.321805</td>
+      <td>0.334945</td>
+      <td>0.329433</td>
+      <td>0.332200</td>
+      <td>0.334017</td>
+      <td>0.304399</td>
+      <td>0.303831</td>
+      <td>0.307037</td>
+      <td>...</td>
+      <td>26216.0</td>
+      <td>14672.0</td>
+      <td>9408.0</td>
+      <td>8872.0</td>
+      <td>10960.0</td>
+      <td>12584.0</td>
+      <td>8880.0</td>
+      <td>9176.0</td>
+      <td>3696.0</td>
+      <td>6168.0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">11874</th>
+      <td>0.383537</td>
+      <td>0.371483</td>
+      <td>0.377822</td>
+      <td>0.394413</td>
+      <td>0.373486</td>
+      <td>0.404684</td>
+      <td>0.374435</td>
+      <td>0.366270</td>
+      <td>0.415342</td>
+      <td>0.418280</td>
+      <td>...</td>
+      <td>26544.0</td>
+      <td>15624.0</td>
+      <td>9904.0</td>
+      <td>10360.0</td>
+      <td>9904.0</td>
+      <td>12216.0</td>
+      <td>7712.0</td>
+      <td>8000.0</td>
+      <td>5208.0</td>
+      <td>8816.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>10663 rows × 294 columns</p>
+<p style="margin-top: .35em"><span style="background: RGBA(176, 224, 230, .25)">8562 rows × 294 columns - Train Set </span></p><p style="margin-top: .35em"><span style="background: RGBA(249, 121, 93, .25)">2101 rows × 294 columns - Test Set </span></p></div></div>
+<div style="float: left; padding: 10px;">
+        <h3>Target</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>anthro_waist_cm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">0</th>
+      <td>31.00</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2</th>
+      <td>26.75</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">3</th>
+      <td>23.50</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">4</th>
+      <td>30.00</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">5</th>
+      <td>28.00</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(249, 121, 93, .25)">11870</th>
+      <td>26.00</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">11871</th>
+      <td>30.00</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">11872</th>
+      <td>19.00</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(249, 121, 93, .25)">11873</th>
+      <td>25.00</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">11874</th>
+      <td>32.00</td>
+    </tr>
+  </tbody>
+</table>
+<p>10663 rows × 1 columns</p>
+<p style="margin-top: .35em"><span style="background: RGBA(176, 224, 230, .25)">8562 rows × 1 columns - Train Set </span></p><p style="margin-top: .35em"><span style="background: RGBA(249, 121, 93, .25)">2101 rows × 1 columns - Test Set </span></p></div></div>
+<div style="float: left; padding: 10px;">
+        <h3>Non Input</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>rel_family_id</th>
+      <th>sex</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">0</th>
+      <td>7321</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2</th>
+      <td>3971</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">3</th>
+      <td>3139</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">4</th>
+      <td>4543</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">5</th>
+      <td>1933</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(249, 121, 93, .25)">11870</th>
+      <td>3128</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">11871</th>
+      <td>2111</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">11872</th>
+      <td>5907</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(249, 121, 93, .25)">11873</th>
+      <td>5594</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">11874</th>
+      <td>6238</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>10663 rows × 2 columns</p>
+<p style="margin-top: .35em"><span style="background: RGBA(176, 224, 230, .25)">8562 rows × 2 columns - Train Set </span></p><p style="margin-top: .35em"><span style="background: RGBA(249, 121, 93, .25)">2101 rows × 2 columns - Test Set </span></p></div></div></div>
+</div>
+</div>
+<div class="section" id="Evaluate-Different-Pipelines">
+<h2>Evaluate Different Pipelines<a class="headerlink" href="#Evaluate-Different-Pipelines" title="Permalink to this headline">¶</a></h2>
+<p>First let’s save some commonly used parameters in an object called the ProblemSpec, we will use all defaults except for the number of jobs, for that let’s use n_jobs=8.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ps</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ProblemSpec</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The function we will use to evaluate different pipelines is bp.evaluate, let’s start with an example with just a linear regression model.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">linear_model</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">linear_model</span><span class="p">,</span>
+                      <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
+                      <span class="n">eval_verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Predicting target = anthro_waist_cm
+Using problem_type = regression
+Using scope = all defining an initial total of 294 features.
+Evaluating 8562 total data points.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "662b37ffb59e4f7fb9573c17e5829b25", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Train size = 6849
+Val size = 1713
+Fit fold in 0.068 seconds.
+explained_variance: 0.19228859349221128
+neg_mean_squared_error: -14.42743864665399
+Train size = 6849
+Val size = 1713
+Fit fold in 0.081 seconds.
+explained_variance: 0.21135734492931657
+neg_mean_squared_error: -13.96475127488305
+Train size = 6850
+Val size = 1712
+Fit fold in 0.085 seconds.
+explained_variance: 0.19187172345658088
+neg_mean_squared_error: -13.996165486455398
+Train size = 6850
+Val size = 1712
+Fit fold in 0.071 seconds.
+explained_variance: 0.16100380766529065
+neg_mean_squared_error: -13.915570852834366
+Train size = 6850
+Val size = 1712
+Fit fold in 0.099 seconds.
+explained_variance: 0.21448693993841805
+neg_mean_squared_error: -13.570138682760142
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.1942016818963635, &#39;neg_mean_squared_error&#39;: -13.974812988717389}
+std_scores = {&#39;explained_variance&#39;: 0.019063031946510073, &#39;neg_mean_squared_error&#39;: 0.27301944181081267}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;train&#39;, target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+<p>Note from the verbose output that it has correctly detected a number of things including: a regression problem type, that we only want to use the training set, that we want to use all input features, what the target variable is, ect…</p>
+<p>We get an instance of BPtEvaluator with the results. This stores all kinds of different information, for example:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Beta weights</span>
+<span class="n">results</span><span class="o">.</span><span class="n">get_fis</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>dmri_rsi.n0_fiber.at_allfib.lh</th>
+      <th>dmri_rsi.n0_fiber.at_allfib.rh</th>
+      <th>dmri_rsi.n0_fiber.at_allfibers</th>
+      <th>dmri_rsi.n0_fiber.at_allfibnocc.lh</th>
+      <th>dmri_rsi.n0_fiber.at_allfibnocc.rh</th>
+      <th>dmri_rsi.n0_fiber.at_atr.lh</th>
+      <th>dmri_rsi.n0_fiber.at_atr.rh</th>
+      <th>dmri_rsi.n0_fiber.at_cc</th>
+      <th>dmri_rsi.n0_fiber.at_cgc.lh</th>
+      <th>dmri_rsi.n0_fiber.at_cgc.rh</th>
+      <th>...</th>
+      <th>dmri_rsi.vol_fiber.at_scs.lh</th>
+      <th>dmri_rsi.vol_fiber.at_scs.rh</th>
+      <th>dmri_rsi.vol_fiber.at_sifc.lh</th>
+      <th>dmri_rsi.vol_fiber.at_sifc.rh</th>
+      <th>dmri_rsi.vol_fiber.at_slf.lh</th>
+      <th>dmri_rsi.vol_fiber.at_slf.rh</th>
+      <th>dmri_rsi.vol_fiber.at_tslf.lh</th>
+      <th>dmri_rsi.vol_fiber.at_tslf.rh</th>
+      <th>dmri_rsi.vol_fiber.at_unc.lh</th>
+      <th>dmri_rsi.vol_fiber.at_unc.rh</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>13.658717</td>
+      <td>10.182917</td>
+      <td>11.113703</td>
+      <td>2.741103</td>
+      <td>2.096137</td>
+      <td>0.652331</td>
+      <td>-19.689333</td>
+      <td>18.133593</td>
+      <td>6.170156</td>
+      <td>18.584436</td>
+      <td>...</td>
+      <td>0.000343</td>
+      <td>-0.000589</td>
+      <td>0.000551</td>
+      <td>0.000348</td>
+      <td>-0.000216</td>
+      <td>0.000278</td>
+      <td>1.902580e-04</td>
+      <td>-0.000544</td>
+      <td>0.000643</td>
+      <td>0.000572</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>13.386769</td>
+      <td>-7.807120</td>
+      <td>5.590872</td>
+      <td>2.074826</td>
+      <td>1.611921</td>
+      <td>-5.200155</td>
+      <td>-17.350840</td>
+      <td>18.954327</td>
+      <td>4.418044</td>
+      <td>18.556810</td>
+      <td>...</td>
+      <td>0.000263</td>
+      <td>-0.000505</td>
+      <td>0.000523</td>
+      <td>0.000272</td>
+      <td>-0.000371</td>
+      <td>0.000474</td>
+      <td>1.721382e-04</td>
+      <td>-0.000582</td>
+      <td>0.000530</td>
+      <td>0.000525</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>14.601005</td>
+      <td>6.447403</td>
+      <td>6.566593</td>
+      <td>5.105803</td>
+      <td>2.144557</td>
+      <td>-0.249971</td>
+      <td>-17.505516</td>
+      <td>19.815592</td>
+      <td>10.121972</td>
+      <td>15.690188</td>
+      <td>...</td>
+      <td>0.000319</td>
+      <td>-0.000600</td>
+      <td>0.000455</td>
+      <td>0.000446</td>
+      <td>-0.000303</td>
+      <td>0.000618</td>
+      <td>1.192093e-07</td>
+      <td>-0.000615</td>
+      <td>0.000378</td>
+      <td>0.000662</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>12.660464</td>
+      <td>16.193197</td>
+      <td>-0.193520</td>
+      <td>2.184492</td>
+      <td>3.968235</td>
+      <td>-7.643031</td>
+      <td>-16.103781</td>
+      <td>15.539372</td>
+      <td>9.867133</td>
+      <td>14.523899</td>
+      <td>...</td>
+      <td>0.000341</td>
+      <td>-0.000441</td>
+      <td>0.000587</td>
+      <td>0.000453</td>
+      <td>-0.000284</td>
+      <td>0.000608</td>
+      <td>1.287460e-04</td>
+      <td>-0.000701</td>
+      <td>0.000359</td>
+      <td>0.000616</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>16.212349</td>
+      <td>11.518905</td>
+      <td>7.905156</td>
+      <td>6.085897</td>
+      <td>1.294112</td>
+      <td>-8.058172</td>
+      <td>-11.786942</td>
+      <td>13.227197</td>
+      <td>10.812229</td>
+      <td>12.374775</td>
+      <td>...</td>
+      <td>0.000080</td>
+      <td>-0.000515</td>
+      <td>0.000614</td>
+      <td>0.000411</td>
+      <td>-0.000342</td>
+      <td>0.000784</td>
+      <td>2.737045e-04</td>
+      <td>-0.000738</td>
+      <td>0.000555</td>
+      <td>0.000540</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 294 columns</p>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Raw predictions made from each fold</span>
+<span class="n">results</span><span class="o">.</span><span class="n">get_preds_dfs</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>predict</th>
+      <th>y_true</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>28</th>
+      <td>24.345831</td>
+      <td>21.25</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>24.806902</td>
+      <td>24.50</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>26.968584</td>
+      <td>23.00</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>27.805948</td>
+      <td>30.80</td>
+    </tr>
+    <tr>
+      <th>47</th>
+      <td>25.691679</td>
+      <td>20.00</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>11848</th>
+      <td>28.006598</td>
+      <td>25.50</td>
+    </tr>
+    <tr>
+      <th>11851</th>
+      <td>23.925535</td>
+      <td>24.00</td>
+    </tr>
+    <tr>
+      <th>11855</th>
+      <td>30.389437</td>
+      <td>38.80</td>
+    </tr>
+    <tr>
+      <th>11861</th>
+      <td>25.687609</td>
+      <td>26.00</td>
+    </tr>
+    <tr>
+      <th>11868</th>
+      <td>29.838160</td>
+      <td>35.00</td>
+    </tr>
+  </tbody>
+</table>
+<p>1713 rows × 2 columns</p>
+</div></div>
+</div>
+<p>All options are listed under: ‘Saved Attributes’ and ‘Avaliable Methods’.</p>
+<p>Anyways, let’s continue trying different models. We will use a ridge regression model. Let’s also use the fact that the jupyter notebook is defining variables in global scope to clean up the evaluation code a bit so we don’t have to keep copy and pasting it.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">eval_pipe</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
+                       <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                       <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
+                       <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ridge_model</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;ridge&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add standard scaler before ridge model</span>
+<span class="c1"># We want this because the same amount of regularization is used across features</span>
+<span class="n">ridge_pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">),</span> <span class="n">ridge_model</span><span class="p">])</span>
+
+<span class="n">eval_pipe</span><span class="p">(</span><span class="n">ridge_pipe</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0a633cae7c9145159bb4f267f1b13b7b", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.2290475271430472, &#39;neg_mean_squared_error&#39;: -13.362139348686418}
+std_scores = {&#39;explained_variance&#39;: 0.02075351765737852, &#39;neg_mean_squared_error&#39;: 0.3531711520267176}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;train&#39;, target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+<p>The ridge regression has hyper-parameters though, what if just whatever the default value is, is not a good choice? We can add a parameter search to the model object.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">random_search</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ParamSearch</span><span class="p">(</span><span class="s1">&#39;RandomSearch&#39;</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+
+<span class="n">ridge_search_model</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;ridge&#39;</span><span class="p">,</span>
+                              <span class="n">params</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="c1"># Referring to a preset distribution of hyper-params</span>
+                              <span class="n">param_search</span><span class="o">=</span><span class="n">random_search</span><span class="p">)</span>
+
+<span class="n">ridge_search_pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">),</span> <span class="n">ridge_search_model</span><span class="p">])</span>
+
+<span class="n">eval_pipe</span><span class="p">(</span><span class="n">ridge_search_pipe</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d63ef5af8eb744709fb2ec239708db84", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.22819416633537087, &#39;neg_mean_squared_error&#39;: -13.376954871269001}
+std_scores = {&#39;explained_variance&#39;: 0.020902924658044268, &#39;neg_mean_squared_error&#39;: 0.3519917172539553}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;train&#39;, target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+<p>At any point we can also ask different questions, for example: What happens we evaluate the model on only one sex?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Male only model first</span>
+<span class="n">eval_pipe</span><span class="p">(</span><span class="n">ridge_search_pipe</span><span class="p">,</span>
+          <span class="n">subjects</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "963362c231a2410c896dcea445631c74", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.2213861522565453, &#39;neg_mean_squared_error&#39;: -13.339620278920432}
+std_scores = {&#39;explained_variance&#39;: 0.038899168304109256, &#39;neg_mean_squared_error&#39;: 0.2880607358773867}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=ValueSubset(name=sex, values=M, decode_values=True),
+            target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">eval_pipe</span><span class="p">(</span><span class="n">ridge_search_pipe</span><span class="p">,</span>
+          <span class="n">subjects</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "23bc729788d74d81b172d5fa6eb3c82e", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.23205991889705402, &#39;neg_mean_squared_error&#39;: -13.996539808005668}
+std_scores = {&#39;explained_variance&#39;: 0.022888054425128167, &#39;neg_mean_squared_error&#39;: 0.5720979643373396}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=ValueSubset(name=sex, values=F, decode_values=True),
+            target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+<p>We do see a decrease in performance for the male model, though it is a bit difficult to tell if that is just noise, or related to the smaller sample sizes. Atleast the results are close, which tells us that sex likely is not being exploited as a proxy! For example if we ran the two same sex only models and they did terrible, it would tell us that our original model had been just memorizing sex effects.</p>
+<p>Let’s try a different choice of scaler next.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ridge_search_pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;robust&#39;</span><span class="p">),</span> <span class="n">ridge_search_model</span><span class="p">])</span>
+<span class="n">eval_pipe</span><span class="p">(</span><span class="n">ridge_search_pipe</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "3b3d189fe6c946aab4edc54d77f8c908", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.22756821907365027, &#39;neg_mean_squared_error&#39;: -13.388315785245691}
+std_scores = {&#39;explained_variance&#39;: 0.02147974464145115, &#39;neg_mean_squared_error&#39;: 0.36072359437215784}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;train&#39;, target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ridge_search_pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;quantile norm&#39;</span><span class="p">),</span> <span class="n">ridge_search_model</span><span class="p">])</span>
+<span class="n">eval_pipe</span><span class="p">(</span><span class="n">ridge_search_pipe</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b2b45e78c21849edb5499093e6014225", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.24424142049591255, &#39;neg_mean_squared_error&#39;: -13.10554322507986}
+std_scores = {&#39;explained_variance&#39;: 0.014347568570678794, &#39;neg_mean_squared_error&#39;: 0.33520468336717396}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;train&#39;, target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+<p>Okay so far we arn’t really seeing sweeping differences when any of the parameters are changed, what about if we try some different complete models as well? Let’s also start off by using some full default pipelines. We can see options with:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">pipelines</span>
+<span class="nb">list</span><span class="p">(</span><span class="n">pipelines</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;elastic_pipe&#39;,
+ &#39;ridge_pipe&#39;,
+ &#39;lgbm_pipe&#39;,
+ &#39;svm_pipe&#39;,
+ &#39;stacking_pipe&#39;,
+ &#39;compare_pipe&#39;]
+</pre></div></div>
+</div>
+<p>Let’s try the elastic net first.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">elastic_pipe</span>
+<span class="n">elastic_pipe</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),
+                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),
+                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),
+                Model(obj=&#39;elastic&#39;,
+                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),
+                                               n_iter=60),
+                      params=1)])
+</pre></div></div>
+</div>
+<p>We can see that this object has imputation and also a one hot enocer for categorical variables built in. In our case those will just be skipped.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">eval_pipe</span><span class="p">(</span><span class="n">elastic_pipe</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "273b20e03a904b69a8ceac3dbb69df1d", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.2149350643892411, &#39;neg_mean_squared_error&#39;: -13.612086079062005}
+std_scores = {&#39;explained_variance&#39;: 0.017456542194885176, &#39;neg_mean_squared_error&#39;: 0.30452126404963037}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;train&#39;, target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+<p>Let’s try a light gbm model next</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">lgbm_pipe</span>
+<span class="n">eval_pipe</span><span class="p">(</span><span class="n">lgbm_pipe</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b9fc7cc36cb84592b75a4eefd09e76a6", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.15981886810855045, &#39;neg_mean_squared_error&#39;: -14.628174890288136}
+std_scores = {&#39;explained_variance&#39;: 0.008612472597788492, &#39;neg_mean_squared_error&#39;: 0.3176639245894241}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;feature_importances_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_feature_importances&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;train&#39;, target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+<p>non-linear svm?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">svm_pipe</span>
+<span class="n">eval_pipe</span><span class="p">(</span><span class="n">svm_pipe</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "df69323c10f74a5da019e6fcb08e169c", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.23972557599885516, &#39;neg_mean_squared_error&#39;: -13.404542506122965}
+std_scores = {&#39;explained_variance&#39;: 0.025086520458320005, &#39;neg_mean_squared_error&#39;: 0.41542931615444495}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;train&#39;, target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+<p>How about a linear svm?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">sgd_pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;robust&#39;</span><span class="p">),</span>
+                        <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;linear svm&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">param_search</span><span class="o">=</span><span class="n">random_search</span><span class="p">)])</span>
+<span class="n">eval_pipe</span><span class="p">(</span><span class="n">sgd_pipe</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c6a540fc31ec44f5b8fcfed2914669bd", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.22686726044873592, &#39;neg_mean_squared_error&#39;: -13.632092635620277}
+std_scores = {&#39;explained_variance&#39;: 0.015546983038273305, &#39;neg_mean_squared_error&#39;: 0.28724921946194054}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;train&#39;, target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Compare">
+<h2>Compare<a class="headerlink" href="#Compare" title="Permalink to this headline">¶</a></h2>
+<p>We can also notably achieve a lot of the different modelling steps we just took, but in a much cleaner way, that is through special Compare input objects. For example let’s run the comparisons between a few models. Compare basically does a grid search over all of the parameters, but in contrast to setting up the different options as a nested grid search, the full 5-fold CV is run for every combination.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Define a set of bp.Options as wrapped in bp.Compare</span>
+<span class="n">compare_pipes</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Compare</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">sgd_pipe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sgd&#39;</span><span class="p">),</span>
+                            <span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">ridge_search_pipe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ridge&#39;</span><span class="p">),</span>
+                            <span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">elastic_pipe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;elastic&#39;</span><span class="p">),</span>
+                            <span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">lgbm_pipe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lgbm&#39;</span><span class="p">)])</span>
+
+<span class="c1"># Pass as before as if a pipeline</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">eval_pipe</span><span class="p">(</span><span class="n">compare_pipes</span><span class="p">)</span>
+<span class="n">results</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c0868e520f2c4c03b893fd045dd94bbe", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7d30ca33824a4531a197914f7017e03c", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mean_scores_explained_variance</th>
+      <th>mean_scores_neg_mean_squared_error</th>
+      <th>std_scores_explained_variance</th>
+      <th>std_scores_neg_mean_squared_error</th>
+      <th>mean_timing_fit</th>
+      <th>mean_timing_score</th>
+    </tr>
+    <tr>
+      <th>pipeline</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>sgd</th>
+      <td>0.226867</td>
+      <td>-13.632093</td>
+      <td>0.015547</td>
+      <td>0.287249</td>
+      <td>16.182405</td>
+      <td>0.007756</td>
+    </tr>
+    <tr>
+      <th>ridge</th>
+      <td>0.244241</td>
+      <td>-13.105543</td>
+      <td>0.014348</td>
+      <td>0.335205</td>
+      <td>11.024628</td>
+      <td>0.461483</td>
+    </tr>
+    <tr>
+      <th>elastic</th>
+      <td>0.214935</td>
+      <td>-13.612086</td>
+      <td>0.017457</td>
+      <td>0.304521</td>
+      <td>8.584299</td>
+      <td>0.036844</td>
+    </tr>
+    <tr>
+      <th>lgbm</th>
+      <td>0.159819</td>
+      <td>-14.628175</td>
+      <td>0.008612</td>
+      <td>0.317664</td>
+      <td>30.417882</td>
+      <td>0.063121</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="Applying-the-Test-Set">
+<h2>Applying the Test Set<a class="headerlink" href="#Applying-the-Test-Set" title="Permalink to this headline">¶</a></h2>
+<p>So far we have been only running internal 5-fold CV on the training set. What if we say we are done with exploration, and now we want to essentially confirm that our best model we have found through internal CV on the training set generalizes to a set of unseen data. To do this, we re-train the best model tested on the full training set and test it on the testing set. In BPt this is done by just passing cv=‘test’ to evaluate.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">results</span> <span class="o">=</span> <span class="n">eval_pipe</span><span class="p">(</span><span class="n">ridge_search_pipe</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">eval_verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Predicting target = anthro_waist_cm
+Using problem_type = regression
+Using scope = all defining an initial total of 294 features.
+Evaluating 10663 total data points.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "59efb8760a3e4133bdf31f90c8102051", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Train size = 8562
+Val size = 2101
+Fit fold in 13.486 seconds.
+explained_variance: 0.269340472039553
+neg_mean_squared_error: -13.932075034752192
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.269340472039553, &#39;neg_mean_squared_error&#39;: -13.932075034752192}
+std_scores = {&#39;explained_variance&#39;: 0.0, &#39;neg_mean_squared_error&#39;: 0.0}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;,
+            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
+                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)},
+            subjects=&#39;all&#39;, target=&#39;anthro_waist_cm&#39;)
+</pre></div></div>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="ssrt.html" title="previous page">Predict Stop Signal Response Time (SSRT)</a>
+    <a class='right-next' id="next-link" href="../reference/index.html" title="next page">API reference</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

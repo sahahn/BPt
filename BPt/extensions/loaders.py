@@ -493,6 +493,8 @@ class SurfMaps(BaseEstimator, TransformerMixin):
     passed maps as extracted from the input during fit,
     and returns for each map a value.
 
+    Parameters
+    -----------
     maps : str or array-like, optional
         This parameter represents the maps in which
         to apply to each surface, where the shape of
@@ -1011,16 +1013,15 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
             default = 'value'
 
     to_compute : valid_measure or list of, optional
-        Either a single str representing a network
-        measure to compute, or a list of valid
-        measures.
+        | Either a single str representing a network
+            measure to compute, or a list of valid
+            measures. You may also pass any custom function
+            which accepts one argument G, and returns
+            a value.
 
-        You may also pass any custom function
-        which accepts one argument G, and returns
-        a value.
-
-        The following global measures are currently implemented
-        as options:
+        | The following global measures are currently implemented
+            as options:
+        |
 
 
         - 'avg_cluster':
@@ -1038,10 +1039,10 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
         - 'transitivity':
             :func:`networkx.algorithms.cluster.transitivity`
 
-
-        You may also select from one of the following
-        averages of local measures:
-
+        |
+        | You may also select from one of the following
+            averages of local measures:
+        |
 
         - 'avg_eigenvector_centrality':
             :func:`networkx.algorithms.centrality.eigenvector_centrality_numpy`
@@ -1083,7 +1084,7 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
     def feat_names_(self):
         '''The list of feature names returned
         by this objects transform function. This property
-        is special in that it can interact with :class:`Loader`,
+        is special in that it can interact with :class:`BPt.Loader`,
         passing along feature name information.
         '''
         return self._feat_names

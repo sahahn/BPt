@@ -41,6 +41,7 @@ BPt.BPtEvaluator
       BPtEvaluator.mean_timing
       BPtEvaluator.preds
       BPtEvaluator.ps
+      BPtEvaluator.score
       BPtEvaluator.scores
       BPtEvaluator.std_scores
       BPtEvaluator.timing

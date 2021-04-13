@@ -247,7 +247,7 @@
 <h1>BPt.ProblemSpec<a class="headerlink" href="#bpt-problemspec" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.ProblemSpec">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">ProblemSpec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scorer</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">subjects</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">problem_type</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">base_dtype</span><span class="o">=</span><span class="default_value">'float32'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L2316-L2525"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.ProblemSpec" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">ProblemSpec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scorer</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">subjects</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">problem_type</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">base_dtype</span><span class="o">=</span><span class="default_value">'float32'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L2305-L2517"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.ProblemSpec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Problem Spec is defined as an object encapsulating the set of
 parameters used by different <a class="reference internal" href="../evaluate.html#api-evaluate"><span class="std std-ref">Evaluation Functions</span></a></p>
 <dl class="field-list">
@@ -305,11 +305,14 @@ the current subjects.</p>
 <p>A common use of this parameter is to
 specify the reserved keyword ‘train’ to
 specify that only the training subjects should be used.</p>
-<p>If set to ‘all’ (as is by default),
-all avaliable subjects will be used.</p>
+<p>If set to ‘default’, special behavior will be
+used where if a train/test split is defined then subjects
+will be set to ‘train’ by default (unless cv=’test’, then subjects
+will be set to ‘all’). If a train/test split is not defined,
+then subjects will be set to ‘all’.</p>
 <p>See <a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> for more information
 of the different accepted BPt subject style inputs.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
 </pre></div>
 </div>
 </dd>

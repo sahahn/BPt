@@ -41,8 +41,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="BPt.Dataset.nan_to_class" href="BPt.Dataset.nan_to_class.html" />
-    <link rel="prev" title="BPt.Dataset.multiply" href="BPt.Dataset.multiply.html" />
+    <link rel="next" title="Pipelines" href="../pipeline.html" />
+    <link rel="prev" title="BPt.Dataset.xs" href="BPt.Dataset.xs.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -415,58 +415,8 @@
 <h1>BPt.Dataset.nan_info<a class="headerlink" href="#bpt-dataset-nan-info" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.nan_info">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">nan_info</code><span class="sig-paren">(</span><em class="sig-param">).sum().sort_values(ascending=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_plotting.py#L29-L89"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.nan_info" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>if na_counts.sum() &gt; 0:</dt><dd><p>self._print(‘Loaded NaN Info:’)
-self._print(‘There are:’, na_counts.sum(), ‘total missing values’)</p>
-<p>u_counts, c_counts = np.unique(na_counts, return_counts=True)
-u_counts, c_counts = u_counts[1:], c_counts[1:]</p>
-<p>inds = c_counts.argsort()
-u_counts = u_counts[inds[::-1]]
-c_counts = c_counts[inds[::-1]]</p>
-<dl>
-<dt>for u, c in zip(u_counts, c_counts):</dt><dd><p>if c &gt; 1:</p>
-<blockquote>
-<div><p>keys = list(na_counts[na_counts == u].index)
-substrs = get_top_substrs(keys)</p>
-<dl class="simple">
-<dt>self._print(c, ‘ columns found with ‘, u, ‘ missing values’,</dt><dd><p>‘ (column name overlap: ‘, substrs, ‘)’, sep=’’)</p>
-</dd>
-</dl>
-</div></blockquote>
-</dd>
-</dl>
-<p>self._print()</p>
-</dd>
-<dt>def substrs(x):</dt><dd><p>return {x[i:i+j] for i in range(len(x)) for j in range(len(x) - i + 1)}</p>
-</dd>
-</dl>
-<p>def find_substr(data):</p>
-<blockquote>
-<div><p>s = substrs(data[0])</p>
-<dl class="simple">
-<dt>for val in data[1:]:</dt><dd><p>s.intersection_update(substrs(val))</p>
-</dd>
-<dt>try:</dt><dd><p>mx = max(s, key=len)</p>
-</dd>
-<dt>except ValueError:</dt><dd><p>mx = ‘’</p>
-</dd>
-</dl>
-<p>return mx</p>
-</div></blockquote>
-<p>def get_top_substrs(keys):</p>
-<blockquote>
-<div><p>found = []
-top = find_substr(keys)</p>
-<dl>
-<dt>while len(top) &gt; 1:</dt><dd><p>found.append(top)</p>
-<p>keys = [k.replace(top, ‘’) for k in keys]
-top = find_substr(keys)</p>
-</dd>
-</dl>
-<p>return found</p>
-</div></blockquote>
-</dd></dl>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">nan_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_plotting.py#L63-L95"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.nan_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 
@@ -476,8 +426,8 @@ top = find_substr(keys)</p>
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="BPt.Dataset.multiply.html" title="previous page">BPt.Dataset.multiply</a>
-    <a class='right-next' id="next-link" href="BPt.Dataset.nan_to_class.html" title="next page">BPt.Dataset.nan_to_class</a>
+    <a class='left-prev' id="prev-link" href="BPt.Dataset.xs.html" title="previous page">BPt.Dataset.xs</a>
+    <a class='right-next' id="next-link" href="../pipeline.html" title="next page">Pipelines</a>
 
               </div>
               

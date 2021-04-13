@@ -194,40 +194,104 @@ be accessed though BPt.default.pipelines.</p>
 <p>We can see a list of all available as follows:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
 
-<span class="gp">In [2]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">pipelines</span>
+<span class="gp">In [2]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">pipelines_keys</span>
 
-<span class="gp">In [3]: </span><span class="n">pipelines</span>
-<span class="gh">Out[3]: </span><span class="go">[&#39;elastic_pipe&#39;, &#39;ridge_pipe&#39;, &#39;lgbm_pipe&#39;, &#39;svm_pipe&#39;, &#39;stacking_pipe&#39;]</span>
+<span class="gp">In [3]: </span><span class="n">pipelines_keys</span>
+<span class="gh">Out[3]: </span><span class="go"></span>
+<span class="go">[&#39;elastic_pipe&#39;,</span>
+<span class="go"> &#39;ridge_pipe&#39;,</span>
+<span class="go"> &#39;lgbm_pipe&#39;,</span>
+<span class="go"> &#39;svm_pipe&#39;,</span>
+<span class="go"> &#39;stacking_pipe&#39;,</span>
+<span class="go"> &#39;compare_pipe&#39;]</span>
 </pre></div>
 </div>
 <p>These represent options which we can import, for example:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">elastic_pipe</span>
 
 <span class="gp">In [5]: </span><span class="n">elastic_pipe</span>
-<span class="gh">Out[5]: </span><span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1)])</span>
+<span class="gh">Out[5]: </span><span class="go"></span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=&#39;elastic&#39;,</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                               n_iter=60),</span>
+<span class="go">                      params=1)])</span>
 </pre></div>
 </div>
 <p>We can go through and print each pipeline:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="k">for</span> <span class="n">pipeline</span> <span class="ow">in</span> <span class="n">pipelines</span><span class="p">:</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="k">for</span> <span class="n">pipeline</span> <span class="ow">in</span> <span class="n">pipelines_keys</span><span class="p">:</span>
 <span class="gp">   ...: </span>    <span class="nb">print</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
 <span class="gp">   ...: </span>    <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;print(bp.default.pipelines.</span><span class="si">{</span><span class="n">pipeline</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
 <span class="gp">   ...: </span>
 <span class="go">elastic_pipe</span>
-<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1)])</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=&#39;elastic&#39;,</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                               n_iter=60),</span>
+<span class="go">                      params=1)])</span>
 <span class="go">ridge_pipe</span>
-<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;ridge&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1)])</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=&#39;ridge&#39;,</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                               n_iter=60),</span>
+<span class="go">                      params=1)])</span>
 <span class="go">lgbm_pipe</span>
-<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;lgbm&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1)])</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=&#39;lgbm&#39;,</span>
+<span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                               n_iter=60),</span>
+<span class="go">                      params=1)])</span>
 <span class="go">svm_pipe</span>
-<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), steps=[FeatSelector(obj=&#39;univariate selection&#39;, params=2), Model(obj=&#39;svm&#39;, params=1)]))])</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                                            n_iter=60),</span>
+<span class="go">                                   steps=[FeatSelector(obj=&#39;univariate &#39;</span>
+<span class="go">                                                           &#39;selection&#39;,</span>
+<span class="go">                                                       params=2),</span>
+<span class="go">                                          Model(obj=&#39;svm&#39;, params=1)]))])</span>
 <span class="go">stacking_pipe</span>
-<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;), Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Ensemble(base_model=Model(obj=&#39;ridge&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1), models=[Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVS...ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1), Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), steps=[FeatSelector(obj=&#39;univariate selection&#39;, params=2), Model(obj=&#39;svm&#39;, params=1)])), Model(obj=&#39;lgbm&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=60), params=1)], obj=&#39;stacking&#39;)])</span>
+<span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
+<span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
+<span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
+<span class="go">                Ensemble(base_model=Model(obj=&#39;ridge&#39;,</span>
+<span class="go">                                          param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                                                   n_iter=60),</span>
+<span class="go">                                          params=1),</span>
+<span class="go">                         models=[Model(obj=&#39;elastic&#39;,</span>
+<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVS...</span>
+<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                                                n_iter=60),</span>
+<span class="go">                                       params=1),</span>
+<span class="go">                                 Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                                                             n_iter=60),</span>
+<span class="go">                                                    steps=[FeatSelector(obj=&#39;univariate &#39;</span>
+<span class="go">                                                                            &#39;selection&#39;,</span>
+<span class="go">                                                                        params=2),</span>
+<span class="go">                                                           Model(obj=&#39;svm&#39;,</span>
+<span class="go">                                                                 params=1)])),</span>
+<span class="go">                                 Model(obj=&#39;lgbm&#39;,</span>
+<span class="go">                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
+<span class="go">                                                                n_iter=60),</span>
+<span class="go">                                       params=1)],</span>
+<span class="go">                         obj=&#39;stacking&#39;)])</span>
+<span class="go">compare_pipe</span>
+<span class="go">&lt;BPt.main.compare.Compare object at 0x7f9e6e43d5b0&gt;</span>
 </pre></div>
 </div>
 <p>Note also that the individual pieces which make up the default pipelines can be accessed as well.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">pieces</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="kn">from</span> <span class="nn">BPt.default.pipelines</span> <span class="kn">import</span> <span class="n">pieces_keys</span>
 
-<span class="gp">In [8]: </span><span class="n">pieces</span>
+<span class="gp">In [8]: </span><span class="n">pieces_keys</span>
 <span class="gh">Out[8]: </span><span class="go"></span>
 <span class="go">[&#39;m_imputer&#39;,</span>
 <span class="go"> &#39;c_imputer&#39;,</span>

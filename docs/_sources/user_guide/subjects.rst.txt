@@ -58,6 +58,12 @@ To select those three subjects.
   Select the set of test subjects as defined by a split in the Dataset, e.g.,
   :func:`set_test_split <BPt.Dataset.set_test_split>`.
 
+- 'default'
+  This is the default subjects value for :class:`ProblemSpec <BPt.ProblemSpec>`,
+  it refers to special behavior where when evaluating if the passed dataset has
+  a train/test split defined, and a cv value is passed that isn't 'test', then
+  subjects = 'train' will be used. Otherwise, subjects='all' will be used.
+
 4. You can pass the special input wrapper :class:`ValueSubset`. This can be
 used to select subsets of subject by a column's
 value or values. See :class:`ValueSubset` for more

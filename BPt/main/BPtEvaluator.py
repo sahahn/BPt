@@ -391,12 +391,12 @@ class BPtEvaluator():
                         'scoring. Predictions will still be made for any',
                         'in validation folds (if store_preds=True).')
 
-        # Verbose info.
+        # Verbose info
         self._print('Predicting target =', str(self.ps.target), level=1)
         self._print('Using problem_type =', str(self.ps.problem_type), level=1)
         self._print('Using scope =', str(self.ps.scope),
-                    'defining an initial total of',
-                    str(X.shape[1]), 'features.', level=1)
+                    '(defining a total of', str(X.shape[1]),
+                    'features).', level=1)
         self._print(f'Evaluating {len(X)} total data points.', level=1)
 
         # Init scores as dictionary of lists
@@ -413,6 +413,7 @@ class BPtEvaluator():
 
         self._print('Using CV: ', cv,
                     'to generate evaluation splits.', level=2)
+        self._print(level=1)
 
         # Run each split
         for train_inds, val_inds in cv.split(X, y):
@@ -546,8 +547,7 @@ class BPtEvaluator():
         # Check for if any missing targets in the training set
         # If so, skip those subjects
         X_tr, y_tr = get_non_nan_Xy(X_tr, y_tr)
-        self._print('Train size =', len(X_tr), level=1)
-        self._print('Val size =', len(X_val), level=1)
+        self._print('Train size:', len(X_tr), '- Val size:', len(X_val), level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()

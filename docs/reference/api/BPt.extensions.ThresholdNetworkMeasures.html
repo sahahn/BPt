@@ -263,7 +263,7 @@
 <h1>BPt.extensions.ThresholdNetworkMeasures<a class="headerlink" href="#bpt-extensions-thresholdnetworkmeasures" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.extensions.ThresholdNetworkMeasures">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.extensions.</code><code class="sig-name descname">ThresholdNetworkMeasures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">threshold_type</span><span class="o">=</span><span class="default_value">'abs'</span></em>, <em class="sig-param"><span class="n">threshold_method</span><span class="o">=</span><span class="default_value">'value'</span></em>, <em class="sig-param"><span class="n">to_compute</span><span class="o">=</span><span class="default_value">'avg_degree'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L958-L1227"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.ThresholdNetworkMeasures" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.extensions.</code><code class="sig-name descname">ThresholdNetworkMeasures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">threshold_type</span><span class="o">=</span><span class="default_value">'abs'</span></em>, <em class="sig-param"><span class="n">threshold_method</span><span class="o">=</span><span class="default_value">'value'</span></em>, <em class="sig-param"><span class="n">to_compute</span><span class="o">=</span><span class="default_value">'avg_degree'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L960-L1228"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.ThresholdNetworkMeasures" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class is designed for thresholding and then extracting network
 measures from an input correlation matrix.</p>
 <dl class="field-list">
@@ -318,14 +318,18 @@ if non-directional edges.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>to_compute</strong><span class="classifier">valid_measure or list of, optional</span></dt><dd><p>Either a single str representing a network
+<dt><strong>to_compute</strong><span class="classifier">valid_measure or list of, optional</span></dt><dd><div class="line-block">
+<div class="line">Either a single str representing a network
 measure to compute, or a list of valid
-measures.</p>
-<p>You may also pass any custom function
+measures. You may also pass any custom function
 which accepts one argument G, and returns
-a value.</p>
-<p>The following global measures are currently implemented
-as options:</p>
+a value.</div>
+</div>
+<div class="line-block">
+<div class="line">The following global measures are currently implemented
+as options:</div>
+<div class="line"><br /></div>
+</div>
 <ul class="simple">
 <li><dl class="simple">
 <dt>‘avg_cluster’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.cluster.average_clustering.html#networkx.algorithms.cluster.average_clustering" title="(in NetworkX v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.cluster.average_clustering()</span></code></a></p>
@@ -363,8 +367,12 @@ as options:</p>
 </dl>
 </li>
 </ul>
-<p>You may also select from one of the following
-averages of local measures:</p>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line">You may also select from one of the following
+averages of local measures:</div>
+<div class="line"><br /></div>
+</div>
 <ul class="simple">
 <li><dl class="simple">
 <dt>‘avg_eigenvector_centrality’:</dt><dd><p><a class="reference external" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.eigenvector_centrality_numpy.html#networkx.algorithms.centrality.eigenvector_centrality_numpy" title="(in NetworkX v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">networkx.algorithms.centrality.eigenvector_centrality_numpy()</span></code></a></p>

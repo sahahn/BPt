@@ -15,6 +15,7 @@ Installation
                 <div class="card-header">
                     pip
                 </div>
+                <img src="../_static/pip.jpg" class="card-img-top" alt="python pip logo" height="260">
                 <div class="card-body">
                     <p class="card-text">
 
@@ -40,6 +41,7 @@ The latest stable version of BPt can be found and installed through pip the pyth
                 <div class="card-header">
                     Github
                 </div>
+                <img src="../_static/github.png" class="card-img-top" alt="github logo" height="200">
                 <div class="card-body">
                     <p class="card-text">
 

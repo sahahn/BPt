@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from .DataFile import load_data_file_proxy
-from copy import copy, deepcopy
-from .helpers import (verbose_print)
+from copy import deepcopy
+from .helpers import verbose_print
 from pandas.util._decorators import doc
 
 
@@ -161,7 +161,7 @@ class Dataset(pd.DataFrame):
 
         # If index returns Dataset, copy over metadata
         if isinstance(item, Dataset):
-            self._copy_meta_data(item, deep=True)
+            self._copy_meta_data(item)
 
         return item
 
@@ -1217,24 +1217,20 @@ class Dataset(pd.DataFrame):
         dataset = super().copy(deep=deep)
 
         # Make copy of meta data from self to dataset in place
-        self._copy_meta_data(dataset, deep=deep)
+        # Always makes deep copy for meta-data.
+        self._copy_meta_data(dataset)
 
         return dataset
 
-    def _copy_meta_data(self, dataset, deep=True):
+    def _copy_meta_data(self, dataset):
         '''Add copy of meta data from self to dataset in place'''
-
-        # Set copy func by if deep or not
-        copy_func = copy
-        if deep:
-            copy_func = deepcopy
 
         # Make copy of meta data
         for m in self._metadata:
 
             # If has this attribute, set in the copy a copy.
             if hasattr(self, m):
-                setattr(dataset, m, copy_func(getattr(self, m)))
+                setattr(dataset, m, deepcopy(getattr(self, m)))
 
         return self
 
@@ -1448,6 +1444,8 @@ class Dataset(pd.DataFrame):
                               _validate_split,
                               _finish_split,
                               set_test_split,
+                              test_split,
+                              train_split,
                               set_train_split,
                               save_test_split,
                               save_train_split)

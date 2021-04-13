@@ -7,6 +7,20 @@ from ...main.input import CVStrategy
 
 
 def get_fake_dataset():
+    '''
+    fake = Dataset()
+    fake['1'] = [1, 1, 1]
+    fake['2'] = [1, 1, 1]
+    fake['3'] = ['2', '2', '2']
+    fake['4'] = ['2', '2', '2']
+    fake['5'] = ['2', '1', '2']
+
+    fake = fake.set_role('1', 'data')
+    fake = fake.set_role('2', 'target')
+    fake = fake.set_role(['3', '4', '5'], 'non input')
+
+    fake.ordinalize(scope='all', inplace=True)
+    '''
 
     fake = Dataset()
     fake['1'] = [1, 1, 1]
@@ -207,6 +221,55 @@ def test_set_train_split():
 
     with assert_raises(RuntimeError):
         df = df.set_train_split(size=0)
+
+
+def test_test_split():
+
+    df = get_fake_dataset()
+    df.add_scope('1', 'test_scope', inplace=True)
+
+    tr_df, test_df = df.test_split(subjects=[2])
+
+    # Check copy data behavior
+    original = tr_df.loc[0, '5']
+    tr_df.loc[0, '5'] = 0
+    assert tr_df.loc[0, '5'] != df.loc[0, '5']
+    assert original == df.loc[0, '5']
+
+    # Check some assumptions
+    assert tr_df.shape == (2, 5)
+    assert 0 in tr_df.index
+    assert 1 in tr_df.index
+
+    assert test_df.shape == (1, 5)
+    assert 2 in test_df.index
+
+    for d in [tr_df, test_df]:
+        assert isinstance(d, Dataset)
+        assert d.test_subjects is None
+        assert d.train_subjects is None
+
+        scopes = d.get_scopes()
+        assert 'test_scope' in scopes['1']
+
+    # Check meta data behavior
+    tr_df.add_scope('1', 'train', inplace=True)
+    scopes = df.get_scopes()
+    assert 'train' not in scopes['1']
+
+    test_scopes = test_df.get_scopes()
+    assert 'train' not in test_scopes['1']
+
+
+def test_train_split():
+
+    df = get_fake_dataset()
+    tr_df, test_df = df.train_split(subjects=[0])
+    assert tr_df.shape == (1, 5)
+    assert 0 in tr_df.index
+    assert test_df.shape == (2, 5)
+    assert 1 in test_df.index
+    assert 2 in test_df.index
 
 
 def get_fake_multi_index_dataset():

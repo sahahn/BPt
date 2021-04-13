@@ -435,6 +435,7 @@ def _get_pipeline(pipeline, problem_spec, dataset,
 
         elif isinstance(obj, tuple):
             (nested_check(o) for o in obj)
+            return
 
         elif isinstance(obj, dict):
             [nested_check(obj[k]) for k in obj]

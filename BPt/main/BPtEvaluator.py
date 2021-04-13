@@ -388,8 +388,11 @@ class BPtEvaluator():
             self._print('Warning: There are', str(n_nan_targets) + ' missing',
                         'targets passed to evaluate. Subjects with missing',
                         'target values will be skipped during training and '
-                        'scoring. Predictions will still be made for any',
-                        'in validation folds (if store_preds=True).')
+                        'scoring.')
+            if self.store_preds:
+                self._print('Note: Predictions will still be made for any',
+                            'subjects with missing values in ',
+                            'any validation folds.')
 
         # Verbose info
         self._print('Predicting target =', str(self.ps.target), level=1)

@@ -124,10 +124,6 @@ class CVStrategy(BaseEstimator):
 
             (default = None)
 
-        See Also
-        --------
-        ML.Define_Validation_Strategy : Main location to define CV object
-
         '''
 
         self.groups = groups

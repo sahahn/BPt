@@ -1118,6 +1118,9 @@ def evaluate(pipeline, dataset,
         # set by last run
         compare_bars = evaluator.compare_bars
 
+        # Then reset so object can be pickled
+        evaluator.compare_bars = None
+
         # Add to compare dict
         evaluators[key] = evaluator
 

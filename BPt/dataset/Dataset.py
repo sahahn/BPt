@@ -1317,6 +1317,20 @@ class Dataset(pd.DataFrame):
 
         return X, y
 
+    def _replace_datafiles_with_repr_(self):
+
+        def is_int(i):
+            try:
+                int(i)
+                return True
+            except ValueError:
+                return False
+
+        for col in self:
+            if 'data file' in self.scopes[col]:
+                self[col] = [f'Loc({int(i)})' if is_int(i)
+                             else repr(i) for i in self[col]]
+
     def _repr_html_(self):
 
         # Checks
@@ -1337,8 +1351,12 @@ class Dataset(pd.DataFrame):
                 display_scope = 'Non Input'
 
             if len(cols) > 0:
+
+                display_copy = self[cols].copy()
+                display_copy._replace_datafiles_with_repr_()
+
                 html += template.format(display_scope,
-                                        self[cols]._base_repr_html_())
+                                        display_copy._base_repr_html_())
                 html += '\n'
 
         return html

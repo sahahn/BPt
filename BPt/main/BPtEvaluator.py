@@ -674,21 +674,25 @@ class BPtEvaluator():
             contains predictions made.
         '''
 
-        # @TODO
-        # Have to handle the different cases for different classes
-
         dfs = []
 
         # For each fold
         for fold_indx in range(len(self.val_indices)):
 
             # Init df
-            df = pd.DataFrame(columns=list(self.preds),
-                              index=self.val_indices[fold_indx])
+            df = pd.DataFrame(index=self.val_indices[fold_indx])
 
             # Add each predict type as a column
             for predict_type in self.preds:
-                df[predict_type] = self.preds[predict_type][fold_indx]
+
+                ps = self.preds[predict_type][fold_indx]
+
+                if isinstance(ps[0], float):
+                    df[predict_type] = ps
+
+                else:
+                    for cls in range(len(ps[0])):
+                        df[predict_type + '_' + str(cls)] = ps[:, cls]
 
             dfs.append(df)
 

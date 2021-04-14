@@ -687,7 +687,7 @@ def test_get_estimator_stacking_default():
     est = get_estimator(pipeline=stacking_pipe, dataset=data,
                         problem_spec=ps)
     assert len(est.steps) == 5
-    
+
     # Test for breaking behavior because of duplicates, i.e. does
     # uniquify work.
     est = get_estimator(pipeline=stacking_pipe, dataset=data,

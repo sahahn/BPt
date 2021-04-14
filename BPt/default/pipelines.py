@@ -23,7 +23,8 @@ stacking = Ensemble('stacking', models=[elastic_search,
                                         ridge_search,
                                         svm_search,
                                         lgbm_search],
-                    base_model=ridge_search)
+                    base_model=ridge_search,
+                    n_jobs_type='models')
 
 # Pre-defined pipelines
 _base_steps = [m_imputer, c_imputer, r_scaler, ohe]

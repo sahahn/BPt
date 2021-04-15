@@ -691,7 +691,7 @@ def _eval_prep(estimator, ps, dataset, cv=5):
         bpt_cv = cv._apply_dataset(dataset)
 
         # Save n_repeats
-        n_repeats = bpt_cv.n_repeats
+        n_repeats = bpt_cv.get_n_repeats()
 
         # Convert from BPtCV to sklearn compat, i.e., just raw index
         sk_cv = bpt_cv.get_cv(X.index,
@@ -1118,7 +1118,8 @@ def evaluate(pipeline, dataset,
         # set by last run
         compare_bars = evaluator.compare_bars
 
-        # Then reset so object can be pickled
+        # Then reset stored attribute,
+        # so the evaluator object can be pickled
         evaluator.compare_bars = None
 
         # Add to compare dict

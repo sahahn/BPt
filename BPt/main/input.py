@@ -2717,21 +2717,70 @@ class CV(Params):
         ::
 
             default = 'context'
+
+    only_fold : int, list of int, or None, optional
+        This parameter specifies if special subset of the requested
+        CV folds should be used. If kept as None, normal all
+        fold behavior will be used. Otherwise, if passed as an int,
+        then that int must represent a valid cv fold, e.g.,
+
+        ::
+
+            only_fold = 0
+
+        Would run the CV but only the 1st fold. Likewise if
+        a list is passed,
+
+        ::
+
+            only_fold = [0, 2]
+
+        Then only the first and 3rd folds will be run.
+        This parameter is useful in cases where the base
+        experiment is too computationally intensive, and
+        it is desired to run a complete CV but in smaller
+        chunks.
+
+        .. warning::
+
+            When used with n_repeats > 1, only_fold
+            will index folds from the repeats, e.g.,
+            split=2, n_repeats=2, only_fold can be 0, 1, 2, or 3,
+            but functionally for say computing summary scores, like std across
+            repeats, n_repeats will be treated as 1.
+
+            For example if passed with the setup above only_fold=[0, 1, 2],
+            then progress bars and summary stats will still show n_repeats=1.
+
+        ::
+
+            default = None
+
+    cv_strategy_kwargs : kwargs, optional
+        If any additional parameters are passed in kwargs style,
+        e.g., ::
+
+            splits = 3
+
+        Then they will try to be set in the base cv_strategy.
+
     '''
 
     def __init__(self, splits=3, n_repeats=1,
                  cv_strategy=None, random_state='context',
-                 **cv_strategy_args):
+                 only_fold=None,
+                 **cv_strategy_kwargs):
 
         self.splits = splits
         self.n_repeats = n_repeats
         self.cv_strategy = cv_strategy
         self.random_state = random_state
+        self.only_fold = only_fold
 
         if self.cv_strategy is None:
             self.cv_strategy = CVStrategy()
 
-        self.cv_strategy.set_params(**cv_strategy_args)
+        self.cv_strategy.set_params(**cv_strategy_kwargs)
 
     def _apply_dataset(self, dataset):
         return get_bpt_cv(self, dataset)

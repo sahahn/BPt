@@ -1,6 +1,77 @@
 from ..main.CV import CVStrategy
 from .helpers import save_subjects
 import pandas as pd
+from .Dataset import _shared_docs
+from pandas.util._decorators import doc
+
+_val_docs = {}
+
+_val_docs['size'] = '''size : float, int or None, optional
+        | This parameter represents the size of the train/test split
+          to apply. If passed a floating type, this parameter
+          should be between 0.0 and 1.0, and it will specify the
+          proportion / percent of the data to bet set in the train/test split.
+          If passed as an integer type, this value will be intrpetted as
+          the absolute number of subjects to be set in the train/test split.
+
+        | Note that either this parameter or subjects should be used, not both
+          as they define different behaviors. Keep as default = None if using
+          subjects.
+
+        ::
+
+            default = None
+'''
+
+_val_docs['subjects'] = '''subjects : :ref:`Subjects`, optional
+        | This parameter can be optionally used instead of size in
+          the case that a specific set of subjects should be used to define
+          the split. This argument can accept any valid :ref:`Subjects` style
+          input. Explicitly, either this parameter or size should be used,
+          not both as they define different behaviors.
+
+        | In the case that additional subjects are specified here, i.e., ones
+          not loaded in the current Dataset, they will be simply be ignored,
+          and the functional splits set to the overlap of passed subjects
+          with loaded subjects.
+          valid subjects.
+
+        ::
+
+            default = None
+'''
+
+_val_docs['cv_strategy'] = '''cv_strategy : None or :class:`CVStrategy`, optional
+        This parameter is only relevant when size is used, i.e., a new split is
+        defined (and subjects is not used). In this case,
+        an instance of :class:`CVStrategy` defining any validation
+        behavior the train/test split should be performed according
+        to should be passed - or left as None (the default), which
+        will use random splits. This parameter is typically
+        used to define behavior like making sure the same distribution
+        of target variable is present in both folds, or that
+        members of the same family are preserved across folds.
+
+        ::
+
+            default = None
+'''
+
+_val_docs['random_state'] = '''random_state : int or None, optional
+        This parameter is only relevant when size is used, i.e., a new split is
+        defined (and subjects is not used). In this case, this
+        parameter represents the random state in which the split should
+        be performed according to. Random states allow for
+        reproducing the same train/test splits across different
+        runs if given the same input Dataset. If left as
+        None, the train/test split will be performed with
+        just a random random seed (that is to say a different random state
+        each time the function is called.)
+
+        ::
+
+            default = None
+'''
 
 
 def _validate_cv_key(self, cv_key, name):
@@ -93,8 +164,7 @@ def _proc_cv_strategy(self, cv_params):
                           train_only=train_only_subjects)
 
     # If None
-    else:
-        return CVStrategy(train_only=train_only_subjects)
+    return CVStrategy(train_only=train_only_subjects)
 
 
 def _validate_split(self, size, subjects):
@@ -124,81 +194,60 @@ def _finish_split(self):
     self._print('Test size: ', len(self.test_subjects), level=1)
 
 
+@doc(**_val_docs, inplace=_shared_docs['inplace'])
 def set_test_split(self, size=None, subjects=None,
                    cv_strategy=None, random_state=None, inplace=False):
-    '''Defines a set of subjects to be reserved as test subjects. This
-    method includes utilities for either defining a new test split, or loading
-    an existing one. See related :func:`save_train_split` and
-    :func:`save_test_split` or to view
-    directly any saved test subjects, you can check self.test_subjects,
-    and likewise for train_subjects.
+    '''| Defines a set of subjects to be reserved as test subjects. This
+         method includes utilities for either defining a new test split,
+         or loading an existing one.
+
+    | This method applies the passed parameters in order define a test set
+      which is stored in the current Dataset.
 
     Parameters
     ----------
-    size : float, int or None, optional
-        If float, should be between 0.0 and 1.0 and represent
-        the proportion of the dataset to be included in the test split.
-        If int, represents the absolute number (or target number) to
-        include in the testing group.
+    {size}
 
-        Either this parameter or subjects should be used, not both
-        as they define different behaviors. Keep as default = None if using
-        subjects.
+    {subjects}
 
-        ::
+    {cv_strategy}
 
-            default = None
+    {random_state}
 
-    subjects : :ref:`Subjects`, optional
-        If instead of defining a new test split, you wish to load
-        an existing set of test subjects, this parameter should be used.
-        This argument accepts :ref:`Subjects` (see for more info) formatted
-        input. This will define an explicit set of subjects to use
-        as the test set.
+    {inplace}
 
-        In the case that additional subjects are loaded here, i.e., ones
-        not loaded in the current Dataset, they will be simply be ignored,
-        and the functional test set will constitute the overlap of
-        valid subjects.
+    See Also
+    ----------
+    set_train_split : Apply a train/test split but via specifying which
+        subjects are training subjects.
+    test_split : Apply a test split returning two separate Train and Test
+        Datasets.
+    save_test_split : Save the test subjects from a split to a text file.
 
-        Either this parameter or subjects should be used, not both
-        as they define different behaviors. Keep as default = None if using
-        size.
+    Examples
+    ---------
 
-        ::
+    .. ipython:: python
 
-            default = None
+        import BPt as bp
 
-    cv_strategy : None or :class:`CVStrategy`, optional
-        This parameter is only relevant when size is not None,
-        and you are defining a new test split. In this case, it
-        defines any validation criteria in which the test split should
-        adhere to. If left as None, the test split will be be performed
-        according to random splits.
+        # Load example data
+        data = bp.read_pickle('data/example1.dataset')
+        data
 
-        ::
+        data.set_test_split(size=.6, inplace=True)
+        data.train_subjects
+        data.test_subjects
 
-            default = None
+    Note that the split is stored in the dataset itself.
+    We can also pass specific subjects.
 
-    random_state : int or None, optional
-        This parameter is only relevant when size is not None,
-        and you are defining a new test split.
-        In this case, you may provide a random state argument,
-        which allows for reproducing the same split.
+    .. ipython:: python
 
-        If kept as None, will perform the split with a random
-        seed.
+        data = data.set_test_split(subjects=[0, 1])
+        data.train_subjects
+        data.test_subjects
 
-        ::
-
-            default = None
-
-    inplace : bool, optional
-        If True, do operation inplace and return None.
-
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -269,86 +318,60 @@ def set_test_split(self, size=None, subjects=None,
     self._finish_split()
 
 
+@doc(**_val_docs, inplace=_shared_docs['inplace'])
 def set_train_split(self, size=None, subjects=None,
                     cv_strategy=None, random_state=None, inplace=False):
-    '''Defines a set of subjects to be reserved as train subjects.
-    This is a variation on function :func:`save_test_split`, where
-    both set train and test subjects, but vary on if parameters
-    specify how the training set should be defined (this function)
-    or how the testing set should be defined.
+    '''| Defines a set of subjects to be reserved as train subjects. This
+         method includes utilities for either defining a new train split,
+         or loading an existing one.
 
-    This method includes utilities for either defining a new train split,
-    or loading an existing one. See related
-    :func:`save_train_split` or to view
-    directly any saved train subjects, you can check self.train_subjects,
-    and likewise for test_subjects.
+    | This method applies the passed parameters in order define a train set
+      which is stored in the current Dataset.
 
     Parameters
     ----------
-    size : float, int or None, optional
-        If float, should be between 0.0 and 1.0 and represent
-        the proportion of the dataset to be included in the training split.
-        If int, represents the absolute number (or target number) to
-        include in the training group.
+    {size}
 
-        Either this parameter or subjects should be used, not both
-        as they define different behaviors. Keep as default = None if using
-        subjects.
+    {subjects}
 
-        ::
+    {cv_strategy}
 
-            default = None
+    {random_state}
 
-    subjects : :ref:`Subjects`, optional
-        If instead of defining a new train split, if you wish to load
-        an existing set of train subjects, this parameter should be used.
-        This argument accepts :ref:`Subjects` (see for more info) formatted
-        input. This will define an explicit set of subjects to use
-        as the training set.
+    {inplace}
 
-        In the case that additional subjects are loaded here, i.e., ones
-        not loaded in the current Dataset, they will be simply be ignored,
-        and the functional test set will constitue the overlap of
-        valid subjects.
+    See Also
+    ----------
+    set_test_split : Apply a train/test split but via specifying which
+        subjects are test subjects.
+    train_split : Apply a train split returning two separate Train and Test
+        Datasets.
+    save_train_split : Save the train subjects from a split to a text file.
 
-        Either this parameter or subjects should be used, not both
-        as they define different behaviors. Keep as default = None if using
-        size.
+    Examples
+    ---------
 
-        ::
+    .. ipython:: python
 
-            default = None
+        import BPt as bp
 
-    cv_strategy : None or :class:`CVStrategy`, optional
-        This parameter is only relevant when size is not None,
-        and you are defining a new train split. In this case, it
-        defines any validation criteria in which the test split should
-        adhere to. If left as None, the train split will be be performed
-        according to random splits.
+        # Load example data
+        data = bp.read_pickle('data/example1.dataset')
+        data
 
-        ::
+        data.set_train_split(size=.6, inplace=True)
+        data.train_subjects
+        data.test_subjects
 
-            default = None
+    Note that the split is stored in the dataset itself.
+    We can also pass specific subjects.
 
-    random_state : int or None, optional
-        This parameter is only relevant when size is not None,
-        and you are defining a new train split.
-        In this case, you may provide a random state argument,
-        which allows for reproducing the same split.
+    .. ipython:: python
 
-        If kept as None, will perform the train split with a random
-        seed.
+        data = data.set_train_split(subjects=[0, 1])
+        data.train_subjects
+        data.test_subjects
 
-        ::
-
-            default = None
-
-    inplace : bool, optional
-        If True, do operation inplace and return None.
-
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -415,6 +438,167 @@ def set_train_split(self, size=None, subjects=None,
     self._finish_split()
 
 
+@doc(**_val_docs)
+def test_split(self, size=None, subjects=None,
+               cv_strategy=None, random_state=None):
+    '''| This method defines and returns a Train and Test Dataset
+         based on the passed parameters, allowing for defining
+         the test set as a new split or from an existing set of
+         subjects.
+
+    | This method's parameters describe how the test set should be generated,
+      where the training set is then defined by just which subjects are not in
+      the test set.
+
+    Parameters
+    ----------
+    {size}
+
+    {subjects}
+
+    {cv_strategy}
+
+    {random_state}
+
+    Returns
+    -------
+    train_data : :class:`Dataset`
+        The current :class:`Dataset` as indexed (i.e., only the subjects from)
+        the requested training set, as defined by the passed parameters.
+        This :class:`Dataset` will have all the same metadata as the original
+        :class:`Dataset`, though if changes are made to it, they will not
+        influence the original :class:`Dataset`.
+
+    test_data : :class:`Dataset`
+        The current :class:`Dataset` as indexed (i.e., only the subjects from)
+        the requested test set, as defined by the passed parameters.
+        This :class:`Dataset` will have all the same metadata as the original
+        :class:`Dataset`, though if changes are made to it, they will not
+        influence the original :class:`Dataset`.
+
+    See Also
+    ----------
+    train_split : Return a train/test split but via specifying which
+        subjects are training subjects.
+    set_test_split : Apply a test split, but storing the split information
+        in the Dataset.
+    save_test_split : Save the test subjects from a split to a text file.
+
+    Examples
+    ---------
+
+    .. ipython:: python
+
+        import BPt as bp
+
+        # Load example data
+        data = bp.read_pickle('data/example1.dataset')
+        data
+
+        tr_data, test_data = data.test_split(size=.2)
+        tr_data
+        test_data
+
+    We can also define a split by passing specific subjects.
+
+    .. ipython:: python
+
+        tr_data, test_data = data.test_split(subjects=[3, 4])
+        tr_data
+        test_data
+
+    We see that the parameters are used to define which subjects
+    are set as test subjects.
+
+    '''
+
+    # Apply split on copy of data
+    data = self.set_test_split(size=size, subjects=subjects,
+                               cv_strategy=cv_strategy,
+                               random_state=random_state,
+                               inplace=False)
+
+    # Properly extracts splits as separate Datasets
+    return split(data)
+
+
+@doc(**_val_docs)
+def train_split(self, size=None, subjects=None,
+                cv_strategy=None, random_state=None):
+    '''| This method defines and returns a Train and Test Dataset
+         based on the passed parameters, allowing for defining
+         the training set as a new split or from an existing set of
+         subjects.
+
+    | This method's parameters describe how the training set
+      should be generated, where the testing set is then defined by
+      just which subjects are not in the training set.
+
+    Parameters
+    ----------
+    {size}
+
+    {subjects}
+
+    {cv_strategy}
+
+    {random_state}
+
+    Returns
+    -------
+    train_data : :class:`Dataset`
+        The current :class:`Dataset` as indexed (i.e., only the subjects from)
+        the requested training set, as defined by the passed parameters.
+        This :class:`Dataset` will have all the same metadata as the original
+        :class:`Dataset`, though if changes are made to it, they will not
+        influence the original :class:`Dataset`.
+
+    test_data : :class:`Dataset`
+        The current :class:`Dataset` as indexed (i.e., only the subjects from)
+        the requested test set, as defined by the passed parameters.
+        This :class:`Dataset` will have all the same metadata as the original
+        :class:`Dataset`, though if changes are made to it, they will not
+        influence the original :class:`Dataset`.
+
+    See Also
+    ----------
+    test_split : Return a train/test split but via specifying which
+        subjects are test subjects.
+    set_train_split : Apply a train split, but storing the split information
+        in the Dataset.
+    save_train_split : Save the train subjects from a split to a text file.
+
+    Examples
+    ---------
+
+    .. ipython:: python
+
+        import BPt as bp
+
+        # Load example data
+        data = bp.read_pickle('data/example1.dataset')
+        data
+
+        tr_data, test_data = data.train_split(size=.6)
+        tr_data
+        test_data
+
+        tr_data, test_data = data.train_split(subjects=[0, 1])
+        tr_data
+        test_data
+
+    '''
+
+    # Apply split on copy of data
+    data = self.set_train_split(size=size, subjects=subjects,
+                                cv_strategy=cv_strategy,
+                                random_state=random_state,
+                                inplace=False)
+
+    # Properly extracts splits as separate Datasets
+    return split(data)
+
+
 def save_test_split(self, loc):
     '''Saves the currently defined test
     subjects in a text file with one subject / index
@@ -451,3 +635,20 @@ def save_train_split(self, loc):
         raise RuntimeError('No train test split defined')
 
     save_subjects(loc, self.train_subjects)
+
+
+def split(data):
+
+    # Get the train and test subjects
+    train_subjects = data.get_subjects('train')
+    test_subjects = data.get_subjects('test')
+
+    # Reset split to None
+    data.train_subjects, data.test_subjects = None, None
+
+    # Get as copies - since meta data should be separate
+    tr_data = data.loc[train_subjects].copy(deep=False)
+    test_data = data.loc[test_subjects].copy(deep=False)
+
+    # Return Datasets as train then test
+    return tr_data, test_data

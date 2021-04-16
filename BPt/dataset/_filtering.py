@@ -31,9 +31,16 @@ def drop_nan_subjects(self, scope, inplace=False):
         return self._inplace('drop_nan_subjects', locals())
 
     cols = self.get_cols(scope)
-    for col in cols:
-        nan_subjects = self._get_nan_subjects(col)
-        self._drop_subjects(nan_subjects)
+
+    if len(cols) == 0:
+        raise RuntimeError(f'No columns found for scope: {scope}.')
+
+    nan_subjects = self._get_nan_subjects(cols[0])
+    for col in cols[1:]:
+        nan_subjects = nan_subjects.union(self._get_nan_subjects(col))
+
+    # Drop all nan subjects
+    self._drop_subjects(nan_subjects)
 
 
 _si_docs = {'subjects': _shared_docs['subjects'],

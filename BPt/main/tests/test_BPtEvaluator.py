@@ -1,5 +1,5 @@
 from .test_evaluate import get_fake_dataset
-from ..input import (Model, Pipeline, Scaler)
+from ..input import (Model, Pipeline, Scaler, CV)
 from ..funcs import evaluate
 from nose.tools import assert_raises
 import numpy as np
@@ -152,3 +152,31 @@ def test_bpt_evaluator_compare_non_overlap_cv2():
 
     compare_df = results1.compare(results2)
     assert compare_df.shape == (2, 2)
+
+
+def test_multiclass_get_preds_df():
+
+    df = get_fake_dataset()
+    df['3'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2]
+    df.ordinalize('3', inplace=True)
+
+    pipe = Pipeline([Model('linear')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=df,
+                       progress_bar=False,
+                       scorer='roc_auc_ovr',
+                       cv=CV(splits=2))
+
+    assert len(results.preds['predict']) == 2
+    assert len(results.preds['predict_proba']) == 2
+
+    assert len(results.preds['predict'][0]) == 10
+    assert len(results.preds['predict_proba'][0]) == 10
+
+    assert len(results.preds['predict_proba'][0][0]) == 3
+
+    # Test get preds df
+    r_df = results.get_preds_dfs()
+    assert r_df[0].shape == (10, 8)
+    assert r_df[0].shape == (10, 8)

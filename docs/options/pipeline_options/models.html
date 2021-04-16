@@ -539,7 +539,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base elastic”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;elasticnet&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="kc">None</span>
@@ -549,7 +549,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“elastic classifier”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;elasticnet&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -560,7 +560,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“elastic clf v2”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;elasticnet&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -571,7 +571,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“elastic classifier extra”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">1500.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;elasticnet&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -696,7 +696,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base lasso”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;l1&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="kc">None</span>
@@ -705,7 +705,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“lasso C”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;l1&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -715,7 +715,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“lasso C extra”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">1500.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;l1&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -796,12 +796,12 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base linear svc”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 </pre></div>
 </div>
 </li>
 <li><p>“linear svc dist”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">21.544346900318843</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
 </pre></div>
@@ -819,7 +819,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base logistic”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;none&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="kc">None</span>
@@ -981,14 +981,14 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base ridge”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;l2&#39;</span>
 <span class="n">solver</span><span class="p">:</span> <span class="s1">&#39;saga&#39;</span>
 </pre></div>
 </div>
 </li>
 <li><p>“ridge C”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">solver</span><span class="p">:</span> <span class="s1">&#39;saga&#39;</span>
 <span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">21.544346900318843</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -996,7 +996,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“ridge C extra”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">1500.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">solver</span><span class="p">:</span> <span class="s1">&#39;saga&#39;</span>
 <span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">21.544346900318843</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -1034,7 +1034,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <span class="n">penalty</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="s1">&#39;l1&#39;</span><span class="p">,</span> <span class="s1">&#39;elasticnet&#39;</span><span class="p">])</span>
 <span class="n">alpha</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">14.677992676220699</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-05</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">l1_ratio</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">0.165</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">learning_rate</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="s1">&#39;optimal&#39;</span><span class="p">,</span> <span class="s1">&#39;invscaling&#39;</span><span class="p">,</span> <span class="s1">&#39;adaptive&#39;</span><span class="p">,</span> <span class="s1">&#39;constant&#39;</span><span class="p">])</span>
 <span class="n">eta0</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">31.62277660168379</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-06</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">power_t</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">0.13333333333333333</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
@@ -1210,19 +1210,19 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base elastic net”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 </pre></div>
 </div>
 </li>
 <li><p>“elastic regression”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">alpha</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">100000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">46.415888336127786</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-05</span><span class="p">,</span> <span class="mf">100000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">l1_ratio</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">0.165</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p>“elastic regression extra”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">1500.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">alpha</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">100000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">46.415888336127786</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-05</span><span class="p">,</span> <span class="mf">100000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">l1_ratio</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">0.165</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">tol</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">4.641588833612779</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-06</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1328,12 +1328,12 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base lasso regressor”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 </pre></div>
 </div>
 </li>
 <li><p>“lasso regressor dist”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">alpha</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">100000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">46.415888336127786</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-05</span><span class="p">,</span> <span class="mf">100000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1423,13 +1423,13 @@ Additionally, a link to the original models documentation as well as the impleme
 <div><ol class="arabic" start="0">
 <li><p>“base linear svr”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span><span class="p">:</span> <span class="s1">&#39;epsilon_insensitive&#39;</span>
-<span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 </pre></div>
 </div>
 </li>
 <li><p>“linear svr dist”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span><span class="p">:</span> <span class="s1">&#39;epsilon_insensitive&#39;</span>
-<span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">21.544346900318843</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1571,13 +1571,13 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base ridge regressor”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">solver</span><span class="p">:</span> <span class="s1">&#39;lsqr&#39;</span>
 </pre></div>
 </div>
 </li>
 <li><p>“ridge regressor dist”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">solver</span><span class="p">:</span> <span class="s1">&#39;lsqr&#39;</span>
 <span class="n">alpha</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">100000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">21.544346900318843</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">100000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -1730,7 +1730,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base elastic”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;elasticnet&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="kc">None</span>
@@ -1740,7 +1740,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“elastic classifier”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;elasticnet&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -1751,7 +1751,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“elastic clf v2”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;elasticnet&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -1762,7 +1762,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“elastic classifier extra”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">1500.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;elasticnet&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -1887,7 +1887,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base lasso”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;l1&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="kc">None</span>
@@ -1896,7 +1896,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“lasso C”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;l1&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -1906,7 +1906,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“lasso C extra”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">1500.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;l1&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -1987,12 +1987,12 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base linear svc”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 </pre></div>
 </div>
 </li>
 <li><p>“linear svc dist”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">21.544346900318843</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
 </pre></div>
@@ -2010,7 +2010,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base logistic”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">multi_class</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;none&#39;</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="kc">None</span>
@@ -2172,14 +2172,14 @@ Additionally, a link to the original models documentation as well as the impleme
 <blockquote>
 <div><ol class="arabic" start="0">
 <li><p>“base ridge”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">penalty</span><span class="p">:</span> <span class="s1">&#39;l2&#39;</span>
 <span class="n">solver</span><span class="p">:</span> <span class="s1">&#39;saga&#39;</span>
 </pre></div>
 </div>
 </li>
 <li><p>“ridge C”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">solver</span><span class="p">:</span> <span class="s1">&#39;saga&#39;</span>
 <span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">21.544346900318843</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -2187,7 +2187,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </div>
 </li>
 <li><p>“ridge C extra”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">1500.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">solver</span><span class="p">:</span> <span class="s1">&#39;saga&#39;</span>
 <span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">21.544346900318843</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-05</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
@@ -2225,7 +2225,7 @@ Additionally, a link to the original models documentation as well as the impleme
 <span class="n">penalty</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="s1">&#39;l1&#39;</span><span class="p">,</span> <span class="s1">&#39;elasticnet&#39;</span><span class="p">])</span>
 <span class="n">alpha</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">14.677992676220699</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-05</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">l1_ratio</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">0.165</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">max_iter</span><span class="p">:</span> <span class="mi">1000</span>
+<span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
 <span class="n">learning_rate</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="s1">&#39;optimal&#39;</span><span class="p">,</span> <span class="s1">&#39;invscaling&#39;</span><span class="p">,</span> <span class="s1">&#39;adaptive&#39;</span><span class="p">,</span> <span class="s1">&#39;constant&#39;</span><span class="p">])</span>
 <span class="n">eta0</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">exponent</span><span class="o">=</span><span class="mf">31.62277660168379</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="mf">1e-06</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">power_t</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">0.13333333333333333</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>

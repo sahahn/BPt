@@ -6,7 +6,7 @@
 User Guide
 ==========
 
-Different introductory information can be found on this page.
+This page includes Guides, Key Concept References and Full Example scripts.
 
 Guides
 -------
@@ -43,3 +43,6 @@ Full Examples
     
     bmi_full_example
     dep_full_example
+    ssrt
+    waist_cm
+    sex

@@ -674,3 +674,64 @@ def test_get_estimator_pipeline_with_custom_steps_naming():
     assert r1 != r2
     assert r1 != r3
     assert r2 != r3
+
+
+def test_get_estimator_stacking_default():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    from ...default.pipelines import stacking_pipe
+
+    # Just want to make sure it doesn't break during construction
+    est = get_estimator(pipeline=stacking_pipe, dataset=data,
+                        problem_spec=ps)
+    assert len(est.steps) == 5
+
+    # Test for breaking behavior because of duplicates, i.e. does
+    # uniquify work.
+    est = get_estimator(pipeline=stacking_pipe, dataset=data,
+                        problem_spec=ps, problem_type='binary')
+    assert len(est.steps) == 5
+
+
+def test_nested_pipelines():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    pipe1 = Pipeline(steps=[Model('linear')])
+    pipe2 = Pipeline(steps=[pipe1])
+
+    est = get_estimator(pipeline=pipe2, dataset=data, problem_spec=ps)
+
+    assert isinstance(est, BPtPipeline)
+
+    # Make sure doesn't break on fit
+    X = np.ones((20, 20))
+    y = np.ones(20)
+    est.fit(X, y)
+
+    assert isinstance(est.steps[0][1], BPtPipeline)
+
+
+def test_nested_pipelines_params():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    pipe1 = Pipeline(steps=[Model('ridge', params=1)])
+    pipe2 = Pipeline(steps=[pipe1])
+
+    est = get_estimator(pipeline=pipe2, dataset=data, problem_spec=ps)
+
+    assert isinstance(est, BPtPipeline)
+
+    # Make sure doesn't break on fit
+    X = np.ones((20, 20))
+    y = np.ones(20)
+    est.fit(X, y)
+
+    assert not isinstance(est.steps[0][1], BPtPipeline)
+    assert isinstance(est.steps[0][1], BPtModel)
+    assert isinstance(est.steps[0][1].estimator, BPtPipeline)

@@ -207,7 +207,7 @@ def get_subjects(self, subjects, return_as='set', only_level=None):
         loaded_subjects =\
             self._get_nan_loaded_subjects(only_level=only_level)
 
-    elif isinstance(subjects, str) and subjects == 'all':
+    elif isinstance(subjects, str) and subjects in ['all', 'default']:
         loaded_subjects = all_subjects
 
     elif isinstance(subjects, str) and subjects == 'train':

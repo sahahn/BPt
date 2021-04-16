@@ -308,6 +308,14 @@
                         </li>
                     
                         <li class="">
+                            <a href="api/BPt.Dataset.test_split.html">BPt.Dataset.test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="api/BPt.Dataset.train_split.html">BPt.Dataset.train_split</a>
+                        </li>
+                    
+                        <li class="">
                             <a href="api/BPt.Dataset.save_test_split.html">BPt.Dataset.save_test_split</a>
                         </li>
                     
@@ -422,13 +430,11 @@
         </li>
     
         <li class="nav-item toc-entry toc-h2">
-            <a href="#plotting-viewing" class="nav-link">Plotting / Viewing</a><ul class="nav section-nav flex-column">
-                
-        <li class="nav-item toc-entry toc-h3">
-            <a href="#dataset-test-split-methods" class="nav-link">Dataset - Test Split Methods</a>
+            <a href="#plotting-viewing" class="nav-link">Plotting / Viewing</a>
         </li>
     
-            </ul>
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#train-test-split" class="nav-link">Train / Test Split</a>
         </li>
     
     </ul>
@@ -620,16 +626,17 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.plot.html#BPt.Dataset.plot" title="BPt.Dataset.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.plot</span></code></a>(scope[, subjects, cut, …])</p></td>
 <td><p>This function creates plots for each of the passed columns (as specified by scope) seperately.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.nan_info.html#BPt.Dataset.nan_info" title="BPt.Dataset.nan_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.nan_info</span></code></a>(…)</p></td>
-<td><p>if na_counts.sum() &gt; 0:</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.nan_info.html#BPt.Dataset.nan_info" title="BPt.Dataset.nan_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.nan_info</span></code></a>([scope])</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.summary.html#BPt.Dataset.summary" title="BPt.Dataset.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.summary</span></code></a>(scope[, subjects, measures, …])</p></td>
 <td><p>This method is used to generate a summary across some data.</p></td>
 </tr>
 </tbody>
 </table>
-<div class="section" id="dataset-test-split-methods">
-<h3>Dataset - Test Split Methods<a class="headerlink" href="#dataset-test-split-methods" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="train-test-split">
+<h2>Train / Test Split<a class="headerlink" href="#train-test-split" title="Permalink to this headline">¶</a></h2>
 <table class="longtable table autosummary">
 <colgroup>
 <col style="width: 10%" />
@@ -637,10 +644,28 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.set_test_split.html#BPt.Dataset.set_test_split" title="BPt.Dataset.set_test_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.set_test_split</span></code></a>([size, subjects, …])</p></td>
-<td><p>Defines a set of subjects to be reserved as test subjects.</p></td>
+<td><p><div class="line-block">
+<div class="line">Defines a set of subjects to be reserved as test subjects. This</div>
+</div>
+</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.set_train_split.html#BPt.Dataset.set_train_split" title="BPt.Dataset.set_train_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.set_train_split</span></code></a>([size, subjects, …])</p></td>
-<td><p>Defines a set of subjects to be reserved as train subjects.</p></td>
+<td><p><div class="line-block">
+<div class="line">Defines a set of subjects to be reserved as train subjects. This</div>
+</div>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.test_split.html#BPt.Dataset.test_split" title="BPt.Dataset.test_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.test_split</span></code></a>([size, subjects, …])</p></td>
+<td><p><div class="line-block">
+<div class="line">This method defines and returns a Train and Test Dataset</div>
+</div>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.train_split.html#BPt.Dataset.train_split" title="BPt.Dataset.train_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.train_split</span></code></a>([size, subjects, …])</p></td>
+<td><p><div class="line-block">
+<div class="line">This method defines and returns a Train and Test Dataset</div>
+</div>
+</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.save_test_split.html#BPt.Dataset.save_test_split" title="BPt.Dataset.save_test_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.save_test_split</span></code></a>(loc)</p></td>
 <td><p>Saves the currently defined test subjects in a text file with one subject / index per line.</p></td>
@@ -650,7 +675,6 @@
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 

@@ -263,12 +263,25 @@
 <h1>BPt.BPtEvaluator.get_preds_dfs<a class="headerlink" href="#bpt-bptevaluator-get-preds-dfs" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.BPtEvaluator.get_preds_dfs">
-<code class="sig-prename descclassname">BPtEvaluator.</code><code class="sig-name descname">get_preds_dfs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L652-L681"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.BPtEvaluator.get_preds_dfs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">BPtEvaluator.</code><code class="sig-name descname">get_preds_dfs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">drop_nan_targets</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L720-L772"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.BPtEvaluator.get_preds_dfs" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function can be used to return the raw predictions
 made during evaluation as a list of pandas Dataframes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><dl class="simple">
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>drop_nan_targets</strong><span class="classifier">bool, optional</span></dt><dd><p>If False (default), then this method will return the
+DataFrame of predictions including targets
+with NaN. To skip these, e.g., in this case
+of plotting against ground truth or computing
+new metrics, set to True.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
 <dt><strong>dfs</strong><span class="classifier">list of pandas.DataFrame</span></dt><dd><p>list of dataframe’s per fold, where each DataFrame
 contains predictions made.</p>
 </dd>

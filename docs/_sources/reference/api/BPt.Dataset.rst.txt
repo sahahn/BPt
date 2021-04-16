@@ -213,6 +213,7 @@ BPt.Dataset
       Dataset.swaplevel
       Dataset.tail
       Dataset.take
+      Dataset.test_split
       Dataset.to_binary
       Dataset.to_clipboard
       Dataset.to_csv
@@ -236,6 +237,7 @@ BPt.Dataset
       Dataset.to_string
       Dataset.to_timestamp
       Dataset.to_xarray
+      Dataset.train_split
       Dataset.transform
       Dataset.transpose
       Dataset.truediv

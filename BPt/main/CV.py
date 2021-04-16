@@ -34,20 +34,21 @@ def get_bpt_cv(cv, dataset):
 
     return BPtCV(splits=cv.splits, n_repeats=cv.n_repeats,
                  cv_strategy=cv_strategy, splits_vals=splits_vals,
-                 random_state=cv.random_state)
+                 random_state=cv.random_state, only_fold=cv.only_fold)
 
 
 class BPtCV(BaseEstimator):
 
     def __init__(self, splits, n_repeats,
                  cv_strategy, splits_vals,
-                 random_state='context'):
+                 random_state='context', only_fold=None):
 
         self.splits = splits
         self.n_repeats = n_repeats
         self.cv_strategy = cv_strategy
         self.splits_vals = splits_vals
         self.random_state = random_state
+        self.only_fold = only_fold
 
     def get_cv(self, fit_index, random_state, return_index):
 
@@ -59,7 +60,8 @@ class BPtCV(BaseEstimator):
                                        n_repeats=self.n_repeats,
                                        splits_vals=self.splits_vals,
                                        random_state=random_state,
-                                       return_index=return_index)
+                                       return_index=return_index,
+                                       only_fold=self.only_fold)
 
     def get_split(self, fit_index, random_state):
         '''Used when there is only one split, returns as index'''
@@ -76,15 +78,17 @@ class BPtCV(BaseEstimator):
                                                  random_state=random_state,
                                                  return_index=True)
 
-    def _build_repr(self):
-        parent_repr = super()._build_repr()
-        return parent_repr
+    def get_n_repeats(self):
+
+        if self.only_fold is None:
+            return self.n_repeats
+        return 1
 
 
 def inds_from_names(original_subjects, subject_splits):
 
     subject_inds = [[[original_subjects.get_loc(name) for name in s]
-                    for s in split] for split in subject_splits]
+                     for s in split] for split in subject_splits]
     return subject_inds
 
 
@@ -123,10 +127,6 @@ class CVStrategy(BaseEstimator):
             training set at every fold, or train test split.
 
             (default = None)
-
-        See Also
-        --------
-        ML.Define_Validation_Strategy : Main location to define CV object
 
         '''
 
@@ -340,7 +340,7 @@ class CVStrategy(BaseEstimator):
 
             subject_splits = [(
                 np.concatenate([groups.index[groups.isin(unique_groups[i[0]])],
-                               train_only]),
+                                train_only]),
                 groups.index[groups.isin(unique_groups[i[1]])]) for i in inds]
 
         else:
@@ -408,7 +408,7 @@ class CVStrategy(BaseEstimator):
                                      return_index=False):
 
         subject_splits = []
-        for n in range(n_repeats):
+        for _ in range(n_repeats):
             subject_splits += self.leave_one_group_out(subjects, groups_series,
                                                        return_index)
 
@@ -423,7 +423,7 @@ class CVStrategy(BaseEstimator):
         [*inds] = logo.split(subjects, groups=groups_series.loc[subjects])
 
         subject_splits = [(np.concatenate([subjects[i[0]], train_only]),
-                          subjects[i[1]]) for i in inds]
+                           subjects[i[1]]) for i in inds]
 
         if return_index:
             return inds_from_names(original_subjects, subject_splits)
@@ -440,7 +440,8 @@ class CVStrategy(BaseEstimator):
         return len(np.unique(groups))
 
     def get_cv(self, fit_index, splits, n_repeats,
-               splits_vals=None, random_state=None, return_index=False):
+               splits_vals=None, random_state=None,
+               return_index=False, only_fold=None):
         '''Always return as list of tuples'''
 
         if return_index == 'both':
@@ -459,23 +460,53 @@ class CVStrategy(BaseEstimator):
         # If split_vals passed, then by group
         if splits_vals is not None:
 
-            return self.repeated_leave_one_group_out(fit_index,
-                                                     n_repeats=n_repeats,
-                                                     groups_series=splits_vals,
-                                                     return_index=return_index)
+            cv_inds =\
+                self.repeated_leave_one_group_out(fit_index,
+                                                  n_repeats=n_repeats,
+                                                  groups_series=splits_vals,
+                                                  return_index=return_index)
 
         # K-fold is splits is an int
         elif isinstance(splits, int):
 
-            return self.repeated_k_fold(fit_index, n_repeats,
-                                        n_splits=splits,
-                                        random_state=random_state,
-                                        return_index=return_index)
+            cv_inds =\
+                self.repeated_k_fold(fit_index, n_repeats,
+                                     n_splits=splits,
+                                     random_state=random_state,
+                                     return_index=return_index)
 
         # Otherwise, as train test splits
         else:
 
-            return self.repeated_train_test_split(fit_index, n_repeats,
-                                                  test_size=splits,
-                                                  random_state=random_state,
-                                                  return_index=return_index)
+            cv_inds =\
+                self.repeated_train_test_split(fit_index, n_repeats,
+                                               test_size=splits,
+                                               random_state=random_state,
+                                               return_index=return_index)
+
+        return proc_only_fold(cv_inds, only_fold)
+
+
+def proc_only_fold(cv_inds, only_fold):
+
+    if isinstance(only_fold, int):
+        only_fold = [only_fold]
+
+    if only_fold is None:
+        return cv_inds
+
+    elif isinstance(only_fold, list):
+
+        cv_subset_inds = []
+
+        for of in only_fold:
+
+            try:
+                cv_subset_inds.append(cv_inds[of])
+            except IndexError:
+                raise IndexError(f'Padded only_fold={of} is out ' +
+                                 'of range for the generated CV folds.')
+
+        return cv_subset_inds
+
+    raise RuntimeError(f'only_fold={only_fold} is invalid.')

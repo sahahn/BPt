@@ -3,6 +3,12 @@ import numpy as np
 
 
 def get_fake_dataset():
+    '''
+    fake['1'] = [1, 2, 3]
+    fake['2'] = ['6', '7', '8']
+    fake['2'] = fake['2'].astype('category')
+    fake['3'] = [np.nan, 2, 3]
+    '''
 
     fake = Dataset()
     fake.verbose = -1

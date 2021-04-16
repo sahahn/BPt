@@ -1,5 +1,5 @@
 from .compare import Compare, Option
-from copy import deepcopy
+from copy import deepcopy, copy
 from sklearn.base import BaseEstimator
 from ..default.helpers import proc_input, coarse_any_obj_check
 from ..util import conv_to_list, BPtInputMixIn
@@ -28,6 +28,7 @@ def proc_all(base_obj):
     proc_name(base_obj, 'base_model')
     proc_name(base_obj, 'models')
     proc_name(base_obj, 'scorer')
+    proc_name(base_obj, 'target_scaler')
 
 
 def proc_name(base_obj, name):
@@ -44,6 +45,23 @@ def proc_name(base_obj, name):
 
         elif isinstance(obj, str):
             setattr(base_obj, name, proc_input(obj))
+
+
+def uniquify(obj):
+
+    for p_str in ['obj', 'base_model', 'models', 'target_scaler']:
+
+        if hasattr(obj, p_str):
+            p = getattr(obj, p_str)
+
+            # Recursive check first
+            if isinstance(p, list):
+                [uniquify(pp) for pp in p]
+            elif hasattr(p, '_uniquify'):
+                p._uniquify()
+
+            # Then set with copy
+            setattr(obj, p_str, copy(p))
 
 
 class Params(BaseEstimator):
@@ -85,17 +103,6 @@ class Params(BaseEstimator):
         self.extra_params.update(extra_params)
 
         return self
-
-    def __repr__(self):
-
-        return super().__repr__()
-
-        # Not sure if really want this...
-        # with pd.option_context('display.max_rows', 1,
-        #                       'display.max_columns', 1,
-        #                       'display.max_colwidth', 1):
-        #    rep = super().__repr__()
-        # return rep
 
 
 class Check():
@@ -323,6 +330,9 @@ class Piece(Params, Check):
                 param_names += ['extra_params']
 
         return param_names
+
+    def _uniquify(self):
+        uniquify(self)
 
 
 _piece_docs = {}
@@ -1087,7 +1097,6 @@ class Ensemble(Model):
             models = [models]
 
         self.models = models
-
         self.params = params
         self.scope = scope
         self.param_search = param_search
@@ -1488,11 +1497,7 @@ class ParamSearch(Params):
 def check_if_sklearn_step(step):
 
     # Skip def. not valid cases
-    if isinstance(step, Piece):
-        return False
-    elif isinstance(step, BPtInputMixIn):
-        return False
-    elif isinstance(step, str):
+    if isinstance(step, (Piece, Pipeline, BPtInputMixIn, str)):
         return False
 
     # If Tuple
@@ -1678,6 +1683,9 @@ class Pipeline(Params):
         self.steps = self._proc_duplicates(self.steps)
         self._flatten_steps()
 
+        # Uniquify
+        self._uniquify()
+
         # Proc input
         self.steps = self._proc_input(self.steps)
 
@@ -1723,7 +1731,8 @@ class Pipeline(Params):
                 raise RuntimeError(repr(step) + ' is not a valid Model')
 
         # If last step isn't model - or custom, raise error
-        if not isinstance(self.steps[-1], (Model, Custom, BPtInputMixIn)):
+        if not isinstance(self.steps[-1], (Model, Pipeline,
+                                           Custom, BPtInputMixIn)):
             raise RuntimeError(repr(step) + ' is not a valid Model')
 
     def _validate_input(self):
@@ -1733,12 +1742,11 @@ class Pipeline(Params):
         # Validate steps
         for step in self.steps:
 
-            if not isinstance(step, (Piece, Compare, Select)):
+            if not isinstance(step, (Piece, Pipeline, Compare, Select)):
                 raise RuntimeError('passed step:' + repr(step) +
                                    ' is not a valid Pipeline Piece / '
                                    'input wrapper')
 
-            # Check input args in case anything changed
             step._check_args()
 
         # Validate param search
@@ -1749,6 +1757,21 @@ class Pipeline(Params):
 
             # Check input args in case anything changed
             self.param_search._check_args()
+
+    def _uniquify(self):
+
+        # First call recursively
+        for step in self.steps:
+            if isinstance(step, (Piece, Pipeline, Compare, Select)):
+                step._uniquify()
+
+        # Then set steps with copy of steps
+        self.steps = [copy(step) for step in self.steps]
+
+    def _check_args(self):
+
+        for step in self.steps:
+            step._check_args()
 
     def _flatten_steps(self):
 
@@ -2138,11 +2161,25 @@ class ModelPipeline(Pipeline):
 
             setattr(self, param_name, new_params)
 
-    def __check_args(self, params):
+    def _uniquify(self):
+
+        for param_name in self.fixed_piece_order:
+            params = getattr(self, param_name)
+
+            # Call recursively
+            if isinstance(params, list):
+                [p._uniquify() for p in params]
+            elif hasattr(params, '_uniquify'):
+                params._uniquify()
+
+            # Then set params with copy
+            setattr(self, param_name, copy(params))
+
+    def _check_args(self, params):
 
         for p in params:
             if isinstance(p, list):
-                self.__check_args(p)
+                self._check_args(p)
             else:
                 p._check_args()
 
@@ -2212,6 +2249,9 @@ class ModelPipeline(Pipeline):
                       'but will have no effect as it is not',
                       ' a valid parameter!')
 
+        # Uniquify
+        self._uniquify()
+
         # Check for duplicate scopes
         self._proc_all_pieces(self._proc_duplicates)
 
@@ -2220,7 +2260,7 @@ class ModelPipeline(Pipeline):
         proc_all(self.param_search)
 
         # Double check input args in case something changed
-        self._proc_all_pieces(self.__check_args)
+        self._proc_all_pieces(self._check_args)
 
         # Proc param search if not None
         if self.param_search is not None:
@@ -2386,15 +2426,18 @@ class ProblemSpec(Params):
         specify the reserved keyword 'train' to
         specify that only the training subjects should be used.
 
-        If set to 'all' (as is by default),
-        all avaliable subjects will be used.
+        If set to 'default', special behavior will be
+        used where if a train/test split is defined then subjects
+        will be set to 'train' by default (unless cv='test', then subjects
+        will be set to 'all'). If a train/test split is not defined,
+        then subjects will be set to 'all'.
 
         See :ref:`Subjects` for more information
         of the different accepted BPt subject style inputs.
 
         ::
 
-            default = 'all'
+            default = 'default'
 
     problem_type : str or 'default', optional
         This parameter controls what type of machine learning
@@ -2476,7 +2519,7 @@ class ProblemSpec(Params):
 
     '''
     def __init__(self, target=0, scorer='default',
-                 scope='all', subjects='all',
+                 scope='all', subjects='default',
                  problem_type='default',
                  n_jobs=1, random_state=1,
                  base_dtype='float32'):
@@ -2674,21 +2717,70 @@ class CV(Params):
         ::
 
             default = 'context'
+
+    only_fold : int, list of int, or None, optional
+        This parameter specifies if special subset of the requested
+        CV folds should be used. If kept as None, normal all
+        fold behavior will be used. Otherwise, if passed as an int,
+        then that int must represent a valid cv fold, e.g.,
+
+        ::
+
+            only_fold = 0
+
+        Would run the CV but only the 1st fold. Likewise if
+        a list is passed,
+
+        ::
+
+            only_fold = [0, 2]
+
+        Then only the first and 3rd folds will be run.
+        This parameter is useful in cases where the base
+        experiment is too computationally intensive, and
+        it is desired to run a complete CV but in smaller
+        chunks.
+
+        .. warning::
+
+            When used with n_repeats > 1, only_fold
+            will index folds from the repeats, e.g.,
+            split=2, n_repeats=2, only_fold can be 0, 1, 2, or 3,
+            but functionally for say computing summary scores, like std across
+            repeats, n_repeats will be treated as 1.
+
+            For example if passed with the setup above only_fold=[0, 1, 2],
+            then progress bars and summary stats will still show n_repeats=1.
+
+        ::
+
+            default = None
+
+    cv_strategy_kwargs : kwargs, optional
+        If any additional parameters are passed in kwargs style,
+        e.g., ::
+
+            splits = 3
+
+        Then they will try to be set in the base cv_strategy.
+
     '''
 
     def __init__(self, splits=3, n_repeats=1,
                  cv_strategy=None, random_state='context',
-                 **cv_strategy_args):
+                 only_fold=None,
+                 **cv_strategy_kwargs):
 
         self.splits = splits
         self.n_repeats = n_repeats
         self.cv_strategy = cv_strategy
         self.random_state = random_state
+        self.only_fold = only_fold
 
         if self.cv_strategy is None:
             self.cv_strategy = CVStrategy()
 
-        self.cv_strategy.set_params(**cv_strategy_args)
+        self.cv_strategy.set_params(**cv_strategy_kwargs)
 
     def _apply_dataset(self, dataset):
         return get_bpt_cv(self, dataset)

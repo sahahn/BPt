@@ -90,14 +90,16 @@ Plotting / Viewing
    Dataset.nan_info
    Dataset.summary
 
-********************************
-Dataset - Test Split Methods
-********************************
+
+Train / Test Split
+~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api/
 
    Dataset.set_test_split
    Dataset.set_train_split
+   Dataset.test_split
+   Dataset.train_split
    Dataset.save_test_split
    Dataset.save_train_split

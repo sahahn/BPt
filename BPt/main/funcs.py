@@ -1,4 +1,4 @@
-from .input import Model, Pipeline, ProblemSpec, CV
+from .input import Model, Pipeline, ProblemSpec, CV, Custom
 from copy import deepcopy
 import numpy as np
 import pandas as pd
@@ -390,11 +390,13 @@ def _get_pipeline(pipeline, problem_spec, dataset,
     # nested model pipeline's
     def nested_check(obj):
 
+        # Case where pipeline is nested as an obj
         if hasattr(obj, 'obj') and isinstance(obj.obj, Pipeline):
 
             nested_pipe, nested_pipe_params =\
                 _get_pipeline(pipeline=obj.obj,
                               problem_spec=nested_ps,
+                              dataset=dataset,
                               has_search=has_search)
 
             # Set obj as nested pipeline
@@ -402,20 +404,45 @@ def _get_pipeline(pipeline, problem_spec, dataset,
 
             # Set obj's params as the nested_pipe_params
             setattr(obj, 'params', nested_pipe_params)
-            return
 
+        # Case where pipeline is passed as a step
+        elif hasattr(obj, 'steps'):
+            for i, step in enumerate(obj.steps):
+                if isinstance(step, Pipeline):
+
+                    # Call nested get pipeline
+                    nested_pipe, nested_pipe_params =\
+                        _get_pipeline(pipeline=step,
+                                      problem_spec=nested_ps,
+                                      dataset=dataset,
+                                      has_search=has_search)
+
+                    # If params to pass along, needs to be Model
+                    if len(nested_pipe_params) > 0:
+                        new_step = Model(nested_pipe,
+                                         params=nested_pipe_params)
+
+                    # Otherwise pass as custom
+                    else:
+                        new_step = Custom(nested_pipe)
+
+                    # Replace step
+                    obj.steps[i] = new_step
+
+        # Recursive cases
         if isinstance(obj, list):
             [nested_check(o) for o in obj]
             return
 
         elif isinstance(obj, tuple):
             (nested_check(o) for o in obj)
+            return
 
         elif isinstance(obj, dict):
             [nested_check(obj[k]) for k in obj]
             return
 
-        if hasattr(obj, 'get_params'):
+        elif hasattr(obj, 'get_params'):
             for param in obj.get_params(deep=False):
                 try:
                     nested_check(getattr(obj, param))
@@ -537,6 +564,10 @@ def _preproc_param_search(object, ps):
     if param_search is None:
         return False
 
+    # If already processed, do nothing, but return True
+    if isinstance(param_search, dict):
+        return True
+
     # If a param search, apply ps and dataset + convert to dict
     as_dict = param_search._as_dict(ps=ps)
 
@@ -627,6 +658,20 @@ def _sk_prep(pipeline, dataset, problem_spec='default',
 def _eval_prep(estimator, ps, dataset, cv=5):
     '''Internal helper function.'''
 
+    # Check for subjects == 'default' in problem_spec
+    if ps.subjects == 'default':
+
+        # If a test set is defined
+        if dataset.test_subjects is not None:
+            if cv == 'test':
+                ps.subjects = 'all'
+            else:
+                ps.subjects = 'train'
+
+        # Otherwise, subjects = 'all' if no test set defined
+        else:
+            ps.subjects = 'all'
+
     # Get X and y - ps should already be init'ed
     X, y = dataset.get_Xy(problem_spec=ps)
 
@@ -646,7 +691,7 @@ def _eval_prep(estimator, ps, dataset, cv=5):
         bpt_cv = cv._apply_dataset(dataset)
 
         # Save n_repeats
-        n_repeats = bpt_cv.n_repeats
+        n_repeats = bpt_cv.get_n_repeats()
 
         # Convert from BPtCV to sklearn compat, i.e., just raw index
         sk_cv = bpt_cv.get_cv(X.index,
@@ -1072,6 +1117,10 @@ def evaluate(pipeline, dataset,
         # Update compare bars to be the the compare bars
         # set by last run
         compare_bars = evaluator.compare_bars
+
+        # Then reset stored attribute,
+        # so the evaluator object can be pickled
+        evaluator.compare_bars = None
 
         # Add to compare dict
         evaluators[key] = evaluator

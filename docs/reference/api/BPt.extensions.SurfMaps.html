@@ -263,7 +263,7 @@
 <h1>BPt.extensions.SurfMaps<a class="headerlink" href="#bpt-extensions-surfmaps" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.extensions.SurfMaps">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.extensions.</code><code class="sig-name descname">SurfMaps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">maps</span></em>, <em class="sig-param"><span class="n">strategy</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vectorize</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L484-L905"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.SurfMaps" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.extensions.</code><code class="sig-name descname">SurfMaps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">maps</span></em>, <em class="sig-param"><span class="n">strategy</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vectorize</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L485-L908"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.SurfMaps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract signals from overlapping labels.</p>
 <p>This class functions similar to
 <a class="reference external" href="https://nilearn.github.io/modules/generated/nilearn.input_data.NiftiMapsMasker.html#nilearn.input_data.NiftiMapsMasker" title="(in Nilearn)"><code class="xref py py-class docutils literal notranslate"><span class="pre">nilearn.input_data.NiftiMapsMasker</span></code></a>, except
@@ -272,8 +272,10 @@ it is designed to work for surface, cifti or any arbitrary
 <p>This object calculates the signal for each of the
 passed maps as extracted from the input during fit,
 and returns for each map a value.</p>
-<dl>
-<dt>maps<span class="classifier">str or array-like, optional</span></dt><dd><p>This parameter represents the maps in which
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>maps</strong><span class="classifier">str or array-like, optional</span></dt><dd><p>This parameter represents the maps in which
 to apply to each surface, where the shape of
 the passed maps should be (# of vertex, # of maps)
 or in other words, the size of the data array in the first
@@ -284,7 +286,7 @@ as the second dimension.</p>
 or the str file location of a numpy or other
 valid surface file format array in which to load.</p>
 </dd>
-<dt>strategy<span class="classifier">{‘auto’, ‘ls’, ‘average’}, optional</span></dt><dd><p>The strategy in which the maps are used to extract
+<dt><strong>strategy</strong><span class="classifier">{‘auto’, ‘ls’, ‘average’}, optional</span></dt><dd><p>The strategy in which the maps are used to extract
 signal. If ‘ls’ is selected, which stands for
 least squares, the least-squares solution will
 be used for each region.</p>
@@ -332,7 +334,7 @@ of the regions. In general, it depends on
 what signal you are trying to summarize, and
 how you are trying to summarize it.</p>
 </dd>
-<dt>mask<span class="classifier">None, str or array-like, optional</span></dt><dd><p>This parameter allows you to optional pass a mask of values in
+<dt><strong>mask</strong><span class="classifier">None, str or array-like, optional</span></dt><dd><p>This parameter allows you to optional pass a mask of values in
 which to not calculate ROI values for.
 This can be passed as a str or
 array-like of values (just like maps),
@@ -349,13 +351,15 @@ the shape of mask should be (size).</p>
 </pre></div>
 </div>
 </dd>
-<dt>vectorize<span class="classifier">bool, optional</span></dt><dd><p>If the returned array should be flattened to 1D. E.g., if this is
+<dt><strong>vectorize</strong><span class="classifier">bool, optional</span></dt><dd><p>If the returned array should be flattened to 1D. E.g., if this is
 the last step in a set of loader steps this should be True.
 Also note, if the surface data it is being applied to is 1D,
 then the output will be 1D regardless of this parameter.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">

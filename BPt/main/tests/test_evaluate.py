@@ -274,6 +274,81 @@ def test_evaluate_cv():
     assert len(evaluator.std_scores) == 6
 
 
+def test_nan_targets():
+
+    dt_pipe = ModelPipeline(model=Model('dt'))
+    dataset = get_fake_binary_dataset()
+    dataset.loc[0, '3'] = np.nan
+
+    cv = CV(splits=3, n_repeats=1)
+    evaluator = evaluate(pipeline=dt_pipe,
+                         dataset=dataset,
+                         cv=cv,
+                         scorer='roc_auc',
+                         progress_bar=False,
+                         problem_type='binary')
+
+    assert evaluator.n_repeats_ == 1
+    assert evaluator.n_splits_ == 3
+
+    for tr in evaluator.train_indices:
+        assert 0 not in tr
+
+    # Should be in one here
+    is_in = [0 in tr for tr in evaluator.all_train_indices]
+    assert any(is_in)
+
+    assert len(evaluator.all_train_indices) == len(evaluator.train_indices)
+
+    ati_len = len(sum([list(e) for e in evaluator.all_train_indices], []))
+    ti_len = len(sum([list(e) for e in evaluator.train_indices], []))
+    assert ati_len != ti_len
+
+    avi_len = len(sum([list(e) for e in evaluator.all_val_indices], []))
+    vi_len = len(sum([list(e) for e in evaluator.val_indices], []))
+    assert avi_len != vi_len
+
+    preds_dfs_dropt = evaluator.get_preds_dfs(drop_nan_targets=True)
+    preds_dfs = evaluator.get_preds_dfs(drop_nan_targets=False)
+    assert preds_dfs_dropt[0].shape != preds_dfs[0].shape
+
+
+def test_only_fold_cv_param():
+
+    dt_pipe = ModelPipeline(model=Model('dt'))
+    dataset = get_fake_binary_dataset()
+    cv = CV(splits=3, n_repeats=1, only_fold=0)
+    evaluator = evaluate(pipeline=dt_pipe,
+                         dataset=dataset,
+                         cv=cv,
+                         scorer='roc_auc',
+                         progress_bar=False,
+                         problem_type='binary')
+
+    assert evaluator.n_repeats_ == 1
+    assert evaluator.n_splits_ == 1
+    assert len(evaluator.scores['roc_auc']) == 1
+    assert len(evaluator.train_indices) == 1
+
+
+def test_multiple_only_fold_cv_param():
+
+    dt_pipe = ModelPipeline(model=Model('dt'))
+    dataset = get_fake_binary_dataset()
+    cv = CV(splits=3, n_repeats=2, only_fold=[0, 4])
+    evaluator = evaluate(pipeline=dt_pipe,
+                         dataset=dataset,
+                         cv=cv,
+                         scorer='roc_auc',
+                         progress_bar=False,
+                         problem_type='binary')
+
+    assert evaluator.n_repeats_ == 1
+    assert evaluator.n_splits_ == 2
+    assert len(evaluator.scores['roc_auc']) == 2
+    assert len(evaluator.train_indices) == 2
+
+
 def test_evaluate_with_resid():
 
     dataset = get_fake_dataset()

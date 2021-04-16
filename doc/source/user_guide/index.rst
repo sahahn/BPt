@@ -45,3 +45,4 @@ Full Examples
     dep_full_example
     ssrt
     waist_cm
+    sex

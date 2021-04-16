@@ -6,6 +6,13 @@ from .datasets import (get_fake_dataset, get_fake_dataset7,
 from ..Dataset import Dataset
 
 
+def test_to_category():
+
+    df = Dataset([1, 2, 3], columns=['0'])
+    df = df.add_scope('0', 'category')
+    assert df['0'].dtype.name == 'category'
+
+
 def test_add_unique_overlap():
 
     df = get_fake_dataset()
@@ -65,6 +72,26 @@ def test_to_binary_object():
     assert 0 not in df.index
     assert 1 in df.index
     assert df.shape == (6, 2)
+
+
+def test_to_binary_inplace_copy():
+
+    df = get_fake_dataset()
+    assert len(df['2'].unique()) == 3
+    df.to_binary('2', inplace=False)
+    assert len(df['2'].unique()) == 3
+
+
+def test_to_binary_inplace_copy2():
+
+    df = get_fake_dataset()
+    assert len(df['2'].unique()) == 3
+
+    df.to_binary('2', drop=False, inplace=False)
+    assert np.nan not in df['2'].values
+
+    df.to_binary('2', drop=False, inplace=True)
+    assert np.nan in df['2'].values
 
 
 def test_to_binary_from_bool():
@@ -136,6 +163,16 @@ def test_nan_to_class():
     assert pd.isnull(df.encoders['2'][2])
 
 
+def test_nan_to_class_inplace_copy():
+
+    df = Dataset([1, 2, np.nan], columns=['1'])
+
+    new = df.nan_to_class(scope='1', inplace=False)
+
+    assert not pd.isna(new['1'].values[2])
+    assert pd.isna(df['1'].values[2])
+
+
 def test_k_bin():
 
     df = get_fake_dataset7()
@@ -155,10 +192,50 @@ def test_k_bin():
     df.k_bin(scope='1', n_bins=2, strategy='uniform', inplace=True)
     assert df['1'].nunique(dropna=True) == 2
 
-    # Test comap with nan to class
+    # Test compat with nan to class
     df = df.nan_to_class(scope='1')
     assert df['1'].nunique(dropna=True) == 3
     assert len(df.encoders['1']) == 3
+
+
+def test_k_bin_quantile():
+
+    data = Dataset([.1, .2, .3, .4, .5, .6, .7, .8, .9], columns=['feat'])
+    data = data.k_bin('feat', n_bins=3, strategy='quantile')
+
+    assert len(np.unique(data['feat'])) == 3
+
+
+def test_k_bin_quantile_inplace():
+
+    data = Dataset([.1, .2, .3, .4, .5, .6, .7, .8, .9], columns=['feat'])
+    assert len(np.unique(data['feat'])) == 9
+
+    data.k_bin('feat', n_bins=3, strategy='uniform', inplace=False)
+
+    assert len(np.unique(data['feat'])) == 9
+
+
+def test_ordinalize_inplace():
+
+    data = Dataset(['a', 'b', 'c'], columns=['feat'])
+    assert 'a' in data['feat'].values
+
+    data.ordinalize(scope='all', inplace=False)
+    assert 'a' in data['feat'].values
+
+    ord = data.ordinalize(scope='all', inplace=False)
+    assert 'a' not in ord['feat'].values
+    assert 'a' in data['feat'].values
+
+
+def test_ordinalize():
+
+    data = Dataset(['a', 'b', 'c'], columns=['feat'])
+    assert 'a' in data['feat'].values
+
+    data.ordinalize(scope='all', inplace=True)
+    assert 'a' not in data['feat'].values
 
 
 def test_binarize_threshold():
@@ -170,6 +247,19 @@ def test_binarize_threshold():
     assert df.loc[1, '1'] == 1
     assert 'category' in df.scopes['1']
     assert df.encoders['1'] == {0: '<1.5', 1: '>=1.5'}
+
+
+def test_binarize_inplace_copy():
+
+    df = get_fake_dataset()
+
+    assert df.loc[0, '1'] != 0
+    assert df.loc[1, '1'] != 1
+
+    df.binarize('1', threshold=1.5, inplace=False)
+
+    assert df.loc[0, '1'] != 0
+    assert df.loc[1, '1'] != 1
 
 
 def test_binarize_with_nans():

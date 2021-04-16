@@ -254,13 +254,22 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
         if drop:
             self.drop(to_drop, axis=0, inplace=True)
 
+        # Grab copy of column to fill
+        # after drops
+        new_col = self[col].copy()
+
         # Binarize
-        self[col] = self[col].where(self[col] > lower, 0)
-        self[col] = self[col].where(self[col] < upper, 1)
+        new_col = new_col.where(new_col > lower, 0)
+        new_col = new_col.where(new_col < upper, 1)
 
         # If not dropping, replace as NaN here
         if not drop:
-            self.loc[to_drop, col] = np.nan
+            new_col.loc[to_drop] = np.nan
+
+        # Make sure column is now categorical and replace
+        new_col = new_col.astype('category')
+        remove_unused_categories(new_col)
+        self[col] = new_col
 
         # Add to name map
         self.encoders[col] =\
@@ -269,9 +278,17 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
     # If a single threshold
     else:
 
+        # Get copy of column to operate on
+        new_col = self[col].copy()
+
         # Binarize
-        self[col] = self[col].where(self[col] >= threshold, 0)
-        self[col] = self[col].where(self[col] < threshold, 1)
+        new_col = new_col.where(new_col >= threshold, 0)
+        new_col = new_col.where(new_col < threshold, 1)
+
+        # Make sure column is now categorical and replace
+        new_col = new_col.astype('category')
+        remove_unused_categories(new_col)
+        self[col] = new_col
 
         # Add to name map
         self.encoders[col] =\
@@ -329,6 +346,22 @@ def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=False):
         ::
 
             default = False
+
+    Examples
+    ---------
+    .. plot::
+        :context: close-figs
+
+        import BPt as bp
+        data = bp.Dataset([.1, .2, .3, .4, .5, .6, .7, .8, .9],
+                          columns=['feat'])
+
+        # Apply k_bin, not in place, then plot
+        data.k_bin('feat', n_bins=3, strategy='uniform').plot('feat')
+
+        # Apply with dif params
+        data.k_bin('feat', n_bins=5, strategy='uniform').plot('feat')
+
     '''
 
     if not inplace:
@@ -372,11 +405,7 @@ def _k_bin(self, col, n_bins, strategy):
                 strategy, level=1)
 
     # Add any needed new categories to the column
-    add_new_categories(self[col], new_values)
-
-    # Replace with new values in place
-    self.loc[non_nan_subjects, col] = new_values
-    remove_unused_categories(self[col])
+    self._replace_cat_values(col, new_values, non_nan_subjects)
 
     # Create encoder information
     encoder = {}
@@ -393,9 +422,6 @@ def _k_bin(self, col, n_bins, strategy):
 
     # Save in encoders
     self.encoders[col] = encoder
-
-    # Make sure col is category type
-    self._add_scope(col, 'category')
 
 
 def ordinalize(self, scope, nan_to_class=False, inplace=False):
@@ -474,11 +500,7 @@ def _ordinalize(self, col):
     new_values = label_encoder.fit_transform(np.array(values))
 
     # Add any needed new categories to the column
-    add_new_categories(self[col], new_values)
-
-    # Replace values in place
-    self.loc[non_nan_subjects, col] = new_values
-    remove_unused_categories(self[col])
+    self._replace_cat_values(col, new_values, non_nan_subjects)
 
     # Convert label encoder to encoder
     encoder = {}
@@ -487,6 +509,23 @@ def _ordinalize(self, col):
 
     # Save in encoders
     self.encoders[col] = encoder
+
+
+def _replace_cat_values(self, col, new_values, non_nan_subjects):
+
+    # Make copy of column
+    new_col = self[col].copy()
+
+    # Add new categories if needed / already categorical
+    add_new_categories(new_col, new_values)
+    new_col.loc[non_nan_subjects] = new_values
+
+    # Make sure cast to type category
+    new_col = new_col.astype('category')
+    remove_unused_categories(new_col)
+
+    # Add back in place
+    self[col] = new_col
 
     # Make sure col is category type
     self._add_scope(col, 'category')
@@ -546,9 +585,16 @@ def nan_to_class(self, scope='category', inplace=False):
         # Add nan class as next avaliable
         nan_class = np.max(values.astype(int)) + 1
 
-        add_new_categories(self[col], [nan_class])
-        self.loc[nan_subjects, col] = nan_class
-        remove_unused_categories(self[col])
+        # Get a copy of the new column
+        new_col = self[col].copy()
+
+        # Add categories, replace vals, and remove unused
+        add_new_categories(new_col, [nan_class])
+        new_col.loc[nan_subjects] = nan_class
+        remove_unused_categories(new_col)
+
+        # Replace col with new column
+        self[col] = new_col
 
         # Update encoder entry with NaN
         self.encoders[col][nan_class] = np.nan

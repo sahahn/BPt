@@ -637,8 +637,9 @@ class Dataset(pd.DataFrame):
                 # Need to cast to int first as intermediate
                 self[col] = self[col].astype('int')
 
-            self[col] = self[col].astype('category')
-            self[col].cat.as_ordered(inplace=True)
+            new_col = self[col].copy().astype('category')
+            new_col.cat.as_ordered(inplace=True)
+            self[col] = new_col
 
             return
 
@@ -1455,7 +1456,8 @@ class Dataset(pd.DataFrame):
                             _ordinalize,
                             nan_to_class,
                             copy_as_non_input,
-                            add_unique_overlap)
+                            add_unique_overlap,
+                            _replace_cat_values)
 
     from ._validation import (_validate_cv_key,
                               _proc_cv_strategy,

@@ -1,3 +1,4 @@
+from copy import deepcopy
 import numpy as np
 import pandas as pd
 import tempfile
@@ -122,6 +123,62 @@ def test_add_scope():
     df = get_fake_dataset()
     df = df.add_scope(scope='1', scope_val='category')
     assert(df['1'].dtype.name == 'category')
+
+
+def test_copy():
+
+    df = get_fake_dataset()
+    df_copy = df.copy(deep=True)
+
+    assert df_copy.loc[0, '1'] == 1
+    df_copy.loc[0, '1'] = 6
+    assert df_copy.loc[0, '1'] == 6
+    assert df.loc[0, '1'] == 1
+
+
+def test_copy_shallow():
+
+    df = get_fake_dataset()
+    df_copy = df.copy(deep=False)
+
+    df_copy['4'] = [6, 6, 6]
+
+    assert '4' in list(df_copy)
+    assert '4' not in list(df)
+
+
+def test_get_shallow_categories():
+
+    df = get_fake_dataset()
+    df_copy = df.copy(deep=False)
+
+    df_copy['2'].cat.add_categories([4], inplace=True)
+    assert 4 in df_copy['2'].cat.categories
+    assert 4 in df['2'].cat.categories
+
+    for col in df_copy:
+        if df_copy[col].dtype.name == 'category':
+            df_copy[col].cat = deepcopy(df_copy[col].cat)
+
+    df_copy['2'].cat.add_categories([10], inplace=True)
+    assert 10 in df_copy['2'].cat.categories
+    assert 5 not in df['2'].cat.categories
+
+
+def test_get_shallow2():
+
+    df = get_fake_dataset()
+    df_copy = df.copy(deep=False)
+
+    # On a shallow copy, setting like
+    # this won't effect the original
+    df_copy['2'] = [10, 10, 10]
+    assert df.loc[0, '2'] != 10
+
+    # Making changes like this
+    # will influence original?
+    df_copy.loc[0, '1'] = 8
+    assert df.loc[0, '1'] == 8
 
 
 def test_remove_scope():

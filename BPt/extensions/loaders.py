@@ -248,7 +248,8 @@ class SurfLabels(BaseEstimator, TransformerMixin):
                  background_label=0,
                  mask=None,
                  strategy='mean',
-                 vectorize=True):
+                 vectorize=True,
+                 names=None):
 
         self.labels = labels
         self.background_label = background_label

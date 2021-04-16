@@ -50,7 +50,7 @@ binary
 
 	0. "base elastic" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'elasticnet'
 		class_weight: None
@@ -59,7 +59,7 @@ binary
 
 	1. "elastic classifier" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'elasticnet'
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -69,7 +69,7 @@ binary
 
 	2. "elastic clf v2" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'elasticnet'
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -79,7 +79,7 @@ binary
 
 	3. "elastic classifier extra" ::
 
-		max_iter: Scalar(lower=1000, upper=10000).set_mutation(sigma=1500.0).set_bounds(full_range_sampling=True, lower=1000, upper=10000).set_integer_casting()
+		max_iter: Scalar(lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=True, lower=100, upper=1000).set_integer_casting()
 		multi_class: 'auto'
 		penalty: 'elasticnet'
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -175,7 +175,7 @@ binary
 
 	0. "base lasso" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'l1'
 		class_weight: None
@@ -183,7 +183,7 @@ binary
 
 	1. "lasso C" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'l1'
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -192,7 +192,7 @@ binary
 
 	2. "lasso C extra" ::
 
-		max_iter: Scalar(lower=1000, upper=10000).set_mutation(sigma=1500.0).set_bounds(full_range_sampling=True, lower=1000, upper=10000).set_integer_casting()
+		max_iter: Scalar(lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=True, lower=100, upper=1000).set_integer_casting()
 		multi_class: 'auto'
 		penalty: 'l1'
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -262,11 +262,11 @@ binary
 
 	0. "base linear svc" ::
 
-		max_iter: 1000
+		max_iter: 100
 
 	1. "linear svc dist" ::
 
-		max_iter: 1000
+		max_iter: 100
 		C: Log(lower=0.0001, upper=10000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.0001, 10000.0, full_range_sampling=True)
 		class_weight: TransitionChoice([None, 'balanced'])
 
@@ -280,7 +280,7 @@ binary
 
 	0. "base logistic" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'none'
 		class_weight: None
@@ -419,20 +419,20 @@ binary
 
 	0. "base ridge" ::
 
-		max_iter: 1000
+		max_iter: 100
 		penalty: 'l2'
 		solver: 'saga'
 
 	1. "ridge C" ::
 
-		max_iter: 1000
+		max_iter: 100
 		solver: 'saga'
 		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
 		class_weight: TransitionChoice([None, 'balanced'])
 
 	2. "ridge C extra" ::
 
-		max_iter: Scalar(lower=1000, upper=10000).set_mutation(sigma=1500.0).set_bounds(full_range_sampling=True, lower=1000, upper=10000).set_integer_casting()
+		max_iter: Scalar(lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=True, lower=100, upper=1000).set_integer_casting()
 		solver: 'saga'
 		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -464,7 +464,7 @@ binary
 		penalty: TransitionChoice(['l2', 'l1', 'elasticnet'])
 		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
-		max_iter: 1000
+		max_iter: 100
 		learning_rate: TransitionChoice(['optimal', 'invscaling', 'adaptive', 'constant'])
 		eta0: Log(lower=1e-06, upper=1000.0).set_mutation(exponent=31.62277660168379, sigma=1.0).set_bounds(1e-06, 1000.0, full_range_sampling=True)
 		power_t: Scalar(lower=0.1, upper=0.9).set_mutation(sigma=0.13333333333333333).set_bounds(full_range_sampling=True, lower=0.1, upper=0.9)
@@ -607,17 +607,17 @@ regression
 
 	0. "base elastic net" ::
 
-		max_iter: 1000
+		max_iter: 100
 
 	1. "elastic regression" ::
 
-		max_iter: 1000
+		max_iter: 100
 		alpha: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
 
 	2. "elastic regression extra" ::
 
-		max_iter: Scalar(lower=1000, upper=10000).set_mutation(sigma=1500.0).set_bounds(full_range_sampling=True, lower=1000, upper=10000).set_integer_casting()
+		max_iter: Scalar(lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=True, lower=100, upper=1000).set_integer_casting()
 		alpha: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
 		tol: Log(lower=1e-06, upper=0.01).set_mutation(exponent=4.641588833612779, sigma=1.0).set_bounds(1e-06, 0.01, full_range_sampling=True)
@@ -698,11 +698,11 @@ regression
 
 	0. "base lasso regressor" ::
 
-		max_iter: 1000
+		max_iter: 100
 
 	1. "lasso regressor dist" ::
 
-		max_iter: 1000
+		max_iter: 100
 		alpha: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
 
 
@@ -777,12 +777,12 @@ regression
 	0. "base linear svr" ::
 
 		loss: 'epsilon_insensitive'
-		max_iter: 1000
+		max_iter: 100
 
 	1. "linear svr dist" ::
 
 		loss: 'epsilon_insensitive'
-		max_iter: 1000
+		max_iter: 100
 		C: Log(lower=0.0001, upper=10000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.0001, 10000.0, full_range_sampling=True)
 
 
@@ -905,12 +905,12 @@ regression
 
 	0. "base ridge regressor" ::
 
-		max_iter: 1000
+		max_iter: 100
 		solver: 'lsqr'
 
 	1. "ridge regressor dist" ::
 
-		max_iter: 1000
+		max_iter: 100
 		solver: 'lsqr'
 		alpha: Log(lower=0.001, upper=100000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.001, 100000.0, full_range_sampling=True)
 
@@ -1034,7 +1034,7 @@ categorical
 
 	0. "base elastic" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'elasticnet'
 		class_weight: None
@@ -1043,7 +1043,7 @@ categorical
 
 	1. "elastic classifier" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'elasticnet'
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -1053,7 +1053,7 @@ categorical
 
 	2. "elastic clf v2" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'elasticnet'
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -1063,7 +1063,7 @@ categorical
 
 	3. "elastic classifier extra" ::
 
-		max_iter: Scalar(lower=1000, upper=10000).set_mutation(sigma=1500.0).set_bounds(full_range_sampling=True, lower=1000, upper=10000).set_integer_casting()
+		max_iter: Scalar(lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=True, lower=100, upper=1000).set_integer_casting()
 		multi_class: 'auto'
 		penalty: 'elasticnet'
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -1159,7 +1159,7 @@ categorical
 
 	0. "base lasso" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'l1'
 		class_weight: None
@@ -1167,7 +1167,7 @@ categorical
 
 	1. "lasso C" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'l1'
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -1176,7 +1176,7 @@ categorical
 
 	2. "lasso C extra" ::
 
-		max_iter: Scalar(lower=1000, upper=10000).set_mutation(sigma=1500.0).set_bounds(full_range_sampling=True, lower=1000, upper=10000).set_integer_casting()
+		max_iter: Scalar(lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=True, lower=100, upper=1000).set_integer_casting()
 		multi_class: 'auto'
 		penalty: 'l1'
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -1246,11 +1246,11 @@ categorical
 
 	0. "base linear svc" ::
 
-		max_iter: 1000
+		max_iter: 100
 
 	1. "linear svc dist" ::
 
-		max_iter: 1000
+		max_iter: 100
 		C: Log(lower=0.0001, upper=10000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.0001, 10000.0, full_range_sampling=True)
 		class_weight: TransitionChoice([None, 'balanced'])
 
@@ -1264,7 +1264,7 @@ categorical
 
 	0. "base logistic" ::
 
-		max_iter: 1000
+		max_iter: 100
 		multi_class: 'auto'
 		penalty: 'none'
 		class_weight: None
@@ -1403,20 +1403,20 @@ categorical
 
 	0. "base ridge" ::
 
-		max_iter: 1000
+		max_iter: 100
 		penalty: 'l2'
 		solver: 'saga'
 
 	1. "ridge C" ::
 
-		max_iter: 1000
+		max_iter: 100
 		solver: 'saga'
 		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
 		class_weight: TransitionChoice([None, 'balanced'])
 
 	2. "ridge C extra" ::
 
-		max_iter: Scalar(lower=1000, upper=10000).set_mutation(sigma=1500.0).set_bounds(full_range_sampling=True, lower=1000, upper=10000).set_integer_casting()
+		max_iter: Scalar(lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=True, lower=100, upper=1000).set_integer_casting()
 		solver: 'saga'
 		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
 		class_weight: TransitionChoice([None, 'balanced'])
@@ -1448,7 +1448,7 @@ categorical
 		penalty: TransitionChoice(['l2', 'l1', 'elasticnet'])
 		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
-		max_iter: 1000
+		max_iter: 100
 		learning_rate: TransitionChoice(['optimal', 'invscaling', 'adaptive', 'constant'])
 		eta0: Log(lower=1e-06, upper=1000.0).set_mutation(exponent=31.62277660168379, sigma=1.0).set_bounds(1e-06, 1000.0, full_range_sampling=True)
 		power_t: Scalar(lower=0.1, upper=0.9).set_mutation(sigma=0.13333333333333333).set_bounds(full_range_sampling=True, lower=0.1, upper=0.9)

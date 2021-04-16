@@ -231,6 +231,12 @@
                 </li>
             
           
+            
+                <li class="">
+                    <a href="sex.html">Predict Sex</a>
+                </li>
+            
+          
         
         
         
@@ -546,7 +552,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Predict-Stop-Signal-Response-Time-(SSRT)">
 <h1>Predict Stop Signal Response Time (SSRT)<a class="headerlink" href="#Predict-Stop-Signal-Response-Time-(SSRT)" title="Permalink to this headline">¶</a></h1>
-<p>This notebook uses stop signal task fMRI data derrived contrasts from the ABCD study to predict stop signal response time (SSRT). This is an example of a regression type machine learning, and additionally includes an extra example of how to plot ROIs feature importance on brain surfaces from nilearn.</p>
+<p>This notebook uses stop signal task fMRI data derived contrasts from the ABCD study to predict stop signal response time (SSRT). This is an example of a regression type machine learning, and additionally includes an extra example of how to plot ROIs feature importance on brain surfaces from nilearn.</p>
 <div class="section" id="Loading-Data">
 <h2>Loading Data<a class="headerlink" href="#Loading-Data" title="Permalink to this headline">¶</a></h2>
 <p>We will be loading data from is essentially a big csv file with all the different columns, some slightly processed, from the ABCD DEAP rds (saved r dataframe). The benefit of this approach is that while a little slow, we can just load any column of interest easily as a dataframe.</p>
@@ -1830,7 +1836,7 @@ Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(), n_repeats=5,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "aafa61d0c7e84e7786b9991386cfe2c9", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "99b5262595874bddba7c1f574417a34c", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
@@ -1905,7 +1911,7 @@ Length: 507, dtype: float32
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "9429a10002834c1ba4ec677ca379e0f6", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0c4eadc3849b437486082543e202d465", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
@@ -1915,8 +1921,8 @@ Length: 507, dtype: float32
 <div class="highlight"><pre>
 BPtEvaluator
 ------------
-mean_scores = {&#39;r2&#39;: 0.05327251543145987, &#39;explained_variance&#39;: 0.05329305687623639, &#39;neg_mean_squared_error&#39;: -6182.876918714411}
-std_scores = {&#39;r2&#39;: 0.0021388040737987894, &#39;explained_variance&#39;: 0.0021417335422099413, &#39;neg_mean_squared_error&#39;: 64.79142619569838}
+mean_scores = {&#39;r2&#39;: 0.05329125867332377, &#39;explained_variance&#39;: 0.05331184756755399, &#39;neg_mean_squared_error&#39;: -6182.756570504683}
+std_scores = {&#39;r2&#39;: 0.002120697874907853, &#39;explained_variance&#39;: 0.002123490497874701, &#39;neg_mean_squared_error&#39;: 64.95993611544839}
 
 Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
@@ -1976,7 +1982,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f5a315d5b89f4b10bd0df46d657c97e4", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1e67501f80be4c7a82e0b577ee03ee32", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
@@ -1986,8 +1992,8 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
 <div class="highlight"><pre>
 BPtEvaluator
 ------------
-mean_scores = {&#39;r2&#39;: 0.034197426384785214, &#39;explained_variance&#39;: 0.03591829920893741, &#39;neg_mean_squared_error&#39;: -6377.342769373649}
-std_scores = {&#39;r2&#39;: 0.009918181711194539, &#39;explained_variance&#39;: 0.008886290552314522, &#39;neg_mean_squared_error&#39;: 472.49320657711036}
+mean_scores = {&#39;r2&#39;: 0.032502829042323635, &#39;explained_variance&#39;: 0.034186186821261545, &#39;neg_mean_squared_error&#39;: -6389.447835404739}
+std_scores = {&#39;r2&#39;: 0.011279438938844285, &#39;explained_variance&#39;: 0.010234922208467674, &#39;neg_mean_squared_error&#39;: 486.9191330435646}
 
 Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
@@ -2031,13 +2037,13 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ad4a888d8c7e495abd6ded61a1acf104", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "cd9b4bcc7e85497b936b9d355c2e4388", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "31ceaab43a8a4048955560a96f305beb", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "2245d9968ee64907bfcc2706159c2202", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
@@ -2086,74 +2092,36 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
   <tbody>
     <tr>
       <th>M</th>
-      <td>0.034131</td>
-      <td>0.035845</td>
-      <td>-6378.247334</td>
-      <td>0.010393</td>
-      <td>0.009315</td>
-      <td>479.321623</td>
-      <td>8.171629</td>
-      <td>0.021138</td>
+      <td>0.034580</td>
+      <td>0.036287</td>
+      <td>-6374.996213</td>
+      <td>0.010381</td>
+      <td>0.009322</td>
+      <td>475.103842</td>
+      <td>6.011585</td>
+      <td>0.015674</td>
     </tr>
     <tr>
       <th>F</th>
-      <td>0.052582</td>
-      <td>0.052905</td>
-      <td>-6110.135241</td>
-      <td>0.008767</td>
-      <td>0.008552</td>
-      <td>494.207478</td>
-      <td>8.100935</td>
-      <td>0.021509</td>
+      <td>0.052949</td>
+      <td>0.053255</td>
+      <td>-6106.857657</td>
+      <td>0.008802</td>
+      <td>0.008576</td>
+      <td>482.504150</td>
+      <td>5.880439</td>
+      <td>0.018481</td>
     </tr>
   </tbody>
 </table>
 </div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># The seperate run results can be indexed like</span>
-<span class="n">results</span><span class="p">[</span><span class="s1">&#39;subjects=M&#39;</span><span class="p">]</span>
-
-<span class="c1"># or</span>
-<span class="n">results</span><span class="p">[</span><span class="s1">&#39;M&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-BPtEvaluator
-------------
-mean_scores = {&#39;r2&#39;: 0.03413090441230645, &#39;explained_variance&#39;: 0.035844790893218494, &#39;neg_mean_squared_error&#39;: -6378.247334379688}
-std_scores = {&#39;r2&#39;: 0.010393233471606603, &#39;explained_variance&#39;: 0.009314796163100483, &#39;neg_mean_squared_error&#39;: 479.32162264542654}
-
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
-
-Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
-
-Evaluated with:
-ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
-            scope=&#39;tfmri_sst_all_incorrect.stop.vs.correct.go_beta_&#39;,
-            scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
-                    &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False),
-                    &#39;r2&#39;: make_scorer(r2_score)},
-            subjects=Intersection([&#39;train&#39;, ValueSubset(name=sex, values=M, decode_values=True)]),
-            target=&#39;tfmri_sst_all_beh_total_mean.rt&#39;)
-</pre></div></div>
 </div>
 </div>
 <div class="section" id="Using-the-Test-Set">
 <h2>Using the Test Set<a class="headerlink" href="#Using-the-Test-Set" title="Permalink to this headline">¶</a></h2>
 <p>While in practice you might want to explore more options with the train set first, let’s just move on to showing how we could test a final pipeline on the testing set, while training on the full train set.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2172,17 +2140,17 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "48a26f3445ba46e087ff2c64d3d3ce2c", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "fc59edaaaddb4ed490201d01056b59bb", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 BPtEvaluator
 ------------
-mean_scores = {&#39;r2&#39;: 0.0767273508156815, &#39;explained_variance&#39;: 0.07683723130501696, &#39;neg_mean_squared_error&#39;: -5918.334587246385}
+mean_scores = {&#39;r2&#39;: 0.078986931622118, &#39;explained_variance&#39;: 0.0790867898118649, &#39;neg_mean_squared_error&#39;: -5903.850290271676}
 std_scores = {&#39;r2&#39;: 0.0, &#39;explained_variance&#39;: 0.0, &#39;neg_mean_squared_error&#39;: 0.0}
 
 Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
@@ -2194,11 +2162,11 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
             scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score),
                     &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False),
                     &#39;r2&#39;: make_scorer(r2_score)},
-            target=&#39;tfmri_sst_all_beh_total_mean.rt&#39;)
+            subjects=&#39;all&#39;, target=&#39;tfmri_sst_all_beh_total_mean.rt&#39;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2208,22 +2176,22 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=51,
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tfmri_sst_all_correct.go.vs.fixation_beta_cort.destrieux_g.and.s.cingul.ant.lh         0.111337
-tfmri_sst_all_correct.go.vs.fixation_beta_cort.destrieux_g.and.s.cingul.ant.rh        -0.065363
-tfmri_sst_all_correct.go.vs.fixation_beta_cort.destrieux_g.and.s.cingul.mid.ant.lh     0.730217
-tfmri_sst_all_correct.go.vs.fixation_beta_cort.destrieux_g.and.s.cingul.mid.ant.rh    -0.797279
-tfmri_sst_all_correct.go.vs.fixation_beta_cort.destrieux_g.and.s.cingul.mid.post.lh   -1.403382
+tfmri_sst_all_correct.go.vs.fixation_beta_cort.destrieux_g.and.s.cingul.ant.lh         0.094251
+tfmri_sst_all_correct.go.vs.fixation_beta_cort.destrieux_g.and.s.cingul.ant.rh        -0.067232
+tfmri_sst_all_correct.go.vs.fixation_beta_cort.destrieux_g.and.s.cingul.mid.ant.lh     0.687618
+tfmri_sst_all_correct.go.vs.fixation_beta_cort.destrieux_g.and.s.cingul.mid.ant.rh    -0.718095
+tfmri_sst_all_correct.go.vs.fixation_beta_cort.destrieux_g.and.s.cingul.mid.post.lh   -1.154759
                                                                                          ...
-tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_putamen.rh                4.141865
-tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_thalamus.proper.lh       -1.177651
-tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_thalamus.proper.rh       -2.324470
-tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_ventraldc.lh             -1.157101
-tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_ventraldc.rh             -1.738446
+tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_putamen.rh                3.647012
+tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_thalamus.proper.lh       -1.002378
+tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_thalamus.proper.rh       -2.003057
+tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_ventraldc.lh             -1.045507
+tfmri_sst_all_incorrect.stop.vs.correct.go_beta_subcort.aseg_ventraldc.rh             -1.657654
 Length: 507, dtype: float32
 </pre></div></div>
 </div>
@@ -2232,7 +2200,7 @@ Length: 507, dtype: float32
 <h2>Plotting results<a class="headerlink" href="#Plotting-results" title="Permalink to this headline">¶</a></h2>
 <p>To plot feature importance results we are going to use a different library avaliable at <a class="reference external" href="https://github.com/sahahn/Neuro_Plotting">https://github.com/sahahn/Neuro_Plotting</a>, in addition to the library nilearn.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2246,7 +2214,7 @@ Length: 507, dtype: float32
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2256,7 +2224,7 @@ Length: 507, dtype: float32
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2267,7 +2235,7 @@ Length: 507, dtype: float32
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -2297,27 +2265,27 @@ Length: 507, dtype: float32
     <tr>
       <th>0</th>
       <td>tfmri_sst_all_correct.go.vs.fixation_beta_cort...</td>
-      <td>0.111337</td>
+      <td>0.094251</td>
     </tr>
     <tr>
       <th>1</th>
       <td>tfmri_sst_all_correct.go.vs.fixation_beta_cort...</td>
-      <td>-0.065363</td>
+      <td>-0.067232</td>
     </tr>
     <tr>
       <th>2</th>
       <td>tfmri_sst_all_correct.go.vs.fixation_beta_cort...</td>
-      <td>0.730217</td>
+      <td>0.687618</td>
     </tr>
     <tr>
       <th>3</th>
       <td>tfmri_sst_all_correct.go.vs.fixation_beta_cort...</td>
-      <td>-0.797279</td>
+      <td>-0.718095</td>
     </tr>
     <tr>
       <th>4</th>
       <td>tfmri_sst_all_correct.go.vs.fixation_beta_cort...</td>
-      <td>-1.403382</td>
+      <td>-1.154759</td>
     </tr>
     <tr>
       <th>...</th>
@@ -2327,27 +2295,27 @@ Length: 507, dtype: float32
     <tr>
       <th>502</th>
       <td>tfmri_sst_all_incorrect.stop.vs.correct.go_bet...</td>
-      <td>4.141865</td>
+      <td>3.647012</td>
     </tr>
     <tr>
       <th>503</th>
       <td>tfmri_sst_all_incorrect.stop.vs.correct.go_bet...</td>
-      <td>-1.177651</td>
+      <td>-1.002378</td>
     </tr>
     <tr>
       <th>504</th>
       <td>tfmri_sst_all_incorrect.stop.vs.correct.go_bet...</td>
-      <td>-2.324470</td>
+      <td>-2.003057</td>
     </tr>
     <tr>
       <th>505</th>
       <td>tfmri_sst_all_incorrect.stop.vs.correct.go_bet...</td>
-      <td>-1.157101</td>
+      <td>-1.045507</td>
     </tr>
     <tr>
       <th>506</th>
       <td>tfmri_sst_all_incorrect.stop.vs.correct.go_bet...</td>
-      <td>-1.738446</td>
+      <td>-1.657654</td>
     </tr>
   </tbody>
 </table>
@@ -2355,7 +2323,7 @@ Length: 507, dtype: float32
 </div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2374,7 +2342,7 @@ Length: 507, dtype: float32
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2406,25 +2374,25 @@ Length: 507, dtype: float32
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/user_guide_ssrt_42_0.png" src="../_images/user_guide_ssrt_42_0.png" />
+<img alt="../_images/user_guide_ssrt_41_0.png" src="../_images/user_guide_ssrt_41_0.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/user_guide_ssrt_42_1.png" src="../_images/user_guide_ssrt_42_1.png" />
+<img alt="../_images/user_guide_ssrt_41_1.png" src="../_images/user_guide_ssrt_41_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/user_guide_ssrt_42_2.png" src="../_images/user_guide_ssrt_42_2.png" />
+<img alt="../_images/user_guide_ssrt_41_2.png" src="../_images/user_guide_ssrt_41_2.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2439,18 +2407,18 @@ Length: 507, dtype: float32
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&lt;nibabel.nifti1.Nifti1Image at 0x7f485812ab50&gt;,
- &lt;nibabel.nifti1.Nifti1Image at 0x7f485813a820&gt;,
- &lt;nibabel.nifti1.Nifti1Image at 0x7f4899a237c0&gt;]
+[&lt;nibabel.nifti1.Nifti1Image at 0x7f0eb3657ca0&gt;,
+ &lt;nibabel.nifti1.Nifti1Image at 0x7f0e779a4400&gt;,
+ &lt;nibabel.nifti1.Nifti1Image at 0x7f0eb5feaf40&gt;]
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -2464,42 +2432,42 @@ Length: 507, dtype: float32
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/user_guide_ssrt_44_0.png" src="../_images/user_guide_ssrt_44_0.png" />
+<img alt="../_images/user_guide_ssrt_43_0.png" src="../_images/user_guide_ssrt_43_0.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/user_guide_ssrt_44_1.png" src="../_images/user_guide_ssrt_44_1.png" />
+<img alt="../_images/user_guide_ssrt_43_1.png" src="../_images/user_guide_ssrt_43_1.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/user_guide_ssrt_44_2.png" src="../_images/user_guide_ssrt_44_2.png" />
+<img alt="../_images/user_guide_ssrt_43_2.png" src="../_images/user_guide_ssrt_43_2.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/user_guide_ssrt_44_3.png" src="../_images/user_guide_ssrt_44_3.png" />
+<img alt="../_images/user_guide_ssrt_43_3.png" src="../_images/user_guide_ssrt_43_3.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/user_guide_ssrt_44_4.png" src="../_images/user_guide_ssrt_44_4.png" />
+<img alt="../_images/user_guide_ssrt_43_4.png" src="../_images/user_guide_ssrt_43_4.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/user_guide_ssrt_44_5.png" src="../_images/user_guide_ssrt_44_5.png" />
+<img alt="../_images/user_guide_ssrt_43_5.png" src="../_images/user_guide_ssrt_43_5.png" />
 </div>
 </div>
 </div>

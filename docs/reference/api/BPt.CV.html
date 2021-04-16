@@ -251,7 +251,7 @@
 <h1>BPt.CV<a class="headerlink" href="#bpt-cv" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.CV">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">CV</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">splits</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">n_repeats</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">cv_strategy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">'context'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">cv_strategy_args</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L2596-L2686"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.CV" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">CV</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">splits</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">n_repeats</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">cv_strategy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">'context'</span></em>, <em class="sig-param"><span class="n">only_fold</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">cv_strategy_kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L2647-L2786"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.CV" title="Permalink to this definition">¶</a></dt>
 <dd><p>This object is used to define a BPt style custom
 CV strategy, e.g., as KFold</p>
 <dl class="field-list">
@@ -318,6 +318,44 @@ the random_state set in <a class="reference internal" href="BPt.ProblemSpec.html
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;context&#39;</span>
 </pre></div>
 </div>
+</dd>
+<dt><strong>only_fold</strong><span class="classifier">int, list of int, or None, optional</span></dt><dd><p>This parameter specifies if special subset of the requested
+CV folds should be used. If kept as None, normal all
+fold behavior will be used. Otherwise, if passed as an int,
+then that int must represent a valid cv fold, e.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">only_fold</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Would run the CV but only the 1st fold. Likewise if
+a list is passed,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">only_fold</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Then only the first and 3rd folds will be run.
+This parameter is useful in cases where the base
+experiment is too computationally intensive, and
+it is desired to run a complete CV but in smaller
+chunks.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When used with n_repeats &gt; 1, only_fold
+will index folds from the repeats, e.g.,
+split=2, n_repeats=2, only_fold can be 0, 1, 2, or 3,
+but functionally for say computing summary scores, like std across
+repeats, n_repeats will be treated as 1.</p>
+<p>For example if passed with the setup above only_fold=[0, 1, 2],
+then progress bars and summary stats will still show n_repeats=1.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>cv_strategy_kwargs</strong><span class="classifier">kwargs, optional</span></dt><dd><p>If any additional parameters are passed in kwargs style,
+e.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">splits</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Then they will try to be set in the base cv_strategy.</p>
 </dd>
 </dl>
 </dd>

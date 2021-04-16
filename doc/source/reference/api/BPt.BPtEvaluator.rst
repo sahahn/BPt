@@ -32,6 +32,8 @@ BPt.BPtEvaluator
    .. autosummary::
       :toctree:
       
+      BPtEvaluator.all_train_indices
+      BPtEvaluator.all_val_indices
       BPtEvaluator.coef_
       BPtEvaluator.estimators
       BPtEvaluator.feat_names

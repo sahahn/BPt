@@ -634,3 +634,111 @@ def test_get_problem_type_regression():
     data['1'] = [0, 1, 2, 3]
 
     assert data._get_problem_type('1') == 'regression'
+
+
+def test_default_test_subjects():
+
+    data = Dataset()
+    data._check_test_subjects()
+    assert data.test_subjects is None
+
+
+def test_rename_cols1():
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data['2'] = [1, 2, 3]
+
+    data = data.add_scope('1', 'some_scope')
+    data = data.rename({'1': '3'}, axis=1)
+
+    assert 'some_scope' in data.get_scopes()['3']
+
+
+def test_rename_cols2():
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data['2'] = [1, 2, 3]
+
+    data = data.add_scope('1', 'some_scope')
+    data = data.rename(columns={'1': '3'})
+
+    assert 'some_scope' in data.get_scopes()['3']
+
+
+def test_rename_cols_duplicate_cols():
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data['2'] = [1, 2, 3]
+
+    with assert_raises(RuntimeError):
+        data.rename({'1': '2'}, axis=1)
+
+
+def test_rename_cols_inplace():
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data['2'] = [1, 2, 3]
+
+    data = data.add_scope('1', 'some_scope')
+    data.rename({'1': '3'}, axis=1)
+
+    assert 'some_scope' in data.get_scopes()['1']
+    assert '1' in list(data)
+
+
+def test_rename_cols_func():
+
+    data = Dataset()
+    data['HI'] = [1, 2, 3]
+    data['BYE'] = [1, 2, 3]
+    data = data.add_scope('all', '1')
+
+    data = data.rename(columns=str.lower)
+    assert '1' in data.scopes['hi']
+    assert '1' in data.scopes['bye']
+
+    assert data.roles['hi'] == 'data'
+    assert data.roles['bye'] == 'data'
+
+
+def test_rename_index():
+
+    data = Dataset()
+    data['HI'] = [1, 2, 3]
+    data = data.set_train_split(subjects=[0, 1])
+
+    data = data.rename(index={0: '00', 1: '11', 2: '22'})
+
+    assert '00' in data.train_subjects
+    assert '11' in data.train_subjects
+    assert '22' in data.test_subjects
+
+    assert 0 not in data.index
+
+
+def test_rename_index_no_tr_test():
+
+    data = Dataset()
+    data['HI'] = [1, 2, 3]
+
+    data = data.rename(index={0: '00', 1: '11', 2: '22'})
+    assert 0 not in data.index
+
+
+def test_rename_index_inplace_test():
+
+    data = Dataset()
+    data['HI'] = [1, 2, 3]
+    data = data.set_train_split(subjects=[0, 1])
+
+    data.rename(index={0: '00', 1: '11', 2: '22'})
+
+    assert '00' not in data.train_subjects
+    assert '11' not in data.train_subjects
+    assert '22' not in data.test_subjects
+
+    assert 0 in data.index

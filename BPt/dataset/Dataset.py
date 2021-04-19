@@ -4,7 +4,8 @@ from .DataFile import load_data_file_proxy
 from copy import deepcopy
 from .helpers import verbose_print
 from pandas.util._decorators import doc
-from pandas import read_csv as pd_read_csv
+import pandas.core.common as com
+from pandas.core.dtypes.generic import ABCMultiIndex
 
 
 _shared_docs = {}
@@ -315,6 +316,16 @@ class Dataset(pd.DataFrame):
             raise RuntimeError('The columns: ' + repr(reserved_overlap) + ' '
                                'overlap with reserved saved names! '
                                'They must be changed.')
+
+        # Check to make sure there are no columns with the same name,
+        # i.e., duplicates
+        self._check_duplicate_cols()
+
+    def _check_duplicate_cols(self):
+
+        if len(set(self.columns)) != len(self.columns):
+            raise RuntimeError('Duplicate columns with the same name ',
+                               'are not allowed!')
 
     def _check_roles(self, check_type=True):
 
@@ -1167,10 +1178,167 @@ class Dataset(pd.DataFrame):
         self._print('Problem type auto-detected as regression', level=2)
         return 'regression'
 
-    def rename(self, **kwargs):
-        print('Warning: rename might cause meta data loss!')
-        print('Until this is supported, re-name before casting to a Dataset.')
-        return super().rename(**kwargs)
+    def rename(self, mapper=None, index=None,
+               columns=None, axis=None, copy=True,
+               inplace=False, level=None, errors='ignore'):
+        '''Calls method according to:
+        https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rename.html
+
+        This version is updated to reflect changes to meta-data after renaming, e.g.,
+        scopes will be updated to their new name accordingly.
+
+        Parameters
+        -------------
+        mapper : dict-like or function, optional
+            Dict-like or function transformations to apply to that
+            axis’ values. Use either mapper and axis to specify
+            the axis to target with mapper, or index and columns.
+
+            ::
+
+                default = None
+
+        index : dict-like or function, optional
+            Alternative to specifying axis
+            (mapper, axis=0 is equivalent to index=mapper).
+
+            ::
+
+                default = None
+
+        columns : dict-like or function, optional
+            Alternative to specifying axis
+            (mapper, axis=1 is equivalent to columns=mapper).
+
+            ::
+
+                default = None
+
+        axis : {0 or 'index', 1 or 'columns'}, optional
+            Axis to target with mapper. Can be either the axis name
+            ('index', 'columns') or number (0, 1). The default is ‘index’.
+
+            ::
+
+                default = 0
+
+        copy : bool, optional
+            Also copy underlying data.
+
+            ::
+
+                default = True
+
+        inplace : bool, optional
+            Whether to return a new :class:`Dataset`.
+            If True then value of copy is ignored.
+
+            ::
+
+                default = False
+
+        level : int or level name, optional
+            In case of a MultiIndex, only rename labels in the specified level.
+
+            ::
+
+                default = None
+
+        errors : {'ignore', 'raise'}, optional
+            If 'raise', raise a KeyError when a dict-like mapper,
+            index, or columns contains labels that are not present
+            in the Index being transformed. If 'ignore',
+            existing keys will be renamed and extra keys will be ignored.
+
+            ::
+
+                default = 'ignore'
+        '''
+
+        # Make sure everything up to data
+        # and that the attributes exist
+        self._check_sr()
+        self._check_encoders()
+        self._check_train_subjects()
+        self._check_test_subjects()
+
+        # First apply parent function
+        data = super().rename(mapper=mapper, index=index, columns=columns,
+                              axis=axis, copy=copy, inplace=inplace,
+                              level=level,
+                              errors=errors)
+
+        # Next proc using either result if not inplace
+        # or self if inplace
+        result = self if inplace else data
+
+        # Set columns and index
+        if not (index is not None or columns is not None):
+            if axis and self._get_axis_number(axis) == 1:
+                columns = mapper
+            else:
+                index = mapper
+
+        # Process each passed
+        for axis_no, replacements in enumerate((index, columns)):
+            if replacements is None:
+                continue
+
+            # Get rename function
+            func = com.get_rename_function(replacements)
+
+            if axis_no == 0:
+                result._rename_index(func, level=level)
+            elif axis_no == 1:
+                result._rename_columns(func)
+            else:
+                raise RuntimeError(f'axis_no == {axis_no}, should be 0 or 1.')
+
+        return result
+
+    def _rename_columns(self, func):
+
+        # Can't have mapping to duplicate cols
+        self._check_duplicate_cols()
+
+        to_change = ['roles', 'scopes', 'encoders']
+        for attr in to_change:
+            curr_attr = getattr(self, attr)
+            new_attr = {func(key): curr_attr[key] for key in curr_attr}
+            setattr(self, attr, new_attr)
+
+    def _rename_index(self, func, level=None):
+
+        # Skip if no train or test subjects
+        if self.train_subjects is None and self.test_subjects is None:
+            return
+
+        if not isinstance(self, ABCMultiIndex):
+            to_change = ['test_subjects', 'train_subjects']
+            for attr in to_change:
+                curr_attr = getattr(self, attr)
+                if curr_attr is not None:
+                    new_vals = [func(val) for val in curr_attr.values]
+                    new_attr = pd.Index(new_vals)
+                    setattr(self, attr, new_attr)
+
+        # @TODO Support at some point
+        else:
+            raise RuntimeError('renaming index in a MultiIndex case '
+                               'is not currently supported.')
+            '''
+            if level is not None:
+                level = self.index._get_level_number(level)
+
+            if level is not None:
+                items = [
+                    tuple(f(y) if i == level else y for i, y in enumerate(x))
+                    for x in self
+                ]
+
+            else:
+                items = [tuple(f(y) for y in x) for x in self]
+            '''
 
     def _is_category(self, scope, limit_to=None, check_scopes=True):
         '''Tests if a set of columns are categorical,

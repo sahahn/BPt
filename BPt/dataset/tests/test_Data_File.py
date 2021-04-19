@@ -35,6 +35,21 @@ def test_Data_File():
     assert hash(df) == hash(df2)
 
 
+def test_Data_File_repr():
+
+    df = get_fake_data_file()
+
+    assert repr(df).startswith("DataFile(loc=")
+    assert str(df).startswith("DataFile(loc=")
+
+
+def test_df_sort():
+
+    df = get_fake_data_file()
+
+    assert not df < df
+
+
 def test_mp_single_load():
 
     df = get_fake_data_file()

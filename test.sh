@@ -1,2 +1,2 @@
 #!/bin/bash
-nosetests BPt/tests/ --with-coverage --cover-package=BPt --cover-html
+nosetests BPt --with-coverage --cover-package=BPt --cover-html

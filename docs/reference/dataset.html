@@ -180,6 +180,10 @@
                         </li>
                     
                         <li class="">
+                            <a href="api/BPt.Dataset.rename.html">BPt.Dataset.rename</a>
+                        </li>
+                    
+                        <li class="">
                             <a href="api/BPt.Dataset.copy.html">BPt.Dataset.copy</a>
                         </li>
                     
@@ -498,13 +502,16 @@
 <tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.get_roles.html#BPt.Dataset.get_roles" title="BPt.Dataset.get_roles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_roles</span></code></a>()</p></td>
 <td><p>This function can be used to get a dictionary with the currently loaded roles, See <a class="reference internal" href="../user_guide/role.html#role"><span class="std std-ref">Role</span></a> for more information on how roles are defined and used within BPt.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.copy.html#BPt.Dataset.copy" title="BPt.Dataset.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.copy</span></code></a>([deep])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.rename.html#BPt.Dataset.rename" title="BPt.Dataset.rename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.rename</span></code></a>([mapper, index, columns, …])</p></td>
+<td><p>Calls method according to: <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rename.html">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rename.html</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.copy.html#BPt.Dataset.copy" title="BPt.Dataset.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.copy</span></code></a>([deep])</p></td>
 <td><p>Creates and returns a dopy of this dataset, either a deep copy or shallow.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.auto_detect_categorical.html#BPt.Dataset.auto_detect_categorical" title="BPt.Dataset.auto_detect_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.auto_detect_categorical</span></code></a>([scope, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.auto_detect_categorical.html#BPt.Dataset.auto_detect_categorical" title="BPt.Dataset.auto_detect_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.auto_detect_categorical</span></code></a>([scope, …])</p></td>
 <td><p>This function will attempt to automatically add scope “category” to any loaded categorical variables.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.get_Xy.html#BPt.Dataset.get_Xy" title="BPt.Dataset.get_Xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_Xy</span></code></a>([problem_spec])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.get_Xy.html#BPt.Dataset.get_Xy" title="BPt.Dataset.get_Xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_Xy</span></code></a>([problem_spec])</p></td>
 <td><p>This function is used to get a sklearn-style grouping of input data (X) and target data (y) from the Dataset as according to a passed problem_spec.</p></td>
 </tr>
 </tbody>
@@ -537,7 +544,10 @@
 <td><p>This method is a used for making a copy of an existing column, ordinalizing it and then setting it to have role = non input.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.add_unique_overlap.html#BPt.Dataset.add_unique_overlap" title="BPt.Dataset.add_unique_overlap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.add_unique_overlap</span></code></a>(cols, new_col[, …])</p></td>
-<td><p>This function is designed to add a new column with the overlapped unique values from passed two or more columns.</p></td>
+<td><p><div class="line-block">
+<div class="line">This function is designed to add a new column</div>
+</div>
+</p></td>
 </tr>
 </tbody>
 </table>

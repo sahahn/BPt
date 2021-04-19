@@ -115,15 +115,16 @@ _shared_docs['subjects'] = '''subjects : :ref:`Subjects`
 
 
 class Dataset(pd.DataFrame):
-    '''The BPt Dataset class is the main class used for preparing data
-    into a compatible format to work with machine learning. This class is new
-    as of BPt version 2 (replacing the building in loading functions of the
-    old BPt_ML).
+    '''| The BPt Dataset class is the main class used for preparing data
+      into a compatible format to work with machine learning.
 
-    See :ref:`loading_data` for more a comprehensive guide on this object.
+    | See :ref:`loading_data` for more a comprehensive guide on this object.
 
-    This class can be initialized like a pandas.DataFrame, or
-    typically from a pandas.DataFrame.
+    | This class can be initialized like a pandas.DataFrame, or
+      typically from a pandas.DataFrame. This class has some constraints
+      relative to using DataFrames. Some of these are that columns must be
+      strings (if passed as int-like will be cast to strings), and that
+      there cannot be duplicate column names.
 
     .. ipython:: python
 
@@ -141,6 +142,10 @@ class Dataset(pd.DataFrame):
         df['1'] = [1, 2, 3]
         data = bp.Dataset(df)
         data
+
+    |  This class is new
+      as of BPt version 2 (replacing the building in loading functions of the
+      old BPt_ML).
 
     .. versionadded:: 2.0.0
 

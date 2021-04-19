@@ -29,6 +29,7 @@ Base
    Dataset.set_role
    Dataset.set_roles
    Dataset.get_roles
+   Dataset.rename
    Dataset.copy
    Dataset.auto_detect_categorical
    Dataset.get_Xy

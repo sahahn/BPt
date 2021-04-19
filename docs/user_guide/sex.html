@@ -1979,7 +1979,7 @@ Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1992,20 +1992,73 @@ Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "9c0795fae4dd4b83b87c0ba432c119fa", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;roc_auc&#39;: 0.8589750730819228}
+std_scores = {&#39;roc_auc&#39;: 0.003731209094578198}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;,
+            scorer={&#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)},
+            subjects=&#39;all&#39;, target=&#39;sex&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">pipelines</span><span class="p">[</span><span class="s1">&#39;stacking_pipe&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),
+                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),
+                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),
+                Ensemble(base_model=Model(obj=&#39;ridge&#39;,
+                                          param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),
+                                                                   n_iter=60),
+                                          params=1),
+                         models=[Model(obj=&#39;elastic&#39;,
+                                       param_search=ParamSearch(cv=CV(cv_strategy=CVS...
+                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),
+                                                                n_iter=60),
+                                       params=1),
+                                 Model(obj=Pipeline(param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),
+                                                                             n_iter=60),
+                                                    steps=[FeatSelector(obj=&#39;univariate &#39;
+                                                                            &#39;selection&#39;,
+                                                                        params=2),
+                                                           Model(obj=&#39;svm&#39;,
+                                                                 params=1)])),
+                                 Model(obj=&#39;lgbm&#39;,
+                                       param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),
+                                                                n_iter=60),
+                                       params=1)],
+                         n_jobs_type=&#39;models&#39;, obj=&#39;stacking&#39;)])
+</pre></div></div>
 </div>
 </div>
 

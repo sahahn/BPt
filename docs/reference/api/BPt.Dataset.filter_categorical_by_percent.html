@@ -423,7 +423,7 @@
 <h1>BPt.Dataset.filter_categorical_by_percent<a class="headerlink" href="#bpt-dataset-filter-categorical-by-percent" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.filter_categorical_by_percent">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">filter_categorical_by_percent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">drop_percent</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'category'</span></em>, <em class="sig-param"><span class="n">drop</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L451-L536"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.filter_categorical_by_percent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">filter_categorical_by_percent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'category'</span></em>, <em class="sig-param"><span class="n">drop_percent</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">drop</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L451-L536"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.filter_categorical_by_percent" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is designed to allow performing outlier filtering
 on categorical type variables. Note that this method assume
 all columns passed are of type ‘category’, and they if not already
@@ -438,6 +438,16 @@ have been calculated (therefore the order won’t matter).</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
+<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;category&#39;</span>
+</pre></div>
+</div>
+</dd>
 <dt><strong>drop_percent</strong><span class="classifier">float, optional</span></dt><dd><p>This parameter acts as a percentage threshold for dropping
 categories when loading categorical data. This parameter
 should be passed as a percent, such that a category
@@ -450,16 +460,6 @@ For example:</p>
 relevant categories as specified by scope
 with a category constituting less than 1% of total
 valid data points will be dropped (or set to NaN if drop=False).</p>
-</dd>
-<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
-<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
-column(s) in which to apply the current function to.
-See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
-can be applied.</p>
-</div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;category&#39;</span>
-</pre></div>
-</div>
 </dd>
 <dt><strong>drop</strong><span class="classifier">bool, optional</span></dt><dd><p>By default this function will drop any subjects / index that are
 determined to be outliers. On the otherhand, you

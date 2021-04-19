@@ -423,7 +423,7 @@
 <h1>BPt.Dataset<a class="headerlink" href="#bpt-dataset" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.Dataset">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L115-L1486"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L116-L1489"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>The BPt Dataset class is the main class used for preparing data
 into a compatible format to work with machine learning. This class is new
 as of BPt version 2 (replacing the building in loading functions of the
@@ -702,13 +702,13 @@ typically from a pandas.DataFrame.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.drop.html#BPt.Dataset.drop" title="BPt.Dataset.drop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop</span></code></a>([labels, axis, index, columns, level, …])</p></td>
 <td><p>Drop specified labels from rows or columns.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.drop_cols.html#BPt.Dataset.drop_cols" title="BPt.Dataset.drop_cols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_cols</span></code></a>([exclusions, inclusions, scope, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.drop_cols.html#BPt.Dataset.drop_cols" title="BPt.Dataset.drop_cols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_cols</span></code></a>([scope, exclusions, inclusions, …])</p></td>
 <td><p>This method is designed to allow dropping columns based on some flexible arguments.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.drop_cols_by_nan.html#BPt.Dataset.drop_cols_by_nan" title="BPt.Dataset.drop_cols_by_nan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_cols_by_nan</span></code></a>([threshold, scope, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.drop_cols_by_nan.html#BPt.Dataset.drop_cols_by_nan" title="BPt.Dataset.drop_cols_by_nan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_cols_by_nan</span></code></a>([scope, threshold, inplace])</p></td>
 <td><p>This method is used for dropping columns based on the amount of missing values found across all subjects.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.drop_cols_by_unique_val.html#BPt.Dataset.drop_cols_by_unique_val" title="BPt.Dataset.drop_cols_by_unique_val"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_cols_by_unique_val</span></code></a>([threshold, scope, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.drop_cols_by_unique_val.html#BPt.Dataset.drop_cols_by_unique_val" title="BPt.Dataset.drop_cols_by_unique_val"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_cols_by_unique_val</span></code></a>([scope, threshold, …])</p></td>
 <td><p>This method will drop any columns with less than or equal to the number of unique values.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.drop_duplicate_cols.html#BPt.Dataset.drop_duplicate_cols" title="BPt.Dataset.drop_duplicate_cols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_duplicate_cols</span></code></a>([scope, inplace])</p></td>
@@ -723,7 +723,7 @@ typically from a pandas.DataFrame.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.drop_nan_subjects.html#BPt.Dataset.drop_nan_subjects" title="BPt.Dataset.drop_nan_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_nan_subjects</span></code></a>(scope[, inplace])</p></td>
 <td><p>This method is used for dropping all of the subjects which have NaN values for a given scope / column.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.drop_subjects_by_nan.html#BPt.Dataset.drop_subjects_by_nan" title="BPt.Dataset.drop_subjects_by_nan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_subjects_by_nan</span></code></a>([threshold, scope, inplace])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.drop_subjects_by_nan.html#BPt.Dataset.drop_subjects_by_nan" title="BPt.Dataset.drop_subjects_by_nan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_subjects_by_nan</span></code></a>([scope, threshold, inplace])</p></td>
 <td><p>This method is used for dropping subjects based on the amount of missing values found across a subset of columns as selected by scope.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.droplevel.html#BPt.Dataset.droplevel" title="BPt.Dataset.droplevel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">droplevel</span></code></a>(level[, axis])</p></td>
@@ -762,13 +762,13 @@ typically from a pandas.DataFrame.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.filter.html#BPt.Dataset.filter" title="BPt.Dataset.filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter</span></code></a>([items, like, regex, axis])</p></td>
 <td><p>Subset the dataframe rows or columns according to the specified index labels.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.filter_categorical_by_percent.html#BPt.Dataset.filter_categorical_by_percent" title="BPt.Dataset.filter_categorical_by_percent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_categorical_by_percent</span></code></a>([…])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.filter_categorical_by_percent.html#BPt.Dataset.filter_categorical_by_percent" title="BPt.Dataset.filter_categorical_by_percent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_categorical_by_percent</span></code></a>([scope, …])</p></td>
 <td><p>This method is designed to allow performing outlier filtering on categorical type variables.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.filter_outliers_by_percent.html#BPt.Dataset.filter_outliers_by_percent" title="BPt.Dataset.filter_outliers_by_percent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_outliers_by_percent</span></code></a>([fop, scope, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.filter_outliers_by_percent.html#BPt.Dataset.filter_outliers_by_percent" title="BPt.Dataset.filter_outliers_by_percent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_outliers_by_percent</span></code></a>([scope, fop, …])</p></td>
 <td><p>This method is designed to allow dropping a fixed percent of outliers from the requested columns.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.filter_outliers_by_std.html#BPt.Dataset.filter_outliers_by_std" title="BPt.Dataset.filter_outliers_by_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_outliers_by_std</span></code></a>([n_std, scope, drop, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.filter_outliers_by_std.html#BPt.Dataset.filter_outliers_by_std" title="BPt.Dataset.filter_outliers_by_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_outliers_by_std</span></code></a>([scope, n_std, drop, …])</p></td>
 <td><p>This method is designed to allow dropping outliers from the requested columns based on comparisons with that columns standard deviation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.first.html#BPt.Dataset.first" title="BPt.Dataset.first"><code class="xref py py-obj docutils literal notranslate"><span class="pre">first</span></code></a>(offset)</p></td>

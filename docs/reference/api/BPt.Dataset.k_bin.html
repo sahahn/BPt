@@ -423,7 +423,7 @@
 <h1>BPt.Dataset.k_bin<a class="headerlink" href="#bpt-dataset-k-bin" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.k_bin">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">k_bin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">n_bins</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">strategy</span><span class="o">=</span><span class="default_value">'uniform'</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L287-L348"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.k_bin" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">k_bin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">n_bins</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">strategy</span><span class="o">=</span><span class="default_value">'uniform'</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L334-L405"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.k_bin" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used to apply k binning to
 a column, or columns. On the backend
 this function used the scikit-learn
@@ -432,7 +432,9 @@ KBinsDiscretizer.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
 <dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
-columns in which to apply k bins to.</p>
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
 </dd>
 <dt><strong>n_bins</strong><span class="classifier">int, optional</span></dt><dd><p>The number of bins to discretize the passed
 columns to. This same value is applied for
@@ -441,7 +443,7 @@ all columns within scope.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>strategy</strong><span class="classifier">{‘uniform’, ‘quantile’, ‘kmeans’}, optional</span></dt><dd><p>The strategy in which the binning should be adhere to.
+<dt><strong>strategy</strong><span class="classifier">‘uniform’, ‘quantile’ or ‘kmeans’, optional</span></dt><dd><p>The strategy in which the binning should be adhere to.
 Options are:</p>
 <ul class="simple">
 <li><dl class="simple">
@@ -465,7 +467,7 @@ k-means cluster.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, do operation inplace and return None.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
@@ -473,6 +475,24 @@ k-means cluster.</p>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">([</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">4</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">6</span><span class="p">,</span> <span class="o">.</span><span class="mi">7</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">],</span>
+                  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">])</span>
+
+<span class="c1"># Apply k_bin, not in place, then plot</span>
+<span class="n">data</span><span class="o">.</span><span class="n">k_bin</span><span class="p">(</span><span class="s1">&#39;feat&#39;</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;feat&#39;</span><span class="p">)</span>
+
+<span class="c1"># Apply with dif params</span>
+<span class="n">data</span><span class="o">.</span><span class="n">k_bin</span><span class="p">(</span><span class="s1">&#39;feat&#39;</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;quantile&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;feat&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../../_images/BPt-Dataset-k_bin-1_00.png" src="../../_images/BPt-Dataset-k_bin-1_00.png" />
+</div>
+<div class="figure align-default">
+<img alt="../../_images/BPt-Dataset-k_bin-1_01.png" src="../../_images/BPt-Dataset-k_bin-1_01.png" />
+</div>
 </dd></dl>
 
 </div>

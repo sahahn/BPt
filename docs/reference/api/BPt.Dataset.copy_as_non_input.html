@@ -423,7 +423,7 @@
 <h1>BPt.Dataset.copy_as_non_input<a class="headerlink" href="#bpt-dataset-copy-as-non-input" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.copy_as_non_input">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">copy_as_non_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">col</span></em>, <em class="sig-param"><span class="n">new_col</span></em>, <em class="sig-param"><span class="n">copy_scopes</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L560-L615"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.copy_as_non_input" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">copy_as_non_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">col</span></em>, <em class="sig-param"><span class="n">new_col</span></em>, <em class="sig-param"><span class="n">copy_scopes</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L635-L687"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.copy_as_non_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is a used for making a copy of an
 existing column, ordinalizing it and then setting it
 to have role = non input.</p>
@@ -434,17 +434,21 @@ to have role = non input.</p>
 </dd>
 <dt><strong>new_col</strong><span class="classifier">str</span></dt><dd><p>The new name of the non input and ordinalized column.</p>
 </dd>
-<dt><strong>copy_scopes</strong><span class="classifier">bool, optional</span></dt><dd><p>If the associated scopes with the original column should be copied
+<dt><strong>copy_scopes</strong><span class="classifier">bool, optional</span></dt><dd><div class="line-block">
+<div class="line">If the associated scopes with the original column should be copied
 over as well. If False, then the new col will
-only have scope ‘category’.</p>
-<p>Note: The scopes will be copied before ordinalizing,
-s.t., the new copy will have the scope ‘category’
-regardless of if that was a scope of the original variable.</p>
+only have scope ‘category’.</div>
+</div>
+<div class="line-block">
+<div class="line">The scopes will be copied before ordinalizing,
+such that the new copy will have the scope ‘category’
+regardless of if that was a scope of the original variable.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, do operation inplace and return None.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>

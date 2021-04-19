@@ -423,7 +423,7 @@
 <h1>BPt.Dataset.filter_outliers_by_std<a class="headerlink" href="#bpt-dataset-filter-outliers-by-std" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.filter_outliers_by_std">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">filter_outliers_by_std</code><span class="sig-paren">(</span><em class="sig-param">n_std=10</em>, <em class="sig-param">scope='float'</em>, <em class="sig-param">drop=True</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=-1</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L303-L448"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.filter_outliers_by_std" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">filter_outliers_by_std</code><span class="sig-paren">(</span><em class="sig-param">scope='float'</em>, <em class="sig-param">n_std=10</em>, <em class="sig-param">drop=True</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=-1</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L303-L448"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.filter_outliers_by_std" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is designed to allow dropping outliers
 from the requested columns based on comparisons with that columns
 standard deviation.</p>
@@ -436,6 +436,16 @@ reduce_func and n_jobs parameters are specific to this case.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
+<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+</pre></div>
+</div>
+</dd>
 <dt><strong>n_std</strong><span class="classifier">float, tuple, optional</span></dt><dd><p>This value is used to set an outlier threshold by
 standrad deviation. For example if passed n_std = 10,
 then it will be converted internally to (10, 10).
@@ -453,16 +463,6 @@ If a tuple with None on one side is passed, e.g.
 (None, 3), then nothing will be taken off
 that lower or upper bound.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">10</span>
-</pre></div>
-</div>
-</dd>
-<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
-<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
-column(s) in which to apply the current function to.
-See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
-can be applied.</p>
-</div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
 </pre></div>
 </div>
 </dd>

@@ -742,3 +742,35 @@ def test_rename_index_inplace_test():
     assert '22' not in data.test_subjects
 
     assert 0 in data.index
+
+
+def test_extra_constructor_scopes():
+
+    data = Dataset([1, 2, 3], columns=['1'],
+                   scopes={'1': 'a'})
+
+    assert 'a' in data.scopes['1']
+
+
+def test_extra_constructor_roles():
+
+    data = Dataset([1, 2, 3], columns=['1'],
+                   roles={'1': 'target'})
+
+    assert data.roles['1'] == 'target'
+
+
+def test_extra_constructor_targets():
+
+    data = Dataset([1, 2, 3], columns=['1'],
+                   targets='1')
+
+    assert data.roles['1'] == 'target'
+
+
+def test_extra_constructor_non_inputs():
+
+    data = Dataset([1, 2, 3], columns=['1'],
+                   non_inputs='1')
+
+    assert data.roles['1'] == 'non input'

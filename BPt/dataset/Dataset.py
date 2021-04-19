@@ -116,7 +116,9 @@ _shared_docs['subjects'] = '''subjects : :ref:`Subjects`
 
 class Dataset(pd.DataFrame):
     '''| The BPt Dataset class is the main class used for preparing data
-      into a compatible format to work with machine learning.
+      into a compatible format to work with machine learning. This class is new
+      as of BPt version 2 (replacing the building in loading functions of the
+      old BPt_ML).
 
     | See :ref:`loading_data` for more a comprehensive guide on this object.
 
@@ -126,11 +128,13 @@ class Dataset(pd.DataFrame):
       strings (if passed as int-like will be cast to strings), and that
       there cannot be duplicate column names.
 
+    | This class can be initialized in most of the same
+      ways that a pandas DataFrame can be initialized, for example
+
     .. ipython:: python
 
-        import BPt as bp
-        data = bp.Dataset()
-        data['1'] = [1, 2, 3]
+        data = bp.Dataset(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
+                          columns=['a', 'b', 'c'])
         data
 
     Or from a pandas DataFrame.
@@ -138,14 +142,20 @@ class Dataset(pd.DataFrame):
     .. ipython:: python
 
         import pandas as pd
-        df = pd.DataFrame()
-        df['1'] = [1, 2, 3]
+        df = pd.DataFrame([1, 2, 3], columns=['a'])
+        df
+
         data = bp.Dataset(df)
         data
 
-    |  This class is new
-      as of BPt version 2 (replacing the building in loading functions of the
-      old BPt_ML).
+    The Dataset also has some extra optional constructor parameters:
+    roles, scopes, targets and non_inputs, which are just helpers
+    for setting parameters at the time of construction. For example:
+
+    .. ipython:: python
+
+        data = bp.Dataset([1, 2, 3], columns=['1'], targets=['1'])
+        data.get_roles()
 
     .. versionadded:: 2.0.0
 
@@ -155,6 +165,32 @@ class Dataset(pd.DataFrame):
                  'verbose_', 'test_subjects', 'train_subjects']
 
     _print = verbose_print
+
+    def __init__(self, data=None, index=None,
+                 columns=None, dtype=None,
+                 copy=None, roles=None,
+                 scopes=None, targets=None,
+                 non_inputs=None):
+
+        super().__init__(data=data, index=index,
+                         columns=columns, dtype=dtype,
+                         copy=copy)
+
+        if roles is not None:
+            self.roles = roles
+            self._check_roles()
+
+        if scopes is not None:
+            self.scopes = scopes
+            self._check_scopes()
+
+        if targets is not None:
+            self.set_target(targets, inplace=True)
+            self._check_roles()
+
+        if non_inputs is not None:
+            self.set_non_input(non_inputs, inplace=True)
+            self._check_roles()
 
     def __getitem__(self, key):
 
@@ -343,6 +379,9 @@ class Dataset(pd.DataFrame):
         elif getattr(self, 'roles') is None:
             self.roles = {}
 
+        if not isinstance(self.roles, dict):
+            raise RuntimeError('roles must be a dict.')
+
         # Fill in any column without a role.
         for col in list(self.columns):
             if col not in self.roles:
@@ -377,6 +416,9 @@ class Dataset(pd.DataFrame):
         # Or is set to None
         elif getattr(self, 'scopes') is None:
             self.scopes = {}
+
+        if not isinstance(self.scopes, dict):
+            raise RuntimeError('scopes must be a dict.')
 
         # Make sure each col is init'ed with a scope
         for col in self.columns:

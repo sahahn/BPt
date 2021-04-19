@@ -1,4 +1,4 @@
-from .dataset.Dataset import Dataset
+from .dataset.Dataset import Dataset, read_csv
 from .main.input import (Loader, Imputer, Scaler,
                          Transformer,
                          FeatSelector, Model, Ensemble,
@@ -29,4 +29,4 @@ __all__ = ["Dataset", "Loader",
            "cross_validate", "cross_val_score", "evaluate",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',
            'BPtEvaluator', 'read_pickle', 'Compare', 'Option',
-           'CompareDict']
+           'CompareDict', 'read_csv']

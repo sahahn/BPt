@@ -139,6 +139,8 @@ plot_html_show_source_link = False
 plot_pre_code = """import numpy as np
 import pandas as pd
 import BPt as bp"""
+plot_rcparams = {'savefig.bbox': 'tight'}
+plot_apply_rcparams = True  # if context option is used
 
 # nbsphinx do not use requirejs (breaks bootstrap)
 nbsphinx_requirejs_path = ""
@@ -390,6 +392,7 @@ ipython_warning_is_error = False
 ipython_execlines = [
     "import numpy as np",
     "import pandas as pd",
+    "import BPt as bp",
     # This ensures correct rendering on system with console encoding != utf8
     # (windows). It forces pandas to encode its output reprs using utf8
     # wherever the docs are built. The docs' target is the browser, not

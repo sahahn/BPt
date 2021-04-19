@@ -4,6 +4,7 @@ from .DataFile import load_data_file_proxy
 from copy import deepcopy
 from .helpers import verbose_print
 from pandas.util._decorators import doc
+from pandas import read_csv as pd_read_csv
 
 
 _shared_docs = {}
@@ -1486,3 +1487,13 @@ class Dataset(pd.DataFrame):
                              drop_cols,
                              drop_cols_by_unique_val,
                              drop_cols_by_nan)
+
+
+def read_csv(*args, **kwargs):
+    '''Passes along all arguments and kwargs to
+    :func:`pandas.read_csv` then casts to :class:`Dataset`.
+
+    This method is just a helper wrapper function.
+    '''
+
+    return Dataset(pd.read_csv(*args, **kwargs))

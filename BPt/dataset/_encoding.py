@@ -4,6 +4,8 @@ from .helpers import (add_new_categories, remove_unused_categories,
                       get_str_round)
 from operator import add
 from functools import reduce
+from .Dataset import _shared_docs, _sip_docs
+from pandas.util._decorators import doc
 
 
 def _add_new_copy(self, old, new):
@@ -23,6 +25,7 @@ def _add_new_copy(self, old, new):
         pass
 
 
+@doc(**_sip_docs)
 def to_binary(self, scope, drop=True, inplace=False):
     '''This method works by setting all
     columns within scope to just two binary
@@ -30,16 +33,12 @@ def to_binary(self, scope, drop=True, inplace=False):
     as the top two categories, any others will have
     their subjects either dropped or replaced with NaN.
 
-    Note: This function will not work on data files.
-
-    See: :func:`binarize <Dataset.binarize>` for converting
-    float style columns to binary.
+    This method is designed for converting from already
+    categorical data to explicitly type binary.
 
     Parameters
     ----------
-    scope : :ref:`Scope`
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to apply to_binary on.
+    {scope}
 
     drop : bool, optional
         If set to True, default, then if more
@@ -53,12 +52,30 @@ def to_binary(self, scope, drop=True, inplace=False):
 
             default = True
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
+    See Also
+    ---------
+    binarize : For converting float data to binary.
 
-            default = False
+
+    Notes
+    ----------
+    This function with not work on columns
+    of type :ref:`data_files`.
+
+
+    Examples
+    ---------
+    Simple example with drop True and False below:
+
+    .. ipython:: python
+
+        data = bp.read_csv('data/example1.csv')
+        data
+
+        data.to_binary('all', drop=True)
+        data.to_binary('all', drop=False)
     '''
 
     if not inplace:
@@ -116,21 +133,16 @@ def _base_binarize(self, col, drop):
     self._ordinalize(col)
 
 
+@doc(**_sip_docs)
 def binarize(self, scope, threshold, replace=True, drop=True, inplace=False):
     '''This method contains a utilities for binarizing a variable.
     These are dichotomizing an existing variable with parameter
     threshold, and applying binarization via two thresholds
     (essentially chopping out the middle of the distribution).
 
-    Note: This function will not work on data files.
-
-    See Related: :func:`to_binary <Dataset.to_binary>`
-
     Parameters
     ----------
-    scope : :ref:`Scope`
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to apply binarize on.
+    {scope}
 
     threshold : float or (float, float)
         This parameter can be used to either set a single threshold
@@ -173,12 +185,30 @@ def binarize(self, scope, threshold, replace=True, drop=True, inplace=False):
 
             default = True
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
+    See Also
+    ---------
+    to_binary : Convert from categorical to binary.
 
-            default = False
+
+    Notes
+    ----------
+    This function with not work on columns
+    of type :ref:`data_files`.
+
+    Examples
+    ----------
+
+    .. ipython:: python
+
+        data = bp.read_csv('data/example2.csv')
+        data
+
+        data.binarize(scope='all', threshold=.5)
+        data.binarize(scope='all', threshold=(.3, .6), drop=False)
+
+
     '''
 
     if not inplace:
@@ -267,7 +297,7 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
             new_col.loc[to_drop] = np.nan
 
         # Make sure column is now categorical and replace
-        new_col = new_col.astype('category')
+        new_col = new_col.astype("Int64").astype('category')
         remove_unused_categories(new_col)
         self[col] = new_col
 
@@ -286,7 +316,7 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
         new_col = new_col.where(new_col < threshold, 1)
 
         # Make sure column is now categorical and replace
-        new_col = new_col.astype('category')
+        new_col = new_col.astype("Int64").astype('category')
         remove_unused_categories(new_col)
         self[col] = new_col
 
@@ -301,6 +331,7 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
     self._add_scope(col, 'category')
 
 
+@doc(**_sip_docs)
 def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=False):
     '''This method is used to apply k binning to
     a column, or columns. On the backend
@@ -309,9 +340,7 @@ def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=False):
 
     Parameters
     ----------
-    scope : :ref:`Scope`
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to apply k bins to.
+    {scope}
 
     n_bins : int, optional
         The number of bins to discretize the passed
@@ -322,7 +351,7 @@ def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=False):
 
             default = 5
 
-    strategy : {'uniform', 'quantile', 'kmeans'}, optional
+    strategy : 'uniform', 'quantile' or 'kmeans', optional
         The strategy in which the binning should be adhere to.
         Options are:
 
@@ -340,12 +369,7 @@ def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=False):
 
             default = 'uniform'
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
-
-        ::
-
-            default = False
+    {inplace}
 
     Examples
     ---------
@@ -360,7 +384,7 @@ def k_bin(self, scope, n_bins=5, strategy='uniform', inplace=False):
         data.k_bin('feat', n_bins=3, strategy='uniform').plot('feat')
 
         # Apply with dif params
-        data.k_bin('feat', n_bins=5, strategy='uniform').plot('feat')
+        data.k_bin('feat', n_bins=5, strategy='quantile').plot('feat')
 
     '''
 
@@ -424,6 +448,7 @@ def _k_bin(self, col, n_bins, strategy):
     self.encoders[col] = encoder
 
 
+@doc(**_sip_docs)
 def ordinalize(self, scope, nan_to_class=False, inplace=False):
     '''This method is used to ordinalize
     a group of columns. Ordinalization is
@@ -431,37 +456,47 @@ def ordinalize(self, scope, nan_to_class=False, inplace=False):
     categories present in each column to
     values 0 to n-1.
 
-    The LabelEncoder from sklearn is used
-    on the backend for this operation.
+    The :class:`LabelEncoder<sklearn.preprocessing.LabelEncoder>`
+    is used on the backend for this operation.
 
     Parameters
     -----------
-    scope : :ref:`Scope`
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to apply ordinalize to.
+    {scope}
 
     nan_to_class : bool, optional
-        If set to True, then treat NaN values as
-        as a unique class, otherwise if False then
-        ordinalization will be applied on just non-NaN
-        values, and any NaN values will remain NaN.
+        | If set to True, then treat NaN values as
+          as a unique class, otherwise if False then
+          ordinalization will be applied on just non-NaN
+          values, and any NaN values will remain NaN.
 
-        See: :func:`nan_to_class <Dataset.nan_to_class>`
-        for more generally adding NaN values as a new
-        category to any arbitrary categorical column.
-        All this parameter does is if True calls
-        self.nan_to_class after normal ordinalization.
+        | See: :func:`nan_to_class <Dataset.nan_to_class>`
+          for more generally adding NaN values as a new
+          category to any arbitrary categorical column.
 
         ::
 
             default = False
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
+    Examples
+    ---------
 
-            default = False
+    .. ipython:: python
+
+        data = bp.read_csv('data/example1.csv')
+        data
+
+        data = data.ordinalize('all')
+        data
+
+    Note that the original names are still saved when using
+    this and simmilar encoding functions.
+
+    .. ipython:: python
+
+        data.encoders
+
     '''
 
     if not inplace:
@@ -520,8 +555,9 @@ def _replace_cat_values(self, col, new_values, non_nan_subjects):
     add_new_categories(new_col, new_values)
     new_col.loc[non_nan_subjects] = new_values
 
-    # Make sure cast to type category
-    new_col = new_col.astype('category')
+    # Make sure cast to type nullable integer, then
+    # category.
+    new_col = new_col.astype("Int64").astype('category')
     remove_unused_categories(new_col)
 
     # Add back in place
@@ -531,26 +567,19 @@ def _replace_cat_values(self, col, new_values, non_nan_subjects):
     self._add_scope(col, 'category')
 
 
+@doc(**_sip_docs)
 def nan_to_class(self, scope='category', inplace=False):
     '''This method will cast any columns that were not categorical that are
     passed here to categorical. Will also ordinally encode them if
     they have not already been encoded
     (e.g., by either via ordinalize, binarize, or a similar function...).
 
-    scope : :ref:`Scope`
-        A BPt style :ref:`Scope` used to select a subset of
-        columns in which to apply nan_to_class.
-
+    {scope}
         ::
 
             default = 'category'
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
-
-        ::
-
-            default = False
+    {inplace}
     '''
 
     if not inplace:
@@ -603,6 +632,7 @@ def nan_to_class(self, scope='category', inplace=False):
     self._check_scopes()
 
 
+@doc(inplace=_shared_docs['inplace'])
 def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=False):
     '''This method is a used for making a copy of an
     existing column, ordinalizing it and then setting it
@@ -617,24 +647,20 @@ def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=False):
         The new name of the non input and ordinalized column.
 
     copy_scopes : bool, optional
-        If the associated scopes with the original column should be copied
-        over as well. If False, then the new col will
-        only have scope 'category'.
+        | If the associated scopes with the original column should be copied
+          over as well. If False, then the new col will
+          only have scope 'category'.
 
-        Note: The scopes will be copied before ordinalizing,
-        s.t., the new copy will have the scope 'category'
-        regardless of if that was a scope of the original variable.
+        | The scopes will be copied before ordinalizing,
+          such that the new copy will have the scope 'category'
+          regardless of if that was a scope of the original variable.
 
         ::
 
             default = True
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
-
-            default = False
     '''
 
     if not inplace:
@@ -661,45 +687,18 @@ def copy_as_non_input(self, col, new_col, copy_scopes=True, inplace=False):
     self._check_scopes()
 
 
+@doc(inplace=_shared_docs['inplace'])
 def add_unique_overlap(self, cols, new_col, decode_values=True, inplace=False):
-    '''This function is designed to add a new column
-    with the overlapped unique values from passed two or more columns.
-    For example, say you had two binary columns, A and B. This function
-    would compute a new column with 4 possible values, where:
+    '''| This function is designed to add a new column
+      with the overlapped unique values from passed two or more columns.
 
-    ::
-
-        # If these are the values in the dataset
-        A == 0 and B == 0, A == 0 and B == 1,
-        A == 1 and B == 0 and A == 1 and B == 1
-
-        # After calling,
-        self.add_unique_overlap(['A', 'B'], new_col='new')
-
-        # This new column 'new' will look like below, before encoding.
-
-        0    A=0 B=0
-        1    A=0 B=1
-        2    A=1 B=1
-        3    A=0 B=0
-        ...
-
-        # After encoding, i.e., the end of the function, it will be
-
-        0    0
-        1    1
-        2    2
-        3    0
-        ...
-
-    The new added column will be default be added with role data,
-    except if all of the passed cols have a different role. In the
-    case that all of the passed cols have the same role, the new
-    col will share that role.
-
-    Simmilar to role, the scope of the new column will be the overlap
-    of shared scopes from all of the passed new_col. If no overlap,
-    then no scope.
+    | The new added column will be default be added with role data,
+      except if all of the passed cols have a different role. In the
+      case that all of the passed cols have the same role, the new
+      col will share that role. Simmilar to role, the scope of
+      the new column will be the overlap
+        of shared scopes from all of the passed new_col. If no overlap,
+        then no scope.
 
     Parameters
     -----------
@@ -725,12 +724,34 @@ def add_unique_overlap(self, cols, new_col, decode_values=True, inplace=False):
 
             default = True
 
-    inplace : bool, optional
-        If True, do operation inplace and return None.
+    {inplace}
 
-        ::
 
-            default = False
+    Examples
+    -----------
+
+    .. ipython:: python
+
+        data = bp.read_csv('data/example1.csv')
+        data
+
+        data.add_unique_overlap(cols=['animals', 'numbers'],
+                                new_col='combo', inplace=True)
+        data
+        data.encoders['combo']
+
+    In that example every combination was a unique combination.
+    Let's try again, but now with overlaps.
+
+    .. ipython:: python
+
+        data = bp.read_csv('data/example1.csv')
+        data = data.ordinalize('all')
+
+        data.add_unique_overlap(cols=['animals', 'numbers'],
+                                new_col='combo', inplace=True)
+        data
+        data.encoders['combo']
 
     '''
 

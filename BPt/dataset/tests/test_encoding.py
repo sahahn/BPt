@@ -103,6 +103,16 @@ def test_to_binary_from_bool():
     assert len(pd.unique(df['1'])) == 2
 
 
+def test_to_binary_from_bool_inplace_copy():
+
+    df = Dataset()
+    df['1'] = [True, False, True, True]
+    df['1'] = df['1'].astype('bool')
+    df_copy = df.to_binary('1')
+
+    assert df['1'].dtype.name != df_copy['1'].dtype.name
+
+
 def test_to_binary():
 
     df = get_fake_dataset7()
@@ -262,6 +272,15 @@ def test_binarize_inplace_copy():
     assert df.loc[1, '1'] != 1
 
 
+def test_binarize_replace():
+
+    df = get_fake_dataset()
+    df = df.binarize('1', threshold=1.5, replace=False)
+
+    assert df.shape == (3, 4)
+    assert 3 in df['1'].values
+
+
 def test_binarize_with_nans():
 
     df = get_fake_dataset()
@@ -308,7 +327,8 @@ def test_copy_as_non_input():
 
     df = get_fake_dataset()
     df.add_scope('1', 'bleh', inplace=True)
-    df.copy_as_non_input(col='1', new_col='1_copy', copy_scopes=False, inplace=True)
+    df.copy_as_non_input(col='1', new_col='1_copy',
+                         copy_scopes=False, inplace=True)
     df._check_scopes()
 
     assert df.shape == ((3, 4))

@@ -493,6 +493,35 @@ class Dataset(pd.DataFrame):
 
         {inplace}
 
+        See Also
+        ----------
+        set_target : Specifically for setting target role.
+        set_non_input : Specifically for setting non input role.
+        get_roles : Returns a dictionary with saved roles.
+
+        Examples
+        ---------
+        Setting columns role's within the :class:`Dataset` is an
+        essential part of using the object.
+
+        .. ipython:: python
+
+            data = bp.read_csv('data/example1.csv')
+            data = data.set_role('animals', 'target')
+            data
+            data.get_roles()
+
+        We can also use the method to set columns to role non input,
+        which has the additional constraint that no NaN values
+        can be present in that column. So we can see below
+        that one row is dropped.
+
+        .. ipython:: python
+
+            data = data.set_role('numbers', 'non input')
+            data
+            data.get_roles()
+
         '''
 
         if not inplace:

@@ -744,6 +744,21 @@ def test_rename_index_inplace_test():
     assert 0 in data.index
 
 
+def test_rename_index_inplace_test_mapper():
+
+    data = Dataset()
+    data['HI'] = [1, 2, 3]
+    data = data.set_train_split(subjects=[0, 1])
+
+    data.rename(mapper={0: '00', 1: '11', 2: '22'}, axis=0)
+
+    assert '00' not in data.train_subjects
+    assert '11' not in data.train_subjects
+    assert '22' not in data.test_subjects
+
+    assert 0 in data.index
+
+
 def test_extra_constructor_scopes():
 
     data = Dataset([1, 2, 3], columns=['1'],
@@ -774,3 +789,10 @@ def test_extra_constructor_non_inputs():
                    non_inputs='1')
 
     assert data.roles['1'] == 'non input'
+
+
+def test_repr_html():
+    
+    # Just make sure throws no errors
+    data = get_full_int_index_dataset()
+    data._repr_html_()

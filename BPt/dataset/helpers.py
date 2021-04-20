@@ -62,7 +62,8 @@ def proc_file_input(files, file_to_subject):
             file_paths = glob.glob(file_paths)
 
         subjects = [file_to_subject[key](fp) for fp in file_paths]
-        files_series[key] = pd.Series(file_paths, index=subjects)
+        files_series[key] = pd.Series(file_paths, index=subjects,
+                                      dtype='object')
 
     return files_series
 

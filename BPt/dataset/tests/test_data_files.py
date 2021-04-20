@@ -94,6 +94,24 @@ def test_data_files_consolidate():
                                   clear_existing='fail', n_jobs=-1)
 
 
+def test_data_files_consolidate2():
+
+    df = setup_datafiles()
+    assert df.file_mapping[0].load().shape == (2,)
+
+    df['data_files2'] = df['data_files'].copy()
+    df.add_scope('data_files2', 'data file', inplace=True)
+
+    temp_dr = tempfile.gettempdir()
+    save_dr = os.path.join(temp_dr, 'save_consol')
+
+    if os.path.exists(save_dr):
+        shutil.rmtree(save_dr)
+
+    df.consolidate_data_files(save_dr, replace_with='test',
+                              scope='data file', cast_to='float64',
+                              clear_existing='fail', n_jobs=-1)
+
 def test_data_files_integration():
 
     df = setup_datafiles()

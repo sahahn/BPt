@@ -11,6 +11,7 @@ from .base import (_get_est_fit_params, _get_est_trans_params,
                    _needs)
 
 
+# @TODO add docsrings here and also add to docs
 class BPtPipeline(Pipeline):
 
     _needs_mapping = True

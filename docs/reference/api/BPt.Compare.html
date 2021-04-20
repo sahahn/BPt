@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -225,6 +229,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -255,7 +261,7 @@
 <h1>BPt.Compare<a class="headerlink" href="#bpt-compare" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.Compare">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Compare</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/compare.py#L146-L224"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Compare" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Compare</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/compare.py#L146-L242"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Compare" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a special BPt input class which
 can be used as a helper to more easily run comparison
 analysis between a few choice of parameters.</p>
@@ -305,6 +311,29 @@ If instead this is not the key point of interest, but you still wish to
 try two different, say, <a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, then you would be better off
 nesting this choice as a hyper-parameter to optimize
 (in this case see: <a class="reference internal" href="BPt.Select.html#BPt.Select" title="BPt.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a>).</div>
+</div>
+<p class="rubric">Examples</p>
+<p>Compare is used with <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, for example:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">BPt.datasets</span> <span class="kn">import</span> <span class="n">load_boston</span>
+
+<span class="gp">In [2]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">load_boston</span><span class="p">()</span>
+
+<span class="gp">In [3]: </span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+<span class="gh">Out[3]: </span><span class="go">(506, 14)</span>
+
+<span class="gp">In [4]: </span><span class="n">pipe_options</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Compare</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;elastic&#39;</span><span class="p">),</span>
+<span class="gp">   ...: </span>                                     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;elastic&#39;</span><span class="p">),</span>
+<span class="gp">   ...: </span>                           <span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;ridge&#39;</span><span class="p">),</span>
+<span class="gp">   ...: </span>                                     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ridge&#39;</span><span class="p">)])</span>
+<span class="gp">   ...: </span>
+
+<span class="gp">In [5]: </span><span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipe_options</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<span class="gh">Out[5]: </span><span class="go"></span>
+<span class="go">          mean_scores_explained_variance  mean_scores_neg_mean_squared_error  std_scores_explained_variance  std_scores_neg_mean_squared_error  mean_timing_fit  mean_timing_score</span>
+<span class="go">pipeline                                                                                                                                                                          </span>
+<span class="go">elastic                         0.653772                          -30.018692                       0.040112                           6.347604         0.001668           0.001037</span>
+<span class="go">ridge                           0.654272                          -29.794915                       0.050788                           6.491644         0.004008           0.001309</span>
+</pre></div>
 </div>
 </dd></dl>
 

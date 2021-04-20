@@ -1,0 +1,6 @@
+BPt.BPtEvaluator.all\_train\_indices
+====================================
+
+.. currentmodule:: BPt
+
+.. autoproperty:: BPtEvaluator.all_train_indices

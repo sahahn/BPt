@@ -1,0 +1,22 @@
+.. _whatsnew_131:
+
+Version 1.3.1
+-----------------
+
+- New AutoGluon option
+    - Can now specify the auto machine learning package AutoGluon as a :class:`BPt.Model`
+
+- New SurfMaps extension loader
+    - Added new extension Loader :class:`BPt.SurfMaps`
+
+- only_fold parameter
+    - New optional parameter in Evaluate for running only one fold.
+
+- Better support for scikit-learns VotingClassifier and VotingRegressor
+    - Similar to Stacking update from 1.3, but for voting classifier + regressor.
+
+- More support for nested pipelines
+    - Can now have nested pipelines propagate their parameter distributions to a parameter search in the top level pipeline.
+
+- Bug Fix with CV
+    - Fixed rare bug with CV expecting pandas Series, added support for passing numpy array.

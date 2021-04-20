@@ -143,7 +143,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -177,6 +177,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
                         </li>
                     
                         <li class="">
@@ -423,7 +427,7 @@
 <h1>BPt.Dataset.drop_subjects_by_nan<a class="headerlink" href="#bpt-dataset-drop-subjects-by-nan" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.drop_subjects_by_nan">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_subjects_by_nan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L103-L154"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_subjects_by_nan" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_subjects_by_nan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L113-L164"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_subjects_by_nan" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used for dropping subjects based on
 the amount of missing values found across a subset of
 columns as selected by scope. Each subject is dropped

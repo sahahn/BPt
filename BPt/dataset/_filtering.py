@@ -25,6 +25,16 @@ def drop_nan_subjects(self, scope, inplace=False):
 
     {inplace}
 
+    Examples
+    ---------
+
+    .. ipython:: python
+
+        data = bp.read_csv('data/example1.csv')
+        data
+        data.drop_nan_subjects(scope='all')
+        data.drop_nan_subjects(scope='numbers')
+
     '''
 
     if not inplace:

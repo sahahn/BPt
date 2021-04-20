@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Why BPt? &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Loading Data" href="loading_data.html" />
+    <link rel="prev" title="User Guide" href="index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../index.html">
+    
+      <img src="../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../reference/index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="active">
+                    <a href="">Why BPt?</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="loading_data.html">Loading Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="saving_data.html">Saving Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="test_split.html">Test Split</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="role.html">Role</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="scope.html">Scope</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="data_types.html">Data Types</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="data_files.html">Data Files</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="subjects.html">Subjects</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pipeline_objects.html">Pipeline Objects</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="params.html">Params</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="extra_params.html">Extra Params</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="bmi_full_example.html">Predict BMI From Change In Brain</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="dep_full_example.html">Predicting Substance Dependence from Multi-Site Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="ssrt.html">Predict Stop Signal Response Time (SSRT)</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="waist_cm.html">Predict Waist Circumference with Diffusion Weighted Imaging</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="sex.html">Predict Sex</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="why-bpt">
+<span id="id1"></span><h1>Why BPt?<a class="headerlink" href="#why-bpt" title="Permalink to this headline">¶</a></h1>
+<p>BPt seeks to integrate a number of lower level packages towards providing a higher level package and user experience.
+The key point of interest here is that BPt is designed specifically for performing neuroimaging based machine learning.
+Towards this end, it builds upon and offers augmented capabilities for core libraries pandas and scikit-learn.</p>
+<ul class="simple">
+<li><p>Scikit-learn is fundamentally a lower level package, one which provides a
+number of the building blocks used in our package.
+That said, scikit-learn does not impose any sort of inherent order on the
+analysis workflow, and is far more flexible than our library.
+Flexibility is highly useful for a number of use cases, but still
+leaves room for higher level packages.
+Specifically, higher level packages like ours can help to both impose
+a conceptual ordering of recommended steps,
+as well as abstracting away boilerplate code in addition to
+providing other convenience functions.
+While it is obviously possible for users to re-create all of
+the functionality found in our library
+with the base libraries we employ, it would require in some cases
+immense effort, thus the existence of our package.</p></li>
+<li><p>We offer advanced and flexible hyper-parameter optimization via
+tight integration with the python nevergrad package.
+This allows BPt to offer a huge range of optimization strategies beyond the
+Random and Grid Searches found in scikit-learn.
+Beyond offering differing optimization methods, Nevergrad importantly supports more advanced functionality such as
+nesting hyper-parameters with dictionaries or choice like objects.
+This functionality allows users to easily implement within
+BPt almost auto-ML like powerful and expressive parameter searches.</p></li>
+<li><p>BPt allows hyper-parameter distributions to be associated directly with machine learning pipeline objects.
+This functionality we believe makes it easier to optimize hyper-parameters across
+a number of pipeline pieces concurrently. We further allow preset hyper-parameter
+distributions to be selected or modified.
+This functionality allows less experienced users to still be able to perform hyper-parameter optimization
+without specifying the sometimes complex parameters themselves.
+In the future we hope to support the sharing of user defined hyper-parameter
+distributions (note: this feature is already supported in the multi-user version of the web interface).</p></li>
+<li><p>We introduce meta hyper-parameter objects, e.g., the <a class="reference internal" href="../reference/api/BPt.Select.html#BPt.Select" title="BPt.Select"><code class="xref py py-class docutils literal notranslate"><span class="pre">Select</span></code></a> object, which allows specifying the choice between
+different pipeline objects as a hyper-parameter. For example, the choice between base two or more base models,
+say a Random Forest model and an Elastic Net Regression (each with their own associated distributions of hyper-parameters),
+can be specified with the Select wrapper as itself a hyper-parameter.
+In this way, broader modelling strategies can be defined explicitly within the hyper-parameter search.
+This allows researchers the ability to easily perform properly nested model selection,
+and thus avoid common pitfalls associated with performing too many repeated internal validations.
+Along similar lines, we introduce functionality where features can themselves be set as binary hyper-parameters.
+This allows for the possibility of higher level optimizations.</p></li>
+<li><p>BPt introduced the concept of Scopes across all pipeline pieces.
+Scopes are a way for different pipeline pieces to optionally act on only a subset of
+features. While a similar functionality is provided via ColumnTransformers in scikit-learn,
+our package improves on this principle in a number of ways. In particular, a number of
+transformers and feature selection objects can alter in sometimes unpredictable ways the number
+of features (i.e., the number of features input before a PCA transformation, vs. the number of output features).
+Our package tracks these changes. What tracking these changes allows is for scopes to be set in downstream pipeline pieces,
+e.g., the model itself, and have that functional set of features passed to the piece still reflect the intention
+of the original scope. For example, if one wanted to perform one hot encoding on a feature X,
+then further specify that a sub-model within an ensemble learner should only be provided feature X,
+our implemented scope system would make this possible.
+Importantly, the number of output features from the one hot encoding does not need to be known ahead of time,
+which makes properly nesting transformations like this much more accessible.
+Scopes can be particularly useful in neuroimaging based ML where a
+user might have data from a number of different modalities,
+and further a combination of categorical and continuous variables,
+all of which they may want to dynamically treat differently.</p></li>
+<li><p>We seek to more tightly couple in general the interaction between data loading, defining cross validation strategies,
+evaluating ML pipelines and making sense of results. For libraries like scikit-learn,
+this coupling is explicitly discouraged (which allows them to provide an extremely modular set of building blocks).
+On the other hand, by coupling these processes on our end, we can introduce a number of conveniences to the end-user.
+These span a number of common use cases associated with neuroimaging based ML,
+including: Allowing the previously introduced concept of Scope.
+Abstracting away a number of the considerations that must be made when
+dealing with loading, plotting and modelling across different data types (e.g., categorical vs. continuous).
+Abstracting away a number of the considerations that must be
+made when dealing with loading, plotting and modelling with missing data / NaN’s
+Data loading and visualization related functions, e.g., dropping outliers
+and automatically visually viewing the distributions of a number of input variables.
+The generation of automatic feature importances across different
+cross validation schemes, and their plotting.
+Exporting of loaded variable summary information to .docx format.
+The ability to easily save and load full projects. And more!</p></li>
+<li><p>At the cost of some flexibility, but with the aims of reducing potentially redundant and cognitively demanding choices,
+the Model Pipeline’s constructed within BPt restrict the order in which the
+different pieces can be specified (e.g., Imputation must come before feature selection).
+That said, as all pipeline pieces are designed to accept custom objects,
+experienced users can easily get around this by passing in their own custom pipelines in relevant places.
+Whenever possible, we believe it to be a benefit to reduce researcher degrees of freedom.</p></li>
+<li><p>BPt provides a loader module which allows the arbitrary inclusion of non-typical 2D scikit-learn input directly integrated into the ML pipeline.
+This functionality is designed to work with the hyper-parameter optimization, scope and other features already mentioned,
+and allows the usage of common neuroimaging features such as 3D MRI volumes, time-series, connectomes, surface based inputs,
+and more. Explicitly, this functionality is designed to be used and evaluated in a properly nested machine learning context.
+An immensely useful package in this regard is nilearn, and by extension nibabel.
+Nilearn provides a number of functions which work very nicely with this loader module.
+This can be seen as combining the functionality of our package and nilearn,
+as an alternative to combining scikit-learn and nilearn.
+While the latter is obviously possible and preferable for some users,
+we hope that providing a higher level interface is still useful to others.</p></li>
+<li><p>Along with the loader module, we currently include a number of extension
+objects beyond those found in the base nilearn library.
+These span the extraction of Network metrics from an adjacency matrix, support for extracting regions of interest from static or time-series surfaces,
+the generation of randomly defined surface parcellations,and the automatic caching of user defined, potentially computationally expensive,
+loading transformations. We plan to continue to add more useful functions like these in the future.</p></li>
+<li><p>Additional measures of feature importance can be specified to be automatically computed. Further, by tracking how features change,
+it can be useful in certain circumstances to back project computed feature importances to their
+original space (e.g., in the case of pipeline where surfaces from a few modalities are loaded from disk along
+with a number of phenotypic categorical variables, a parcellation applied on just the surface volumes,
+feature selection performed separately for say a number of different modalities, and then a base model evaluated,
+feature importances from the base model can be automatically projected back to the different modalities surfaces).</p></li>
+</ul>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="index.html" title="previous page">User Guide</a>
+    <a class='right-next' id="next-link" href="loading_data.html" title="next page">Loading Data</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

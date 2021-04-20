@@ -427,7 +427,7 @@
 <h1>BPt.Dataset.set_role<a class="headerlink" href="#bpt-dataset-set-role" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.set_role">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">set_role</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">role</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L426-L458"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.set_role" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">set_role</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">role</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L473-L534"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.set_role" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used to set a role for
 either a single column or multiple, as set
 through the scope parameter. See <a class="reference internal" href="../../user_guide/role.html#role"><span class="std std-ref">Role</span></a>
@@ -456,6 +456,55 @@ each role differs.</p>
 </dl>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="BPt.Dataset.set_target.html#BPt.Dataset.set_target" title="BPt.Dataset.set_target"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_target</span></code></a></dt><dd><p>Specifically for setting target role.</p>
+</dd>
+<dt><a class="reference internal" href="BPt.Dataset.set_non_input.html#BPt.Dataset.set_non_input" title="BPt.Dataset.set_non_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_non_input</span></code></a></dt><dd><p>Specifically for setting non input role.</p>
+</dd>
+<dt><a class="reference internal" href="BPt.Dataset.get_roles.html#BPt.Dataset.get_roles" title="BPt.Dataset.get_roles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_roles</span></code></a></dt><dd><p>Returns a dictionary with saved roles.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<p>Setting columns role’s within the <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> is an
+essential part of using the object.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/example1.csv&#39;</span><span class="p">)</span>
+
+<span class="gp">In [2]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;animals&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">)</span>
+
+<span class="gp">In [3]: </span><span class="n">data</span>
+<span class="gh">Out[3]: </span><span class="go"></span>
+<span class="go">  animals  numbers</span>
+<span class="go">0   &#39;cat&#39;      1.0</span>
+<span class="go">1   &#39;cat&#39;      2.0</span>
+<span class="go">2   &#39;dog&#39;      1.0</span>
+<span class="go">3   &#39;dog&#39;      2.0</span>
+<span class="go">4   &#39;elk&#39;      NaN</span>
+
+<span class="gp">In [4]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_roles</span><span class="p">()</span>
+<span class="gh">Out[4]: </span><span class="go">{&#39;animals&#39;: &#39;target&#39;, &#39;numbers&#39;: &#39;data&#39;}</span>
+</pre></div>
+</div>
+<p>We can also use the method to set columns to role non input,
+which has the additional constraint that no NaN values
+can be present in that column. So we can see below
+that one row is dropped.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;numbers&#39;</span><span class="p">,</span> <span class="s1">&#39;non input&#39;</span><span class="p">)</span>
+
+<span class="gp">In [6]: </span><span class="n">data</span>
+<span class="gh">Out[6]: </span><span class="go"></span>
+<span class="go">  animals  numbers</span>
+<span class="go">0   &#39;cat&#39;      1.0</span>
+<span class="go">1   &#39;cat&#39;      2.0</span>
+<span class="go">2   &#39;dog&#39;      1.0</span>
+<span class="go">3   &#39;dog&#39;      2.0</span>
+
+<span class="gp">In [7]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_roles</span><span class="p">()</span>
+<span class="gh">Out[7]: </span><span class="go">{&#39;animals&#39;: &#39;target&#39;, &#39;numbers&#39;: &#39;non input&#39;}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

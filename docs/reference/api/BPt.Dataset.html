@@ -427,43 +427,68 @@
 <h1>BPt.Dataset<a class="headerlink" href="#bpt-dataset" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.Dataset">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L117-L1657"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>The BPt Dataset class is the main class used for preparing data
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">roles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scopes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">targets</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">non_inputs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L117-L1733"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line">The BPt Dataset class is the main class used for preparing data
 into a compatible format to work with machine learning. This class is new
 as of BPt version 2 (replacing the building in loading functions of the
-old BPt_ML).</p>
-<p>See <a class="reference internal" href="../../user_guide/loading_data.html#loading-data"><span class="std std-ref">Loading Data</span></a> for more a comprehensive guide on this object.</p>
-<p>This class can be initialized like a pandas.DataFrame, or
-typically from a pandas.DataFrame.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+old BPt_ML).</div>
+</div>
+<div class="line-block">
+<div class="line">See <a class="reference internal" href="../../user_guide/loading_data.html#loading-data"><span class="std std-ref">Loading Data</span></a> for more a comprehensive guide on this object.</div>
+</div>
+<div class="line-block">
+<div class="line">This class can be initialized like a pandas.DataFrame, or
+typically from a pandas.DataFrame. This class has some constraints
+relative to using DataFrames. Some of these are that columns must be
+strings (if passed as int-like will be cast to strings), and that
+there cannot be duplicate column names.</div>
+</div>
+<div class="line-block">
+<div class="line">This class can be initialized in most of the same
+ways that a pandas DataFrame can be initialized, for example</div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]),</span>
+<span class="gp">   ...: </span>                  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span>
+<span class="gp">   ...: </span>
 
-<span class="gp">In [2]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+<span class="gp">In [2]: </span><span class="n">data</span>
+<span class="gh">Out[2]: </span><span class="go"></span>
+<span class="go">   a  b  c</span>
+<span class="go">0  1  2  3</span>
+<span class="go">1  4  5  6</span>
+<span class="go">2  7  8  9</span>
+</pre></div>
+</div>
+<p>Or from a pandas DataFrame.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
-<span class="gp">In [3]: </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">In [4]: </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
 
-<span class="gp">In [4]: </span><span class="n">data</span>
-<span class="gh">Out[4]: </span><span class="go"></span>
-<span class="go">   1</span>
+<span class="gp">In [5]: </span><span class="n">df</span>
+<span class="gh">Out[5]: </span><span class="go"></span>
+<span class="go">   a</span>
+<span class="go">0  1</span>
+<span class="go">1  2</span>
+<span class="go">2  3</span>
+
+<span class="gp">In [6]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+<span class="gp">In [7]: </span><span class="n">data</span>
+<span class="gh">Out[7]: </span><span class="go"></span>
+<span class="go">   a</span>
 <span class="go">0  1</span>
 <span class="go">1  2</span>
 <span class="go">2  3</span>
 </pre></div>
 </div>
-<p>Or from a pandas DataFrame.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<p>The Dataset also has some extra optional constructor parameters:
+roles, scopes, targets and non_inputs, which are just helpers
+for setting parameters at the time of construction. For example:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">],</span> <span class="n">targets</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">])</span>
 
-<span class="gp">In [6]: </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-
-<span class="gp">In [7]: </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-
-<span class="gp">In [8]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-
-<span class="gp">In [9]: </span><span class="n">data</span>
-<span class="gh">Out[9]: </span><span class="go"></span>
-<span class="go">   1</span>
-<span class="go">0  1</span>
-<span class="go">1  2</span>
-<span class="go">2  3</span>
+<span class="gp">In [9]: </span><span class="n">data</span><span class="o">.</span><span class="n">get_roles</span><span class="p">()</span>
+<span class="gh">Out[9]: </span><span class="go">{&#39;1&#39;: &#39;target&#39;}</span>
 </pre></div>
 </div>
 <div class="versionadded">

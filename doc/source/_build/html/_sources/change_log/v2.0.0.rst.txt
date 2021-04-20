@@ -1,0 +1,21 @@
+.. _whatsnew_200:
+
+Version 2.0.0
+---------------
+
+- Big Change: New :class:`BPt.Dataset` class
+    - This new Dataset class is designed to fully replace the old system of loading via the BPt_ML class.
+    - This new system is designed to be more flexible than the old system.
+    - Most of the old functionality is ported over, and various new functionality added.
+
+- Updates to the project documentation
+    - With replacing the BPt_ML class, large amounts of the documentation was replaced and updated.
+    - Moved to new pandas style documentation.
+
+- More tests
+    - More tests across all pieces of the project.
+
+- Removed Values_Subset class
+    - Now the ValueSubset class replaces this functionality, and more generally the
+      feature of creating overlaps of column values on the fly is depreciated.
+

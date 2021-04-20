@@ -1,0 +1,446 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scope &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Types" href="data_types.html" />
+    <link rel="prev" title="Role" href="role.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../index.html">
+    
+      <img src="../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../reference/index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="why_bpt.html">Why BPt?</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="loading_data.html">Loading Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="saving_data.html">Saving Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="test_split.html">Test Split</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="role.html">Role</a>
+                </li>
+            
+          
+            
+                <li class="active">
+                    <a href="">Scope</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="data_types.html">Data Types</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="data_files.html">Data Files</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="subjects.html">Subjects</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pipeline_objects.html">Pipeline Objects</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="params.html">Params</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="extra_params.html">Extra Params</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="bmi_full_example.html">Predict BMI From Change In Brain</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="dep_full_example.html">Predicting Substance Dependence from Multi-Site Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="ssrt.html">Predict Stop Signal Response Time (SSRT)</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="waist_cm.html">Predict Waist Circumference with Diffusion Weighted Imaging</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="sex.html">Predict Sex</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="scope">
+<span id="id1"></span><h1>Scope<a class="headerlink" href="#scope" title="Permalink to this headline">¶</a></h1>
+<p>Scope’s represent a key concept within BPt, that are present when preparing data with
+the <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> class (See functions for adding and removing scopes
+to the Dataset: <a class="reference internal" href="../reference/api/BPt.Dataset.add_scope.html#BPt.Dataset.add_scope" title="BPt.Dataset.add_scope"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_scope</span></code></a> and
+<a class="reference internal" href="../reference/api/BPt.Dataset.remove_scope.html#BPt.Dataset.remove_scope" title="BPt.Dataset.remove_scope"><code class="xref py py-func docutils literal notranslate"><span class="pre">remove_scope</span></code></a>), and during ML.
+The <cite>scope</cite> argument can also be
+found across different <a class="reference internal" href="../reference/api/BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> pieces
+and within <a class="reference internal" href="../reference/api/BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>. The fundamental idea is
+that during loading, plotting, ML, etc… it is often desirable to specify
+a subset of the total loaded columns/features. This is accomplished within BPt via the
+concept of ‘scope’ and the ‘scope’ parameter.</p>
+<p>The concept of scopes extends beyond the <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> class to the rest of
+BPt. The fundamental idea is that it provides a utility for more easily selecting different
+subsets of columns from the full dataset. This is accomplished by providing different functions
+and methods with a <cite>scope</cite> argument, which accepts any BPt style <a class="reference internal" href="#scope"><span class="std std-ref">Scope</span></a> input, and then
+operates just on that subset of columns. For example consider the example below
+with the function <a class="reference internal" href="../reference/api/BPt.Dataset.get_cols.html#BPt.Dataset.get_cols" title="BPt.Dataset.get_cols"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_cols</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Empty Dataset with 3 columns</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">])</span>
+
+<span class="c1"># scope of &#39;all&#39; will return all columns</span>
+<span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+<span class="c1"># cols == [&#39;1&#39;, &#39;2&#39;, &#39;3&#39;]</span>
+</pre></div>
+</div>
+<p>In this example, we pass a fixed input str scope: ‘all’. This is a special reserved scope
+which will always return all columns. In addition to ‘all’ there are a number of other
+reserved special scopes which cannot be set, and have their own fixed behavior. These are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>‘all’</dt><dd><p>All loaded columns</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘float’</dt><dd><p>All loaded columns of type ‘float’, i.e.,
+a continuous variable and not a categorical variable or a data file,
+see: <a class="reference internal" href="data_types.html#data-types"><span class="std std-ref">Data Types</span></a></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘category’</dt><dd><p>All loaded columns of type / scope ‘category’, see <a class="reference internal" href="data_types.html#data-types"><span class="std std-ref">Data Types</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘data file’</dt><dd><p>All loaded columns of type / scope ‘data file’, see <a class="reference internal" href="data_types.html#data-types"><span class="std std-ref">Data Types</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘data’</dt><dd><p>All loaded columns with role ‘data’, see <a class="reference internal" href="role.html#role"><span class="std std-ref">Role</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘target’</dt><dd><p>All loaded columns with role ‘target’, see <a class="reference internal" href="role.html#role"><span class="std std-ref">Role</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘non input’</dt><dd><p>All loaded columns with role ‘non input’, see <a class="reference internal" href="role.html#role"><span class="std std-ref">Role</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘data float’</dt><dd><p>All loaded columns of type ‘float’ with role ‘data’.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘data category’</dt><dd><p>All loaded columns of type ‘float’ with role ‘data’.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘target float’</dt><dd><p>All loaded columns of type ‘float’ with role ‘target’.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘target category’</dt><dd><p>All loaded columns of type ‘float’ with role ‘target’.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Those enumerated, the scope system also passing other strings, which are not one of the above,
+reserved scopes. In the case that a string is passed, the following options are possible
+and are checked in this order:</p>
+<p>1. Passing the name of a column directly. In this case that column will be returned by name.
+E.g., with the variable data from before:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will specify just the column ‘1’.</p>
+<p>2. Passing the name of a scope. What this refers to is the ability to add
+custom scopes to columns with <a class="reference internal" href="../reference/api/BPt.Dataset.add_scope.html#BPt.Dataset.add_scope" title="BPt.Dataset.add_scope"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_scope</span></code></a>.
+This acts as a tagging system, where
+you can create custom subsets. For example if we wanted the subset of ‘1’ and ‘3’,
+we can pass scope=[‘1’, ‘3’], but if we were using this same set many times, we can also
+set the scopes of each of these columns to a custom scope, e.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">set_scopes</span><span class="p">({</span><span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="s1">&#39;custom&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="s1">&#39;custom&#39;</span><span class="p">})</span>
+
+<span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;custom&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, cols would return us the scope ‘custom’. Likewise, you may remove
+scopes with <a class="reference internal" href="../reference/api/BPt.Dataset.remove_scope.html#BPt.Dataset.remove_scope" title="BPt.Dataset.remove_scope"><code class="xref py py-func docutils literal notranslate"><span class="pre">remove_scope</span></code></a>.</p>
+<p>3. Passing a stub. This functionality allows us to pass a common substring present
+across a number of columns, and lets us select all columns with that substring. For example,
+let’s say we have columns ‘my_col1’, ‘my_col2’ and ‘target’ loaded. By passing scope=’my_col’
+we can select both ‘my_col1’ and ‘my_col2, but not ‘target’.</p>
+<p>In addition to the 4 different ways scopes can be used enumerated above, we can also
+compose any combination by passing a list of scopes. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Returns columns ‘1’ and ‘2’. We can also combine across methods. E.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s1">&#39;custom&#39;</span><span class="p">,</span> <span class="s1">&#39;non input&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>In this example, we are requesting the union (NOT the overlap) of column ‘1’, any
+category columns, any columns with the scope ‘custom’ and any ‘non input’ columns.</p>
+<p>Scopes can also be associated 1:1 with their corresponding base
+ModelPipeline objects (except for the ProblemSpec scope).
+One useful function designed specifically for objects with Scope
+is the <a class="reference internal" href="../reference/api/BPt.Duplicate.html#BPt.Duplicate" title="BPt.Duplicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Duplicate</span></code></a> Input Wrapper, which
+allows us to conveniently replicate pipeline objects
+across a number of scopes. This functionality is especially useful with
+<a class="reference internal" href="../reference/api/BPt.Transformer.html#BPt.Transformer" title="BPt.Transformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transformer</span></code></a> objects, (though still usable with other pipeline pieces,
+though other pieces tend to work on each feature independency,
+ruining some of the benefit). For example consider a case where you would like to
+run a PCA transformer on different groups of variables separately,
+or say you wanted to use a categorical encoder on 15 different
+categorical variables. Rather then having to manually type out every combination
+or write a for loop, you can use <a class="reference internal" href="../reference/api/BPt.Duplicate.html#BPt.Duplicate" title="BPt.Duplicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Duplicate</span></code></a>.</p>
+<p>See <a class="reference internal" href="../reference/api/BPt.Duplicate.html#BPt.Duplicate" title="BPt.Duplicate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Duplicate</span></code></a> for more information on how to use this functionality.</p>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="role.html" title="previous page">Role</a>
+    <a class='right-next' id="next-link" href="data_types.html" title="next page">Data Types</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

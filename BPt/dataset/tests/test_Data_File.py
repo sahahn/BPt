@@ -1,5 +1,5 @@
 import numpy as np
-from ..DataFile import DataFile, mp_single_load, load_data_file_proxy
+from ..data_file import DataFile, mp_single_load, load_data_file_proxy
 import tempfile
 import pandas as pd
 import os

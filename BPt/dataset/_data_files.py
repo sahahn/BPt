@@ -1,7 +1,7 @@
 import os
 import shutil
 from joblib import Parallel, delayed
-from .DataFile import DataFile
+from .data_file import DataFile
 from .helpers import (proc_file_input, mp_consol_save, wrap_load_func)
 from pandas.util._decorators import doc
 from .Dataset import _shared_docs, _sip_docs

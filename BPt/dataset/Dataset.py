@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from .DataFile import load_data_file_proxy
+from .data_file import load_data_file_proxy
 from copy import deepcopy
 from .helpers import verbose_print
 from pandas.util._decorators import doc

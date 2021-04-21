@@ -7,6 +7,8 @@ from sklearn.base import clone
 from .ScopeObjs import ScopeTransformer
 from operator import itemgetter
 from .base import _get_est_trans_params
+from ..util import get_top_substrs
+import pandas as pd
 
 
 def load_and_trans(transformer, load_func, loc):
@@ -226,7 +228,10 @@ class BPtLoader(ScopeTransformer):
 
         return super().transform_df(df, base_name=base_name)
 
-    def _proc_new_names(self, feat_names, base_name, encoders=None):
+    def _proc_new_names(self, feat_names, base_name=None, encoders=None):
+
+        # Store original passed feat names here
+        self.feat_names_in_ = feat_names
 
         # If skip, return passed names as is
         if self.estimator_ is None:
@@ -241,10 +246,10 @@ class BPtLoader(ScopeTransformer):
         for c in range(len(self.inds_)):
 
             ind = self.inds_[c]
-            base_name = feat_names[ind]
+            col_name = feat_names[ind]
 
             new_inds = self.X_trans_inds_[c]
-            new_names += [str(base_name) + '_' + str(i)
+            new_names += [str(col_name) + '_' + str(i)
                           for i in range(len(new_inds))]
 
         # Remove old names - using parent method
@@ -255,9 +260,77 @@ class BPtLoader(ScopeTransformer):
 
         return all_names
 
-    def inverse_transform(self, X, name='base loader'):
+    def inverse_transform_FIs(self, fis):
 
-        # @TODO make sure this is still working
+        # If doesn't have inverse_transform, return as is.
+        if not hasattr(self.estimator_, 'inverse_transform'):
+            return fis
+
+        # Get feature importances also as array
+        fis_data = np.array(fis)
+        fis_names = np.array(fis.index)
+
+        # Compute reverse mapping
+        reverse_mapping = get_reverse_mapping(self.mapping_)
+
+        # Prep return fis
+        return_fis_data = np.zeros(len(reverse_mapping), dtype='object')
+        return_fis_names = ['' for _ in range(len(reverse_mapping))]
+
+        # Process each feature
+        for col_ind in self.inds_:
+
+            # Get reverse inds and data for just this col
+            reverse_inds = proc_mapping([col_ind], self.out_mapping_)
+            col_fis = fis_data[reverse_inds]
+            col_names = fis_names[reverse_inds]
+
+            # Run inverse transform
+            inv_fis = self.estimator_.inverse_transform(col_fis)
+
+            # Place into return fis_data
+            original_ind = reverse_mapping[col_ind]
+            return_fis_data[original_ind] = inv_fis
+
+            # Add return name
+            return_fis_names[original_ind] =\
+                self._get_reverse_feat_name(col_names, original_ind)
+
+        # Fill in with original
+        for col_ind in self.rest_inds_:
+            reverse_ind = proc_mapping([col_ind], self.out_mapping_)[0]
+            original_ind = reverse_mapping[col_ind]
+
+            # Just pass along data and name, but in original spot
+            return_fis_data[original_ind] = fis_data[reverse_ind]
+            return_fis_names[original_ind] = fis_names[reverse_ind]
+
+        # Return new series
+        return pd.Series(return_fis_data, index=return_fis_names)
+
+    def _get_reverse_feat_name(self, col_names, original_ind):
+
+        # Get + add return name
+        if hasattr(self, 'feat_names_in_'):
+            return self.feat_names_in_[original_ind]
+
+        # If reverse_feat_names hasn't been called
+        substrs = get_top_substrs(col_names)
+
+        # If no common sub string
+        if len(substrs) == 0:
+            return 'loader_ind_' + str(original_ind)
+
+        # Just take first substring
+        new_name = substrs[0]
+
+        # Remove ending _ if any
+        if new_name.endswith('_'):
+            new_name = new_name[:-1]
+
+        return new_name
+
+    def inverse_transform(self, X, name='base loader'):
 
         # For each column, compute the inverse transform of what's loaded
         inverse_X = {}

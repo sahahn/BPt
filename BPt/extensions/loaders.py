@@ -74,8 +74,8 @@ class Identity(BaseEstimator, TransformerMixin):
         '''
         return X.flatten()
 
-    def reverse_transform(self, X_trans):
-        '''Reverse transform, i.e., un-flatten.
+    def inverse_transform(self, X_trans):
+        '''Inverse transform, i.e., un-flatten.
 
         Parameters
         ----------

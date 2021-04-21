@@ -194,3 +194,49 @@ def test_pipeline_fit_caching():
     # Removed cached once done
     shutil.rmtree(cache_loc)
 
+
+def test_pipeline_inverse_transform_FIs_loader_static_transform():
+
+    steps = []
+
+    # Loader - transform (5, 2) to (5, 8)
+    # as each DataFile contains np.zeros((2, 2))
+
+    loader = BPtLoader(estimator=Identity(),
+                       inds=[1],
+                       file_mapping=get_fake_mapping(100))
+    steps.append(('loader', loader))
+
+    # Add transformer to ones
+    # input here should be (5, 8) of real val, original
+    # inds of 0 should work on half
+    to_ones = ToFixedTransformer(to=1)
+    st = ScopeTransformer(estimator=to_ones, inds=Ellipsis)
+    steps.append(('to_ones', st))
+
+    # Add basic linear regression model
+    # Original inds should work on all
+    model = BPtModel(estimator=LinearRegression(), inds=Ellipsis)
+    steps.append(('model', model))
+
+    # Create pipe
+    pipe = BPtPipeline(steps=steps)
+
+    X = pd.DataFrame(np.arange(100).reshape((50, 2)))
+    y = np.ones(50)
+
+    pipe.fit(X, y)
+
+    # Fake coef
+    coef_ = [0, 1, 2, 3, 4]
+    feat_names = pipe.transform_feat_names(X)
+
+    fis = pd.Series(coef_, index=feat_names)
+    inverse_fis = pipe.inverse_transform_FIs(fis)
+    print(inverse_fis)
+
+    assert inverse_fis.loc[0] == 4
+    assert inverse_fis.loc[1].shape == ((2, 2))
+    assert inverse_fis.loc[1][0][0] == 0
+
+    clean_fake_mapping(100)

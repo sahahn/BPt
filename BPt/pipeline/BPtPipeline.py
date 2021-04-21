@@ -304,11 +304,21 @@ class BPtPipeline(Pipeline):
 
         return feat_names
 
-    def inverse_transform_FIs(self, fis, feat_names):
+    def inverse_transform_FIs(self, fis):
+        '''fis should be a pandas Series as indexed by feature name'''
 
-        # @TODO Need to write and check each base objects
-        # inverse transform
-        return
+        # Get as two lists - all steps but last
+        ordered_objs, _ =\
+            self._get_ordered_objs_and_names()
+
+        # Process each object in reverse order
+        for obj in ordered_objs[::-1]:
+
+            # Process only if object has method
+            if hasattr(obj, 'inverse_transform_FIs'):
+                fis = obj.inverse_transform_FIs(fis)
+
+        return fis
 
     @if_delegate_has_method(delegate='_final_estimator')
     def predict(self, X, **predict_params):

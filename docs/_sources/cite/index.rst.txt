@@ -42,6 +42,6 @@ Vancouver
     Hahn S, Yuan DK, Thompson WK, Owens M, Allgaier N, Garavan H. Brain Predictability toolbox: a Python library for neuroimaging-based machine learning. Bioinformatics.
 
 
-.. note::
+.. note ::
     
     Depending on what functions of the library you used, you may also wish to cite scikit-learn or related projects / methods papers accordingly.

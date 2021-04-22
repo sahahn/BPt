@@ -3,7 +3,7 @@ from .datasets import get_fake_dataset, get_fake_multi_index_dataset
 import numpy as np
 import tempfile
 import os
-from nose.tools import assert_raises
+import pytest
 
 
 def test_add_data_files():
@@ -88,7 +88,7 @@ def test_data_files_consolidate():
     assert df.file_mapping[0].load().shape == ((2, 2))
 
     # Should fail if try again
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         df.consolidate_data_files(save_dr, replace_with='test',
                                   scope='data file', cast_to=None,
                                   clear_existing='fail', n_jobs=-1)

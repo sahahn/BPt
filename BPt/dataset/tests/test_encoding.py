@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from nose.tools import assert_raises
+import pytest
 from .datasets import (get_fake_dataset, get_fake_dataset7,
                        get_fake_multi_index_dataset)
 from ..Dataset import Dataset
@@ -28,16 +28,16 @@ def test_add_unique_overlap():
     assert 'b' not in df.scopes['combo']
     assert df.roles['combo'] == 'data'
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         df.add_unique_overlap(cols='1', new_col='combo')
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         df.add_unique_overlap(cols=['1'], new_col='combo')
 
-    with assert_raises(KeyError):
+    with pytest.raises(KeyError):
         df.add_unique_overlap(cols=['does not exist', '1'], new_col='combo')
 
-    with assert_raises(KeyError):
+    with pytest.raises(KeyError):
         df.add_unique_overlap(cols=['1', '2'], new_col='1')
 
 

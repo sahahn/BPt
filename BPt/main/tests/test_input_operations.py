@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+import pytest
 from ..input_operations import Select
 from ..input import Model, Scaler
 from ...util import BPtInputMixIn
@@ -8,7 +8,7 @@ def test_select_fail():
 
     s = Select([Model('dt'), Scaler('robust')])
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         s._check_args()
 
 

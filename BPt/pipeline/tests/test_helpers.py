@@ -3,7 +3,7 @@ from ..helpers import (to_memmap, from_memmap, get_grid_params,
 import numpy as np
 import os
 from ...default.params.Params import Choice, TransitionChoice, Scalar
-from nose.tools import raises
+import pytest
 import nevergrad as ng
 
 
@@ -49,11 +49,12 @@ def test_get_grid_params():
     assert grid_params['4'] == [1, 2]
 
 
-@raises(RuntimeError)
 def test_get_grid_params_fail():
 
-    params = {'1': ng.p.Scalar(lower=1, upper=2)}
-    get_grid_params(params)
+    with pytest.raises(RuntimeError):
+
+        params = {'1': ng.p.Scalar(lower=1, upper=2)}
+        get_grid_params(params)
 
 
 def test_is_ng():

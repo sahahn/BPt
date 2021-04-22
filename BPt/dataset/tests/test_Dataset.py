@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import tempfile
 import os
-from nose.tools import assert_raises
+import pytest
 from ...main.input_operations import Intersection
 from ...main.input import ProblemSpec
 from ..helpers import base_load_subjects, save_subjects
@@ -42,7 +42,7 @@ def test_set_role_fail():
 
     df = get_fake_dataset()
 
-    with assert_raises(AttributeError):
+    with pytest.raises(AttributeError):
         df.set_role('1', 'not real role')
 
 
@@ -495,13 +495,13 @@ def test_invalid_names():
     df = Dataset()
     df['target'] = ['1']
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         df._check_cols()
 
     df = Dataset()
     df['data'] = ['1']
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         df._check_cols()
 
 
@@ -615,7 +615,7 @@ def test_get_problem_type_binary_error():
     data = Dataset()
     data['1'] = [1, 2, 2, 2]
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         data._get_problem_type('1')
 
 
@@ -673,7 +673,7 @@ def test_rename_cols_duplicate_cols():
     data['1'] = [1, 2, 3]
     data['2'] = [1, 2, 3]
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         data.rename({'1': '2'}, axis=1)
 
 
@@ -792,7 +792,7 @@ def test_extra_constructor_non_inputs():
 
 
 def test_repr_html():
-    
+
     # Just make sure throws no errors
     data = get_full_int_index_dataset()
     data._repr_html_()

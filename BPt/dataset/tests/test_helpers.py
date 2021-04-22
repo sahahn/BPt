@@ -1,5 +1,5 @@
 from ..helpers import proc_fop, proc_file_input
-from nose.tools import assert_raises
+import pytest
 
 
 def test_proc_fop():
@@ -18,17 +18,17 @@ def test_proc_fop():
 
 def test_proc_file_input():
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         proc_file_input(files='not dict',
                         file_to_subject='auto')
 
     files = {'something': ['loc1.npy', 'loc2.npy']}
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         proc_file_input(files=files,
                         file_to_subject=None)
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         proc_file_input(files=files,
                         file_to_subject={'dif_key': 'auto'})
 

@@ -8,7 +8,7 @@ from ..funcs import (pipeline_check, problem_spec_check, get_estimator,
                      _preproc_pipeline, _preproc_param_search)
 from ..CV import BPtCV
 from ...dataset.Dataset import Dataset
-from nose.tools import assert_raises
+import pytest
 from sklearn.linear_model import Ridge
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.preprocessing import RobustScaler
@@ -119,7 +119,7 @@ def test_problem_spec_compare_fail():
     dataset = get_fake_dataset()
     p = ProblemSpec(scope=Compare(['all', 'float']))
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         problem_spec_check(p, dataset, error_if_compare=True)
 
     problem_spec_check(p, dataset, error_if_compare=False)
@@ -179,7 +179,7 @@ def test_problem_spec_multiple_compares():
     assert isinstance(subset, CompareDict)
     assert len(subset) == 3
 
-    with assert_raises(KeyError):
+    with pytest.raises(KeyError):
         ps['nonsense']
 
 
@@ -209,15 +209,15 @@ def test_problem_spec_check():
     assert ps.scorer != 'default'
 
     p.target = '1'
-    with assert_raises(IndexError):
+    with pytest.raises(IndexError):
         ps = problem_spec_check(p, dataset)
 
     p.target = '4'
-    with assert_raises(IndexError):
+    with pytest.raises(IndexError):
         ps = problem_spec_check(p, dataset)
 
     p.target = 8
-    with assert_raises(IndexError):
+    with pytest.raises(IndexError):
         ps = problem_spec_check(p, dataset)
 
 
@@ -321,17 +321,17 @@ def test_preproc_pipeline():
 
     # Not a valid column error
     pipe = ModelPipeline(param_search=ParamSearch(cv=CV(splits='6')))
-    with assert_raises(KeyError):
+    with pytest.raises(KeyError):
         proc_pipe = _preproc_pipeline(pipe, ps, dataset=data)
 
     # Trigger role failure
     pipe = ModelPipeline(param_search=ParamSearch(cv=CV(splits='3')))
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         proc_pipe = _preproc_pipeline(pipe, ps, dataset=data)
 
     # Not category failure
     pipe = ModelPipeline(param_search=ParamSearch(cv=CV(splits='5')))
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         proc_pipe = _preproc_pipeline(pipe, ps, dataset=data)
 
 
@@ -594,7 +594,7 @@ def test_get_estimator_compare_fail():
         Model(obj=Compare(['random forest',
                            'ridge']))])
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         get_estimator(pipeline=pipe, dataset=data,
                       problem_spec=ps)
 

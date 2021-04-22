@@ -1,6 +1,6 @@
 import numpy as np
 from ..Dataset import Dataset
-from nose.tools import assert_raises
+import pytest
 import os
 import tempfile
 from ...main.input import CVStrategy
@@ -79,19 +79,19 @@ def test_proc_cv_strategy_groups():
 
     df = get_fake_dataset()
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         cv_params = CVStrategy(groups=['1', '2'])
 
     cv_params = CVStrategy(groups='1')
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         cv = df._proc_cv_strategy(cv_params)
 
     cv_params = CVStrategy(groups="doesn't exist")
-    with assert_raises(KeyError):
+    with pytest.raises(KeyError):
         cv = df._proc_cv_strategy(cv_params)
 
     cv_params = CVStrategy(groups='2')
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         cv = df._proc_cv_strategy(cv_params)
 
     cv_params = CVStrategy(groups='3')
@@ -104,15 +104,15 @@ def test_proc_cv_strategy_stratify():
 
     df = get_fake_dataset()
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         cv_params = CVStrategy(stratify=['1', '2'])
 
     cv_params = CVStrategy(stratify='1')
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         cv = df._proc_cv_strategy(cv_params)
 
     cv_params = CVStrategy(stratify="doesn't exist")
-    with assert_raises(KeyError):
+    with pytest.raises(KeyError):
         cv = df._proc_cv_strategy(cv_params)
 
     cv_params = CVStrategy(stratify='2')
@@ -131,10 +131,10 @@ def test_set_test_split():
     df = get_fake_dataset()
     df.verbose = -1
 
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         df = df.set_test_split()
 
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         df = df.set_test_split(size=.2, subjects=[1, 2])
 
     df = df.set_test_split(size=1, cv_strategy=None, random_state=None)
@@ -176,10 +176,10 @@ def test_set_train_split():
 
     df = get_fake_dataset()
 
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         df = df.set_train_split()
 
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         df = df.set_train_split(size=.2, subjects=[1, 2])
 
     df = df.set_train_split(size=1, cv_strategy=None, random_state=None)
@@ -214,12 +214,12 @@ def test_set_train_split():
     assert len(df.train_subjects) == 2
     assert 0 in df.train_subjects
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         df.set_train_split(size=1,
                            cv_strategy=CVStrategy(train_only_subjects=[0, 1]),
                            random_state=1, inplace=True)
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         df = df.set_train_split(size=0)
 
 

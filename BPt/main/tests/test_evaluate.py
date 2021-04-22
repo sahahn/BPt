@@ -7,7 +7,7 @@ from ..input_operations import Select
 from ...dataset.Dataset import Dataset
 from ...default.params.Params import Choice
 from ..funcs import evaluate, cross_val_score, _sk_check_y
-from nose.tools import assert_raises
+import pytest
 import pandas as pd
 import numpy as np
 from ...extensions import LinearResidualizer
@@ -122,7 +122,7 @@ def test_sk_check_y():
 
     # Fails
     y = pd.Series([1, 2, np.nan])
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         _sk_check_y(y)
 
 
@@ -331,10 +331,10 @@ def test_evaluate_fail():
                          progress_bar=False,
                          store_estimators=False)
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         evaluator._estimators_check()
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         evaluator.permutation_importance(dataset)
 
 

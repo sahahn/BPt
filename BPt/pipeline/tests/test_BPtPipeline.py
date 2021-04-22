@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+import pytest
 from ..BPtPipeline import BPtPipeline
 from .helpers import ToFixedTransformer, get_fake_mapping, clean_fake_mapping
 from ..ScopeObjs import ScopeTransformer
@@ -458,7 +458,7 @@ def test_pipeline_inverse_transform_FIs_impossible():
 
     fis = pd.Series(coef_, index=feat_names)
 
-    with assert_raises(IndexError):
+    with pytest.raises(IndexError):
         pipe.inverse_transform_FIs(fis)
 
     # Clean up

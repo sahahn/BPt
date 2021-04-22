@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -233,6 +237,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -263,7 +269,7 @@
 <h1>BPt.get_estimator<a class="headerlink" href="#bpt-get-estimator" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="BPt.get_estimator">
-<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">get_estimator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L271-L351"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.get_estimator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">get_estimator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L271-L349"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.get_estimator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a sklearn compatible <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v0.24)"><span class="xref std std-ref">estimator</span></a> from a
 <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>, <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> and <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p>
 <dl class="field-list">
@@ -337,53 +343,48 @@ used with Dataset method
 <p>First we will setup a dataset and a pipeline.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
 
-<span class="gp">In [2]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+<span class="gp">In [2]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]],</span>
+<span class="gp">   ...: </span>                   <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">],</span>
+<span class="gp">   ...: </span>                   <span class="n">targets</span><span class="o">=</span><span class="s1">&#39;3&#39;</span><span class="p">)</span>
+<span class="gp">   ...: </span>
 
-<span class="gp">In [3]: </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-
-<span class="gp">In [4]: </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
-
-<span class="gp">In [5]: </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
-
-<span class="gp">In [6]: </span><span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="gp">In [7]: </span><span class="n">data</span>
-<span class="gh">Out[7]: </span><span class="go"></span>
+<span class="gp">In [3]: </span><span class="n">data</span>
+<span class="gh">Out[3]: </span><span class="go"></span>
 <span class="go">   1  2  3</span>
-<span class="go">0  1  2  5</span>
-<span class="go">1  2  3  6</span>
-<span class="go">2  3  4  7</span>
+<span class="go">0  1  2  3</span>
+<span class="go">1  2  3  4</span>
+<span class="go">2  5  6  7</span>
 
-<span class="gp">In [8]: </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">),</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;linear&#39;</span><span class="p">)])</span>
+<span class="gp">In [4]: </span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">),</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;linear&#39;</span><span class="p">)])</span>
 
-<span class="gp">In [9]: </span><span class="n">pipeline</span>
-<span class="gh">Out[9]: </span><span class="go">Pipeline(steps=[Scaler(obj=&#39;standard&#39;), Model(obj=&#39;linear&#39;)])</span>
+<span class="gp">In [5]: </span><span class="n">pipeline</span>
+<span class="gh">Out[5]: </span><span class="go">Pipeline(steps=[Scaler(obj=&#39;standard&#39;), Model(obj=&#39;linear&#39;)])</span>
 </pre></div>
 </div>
 <p>Next we can use get_estimator and
 also convert the dataset into a traditional sklearn-style
 X, y input. Note that we are using just the default values
 for problem spec.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_Xy</span><span class="p">()</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_Xy</span><span class="p">()</span>
 
-<span class="gp">In [11]: </span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
-<span class="gh">Out[11]: </span><span class="go">((3, 2), (3,))</span>
+<span class="gp">In [7]: </span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
+<span class="gh">Out[7]: </span><span class="go">((3, 2), (3,))</span>
 
-<span class="gp">In [12]: </span><span class="n">estimator</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">get_estimator</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="gp">In [8]: </span><span class="n">estimator</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">get_estimator</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now we can use this estimator as we would any other sklearn
 style estimator.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="gh">Out[13]: </span><span class="go"></span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gh">Out[9]: </span><span class="go"></span>
 <span class="go">BPtPipeline(steps=[(&#39;standard float&#39;,</span>
 <span class="go">                    ScopeTransformer(estimator=StandardScaler(), inds=Ellipsis)),</span>
 <span class="go">                   (&#39;linear regressor&#39;,</span>
 <span class="go">                    BPtModel(estimator=LinearRegression(n_jobs=1), inds=Ellipsis))],</span>
 <span class="go">            verbose=0)</span>
 
-<span class="gp">In [14]: </span><span class="n">estimator</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="gh">Out[14]: </span><span class="go">1.0</span>
+<span class="gp">In [10]: </span><span class="n">estimator</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gh">Out[10]: </span><span class="go">0.9999999999999475</span>
 </pre></div>
 </div>
 </dd></dl>

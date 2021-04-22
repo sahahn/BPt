@@ -1,5 +1,5 @@
 import numpy as np
-from ..DataFile import DataFile, mp_single_load, load_data_file_proxy
+from ..data_file import DataFile, mp_single_load, load_data_file_proxy
 import tempfile
 import pandas as pd
 import os
@@ -33,6 +33,21 @@ def test_Data_File():
 
     # Make sure hash works
     assert hash(df) == hash(df2)
+
+
+def test_Data_File_repr():
+
+    df = get_fake_data_file()
+
+    assert repr(df).startswith("DataFile(loc=")
+    assert str(df).startswith("DataFile(loc=")
+
+
+def test_df_sort():
+
+    df = get_fake_data_file()
+
+    assert not df < df
 
 
 def test_mp_single_load():

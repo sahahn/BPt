@@ -25,6 +25,16 @@ def drop_nan_subjects(self, scope, inplace=False):
 
     {inplace}
 
+    Examples
+    ---------
+
+    .. ipython:: python
+
+        data = bp.read_csv('data/example1.csv')
+        data
+        data.drop_nan_subjects(scope='all')
+        data.drop_nan_subjects(scope='numbers')
+
     '''
 
     if not inplace:
@@ -101,7 +111,7 @@ def apply_exclusions(self, subjects, inplace=False):
 
 
 @doc(**_sip_docs)
-def drop_subjects_by_nan(self, threshold=.5, scope='all', inplace=False):
+def drop_subjects_by_nan(self, scope='all', threshold=.5, inplace=False):
     '''This method is used for dropping subjects based on
     the amount of missing values found across a subset of
     columns as selected by scope. Each subject is dropped
@@ -110,6 +120,11 @@ def drop_subjects_by_nan(self, threshold=.5, scope='all', inplace=False):
 
     Parameters
     -----------
+    {scope}
+        ::
+
+            default = 'all'
+
     threshold : float or int, optional
         Passed as a float between 0 and 1, or
         as an int. If greater than 0 or less than 1,
@@ -122,11 +137,6 @@ def drop_subjects_by_nan(self, threshold=.5, scope='all', inplace=False):
         ::
 
             default = .5
-
-    {scope}
-        ::
-
-            default = 'all'
 
     {inplace}
 
@@ -188,7 +198,7 @@ _outlier_docs = {**_sip_docs, **_file_docs, 'drop': _shared_docs['drop']}
 
 
 @doc(**_outlier_docs)
-def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
+def filter_outliers_by_percent(self, scope='float', fop=1, drop=True,
                                reduce_func=np.mean, n_jobs=-1, inplace=False):
     '''This method is designed to allow dropping a fixed percent of outliers
     from the requested columns. This method is designed to work
@@ -204,6 +214,11 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
 
     Parameters
     -----------
+    {scope}
+        ::
+
+            default = 'float'
+
     fop : float, tuple, optional
         This parameter represents the percent of outliers to drop.
         It should be passed as a percent, e.g., therefore 1 for
@@ -233,11 +248,6 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
         ::
 
             default = 1
-
-    {scope}
-        ::
-
-            default = 'float'
 
     {drop}
 
@@ -301,7 +311,7 @@ def filter_outliers_by_percent(self, fop=1, scope='float', drop=True,
 
 
 @doc(**_outlier_docs)
-def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
+def filter_outliers_by_std(self, scope='float', n_std=10, drop=True,
                            reduce_func=np.mean, n_jobs=-1, inplace=False):
     '''This method is designed to allow dropping outliers
     from the requested columns based on comparisons with that columns
@@ -317,6 +327,11 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
 
     Parameters
     -----------
+    {scope}
+        ::
+
+            default = 'float'
+
     n_std : float, tuple, optional
         This value is used to set an outlier threshold by
         standrad deviation. For example if passed n_std = 10,
@@ -339,11 +354,6 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
         ::
 
             default = 10
-
-    {scope}
-        ::
-
-            default = 'float'
 
     {drop}
 
@@ -449,7 +459,7 @@ def filter_outliers_by_std(self, n_std=10, scope='float', drop=True,
 
 
 @doc(**_sip_docs, drop=_shared_docs['drop'])
-def filter_categorical_by_percent(self, drop_percent=1, scope='category',
+def filter_categorical_by_percent(self, scope='category', drop_percent=1,
                                   drop=True, inplace=False):
     '''This method is designed to allow performing outlier filtering
     on categorical type variables. Note that this method assume
@@ -467,6 +477,11 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
 
     Parameters
     -----------
+    {scope}
+        ::
+
+            default = 'category'
+
     drop_percent : float, optional
         This parameter acts as a percentage threshold for dropping
         categories when loading categorical data. This parameter
@@ -482,11 +497,6 @@ def filter_categorical_by_percent(self, drop_percent=1, scope='category',
         relevant categories as specified by scope
         with a category constituting less than 1% of total
         valid data points will be dropped (or set to NaN if drop=False).
-
-    {scope}
-        ::
-
-            default = 'category'
 
     {drop}
 
@@ -600,9 +610,9 @@ def drop_duplicate_cols(self, scope='all', inplace=False):
 
 @doc(**_sip_docs)
 def drop_cols(self,
+              scope='all',
               exclusions=None,
               inclusions=None,
-              scope='all',
               inplace=False):
     '''This method is designed to allow
     dropping columns based on some flexible arguments.
@@ -617,6 +627,11 @@ def drop_cols(self,
 
     Parameters
     ------------
+    {scope}
+        ::
+
+            default = 'all'
+
     exclusions : :ref:`Scope`, optional
         A BPt style :ref:`Scope` used to select a subset of
         columns in which if a column is in the selected
@@ -631,11 +646,6 @@ def drop_cols(self,
         subset of columns, it will be dropped (though if scope is
         set, then only those columns within scope will be checked to
         see if outside of the passed inclusions here.)
-
-    {scope}
-        ::
-
-            default = 'all'
 
     {inplace}
 
@@ -683,7 +693,7 @@ def drop_cols(self,
 
 
 @doc(**_sip_docs)
-def drop_cols_by_unique_val(self, threshold=1, scope='all',
+def drop_cols_by_unique_val(self, scope='all', threshold=1,
                             dropna=True, inplace=False):
     '''This method will drop any columns with less than or equal to
     the number of unique values.
@@ -693,6 +703,11 @@ def drop_cols_by_unique_val(self, threshold=1, scope='all',
 
     Parameters
     -----------
+    {scope}
+        ::
+
+            default = 'all'
+
     threshold : int, optional
         The threshold in which a column should be dropped
         if it has less than or equal to this number of
@@ -704,11 +719,6 @@ def drop_cols_by_unique_val(self, threshold=1, scope='all',
         ::
 
             default = 1
-
-    {scope}
-        ::
-
-            default = 'all'
 
     dropna : bool, optional
         This parameter controls if NaN values are
@@ -742,7 +752,7 @@ def drop_cols_by_unique_val(self, threshold=1, scope='all',
 
 
 @doc(**_sip_docs)
-def drop_cols_by_nan(self, threshold=.5, scope='all', inplace=False):
+def drop_cols_by_nan(self, scope='all', threshold=.5, inplace=False):
     '''This method is used for dropping columns based on
     the amount of missing values found across all subjects.
     Each column is dropped if it has greater than or equal
@@ -750,6 +760,11 @@ def drop_cols_by_nan(self, threshold=.5, scope='all', inplace=False):
 
     Parameters
     -----------
+    {scope}
+        ::
+
+            default = 'all'
+
     threshold : float or int, optional
         Passed as a float between 0 and 1, or
         as an int. If greater than 0 or less than 1,
@@ -768,11 +783,6 @@ def drop_cols_by_nan(self, threshold=.5, scope='all', inplace=False):
         ::
 
             default = .5
-
-    {scope}
-        ::
-
-            default = 'all'
 
     {inplace}
 

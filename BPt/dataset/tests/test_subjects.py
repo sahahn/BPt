@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import tempfile
 import os
-from nose.tools import assert_raises
+import pytest
 from ...main.input_operations import ValueSubset, Intersection
 from .datasets import (get_fake_dataset, get_fake_dataset2, get_full_dataset,
                        get_fake_multi_index_dataset, get_full_int_index_dataset,
@@ -148,11 +148,11 @@ def test_get_subjects_ValueSubset():
 
     # Bad name col
     vs = ValueSubset(name=1, values=[np.nan, 2], decode_values=False)
-    with assert_raises(KeyError):
+    with pytest.raises(KeyError):
         subjects = df.get_subjects(vs, return_as='set')
 
     # Bad input
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         vs = ValueSubset(name=[1, 2], values=2)
 
 

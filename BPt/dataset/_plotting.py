@@ -3,7 +3,7 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 from pandas.util._decorators import doc
-from ..util import save_docx_table
+from ..util import save_docx_table, get_top_substrs
 from .Dataset import _file_docs, _shared_docs
 
 _plot_docs = _file_docs.copy()
@@ -24,40 +24,6 @@ _plot_docs['decode_values'] = '''decode_values : bool, optional
 
             default = True
 '''
-
-
-def substrs(x):
-    return {x[i:i+j] for i in range(len(x)) for j in range(len(x) - i + 1)}
-
-
-def find_substr(data):
-
-    s = substrs(data[0])
-
-    for val in data[1:]:
-        s.intersection_update(substrs(val))
-
-    try:
-        mx = max(s, key=len)
-
-    except ValueError:
-        mx = ''
-
-    return mx
-
-
-def get_top_substrs(keys):
-
-    found = []
-    top = find_substr(keys)
-
-    while len(top) > 1:
-        found.append(top)
-
-        keys = [k.replace(top, '') for k in keys]
-        top = find_substr(keys)
-
-    return found
 
 
 def nan_info(self, scope='all'):

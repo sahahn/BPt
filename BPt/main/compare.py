@@ -190,6 +190,24 @@ class Compare(BPtInputMixIn):
         try two different, say, :class:`Model`, then you would be better off
         nesting this choice as a hyper-parameter to optimize
         (in this case see: :class:`Select`).
+
+    Examples
+    ---------
+    Compare is used with :func:`evaluate`, for example:
+
+    .. ipython:: python
+
+        from BPt.datasets import load_boston
+        data = bp.datasets.load_boston()
+        data.shape
+
+        pipe_options = bp.Compare([bp.Option(bp.Model('elastic'),
+                                             name='elastic'),
+                                   bp.Option(bp.Model('ridge'),
+                                             name='ridge')])
+
+        bp.evaluate(pipe_options, data, progress_bar=False).summary()
+
     '''
 
     def __init__(self, options):

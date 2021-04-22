@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -143,7 +147,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -177,6 +181,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
                         </li>
                     
                         <li class="">
@@ -393,6 +401,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -423,7 +433,7 @@
 <h1>BPt.Dataset.drop_cols_by_unique_val<a class="headerlink" href="#bpt-dataset-drop-cols-by-unique-val" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.drop_cols_by_unique_val">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_cols_by_unique_val</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">dropna</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L685-L741"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_cols_by_unique_val" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_cols_by_unique_val</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">dropna</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L695-L751"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_cols_by_unique_val" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method will drop any columns with less than or equal to
 the number of unique values.
 This is a coarse filtering method for removing
@@ -432,15 +442,6 @@ loaded or included with a dataset.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>threshold</strong><span class="classifier">int, optional</span></dt><dd><p>The threshold in which a column should be dropped
-if it has less than or equal to this number of
-unique values.</p>
-<p>For example, the default value of 1, will
-only drop column with only 1 unique value.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">1</span>
-</pre></div>
-</div>
-</dd>
 <dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
 <div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
 column(s) in which to apply the current function to.
@@ -448,6 +449,15 @@ See <a class="reference internal" href="../../user_guide/scope.html#scope"><span
 can be applied.</p>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>threshold</strong><span class="classifier">int, optional</span></dt><dd><p>The threshold in which a column should be dropped
+if it has less than or equal to this number of
+unique values.</p>
+<p>For example, the default value of 1, will
+only drop column with only 1 unique value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
 </div>
 </dd>

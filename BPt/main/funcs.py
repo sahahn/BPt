@@ -304,11 +304,9 @@ def get_estimator(pipeline, dataset,
 
         import BPt as bp
 
-        data = bp.Dataset()
-        data['1'] = [1, 2, 3]
-        data['2'] = [2, 3, 4]
-        data['3'] = [5, 6, 7]
-        data.set_role('3', 'target', inplace=True)
+        data = bp.Dataset([[1, 2, 3], [2, 3, 4], [5, 6, 7]],
+                           columns=['1', '2', '3'],
+                           targets='3')
         data
 
         pipeline = bp.Pipeline([bp.Scaler('standard'), bp.Model('linear')])
@@ -468,6 +466,7 @@ def _preproc_pipeline(pipe, ps, dataset):
     # Check imputers default case
     # Check if any NaN in data
     data_cols = dataset._get_cols(scope='data', limit_to=ps.scope)
+
     is_na = dataset[data_cols].isna().any().any()
     pipe._check_imputers(is_na)
 

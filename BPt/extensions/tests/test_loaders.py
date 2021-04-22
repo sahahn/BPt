@@ -4,7 +4,7 @@ from ..loaders import (SurfMaps, SurfLabels, Identity,
 import numpy as np
 import tempfile
 import os
-from nose.tools import assert_raises
+import pytest
 
 
 def test_identity():
@@ -78,7 +78,7 @@ def test_bad_surf_labels_mask():
     data = np.array([1, 2, 3, 4])
     mask = np.array([1, 0, 0, 0, 0])
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         SurfLabels(labels=labels, mask=mask,
                    strategy='mean').fit_transform(data)
 
@@ -154,7 +154,7 @@ def test_surf_labels_2d_fail():
 
     sl = SurfLabels(labels=labels, vectorize=False)
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         sl.fit_transform(data)
 
 

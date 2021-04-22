@@ -1,7 +1,7 @@
 from .test_evaluate import get_fake_dataset
 from ..input import (Model, Pipeline, Scaler, CV)
 from ..funcs import evaluate
-from nose.tools import assert_raises
+import pytest
 import numpy as np
 
 
@@ -23,7 +23,7 @@ def test_bpt_evaluator_compare_fail():
                         random_state=2,
                         cv=2)
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         results1.compare(results2)
 
 

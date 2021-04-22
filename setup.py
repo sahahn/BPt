@@ -23,10 +23,9 @@ setup(name='brain-pred-toolbox',
           'Ipython',
           'joblib>=0.14',
           'loky',
-          'nose',
       ],
       extra_requires={
           'extra': ['lightgbm>3', 'sweetviz>2']},
-      test_suite='nose.collector',
-      tests_require=['nose', 'coverage'],
+      test_suite='pytest',
+      tests_require=['pytest'],
       zip_safe=False)

@@ -1,0 +1,3074 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Predict BMI From Change In Brain &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Predicting Substance Dependence from Multi-Site Data" href="dep_full_example.html" />
+    <link rel="prev" title="Extra Params" href="extra_params.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../index.html">
+    
+      <img src="../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../reference/index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="why_bpt.html">Why BPt?</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="loading_data.html">Loading Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="saving_data.html">Saving Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="test_split.html">Test Split</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="role.html">Role</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="scope.html">Scope</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="data_types.html">Data Types</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="data_files.html">Data Files</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="subjects.html">Subjects</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pipeline_objects.html">Pipeline Objects</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="params.html">Params</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="extra_params.html">Extra Params</a>
+                </li>
+            
+          
+            
+                <li class="active">
+                    <a href="">Predict BMI From Change In Brain</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="dep_full_example.html">Predicting Substance Dependence from Multi-Site Data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="ssrt.html">Predict Stop Signal Response Time (SSRT)</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="waist_cm.html">Predict Waist Circumference with Diffusion Weighted Imaging</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="sex.html">Predict Sex</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Preparing-Data" class="nav-link">Preparing Data</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Single-Training-Set-Evaluation" class="nav-link">Single Training Set Evaluation</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#How-to-employ-Test-Set?" class="nav-link">How to employ Test Set?</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Using-the-LinearResidualizer" class="nav-link">Using the LinearResidualizer</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#Compare-&-Evaluate" class="nav-link">Compare & Evaluate</a>
+        </li>
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Predict-BMI-From-Change-In-Brain">
+<h1>Predict BMI From Change In Brain<a class="headerlink" href="#Predict-BMI-From-Change-In-Brain" title="Permalink to this headline">¶</a></h1>
+<p>This script shows a real world example using BPt to study the relationship between BMI and the brain. Interestingly, we employ longitudinal brain data from two time points as represented by a change in brain measurements between time points. The data used in this notebook cannot be made public as it is from the ABCD Study, which requires a data use agreement in order to use the data.</p>
+<p>This notebook covers a number of different topics:</p>
+<ul class="simple">
+<li><p>Preparing Data</p></li>
+<li><p>Evaluating a single pipeline</p></li>
+<li><p>Considering different options for how to use a test set</p></li>
+<li><p>Use a LinearResidualizer to residualize input brain data</p></li>
+<li><p>Introduce and use the Evaluate input option</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Don&#39;t show sklearn convergence warnings</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">simplefilter</span>
+<span class="kn">from</span> <span class="nn">sklearn.exceptions</span> <span class="kn">import</span> <span class="n">ConvergenceWarning</span>
+<span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">ConvergenceWarning</span><span class="p">)</span>
+
+<span class="c1"># Display tables up to five decimals</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">float_format</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:,.5f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Preparing-Data">
+<h2>Preparing Data<a class="headerlink" href="#Preparing-Data" title="Permalink to this headline">¶</a></h2>
+<p>We will first load in the underlying dataset for this project which has been saved as a csv. It contains multi-modal change in ROI data from two timepoints of the ABCD Study (difference from follow up and baseline).</p>
+<p>This saved dataset doesn’t include the real family ids, but an interesting piece of the ABCD study derived data is that there are a number of subjects from the same family. We will handle that in this example (granted with a fake family structure which we will generate below) by ensuring that for any cross-validation split, members of the same family stay in the same training or testing fold.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/structure_diff.csv&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add fake family id.</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;b_rel_family_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;Unnamed: 0&#39;,
+ &#39;Unnamed: 0.1&#39;,
+ &#39;src_subject_id&#39;,
+ &#39;b_averaged_puberty&#39;,
+ &#39;y2_averaged_puberty&#39;,
+ &#39;b_agemos&#39;,
+ &#39;y2_agemos&#39;,
+ &#39;b_sex&#39;,
+ &#39;b_race_ethnicity_categories&#39;,
+ &#39;b_demo_highest_education_categories&#39;]
+</pre></div></div>
+</div>
+<p>This dataset contains a number of columns we don’t need. We will use the next cell to both group variables of interest together, and then select only the relvant columns to keep.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Targets - We have a few different options for what to predict.</span>
+<span class="c1"># Either year 2 bmi baseline bmi or the difference in bmi.</span>
+<span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;y2_bmi&#39;</span><span class="p">,</span> <span class="s1">&#39;b_bmi&#39;</span><span class="p">,</span> <span class="s1">&#39;bmi_diff&#39;</span><span class="p">]</span>
+
+<span class="c1"># Columns with different traditional &#39;co-variates&#39;.</span>
+<span class="n">covars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;b_sex&#39;</span><span class="p">,</span>  <span class="s1">&#39;b_demo_highest_education_categories&#39;</span><span class="p">,</span><span class="s1">&#39;b_race_ethnicity_categories&#39;</span><span class="p">,</span>
+          <span class="s1">&#39;b_agemos&#39;</span><span class="p">,</span> <span class="s1">&#39;pub_diff&#39;</span><span class="p">,</span> <span class="s1">&#39;y2_mri_info_deviceserialnumber&#39;</span><span class="p">]</span>
+
+<span class="c1"># Let&#39;s also note which of these are categorical</span>
+<span class="n">cat_covars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;y2_mri_info_deviceserialnumber&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;b_demo_highest_education_categories&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;b_race_ethnicity_categories&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;b_sex&#39;</span><span class="p">]</span>
+
+<span class="c1"># These variables are any which we might want to use</span>
+<span class="c1"># but not directly as input features! E.g., we</span>
+<span class="c1"># might want to use them to inform choice of cross-validation.</span>
+<span class="n">non_input</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;b_rel_family_id&#39;</span><span class="p">,</span> <span class="s1">&#39;time_diff&#39;</span><span class="p">]</span>
+
+<span class="c1"># The different imaging features</span>
+<span class="n">thick</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;thick&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">]</span>
+<span class="n">area</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;smri_area_cort&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">]</span>
+<span class="n">subcort</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;smri_vol&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">]</span>
+<span class="n">dti_fa</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;dmri_dti_full_fa_&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">]</span>
+<span class="n">dti_md</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;dmri_dti_full_md_&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">]</span>
+<span class="n">brain</span> <span class="o">=</span> <span class="n">thick</span> <span class="o">+</span> <span class="n">area</span> <span class="o">+</span> <span class="n">subcort</span> <span class="o">+</span> <span class="n">dti_fa</span> <span class="o">+</span> <span class="n">dti_md</span>
+
+<span class="c1"># All to keep</span>
+<span class="n">to_keep</span> <span class="o">=</span> <span class="n">brain</span> <span class="o">+</span> <span class="n">targets</span> <span class="o">+</span> <span class="n">covars</span> <span class="o">+</span> <span class="n">non_input</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">to_keep</span><span class="p">]</span>
+<span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(2622, 672)
+</pre></div></div>
+</div>
+<p>Now let’s convert from a pandas DataFrame to a BPt Dataset.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># This is optional, to print some extra statements.</span>
+<span class="n">data</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(2622, 672)
+</pre></div></div>
+</div>
+<p>Next, we perform some actions specific to the Dataset class. These include specifying which columns are ‘target’ and ‘non input’, with any we don’t set to one these roles treated as the default role, ‘data’.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Set&#39;s targets to target role</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">)</span>
+
+<span class="c1"># Set non input to non input role</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="n">non_input</span><span class="p">,</span> <span class="s1">&#39;non input&#39;</span><span class="p">)</span>
+
+<span class="c1"># Drop any missing values in the target variable</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop_subjects_by_nan</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+
+<span class="c1"># We can optional add the categories we made as scopes!</span>
+<span class="n">data</span><span class="o">.</span><span class="n">add_scope</span><span class="p">(</span><span class="n">covars</span><span class="p">,</span> <span class="s1">&#39;covars&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">add_scope</span><span class="p">(</span><span class="n">cat_covars</span><span class="p">,</span> <span class="s1">&#39;cat covars&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">add_scope</span><span class="p">(</span><span class="n">thick</span><span class="p">,</span> <span class="s1">&#39;thick&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">add_scope</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">add_scope</span><span class="p">(</span><span class="n">subcort</span><span class="p">,</span> <span class="s1">&#39;subcort&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">add_scope</span><span class="p">(</span><span class="n">dti_fa</span><span class="p">,</span> <span class="s1">&#39;dti_fa&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">add_scope</span><span class="p">(</span><span class="n">dti_md</span><span class="p">,</span> <span class="s1">&#39;dti_md&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">add_scope</span><span class="p">(</span><span class="n">brain</span><span class="p">,</span> <span class="s1">&#39;brain&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+
+<span class="c1"># Drop all NaN from any column</span>
+<span class="c1"># Though BPt can generally handle NaN data fine,</span>
+<span class="c1"># it makes certain pieces easier for this example as we don&#39;t have to worry</span>
+<span class="c1"># about imputation.</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+<span class="c1"># Just show the first few rows</span>
+<span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Setting NaN threshold to: 1.5
+Dropped 4 Rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div style="float: left; padding: 10px;">
+        <h3>Data</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>b_agemos</th>
+      <th>b_demo_highest_education_categories</th>
+      <th>b_race_ethnicity_categories</th>
+      <th>b_sex</th>
+      <th>dmri_dti_full_fa_subcort_aseg_accumbens_area_lh</th>
+      <th>dmri_dti_full_fa_subcort_aseg_accumbens_area_rh</th>
+      <th>dmri_dti_full_fa_subcort_aseg_amygdala_lh</th>
+      <th>dmri_dti_full_fa_subcort_aseg_amygdala_rh</th>
+      <th>dmri_dti_full_fa_subcort_aseg_caudate_lh</th>
+      <th>dmri_dti_full_fa_subcort_aseg_caudate_rh</th>
+      <th>...</th>
+      <th>smri_vol_scs_suprateialv</th>
+      <th>smri_vol_scs_tplh</th>
+      <th>smri_vol_scs_tprh</th>
+      <th>smri_vol_scs_vedclh</th>
+      <th>smri_vol_scs_vedcrh</th>
+      <th>smri_vol_scs_wholeb</th>
+      <th>smri_vol_scs_wmhint</th>
+      <th>smri_vol_scs_wmhintlh</th>
+      <th>smri_vol_scs_wmhintrh</th>
+      <th>y2_mri_info_deviceserialnumber</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>124</td>
+      <td>2</td>
+      <td>2</td>
+      <td>1</td>
+      <td>0.00130</td>
+      <td>0.01091</td>
+      <td>-0.02198</td>
+      <td>0.00540</td>
+      <td>0.01938</td>
+      <td>0.02625</td>
+      <td>...</td>
+      <td>5,349.45748</td>
+      <td>233.90000</td>
+      <td>-152.70000</td>
+      <td>-30.40000</td>
+      <td>-60.30000</td>
+      <td>3,806.65748</td>
+      <td>10.50000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>HASHe4f6957a</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>114</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>-0.05736</td>
+      <td>-0.06722</td>
+      <td>-0.03989</td>
+      <td>-0.03279</td>
+      <td>-0.05530</td>
+      <td>-0.05565</td>
+      <td>...</td>
+      <td>8,612.98668</td>
+      <td>904.50000</td>
+      <td>426.10000</td>
+      <td>-106.20000</td>
+      <td>-44.60000</td>
+      <td>8,607.68667</td>
+      <td>-68.20000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>HASHc3bf3d9c</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>118</td>
+      <td>5</td>
+      <td>2</td>
+      <td>1</td>
+      <td>-0.01056</td>
+      <td>0.00005</td>
+      <td>0.00111</td>
+      <td>-0.01210</td>
+      <td>0.01097</td>
+      <td>-0.00400</td>
+      <td>...</td>
+      <td>-8,676.49078</td>
+      <td>346.50000</td>
+      <td>364.40000</td>
+      <td>-153.30000</td>
+      <td>-354.10000</td>
+      <td>-8,363.89077</td>
+      <td>-186.70000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>HASH5ac2b20b</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>129</td>
+      <td>3</td>
+      <td>3</td>
+      <td>1</td>
+      <td>-0.01598</td>
+      <td>0.01693</td>
+      <td>0.00801</td>
+      <td>0.00392</td>
+      <td>0.01860</td>
+      <td>-0.00437</td>
+      <td>...</td>
+      <td>-2,028.86693</td>
+      <td>-43.20000</td>
+      <td>-108.60000</td>
+      <td>-41.80000</td>
+      <td>2.60000</td>
+      <td>-868.16693</td>
+      <td>153.40000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>HASH1314a204</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>129</td>
+      <td>2</td>
+      <td>3</td>
+      <td>1</td>
+      <td>-0.00431</td>
+      <td>-0.00233</td>
+      <td>0.00198</td>
+      <td>0.01399</td>
+      <td>0.00302</td>
+      <td>-0.00935</td>
+      <td>...</td>
+      <td>-10,946.83612</td>
+      <td>-428.40000</td>
+      <td>-959.60000</td>
+      <td>-367.70000</td>
+      <td>523.70000</td>
+      <td>-13,341.83612</td>
+      <td>-116.00000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>HASH5b0cf1bb</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 667 columns</p>
+</div></div>
+<div style="float: left; padding: 10px;">
+        <h3>Targets</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>b_bmi</th>
+      <th>bmi_diff</th>
+      <th>y2_bmi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>15.17507</td>
+      <td>1.60560</td>
+      <td>16.78067</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>24.43703</td>
+      <td>7.30913</td>
+      <td>31.74616</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>16.09284</td>
+      <td>-0.65470</td>
+      <td>15.43814</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>23.12664</td>
+      <td>3.93355</td>
+      <td>27.06019</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>25.67191</td>
+      <td>2.10319</td>
+      <td>27.77510</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+<div style="float: left; padding: 10px;">
+        <h3>Non Input</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>b_rel_family_id</th>
+      <th>time_diff</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>867</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>206</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>701</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>998</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>118</td>
+      <td>26</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The scopes we defined are nice, as it lets use check columns, or compose different scopes together. For example we can check the scope we set ‘cat covars’ as composed with another variable as:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">get_cols</span><span class="p">([</span><span class="n">cat_covars</span><span class="p">,</span> <span class="s1">&#39;b_rel_family_id&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;b_demo_highest_education_categories&#39;,
+ &#39;b_race_ethnicity_categories&#39;,
+ &#39;b_rel_family_id&#39;,
+ &#39;b_sex&#39;,
+ &#39;y2_mri_info_deviceserialnumber&#39;]
+</pre></div></div>
+</div>
+<p>These are notably the columns we want to make sure are categorical, so lets ordinalize them, then plot.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ordinalize</span><span class="p">([</span><span class="n">cat_covars</span><span class="p">,</span> <span class="s1">&#39;b_rel_family_id&#39;</span><span class="p">])</span>
+
+<span class="c1"># Then plot just the categorical variables</span>
+<span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+b_demo_highest_education_categories: 2592 rows
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_bmi_full_example_14_1.png" src="../_images/user_guide_bmi_full_example_14_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+b_race_ethnicity_categories: 2592 rows
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_bmi_full_example_14_3.png" src="../_images/user_guide_bmi_full_example_14_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+b_rel_family_id: 2592 rows
+b_sex: 2592 rows
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/sage/anaconda3/envs/bpt/lib/python3.9/site-packages/BPt/dataset/helpers.py:167: UserWarning: Skipping plot: b_rel_family_id as &gt;= categories!
+  warnings.warn(as_str)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_bmi_full_example_14_6.png" src="../_images/user_guide_bmi_full_example_14_6.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+y2_mri_info_deviceserialnumber: 2592 rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_bmi_full_example_14_8.png" src="../_images/user_guide_bmi_full_example_14_8.png" />
+</div>
+</div>
+<p>Let’s plot the target variables as well.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+b_bmi: 2592 rows
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_bmi_full_example_16_1.png" src="../_images/user_guide_bmi_full_example_16_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+bmi_diff: 2592 rows
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_bmi_full_example_16_3.png" src="../_images/user_guide_bmi_full_example_16_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+y2_bmi: 2592 rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_bmi_full_example_16_5.png" src="../_images/user_guide_bmi_full_example_16_5.png" />
+</div>
+</div>
+<p>Okay, we note that there are some extreme outliers … in bmi_diff and y2_bmi, we can drop these by dropping any data points which are father then 10 standard deviations from the mean.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dropped 1 Rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+b_bmi      52.82985
+bmi_diff   12.04728
+y2_bmi     46.93467
+dtype: float64
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+b_bmi: 2591 rows
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_bmi_full_example_19_1.png" src="../_images/user_guide_bmi_full_example_19_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+bmi_diff: 2591 rows
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_bmi_full_example_19_3.png" src="../_images/user_guide_bmi_full_example_19_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+y2_bmi: 2591 rows
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/user_guide_bmi_full_example_19_5.png" src="../_images/user_guide_bmi_full_example_19_5.png" />
+</div>
+</div>
+<p>Okay those maximum seem much more reasonable. Let’s also assume that there may be some extreme values present in the input data as well, and that these represet corrupted data that we therefore want to drop.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Repeat it twice, to deal with outliers at multiple scales</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filter_outliers_by_std</span><span class="p">(</span><span class="n">n_std</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Dropped 62 Rows
+Dropped 18 Rows
+</pre></div></div>
+</div>
+<p>Next, we consider splitting up out data with a global train and test split. This can be useful in some instances. Note that we also define a cv strategy which says to perform the train test split keeping members of the same family in the same fold.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Let&#39;s say we want to keep family members in the same train or test split</span>
+<span class="n">cv_strategy</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">CVStrategy</span><span class="p">(</span><span class="n">groups</span><span class="o">=</span><span class="s1">&#39;b_rel_family_id&#39;</span><span class="p">)</span>
+
+<span class="c1"># Test split</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_test_split</span><span class="p">(</span><span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">cv_strategy</span><span class="o">=</span><span class="n">cv_strategy</span><span class="p">)</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Performing test split on: 2511 subjects.
+random_state: 5
+Test split size: 0.2
+
+Performed train/test split
+Train size: 2011
+Test size:  500
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div style="float: left; padding: 10px;">
+        <h3>Data</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>b_agemos</th>
+      <th>b_demo_highest_education_categories</th>
+      <th>b_race_ethnicity_categories</th>
+      <th>b_sex</th>
+      <th>dmri_dti_full_fa_subcort_aseg_accumbens_area_lh</th>
+      <th>dmri_dti_full_fa_subcort_aseg_accumbens_area_rh</th>
+      <th>dmri_dti_full_fa_subcort_aseg_amygdala_lh</th>
+      <th>dmri_dti_full_fa_subcort_aseg_amygdala_rh</th>
+      <th>dmri_dti_full_fa_subcort_aseg_caudate_lh</th>
+      <th>dmri_dti_full_fa_subcort_aseg_caudate_rh</th>
+      <th>...</th>
+      <th>smri_vol_scs_suprateialv</th>
+      <th>smri_vol_scs_tplh</th>
+      <th>smri_vol_scs_tprh</th>
+      <th>smri_vol_scs_vedclh</th>
+      <th>smri_vol_scs_vedcrh</th>
+      <th>smri_vol_scs_wholeb</th>
+      <th>smri_vol_scs_wmhint</th>
+      <th>smri_vol_scs_wmhintlh</th>
+      <th>smri_vol_scs_wmhintrh</th>
+      <th>y2_mri_info_deviceserialnumber</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th style="background: RGBA(249, 121, 93, .25)">0</th>
+      <td>124</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0.00130</td>
+      <td>0.01091</td>
+      <td>-0.02198</td>
+      <td>0.00540</td>
+      <td>0.01938</td>
+      <td>0.02625</td>
+      <td>...</td>
+      <td>5,349.45748</td>
+      <td>233.90000</td>
+      <td>-152.70000</td>
+      <td>-30.40000</td>
+      <td>-60.30000</td>
+      <td>3,806.65748</td>
+      <td>10.50000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">1</th>
+      <td>114</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>-0.05736</td>
+      <td>-0.06722</td>
+      <td>-0.03989</td>
+      <td>-0.03279</td>
+      <td>-0.05530</td>
+      <td>-0.05565</td>
+      <td>...</td>
+      <td>8,612.98668</td>
+      <td>904.50000</td>
+      <td>426.10000</td>
+      <td>-106.20000</td>
+      <td>-44.60000</td>
+      <td>8,607.68667</td>
+      <td>-68.20000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2</th>
+      <td>118</td>
+      <td>4</td>
+      <td>1</td>
+      <td>0</td>
+      <td>-0.01056</td>
+      <td>0.00005</td>
+      <td>0.00111</td>
+      <td>-0.01210</td>
+      <td>0.01097</td>
+      <td>-0.00400</td>
+      <td>...</td>
+      <td>-8,676.49078</td>
+      <td>346.50000</td>
+      <td>364.40000</td>
+      <td>-153.30000</td>
+      <td>-354.10000</td>
+      <td>-8,363.89077</td>
+      <td>-186.70000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">3</th>
+      <td>129</td>
+      <td>2</td>
+      <td>2</td>
+      <td>0</td>
+      <td>-0.01598</td>
+      <td>0.01693</td>
+      <td>0.00801</td>
+      <td>0.00392</td>
+      <td>0.01860</td>
+      <td>-0.00437</td>
+      <td>...</td>
+      <td>-2,028.86693</td>
+      <td>-43.20000</td>
+      <td>-108.60000</td>
+      <td>-41.80000</td>
+      <td>2.60000</td>
+      <td>-868.16693</td>
+      <td>153.40000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">4</th>
+      <td>129</td>
+      <td>1</td>
+      <td>2</td>
+      <td>0</td>
+      <td>-0.00431</td>
+      <td>-0.00233</td>
+      <td>0.00198</td>
+      <td>0.01399</td>
+      <td>0.00302</td>
+      <td>-0.00935</td>
+      <td>...</td>
+      <td>-10,946.83612</td>
+      <td>-428.40000</td>
+      <td>-959.60000</td>
+      <td>-367.70000</td>
+      <td>523.70000</td>
+      <td>-13,341.83612</td>
+      <td>-116.00000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2617</th>
+      <td>116</td>
+      <td>4</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.01832</td>
+      <td>0.01805</td>
+      <td>-0.01115</td>
+      <td>-0.01464</td>
+      <td>-0.00121</td>
+      <td>0.00636</td>
+      <td>...</td>
+      <td>28,667.74480</td>
+      <td>222.10000</td>
+      <td>-81.30000</td>
+      <td>75.10000</td>
+      <td>-179.90000</td>
+      <td>30,634.24480</td>
+      <td>-488.40000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2618</th>
+      <td>121</td>
+      <td>4</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.00590</td>
+      <td>0.01706</td>
+      <td>0.01344</td>
+      <td>-0.01547</td>
+      <td>0.05446</td>
+      <td>0.00473</td>
+      <td>...</td>
+      <td>29,291.49896</td>
+      <td>622.10000</td>
+      <td>1,192.90000</td>
+      <td>178.50000</td>
+      <td>-172.30000</td>
+      <td>35,063.49896</td>
+      <td>-328.20000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2619</th>
+      <td>115</td>
+      <td>4</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.01052</td>
+      <td>-0.00480</td>
+      <td>-0.01075</td>
+      <td>0.00413</td>
+      <td>0.00617</td>
+      <td>-0.00796</td>
+      <td>...</td>
+      <td>-2,472.94550</td>
+      <td>188.60000</td>
+      <td>296.00000</td>
+      <td>-80.00000</td>
+      <td>-93.40000</td>
+      <td>125.15450</td>
+      <td>-111.00000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2620</th>
+      <td>122</td>
+      <td>3</td>
+      <td>4</td>
+      <td>1</td>
+      <td>-0.00367</td>
+      <td>-0.02230</td>
+      <td>-0.02573</td>
+      <td>0.00112</td>
+      <td>-0.01337</td>
+      <td>0.00052</td>
+      <td>...</td>
+      <td>-5,554.60274</td>
+      <td>92.20000</td>
+      <td>115.10000</td>
+      <td>27.90000</td>
+      <td>59.10000</td>
+      <td>-6,407.10274</td>
+      <td>-239.70000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2621</th>
+      <td>108</td>
+      <td>2</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0.01437</td>
+      <td>-0.00121</td>
+      <td>-0.00540</td>
+      <td>-0.00305</td>
+      <td>-0.00761</td>
+      <td>0.00312</td>
+      <td>...</td>
+      <td>3,299.19185</td>
+      <td>-276.20000</td>
+      <td>107.10000</td>
+      <td>281.90000</td>
+      <td>191.00000</td>
+      <td>2,199.19185</td>
+      <td>-278.20000</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>2511 rows × 667 columns</p>
+<p style="margin-top: .35em"><span style="background: RGBA(176, 224, 230, .25)">2011 rows × 667 columns - Train Set </span></p><p style="margin-top: .35em"><span style="background: RGBA(249, 121, 93, .25)">500 rows × 667 columns - Test Set </span></p></div></div>
+<div style="float: left; padding: 10px;">
+        <h3>Targets</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>b_bmi</th>
+      <th>bmi_diff</th>
+      <th>y2_bmi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th style="background: RGBA(249, 121, 93, .25)">0</th>
+      <td>15.17507</td>
+      <td>1.60560</td>
+      <td>16.78067</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">1</th>
+      <td>24.43703</td>
+      <td>7.30913</td>
+      <td>31.74616</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2</th>
+      <td>16.09284</td>
+      <td>-0.65470</td>
+      <td>15.43814</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">3</th>
+      <td>23.12664</td>
+      <td>3.93355</td>
+      <td>27.06019</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">4</th>
+      <td>25.67191</td>
+      <td>2.10319</td>
+      <td>27.77510</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2617</th>
+      <td>16.39614</td>
+      <td>2.08329</td>
+      <td>18.47943</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2618</th>
+      <td>19.46738</td>
+      <td>2.84646</td>
+      <td>22.31384</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2619</th>
+      <td>16.84454</td>
+      <td>0.32319</td>
+      <td>17.16773</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2620</th>
+      <td>14.79673</td>
+      <td>1.22506</td>
+      <td>16.02180</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2621</th>
+      <td>14.19771</td>
+      <td>0.49346</td>
+      <td>14.69117</td>
+    </tr>
+  </tbody>
+</table>
+<p>2511 rows × 3 columns</p>
+<p style="margin-top: .35em"><span style="background: RGBA(176, 224, 230, .25)">2011 rows × 3 columns - Train Set </span></p><p style="margin-top: .35em"><span style="background: RGBA(249, 121, 93, .25)">500 rows × 3 columns - Test Set </span></p></div></div>
+<div style="float: left; padding: 10px;">
+        <h3>Non Input</h3><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>b_rel_family_id</th>
+      <th>time_diff</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th style="background: RGBA(249, 121, 93, .25)">0</th>
+      <td>789</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">1</th>
+      <td>188</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2</th>
+      <td>636</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">3</th>
+      <td>908</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">4</th>
+      <td>107</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2617</th>
+      <td>191</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2618</th>
+      <td>645</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2619</th>
+      <td>572</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2620</th>
+      <td>903</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <th style="background: RGBA(176, 224, 230, .25)">2621</th>
+      <td>705</td>
+      <td>22</td>
+    </tr>
+  </tbody>
+</table>
+<p>2511 rows × 2 columns</p>
+<p style="margin-top: .35em"><span style="background: RGBA(176, 224, 230, .25)">2011 rows × 2 columns - Train Set </span></p><p style="margin-top: .35em"><span style="background: RGBA(249, 121, 93, .25)">500 rows × 2 columns - Test Set </span></p></div></div></div>
+</div>
+</div>
+<div class="section" id="Single-Training-Set-Evaluation">
+<h2>Single Training Set Evaluation<a class="headerlink" href="#Single-Training-Set-Evaluation" title="Permalink to this headline">¶</a></h2>
+<p>Our Dataset is now fully prepared. We can now define and evaluate a machine learning pipeline. We will start by considering a pipeline which a few steps, these are:</p>
+<ol class="arabic simple">
+<li><p>Winsorize just the brain data.</p></li>
+<li><p>Perform Robust Scaling on any ‘float’ type columns, ‘brain’ or ‘covars’</p></li>
+<li><p>One Hot Encode any categorical features</p></li>
+<li><p>Fit an Elastic-Net Regression with nested random hyper-parameter search</p></li>
+</ol>
+<p>Let’s use one other feature of the toolbox, that is a custom cross-validation strategy. This is the same idea that we used when defining the train-test split, but now we want it to apply both during the evaluation and during the splits made when evaluating hyper-parameters.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1">#1</span>
+<span class="n">w_scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;winsorize&#39;</span><span class="p">,</span> <span class="n">quantile_range</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">98</span><span class="p">),</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;brain&#39;</span><span class="p">)</span>
+
+<span class="c1">#2</span>
+<span class="n">s_scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+
+<span class="c1">#3</span>
+<span class="n">ohe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Transformer</span><span class="p">(</span><span class="s1">&#39;one hot encoder&#39;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+
+<span class="c1">#4</span>
+<span class="n">param_search</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">ParamSearch</span><span class="p">(</span><span class="s1">&#39;RandomSearch&#39;</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                            <span class="n">cv</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cv_strategy</span><span class="o">=</span><span class="n">cv_strategy</span><span class="p">))</span>
+<span class="n">elastic</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;elastic&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                   <span class="n">param_search</span><span class="o">=</span><span class="n">param_search</span><span class="p">)</span>
+
+<span class="c1"># Now we can actually defined the pipeline</span>
+<span class="n">pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="p">[</span><span class="n">w_scaler</span><span class="p">,</span> <span class="n">s_scaler</span><span class="p">,</span> <span class="n">ohe</span><span class="p">,</span> <span class="n">elastic</span><span class="p">])</span>
+<span class="n">pipe</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Pipeline(steps=[Scaler(extra_params={&#39;quantile_range&#39;: (2, 98)}, obj=&#39;winsorize&#39;, scope=&#39;brain&#39;), Scaler(obj=&#39;standard&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(groups=&#39;b_rel_family_id&#39;)), n_iter=60), params=1)])
+</pre></div></div>
+</div>
+<p>Let’s say we want to use a 5-fold CV to evaluate this model on just the training set. We can first define the cv, the same as for the param_search above, but this time with splits=5.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">cv</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">CV</span><span class="p">(</span><span class="n">splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n_repeats</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cv_strategy</span><span class="o">=</span><span class="n">cv_strategy</span><span class="p">)</span>
+<span class="n">cv</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CV(cv_strategy=CVStrategy(groups=&#39;b_rel_family_id&#39;), splits=5)
+</pre></div></div>
+</div>
+<p>And we will make a problem_spec to store some common params. In this case the random state for reproducibility of results and the number of jobs to use.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Use problem spec just to store n jobs and random state</span>
+<span class="n">ps</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ProblemSpec</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ps</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ProblemSpec(n_jobs=8, random_state=10)
+</pre></div></div>
+</div>
+<p>Now we are ready to evaluate this pipeline, let’s check an example using the function evaluate.</p>
+<p>We will set a few specific parameters, which can be set in evaluate or fixed in problem_spec, these are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">target</span><span class="o">=</span><span class="s1">&#39;y2_bmi&#39;</span>
+<span class="n">scope</span><span class="o">=</span><span class="s1">&#39;brain&#39;</span>
+<span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;train&#39;</span>
+</pre></div>
+</div>
+<p>These set:</p>
+<ol class="arabic simple">
+<li><p>Our target variable to predict as year 2 BMI.</p></li>
+<li><p>Our input features as just the brain features (i.e., not the co-variates)</p></li>
+<li><p>Only use as our subjects the train data</p></li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
+                        <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                        <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
+                        <span class="n">target</span><span class="o">=</span><span class="s1">&#39;y2_bmi&#39;</span><span class="p">,</span>
+                        <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;brain&#39;</span><span class="p">,</span>
+                        <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                        <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span>
+<span class="n">evaluator</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7bc2963d116a420fb9bfd817f1e8abfd", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.021253554418295285, &#39;neg_mean_squared_error&#39;: -19.97986420907407}
+std_scores = {&#39;explained_variance&#39;: 0.011864902647698555, &#39;neg_mean_squared_error&#39;: 1.657340479412642}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;brain&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, subjects=&#39;train&#39;, target=&#39;y2_bmi&#39;)
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="How-to-employ-Test-Set?">
+<h2>How to employ Test Set?<a class="headerlink" href="#How-to-employ-Test-Set?" title="Permalink to this headline">¶</a></h2>
+<p>Next, we will discuss briefly two methods of evaluating on the test set.</p>
+<ol class="arabic simple">
+<li><p>There is a notion in some of the literature that the test set should be used to evaluate an existing estimator. In this case, that would consist of selecting from the 5 trained models we evaluated on the train set, and testing the one which performed best.</p></li>
+<li><p>On the otherhand, we could instead re-train an estimator on the full training set and then test that on the test set. This is actually the reccomended strategy, but its still worth comparing both below.</p></li>
+</ol>
+<p>Let’s first do strategy 1.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Get best model</span>
+<span class="n">best_model_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">evaluator</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">&#39;explained_variance&#39;</span><span class="p">])</span>
+<span class="n">best_model</span> <span class="o">=</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">estimators</span><span class="p">[</span><span class="n">best_model_ind</span><span class="p">]</span>
+
+<span class="c1"># Get the correct test data - setting the problem spec</span>
+<span class="c1"># as the problem spec saved when running this evaluator</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_Xy</span><span class="p">(</span><span class="n">problem_spec</span><span class="o">=</span><span class="n">evaluator</span><span class="o">.</span><span class="n">ps</span><span class="p">,</span>
+                             <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+
+<span class="c1"># Score</span>
+<span class="n">score</span> <span class="o">=</span> <span class="n">best_model</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.019468179192349444
+</pre></div></div>
+</div>
+<p>Next, lets compare that with re-training our model on the full training set, then testing.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">pipe</span><span class="p">,</span>
+                        <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                        <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
+                        <span class="n">target</span><span class="o">=</span><span class="s1">&#39;y2_bmi&#39;</span><span class="p">,</span>
+                        <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;brain&#39;</span><span class="p">,</span>
+                        <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
+                        <span class="n">cv</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+
+<span class="n">evaluator</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8c4a562ff3f44728b9479186f915c87a", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.020264832058070947, &#39;neg_mean_squared_error&#39;: -17.06958371478156}
+std_scores = {&#39;explained_variance&#39;: 0.0, &#39;neg_mean_squared_error&#39;: 0.0}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;brain&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, target=&#39;y2_bmi&#39;)
+</pre></div></div>
+</div>
+<p>We can see that the results difer, though not hugely. One explanation is that at these sample sizes we still get boosts in performance from sample size, which means we expect our final model trained on the full and larger training set to do better. Another contributing factor is that by selecting from the 5-folds the model which does ‘best’ we may actually be choosing an overfit model which happened to do better on its corresponding validation set. We therefore reccomend the latter strategy.</p>
+<p>In fact, we can formalize this intution, and test it on just the training set. We can do this because really the first method is just a type of meta-estimator. What it does is just in an internal nesting step, trains five models and selects the best one. We can formalize this as a custom model and compare it below.</p>
+<p>We will also change the pipeline being compared a little bit for simplicity, replacing the elastic net we made via BPt with the ElasticNetCV object from scikit-learn.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_validate</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">ElasticNetCV</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
+
+<span class="k">class</span> <span class="nc">BestOfModel</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">=</span> <span class="n">estimator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">cv</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">,</span>
+                                <span class="n">return_estimator</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">best_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="s1">&#39;test_score&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimator_</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;estimator&#39;</span><span class="p">][</span><span class="n">best_ind</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator_</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+
+<span class="c1"># The new elastic net cv to use</span>
+<span class="n">new_elastic</span> <span class="o">=</span> <span class="n">ElasticNetCV</span><span class="p">()</span>
+
+<span class="c1"># The best of model</span>
+<span class="n">best_of_model</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span>
+    <span class="n">BestOfModel</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="n">new_elastic</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># The static model</span>
+<span class="n">static_model</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">new_elastic</span><span class="p">)</span>
+
+<span class="c1"># Use the same initial steps as before, but now with the best of model and the static models</span>
+<span class="n">best_of_pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="p">[</span><span class="n">w_scaler</span><span class="p">,</span> <span class="n">s_scaler</span><span class="p">,</span> <span class="n">ohe</span><span class="p">,</span> <span class="n">best_of_model</span><span class="p">])</span>
+<span class="n">static_pipe</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="p">[</span><span class="n">w_scaler</span><span class="p">,</span> <span class="n">s_scaler</span><span class="p">,</span> <span class="n">ohe</span><span class="p">,</span> <span class="n">static_model</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>Let’s try the best of model first, evaluating it on the training set with 5-fold CV.</p>
+<p>Note: This is going to be a bit slow as each time a model is trained in one of the 5-folds it needs to internally train 5 models. So it should take roughly 5x longer to evaluate then it’s static counterpart.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">best_of_pipe</span><span class="p">,</span>
+                        <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                        <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
+                        <span class="n">target</span><span class="o">=</span><span class="s1">&#39;y2_bmi&#39;</span><span class="p">,</span>
+                        <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;brain&#39;</span><span class="p">,</span>
+                        <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                        <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span>
+
+<span class="n">evaluator</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8e24382785bc475cba1f55d219b142fa", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.011890555452472706, &#39;neg_mean_squared_error&#39;: -20.18717309468044}
+std_scores = {&#39;explained_variance&#39;: 0.007451431461277308, &#39;neg_mean_squared_error&#39;: 1.7376889033665959}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;brain&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, subjects=&#39;train&#39;, target=&#39;y2_bmi&#39;)
+</pre></div></div>
+</div>
+<p>Next, let’s run its corresponding ‘static’ counterpart.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">static_pipe</span><span class="p">,</span>
+                        <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                        <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
+                        <span class="n">target</span><span class="o">=</span><span class="s1">&#39;y2_bmi&#39;</span><span class="p">,</span>
+                        <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;brain&#39;</span><span class="p">,</span>
+                        <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                        <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span>
+
+<span class="n">evaluator</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "58fc044c5bbc4d18a1fdbf77cb3ceea1", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.016566885756014837, &#39;neg_mean_squared_error&#39;: -20.079838071255505}
+std_scores = {&#39;explained_variance&#39;: 0.008471508641454718, &#39;neg_mean_squared_error&#39;: 1.680294535454177}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;brain&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, subjects=&#39;train&#39;, target=&#39;y2_bmi&#39;)
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Using-the-LinearResidualizer">
+<h2>Using the LinearResidualizer<a class="headerlink" href="#Using-the-LinearResidualizer" title="Permalink to this headline">¶</a></h2>
+<p>BPt has an object in the extensions library designed for performing properly nested residualization on input features. This is sometimes used in the literature, though the merit of this approach is still unclear.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># We can import this object from extensions as</span>
+<span class="kn">from</span> <span class="nn">BPt.extensions</span> <span class="kn">import</span> <span class="n">LinearResidualizer</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># We can make the object itself first, residualizing for time_diff</span>
+<span class="n">resid</span> <span class="o">=</span> <span class="n">LinearResidualizer</span><span class="p">(</span><span class="n">to_resid_df</span><span class="o">=</span><span class="n">data</span><span class="p">[[</span><span class="s1">&#39;time_diff&#39;</span><span class="p">]])</span>
+<span class="n">resid</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+LinearResidualizer(to_resid_df=    time_diff
+0   25
+..  ..
+
+[2511 rows x 1 columns])
+</pre></div></div>
+</div>
+<p>This object is itself a sklearn compliant transformer. We can use it in the pipeline by setting it as a scaler. Note that we set scope=‘brain’, as we only want to residualize the brain variables.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">resid_scaler</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Scaler</span><span class="p">(</span><span class="n">resid</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;brain&#39;</span><span class="p">)</span>
+<span class="n">resid_scaler</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Scaler(obj=LinearResidualizer(to_resid_df=      time_diff
+0            25
+1            24
+2            24
+3            23
+4            26
+...         ...
+2617         24
+2618         23
+2619         21
+2620         24
+2621         22
+
+[2511 rows x 1 columns]), scope=&#39;brain&#39;)
+</pre></div></div>
+</div>
+<p>Now let’s integrate it with our other pipeline.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Original steps</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;original steps:&#39;</span><span class="p">,</span> <span class="n">pipe</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
+
+<span class="c1"># New steps</span>
+<span class="n">resid_pipe</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">resid_pipe</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="n">resid_pipe</span><span class="o">.</span><span class="n">steps</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">resid_scaler</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">resid_pipe</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;resid steps:&#39;</span><span class="p">,</span> <span class="n">resid_pipe</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+original steps: [Scaler(extra_params={&#39;quantile_range&#39;: (2, 98)}, obj=&#39;winsorize&#39;, scope=&#39;brain&#39;), Scaler(obj=&#39;standard&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(groups=&#39;b_rel_family_id&#39;)), n_iter=60), params=1)]
+resid steps: [Scaler(extra_params={&#39;quantile_range&#39;: (2, 98)}, obj=&#39;winsorize&#39;, scope=&#39;brain&#39;), Scaler(obj=&#39;standard&#39;), Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;), Scaler(obj=LinearResidualizer(to_resid_df=      time_diff
+0            25
+1            24
+2            24
+3            23
+4            26
+...         ...
+2617         24
+2618         23
+2619         21
+2620         24
+2621         22
+
+[2511 rows x 1 columns]), scope=&#39;brain&#39;), Model(obj=&#39;elastic&#39;, param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy(groups=&#39;b_rel_family_id&#39;)), n_iter=60), params=1)]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Same evaluate as before</span>
+<span class="n">evaluator</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">resid_pipe</span><span class="p">,</span>
+                        <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                        <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
+                        <span class="n">target</span><span class="o">=</span><span class="s1">&#39;y2_bmi&#39;</span><span class="p">,</span>
+                        <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;brain&#39;</span><span class="p">,</span>
+                        <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
+                        <span class="n">cv</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+
+<span class="n">evaluator</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ee105410127c4aba99bb96b19c560c42", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.02062763589724137, &#39;neg_mean_squared_error&#39;: -17.06324050542408}
+std_scores = {&#39;explained_variance&#39;: 0.0, &#39;neg_mean_squared_error&#39;: 0.0}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;brain&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, target=&#39;y2_bmi&#39;)
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Compare-&amp;-Evaluate">
+<h2>Compare &amp; Evaluate<a class="headerlink" href="#Compare-&-Evaluate" title="Permalink to this headline">¶</a></h2>
+<p>Let’s now try out a newer feature the input class Compare. We can also use another parameter Option to make the results easier to work with after. Let’s define two different things to Compare here first.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Two choices of Pipeline, compare or not.</span>
+<span class="n">compare_pipes</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Compare</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">pipe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;base&#39;</span><span class="p">),</span>
+                            <span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">resid_pipe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;resid&#39;</span><span class="p">)])</span>
+
+<span class="c1"># No need to set name&#39;s here since the value itself is a good name</span>
+<span class="n">compare_scopes</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Compare</span><span class="p">([</span><span class="s1">&#39;covars&#39;</span><span class="p">,</span> <span class="s1">&#39;brain&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">evaluators</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">=</span><span class="n">compare_pipes</span><span class="p">,</span> <span class="c1"># So choice of pipeline and scope are now Compare</span>
+                         <span class="n">scope</span><span class="o">=</span><span class="n">compare_scopes</span><span class="p">,</span>
+                         <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                         <span class="n">problem_spec</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span>
+                         <span class="n">target</span><span class="o">=</span><span class="s1">&#39;y2_bmi&#39;</span><span class="p">,</span> <span class="c1"># Note we still have y2_bmi fixed as the target</span>
+                         <span class="n">subjects</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="c1"># and train subjects only</span>
+                         <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="c1"># CV still out custom CV.</span>
+                         <span class="n">eval_verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "eb6345063ae442eaa227d28c68052fce", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6c04ed9ed99e4a849518a9a501b8dc19", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Look at a summary of the results - note this option is only avaliable after a call to evaluate with</span>
+<span class="c1"># Compare&#39;s has been made!</span>
+<span class="n">evaluators</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>mean_scores_explained_variance</th>
+      <th>mean_scores_neg_mean_squared_error</th>
+      <th>std_scores_explained_variance</th>
+      <th>std_scores_neg_mean_squared_error</th>
+      <th>mean_timing_fit</th>
+      <th>mean_timing_score</th>
+    </tr>
+    <tr>
+      <th>pipeline</th>
+      <th>scope</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="3" valign="top">base</th>
+      <th>covars</th>
+      <td>0.08750</td>
+      <td>-18.63043</td>
+      <td>0.02043</td>
+      <td>1.60705</td>
+      <td>2.36674</td>
+      <td>0.03439</td>
+    </tr>
+    <tr>
+      <th>brain</th>
+      <td>0.02125</td>
+      <td>-19.97986</td>
+      <td>0.01186</td>
+      <td>1.65734</td>
+      <td>8.67881</td>
+      <td>0.02694</td>
+    </tr>
+    <tr>
+      <th>all</th>
+      <td>0.06004</td>
+      <td>-19.18665</td>
+      <td>0.01530</td>
+      <td>1.59740</td>
+      <td>8.37871</td>
+      <td>0.04497</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">resid</th>
+      <th>covars</th>
+      <td>0.08750</td>
+      <td>-18.63043</td>
+      <td>0.02043</td>
+      <td>1.60705</td>
+      <td>2.84961</td>
+      <td>0.03162</td>
+    </tr>
+    <tr>
+      <th>brain</th>
+      <td>0.02201</td>
+      <td>-19.96367</td>
+      <td>0.01203</td>
+      <td>1.65617</td>
+      <td>8.29963</td>
+      <td>0.08293</td>
+    </tr>
+    <tr>
+      <th>all</th>
+      <td>0.06033</td>
+      <td>-19.17940</td>
+      <td>0.01569</td>
+      <td>1.59423</td>
+      <td>8.36900</td>
+      <td>0.06644</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>We can also try another method avaliable which will run a pairwise model ttest comparison between all options</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">evaluators</span><span class="o">.</span><span class="n">pairwise_t_stats</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="s1">&#39;explained_variance&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pipeline (1)</th>
+      <th>scope (1)</th>
+      <th>pipeline (2)</th>
+      <th>scope (2)</th>
+      <th>t_stat</th>
+      <th>p_val</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>base</td>
+      <td>covars</td>
+      <td>base</td>
+      <td>brain</td>
+      <td>6.59395</td>
+      <td>0.02055</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>base</td>
+      <td>covars</td>
+      <td>base</td>
+      <td>all</td>
+      <td>4.04477</td>
+      <td>0.11657</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>base</td>
+      <td>covars</td>
+      <td>resid</td>
+      <td>brain</td>
+      <td>6.63327</td>
+      <td>0.02010</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>base</td>
+      <td>covars</td>
+      <td>resid</td>
+      <td>all</td>
+      <td>3.99660</td>
+      <td>0.12132</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>base</td>
+      <td>brain</td>
+      <td>base</td>
+      <td>all</td>
+      <td>-7.60785</td>
+      <td>0.01202</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>base</td>
+      <td>brain</td>
+      <td>resid</td>
+      <td>covars</td>
+      <td>-6.59395</td>
+      <td>0.02055</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>base</td>
+      <td>brain</td>
+      <td>resid</td>
+      <td>brain</td>
+      <td>-2.41288</td>
+      <td>0.54995</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>base</td>
+      <td>brain</td>
+      <td>resid</td>
+      <td>all</td>
+      <td>-7.34386</td>
+      <td>0.01373</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>base</td>
+      <td>all</td>
+      <td>resid</td>
+      <td>covars</td>
+      <td>-4.04477</td>
+      <td>0.11657</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>base</td>
+      <td>all</td>
+      <td>resid</td>
+      <td>brain</td>
+      <td>7.91573</td>
+      <td>0.01034</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>base</td>
+      <td>all</td>
+      <td>resid</td>
+      <td>all</td>
+      <td>-1.06086</td>
+      <td>1.00000</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>resid</td>
+      <td>covars</td>
+      <td>resid</td>
+      <td>brain</td>
+      <td>6.63327</td>
+      <td>0.02010</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>resid</td>
+      <td>covars</td>
+      <td>resid</td>
+      <td>all</td>
+      <td>3.99660</td>
+      <td>0.12132</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>resid</td>
+      <td>brain</td>
+      <td>resid</td>
+      <td>all</td>
+      <td>-7.62646</td>
+      <td>0.01190</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>We can also explicitly compare two evaluators</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">e1</span> <span class="o">=</span> <span class="n">evaluators</span><span class="p">[</span><span class="s1">&#39;pipeline=base, scope=covars&#39;</span><span class="p">]</span>
+<span class="n">e2</span> <span class="o">=</span> <span class="n">evaluators</span><span class="p">[</span><span class="s1">&#39;pipeline=base, scope=brain&#39;</span><span class="p">]</span>
+
+<span class="c1"># Look at function docstring</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;       &#39;</span><span class="p">,</span> <span class="n">e1</span><span class="o">.</span><span class="n">compare</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="n">e1</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">e2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+        This method is designed to perform a statistical comparison
+        between the results from the evaluation stored in this object
+        and another instance of :class:`BPtEvaluator`. The statistics
+        produced here are explained in:
+        https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_stats.html
+
+        .. note::
+            In the case that the sizes of the training and validation sets
+            at each fold vary dramatically, it is unclear if this
+            statistics are still valid.
+            In that case, the mean train size and mean validation sizes
+            are employed when computing statistics.
+
+        Parameters
+        ------------
+        other : :class:`BPtEvaluator`
+            Another instance of :class:`BPtEvaluator` in which
+            to compare which. The cross-validation used
+            should be the same in both instances, otherwise
+            statistics will not be generated.
+
+        rope_interval : list or dict of
+            | This parameter allows for passing in a custom
+                region of practical equivalence interval (or rope interval)
+                a concept from bayesian statistics. If passed as
+                a list, this should be a list with two elements, describing
+                the difference in score which should be treated as two
+                models or runs being practically equivalent.
+
+            | Alternatively, in the case of multiple underlying
+                scorers / metrics. A dictionary, where keys correspond
+                to scorer / metric names can be passed with a separate
+                rope_interval for each. For example:
+
+            ::
+
+                rope_interval = {&#39;explained_variance&#39;: [-0.01, 0.01],
+                                 &#39;neg_mean_squared_error&#39;: [-1, 1]}
+
+            This example would define separate rope regions depending
+            on the metric.
+
+            ::
+
+                default = [-0.01, 0.01]
+
+        Returns
+        -------
+        compare_df : pandas DataFrame
+            | The returned DataFrame will generate separate rows
+                for all overlapping metrics / scorers between the
+                evaluators being compared. Further, columns with
+                statistics of interest will be generated:
+
+                - &#39;mean_diff&#39;
+                    The mean score minus other&#39;s mean score
+
+                - &#39;std_diff&#39;
+                    The std minus other&#39;s std
+
+            | Further, only in the case that the cross-validation
+                folds are identical between the comparisons,
+                the following additional columns will be generated:
+
+                - &#39;t_stat&#39;
+                    Corrected paired ttest statistic.
+
+                - &#39;p_val&#39;
+                    The p value for the corrected paired ttest statistic.
+
+                - &#39;better_prob&#39;
+                    The probability that this evaluated option is better than
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
+                - &#39;worse_prob&#39;
+                    The probability that this evaluated option is worse than
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
+                - &#39;rope_prob&#39;
+                    The probability that this evaluated option is equivalent to
+                    the other evaluated option under a bayesian framework and
+                    the passed value of rope_interval. See sklearn example
+                    for more details.
+
+
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mean_diff</th>
+      <th>std_diff</th>
+      <th>t_stat</th>
+      <th>p_val</th>
+      <th>better_prob</th>
+      <th>worse_prob</th>
+      <th>rope_prob</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>neg_mean_squared_error</th>
+      <td>1.34943</td>
+      <td>-0.05030</td>
+      <td>6.16829</td>
+      <td>0.00175</td>
+      <td>0.99820</td>
+      <td>0.00171</td>
+      <td>0.00010</td>
+    </tr>
+    <tr>
+      <th>explained_variance</th>
+      <td>0.06625</td>
+      <td>0.00856</td>
+      <td>6.59395</td>
+      <td>0.00137</td>
+      <td>0.99750</td>
+      <td>0.00081</td>
+      <td>0.00169</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Okay so it looks like it ran all the different combinations, but how do we look at each indivudal evaluator / the full results?? There are few different ways to index the object storing the different evaluators, but its essentially a dictionary. We can index one run as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">evaluators</span><span class="p">[</span><span class="s1">&#39;pipeline=base, scope=covars&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.08750025137203998, &#39;neg_mean_squared_error&#39;: -18.63043213787136}
+std_scores = {&#39;explained_variance&#39;: 0.0204257696433489, &#39;neg_mean_squared_error&#39;: 1.6070454784784487}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;covars&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, subjects=&#39;train&#39;, target=&#39;y2_bmi&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Note, with get_fis, if mean=True it will return</span>
+<span class="c1"># the mean and only non-null, and non-zero features directly.</span>
+<span class="n">evaluators</span><span class="p">[</span><span class="s1">&#39;pipeline=base, scope=covars&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_fis</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+b_demo_highest_education_categories=1            0.24071
+b_demo_highest_education_categories=2            0.45955
+b_demo_highest_education_categories=3            0.26963
+b_demo_highest_education_categories=4           -0.71133
+b_demo_highest_education_categories=5           -1.20322
+b_race_ethnicity_categories=1                   -0.72083
+b_race_ethnicity_categories=2                    0.84072
+b_race_ethnicity_categories=3                    0.78320
+b_race_ethnicity_categories=4                   -0.27170
+b_race_ethnicity_categories=5                   -0.00703
+b_sex=1                                          0.01196
+b_sex=2                                         -0.01194
+y2_mri_info_deviceserialnumber=&#39;HASH03db707f&#39;    0.72240
+y2_mri_info_deviceserialnumber=&#39;HASH11ad4ed5&#39;   -0.88266
+y2_mri_info_deviceserialnumber=&#39;HASH1314a204&#39;   -0.73021
+y2_mri_info_deviceserialnumber=&#39;HASH3935c89e&#39;   -0.05978
+y2_mri_info_deviceserialnumber=&#39;HASH4036a433&#39;   -0.00387
+y2_mri_info_deviceserialnumber=&#39;HASH4b0b8b05&#39;    0.03677
+y2_mri_info_deviceserialnumber=&#39;HASH4d1ed7b1&#39;    0.02080
+y2_mri_info_deviceserialnumber=&#39;HASH5ac2b20b&#39;    0.02204
+y2_mri_info_deviceserialnumber=&#39;HASH5b0cf1bb&#39;   -0.06402
+y2_mri_info_deviceserialnumber=&#39;HASH5b2fcf80&#39;   -0.01046
+y2_mri_info_deviceserialnumber=&#39;HASH65b39280&#39;    0.56189
+y2_mri_info_deviceserialnumber=&#39;HASH69f406fa&#39;    0.03348
+y2_mri_info_deviceserialnumber=&#39;HASH7911780b&#39;    0.34166
+y2_mri_info_deviceserialnumber=&#39;HASH7f91147d&#39;   -0.00444
+y2_mri_info_deviceserialnumber=&#39;HASH96a0c182&#39;   -0.10546
+y2_mri_info_deviceserialnumber=&#39;HASHa3e45734&#39;   -0.22419
+y2_mri_info_deviceserialnumber=&#39;HASHb640a1b8&#39;    0.05527
+y2_mri_info_deviceserialnumber=&#39;HASHc3bf3d9c&#39;    0.07478
+y2_mri_info_deviceserialnumber=&#39;HASHd422be27&#39;    0.17122
+y2_mri_info_deviceserialnumber=&#39;HASHd7cb4c6d&#39;   -0.37760
+y2_mri_info_deviceserialnumber=&#39;HASHdb2589d4&#39;   -0.01870
+y2_mri_info_deviceserialnumber=&#39;HASHe3ce02d3&#39;    0.07643
+y2_mri_info_deviceserialnumber=&#39;HASHe4f6957a&#39;    0.01405
+y2_mri_info_deviceserialnumber=&#39;HASHfeb7e81a&#39;   -0.13043
+b_agemos                                         0.40722
+pub_diff                                         0.29176
+dtype: float64
+</pre></div></div>
+</div>
+<p>Warning: This doesn’t mean that this mean features were selected! Remember this is the average over training 5 models, so it means that if a feature shows up it was selected at least once in one of the models!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># These are the different options</span>
+<span class="n">evaluators</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([Options(pipeline=base, scope=covars), Options(pipeline=base, scope=brain), Options(pipeline=base, scope=all), Options(pipeline=resid, scope=covars), Options(pipeline=resid, scope=brain), Options(pipeline=resid, scope=all)])
+</pre></div></div>
+</div>
+<p>We can index multiple like this …</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">evaluators</span><span class="p">[</span><span class="s1">&#39;covars&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CompareDict({Options(pipeline=base, scope=covars): BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.08750025137203998, &#39;neg_mean_squared_error&#39;: -18.63043213787136}
+std_scores = {&#39;explained_variance&#39;: 0.0204257696433489, &#39;neg_mean_squared_error&#39;: 1.6070454784784487}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;covars&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, subjects=&#39;train&#39;, target=&#39;y2_bmi&#39;)
+, Options(pipeline=resid, scope=covars): BPtEvaluator
+------------
+mean_scores = {&#39;explained_variance&#39;: 0.08750025137203998, &#39;neg_mean_squared_error&#39;: -18.63043213787136}
+std_scores = {&#39;explained_variance&#39;: 0.0204257696433489, &#39;neg_mean_squared_error&#39;: 1.6070454784784487}
+
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+
+Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
+
+Evaluated with:
+ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=&#39;covars&#39;, scorer={&#39;explained_variance&#39;: make_scorer(explained_variance_score), &#39;neg_mean_squared_error&#39;: make_scorer(mean_squared_error, greater_is_better=False)}, subjects=&#39;train&#39;, target=&#39;y2_bmi&#39;)
+})
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Or get a summary of just this subset</span>
+<span class="n">evaluators</span><span class="p">[</span><span class="s1">&#39;covars&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>mean_scores_explained_variance</th>
+      <th>mean_scores_neg_mean_squared_error</th>
+      <th>std_scores_explained_variance</th>
+      <th>std_scores_neg_mean_squared_error</th>
+      <th>mean_timing_fit</th>
+      <th>mean_timing_score</th>
+    </tr>
+    <tr>
+      <th>pipeline</th>
+      <th>scope</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>base</th>
+      <th>covars</th>
+      <td>0.08750</td>
+      <td>-18.63043</td>
+      <td>0.02043</td>
+      <td>1.60705</td>
+      <td>2.36674</td>
+      <td>0.03439</td>
+    </tr>
+    <tr>
+      <th>resid</th>
+      <th>covars</th>
+      <td>0.08750</td>
+      <td>-18.63043</td>
+      <td>0.02043</td>
+      <td>1.60705</td>
+      <td>2.84961</td>
+      <td>0.03162</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Note the resid_pipeline just covars and normal pipeline did the same… this is good, since they are exactly the same.</p>
+<p>That will end this example.</p>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="extra_params.html" title="previous page">Extra Params</a>
+    <a class='right-next' id="next-link" href="dep_full_example.html" title="next page">Predicting Substance Dependence from Multi-Site Data</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

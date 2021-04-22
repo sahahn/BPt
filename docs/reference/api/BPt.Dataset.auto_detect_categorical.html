@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -143,7 +147,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -177,6 +181,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
                         </li>
                     
                         <li class="">
@@ -393,6 +401,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -423,7 +433,7 @@
 <h1>BPt.Dataset.auto_detect_categorical<a class="headerlink" href="#bpt-dataset-auto-detect-categorical" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.auto_detect_categorical">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">auto_detect_categorical</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">obj_thresh</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">all_thresh</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L1024-L1133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.auto_detect_categorical" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">auto_detect_categorical</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">obj_thresh</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">all_thresh</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L1113-L1222"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.auto_detect_categorical" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function will attempt to automatically add scope “category” to
 any loaded categorical variables. Note that any columns with pandas
 data type category should already be detected without

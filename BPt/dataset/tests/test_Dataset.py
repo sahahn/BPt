@@ -1,8 +1,9 @@
+from copy import deepcopy
 import numpy as np
 import pandas as pd
 import tempfile
 import os
-from nose.tools import assert_raises
+import pytest
 from ...main.input_operations import Intersection
 from ...main.input import ProblemSpec
 from ..helpers import base_load_subjects, save_subjects
@@ -41,7 +42,7 @@ def test_set_role_fail():
 
     df = get_fake_dataset()
 
-    with assert_raises(AttributeError):
+    with pytest.raises(AttributeError):
         df.set_role('1', 'not real role')
 
 
@@ -122,6 +123,62 @@ def test_add_scope():
     df = get_fake_dataset()
     df = df.add_scope(scope='1', scope_val='category')
     assert(df['1'].dtype.name == 'category')
+
+
+def test_copy():
+
+    df = get_fake_dataset()
+    df_copy = df.copy(deep=True)
+
+    assert df_copy.loc[0, '1'] == 1
+    df_copy.loc[0, '1'] = 6
+    assert df_copy.loc[0, '1'] == 6
+    assert df.loc[0, '1'] == 1
+
+
+def test_copy_shallow():
+
+    df = get_fake_dataset()
+    df_copy = df.copy(deep=False)
+
+    df_copy['4'] = [6, 6, 6]
+
+    assert '4' in list(df_copy)
+    assert '4' not in list(df)
+
+
+def test_get_shallow_categories():
+
+    df = get_fake_dataset()
+    df_copy = df.copy(deep=False)
+
+    df_copy['2'].cat.add_categories([4], inplace=True)
+    assert 4 in df_copy['2'].cat.categories
+    assert 4 in df['2'].cat.categories
+
+    for col in df_copy:
+        if df_copy[col].dtype.name == 'category':
+            df_copy[col].cat = deepcopy(df_copy[col].cat)
+
+    df_copy['2'].cat.add_categories([10], inplace=True)
+    assert 10 in df_copy['2'].cat.categories
+    assert 5 not in df['2'].cat.categories
+
+
+def test_get_shallow2():
+
+    df = get_fake_dataset()
+    df_copy = df.copy(deep=False)
+
+    # On a shallow copy, setting like
+    # this won't effect the original
+    df_copy['2'] = [10, 10, 10]
+    assert df.loc[0, '2'] != 10
+
+    # Making changes like this
+    # will influence original?
+    df_copy.loc[0, '1'] = 8
+    assert df.loc[0, '1'] == 8
 
 
 def test_remove_scope():
@@ -438,13 +495,13 @@ def test_invalid_names():
     df = Dataset()
     df['target'] = ['1']
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         df._check_cols()
 
     df = Dataset()
     df['data'] = ['1']
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         df._check_cols()
 
 
@@ -558,7 +615,7 @@ def test_get_problem_type_binary_error():
     data = Dataset()
     data['1'] = [1, 2, 2, 2]
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         data._get_problem_type('1')
 
 
@@ -577,3 +634,165 @@ def test_get_problem_type_regression():
     data['1'] = [0, 1, 2, 3]
 
     assert data._get_problem_type('1') == 'regression'
+
+
+def test_default_test_subjects():
+
+    data = Dataset()
+    data._check_test_subjects()
+    assert data.test_subjects is None
+
+
+def test_rename_cols1():
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data['2'] = [1, 2, 3]
+
+    data = data.add_scope('1', 'some_scope')
+    data = data.rename({'1': '3'}, axis=1)
+
+    assert 'some_scope' in data.get_scopes()['3']
+
+
+def test_rename_cols2():
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data['2'] = [1, 2, 3]
+
+    data = data.add_scope('1', 'some_scope')
+    data = data.rename(columns={'1': '3'})
+
+    assert 'some_scope' in data.get_scopes()['3']
+
+
+def test_rename_cols_duplicate_cols():
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data['2'] = [1, 2, 3]
+
+    with pytest.raises(RuntimeError):
+        data.rename({'1': '2'}, axis=1)
+
+
+def test_rename_cols_inplace():
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data['2'] = [1, 2, 3]
+
+    data = data.add_scope('1', 'some_scope')
+    data.rename({'1': '3'}, axis=1)
+
+    assert 'some_scope' in data.get_scopes()['1']
+    assert '1' in list(data)
+
+
+def test_rename_cols_func():
+
+    data = Dataset()
+    data['HI'] = [1, 2, 3]
+    data['BYE'] = [1, 2, 3]
+    data = data.add_scope('all', '1')
+
+    data = data.rename(columns=str.lower)
+    assert '1' in data.scopes['hi']
+    assert '1' in data.scopes['bye']
+
+    assert data.roles['hi'] == 'data'
+    assert data.roles['bye'] == 'data'
+
+
+def test_rename_index():
+
+    data = Dataset()
+    data['HI'] = [1, 2, 3]
+    data = data.set_train_split(subjects=[0, 1])
+
+    data = data.rename(index={0: '00', 1: '11', 2: '22'})
+
+    assert '00' in data.train_subjects
+    assert '11' in data.train_subjects
+    assert '22' in data.test_subjects
+
+    assert 0 not in data.index
+
+
+def test_rename_index_no_tr_test():
+
+    data = Dataset()
+    data['HI'] = [1, 2, 3]
+
+    data = data.rename(index={0: '00', 1: '11', 2: '22'})
+    assert 0 not in data.index
+
+
+def test_rename_index_inplace_test():
+
+    data = Dataset()
+    data['HI'] = [1, 2, 3]
+    data = data.set_train_split(subjects=[0, 1])
+
+    data.rename(index={0: '00', 1: '11', 2: '22'})
+
+    assert '00' not in data.train_subjects
+    assert '11' not in data.train_subjects
+    assert '22' not in data.test_subjects
+
+    assert 0 in data.index
+
+
+def test_rename_index_inplace_test_mapper():
+
+    data = Dataset()
+    data['HI'] = [1, 2, 3]
+    data = data.set_train_split(subjects=[0, 1])
+
+    data.rename(mapper={0: '00', 1: '11', 2: '22'}, axis=0)
+
+    assert '00' not in data.train_subjects
+    assert '11' not in data.train_subjects
+    assert '22' not in data.test_subjects
+
+    assert 0 in data.index
+
+
+def test_extra_constructor_scopes():
+
+    data = Dataset([1, 2, 3], columns=['1'],
+                   scopes={'1': 'a'})
+
+    assert 'a' in data.scopes['1']
+
+
+def test_extra_constructor_roles():
+
+    data = Dataset([1, 2, 3], columns=['1'],
+                   roles={'1': 'target'})
+
+    assert data.roles['1'] == 'target'
+
+
+def test_extra_constructor_targets():
+
+    data = Dataset([1, 2, 3], columns=['1'],
+                   targets='1')
+
+    assert data.roles['1'] == 'target'
+
+
+def test_extra_constructor_non_inputs():
+
+    data = Dataset([1, 2, 3], columns=['1'],
+                   non_inputs='1')
+
+    assert data.roles['1'] == 'non input'
+
+
+def test_repr_html():
+
+    # Just make sure throws no errors
+    data = get_full_int_index_dataset()
+    data._repr_html_()

@@ -3,7 +3,7 @@ from ..input import (ModelPipeline, Pipeline, Transformer,
 from ..input_operations import Duplicate
 from sklearn.linear_model import LinearRegression
 from ...default.helpers import proc_str_input
-from nose.tools import assert_raises
+import pytest
 
 
 def test_pipeline_check_duplicate():
@@ -22,22 +22,22 @@ def test_pipeline_proc_input():
 
     assert proc_str_input('SOmeThing_reGressor') == 'something'
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         Pipeline(steps=[Model('SOmeThing_reGressor')])
 
 
 def test_coarse_check_fail():
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         Model(obj='not real')
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         FeatSelector(obj='nope')
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         FeatSelector(obj='still fake')
 
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         FeatSelector()
 
 
@@ -51,7 +51,7 @@ def test_get_piece_params():
     params2 = t.get_params()
     assert params2['extra'] == 5
 
-    with assert_raises(AttributeError):
+    with pytest.raises(AttributeError):
         t.extra
 
 
@@ -71,19 +71,19 @@ def test_modelpipeline_check_duplicate():
 
 def test_pipeline_bad_input():
 
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         Pipeline(6)
 
-    with assert_raises(IndexError):
+    with pytest.raises(IndexError):
         Pipeline([])
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         Pipeline([Transformer('fake')])
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         Pipeline(['not real', Model('ridge')])
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         Pipeline([Model('ridge')], param_search='bad param str')
 
 

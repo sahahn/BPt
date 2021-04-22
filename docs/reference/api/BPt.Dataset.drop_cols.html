@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -143,7 +147,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -177,6 +181,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
                         </li>
                     
                         <li class="">
@@ -393,6 +401,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -423,7 +433,7 @@
 <h1>BPt.Dataset.drop_cols<a class="headerlink" href="#bpt-dataset-drop-cols" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.drop_cols">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_cols</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exclusions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inclusions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L601-L682"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_cols" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_cols</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">exclusions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inclusions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L611-L692"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_cols" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is designed to allow
 dropping columns based on some flexible arguments.
 Essentially, exclusions, inclusions and scope are
@@ -436,6 +446,16 @@ not in the passed inclusions columns, drop that column.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
+<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
+</pre></div>
+</div>
+</dd>
 <dt><strong>exclusions</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a>, optional</span></dt><dd><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
 columns in which if a column is in the selected
 subset of columns, it will be dropped (though if scope is
@@ -447,16 +467,6 @@ columns in which if a column is not in the selected
 subset of columns, it will be dropped (though if scope is
 set, then only those columns within scope will be checked to
 see if outside of the passed inclusions here.)</p>
-</dd>
-<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
-<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
-column(s) in which to apply the current function to.
-See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
-can be applied.</p>
-</div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
-</pre></div>
-</div>
 </dd>
 <dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>

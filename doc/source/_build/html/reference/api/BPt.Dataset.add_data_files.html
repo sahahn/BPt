@@ -1,0 +1,600 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BPt.Dataset.add_data_files &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BPt.Dataset.add_prefix" href="BPt.Dataset.add_prefix.html" />
+    <link rel="prev" title="BPt.Dataset.add" href="BPt.Dataset.add.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../index.html">
+    
+      <img src="../../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+        
+        
+          
+            
+  
+                <li class="active">
+                    <a href="../dataset.html">Dataset</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.html">BPt.Dataset</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_cols.html">BPt.Dataset.get_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_subjects.html">BPt.Dataset.get_subjects</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_values.html">BPt.Dataset.get_values</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_scope.html">BPt.Dataset.add_scope</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.remove_scope.html">BPt.Dataset.remove_scope</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_role.html">BPt.Dataset.set_role</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_roles.html">BPt.Dataset.set_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.copy.html">BPt.Dataset.copy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.auto_detect_categorical.html">BPt.Dataset.auto_detect_categorical</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_binary.html">BPt.Dataset.to_binary</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.binarize.html">BPt.Dataset.binarize</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.k_bin.html">BPt.Dataset.k_bin</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.ordinalize.html">BPt.Dataset.ordinalize</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.nan_to_class.html">BPt.Dataset.nan_to_class</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.copy_as_non_input.html">BPt.Dataset.copy_as_non_input</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_data_file.html">BPt.Dataset.to_data_file</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.consolidate_data_files.html">BPt.Dataset.consolidate_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.update_data_file_paths.html">BPt.Dataset.update_data_file_paths</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.filter_outliers_by_std.html">BPt.Dataset.filter_outliers_by_std</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.filter_outliers_by_percent.html">BPt.Dataset.filter_outliers_by_percent</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.filter_categorical_by_percent.html">BPt.Dataset.filter_categorical_by_percent</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_cols.html">BPt.Dataset.drop_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_nan_subjects.html">BPt.Dataset.drop_nan_subjects</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_subjects_by_nan.html">BPt.Dataset.drop_subjects_by_nan</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_cols_by_unique_val.html">BPt.Dataset.drop_cols_by_unique_val</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_cols_by_nan.html">BPt.Dataset.drop_cols_by_nan</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_id_cols.html">BPt.Dataset.drop_id_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_duplicate_cols.html">BPt.Dataset.drop_duplicate_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.apply_inclusions.html">BPt.Dataset.apply_inclusions</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.apply_exclusions.html">BPt.Dataset.apply_exclusions</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.plot.html">BPt.Dataset.plot</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.summary.html">BPt.Dataset.summary</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_test_split.html">BPt.Dataset.set_test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_train_split.html">BPt.Dataset.set_train_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.test_split.html">BPt.Dataset.test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.train_split.html">BPt.Dataset.train_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.save_test_split.html">BPt.Dataset.save_test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.save_train_split.html">BPt.Dataset.save_train_split</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline.html">Pipelines</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline_pieces.html">Pipeline Pieces</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../problem_spec.html">ProblemSpec</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../CV.html">CV</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../input_operations.html">Input Operations</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../dists.html">Parameter Distributions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../evaluate.html">Evaluate</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="bpt-dataset-add-data-files">
+<h1>BPt.Dataset.add_data_files<a class="headerlink" href="#bpt-dataset-add-data-files" title="Permalink to this headline">¶</a></h1>
+<dl class="py method">
+<dt id="BPt.Dataset.add_data_files">
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">add_data_files</code><span class="sig-paren">(</span><em class="sig-param">files</em>, <em class="sig-param">file_to_subject</em>, <em class="sig-param">load_func=&lt;function load&gt;</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_data_files.py#L34-L172"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.add_data_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method allows adding columns of type
+‘data file’ to the Dataset class.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>files</strong><span class="classifier">dict</span></dt><dd><p>This argument must be passed as a python dict.
+Specifically, a python dictionary should be passed where
+each key refers to the name of that feature / column of data files
+to load, and the value is either a list-like of
+str file paths, or a single globbing str which will
+be used to determine the files.</p>
+<p>In addition to this parameter, you must also pass a
+python function to the file_to_subject param,
+which specifies how to convert from passed
+file path, to a subject name.</p>
+<p>E.g., consider the example below, where 2 subjects files are
+loaded for ‘feat1’ and feat2’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">files</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">files</span><span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;f1/subj_0.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;f1/subj_1.npy&#39;</span><span class="p">]</span>
+<span class="n">files</span><span class="p">[</span><span class="s1">&#39;feat2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;f2/subj_0.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;f2/subj_1.npy&#39;</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">file_to_subject_func</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">subject</span>
+
+<span class="n">file_to_subject</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
+<span class="c1"># or</span>
+<span class="n">file_to_subject</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">file_to_subject</span><span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
+<span class="n">file_to_subject</span><span class="p">[</span><span class="s1">&#39;feat2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
+</pre></div>
+</div>
+<p>In this example, subjects are loaded as ‘subj_0’ and ‘subj_1’,
+and they have associated loaded data files ‘feat1’ and ‘feat2’.</p>
+</dd>
+<dt><strong>file_to_subject</strong><span class="classifier">python function, dict of or ‘auto’</span></dt><dd><p>You must pass some way of mapping file names
+to their corresponding subject. The flexible way
+to do this is by passing a python function
+which takes in a file path, and returns the relevant subject for
+that file path. If just one function is passed, it will be used
+for to load all dictionary entries, alternatively you can pass
+a matching dictionary of funcs, allowing for different funcs
+for each feature to load.</p>
+<p>See the example in files, e.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_to_subject</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
+<span class="c1"># or</span>
+<span class="n">file_to_subject</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">file_to_subject</span><span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
+<span class="n">file_to_subject</span><span class="p">[</span><span class="s1">&#39;feat2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_to_subject_func</span>
+</pre></div>
+</div>
+<p>You may also pass the custom str ‘auto’ to
+specify that the subject name should be the base
+file name with the extension removed. For example
+if the path is ‘/some/path/subj16.npy’ then the auto
+subject will be ‘subj16’.</p>
+<p>In the case that the underlying index is a MultiIndex, this
+function should be designed to return the subject in correct
+tuple form. E.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># The underlying dataset is indexed by subject and event</span>
+<span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Only one feature</span>
+<span class="n">files</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">files</span><span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;f1/s0_e0.npy&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;f1/s0_e1.npy&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;f1/s1_e0.npy&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;f1/s1_e1.npy&#39;</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">file_to_subject_func</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+
+    <span class="c1"># This selects the substring</span>
+    <span class="c1"># at the last part seperated by the &#39;/&#39;</span>
+    <span class="c1"># so e.g. the stub, &#39;s0_e0.npy&#39;, &#39;s0_e1.npy&#39;, etc...</span>
+    <span class="n">subj_split</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># This removes the .npy from the end, so</span>
+    <span class="c1"># stubs == &#39;s0_e0&#39;, &#39;s0_e1&#39;, etc...</span>
+    <span class="n">subj_split</span> <span class="o">=</span> <span class="n">subj_split</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Set the subject name as the first part</span>
+    <span class="c1"># and the eventname as the second part</span>
+    <span class="n">subj_name</span> <span class="o">=</span> <span class="n">subj_split</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">event_name</span> <span class="o">=</span> <span class="n">subj_split</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Lastly put it into the correct return style</span>
+    <span class="c1"># This is tuple style e.g., (&#39;s0&#39;, &#39;e0&#39;), (&#39;s0&#39;, &#39;e1&#39;)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">subj_name</span><span class="p">,</span> <span class="n">eventname</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ind</span>
+</pre></div>
+</div>
+<p>While this is a bit longer than the previous case, it is flexible.</p>
+</dd>
+<dt><strong>load_func</strong><span class="classifier">python function, optional</span></dt><dd><p>Fundamentally columns of type ‘data file’ represent
+a path to a saved file, which means you must
+also provide some information on how to load the saved file.
+This parameter is where that loading function should be passed.
+The passed <cite>load_func</cite> will be called on each file individually
+and whatever the output of the function is will be passed to
+the different loading functions.</p>
+<p>You might need to pass a user defined custom function
+in some cases, e.g., you want to use <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.load.html#numpy.load" title="(in NumPy v1.20)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.load()</span></code></a>,
+but then also np.stack. Just wrap those two functions in one,
+and pass the new function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_wrapper</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>In this case though, it is reccomended that
+you define this function in a separate file from
+where the main script will be run (for ease of caching)</p>
+<p>By default this function assumes data files are passed
+as numpy arrays.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="BPt.Dataset.to_data_file.html#BPt.Dataset.to_data_file" title="BPt.Dataset.to_data_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_data_file</span></code></a></dt><dd><p>Cast existing columns to type Data File.</p>
+</dd>
+<dt><a class="reference internal" href="BPt.Dataset.get_file_mapping.html#BPt.Dataset.get_file_mapping" title="BPt.Dataset.get_file_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_mapping</span></code></a></dt><dd><p>Returns the raw file mapping.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="BPt.Dataset.add.html" title="previous page">BPt.Dataset.add</a>
+    <a class='right-next' id="next-link" href="BPt.Dataset.add_prefix.html" title="next page">BPt.Dataset.add_prefix</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

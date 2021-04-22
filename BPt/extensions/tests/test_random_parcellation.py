@@ -1,6 +1,6 @@
 from ..random_parcellation import RandomParcellation
 import numpy as np
-from nose.tools import assert_raises
+import pytest
 
 
 def test_base():
@@ -79,7 +79,7 @@ def test_mask_fail():
                 [3, 4],
                 [4, 0],
                 [0, 1]]
-    with assert_raises(IndexError):
+    with pytest.raises(IndexError):
         RandomParcellation(geo=fake_geo, n_parcels=2,
                            medial_wall_inds=[0, 0, 0, 1, 0],
                            random_state=1).get_parc()

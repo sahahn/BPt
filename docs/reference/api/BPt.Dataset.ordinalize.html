@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -143,7 +147,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -177,6 +181,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
                         </li>
                     
                         <li class="">
@@ -393,6 +401,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -423,34 +433,38 @@
 <h1>BPt.Dataset.ordinalize<a class="headerlink" href="#bpt-dataset-ordinalize" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.ordinalize">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">ordinalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">nan_to_class</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L401-L459"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.ordinalize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">ordinalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">nan_to_class</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L451-L520"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.ordinalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used to ordinalize
 a group of columns. Ordinalization is
 performed by setting all n unique
 categories present in each column to
 values 0 to n-1.</p>
-<p>The LabelEncoder from sklearn is used
-on the backend for this operation.</p>
+<p>The <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html#sklearn.preprocessing.LabelEncoder" title="(in scikit-learn v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelEncoder</span></code></a>
+is used on the backend for this operation.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
 <dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
-columns in which to apply ordinalize to.</p>
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
 </dd>
-<dt><strong>nan_to_class</strong><span class="classifier">bool, optional</span></dt><dd><p>If set to True, then treat NaN values as
+<dt><strong>nan_to_class</strong><span class="classifier">bool, optional</span></dt><dd><div class="line-block">
+<div class="line">If set to True, then treat NaN values as
 as a unique class, otherwise if False then
 ordinalization will be applied on just non-NaN
-values, and any NaN values will remain NaN.</p>
-<p>See: <a class="reference internal" href="BPt.Dataset.nan_to_class.html#BPt.Dataset.nan_to_class" title="BPt.Dataset.nan_to_class"><code class="xref py py-func docutils literal notranslate"><span class="pre">nan_to_class</span></code></a>
+values, and any NaN values will remain NaN.</div>
+</div>
+<div class="line-block">
+<div class="line">See: <a class="reference internal" href="BPt.Dataset.nan_to_class.html#BPt.Dataset.nan_to_class" title="BPt.Dataset.nan_to_class"><code class="xref py py-func docutils literal notranslate"><span class="pre">nan_to_class</span></code></a>
 for more generally adding NaN values as a new
-category to any arbitrary categorical column.
-All this parameter does is if True calls
-self.nan_to_class after normal ordinalization.</p>
+category to any arbitrary categorical column.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
 </dd>
-<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, do operation inplace and return None.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
@@ -458,6 +472,36 @@ self.nan_to_class after normal ordinalization.</p>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/example1.csv&#39;</span><span class="p">)</span>
+
+<span class="gp">In [2]: </span><span class="n">data</span>
+<span class="gh">Out[2]: </span><span class="go"></span>
+<span class="go">  animals  numbers</span>
+<span class="go">0   &#39;cat&#39;      1.0</span>
+<span class="go">1   &#39;cat&#39;      2.0</span>
+<span class="go">2   &#39;dog&#39;      1.0</span>
+<span class="go">3   &#39;dog&#39;      2.0</span>
+<span class="go">4   &#39;elk&#39;      NaN</span>
+
+<span class="gp">In [3]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ordinalize</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+<span class="gp">In [4]: </span><span class="n">data</span>
+<span class="gh">Out[4]: </span><span class="go"></span>
+<span class="go">  animals numbers</span>
+<span class="go">0       0       0</span>
+<span class="go">1       0       1</span>
+<span class="go">2       1       0</span>
+<span class="go">3       1       1</span>
+<span class="go">4       2     NaN</span>
+</pre></div>
+</div>
+<p>Note that the original names are still saved when using
+this and simmilar encoding functions.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">data</span><span class="o">.</span><span class="n">encoders</span>
+<span class="gh">Out[5]: </span><span class="go">{&#39;animals&#39;: {0: &quot;&#39;cat&#39;&quot;, 1: &quot;&#39;dog&#39;&quot;, 2: &quot;&#39;elk&#39;&quot;}, &#39;numbers&#39;: {0: 1.0, 1: 2.0}}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

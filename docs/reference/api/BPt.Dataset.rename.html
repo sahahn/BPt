@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -143,7 +147,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -177,6 +181,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="">BPt.Dataset.rename</a>
                         </li>
                     
                         <li class="">
@@ -393,6 +401,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -423,118 +433,66 @@
 <h1>BPt.Dataset.rename<a class="headerlink" href="#bpt-dataset-rename" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.rename">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">rename</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L1168-L1171"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.rename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alter axes labels.</p>
-<p>Function / dict values must be unique (1-to-1). Labels not contained in
-a dict / Series will be left as-is. Extra labels listed don’t throw an
-error.</p>
-<p>See the <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/basics.html#basics-rename" title="(in pandas v1.2.4)"><span class="xref std std-ref">user guide</span></a> for more.</p>
-<dl class="field-list simple">
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">rename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mapper</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">'ignore'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L1257-L1373"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.rename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls method according to:
+<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rename.html">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rename.html</a></p>
+<p>This version is updated to reflect changes to meta-data after renaming, e.g.,
+scopes will be updated to their new name accordingly.</p>
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>mapper</strong><span class="classifier">dict-like or function</span></dt><dd><p>Dict-like or function transformations to apply to
-that axis’ values. Use either <code class="docutils literal notranslate"><span class="pre">mapper</span></code> and <code class="docutils literal notranslate"><span class="pre">axis</span></code> to
-specify the axis to target with <code class="docutils literal notranslate"><span class="pre">mapper</span></code>, or <code class="docutils literal notranslate"><span class="pre">index</span></code> and
-<code class="docutils literal notranslate"><span class="pre">columns</span></code>.</p>
+<dd class="field-odd"><dl>
+<dt><strong>mapper</strong><span class="classifier">dict-like or function, optional</span></dt><dd><p>Dict-like or function transformations to apply to that
+axis’ values. Use either mapper and axis to specify
+the axis to target with mapper, or index and columns.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
 </dd>
-<dt><strong>index</strong><span class="classifier">dict-like or function</span></dt><dd><p>Alternative to specifying axis (<code class="docutils literal notranslate"><span class="pre">mapper,</span> <span class="pre">axis=0</span></code>
-is equivalent to <code class="docutils literal notranslate"><span class="pre">index=mapper</span></code>).</p>
+<dt><strong>index</strong><span class="classifier">dict-like or function, optional</span></dt><dd><p>Alternative to specifying axis
+(mapper, axis=0 is equivalent to index=mapper).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
 </dd>
-<dt><strong>columns</strong><span class="classifier">dict-like or function</span></dt><dd><p>Alternative to specifying axis (<code class="docutils literal notranslate"><span class="pre">mapper,</span> <span class="pre">axis=1</span></code>
-is equivalent to <code class="docutils literal notranslate"><span class="pre">columns=mapper</span></code>).</p>
+<dt><strong>columns</strong><span class="classifier">dict-like or function, optional</span></dt><dd><p>Alternative to specifying axis
+(mapper, axis=1 is equivalent to columns=mapper).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
 </dd>
-<dt><strong>axis</strong><span class="classifier">{0 or ‘index’, 1 or ‘columns’}, default 0</span></dt><dd><p>Axis to target with <code class="docutils literal notranslate"><span class="pre">mapper</span></code>. Can be either the axis name
+<dt><strong>axis</strong><span class="classifier">{0 or ‘index’, 1 or ‘columns’}, optional</span></dt><dd><p>Axis to target with mapper. Can be either the axis name
 (‘index’, ‘columns’) or number (0, 1). The default is ‘index’.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
 </dd>
-<dt><strong>copy</strong><span class="classifier">bool, default True</span></dt><dd><p>Also copy underlying data.</p>
+<dt><strong>copy</strong><span class="classifier">bool, optional</span></dt><dd><p>Also copy underlying data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
 </dd>
-<dt><strong>inplace</strong><span class="classifier">bool, default False</span></dt><dd><p>Whether to return a new DataFrame. If True then value of copy is
-ignored.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to return a new <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>.
+If True then value of copy is ignored.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
 </dd>
-<dt><strong>level</strong><span class="classifier">int or level name, default None</span></dt><dd><p>In case of a MultiIndex, only rename labels in the specified
-level.</p>
+<dt><strong>level</strong><span class="classifier">int or level name, optional</span></dt><dd><p>In case of a MultiIndex, only rename labels in the specified level.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
 </dd>
-<dt><strong>errors</strong><span class="classifier">{‘ignore’, ‘raise’}, default ‘ignore’</span></dt><dd><p>If ‘raise’, raise a <cite>KeyError</cite> when a dict-like <cite>mapper</cite>, <cite>index</cite>,
-or <cite>columns</cite> contains labels that are not present in the Index
-being transformed.
-If ‘ignore’, existing keys will be renamed and extra keys will be
-ignored.</p>
+<dt><strong>errors</strong><span class="classifier">{‘ignore’, ‘raise’}, optional</span></dt><dd><p>If ‘raise’, raise a KeyError when a dict-like mapper,
+index, or columns contains labels that are not present
+in the Index being transformed. If ‘ignore’,
+existing keys will be renamed and extra keys will be ignored.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>DataFrame or None</dt><dd><p>DataFrame with the renamed axis labels or None if <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code>.</p>
-</dd>
 </dl>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><dl class="simple">
-<dt>KeyError</dt><dd><p>If any of the labels is not found in the selected axis and
-“errors=’raise’”.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.rename_axis</span></code></dt><dd><p>Set the name of the axis.</p>
-</dd>
-</dl>
-</div>
-<p class="rubric">Examples</p>
-<p><code class="docutils literal notranslate"><span class="pre">DataFrame.rename</span></code> supports two calling conventions</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">(index=index_mapper,</span> <span class="pre">columns=columns_mapper,</span> <span class="pre">...)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">(mapper,</span> <span class="pre">axis={'index',</span> <span class="pre">'columns'},</span> <span class="pre">...)</span></code></p></li>
-</ul>
-<p>We <em>highly</em> recommend using keyword arguments to clarify your
-intent.</p>
-<p>Rename columns using a mapping:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">})</span>
-<span class="go">   a  c</span>
-<span class="go">0  1  4</span>
-<span class="go">1  2  5</span>
-<span class="go">2  3  6</span>
-</pre></div>
-</div>
-<p>Rename index using a mapping:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">})</span>
-<span class="go">   A  B</span>
-<span class="go">x  1  4</span>
-<span class="go">y  2  5</span>
-<span class="go">z  3  6</span>
-</pre></div>
-</div>
-<p>Cast index labels to a different type:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">index</span>
-<span class="go">RangeIndex(start=0, stop=3, step=1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
-<span class="go">Index([&#39;0&#39;, &#39;1&#39;, &#39;2&#39;], dtype=&#39;object&#39;)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">},</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">)</span>
-<span class="gt">Traceback (most recent call last):</span>
-<span class="gr">KeyError</span>: <span class="n">[&#39;C&#39;] not found in axis</span>
-</pre></div>
-</div>
-<p>Using axis-style parameters:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
-<span class="go">   a  b</span>
-<span class="go">0  1  4</span>
-<span class="go">1  2  5</span>
-<span class="go">2  3  6</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>
-<span class="go">   A  B</span>
-<span class="go">0  1  4</span>
-<span class="go">2  2  5</span>
-<span class="go">4  3  6</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </div>

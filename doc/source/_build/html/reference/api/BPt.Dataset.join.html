@@ -1,0 +1,587 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BPt.Dataset.join &#8212; BPt 2 documentation</title>
+    
+  <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BPt.Dataset.k_bin" href="BPt.Dataset.k_bin.html" />
+    <link rel="prev" title="BPt.Dataset.itertuples" href="BPt.Dataset.itertuples.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../index.html">
+    
+      <img src="../../_static/red_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../index.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../options/index.html">Default Options</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../change_log/index.html">Change Log</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/sahahn/BPt" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://twitter.com/SageHahn11" target="_blank" rel="noopener">
+              <span><i class="fab fa-twitter-square"></i></span>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+        
+        
+          
+            
+  
+                <li class="active">
+                    <a href="../dataset.html">Dataset</a>
+                    <ul>
+                    
+                        <li class="active">
+                            <a href="BPt.Dataset.html">BPt.Dataset</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_cols.html">BPt.Dataset.get_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_subjects.html">BPt.Dataset.get_subjects</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_values.html">BPt.Dataset.get_values</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_scope.html">BPt.Dataset.add_scope</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.remove_scope.html">BPt.Dataset.remove_scope</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_role.html">BPt.Dataset.set_role</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_roles.html">BPt.Dataset.set_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.copy.html">BPt.Dataset.copy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.auto_detect_categorical.html">BPt.Dataset.auto_detect_categorical</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_Xy.html">BPt.Dataset.get_Xy</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_binary.html">BPt.Dataset.to_binary</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.binarize.html">BPt.Dataset.binarize</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.k_bin.html">BPt.Dataset.k_bin</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.ordinalize.html">BPt.Dataset.ordinalize</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.nan_to_class.html">BPt.Dataset.nan_to_class</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.copy_as_non_input.html">BPt.Dataset.copy_as_non_input</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_unique_overlap.html">BPt.Dataset.add_unique_overlap</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.add_data_files.html">BPt.Dataset.add_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.to_data_file.html">BPt.Dataset.to_data_file</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.consolidate_data_files.html">BPt.Dataset.consolidate_data_files</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.update_data_file_paths.html">BPt.Dataset.update_data_file_paths</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.get_file_mapping.html">BPt.Dataset.get_file_mapping</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.filter_outliers_by_std.html">BPt.Dataset.filter_outliers_by_std</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.filter_outliers_by_percent.html">BPt.Dataset.filter_outliers_by_percent</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.filter_categorical_by_percent.html">BPt.Dataset.filter_categorical_by_percent</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_cols.html">BPt.Dataset.drop_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_nan_subjects.html">BPt.Dataset.drop_nan_subjects</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_subjects_by_nan.html">BPt.Dataset.drop_subjects_by_nan</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_cols_by_unique_val.html">BPt.Dataset.drop_cols_by_unique_val</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_cols_by_nan.html">BPt.Dataset.drop_cols_by_nan</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_id_cols.html">BPt.Dataset.drop_id_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.drop_duplicate_cols.html">BPt.Dataset.drop_duplicate_cols</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.apply_inclusions.html">BPt.Dataset.apply_inclusions</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.apply_exclusions.html">BPt.Dataset.apply_exclusions</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.plot.html">BPt.Dataset.plot</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.summary.html">BPt.Dataset.summary</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_test_split.html">BPt.Dataset.set_test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.set_train_split.html">BPt.Dataset.set_train_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.test_split.html">BPt.Dataset.test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.train_split.html">BPt.Dataset.train_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.save_test_split.html">BPt.Dataset.save_test_split</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.save_train_split.html">BPt.Dataset.save_train_split</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline.html">Pipelines</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline_pieces.html">Pipeline Pieces</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../problem_spec.html">ProblemSpec</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../CV.html">CV</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../input_operations.html">Input Operations</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../dists.html">Parameter Distributions</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../evaluate.html">Evaluate</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="bpt-dataset-join">
+<h1>BPt.Dataset.join<a class="headerlink" href="#bpt-dataset-join" title="Permalink to this headline">¶</a></h1>
+<dl class="py method">
+<dt id="BPt.Dataset.join">
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">join</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em>, <em class="sig-param"><span class="n">on</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">how</span><span class="o">=</span><span class="default_value">'left'</span></em>, <em class="sig-param"><span class="n">lsuffix</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">rsuffix</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">sort</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../pandas/core/frame.py#L7990-L8112"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.join" title="Permalink to this definition">¶</a></dt>
+<dd><p>Join columns of another DataFrame.</p>
+<p>Join columns with <cite>other</cite> DataFrame either on index or on a key
+column. Efficiently join multiple DataFrame objects by index at once by
+passing a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>other</strong><span class="classifier">DataFrame, Series, or list of DataFrame</span></dt><dd><p>Index should be similar to one of the columns in this one. If a
+Series is passed, its name attribute must be set, and that will be
+used as the column name in the resulting joined DataFrame.</p>
+</dd>
+<dt><strong>on</strong><span class="classifier">str, list of str, or array-like, optional</span></dt><dd><p>Column or index level name(s) in the caller to join on the index
+in <cite>other</cite>, otherwise joins index-on-index. If multiple
+values given, the <cite>other</cite> DataFrame must have a MultiIndex. Can
+pass an array as the join key if it is not already contained in
+the calling DataFrame. Like an Excel VLOOKUP operation.</p>
+</dd>
+<dt><strong>how</strong><span class="classifier">{‘left’, ‘right’, ‘outer’, ‘inner’}, default ‘left’</span></dt><dd><p>How to handle the operation of the two objects.</p>
+<ul class="simple">
+<li><p>left: use calling frame’s index (or column if on is specified)</p></li>
+<li><p>right: use <cite>other</cite>’s index.</p></li>
+<li><p>outer: form union of calling frame’s index (or column if on is
+specified) with <cite>other</cite>’s index, and sort it.
+lexicographically.</p></li>
+<li><p>inner: form intersection of calling frame’s index (or column if
+on is specified) with <cite>other</cite>’s index, preserving the order
+of the calling’s one.</p></li>
+</ul>
+</dd>
+<dt><strong>lsuffix</strong><span class="classifier">str, default ‘’</span></dt><dd><p>Suffix to use from left frame’s overlapping columns.</p>
+</dd>
+<dt><strong>rsuffix</strong><span class="classifier">str, default ‘’</span></dt><dd><p>Suffix to use from right frame’s overlapping columns.</p>
+</dd>
+<dt><strong>sort</strong><span class="classifier">bool, default False</span></dt><dd><p>Order result DataFrame lexicographically by the join key. If False,
+the order of the join key depends on the join type (how keyword).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>DataFrame</dt><dd><p>A dataframe containing columns from both the caller and <cite>other</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.merge</span></code></dt><dd><p>For column(s)-on-column(s) operations.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>Parameters <cite>on</cite>, <cite>lsuffix</cite>, and <cite>rsuffix</cite> are not supported when
+passing a list of <cite>DataFrame</cite> objects.</p>
+<p>Support for specifying index levels as the <cite>on</cite> parameter was added
+in version 0.23.0.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;K0&#39;</span><span class="p">,</span> <span class="s1">&#39;K1&#39;</span><span class="p">,</span> <span class="s1">&#39;K2&#39;</span><span class="p">,</span> <span class="s1">&#39;K3&#39;</span><span class="p">,</span> <span class="s1">&#39;K4&#39;</span><span class="p">,</span> <span class="s1">&#39;K5&#39;</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;A0&#39;</span><span class="p">,</span> <span class="s1">&#39;A1&#39;</span><span class="p">,</span> <span class="s1">&#39;A2&#39;</span><span class="p">,</span> <span class="s1">&#39;A3&#39;</span><span class="p">,</span> <span class="s1">&#39;A4&#39;</span><span class="p">,</span> <span class="s1">&#39;A5&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
+<span class="go">  key   A</span>
+<span class="go">0  K0  A0</span>
+<span class="go">1  K1  A1</span>
+<span class="go">2  K2  A2</span>
+<span class="go">3  K3  A3</span>
+<span class="go">4  K4  A4</span>
+<span class="go">5  K5  A5</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">other</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;K0&#39;</span><span class="p">,</span> <span class="s1">&#39;K1&#39;</span><span class="p">,</span> <span class="s1">&#39;K2&#39;</span><span class="p">],</span>
+<span class="gp">... </span>                      <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;B0&#39;</span><span class="p">,</span> <span class="s1">&#39;B1&#39;</span><span class="p">,</span> <span class="s1">&#39;B2&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">other</span>
+<span class="go">  key   B</span>
+<span class="go">0  K0  B0</span>
+<span class="go">1  K1  B1</span>
+<span class="go">2  K2  B2</span>
+</pre></div>
+</div>
+<p>Join DataFrames using their indexes.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">lsuffix</span><span class="o">=</span><span class="s1">&#39;_caller&#39;</span><span class="p">,</span> <span class="n">rsuffix</span><span class="o">=</span><span class="s1">&#39;_other&#39;</span><span class="p">)</span>
+<span class="go">  key_caller   A key_other    B</span>
+<span class="go">0         K0  A0        K0   B0</span>
+<span class="go">1         K1  A1        K1   B1</span>
+<span class="go">2         K2  A2        K2   B2</span>
+<span class="go">3         K3  A3       NaN  NaN</span>
+<span class="go">4         K4  A4       NaN  NaN</span>
+<span class="go">5         K5  A5       NaN  NaN</span>
+</pre></div>
+</div>
+<p>If we want to join using the key columns, we need to set key to be
+the index in both <cite>df</cite> and <cite>other</cite>. The joined DataFrame will have
+key as its index.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">))</span>
+<span class="go">      A    B</span>
+<span class="go">key</span>
+<span class="go">K0   A0   B0</span>
+<span class="go">K1   A1   B1</span>
+<span class="go">K2   A2   B2</span>
+<span class="go">K3   A3  NaN</span>
+<span class="go">K4   A4  NaN</span>
+<span class="go">K5   A5  NaN</span>
+</pre></div>
+</div>
+<p>Another option to join using the key columns is to use the <cite>on</cite>
+parameter. DataFrame.join always uses <cite>other</cite>’s index but we can use
+any column in <cite>df</cite>. This method preserves the original DataFrame’s
+index in the result.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">),</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;key&#39;</span><span class="p">)</span>
+<span class="go">  key   A    B</span>
+<span class="go">0  K0  A0   B0</span>
+<span class="go">1  K1  A1   B1</span>
+<span class="go">2  K2  A2   B2</span>
+<span class="go">3  K3  A3  NaN</span>
+<span class="go">4  K4  A4  NaN</span>
+<span class="go">5  K5  A5  NaN</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="BPt.Dataset.itertuples.html" title="previous page">BPt.Dataset.itertuples</a>
+    <a class='right-next' id="next-link" href="BPt.Dataset.k_bin.html" title="next page">BPt.Dataset.k_bin</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020-2021.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

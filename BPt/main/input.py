@@ -430,6 +430,7 @@ _piece_docs[
         ::
 
             default = None
+
 """
 
 _piece_docs[
@@ -451,6 +452,7 @@ _piece_docs[
         ::
 
             default = None
+
 """
 
 
@@ -1563,7 +1565,7 @@ def add_nested_deep_params(params):
 _pipeline_docs = {}
 _pipeline_docs['param_search'] = _piece_docs['param_search']
 
-_pipeline_docs['cache_loc'] = """Path str or None, optional
+_pipeline_docs['cache_loc'] = """cache_loc : Path str or None, optional
         Optional parameter specifying a directory
         in which full BPt pipeline's should
         be cached after fitting. This should be
@@ -1603,43 +1605,7 @@ class Pipeline(Params):
             and it is at the end of the list, i.e., the last step.
             This constraint excludes any nested models.
 
-        | The base behavior is to use all valid Pipeline objects,
-            for example:
-
-        ::
-
-            Pipeline(steps=[Imputer('mean'),
-                            Scaler('robust'),
-                            Model('elastic')])
-
-        | Would create a pipeline with mean imputation, robust scaling
-            and an elastic net, all using the BPt style custom objects.
-
-        | This object can also work with :class:`sklearn.pipeline.Pipeline`
-            style steps. Or a mix of BPt style and sklearn style, for example:
-
-        ::
-
-            from sklearn.linear import Ridge
-
-            Pipeline(steps=[Imputer('mean'),
-                            Scaler('robust'),
-                            ('ridge regression', Ridge())])
-
-        | You may also pass sklearn objects directly instead of as
-            a tuple, i.e., in the :func:`sklearn.pipeline.make_pipeline`
-            input style. For example:
-
-        ::
-
-            from sklearn.linear import Ridge
-            Pipeline(steps=[Ridge()])
-
-        .. note::
-
-            Passing objects as sklearn-style
-            ensures they have essentially a scope of 'all'
-            and no associated hyper-parameter distributions.
+        | See below for example usage.
 
     {param_search}
 
@@ -1659,6 +1625,50 @@ class Pipeline(Params):
     re-used across different data and setups, for example
     with different underlying problem_types (running a binary and then
     a regression version).
+
+    Examples
+    ----------
+    The base behavior is to use all valid Pipeline objects,
+    for example:
+
+    .. ipython:: python
+
+        pipe = bp.Pipeline(steps=[bp.Imputer('mean'),
+                                  bp.Scaler('robust'),
+                                  bp.Model('elastic')])
+        pipe
+
+    | This would creates a pipeline with mean imputation, robust scaling
+      and an elastic net, all using the BPt style custom objects.
+
+    | This object can also work with :class:`sklearn.pipeline.Pipeline`
+      style steps. Or a mix of BPt style and sklearn style, for example:
+
+    .. ipython:: python
+
+        from sklearn.linear_model import Ridge
+
+        pipe = bp.Pipeline(steps=[bp.Imputer('mean'),
+                                  bp.Scaler('robust'),
+                                  ('ridge regression', Ridge())])
+        pipe
+
+    You may also pass sklearn objects directly instead of as
+    a tuple, i.e., in the :func:`sklearn.pipeline.make_pipeline`
+    input style. For example:
+
+    .. ipython:: python
+
+        from sklearn.linear_model import Ridge
+        pipe = bp.Pipeline(steps=[Ridge()])
+        pipe
+
+    .. note::
+
+        Passing objects as sklearn-style
+        ensures they have essentially a scope of 'all'
+        and no associated hyper-parameter distributions.
+
     '''
     def __init__(self, steps, param_search=None, cache_loc=None, verbose=0):
         self.steps = steps

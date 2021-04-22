@@ -1,12 +1,13 @@
 from .helpers import (update_mapping, proc_mapping, get_reverse_mapping)
 import numpy as np
 from joblib import Parallel, delayed
-import warnings
 from sklearn.utils.validation import check_memory
 from sklearn.base import clone
 from .ScopeObjs import ScopeTransformer
 from operator import itemgetter
 from .base import _get_est_trans_params
+from ..util import get_top_substrs
+import pandas as pd
 
 
 def load_and_trans(transformer, load_func, loc):
@@ -53,7 +54,7 @@ class BPtLoader(ScopeTransformer):
         self.fix_n_jobs = fix_n_jobs
         self.n_jobs = n_jobs
 
-    # Override inherieted n_jobs propegate behavior
+    # Override inherited n_jobs propegate behavior
     @property
     def n_jobs(self):
         return self.n_jobs_proxy
@@ -126,6 +127,10 @@ class BPtLoader(ScopeTransformer):
                     fit_index=fit_index,
                     **fit_params)
 
+        # If skipped, skip
+        if self.estimator_ is None:
+            return X
+
         # The parent fit takes care of, in addition to
         # fitting the loader on one
         # data point, sets base_dtype, processes the mapping,
@@ -141,6 +146,10 @@ class BPtLoader(ScopeTransformer):
         return X_trans
 
     def transform(self, X, transform_index=None):
+
+        # Skip if skipped
+        if self.estimator_ is None:
+            return X
 
         # @ TODO transform index just exists for compat
         # with loader right now, won't actually propegate.
@@ -226,7 +235,14 @@ class BPtLoader(ScopeTransformer):
 
         return super().transform_df(df, base_name=base_name)
 
-    def _proc_new_names(self, feat_names, base_name, encoders=None):
+    def _proc_new_names(self, feat_names, base_name=None, encoders=None):
+
+        # If skip, return passed names as is
+        if self.estimator_ is None:
+            return feat_names
+
+        # Store original passed feat names here
+        self.feat_names_in_ = feat_names
 
         # If skip, return passed names as is
         if self.estimator_ is None:
@@ -241,10 +257,10 @@ class BPtLoader(ScopeTransformer):
         for c in range(len(self.inds_)):
 
             ind = self.inds_[c]
-            base_name = feat_names[ind]
+            col_name = feat_names[ind]
 
             new_inds = self.X_trans_inds_[c]
-            new_names += [str(base_name) + '_' + str(i)
+            new_names += [str(col_name) + '_' + str(i)
                           for i in range(len(new_inds))]
 
         # Remove old names - using parent method
@@ -255,81 +271,79 @@ class BPtLoader(ScopeTransformer):
 
         return all_names
 
-    def inverse_transform(self, X, name='base loader'):
+    def inverse_transform_FIs(self, fis):
 
-        # @TODO make sure this is still working
+        # Skip if skipped
+        if self.estimator_ is None:
+            return fis
 
-        # For each column, compute the inverse transform of what's loaded
-        inverse_X = {}
+        # If doesn't have inverse_transform, return as is.
+        if not hasattr(self.estimator_, 'inverse_transform'):
+            return fis
+
+        # Get feature importances also as array
+        fis_data = np.array(fis)
+        fis_names = np.array(fis.index)
+
+        # Compute reverse mapping
         reverse_mapping = get_reverse_mapping(self.mapping_)
 
-        no_it_warns = set()
-        other_warns = set()
+        # Prep return fis
+        return_fis_data = np.zeros(len(reverse_mapping), dtype='object')
+        return_fis_names = ['' for _ in range(len(reverse_mapping))]
 
+        # Process each feature
         for col_ind in self.inds_:
+
+            # Get reverse inds and data for just this col
             reverse_inds = proc_mapping([col_ind], self.out_mapping_)
+            col_fis = fis_data[reverse_inds]
+            col_names = fis_names[reverse_inds]
 
-            # for each subject
-            X_trans = []
-            for subject_X in X[:, reverse_inds]:
+            # Run inverse transform
+            inv_fis = self.estimator_.inverse_transform(col_fis)
 
-                # If pipeline
-                if hasattr(self.estimator_, 'steps'):
-                    for step in self.estimator_.steps[::-1]:
-                        s_name = step[0]
-                        pipe_piece = self.estimator_[s_name]
+            # Place into return fis_data
+            original_ind = reverse_mapping[col_ind]
+            return_fis_data[original_ind] = inv_fis
 
-                        try:
-                            subject_X = pipe_piece.inverse_transform(subject_X)
-                        except AttributeError:
-                            no_it_warns.add(name + '__' + s_name)
-                        except:
-                            other_warns.add(name + '__' + s_name)
+            # Add return name
+            return_fis_names[original_ind] =\
+                self._get_reverse_feat_name(col_names, original_ind)
 
-                else:
-                    try:
-                        subject_X =\
-                            self.estimator_.inverse_transform(
-                                subject_X)
-                    except AttributeError:
-                        no_it_warns.add(name)
-                    except:
-                        other_warns.add(name)
+        # Fill in with original
+        for col_ind in self.rest_inds_:
+            reverse_ind = proc_mapping([col_ind], self.out_mapping_)[0]
+            original_ind = reverse_mapping[col_ind]
 
-                # Regardless of outcome, add to X_trans
-                X_trans.append(subject_X)
+            # Just pass along data and name, but in original spot
+            return_fis_data[original_ind] = fis_data[reverse_ind]
+            return_fis_names[original_ind] = fis_names[reverse_ind]
 
-            # If X_trans only has len 1, get rid of internal list
-            if len(X_trans) == 1:
-                X_trans = X_trans[0]
+        # Return new series
+        return pd.Series(return_fis_data, index=return_fis_names)
 
-            # Store the list of inverse_transformed X's by subject
-            # In a dictionary with the original col_ind as the key
-            inverse_X[reverse_mapping[col_ind]] = X_trans
+    def _get_reverse_feat_name(self, col_names, original_ind):
 
-        # Send out warn messages
-        if len(no_it_warns) > 0:
-            warnings.warn(repr(list(no_it_warns)) + ' skipped '
-                          'in calculating inverse FIs due to no '
-                          'inverse_transform')
-        if len(other_warns) > 0:
-            warnings.warn(repr(list(other_warns)) + ' skipped '
-                          'in calculating inverse FIs due to '
-                          'an error in inverse_transform')
+        # Get + add return name
+        if hasattr(self, 'feat_names_in_'):
+            return self.feat_names_in_[original_ind]
 
-        # Now need to do two things, it is assumed the output from loader
-        # cannot be put in a standard X array, but also
-        # in the case with multiple loaders, we still need to return
-        # An otherwise inverted X, we will just set values to 0 in this version
-        reverse_rest_inds = proc_mapping(self.rest_inds_, self.out_mapping_)
+        # If reverse_feat_names hasn't been called
+        substrs = get_top_substrs(col_names)
 
-        all_inds_len = len(self.inds_) + len(self.rest_inds_)
-        Xt = np.zeros((X.shape[0], all_inds_len), dtype=X.dtype)
+        # If no common sub string
+        if len(substrs) == 0:
+            return 'loader_ind_' + str(original_ind)
 
-        Xt[:, self.inds_] = 0
-        Xt[:, self.rest_inds_] = X[:, reverse_rest_inds]
+        # Just take first substring
+        new_name = substrs[0]
 
-        return Xt, inverse_X
+        # Remove ending _ if any
+        if new_name.endswith('_'):
+            new_name = new_name[:-1]
+
+        return new_name
 
 
 class CompatArray(list):

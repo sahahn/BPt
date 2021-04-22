@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -143,7 +147,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -177,6 +181,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
                         </li>
                     
                         <li class="">
@@ -393,6 +401,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -423,20 +433,21 @@
 <h1>BPt.Dataset.to_binary<a class="headerlink" href="#bpt-dataset-to-binary" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.to_binary">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_binary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">drop</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L26-L84"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_binary" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_binary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">drop</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L28-L101"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_binary" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method works by setting all
 columns within scope to just two binary
 categories. This works by setting the two values
 as the top two categories, any others will have
 their subjects either dropped or replaced with NaN.</p>
-<p>Note: This function will not work on data files.</p>
-<p>See: <a class="reference internal" href="BPt.Dataset.binarize.html#BPt.Dataset.binarize" title="BPt.Dataset.binarize"><code class="xref py py-func docutils literal notranslate"><span class="pre">binarize</span></code></a> for converting
-float style columns to binary.</p>
+<p>This method is designed for converting from already
+categorical data to explicitly type binary.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
 <dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
-columns in which to apply to_binary on.</p>
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
 </dd>
 <dt><strong>drop</strong><span class="classifier">bool, optional</span></dt><dd><p>If set to True, default, then if more
 than two categories are found when converting
@@ -448,7 +459,7 @@ be set to NaN and no rows dropped.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, do operation inplace and return None.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
@@ -456,6 +467,47 @@ be set to NaN and no rows dropped.</p>
 </dl>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="BPt.Dataset.binarize.html#BPt.Dataset.binarize" title="BPt.Dataset.binarize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">binarize</span></code></a></dt><dd><p>For converting float data to binary.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This function with not work on columns
+of type <a class="reference internal" href="../../user_guide/data_files.html#data-files"><span class="std std-ref">Data Files</span></a>.</p>
+<p class="rubric">Examples</p>
+<p>Simple example with drop True and False below:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/example1.csv&#39;</span><span class="p">)</span>
+
+<span class="gp">In [2]: </span><span class="n">data</span>
+<span class="gh">Out[2]: </span><span class="go"></span>
+<span class="go">  animals  numbers</span>
+<span class="go">0   &#39;cat&#39;      1.0</span>
+<span class="go">1   &#39;cat&#39;      2.0</span>
+<span class="go">2   &#39;dog&#39;      1.0</span>
+<span class="go">3   &#39;dog&#39;      2.0</span>
+<span class="go">4   &#39;elk&#39;      NaN</span>
+
+<span class="gp">In [3]: </span><span class="n">data</span><span class="o">.</span><span class="n">to_binary</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gh">Out[3]: </span><span class="go"></span>
+<span class="go">  animals numbers</span>
+<span class="go">0       0       0</span>
+<span class="go">1       0       1</span>
+<span class="go">2       1       0</span>
+<span class="go">3       1       1</span>
+
+<span class="gp">In [4]: </span><span class="n">data</span><span class="o">.</span><span class="n">to_binary</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gh">Out[4]: </span><span class="go"></span>
+<span class="go">  animals numbers</span>
+<span class="go">0       0       0</span>
+<span class="go">1       0       1</span>
+<span class="go">2       1       0</span>
+<span class="go">3       1       1</span>
+<span class="go">4     NaN     NaN</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

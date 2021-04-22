@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -143,7 +147,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -177,6 +181,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
                         </li>
                     
                         <li class="">
@@ -393,6 +401,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -423,7 +433,7 @@
 <h1>BPt.Dataset.filter_outliers_by_percent<a class="headerlink" href="#bpt-dataset-filter-outliers-by-percent" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.filter_outliers_by_percent">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">filter_outliers_by_percent</code><span class="sig-paren">(</span><em class="sig-param">fop=1</em>, <em class="sig-param">scope='float'</em>, <em class="sig-param">drop=True</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=-1</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L190-L300"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.filter_outliers_by_percent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">filter_outliers_by_percent</code><span class="sig-paren">(</span><em class="sig-param">scope='float'</em>, <em class="sig-param">fop=1</em>, <em class="sig-param">drop=True</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=-1</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L200-L310"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.filter_outliers_by_percent" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is designed to allow dropping a fixed percent of outliers
 from the requested columns. This method is designed to work
 on float type / cont. variables.</p>
@@ -436,6 +446,16 @@ reduce_func and n_jobs parameters are specific to this case.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
+<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
+<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+</pre></div>
+</div>
+</dd>
 <dt><strong>fop</strong><span class="classifier">float, tuple, optional</span></dt><dd><p>This parameter represents the percent of outliers to drop.
 It should be passed as a percent, e.g., therefore 1 for
 one percent, or 5 for five percent.</p>
@@ -456,16 +476,6 @@ one half, for example:</p>
 <p>Would drop only five percent from the bottom half, and not drop
 any from the top half.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">1</span>
-</pre></div>
-</div>
-</dd>
-<dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><blockquote>
-<div><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
-column(s) in which to apply the current function to.
-See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
-can be applied.</p>
-</div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
 </pre></div>
 </div>
 </dd>

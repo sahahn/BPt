@@ -1,9 +1,11 @@
 import pandas as pd
 import numpy as np
-from .DataFile import load_data_file_proxy
+from .data_file import load_data_file_proxy
 from copy import deepcopy
 from .helpers import verbose_print
 from pandas.util._decorators import doc
+import pandas.core.common as com
+from pandas.core.dtypes.generic import ABCMultiIndex
 
 
 _shared_docs = {}
@@ -113,21 +115,26 @@ _shared_docs['subjects'] = '''subjects : :ref:`Subjects`
 
 
 class Dataset(pd.DataFrame):
-    '''The BPt Dataset class is the main class used for preparing data
-    into a compatible format to work with machine learning. This class is new
-    as of BPt version 2 (replacing the building in loading functions of the
-    old BPt_ML).
+    '''| The BPt Dataset class is the main class used for preparing data
+      into a compatible format to work with machine learning. This class is new
+      as of BPt version 2 (replacing the building in loading functions of the
+      old BPt_ML).
 
-    See :ref:`loading_data` for more a comprehensive guide on this object.
+    | See :ref:`loading_data` for more a comprehensive guide on this object.
 
-    This class can be initialized like a pandas.DataFrame, or
-    typically from a pandas.DataFrame.
+    | This class can be initialized like a pandas.DataFrame, or
+      typically from a pandas.DataFrame. This class has some constraints
+      relative to using DataFrames. Some of these are that columns must be
+      strings (if passed as int-like will be cast to strings), and that
+      there cannot be duplicate column names.
+
+    | This class can be initialized in most of the same
+      ways that a pandas DataFrame can be initialized, for example
 
     .. ipython:: python
 
-        import BPt as bp
-        data = bp.Dataset()
-        data['1'] = [1, 2, 3]
+        data = bp.Dataset(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
+                          columns=['a', 'b', 'c'])
         data
 
     Or from a pandas DataFrame.
@@ -135,10 +142,20 @@ class Dataset(pd.DataFrame):
     .. ipython:: python
 
         import pandas as pd
-        df = pd.DataFrame()
-        df['1'] = [1, 2, 3]
+        df = pd.DataFrame([1, 2, 3], columns=['a'])
+        df
+
         data = bp.Dataset(df)
         data
+
+    The Dataset also has some extra optional constructor parameters:
+    roles, scopes, targets and non_inputs, which are just helpers
+    for setting parameters at the time of construction. For example:
+
+    .. ipython:: python
+
+        data = bp.Dataset([1, 2, 3], columns=['1'], targets=['1'])
+        data.get_roles()
 
     .. versionadded:: 2.0.0
 
@@ -148,6 +165,32 @@ class Dataset(pd.DataFrame):
                  'verbose_', 'test_subjects', 'train_subjects']
 
     _print = verbose_print
+
+    def __init__(self, data=None, index=None,
+                 columns=None, dtype=None,
+                 copy=None, roles=None,
+                 scopes=None, targets=None,
+                 non_inputs=None):
+
+        super().__init__(data=data, index=index,
+                         columns=columns, dtype=dtype,
+                         copy=copy)
+
+        if roles is not None:
+            self.roles = roles
+            self._check_roles()
+
+        if scopes is not None:
+            self.scopes = scopes
+            self._check_scopes()
+
+        if targets is not None:
+            self.set_target(targets, inplace=True)
+            self._check_roles()
+
+        if non_inputs is not None:
+            self.set_non_input(non_inputs, inplace=True)
+            self._check_roles()
 
     def __getitem__(self, key):
 
@@ -315,6 +358,16 @@ class Dataset(pd.DataFrame):
                                'overlap with reserved saved names! '
                                'They must be changed.')
 
+        # Check to make sure there are no columns with the same name,
+        # i.e., duplicates
+        self._check_duplicate_cols()
+
+    def _check_duplicate_cols(self):
+
+        if len(set(self.columns)) != len(self.columns):
+            raise RuntimeError('Duplicate columns with the same name ',
+                               'are not allowed!')
+
     def _check_roles(self, check_type=True):
 
         # Make sure cols type str
@@ -325,6 +378,9 @@ class Dataset(pd.DataFrame):
             self.roles = {}
         elif getattr(self, 'roles') is None:
             self.roles = {}
+
+        if not isinstance(self.roles, dict):
+            raise RuntimeError('roles must be a dict.')
 
         # Fill in any column without a role.
         for col in list(self.columns):
@@ -360,6 +416,9 @@ class Dataset(pd.DataFrame):
         # Or is set to None
         elif getattr(self, 'scopes') is None:
             self.scopes = {}
+
+        if not isinstance(self.scopes, dict):
+            raise RuntimeError('scopes must be a dict.')
 
         # Make sure each col is init'ed with a scope
         for col in self.columns:
@@ -433,6 +492,35 @@ class Dataset(pd.DataFrame):
             each role differs.
 
         {inplace}
+
+        See Also
+        ----------
+        set_target : Specifically for setting target role.
+        set_non_input : Specifically for setting non input role.
+        get_roles : Returns a dictionary with saved roles.
+
+        Examples
+        ---------
+        Setting columns role's within the :class:`Dataset` is an
+        essential part of using the object.
+
+        .. ipython:: python
+
+            data = bp.read_csv('data/example1.csv')
+            data = data.set_role('animals', 'target')
+            data
+            data.get_roles()
+
+        We can also use the method to set columns to role non input,
+        which has the additional constraint that no NaN values
+        can be present in that column. So we can see below
+        that one row is dropped.
+
+        .. ipython:: python
+
+            data = data.set_role('numbers', 'non input')
+            data
+            data.get_roles()
 
         '''
 
@@ -637,8 +725,9 @@ class Dataset(pd.DataFrame):
                 # Need to cast to int first as intermediate
                 self[col] = self[col].astype('int')
 
-            self[col] = self[col].astype('category')
-            self[col].cat.as_ordered(inplace=True)
+            new_col = self[col].copy().astype('category')
+            new_col.cat.as_ordered(inplace=True)
+            self[col] = new_col
 
             return
 
@@ -1165,10 +1254,167 @@ class Dataset(pd.DataFrame):
         self._print('Problem type auto-detected as regression', level=2)
         return 'regression'
 
-    def rename(self, **kwargs):
-        print('Warning: rename might cause meta data loss!')
-        print('Until this is supported, re-name before casting to a Dataset.')
-        return super().rename(**kwargs)
+    def rename(self, mapper=None, index=None,
+               columns=None, axis=None, copy=True,
+               inplace=False, level=None, errors='ignore'):
+        '''Calls method according to:
+        https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rename.html
+
+        This version is updated to reflect changes to meta-data after renaming, e.g.,
+        scopes will be updated to their new name accordingly.
+
+        Parameters
+        -------------
+        mapper : dict-like or function, optional
+            Dict-like or function transformations to apply to that
+            axis’ values. Use either mapper and axis to specify
+            the axis to target with mapper, or index and columns.
+
+            ::
+
+                default = None
+
+        index : dict-like or function, optional
+            Alternative to specifying axis
+            (mapper, axis=0 is equivalent to index=mapper).
+
+            ::
+
+                default = None
+
+        columns : dict-like or function, optional
+            Alternative to specifying axis
+            (mapper, axis=1 is equivalent to columns=mapper).
+
+            ::
+
+                default = None
+
+        axis : {0 or 'index', 1 or 'columns'}, optional
+            Axis to target with mapper. Can be either the axis name
+            ('index', 'columns') or number (0, 1). The default is ‘index’.
+
+            ::
+
+                default = 0
+
+        copy : bool, optional
+            Also copy underlying data.
+
+            ::
+
+                default = True
+
+        inplace : bool, optional
+            Whether to return a new :class:`Dataset`.
+            If True then value of copy is ignored.
+
+            ::
+
+                default = False
+
+        level : int or level name, optional
+            In case of a MultiIndex, only rename labels in the specified level.
+
+            ::
+
+                default = None
+
+        errors : {'ignore', 'raise'}, optional
+            If 'raise', raise a KeyError when a dict-like mapper,
+            index, or columns contains labels that are not present
+            in the Index being transformed. If 'ignore',
+            existing keys will be renamed and extra keys will be ignored.
+
+            ::
+
+                default = 'ignore'
+        '''
+
+        # Make sure everything up to data
+        # and that the attributes exist
+        self._check_sr()
+        self._check_encoders()
+        self._check_train_subjects()
+        self._check_test_subjects()
+
+        # First apply parent function
+        data = super().rename(mapper=mapper, index=index, columns=columns,
+                              axis=axis, copy=copy, inplace=inplace,
+                              level=level,
+                              errors=errors)
+
+        # Next proc using either result if not inplace
+        # or self if inplace
+        result = self if inplace else data
+
+        # Set columns and index
+        if not (index is not None or columns is not None):
+            if axis and self._get_axis_number(axis) == 1:
+                columns = mapper
+            else:
+                index = mapper
+
+        # Process each passed
+        for axis_no, replacements in enumerate((index, columns)):
+            if replacements is None:
+                continue
+
+            # Get rename function
+            func = com.get_rename_function(replacements)
+
+            if axis_no == 0:
+                result._rename_index(func, level=level)
+            elif axis_no == 1:
+                result._rename_columns(func)
+            else:
+                raise RuntimeError(f'axis_no == {axis_no}, should be 0 or 1.')
+
+        return result
+
+    def _rename_columns(self, func):
+
+        # Can't have mapping to duplicate cols
+        self._check_duplicate_cols()
+
+        to_change = ['roles', 'scopes', 'encoders']
+        for attr in to_change:
+            curr_attr = getattr(self, attr)
+            new_attr = {func(key): curr_attr[key] for key in curr_attr}
+            setattr(self, attr, new_attr)
+
+    def _rename_index(self, func, level=None):
+
+        # Skip if no train or test subjects
+        if self.train_subjects is None and self.test_subjects is None:
+            return
+
+        if not isinstance(self, ABCMultiIndex):
+            to_change = ['test_subjects', 'train_subjects']
+            for attr in to_change:
+                curr_attr = getattr(self, attr)
+                if curr_attr is not None:
+                    new_vals = [func(val) for val in curr_attr.values]
+                    new_attr = pd.Index(new_vals)
+                    setattr(self, attr, new_attr)
+
+        # @TODO Support at some point
+        else:
+            raise RuntimeError('renaming index in a MultiIndex case '
+                               'is not currently supported.')
+            '''
+            if level is not None:
+                level = self.index._get_level_number(level)
+
+            if level is not None:
+                items = [
+                    tuple(f(y) if i == level else y for i, y in enumerate(x))
+                    for x in self
+                ]
+
+            else:
+                items = [tuple(f(y) for y in x) for x in self]
+            '''
 
     def _is_category(self, scope, limit_to=None, check_scopes=True):
         '''Tests if a set of columns are categorical,
@@ -1455,7 +1701,8 @@ class Dataset(pd.DataFrame):
                             _ordinalize,
                             nan_to_class,
                             copy_as_non_input,
-                            add_unique_overlap)
+                            add_unique_overlap,
+                            _replace_cat_values)
 
     from ._validation import (_validate_cv_key,
                               _proc_cv_strategy,
@@ -1484,3 +1731,13 @@ class Dataset(pd.DataFrame):
                              drop_cols,
                              drop_cols_by_unique_val,
                              drop_cols_by_nan)
+
+
+def read_csv(*args, **kwargs):
+    '''Passes along all arguments and kwargs to
+    :func:`pandas.read_csv` then casts to :class:`Dataset`.
+
+    This method is just a helper wrapper function.
+    '''
+
+    return Dataset(pd.read_csv(*args, **kwargs))

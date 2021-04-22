@@ -9,14 +9,14 @@ from .datasets import (get_fake_dataset, get_fake_dataset2, get_fake_dataset3,
 def test_filter_outliers():
 
     df = get_fake_dataset()
-    df = df.filter_outliers_by_percent(20, scope='3', drop=False)
+    df = df.filter_outliers_by_percent(fop=20, scope='3', drop=False)
     assert pd.isnull(df['3']).all()
 
 
 def test_filter_outliers_inplace():
 
     df = get_fake_dataset()
-    df.filter_outliers_by_percent(20, scope='3',
+    df.filter_outliers_by_percent(fop=20, scope='3',
                                   drop=False, inplace=True)
     assert pd.isnull(df['3']).all()
 
@@ -24,24 +24,24 @@ def test_filter_outliers_inplace():
 def test_filter_outliers_by_percent():
 
     df = get_fake_dataset4()
-    df = df.filter_outliers_by_percent(20, scope='1', drop=True)
+    df = df.filter_outliers_by_percent(fop=20, scope='1', drop=True)
     assert len(df) == 4
 
     # Make sure works with NaNs
     df = get_fake_dataset4()
-    df = df.filter_outliers_by_percent(20, scope='2', drop=True)
+    df = df.filter_outliers_by_percent(fop=20, scope='2', drop=True)
     assert len(df) == 4
     assert pd.isnull(df.loc[5, '2'])
 
     # Make sure range works
     df = get_fake_dataset4()
-    df = df.filter_outliers_by_percent((20, None), scope='2', drop=True)
+    df = df.filter_outliers_by_percent(fop=(20, None), scope='2', drop=True)
     assert len(df) == 5
     assert pd.isnull(df.loc[5, '2'])
 
     # Make sure drop false works
     df = get_fake_dataset4()
-    df = df.filter_outliers_by_percent((20, None), scope='2', drop=False)
+    df = df.filter_outliers_by_percent(fop=(20, None), scope='2', drop=False)
     assert len(df) == 6
     assert pd.isnull(df.loc[0, '2'])
     assert pd.isnull(df.loc[5, '2'])
@@ -50,25 +50,25 @@ def test_filter_outliers_by_percent():
 def test_filter_outliers_by_percent_inplace():
 
     df = get_fake_dataset4()
-    df.filter_outliers_by_percent(20, scope='1', drop=True, inplace=True)
+    df.filter_outliers_by_percent(fop=20, scope='1', drop=True, inplace=True)
     assert len(df) == 4
 
     # Make sure works with NaNs
     df = get_fake_dataset4()
-    df.filter_outliers_by_percent(20, scope='2', drop=True, inplace=True)
+    df.filter_outliers_by_percent(fop=20, scope='2', drop=True, inplace=True)
     assert len(df) == 4
     assert pd.isnull(df.loc[5, '2'])
 
     # Make sure range works
     df = get_fake_dataset4()
-    df.filter_outliers_by_percent((20, None), scope='2',
+    df.filter_outliers_by_percent(fop=(20, None), scope='2',
                                   drop=True, inplace=True)
     assert len(df) == 5
     assert pd.isnull(df.loc[5, '2'])
 
     # Make sure drop false works
     df = get_fake_dataset4()
-    df.filter_outliers_by_percent((20, None), scope='2',
+    df.filter_outliers_by_percent(fop=(20, None), scope='2',
                                   drop=False, inplace=True)
     assert len(df) == 6
     assert pd.isnull(df.loc[0, '2'])
@@ -80,24 +80,24 @@ def test_filter_outliers_by_std():
     df = get_fake_dataset4()
 
     # Mean is 3.5, std of 1 is ~1.7 for col 1
-    df = df.filter_outliers_by_std(1, scope='1', drop=True)
+    df = df.filter_outliers_by_std(n_std=1, scope='1', drop=True)
     assert len(df) == 4
 
     # Make sure works with NaNs - mean is 3, std is ~1.4
     df = get_fake_dataset4()
-    df = df.filter_outliers_by_std(1, scope='2', drop=True)
+    df = df.filter_outliers_by_std(n_std=1, scope='2', drop=True)
     assert len(df) == 4
     assert pd.isnull(df.loc[5, '2'])
 
     # Make sure range works
     df = get_fake_dataset4()
-    df = df.filter_outliers_by_std((1, None), scope='2', drop=True)
+    df = df.filter_outliers_by_std(n_std=(1, None), scope='2', drop=True)
     assert len(df) == 5
     assert pd.isnull(df.loc[5, '2'])
 
     # Make sure drop false works
     df = get_fake_dataset4()
-    df = df.filter_outliers_by_std((1, None), scope='2', drop=False)
+    df = df.filter_outliers_by_std(n_std=(1, None), scope='2', drop=False)
     assert len(df) == 6
     assert pd.isnull(df.loc[0, '2'])
     assert pd.isnull(df.loc[5, '2'])

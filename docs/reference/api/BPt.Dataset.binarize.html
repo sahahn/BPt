@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -143,7 +147,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -177,6 +181,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
                         </li>
                     
                         <li class="">
@@ -393,6 +401,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -423,18 +433,18 @@
 <h1>BPt.Dataset.binarize<a class="headerlink" href="#bpt-dataset-binarize" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.binarize">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">binarize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">threshold</span></em>, <em class="sig-param"><span class="n">replace</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">drop</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L119-L218"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.binarize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">binarize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">threshold</span></em>, <em class="sig-param"><span class="n">replace</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">drop</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_encoding.py#L136-L248"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.binarize" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method contains a utilities for binarizing a variable.
 These are dichotomizing an existing variable with parameter
 threshold, and applying binarization via two thresholds
 (essentially chopping out the middle of the distribution).</p>
-<p>Note: This function will not work on data files.</p>
-<p>See Related: <a class="reference internal" href="BPt.Dataset.to_binary.html#BPt.Dataset.to_binary" title="BPt.Dataset.to_binary"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_binary</span></code></a></p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
 <dt><strong>scope</strong><span class="classifier"><a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a></span></dt><dd><p>A BPt style <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> used to select a subset of
-columns in which to apply binarize on.</p>
+column(s) in which to apply the current function to.
+See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
+can be applied.</p>
 </dd>
 <dt><strong>threshold</strong><span class="classifier">float or (float, float)</span></dt><dd><p>This parameter can be used to either set a single threshold
 where any values less than or equal (&gt;=) to the threshold
@@ -470,7 +480,7 @@ the configuration with parameter’s upper and lower.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, do operation inplace and return None.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
@@ -478,6 +488,62 @@ the configuration with parameter’s upper and lower.</p>
 </dl>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="BPt.Dataset.to_binary.html#BPt.Dataset.to_binary" title="BPt.Dataset.to_binary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_binary</span></code></a></dt><dd><p>Convert from categorical to binary.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This function with not work on columns
+of type <a class="reference internal" href="../../user_guide/data_files.html#data-files"><span class="std std-ref">Data Files</span></a>.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/example2.csv&#39;</span><span class="p">)</span>
+
+<span class="gp">In [2]: </span><span class="n">data</span>
+<span class="gh">Out[2]: </span><span class="go"></span>
+<span class="go">   col1</span>
+<span class="go">0   0.1</span>
+<span class="go">1   0.2</span>
+<span class="go">2   0.3</span>
+<span class="go">3   0.4</span>
+<span class="go">4   0.5</span>
+<span class="go">5   0.6</span>
+<span class="go">6   0.7</span>
+<span class="go">7   0.8</span>
+<span class="go">8   0.9</span>
+<span class="go">9   1.0</span>
+
+<span class="gp">In [3]: </span><span class="n">data</span><span class="o">.</span><span class="n">binarize</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+<span class="gh">Out[3]: </span><span class="go"></span>
+<span class="go">  col1</span>
+<span class="go">0    0</span>
+<span class="go">1    0</span>
+<span class="go">2    0</span>
+<span class="go">3    0</span>
+<span class="go">4    1</span>
+<span class="go">5    1</span>
+<span class="go">6    1</span>
+<span class="go">7    1</span>
+<span class="go">8    1</span>
+<span class="go">9    1</span>
+
+<span class="gp">In [4]: </span><span class="n">data</span><span class="o">.</span><span class="n">binarize</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="p">(</span><span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">6</span><span class="p">),</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gh">Out[4]: </span><span class="go"></span>
+<span class="go">  col1</span>
+<span class="go">0    0</span>
+<span class="go">1    0</span>
+<span class="go">2  NaN</span>
+<span class="go">3  NaN</span>
+<span class="go">4  NaN</span>
+<span class="go">5  NaN</span>
+<span class="go">6    1</span>
+<span class="go">7    1</span>
+<span class="go">8    1</span>
+<span class="go">9    1</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

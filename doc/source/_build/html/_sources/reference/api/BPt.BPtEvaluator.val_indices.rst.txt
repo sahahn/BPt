@@ -1,0 +1,6 @@
+BPt.BPtEvaluator.val\_indices
+=============================
+
+.. currentmodule:: BPt
+
+.. autoproperty:: BPtEvaluator.val_indices

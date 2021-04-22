@@ -88,6 +88,10 @@
             <a class="nav-link" href="../../change_log/index.html">Change Log</a>
         </li>
         
+        <li class="nav-item ">
+            <a class="nav-link" href="../../cite/index.html">Cite BPt</a>
+        </li>
+        
         
       </ul>
 
@@ -143,7 +147,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -177,6 +181,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.get_roles.html">BPt.Dataset.get_roles</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.rename.html">BPt.Dataset.rename</a>
                         </li>
                     
                         <li class="">
@@ -393,6 +401,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -534,10 +544,10 @@ each time the function is called.)</p>
 <span class="gp">In [4]: </span><span class="n">data</span><span class="o">.</span><span class="n">set_test_split</span><span class="p">(</span><span class="n">size</span><span class="o">=.</span><span class="mi">6</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="gp">In [5]: </span><span class="n">data</span><span class="o">.</span><span class="n">train_subjects</span>
-<span class="gh">Out[5]: </span><span class="go">Int64Index([0, 4], dtype=&#39;int64&#39;)</span>
+<span class="gh">Out[5]: </span><span class="go">Int64Index([3, 1], dtype=&#39;int64&#39;)</span>
 
 <span class="gp">In [6]: </span><span class="n">data</span><span class="o">.</span><span class="n">test_subjects</span>
-<span class="gh">Out[6]: </span><span class="go">Int64Index([2, 1, 3], dtype=&#39;int64&#39;)</span>
+<span class="gh">Out[6]: </span><span class="go">Int64Index([0, 4, 2], dtype=&#39;int64&#39;)</span>
 </pre></div>
 </div>
 <p>Note that the split is stored in the dataset itself.

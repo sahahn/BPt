@@ -1,19 +1,105 @@
 from BPt.pipeline.BPtPipeline import BPtPipeline
 from BPt.main.BPtEvaluator import BPtEvaluator
 from ...pipeline.BPtSearchCV import BPtGridSearchCV, NevergradSearchCV
-from ..input import (ModelPipeline, Model, CV, Pipeline, Scaler,
+from ..input import (Loader, ModelPipeline, Model, CV, Pipeline, Scaler,
                      ParamSearch, FeatSelector, Transformer)
 from ..input_operations import Select
 from ...dataset.Dataset import Dataset
 from ...default.params.Params import Choice
 from ..funcs import evaluate, cross_val_score, _sk_check_y
-from nose.tools import assert_raises
+import pytest
 import pandas as pd
 import numpy as np
 from ...extensions import LinearResidualizer
 from ..compare import Compare, Option, CompareDict, Options
 from sklearn.tree import DecisionTreeClassifier
+from ...pipeline.BPtLoader import BPtLoader
+import warnings
 from ...pipeline.Selector import Selector
+from ...pipeline.tests.helpers import get_fake_mapping, clean_fake_mapping
+
+
+def get_fake_datafile_dataset(m, n):
+
+    fm = get_fake_mapping(int(m*n))
+    fm = {key: fm[key].loc for key in fm}
+    data = Dataset(np.arange(int(m*n)).reshape((m, n)),
+                   columns=['col1', 'col2'],
+                   dtype='object')
+    data = data.replace(fm)
+
+    data.to_data_file(scope='all', inplace=True)
+
+    data['t'] = np.random.random(m)
+    data.set_role('t', 'target', inplace=True)
+
+    return data
+
+
+def test_evaluate_with_loader():
+
+    data = get_fake_datafile_dataset(50, 2)
+    pipe = Pipeline([Loader('identity'), Model('dt')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       cv=3)
+
+    assert len(results.feat_names[0]) == 8
+    assert isinstance(results.estimators[0].steps[0][1], BPtLoader)
+
+    # Clean up
+    clean_fake_mapping(100)
+
+
+def test_evaluate_with_loader_inverse_fis():
+
+    data = get_fake_datafile_dataset(50, 2)
+    pipe = Pipeline([Loader('identity'), Model('dt')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       cv=3)
+
+    # Clean up
+    clean_fake_mapping(100)
+
+    inverse_fis = results.get_inverse_fis()
+
+    assert len(inverse_fis) == 3
+    assert inverse_fis[0].loc['col1'].shape == (2, 2)
+    assert inverse_fis[0].loc['col2'].shape == (2, 2)
+
+
+def test_evaluate_with_loader_inverse_fis_categorical():
+
+    warnings.filterwarnings("ignore")
+
+    data = get_fake_datafile_dataset(50, 2)
+    pipe = Pipeline([Loader('identity'), Model('linear', tol=1)])
+
+    data = data.k_bin(scope='t', n_bins=5)
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       cv=3)
+    # Clean up
+    clean_fake_mapping(100)
+
+    inverse_fis = results.get_inverse_fis()
+    assert len(inverse_fis) == 3
+
+    fold1 = inverse_fis[0]
+
+    # One for each class
+    assert len(fold1) == 5
+
+    assert fold1[0].loc['col1'].shape == (2, 2)
+    assert fold1[3].loc['col1'].shape == (2, 2)
+    assert fold1[0].loc['col2'].shape == (2, 2)
 
 
 def get_fake_dataset():
@@ -36,7 +122,7 @@ def test_sk_check_y():
 
     # Fails
     y = pd.Series([1, 2, np.nan])
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         _sk_check_y(y)
 
 
@@ -245,10 +331,10 @@ def test_evaluate_fail():
                          progress_bar=False,
                          store_estimators=False)
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         evaluator._estimators_check()
 
-    with assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         evaluator.permutation_importance(dataset)
 
 
@@ -804,3 +890,5 @@ def test_evaluate_pipeline_with_custom_selector_mapping():
                              progress_bar=False,
                              cv=3)
         run_fs_checks(evaluator)
+
+

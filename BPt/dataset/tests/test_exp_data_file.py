@@ -1,5 +1,4 @@
 from ..data_file import DataFile
-from ..data_file_type import DataFileDtype
 from ..Dataset import Dataset
 import numpy as np
 import tempfile

@@ -1,13 +1,9 @@
 # Brain Predictability Toolbox (BPt)
 
-![status](https://github.com/sahahn/BPt/actions/workflows/main.yml/badge.svg) ![cov](https://codecov.io/gh/sahahn/BPt/branch/main/graphs/badge.svg?branch=main&service=github) ![version](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue) ![pip](https://badge.fury.io/py/brain-pred-toolbox.svg)
-
+[![status](https://github.com/sahahn/BPt/actions/workflows/main.yml/badge.svg)](https://github.com/sahahn/BPt/actions) [![codecov](https://codecov.io/gh/sahahn/BPt/branch/master/graph/badge.svg?token=SCA77VAUAG)](https://codecov.io/gh/sahahn/BPt) ![version](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue) [![pip](https://badge.fury.io/py/brain-pred-toolbox.svg)](https://pypi.org/project/brain-pred-toolbox/)
 
 
 ![logo](https://github.com/sahahn/BPt/blob/master/doc/source/_static/red_logo.png?raw=true)
-
-
-
 
 
 - The Brain Predictability toolbox (BPt) is a Python based Machine Learning library designed for working with Neuroimaging data. This library is particularly suited towards working with large neuroimaging datasets, where a large number of subjects with potentially multi-modal data are available.

@@ -5,6 +5,7 @@ import numpy as np
 import tempfile
 import os
 import pytest
+import warnings
 
 
 def test_identity():
@@ -40,7 +41,6 @@ def test_load_nilearn():
 
     try:
         import nibabel as nib
-        import warnings
     except ImportError:
         return
 

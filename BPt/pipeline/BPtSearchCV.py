@@ -18,11 +18,7 @@ import os
 import pandas as pd
 
 from .helpers import to_memmap, from_memmap, get_grid_params
-
-try:
-    from loky import get_reusable_executor
-except ImportError:
-    pass
+from loky import get_reusable_executor
 
 
 class BPtSearchCV(BaseEstimator):
@@ -449,15 +445,12 @@ class NevergradSearchCV(BPtSearchCV):
 
             if self.ps['mp_context'] == 'loky':
 
-                try:
-                    executor = get_reusable_executor(
-                        max_workers=self.n_jobs, timeout=120)
+                executor = get_reusable_executor(
+                    max_workers=self.n_jobs, timeout=120)
 
-                    recommendation = optimizer.minimize(ng_cv_score,
-                                                        executor=executor,
-                                                        batch_mode=False)
-                except NameError:
-                    raise(ImportError('Make sure loky is installed'))
+                recommendation = optimizer.minimize(ng_cv_score,
+                                                    executor=executor,
+                                                    batch_mode=False)
 
             try:
                 with futures.ProcessPoolExecutor(

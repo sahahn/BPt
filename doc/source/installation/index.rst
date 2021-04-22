@@ -67,6 +67,13 @@ The latest development version of BPt can also optionally be installed from gith
         </div>
     </div>
 
+=================
+Python version
+=================
+
+This library is only tested on python versions 3.7+ so while 3.6 might work,
+for the most reliable performance please use higher versions of python!
+
 
 =================
 Extra Libraries

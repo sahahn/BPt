@@ -1,6 +1,7 @@
 from ..random_parcellation import RandomParcellation
 import numpy as np
 import pytest
+from ..loaders import load_surf
 
 
 def test_base():
@@ -70,6 +71,22 @@ def test_mask():
 
     assert p[0] == 0
     assert len(np.unique(p) == 3)
+
+
+def test_with_load_surf():
+
+    fake_geo = [[1, 2],
+                [2, 3],
+                [3, 4],
+                [4, 0],
+                [0, 1]]
+
+    p = RandomParcellation(geo=fake_geo, n_parcels=2,
+                           medial_wall_mask=[1, 0, 0, 0, 0],
+                           random_state=1)
+
+    s = load_surf(p)
+    assert s.shape == (5,)
 
 
 def test_mask_fail():

@@ -18,6 +18,7 @@ BPt.BPtEvaluator
       BPtEvaluator.get_coefs
       BPtEvaluator.get_feature_importances
       BPtEvaluator.get_fis
+      BPtEvaluator.get_inverse_fis
       BPtEvaluator.get_preds_dfs
       BPtEvaluator.permutation_importance
 

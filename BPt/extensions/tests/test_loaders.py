@@ -30,6 +30,29 @@ def test_load_surf_None():
     assert loaded is None
 
 
+def test_load_surf_bad():
+
+    with pytest.raises(FileNotFoundError):
+        load_surf('not_real.npy')
+
+
+def test_load_nilearn():
+
+    try:
+        import nibabel as nib
+        import warnings
+    except ImportError:
+        return
+
+    temp_loc = os.path.join(tempfile.gettempdir(), 'temp.nii')
+    obj = nib.Nifti1Image(np.ones((100, 1, 1, 1)), np.eye(4))
+    nib.save(obj, temp_loc)
+
+    warnings.simplefilter('ignore')
+    loaded = load_surf(temp_loc)
+    assert loaded.shape == (100,)
+
+
 def test_load_surf_array():
 
     loaded = load_surf(np.ones(5))
@@ -194,6 +217,22 @@ def test_surf_maps_average():
 
     assert data_dtype == Xt.dtype.name
     np.array_equal(Xt, np.array([2, 1.66666667]))
+
+
+def test_surf_maps_average_fail():
+
+    maps = np.array([[1, 0],
+                     [1, 0],
+                     [0, 1],
+                     [0, 2]])
+
+    data = np.array([1.0, 3.0, 1.0, 2.0])
+
+    sm = SurfMaps(maps=maps, strategy='average')
+    Xt = sm.fit_transform(data)
+
+    with pytest.raises(RuntimeError):
+        sm.inverse_transform(Xt)
 
 
 def test_single_connectivity_measure():

@@ -11,18 +11,6 @@ Additionally, a link to the original models documentation as well as the impleme
 
 binary
 ======
-"auto gluon binary"
-*******************
-
-  Base Class Documentation: :class:`BPt.extensions.AutoGluon.AutoGluon`
-
-  Param Distributions
-
-	0. "pt binary" ::
-
-		problem_type: 'binary'
-
-
 "dt classifier"
 ***************
 
@@ -557,18 +545,6 @@ regression
 		defaults only
 
 
-"auto gluon regression"
-***********************
-
-  Base Class Documentation: :class:`BPt.extensions.AutoGluon.AutoGluon`
-
-  Param Distributions
-
-	0. "pt regression" ::
-
-		problem_type: 'regression'
-
-
 "bayesian ridge regressor"
 **************************
 
@@ -995,18 +971,6 @@ regression
 
 categorical
 ===========
-"auto gluon categorical"
-************************
-
-  Base Class Documentation: :class:`BPt.extensions.AutoGluon.AutoGluon`
-
-  Param Distributions
-
-	0. "pt multiclass" ::
-
-		problem_type: 'multiclass'
-
-
 "dt classifier"
 ***************
 

@@ -101,11 +101,8 @@ def load_surf(surf):
 
         # Only try to load with numpy if str ends with numpy ext
         if surf.endswith('.npy') or surf.endswith('.npz'):
-            try:
-                surf = np.load(surf)
-                return surf
-            except ValueError:
-                pass
+            surf = np.load(surf)
+            return surf
 
         # If not numpy, or numpy failed, try nilearn load surf data
         try:
@@ -889,23 +886,6 @@ class SurfMaps(BaseEstimator, TransformerMixin):
 
         elif self.strategy_ == 'average':
             raise RuntimeError('Cannot calculate reverse of average.')
-
-            # Can maybe average over estimated .. ?
-            # rough idea below
-            est_weights = lstsq(self.maps_.T, X_trans)[0]
-
-            X = []
-            for m in range(self.maps_.shape[1]):
-
-                mp = self.maps_[:, m]
-                mp_sum = np.sum(mp)
-                if mp_sum == 0:
-                    pass
-
-                X.append(X_trans[m, ] * mp * est_weights)
-                print(est_weights)
-
-            print(X)
 
 
 def proc_X(X):

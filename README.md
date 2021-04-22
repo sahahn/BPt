@@ -1,6 +1,6 @@
 # Brain Predictability Toolbox (BPt)
 
-![status](https://github.com/sahahn/BPt/actions/workflows/main.yml/badge.svg)  ![version](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue) ![pip](https://badge.fury.io/py/brain-pred-toolbox.svg)
+![status](https://github.com/sahahn/BPt/actions/workflows/main.yml/badge.svg) ![cov](https://codecov.io/gh/sahahn/BPt/branch/main/graphs/badge.svg?branch=main&service=github) ![version](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue) ![pip](https://badge.fury.io/py/brain-pred-toolbox.svg)
 
 
 

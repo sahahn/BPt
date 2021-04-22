@@ -7,7 +7,7 @@ import tempfile
 import shutil
 import os
 import numpy as np
-from mvlearn import CCA
+from mvlearn.embed import CCA
 
 
 def get_X():

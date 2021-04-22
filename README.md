@@ -9,10 +9,12 @@
 
 - This library is based on python and likely will require atleast some prior experience with python and machine learning.
 
-- This library should work with all python version 3.6+, but for the most reliable performance for all methods and cases, please use python version 3.8+. Note with python 3.6 the only currently known issue is related to caching certain pipeline components, which was solved in an upgrade to the python pickle library.
-
 
 ### Install
+----
+
+**Note:** *This library is only tested on python versions 3.7+ so while 3.6 might work, for the most reliable performance please use higher versions of python!*
+
 
 The easiest way to install the latest stable release of BPt is via pip, just run
 ``` 

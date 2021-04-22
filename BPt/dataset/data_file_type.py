@@ -57,7 +57,8 @@ class DataFileDtype(ExtensionDtype):
             )
 
         if string != cls.name:
-            raise TypeError(f"Cannot construct a 'DataFileDType' from '{string}'")
+            raise TypeError(
+                f"Cannot construct a 'DataFileDType' from '{string}'")
 
         return cls()
 

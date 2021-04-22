@@ -83,26 +83,14 @@ class DataFileArray(ExtensionArray):
         return cls()
 
     def _from_factorized(cls, values, original):
-        """
-        Reconstruct an ExtensionArray after factorization.
-        Parameters
-        ----------
-        values : ndarray
-            An integer ndarray with the factorized values.
-        original : ExtensionArray
-            The original ExtensionArray that factorize was called on.
-        See Also
-        --------
-        factorize : Top-level factorize method that dispatches here.
-        ExtensionArray.factorize : Encode the extension array as an enumerated type.
-        """
         return cls()
 
     def __getitem__(self, key):
         return self._data[key]
 
     def __setitem__(self, key, value):
-        raise NotImplementedError(f"{type(self)} does not implement __setitem__.")
+        raise NotImplementedError(
+            f"{type(self)} does not implement __setitem__.")
 
     def __len__(self) -> int:
         """

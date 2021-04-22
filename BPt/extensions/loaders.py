@@ -10,7 +10,7 @@ class Identity(BaseEstimator, TransformerMixin):
     This loader is used to for example pass along loaded surfaces
     or volumes to a PCA or other similar transformation.
 
-    This object is designed to be used with :class:`Loader`
+    This object is designed to be used with input class :class:`BPt.Loader`
     for operating on single subjects at a time.
     '''
 
@@ -914,6 +914,12 @@ try:
     from nilearn.connectome import ConnectivityMeasure
 
     class SingleConnectivityMeasure(ConnectivityMeasure):
+        '''| See :class:`nilearn.connectome.ConnectivityMeasure`.
+          This class is just a wrapper to let this object work when passed
+          a single connectivity matrix.
+
+        | This class requires extra dependency nilearn to be installed.
+        '''
 
         def fit(self, X, y=None):
             return super().fit(proc_X(X), y)

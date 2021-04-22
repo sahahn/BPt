@@ -95,9 +95,40 @@ Different extension libraries are listed below:
 lightgbm
 ~~~~~~~~~~~
 
-See https://lightgbm.readthedocs.io/en/latest/Python-Intro.html.
 This is a library designed to perform extreme gradient boosting. It
 is offered under :ref:`Models` under reserved keys 'light gbm' and 'lgbm'.
+See https://lightgbm.readthedocs.io/en/latest/Python-Intro.html if having trouble installing through pip.
 
+nilearn
+~~~~~~~~
 
+This is a library dedicated to doing ML for neuroimaging, if installed it
+allows using a few of the extension libraries in BPt, including:
+:class:`BPt.extensions.SurfLabels`, :class:`BPt.extensions.SurfMaps`
+and :class:`BPt.extensions.SingleConnectivityMeasure`.
+                   
+python-docx
+~~~~~~~~~~~~~
 
+This library is required to use the save_file option of :func:`BPt.Dataset.summary` and
+:func:`BPt.util.save_docx_table`. It is used for saving tables in docx format.
+
+xgboost
+~~~~~~~~~
+
+This is another library for performing extreme gradient boosting. It is offered
+under :ref:`Models`.
+
+mvlearn
+~~~~~~~~~
+
+imblearn
+~~~~~~~~~~~
+
+networkx
+~~~~~~~~~~
+
+Required in order to use :class:`BPt.extensions.ThresholdNetworkMeasures`.
+                    
+sweetviz
+~~~~~~~~~

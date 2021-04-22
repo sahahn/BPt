@@ -15,4 +15,5 @@ Extension Classes
    SurfLabels
    SurfMaps
    ThresholdNetworkMeasures
+   SingleConnectivityMeasure
    RandomParcellation

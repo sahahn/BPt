@@ -295,7 +295,7 @@
 <td><p>Loader refers to transformations which operate on <a class="reference internal" href="../user_guide/data_files.html#data-files"><span class="std std-ref">Data Files</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Imputer.html#BPt.Imputer" title="BPt.Imputer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Imputer</span></code></a>(obj[, params, scope, cache_loc, …])</p></td>
-<td><p>If there is any missing data (NaN’s), then an imputation strategy is likely necessary (with some expections, i.e., a final model which can accept NaN values directly).</p></td>
+<td><p>This input object is used to specify imputation steps for a <a class="reference internal" href="api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Scaler.html#BPt.Scaler" title="BPt.Scaler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Scaler</span></code></a>(obj[, params, scope, cache_loc])</p></td>
 <td><p>The Scaler piece refers to a piece in the <a class="reference internal" href="api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> or <a class="reference internal" href="api/BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a>, which is responsible for performing any sort of scaling or transformation on the data which doesn’t require the target variable, and doesn’t change the number of data points or features.</p></td>
@@ -313,10 +313,7 @@
 <td><p>The Ensemble object is a <a class="reference internal" href="api/BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> (or <a class="reference internal" href="api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>) piece, designed to be passed as an estimator, the same as <a class="reference internal" href="api/BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>([search_type, cv, n_iter, …])</p></td>
-<td><p><div class="line-block">
-<div class="line">ParamSearch is special input object designed to be</div>
-</div>
-</p></td>
+<td><p>ParamSearch is special input object designed to be used with <a class="reference internal" href="api/BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> or <a class="reference internal" href="api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> that is used in order to define a hyperparameter search strategy.</p></td>
 </tr>
 </tbody>
 </table>

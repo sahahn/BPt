@@ -24,8 +24,11 @@ setup(name='brain-pred-toolbox',
           'joblib>=0.14',
           'loky',
       ],
-      extra_requires={
-          'extra': ['lightgbm>3', 'sweetviz>2']},
+      extras_require={
+          'extra': ['lightgbm>3',
+                    'sweetviz>2',
+                    'nilearn'],
+       },
       test_suite='pytest',
-      tests_require=['pytest'],
+      tests_require=['pytest', 'coverage'],
       zip_safe=False)

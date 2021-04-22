@@ -1,6 +1,12 @@
+# Brain Predictability Toolbox (BPt)
+
+![example workflow](https://github.com/sahahn/BPt/actions/workflows/main.yml/badge.svg)
+
 ![logo](https://github.com/sahahn/BPt/blob/master/doc/source/_static/red_logo.png?raw=true)
 
-# Brain Predictability Toolbox (BPt)
+
+
+
 
 - The Brain Predictability toolbox (BPt) is a Python based Machine Learning library designed for working with Neuroimaging data. This library is particularly suited towards working with large neuroimaging datasets, where a large number of subjects with potentially multi-modal data are available.
 
@@ -28,9 +34,3 @@ and then install it locally with once navigated into the main BPt folder
 pip install .
 ```
 
-
-
-### Old Version
-
-BPt 2.0+  is notably not fully compatible with earlier versions of the code. If still working with older code, it is recommended you update, but you
-can still view a version of the the old documentation for now at: https://bpt.readthedocs.io/en/latest/

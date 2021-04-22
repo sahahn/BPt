@@ -1,7 +1,8 @@
 from sklearn.feature_selection._base import SelectorMixin
-from .helpers import update_mapping
+from .helpers import update_mapping, get_reverse_mapping, proc_mapping
 from .ScopeObjs import ScopeTransformer
 import numpy as np
+import pandas as pd
 
 
 class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
@@ -65,6 +66,9 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
         if self.estimator_ is None:
             return feat_names
 
+        # Store original passed feat names here
+        self.feat_names_in_ = feat_names
+
         # Get base new names from parent class
         new_names = super()._proc_new_names(feat_names)
 
@@ -85,3 +89,24 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
         support = np.concatenate([base_support, rest_support])
 
         return support
+
+    def inverse_transform_FIs(self, fis):
+
+        # Skip if skipped
+        if self.estimator_ is None:
+            return fis
+
+        # Get data as input form
+        fis_data = np.array(fis).reshape(1, -1)
+
+        # Get return data from inverse transform
+        return_fis_data = self.estimator_.inverse_transform(fis_data)[0]
+
+        if not hasattr(self, 'feat_names_in_'):
+            raise RuntimeError('_proc_new_names must be called first.')
+
+        # Put in a series to return
+        return_fis = pd.Series(return_fis_data,
+                               index=self.feat_names_in_)
+
+        return return_fis

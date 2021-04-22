@@ -927,6 +927,25 @@ class BPtEvaluator():
         # Categorical case
         return [fi.mean() for fi in fis]
 
+    def _get_base_fis_list(self):
+
+        self._estimators_check()
+
+        coefs = self.get_coefs()
+        feature_importances = self.get_feature_importances()
+
+        fis = []
+        for coef, fi, feat_names in zip(coefs, feature_importances,
+                                        self.feat_names):
+            if coef is not None:
+                fis.append(fi_to_series(coef, feat_names))
+            elif fi is not None:
+                fis.append(fi_to_series(fi, feat_names))
+            else:
+                fis.appends(None)
+
+        return fis
+
     def get_fis(self, mean=False, abs=False):
         '''This method will return a pandas DataFrame with
         each row a fold, and each column a feature if
@@ -983,23 +1002,7 @@ class BPtEvaluator():
 
         '''
 
-        # @TODO handle multi-class case ...
-
-        self._estimators_check()
-
-        coefs = self.get_coefs()
-        feature_importances = self.get_feature_importances()
-
-        fis = []
-        for coef, fi, feat_names in zip(coefs, feature_importances,
-                                        self.feat_names):
-            if coef is not None:
-                fis.append(fi_to_series(coef, feat_names))
-            elif fi is not None:
-                fis.append(fi_to_series(fi, feat_names))
-            else:
-                fis.appends(None)
-
+        fis = self._get_base_fis_list()
         base = fis_to_df(fis)
 
         # Proc. abs arg
@@ -1019,6 +1022,60 @@ class BPtEvaluator():
 
         # Base mean case
         return mean_no_zeros(base)
+
+    def get_inverse_fis(self):
+        '''Try to inverse transform stored
+        feature importances (either beta weights or
+        automatically calculated feature importances)
+        to their original space.
+
+        .. warning ::
+
+            | If there are any underlying non-recoverable
+              transformations in the pipeline, this method
+              will fail! For example, if a PCA was applied,
+              then a reverse transformation cannot be computed.
+
+        This method can be especially helpful when using :class:`Loader`.
+
+        Returns
+        --------
+        inverse_fis : list of pandas Series
+            | The inverse feature importances will be returned
+              as a list, where each index of the list refers to
+              a fold of the cross-validation, and each element
+              of the list is either a pandas Series or a list
+              of pandas Series (in the case of a categorical
+              problem type where separate feature importances
+              were calculated for each class).
+
+            | If a :class:`Loader` was used, the returned Series
+              may contain multi-dimensional arrays instead of scalar
+              values, representing feature importances as transformed
+              back into the original loaded space / shape.
+        '''
+
+        # As list of series or list of list of series
+        fis = self._get_base_fis_list()
+
+        inv_trans_fis = []
+        for i, fi in enumerate(fis):
+
+            # The estimator for this fold
+            estimator = self.estimators[i]
+
+            # Non-categorical case
+            if isinstance(fi, pd.Series):
+                inv_trans_fis.append(
+                    estimator.inverse_transform_FIs(fi))
+
+            # Categorical case
+            else:
+                cat_inv_fis =\
+                    [estimator.inverse_transform_FIs(f) for f in fi]
+                inv_trans_fis.append(cat_inv_fis)
+
+        return inv_trans_fis
 
     def _get_val_fold_Xy(self, estimator, X_df, y_df, fold, just_model=True):
 
@@ -1073,7 +1130,6 @@ class BPtEvaluator():
             ::
 
                 default = 'default'
-
 
         just_model : bool, optional
             When set to true, the permutation feature importances

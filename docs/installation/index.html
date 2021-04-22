@@ -73,6 +73,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../user_guide/index.html">User Guide</a>
         </li>
         
@@ -149,6 +153,8 @@
         
         
         
+        
+        
       </ul>
   
   </nav>
@@ -170,10 +176,42 @@
         </li>
     
         <li class="nav-item toc-entry toc-h2">
+            <a href="#python-version" class="nav-link">Python version</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
             <a href="#extra-libraries" class="nav-link">Extra Libraries</a><ul class="nav section-nav flex-column">
                 
         <li class="nav-item toc-entry toc-h3">
             <a href="#lightgbm" class="nav-link">lightgbm</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#nilearn" class="nav-link">nilearn</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#python-docx" class="nav-link">python-docx</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#xgboost" class="nav-link">xgboost</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#mvlearn" class="nav-link">mvlearn</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#imblearn" class="nav-link">imblearn</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#networkx" class="nav-link">networkx</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#sweetviz" class="nav-link">sweetviz</a>
         </li>
     
             </ul>
@@ -232,6 +270,11 @@ pip install .
         </div>
     </div>
 </div></div>
+<div class="section" id="python-version">
+<h1>Python version<a class="headerlink" href="#python-version" title="Permalink to this headline">¶</a></h1>
+<p>This library is only tested on python versions 3.7+ so while 3.6 might work,
+for the most reliable performance please use higher versions of python!</p>
+</div>
 <div class="section" id="extra-libraries">
 <h1>Extra Libraries<a class="headerlink" href="#extra-libraries" title="Permalink to this headline">¶</a></h1>
 <p>BPt has a number of other optional requirements, then when installed allow using more default options. These are not
@@ -245,9 +288,39 @@ installation of these libraries is non-trivial.</p>
 <p>Different extension libraries are listed below:</p>
 <div class="section" id="lightgbm">
 <h2>lightgbm<a class="headerlink" href="#lightgbm" title="Permalink to this headline">¶</a></h2>
-<p>See <a class="reference external" href="https://lightgbm.readthedocs.io/en/latest/Python-Intro.html">https://lightgbm.readthedocs.io/en/latest/Python-Intro.html</a>.
-This is a library designed to perform extreme gradient boosting. It
-is offered under <a class="reference internal" href="../options/pipeline_options/models.html#models"><span class="std std-ref">Models</span></a> under reserved keys ‘light gbm’ and ‘lgbm’.</p>
+<p>This is a library designed to perform extreme gradient boosting. It
+is offered under <a class="reference internal" href="../options/pipeline_options/models.html#models"><span class="std std-ref">Models</span></a> under reserved keys ‘light gbm’ and ‘lgbm’.
+See <a class="reference external" href="https://lightgbm.readthedocs.io/en/latest/Python-Intro.html">https://lightgbm.readthedocs.io/en/latest/Python-Intro.html</a> if having trouble installing through pip.</p>
+</div>
+<div class="section" id="nilearn">
+<h2>nilearn<a class="headerlink" href="#nilearn" title="Permalink to this headline">¶</a></h2>
+<p>This is a library dedicated to doing ML for neuroimaging, if installed it
+allows using a few of the extension libraries in BPt, including:
+<a class="reference internal" href="../reference/api/BPt.extensions.SurfLabels.html#BPt.extensions.SurfLabels" title="BPt.extensions.SurfLabels"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.SurfLabels</span></code></a>, <a class="reference internal" href="../reference/api/BPt.extensions.SurfMaps.html#BPt.extensions.SurfMaps" title="BPt.extensions.SurfMaps"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.SurfMaps</span></code></a>
+and <a class="reference internal" href="../reference/api/BPt.extensions.SingleConnectivityMeasure.html#BPt.extensions.SingleConnectivityMeasure" title="BPt.extensions.SingleConnectivityMeasure"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.SingleConnectivityMeasure</span></code></a>.</p>
+</div>
+<div class="section" id="python-docx">
+<h2>python-docx<a class="headerlink" href="#python-docx" title="Permalink to this headline">¶</a></h2>
+<p>This library is required to use the save_file option of <a class="reference internal" href="../reference/api/BPt.Dataset.summary.html#BPt.Dataset.summary" title="BPt.Dataset.summary"><code class="xref py py-func docutils literal notranslate"><span class="pre">BPt.Dataset.summary()</span></code></a> and
+<a class="reference internal" href="../reference/api/BPt.util.save_docx_table.html#BPt.util.save_docx_table" title="BPt.util.save_docx_table"><code class="xref py py-func docutils literal notranslate"><span class="pre">BPt.util.save_docx_table()</span></code></a>. It is used for saving tables in docx format.</p>
+</div>
+<div class="section" id="xgboost">
+<h2>xgboost<a class="headerlink" href="#xgboost" title="Permalink to this headline">¶</a></h2>
+<p>This is another library for performing extreme gradient boosting. It is offered
+under <a class="reference internal" href="../options/pipeline_options/models.html#models"><span class="std std-ref">Models</span></a>.</p>
+</div>
+<div class="section" id="mvlearn">
+<h2>mvlearn<a class="headerlink" href="#mvlearn" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="imblearn">
+<h2>imblearn<a class="headerlink" href="#imblearn" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="networkx">
+<h2>networkx<a class="headerlink" href="#networkx" title="Permalink to this headline">¶</a></h2>
+<p>Required in order to use <a class="reference internal" href="../reference/api/BPt.extensions.ThresholdNetworkMeasures.html#BPt.extensions.ThresholdNetworkMeasures" title="BPt.extensions.ThresholdNetworkMeasures"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.ThresholdNetworkMeasures</span></code></a>.</p>
+</div>
+<div class="section" id="sweetviz">
+<h2>sweetviz<a class="headerlink" href="#sweetviz" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.extensions.Identity.reverse_transform &#8212; BPt 2 documentation</title>
+    <title>BPt.extensions.SingleConnectivityMeasure.fit &#8212; BPt 2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -41,8 +41,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="BPt.extensions.Identity.set_params" href="BPt.extensions.Identity.set_params.html" />
-    <link rel="prev" title="BPt.extensions.Identity.get_params" href="BPt.extensions.Identity.get_params.html" />
+    <link rel="next" title="BPt.extensions.SingleConnectivityMeasure.fit_transform" href="BPt.extensions.SingleConnectivityMeasure.fit_transform.html" />
+    <link rel="prev" title="BPt.extensions.SingleConnectivityMeasure" href="BPt.extensions.SingleConnectivityMeasure.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -66,6 +66,10 @@
         
         <li class="nav-item ">
             <a class="nav-link" href="../../installation/index.html">Installation</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href=""></a>
         </li>
         
         <li class="nav-item ">
@@ -140,6 +144,8 @@
         
         
         
+        
+        
           
             
                 <li class="">
@@ -201,7 +207,7 @@
                     <a href="../extensions.html">Extension Classes</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.extensions.Identity.html">BPt.extensions.Identity</a>
                         </li>
                     
@@ -215,6 +221,10 @@
                     
                         <li class="">
                             <a href="BPt.extensions.ThresholdNetworkMeasures.html">BPt.extensions.ThresholdNetworkMeasures</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="BPt.extensions.SingleConnectivityMeasure.html">BPt.extensions.SingleConnectivityMeasure</a>
                         </li>
                     
                         <li class="">
@@ -265,22 +275,24 @@
               
               <div>
                 
-  <div class="section" id="bpt-extensions-identity-reverse-transform">
-<h1>BPt.extensions.Identity.reverse_transform<a class="headerlink" href="#bpt-extensions-identity-reverse-transform" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="bpt-extensions-singleconnectivitymeasure-fit">
+<h1>BPt.extensions.SingleConnectivityMeasure.fit<a class="headerlink" href="#bpt-extensions-singleconnectivitymeasure-fit" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
-<dt id="BPt.extensions.Identity.reverse_transform">
-<code class="sig-prename descclassname">Identity.</code><code class="sig-name descname">reverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X_trans</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L77-L92"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.Identity.reverse_transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reverse transform, i.e., un-flatten.</p>
+<dt id="BPt.extensions.SingleConnectivityMeasure.fit">
+<code class="sig-prename descclassname">SingleConnectivityMeasure.</code><code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/extensions/loaders.py#L924-L925"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.extensions.SingleConnectivityMeasure.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the covariance estimator to the given time series for each
+subject.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>X_trans</strong><span class="classifier">numpy.array</span></dt><dd><p>1D transformed numpy.array.</p>
+<dt><strong>X</strong><span class="classifier">list of numpy.ndarray, shape for each (n_samples, n_features)</span></dt><dd><p>The input subjects time series. The number of samples may differ
+from one subject to another.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>X</strong><span class="classifier">numpy.array</span></dt><dd><p>Data in original shape.</p>
+<dt><strong>self</strong><span class="classifier">ConnectivityMatrix instance</span></dt><dd><p>The object itself. Useful for chaining operations.</p>
 </dd>
 </dl>
 </dd>
@@ -295,8 +307,8 @@
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="BPt.extensions.Identity.get_params.html" title="previous page">BPt.extensions.Identity.get_params</a>
-    <a class='right-next' id="next-link" href="BPt.extensions.Identity.set_params.html" title="next page">BPt.extensions.Identity.set_params</a>
+    <a class='left-prev' id="prev-link" href="BPt.extensions.SingleConnectivityMeasure.html" title="previous page">BPt.extensions.SingleConnectivityMeasure</a>
+    <a class='right-next' id="next-link" href="BPt.extensions.SingleConnectivityMeasure.fit_transform.html" title="next page">BPt.extensions.SingleConnectivityMeasure.fit_transform</a>
 
               </div>
               

@@ -471,61 +471,59 @@ class Loader(Piece):
     Parameters
     ----------
     obj : str, custom obj or :class:`Pipe`
-        `obj` selects the base loader object to use, this can be either
-        a str corresponding to
-        one of the preset loaders found at :ref:`Loaders`.
-        Beyond pre-defined loaders, users can
-        pass in custom objects as long as they have functions
-        corresponding to the correct behavior.
+        | `obj` selects the base loader object to use, this can be either
+          a str corresponding to
+          one of the preset loaders found at :ref:`Loaders`.
+          Beyond pre-defined loaders, users can
+          pass in custom objects as long as they have functions
+          corresponding to the correct behavior.
 
-        `obj` can also be passed as a :class:`Pipe`.
-        See :class:`Pipe`'s documentation to
-        learn more on how this works, and why you might want to use it.
+        | `obj` can also be passed as a :class:`Pipe`.
+          See :class:`Pipe`'s documentation to
+          learn more on how this works, and why you might want to use it.
+          See :ref:`Pipeline Objects<pipeline_objects>` to read more
+          about pipeline objects in general.
 
-        See :ref:`Pipeline Objects<pipeline_objects>` to read more
-        about pipeline objects in general.
-
-        For example, the 'identity' loader will load in saved data at
-        the stored file
-        location, lets say they are 2d numpy arrays,
-        and will return a flattened version
-        of the saved arrays, with each data point as a feature.
-        A more practical example
-        might constitute loading in say 3D neuroimaging data,
-        and passing on features as extracted by ROI.
+        | For example, the 'identity' loader will load in saved data at
+          the stored file location, lets say they are 2d numpy arrays,
+          and will return a flattened version
+          of the saved arrays, with each data point as a feature.
+          A more practical example
+          might constitute loading in say 3D neuroimaging data,
+          and passing on features as extracted by ROI.
 
     behav : 'single' or 'all', optional
-        The Loader object can operate under two different
-        behaviors, corresponding to operations which can
-        be done for each subject's Data File independently ('single')
-        and operations which must be done using information
-        from all train subject's Data Files ('all').
+        | The Loader object can operate under two different
+          behaviors, corresponding to operations which can
+          be done for each subject's Data File independently ('single')
+          and operations which must be done using information
+          from all train subject's Data Files ('all').
 
-        'single' is the default behavior, if requested
-        then the Loader will load each subject's Data File
-        seperately and apply the passed `obj` fit_transform.
-        The benefit of this method in contrast to 'all' is
-        that only one subject's full raw data needs to be
-        loaded at once, whereas with all, you must have enough
-        avaliable memory to load all of the current training or
-        validation subject's raw data at one. Likewise 'single'
-        allows for caching fit_transform operations for each
-        individual subject (which can then be more flexibly re-used).
+        | 'single' is the default behavior, if requested
+          then the Loader will load each subject's Data File
+          seperately and apply the passed `obj` fit_transform.
+          The benefit of this method in contrast to 'all' is
+          that only one subject's full raw data needs to be
+          loaded at once, whereas with all, you must have enough
+          avaliable memory to load all of the current training or
+          validation subject's raw data at one. Likewise 'single'
+          allows for caching fit_transform operations for each
+          individual subject (which can then be more flexibly re-used).
 
-        Behavior 'all' is designed to work with base objects
-        that accept a list of length n_subjects to their fit_transform
-        function, where each element of the list will be that subject's
-        loaded Data File. This behavior requires loading all data
-        into memory, but allows for using information from the rest
-        of the group split. For example we would need to set Loader
-        to 'all' if we wanted to use
-        :class:`nilearn.connectome.ConnectivityMeasure`
-        with parameter kind = "tangent" as this transformer requires
-        information from the rest of the loaded subjects when training.
-        On the otherhand, if we used kind = "correlation",
-        then we could use either behavior
-        'all' or 'single' since "correlation" can be computed for each
-        subject individually.
+        | Behavior 'all' is designed to work with base objects
+          that accept a list of length n_subjects to their fit_transform
+          function, where each element of the list will be that subject's
+          loaded Data File. This behavior requires loading all data
+          into memory, but allows for using information from the rest
+          of the group split. For example we would need to set Loader
+          to 'all' if we wanted to use
+          :class:`nilearn.connectome.ConnectivityMeasure`
+          with parameter kind = "tangent" as this transformer requires
+          information from the rest of the loaded subjects when training.
+          On the otherhand, if we used kind = "correlation",
+          then we could use either behavior
+          'all' or 'single' since "correlation" can be computed for each
+          subject individually.
 
         ::
 
@@ -539,13 +537,15 @@ class Loader(Piece):
             default = 'data file'
 
     cache_loc : str, Path or None, optional
-        Optional location in which to if set, the Loader transform
-        function will be cached for each subject. These cached
-        transformations can then be loaded for each subject when
-        they appear again in later folds.
+        | Optional location in which to if set, the Loader transform
+          function will be cached for each subject. These cached
+          transformations can then be loaded for each subject when
+          they appear again in later folds.
 
-        Warning: If behav = 'all', then this parameter is currently
-        not used.
+        .. warning ::
+
+            If behav = 'all', then this parameter is currently
+            skipped!
 
         Set to None, to ignore
 
@@ -557,7 +557,6 @@ class Loader(Piece):
         Typically this parameter is left as default, but
         in special cases you may want to set this. It controls
         the number of jobs fixed for the Loading Wrapper.
-
         This parameter can be used to set that value.
 
         ::
@@ -587,6 +586,10 @@ class Loader(Piece):
         import BPt as bp
         loader = bp.Loader(obj='identity')
         loader
+
+    This specifies that the :class:`BPt.extensions.Identity` loader be used
+    (which just loads and flattens files).
+
     '''
 
     _constructor = LoaderConstructor
@@ -613,13 +616,15 @@ class Loader(Piece):
 
 @doc(**_bp_docs)
 class Imputer(Piece):
-    '''If there is any missing data (NaN's), then an imputation strategy
+    '''This input object is used to specify imputation steps
+    for a :class:`Pipeline`.
+
+    If there is any missing data (NaN's), then an imputation strategy
     is likely necessary (with some expections, i.e., a final model which
-    can accept NaN values directly).
-    This object allows for defining an imputation strategy.
-    In general, you should need at most two Imputers, one for all
-    `float` type data and one for all categorical data. If there
-    is no missing data, this piece will be skipped.
+    can accept NaN values directly). This object allows for defining
+    an imputation strategy. In general, you should need at most two
+    Imputers, one for all `float` type data and one for all
+    categorical data. If there is no missing data, this piece will be skipped.
 
     Parameters
     ----------
@@ -1160,16 +1165,16 @@ class Custom(Piece):
 
 
 class ParamSearch(Params):
-    '''| ParamSearch is special input object designed to be
-        used with :class:`ModelPipeline` or :class:`Pipeline`.
-        ParamSearch defines a hyperparameter search strategy.
-        Where when passed to :class:`Pipeline`, its search strategy is
-        applied in the context of any set :ref:`Params` within the base pieces.
-        Specifically, there must be at least one parameter search
-        somewhere in the object ParamSearch is passed!
+    '''ParamSearch is special input object designed to be
+    used with :class:`ModelPipeline` or :class:`Pipeline` that
+    is used in order to define a hyperparameter search strategy.
 
-    | All backend hyper-parameter searches make use of the
-        <https://github.com/facebookresearch/nevergrad>`_ library.
+    | When passed to :class:`Pipeline`, its search strategy is
+      applied in the context of any set :ref:`Params` within the base pieces.
+      Specifically, there must be at least one parameter search
+      somewhere in the object ParamSearch is passed!
+      All backend hyper-parameter searches make use of the
+      <https://github.com/facebookresearch/nevergrad>`_ library.
 
     Parameters
     ----------

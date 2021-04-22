@@ -16,7 +16,7 @@ BPt.extensions.Identity
       Identity.fit
       Identity.fit_transform
       Identity.get_params
-      Identity.reverse_transform
+      Identity.inverse_transform
       Identity.set_params
       Identity.transform
 

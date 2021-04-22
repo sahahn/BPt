@@ -204,20 +204,6 @@ try:
 except ImportError:
     pass
 
-try:
-    from ...extensions.AutoGluon import AutoGluon
-
-    AVALIABLE['binary']['auto gluon'] = 'auto gluon binary'
-    AVALIABLE['categorical']['auto gluon'] = 'auto gluon categorical'
-    AVALIABLE['regression']['auto gluon'] = 'auto gluon regression'
-
-    MODELS['auto gluon binary'] = (AutoGluon, ['pt binary'])
-    MODELS['auto gluon categorical'] = (AutoGluon, ['pt multiclass'])
-    MODELS['auto gluon regression'] = (AutoGluon, ['pt regression'])
-
-except ImportError:
-    pass
-
 
 def get_base_model_and_params(model_type, extra_params, model_type_params,
                               random_state=None, **kwargs):

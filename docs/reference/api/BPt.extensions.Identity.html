@@ -73,6 +73,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -132,6 +136,8 @@
     
   
     <ul class="nav bd-sidenav">
+        
+        
         
         
         
@@ -218,6 +224,10 @@
                         </li>
                     
                         <li class="">
+                            <a href="BPt.extensions.SingleConnectivityMeasure.html">BPt.extensions.SingleConnectivityMeasure</a>
+                        </li>
+                    
+                        <li class="">
                             <a href="BPt.extensions.RandomParcellation.html">BPt.extensions.RandomParcellation</a>
                         </li>
                     
@@ -273,7 +283,7 @@
 <dd><p>This loader will simply flatten the input object, if not already.
 This loader is used to for example pass along loaded surfaces
 or volumes to a PCA or other similar transformation.</p>
-<p>This object is designed to be used with <code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code>
+<p>This object is designed to be used with input class <a class="reference internal" href="BPt.Loader.html#BPt.Loader" title="BPt.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Loader</span></code></a>
 for operating on single subjects at a time.</p>
 <p class="rubric">Methods</p>
 <table class="longtable table autosummary">
@@ -291,8 +301,8 @@ for operating on single subjects at a time.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.extensions.Identity.get_params.html#BPt.extensions.Identity.get_params" title="BPt.extensions.Identity.get_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code></a>([deep])</p></td>
 <td><p>Get parameters for this estimator.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.extensions.Identity.reverse_transform.html#BPt.extensions.Identity.reverse_transform" title="BPt.extensions.Identity.reverse_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_transform</span></code></a>(X_trans)</p></td>
-<td><p>Reverse transform, i.e., un-flatten.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.extensions.Identity.inverse_transform.html#BPt.extensions.Identity.inverse_transform" title="BPt.extensions.Identity.inverse_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inverse_transform</span></code></a>(X_trans)</p></td>
+<td><p>Inverse transform, i.e., un-flatten.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.extensions.Identity.set_params.html#BPt.extensions.Identity.set_params" title="BPt.extensions.Identity.set_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code></a>(**params)</p></td>
 <td><p>Set the parameters of this estimator.</p></td>

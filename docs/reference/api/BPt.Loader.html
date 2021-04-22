@@ -73,6 +73,10 @@
         </li>
         
         <li class="nav-item ">
+            <a class="nav-link" href=""></a>
+        </li>
+        
+        <li class="nav-item ">
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
@@ -132,6 +136,8 @@
     
   
     <ul class="nav bd-sidenav">
+        
+        
         
         
         
@@ -281,7 +287,7 @@
 <h1>BPt.Loader<a class="headerlink" href="#bpt-loader" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.Loader">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Loader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">behav</span><span class="o">=</span><span class="default_value">'single'</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'data file'</span></em>, <em class="sig-param"><span class="n">cache_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fix_n_wrapper_jobs</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L460-L611"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Loader" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Loader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">behav</span><span class="o">=</span><span class="default_value">'single'</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'data file'</span></em>, <em class="sig-param"><span class="n">cache_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fix_n_wrapper_jobs</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L460-L614"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Loader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loader refers to transformations which operate on <a class="reference internal" href="../../user_guide/data_files.html#data-files"><span class="std std-ref">Data Files</span></a>.
 They in essence take in saved file locations and after some series
 of specified transformations pass on compatible features.</p>
@@ -293,32 +299,40 @@ the list is a subject’s data. See parameter behav.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>obj</strong><span class="classifier">str, custom obj or <a class="reference internal" href="BPt.Pipe.html#BPt.Pipe" title="BPt.Pipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipe</span></code></a></span></dt><dd><p><cite>obj</cite> selects the base loader object to use, this can be either
+<dt><strong>obj</strong><span class="classifier">str, custom obj or <a class="reference internal" href="BPt.Pipe.html#BPt.Pipe" title="BPt.Pipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipe</span></code></a></span></dt><dd><div class="line-block">
+<div class="line"><cite>obj</cite> selects the base loader object to use, this can be either
 a str corresponding to
 one of the preset loaders found at <a class="reference internal" href="../../options/pipeline_options/loaders.html#loaders"><span class="std std-ref">Loaders</span></a>.
 Beyond pre-defined loaders, users can
 pass in custom objects as long as they have functions
-corresponding to the correct behavior.</p>
-<p><cite>obj</cite> can also be passed as a <a class="reference internal" href="BPt.Pipe.html#BPt.Pipe" title="BPt.Pipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipe</span></code></a>.
+corresponding to the correct behavior.</div>
+</div>
+<div class="line-block">
+<div class="line"><cite>obj</cite> can also be passed as a <a class="reference internal" href="BPt.Pipe.html#BPt.Pipe" title="BPt.Pipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipe</span></code></a>.
 See <a class="reference internal" href="BPt.Pipe.html#BPt.Pipe" title="BPt.Pipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipe</span></code></a>’s documentation to
-learn more on how this works, and why you might want to use it.</p>
-<p>See <a class="reference internal" href="../../user_guide/pipeline_objects.html#pipeline-objects"><span class="std std-ref">Pipeline Objects</span></a> to read more
-about pipeline objects in general.</p>
-<p>For example, the ‘identity’ loader will load in saved data at
-the stored file
-location, lets say they are 2d numpy arrays,
+learn more on how this works, and why you might want to use it.
+See <a class="reference internal" href="../../user_guide/pipeline_objects.html#pipeline-objects"><span class="std std-ref">Pipeline Objects</span></a> to read more
+about pipeline objects in general.</div>
+</div>
+<div class="line-block">
+<div class="line">For example, the ‘identity’ loader will load in saved data at
+the stored file location, lets say they are 2d numpy arrays,
 and will return a flattened version
 of the saved arrays, with each data point as a feature.
 A more practical example
 might constitute loading in say 3D neuroimaging data,
-and passing on features as extracted by ROI.</p>
+and passing on features as extracted by ROI.</div>
+</div>
 </dd>
-<dt><strong>behav</strong><span class="classifier">‘single’ or ‘all’, optional</span></dt><dd><p>The Loader object can operate under two different
+<dt><strong>behav</strong><span class="classifier">‘single’ or ‘all’, optional</span></dt><dd><div class="line-block">
+<div class="line">The Loader object can operate under two different
 behaviors, corresponding to operations which can
 be done for each subject’s Data File independently (‘single’)
 and operations which must be done using information
-from all train subject’s Data Files (‘all’).</p>
-<p>‘single’ is the default behavior, if requested
+from all train subject’s Data Files (‘all’).</div>
+</div>
+<div class="line-block">
+<div class="line">‘single’ is the default behavior, if requested
 then the Loader will load each subject’s Data File
 seperately and apply the passed <cite>obj</cite> fit_transform.
 The benefit of this method in contrast to ‘all’ is
@@ -327,8 +341,10 @@ loaded at once, whereas with all, you must have enough
 avaliable memory to load all of the current training or
 validation subject’s raw data at one. Likewise ‘single’
 allows for caching fit_transform operations for each
-individual subject (which can then be more flexibly re-used).</p>
-<p>Behavior ‘all’ is designed to work with base objects
+individual subject (which can then be more flexibly re-used).</div>
+</div>
+<div class="line-block">
+<div class="line">Behavior ‘all’ is designed to work with base objects
 that accept a list of length n_subjects to their fit_transform
 function, where each element of the list will be that subject’s
 loaded Data File. This behavior requires loading all data
@@ -341,7 +357,8 @@ information from the rest of the loaded subjects when training.
 On the otherhand, if we used kind = “correlation”,
 then we could use either behavior
 ‘all’ or ‘single’ since “correlation” can be computed for each
-subject individually.</p>
+subject individually.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;single&#39;</span>
 </pre></div>
 </div>
@@ -381,12 +398,17 @@ how scopes can be specified.</div>
 </pre></div>
 </div>
 </dd>
-<dt><strong>cache_loc</strong><span class="classifier">str, Path or None, optional</span></dt><dd><p>Optional location in which to if set, the Loader transform
+<dt><strong>cache_loc</strong><span class="classifier">str, Path or None, optional</span></dt><dd><div class="line-block">
+<div class="line">Optional location in which to if set, the Loader transform
 function will be cached for each subject. These cached
 transformations can then be loaded for each subject when
-they appear again in later folds.</p>
-<p>Warning: If behav = ‘all’, then this parameter is currently
-not used.</p>
+they appear again in later folds.</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If behav = ‘all’, then this parameter is currently
+skipped!</p>
+</div>
 <p>Set to None, to ignore</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
@@ -394,8 +416,8 @@ not used.</p>
 </dd>
 <dt><strong>fix_n_wrapper_jobs</strong><span class="classifier">int or False, optional</span></dt><dd><p>Typically this parameter is left as default, but
 in special cases you may want to set this. It controls
-the number of jobs fixed for the Loading Wrapper.</p>
-<p>This parameter can be used to set that value.</p>
+the number of jobs fixed for the Loading Wrapper.
+This parameter can be used to set that value.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>
 </pre></div>
 </div>
@@ -445,6 +467,8 @@ to each piece individually.</p>
 <span class="gh">Out[3]: </span><span class="go">Loader(obj=&#39;identity&#39;)</span>
 </pre></div>
 </div>
+<p>This specifies that the <a class="reference internal" href="BPt.extensions.Identity.html#BPt.extensions.Identity" title="BPt.extensions.Identity"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.extensions.Identity</span></code></a> loader be used
+(which just loads and flattens files).</p>
 <p class="rubric">Methods</p>
 <table class="longtable table autosummary">
 <colgroup>

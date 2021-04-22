@@ -378,7 +378,6 @@ if include_api:
         "python": ("https://docs.python.org/3/", None),
         "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
         "statsmodels": ("https://www.statsmodels.org/devel/", None),
-        'deslib': ('http://deslib.readthedocs.io/en/latest', None),
         'sklearn': ('http://scikit-learn.org/stable', None),
         'lightgbm': ('https://lightgbm.readthedocs.io/en/latest', None),
         'xgboost': ('https://xgboost.readthedocs.io/en/latest', None),

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.to_data_file &#8212; BPt 2 documentation</title>
+    <title>BPt.Dataset.to_data_file &#8212; BPt 2.0.0 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.to_data_file<a class="headerlink" href="#bpt-dataset-to-data-file" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.to_data_file">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_data_file</code><span class="sig-paren">(</span><em class="sig-param">scope</em>, <em class="sig-param">load_func=&lt;function load&gt;</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_data_files.py#L175-L241"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_data_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_data_file</code><span class="sig-paren">(</span><em class="sig-param">scope</em>, <em class="sig-param">load_func=&lt;function load&gt;</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_data_files.py#L209-L275"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_data_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method can be used to cast any existing columns
 where the values are file paths, to a data file.</p>
 <dl class="field-list">
@@ -450,26 +450,37 @@ column(s) in which to apply the current function to.
 See <a class="reference internal" href="../../user_guide/scope.html#scope"><span class="std std-ref">Scope</span></a> for more information on how this
 can be applied.</p>
 </dd>
-<dt><strong>load_func</strong><span class="classifier">python function, optional</span></dt><dd><p>Fundamentally columns of type ‘data file’ represent
+<dt><strong>load_func</strong><span class="classifier">python function, optional</span></dt><dd><div class="line-block">
+<div class="line">Fundamentally columns of type ‘data file’ represent
 a path to a saved file, which means you must
 also provide some information on how to load the saved file.
 This parameter is where that loading function should be passed.
 The passed <cite>load_func</cite> will be called on each file individually
 and whatever the output of the function is will be passed to
-the different loading functions.</p>
-<p>You might need to pass a user defined custom function
+the different loading functions.</div>
+</div>
+<div class="line-block">
+<div class="line">You might need to pass a user defined custom function
 in some cases, e.g., you want to use <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.load.html#numpy.load" title="(in NumPy v1.20)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.load()</span></code></a>,
-but then also np.stack. Just wrap those two functions in one,
-and pass the new function.</p>
+but then also <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.stack.html#numpy.stack" title="(in NumPy v1.20)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.stack()</span></code></a>.
+Just wrap those two functions in one,
+and pass the new function.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_wrapper</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>In this case though, it is reccomended that
-you define this function in a separate file from
-where the main script will be run (for ease of caching)</p>
-<p>By default this function assumes data files are passed
-as numpy arrays.</p>
+<div class="line-block">
+<div class="line">Note that in this case where a custom function is defined
+it is reccomended that you define this function in
+a separate file from where the main script will be run,
+and then import the function.</div>
+</div>
+<div class="line-block">
+<div class="line">By default this function assumes data files are passed
+as numpy arrays, and uses the default function
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.load.html#numpy.load" title="(in NumPy v1.20)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.load()</span></code></a>, when nothing else is specified.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span>
 </pre></div>
 </div>

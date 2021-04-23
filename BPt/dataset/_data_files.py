@@ -40,105 +40,41 @@ def add_data_files(self, files, file_to_subject,
     Parameters
     ----------
     files : dict
-        This argument must be passed as a python dict.
-        Specifically, a python dictionary should be passed where
-        each key refers to the name of that feature / column of data files
-        to load, and the value is either a list-like of
-        str file paths, or a single globbing str which will
-        be used to determine the files.
+        | This argument specifies the files to be loaded as :ref:`data_files`.
+          Files must be passed as a python dict where
+          each key refers to the name of that feature / column of data files
+          to load, and the value is either a list-like of
+          str file paths, or a single globbing str which will
+          be used to determine the files.
 
-        In addition to this parameter, you must also pass a
-        python function to the file_to_subject param,
-        which specifies how to convert from passed
-        file path, to a subject name.
-
-        E.g., consider the example below, where 2 subjects files are
-        loaded for 'feat1' and feat2':
-
-        ::
-
-            files = dict()
-            files['feat1'] = ['f1/subj_0.npy', 'f1/subj_1.npy']
-            files['feat2'] = ['f2/subj_0.npy', 'f2/subj_1.npy']
-
-            def file_to_subject_func(file):
-                subject = file.split('/')[1].replace('.npy', '')
-                return subject
-
-            file_to_subject = file_to_subject_func
-            # or
-            file_to_subject = dict()
-            file_to_subject['feat1'] = file_to_subject_func
-            file_to_subject['feat2'] = file_to_subject_func
-
-        In this example, subjects are loaded as 'subj_0' and 'subj_1',
-        and they have associated loaded data files 'feat1' and 'feat2'.
+        | In addition to this parameter, you must also pass a
+          python function to the file_to_subject param,
+          which specifies how to convert from passed
+          file path, to a subject name.
 
     file_to_subject : python function, dict of or 'auto'
-        You must pass some way of mapping file names
-        to their corresponding subject. The flexible way
-        to do this is by passing a python function
-        which takes in a file path, and returns the relevant subject for
-        that file path. If just one function is passed, it will be used
-        for to load all dictionary entries, alternatively you can pass
-        a matching dictionary of funcs, allowing for different funcs
-        for each feature to load.
+        | This parameter represents how the subject name should
+          be determined from the passed file paths. This
+          parameter can be passed any python function, where
+          the first argument on the function takes a full
+          file path and returns a subject name.
 
-        See the example in files, e.g.,
+        | This parameter should be passed as either a single function
+          or argument to be used for all columns, or as a dictionary
+          corresponding to the passed files dictionary in the case
+          that each column requires a different function mapping path
+          to subject. If just one function is passed, it will be used
+          for to load all dictionary entries. For example:
 
-        ::
+        | You may also pass the custom str 'auto' to
+          specify that the subject name should be the base
+          file name with the extension removed. For example
+          if the path is '/some/path/subj16.npy' then the auto
+          subject will be 'subj16'.
 
-            file_to_subject = file_to_subject_func
-            # or
-            file_to_subject = dict()
-            file_to_subject['feat1'] = file_to_subject_func
-            file_to_subject['feat2'] = file_to_subject_func
-
-        You may also pass the custom str 'auto' to
-        specify that the subject name should be the base
-        file name with the extension removed. For example
-        if the path is '/some/path/subj16.npy' then the auto
-        subject will be 'subj16'.
-
-        In the case that the underlying index is a MultiIndex, this
-        function should be designed to return the subject in correct
-        tuple form. E.g.,
-
-        ::
-
-            # The underlying dataset is indexed by subject and event
-            data.set_index(['subject', 'event'], inplace=True)
-
-            # Only one feature
-            files = dict()
-            files['feat1'] = ['f1/s0_e0.npy',
-                                'f1/s0_e1.npy',
-                                'f1/s1_e0.npy',
-                                'f1/s1_e1.npy']
-
-            def file_to_subject_func(file):
-
-                # This selects the substring
-                # at the last part seperated by the '/'
-                # so e.g. the stub, 's0_e0.npy', 's0_e1.npy', etc...
-                subj_split = file.split('/')[-1]
-
-                # This removes the .npy from the end, so
-                # stubs == 's0_e0', 's0_e1', etc...
-                subj_split = subj_split.replace('.npy', '')
-
-                # Set the subject name as the first part
-                # and the eventname as the second part
-                subj_name = subj_split.split('_')[0]
-                event_name = subj_split.split('_')[1]
-
-                # Lastly put it into the correct return style
-                # This is tuple style e.g., ('s0', 'e0'), ('s0', 'e1')
-                ind = (subj_name, eventname)
-
-                return ind
-
-        While this is a bit longer than the previous case, it is flexible.
+        | In the case that the underlying index is a MultiIndex, this
+          function should be designed to return the subject in correct
+          tuple form. See Examples below.
 
     {load_func}
 
@@ -148,6 +84,104 @@ def add_data_files(self, files, file_to_subject,
     --------
     to_data_file : Cast existing columns to type Data File.
     get_file_mapping : Returns the raw file mapping.
+
+    Examples
+    ---------
+    Consider the brief example below for loading two fake subjects,
+    with the files parameter.
+
+    ::
+
+        files = dict()
+        files['feat1'] = ['f1/subj_0.npy', 'f1/subj_1.npy']
+        files['feat2'] = ['f2/subj_0.npy', 'f2/subj_1.npy']
+
+    This could be matched with file_to_subject as:
+
+    ::
+
+        def file_to_subject_func(file):
+            subject = file.split('/')[1].replace('.npy', '')
+            return subject
+
+        file_to_subject = file_to_subject_func
+        # or
+        file_to_subject = dict()
+        file_to_subject['feat1'] = file_to_subject_func
+        file_to_subject['feat2'] = file_to_subject_func
+
+    In this example, subjects are loaded as 'subj_0' and 'subj_1',
+    and they have associated loaded data files 'feat1' and 'feat2'.
+
+    Next, we consider an example with fake data.
+    In this example we will first generate and save some fake data files.
+    These fake files will correspond to left hemisphere vertex files.
+
+    .. ipython:: python
+
+        import numpy as np
+        import os
+
+        dr = 'data/fake_surface/'
+        os.makedirs(dr, exist_ok=True)
+
+        # 20 subjects each with 10,242 vertex values
+        X = np.random.random(size=(20, 10242))
+
+        # Save the data as numpy arrays
+        for x in range(len(X)):
+            np.save(dr + str(x), X[x])
+
+        os.listdir(dr)[:5]
+
+    Next, we will use add data files to add these to
+    a :class:`Dataset`.
+
+    .. ipython:: python
+
+        data = bp.Dataset()
+        files = dict()
+        files['fake_surface'] = dr + '*' # Add * for file globbing
+
+
+        data = data.add_data_files(files=files, file_to_subject='auto')
+        data.head(5)
+
+    Let's also consider lastly a MultiIndex example:
+
+    ::
+
+        # The underlying dataset is indexed by subject and event
+        data.set_index(['subject', 'event'], inplace=True)
+
+        # Only one feature
+        files = dict()
+        files['feat1'] = ['f1/s0_e0.npy',
+                          'f1/s0_e1.npy',
+                          'f1/s1_e0.npy',
+                          'f1/s1_e1.npy']
+
+        def file_to_subject_func(file):
+
+            # This selects the substring
+            # at the last part seperated by the '/'
+            # so e.g. the stub, 's0_e0.npy', 's0_e1.npy', etc...
+            subj_split = file.split('/')[-1]
+
+            # This removes the .npy from the end, so
+            # stubs == 's0_e0', 's0_e1', etc...
+            subj_split = subj_split.replace('.npy', '')
+
+            # Set the subject name as the first part
+            # and the eventname as the second part
+            subj_name = subj_split.split('_')[0]
+            event_name = subj_split.split('_')[1]
+
+            # Lastly put it into the correct return style
+            # This is tuple style e.g., ('s0', 'e0'), ('s0', 'e1')
+            ind = (subj_name, eventname)
+
+            return ind
 
     '''
 

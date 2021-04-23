@@ -27,30 +27,33 @@ _shared_docs['inplace'] = """inplace : bool, optional
 _sip_docs = _shared_docs.copy()
 
 _shared_docs['load_func'] = """load_func : python function, optional
-            Fundamentally columns of type 'data file' represent
-            a path to a saved file, which means you must
-            also provide some information on how to load the saved file.
-            This parameter is where that loading function should be passed.
-            The passed `load_func` will be called on each file individually
-            and whatever the output of the function is will be passed to
-            the different loading functions.
+            | Fundamentally columns of type 'data file' represent
+              a path to a saved file, which means you must
+              also provide some information on how to load the saved file.
+              This parameter is where that loading function should be passed.
+              The passed `load_func` will be called on each file individually
+              and whatever the output of the function is will be passed to
+              the different loading functions.
 
-            You might need to pass a user defined custom function
-            in some cases, e.g., you want to use :func:`numpy.load`,
-            but then also np.stack. Just wrap those two functions in one,
-            and pass the new function.
+            | You might need to pass a user defined custom function
+              in some cases, e.g., you want to use :func:`numpy.load`,
+              but then also :func:`numpy.stack`.
+              Just wrap those two functions in one,
+              and pass the new function.
 
             ::
 
                 def my_wrapper(x):
                     return np.stack(np.load(x))
 
-            In this case though, it is reccomended that
-            you define this function in a separate file from
-            where the main script will be run (for ease of caching)
+            | Note that in this case where a custom function is defined
+              it is reccomended that you define this function in
+              a separate file from where the main script will be run,
+              and then import the function.
 
-            By default this function assumes data files are passed
-            as numpy arrays.
+            | By default this function assumes data files are passed
+              as numpy arrays, and uses the default function
+              :func:`numpy.load`, when nothing else is specified.
 
             ::
 

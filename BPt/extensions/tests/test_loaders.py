@@ -337,5 +337,3 @@ def test_threshold_network_measures_density():
 
     thresh_X = nm._apply_threshold(X)
     assert np.sum(thresh_X) == 2
-
-

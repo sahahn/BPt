@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Version 2.0.0 &#8212; BPt 2 documentation</title>
+    <title>Version 2.0.0 &#8212; BPt 2.0.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -236,6 +236,14 @@
 </dl>
 </li>
 <li><dl class="simple">
+<dt>Big Change: New evaluate method</dt><dd><ul>
+<li><p>Instead of previous BPt_ML.Evaluate, now various function are provided instead e.g., <code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></p></li>
+<li><p>Introduce new returned flexible class from <code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code> called <code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
 <dt>Updates to the project documentation</dt><dd><ul>
 <li><p>With replacing the BPt_ML class, large amounts of the documentation was replaced and updated.</p></li>
 <li><p>Moved to new pandas style documentation.</p></li>
@@ -244,8 +252,25 @@
 </dl>
 </li>
 <li><dl class="simple">
+<dt>Class name changes</dt><dd><ul>
+<li><p>Input classes with _’s have been replaced with versions without underscores, e.g.,
+Problem_Spec to <code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Better support with sklearn</dt><dd><ul>
+<li><p>Now a number of functions can be passed also in native scikit-learn style syntax.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
 <dt>More tests</dt><dd><ul>
 <li><p>More tests across all pieces of the project.</p></li>
+<li><p>Changed from nosetests to pytest.</p></li>
+<li><p>Added github actions CI to automatically run tests.</p></li>
 </ul>
 </dd>
 </dl>
@@ -254,6 +279,20 @@
 <dt>Removed Values_Subset class</dt><dd><ul>
 <li><p>Now the ValueSubset class replaces this functionality, and more generally the
 feature of creating overlaps of column values on the fly is depreciated.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Removed AutoGluon support</dt><dd><ul>
+<li><p>Too difficult to manage dependencies, removed for now this previous feature.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>More!</dt><dd><ul>
+<li><p>Given the scope of this update, not all of the changes and fixes can be listed here.</p></li>
 </ul>
 </dd>
 </dl>

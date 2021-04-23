@@ -16,3 +16,10 @@ See :func:`add_data_files <Dataset.add_data_files>` for how to load data files t
 
 During construction of a model pipeline any loaded data files must have a corresponding
 :class:`Loader` where those files will be converted into valid down stream predictive features.
+
+**Examples:**
+
+.. toctree::
+    :maxdepth: 1
+
+    load_timeseries_example

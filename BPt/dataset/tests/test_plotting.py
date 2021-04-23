@@ -100,20 +100,14 @@ def test_summary_save():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
 
-        try:
-            import docx
-            docx
-        except ImportError:
-            return
+        df = get_fake_dataset()
 
-    df = get_fake_dataset()
+        temp = os.path.join(tempfile.gettempdir(), 't1.docx')
+        if os.path.exists(temp):
+            os.remove(temp)
 
-    temp = os.path.join(tempfile.gettempdir(), 't1.docx')
-    if os.path.exists(temp):
+        df.summary(scope=['class', 'val1'],
+                   save_file=temp)
+
+        assert os.path.exists(temp)
         os.remove(temp)
-
-    df.summary(scope=['class', 'val1'],
-               save_file=temp)
-
-    assert os.path.exists(temp)
-    os.remove(temp)

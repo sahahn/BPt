@@ -186,3 +186,19 @@ def test_multiclass_get_preds_df():
     r_df = results.get_preds_dfs()
     assert r_df[0].shape == (10, 8)
     assert r_df[0].shape == (10, 8)
+
+
+def test_permutation_feature_importance():
+
+    pipe = Pipeline([Scaler('standard'), Model('linear')])
+    dataset = get_fake_dataset()
+    results = evaluate(pipeline=pipe,
+                       dataset=dataset,
+                       progress_bar=False,
+                       scorer='neg_mean_squared_error',
+                       random_state=2,
+                       cv=2)
+
+    fis = results.permutation_importance(dataset, n_repeats=10)
+    assert fis['importances_mean'].shape == (2, 2)
+    assert fis['importances_std'].shape == (2, 2)

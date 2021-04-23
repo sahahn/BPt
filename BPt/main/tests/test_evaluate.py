@@ -85,7 +85,8 @@ def test_evaluate_with_loader_inverse_fis_categorical():
     results = evaluate(pipeline=pipe,
                        dataset=data,
                        progress_bar=False,
-                       cv=3)
+                       cv=3,
+                       random_state=3)
     # Clean up
     clean_fake_mapping(100)
 
@@ -188,6 +189,20 @@ def test_evaluate_regression_dt():
     assert len(evaluator.val_indices) == 5
 
 
+def test_regression_mean_fis():
+
+    dt_pipe = ModelPipeline(model=Model('dt'))
+    dataset = get_fake_dataset()
+    evaluator = evaluate(pipeline=dt_pipe,
+                         dataset=dataset,
+                         progress_bar=False,
+                         problem_type='regression',
+                         random_state=0)
+
+    mean_fis = evaluator.get_fis(mean=True)
+    assert len(mean_fis) == 0
+
+
 def get_fake_category_dataset():
 
     fake = Dataset()
@@ -242,6 +257,22 @@ def test_evaluate_categorical_dt():
     assert len(predict) == 5
     assert predict[0].shape == y_true[0].shape
     assert predict[0].shape[0] == predict_proba[0].shape[0]
+
+
+def test_evaluate_categorical_dt_mean_fis():
+
+    dt_pipe = ModelPipeline(model=Model('linear'))
+    dataset = get_fake_category_dataset()
+
+    evaluator = evaluate(pipeline=dt_pipe,
+                         dataset=dataset,
+                         problem_spec='default',
+                         progress_bar=False,
+                         problem_type='categorical',
+                         random_state=1,
+                         cv=3)
+    mean_fis = evaluator.get_fis(mean=True)
+    assert len(mean_fis) == 3
 
 
 def test_evaluate_categorical_linear():

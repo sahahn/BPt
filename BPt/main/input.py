@@ -547,7 +547,7 @@ class Loader(Piece):
             If behav = 'all', then this parameter is currently
             skipped!
 
-        Set to None, to ignore
+        Set to None, to ignore.
 
         ::
 
@@ -1901,6 +1901,14 @@ class Pipeline(Params):
                 setattr(obj, last_key, value)
 
             return self
+
+    def build(self, dataset, problem_spec='default', **extra_params):
+
+        from .funcs import get_estimator
+
+        return get_estimator(pipeline=self, dataset=dataset,
+                             problem_spec=problem_spec,
+                             extra_params=extra_params)
 
 
 class ModelPipeline(Pipeline):

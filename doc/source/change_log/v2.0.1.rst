@@ -2,3 +2,5 @@
 
 Version 2.0.1
 ---------------
+
+- New: :func:`Pipeline.build`

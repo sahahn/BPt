@@ -18,7 +18,7 @@ from . import p
 from pandas import read_pickle
 
 __author__ = "sahahn"
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 __all__ = ["Dataset", "Loader",
            "Imputer", "Scaler", "Transformer", 'get_estimator',
            "FeatSelector", "Model",

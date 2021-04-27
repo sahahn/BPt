@@ -204,7 +204,6 @@ class Piece(Params, Check):
     '''This is the base piece in which :ref`pipeline_objects` inherit from. This
     class should not be used directly.'''
 
-    # @TODO make this function work with custom objects
     def build(self, dataset, problem_spec='default', **problem_spec_params):
         '''This method is used to convert a single pipeline piece into
         the base sklearn style object used in the pipeline. This method
@@ -1903,6 +1902,13 @@ class Pipeline(Params):
             return self
 
     def build(self, dataset, problem_spec='default', **extra_params):
+        '''This method generates a sklearn compliant :ref:`estimator<develop>`
+        version of the current :class:`Pipeline` with respect to a passed
+        dataset and :class:`Dataset` and :class:`ProblemSpec`.
+
+        This method calls :func:`get_estimator` with pipeline set as
+        itself, see :func:`get_estimator` for parameters.
+        '''
 
         from .funcs import get_estimator
 

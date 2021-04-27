@@ -1,4 +1,5 @@
-from .input import Model, Pipeline, ProblemSpec, CV, Custom
+import warnings
+from .input import Model, ModelPipeline, Pipeline, ProblemSpec, CV, Custom
 from copy import deepcopy
 import numpy as np
 import pandas as pd
@@ -578,6 +579,17 @@ def _preproc_param_search(object, ps):
 
 def _initial_prep(pipeline, dataset, problem_spec,
                   error_if_compare=True, **extra_params):
+
+    # Get set of all possible params that extra params could refer to
+    possible_params = set(ProblemSpec._get_param_names())
+    possible_params.update(set(Pipeline._get_param_names()))
+    possible_params.update(set(ModelPipeline._get_param_names()))
+
+    # Warn in extra param doesn't map to a possible param
+    for key in extra_params:
+        if key not in possible_params:
+            warnings.warn(f'Passed extra_params key {key} does not appear '
+                          'to be valid, and will be skipped')
 
     # error if compare can be bool or tuple of bool's
     if isinstance(error_if_compare, tuple):

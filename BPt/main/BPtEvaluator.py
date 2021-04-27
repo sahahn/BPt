@@ -1704,6 +1704,5 @@ class BPtEvaluatorFold():
         if hasattr(evaluator, 'estimators'):
             self.estimator = evaluator.estimators[fold]
 
-        # self.scores = 
-        # self.feat_names = 
-
+        # self.scores =
+        # self.feat_names =

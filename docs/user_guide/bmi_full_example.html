@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Predict BMI &#8212; BPt 2.0.0 documentation</title>
+    <title>Predict BMI &#8212; BPt 2.0.1 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -1813,7 +1813,7 @@ BPtEvaluator
 mean_scores = {&#39;explained_variance&#39;: 0.25655836420425737, &#39;neg_mean_squared_error&#39;: -12.15230817006252}
 std_scores = {&#39;explained_variance&#39;: 0.02393695017649266, &#39;neg_mean_squared_error&#39;: 1.1099605948532965}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -1830,7 +1830,7 @@ ProblemSpec(n_jobs=8, problem_type=&#39;regression&#39;, random_state=10, scope=
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">evaluator</span><span class="o">.</span><span class="n">train_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">test_subjects</span><span class="p">),</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">val_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">test_subjects</span><span class="p">)</span>
+<span></span><span class="n">evaluator</span><span class="o">.</span><span class="n">train_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">test_subjects</span><span class="p">),</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">val_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">test_subjects</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1914,7 +1914,7 @@ BPtEvaluator
 mean_scores = {&#39;explained_variance&#39;: 0.27514029708500876, &#39;neg_mean_squared_error&#39;: -12.269150360411253}
 std_scores = {&#39;explained_variance&#39;: 0.0, &#39;neg_mean_squared_error&#39;: 0.0}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -2008,7 +2008,7 @@ BPtEvaluator
 mean_scores = {&#39;explained_variance&#39;: 0.2485223109713471, &#39;neg_mean_squared_error&#39;: -12.281307958444154}
 std_scores = {&#39;explained_variance&#39;: 0.024857512022276998, &#39;neg_mean_squared_error&#39;: 1.112832141546892}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
 
@@ -2052,7 +2052,7 @@ BPtEvaluator
 mean_scores = {&#39;explained_variance&#39;: 0.25832965982663025, &#39;neg_mean_squared_error&#39;: -12.120236239339546}
 std_scores = {&#39;explained_variance&#39;: 0.02451883500218578, &#39;neg_mean_squared_error&#39;: 1.0828442666660394}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -2650,7 +2650,7 @@ BPtEvaluator
 mean_scores = {&#39;explained_variance&#39;: 0.11316930054010477, &#39;neg_mean_squared_error&#39;: -14.517611278919068}
 std_scores = {&#39;explained_variance&#39;: 0.011916342728361404, &#39;neg_mean_squared_error&#39;: 1.4524277905958483}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 

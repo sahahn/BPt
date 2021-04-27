@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.BPtEvaluator.all_val_indices &#8212; BPt 2.0.0 documentation</title>
+    <title>BPt.BPtEvaluator.estimator &#8212; BPt 2.0.1 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -41,8 +41,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="BPt.BPtEvaluator.coef_" href="BPt.BPtEvaluator.coef_.html" />
-    <link rel="prev" title="BPt.BPtEvaluator.all_train_indices" href="BPt.BPtEvaluator.all_train_indices.html" />
+    <link rel="next" title="BPt.BPtEvaluator.estimators" href="BPt.BPtEvaluator.estimators.html" />
+    <link rel="prev" title="BPt.BPtEvaluator.coef_" href="BPt.BPtEvaluator.coef_.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -271,20 +271,14 @@
               
               <div>
                 
-  <div class="section" id="bpt-bptevaluator-all-val-indices">
-<h1>BPt.BPtEvaluator.all_val_indices<a class="headerlink" href="#bpt-bptevaluator-all-val-indices" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="bpt-bptevaluator-estimator">
+<h1>BPt.BPtEvaluator.estimator<a class="headerlink" href="#bpt-bptevaluator-estimator" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
-<dt id="BPt.BPtEvaluator.all_val_indices">
-<em class="property">property </em><code class="sig-prename descclassname">BPtEvaluator.</code><code class="sig-name descname">all_val_indices</code><a class="headerlink" href="#BPt.BPtEvaluator.all_val_indices" title="Permalink to this definition">¶</a></dt>
-<dd><div class="line-block">
-<div class="line">This parameter stores the validation subjects / index
-used in every fold of the cross-validation.</div>
-</div>
-<div class="line-block">
-<div class="line">This parameter
-differs from <a class="reference internal" href="BPt.BPtEvaluator.val_indices.html#BPt.BPtEvaluator.val_indices" title="BPt.BPtEvaluator.val_indices"><code class="xref py py-data docutils literal notranslate"><span class="pre">val_indices</span></code></a>
-in that even subjects with missing target values are included.</div>
-</div>
+<dt id="BPt.BPtEvaluator.estimator">
+<em class="property">property </em><code class="sig-prename descclassname">BPtEvaluator.</code><code class="sig-name descname">estimator</code><a class="headerlink" href="#BPt.BPtEvaluator.estimator" title="Permalink to this definition">¶</a></dt>
+<dd><p>This parameter stores the passed saved, unfitted estimator
+used in this evaluation. This is a sklearn style estimator obtained
+from <a class="reference internal" href="BPt.get_estimator.html#BPt.get_estimator" title="BPt.get_estimator"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_estimator()</span></code></a>.</p>
 </dd></dl>
 
 </div>
@@ -295,8 +289,8 @@ in that even subjects with missing target values are included.</div>
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="BPt.BPtEvaluator.all_train_indices.html" title="previous page">BPt.BPtEvaluator.all_train_indices</a>
-    <a class='right-next' id="next-link" href="BPt.BPtEvaluator.coef_.html" title="next page">BPt.BPtEvaluator.coef_</a>
+    <a class='left-prev' id="prev-link" href="BPt.BPtEvaluator.coef_.html" title="previous page">BPt.BPtEvaluator.coef_</a>
+    <a class='right-next' id="next-link" href="BPt.BPtEvaluator.estimators.html" title="next page">BPt.BPtEvaluator.estimators</a>
 
               </div>
               

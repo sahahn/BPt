@@ -21,6 +21,7 @@ BPt.BPtEvaluator
       BPtEvaluator.get_inverse_fis
       BPtEvaluator.get_preds_dfs
       BPtEvaluator.permutation_importance
+      BPtEvaluator.subset_by
 
 
 
@@ -33,9 +34,10 @@ BPt.BPtEvaluator
    .. autosummary::
       :toctree:
       
-      BPtEvaluator.all_train_indices
-      BPtEvaluator.all_val_indices
+      BPtEvaluator.all_train_subjects
+      BPtEvaluator.all_val_subjects
       BPtEvaluator.coef_
+      BPtEvaluator.estimator
       BPtEvaluator.estimators
       BPtEvaluator.feat_names
       BPtEvaluator.feature_importances_
@@ -48,8 +50,8 @@ BPt.BPtEvaluator
       BPtEvaluator.scores
       BPtEvaluator.std_scores
       BPtEvaluator.timing
-      BPtEvaluator.train_indices
-      BPtEvaluator.val_indices
+      BPtEvaluator.train_subjects
+      BPtEvaluator.val_subjects
       BPtEvaluator.weighted_mean_scores
 
 

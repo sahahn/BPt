@@ -1034,7 +1034,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.42533195477230185, &#39;roc_auc&#39;: 0.8064400876380518, &#39;balanced_accuracy&#39;: 0.7194033665229546}
 std_scores = {&#39;matthews&#39;: 0.02372948469896042, &#39;roc_auc&#39;: 0.014513566540939276, &#39;balanced_accuracy&#39;: 0.012339782022093257}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -1048,8 +1048,8 @@ ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accu
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">train_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">val_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">train_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">val_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1138,7 +1138,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.2806937010851929, &#39;roc_auc&#39;: 0.724342679133859, &#39;balanced_accuracy&#39;: 0.6448295419977427}
 std_scores = {&#39;matthews&#39;: 0.09542590294675868, &#39;roc_auc&#39;: 0.04969484135272, &#39;balanced_accuracy&#39;: 0.0595558011571011}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -1152,8 +1152,8 @@ ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accu
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">train_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">val_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">train_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">data</span><span class="o">.</span><span class="n">plot_bivar</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="s1">&#39;Dependent any drug&#39;</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">val_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1240,7 +1240,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.4198523568381287, &#39;roc_auc&#39;: 0.8021293794313956, &#39;balanced_accuracy&#39;: 0.71695304741449}
 std_scores = {&#39;matthews&#39;: 0.05886752017766923, &#39;roc_auc&#39;: 0.020630146396151645, &#39;balanced_accuracy&#39;: 0.030556740029522838}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -1389,7 +1389,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.024294039432900597, &#39;roc_auc&#39;: 0.5292721521624003, &#39;balanced_accuracy&#39;: 0.5116503104881627}
 std_scores = {&#39;matthews&#39;: 0.0818023189639453, &#39;roc_auc&#39;: 0.053461117751205205, &#39;balanced_accuracy&#39;: 0.04147838671486171}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -1430,7 +1430,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.23754373855512448, &#39;roc_auc&#39;: 0.6581411778771414, &#39;balanced_accuracy&#39;: 0.6117532215243421}
 std_scores = {&#39;matthews&#39;: 0.028251718001276915, &#39;roc_auc&#39;: 0.00840487420017697, &#39;balanced_accuracy&#39;: 0.01031391488070083}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -1446,8 +1446,8 @@ ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accu
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># The train and val subjects from fold 0</span>
-<span class="n">tr_subjs</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">train_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">val_subjs</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">val_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">tr_subjs</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">train_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">val_subjs</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">val_subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="c1"># An object specifying just site 29&#39;s subjects</span>
 <span class="n">site29</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">ValueSubset</span><span class="p">(</span><span class="s1">&#39;Site&#39;</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="n">decode_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1799,7 +1799,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.23079311975258734, &#39;roc_auc&#39;: 0.6494071534373412, &#39;balanced_accuracy&#39;: 0.6141868842892168}
 std_scores = {&#39;matthews&#39;: 0.09467372271946288, &#39;roc_auc&#39;: 0.07189605086562514, &#39;balanced_accuracy&#39;: 0.05165558889230518}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -1838,7 +1838,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.3099741843096915, &#39;roc_auc&#39;: 0.7185050035507189, &#39;balanced_accuracy&#39;: 0.6557306499974717}
 std_scores = {&#39;matthews&#39;: 0.05501720339208484, &#39;roc_auc&#39;: 0.030948171887409684, &#39;balanced_accuracy&#39;: 0.02748782703232899}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -1885,7 +1885,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.14755625865911742, &#39;roc_auc&#39;: 0.6060559623948263, &#39;balanced_accuracy&#39;: 0.5636346829506975}
 std_scores = {&#39;matthews&#39;: 0.17026794856315272, &#39;roc_auc&#39;: 0.12014100381868857, &#39;balanced_accuracy&#39;: 0.076467544201846}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
@@ -1966,7 +1966,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.02346740168044174, &#39;roc_auc&#39;: 0.4992373334460878, &#39;balanced_accuracy&#39;: 0.511308005873143}
 std_scores = {&#39;matthews&#39;: 0.09763704971436771, &#39;roc_auc&#39;: 0.06654364664577839, &#39;balanced_accuracy&#39;: 0.04908589456453536}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
 
@@ -2067,7 +2067,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.03667173630581328, &#39;roc_auc&#39;: 0.5248868808677055, &#39;balanced_accuracy&#39;: 0.5178404766273731}
 std_scores = {&#39;matthews&#39;: 0.11389312167894736, &#39;roc_auc&#39;: 0.06057589628452694, &#39;balanced_accuracy&#39;: 0.05676567744096608}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
 
@@ -2259,7 +2259,7 @@ BPtEvaluator
 mean_scores = {&#39;matthews&#39;: 0.05405567645912566, &#39;roc_auc&#39;: 0.5360103823230292, &#39;balanced_accuracy&#39;: 0.5284061852113758}
 std_scores = {&#39;matthews&#39;: 0.14703361948297453, &#39;roc_auc&#39;: 0.0926704447511229, &#39;balanced_accuracy&#39;: 0.07192589246275141}
 
-Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_indices&#39;, &#39;val_indices&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
+Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;]
 
 Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;permutation_importance&#39;]
 

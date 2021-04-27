@@ -1263,7 +1263,8 @@ class Dataset(pd.DataFrame):
         '''Calls method according to:
         https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rename.html
 
-        This version is updated to reflect changes to meta-data after renaming, e.g.,
+        This version is updated to reflect changes
+        to meta-data after renaming, e.g.,
         scopes will be updated to their new name accordingly.
 
         Parameters

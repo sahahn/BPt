@@ -13,6 +13,7 @@ BPt.Pipeline
    .. autosummary::
       :toctree:
       
+      Pipeline.build
       Pipeline.copy
       Pipeline.get_params
       Pipeline.set_params

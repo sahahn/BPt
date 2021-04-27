@@ -137,6 +137,18 @@ class BPtEvaluator():
         self.compare_bars = compare_bars
 
     @property
+    def estimator(self):
+        '''This parameter stores the passed saved, unfitted estimator
+        used in this evaluation. This is a sklearn style estimator obtained
+        from :func:`get_estimator`.'''
+
+        return self._estimator
+
+    @estimator.setter
+    def estimator(self, estimator):
+        self._estimator = estimator
+
+    @property
     def mean_scores(self):
         '''This parameter stores the mean scores as
         a dictionary of values, where each dictionary
@@ -264,7 +276,7 @@ class BPtEvaluator():
         self._feat_names = feat_names
 
     @property
-    def val_indices(self):
+    def val_subjects(self):
         '''| This parameter stores the validation subjects / index
           used in every fold of the cross-validation. It can be
           useful in some cases
@@ -272,18 +284,18 @@ class BPtEvaluator():
 
         | This parameter
           differs from
-          :data:`all_val_indices<BPtEvaluator.all_val_indices>`
+          :data:`all_val_subjects<BPtEvaluator.all_val_subjects>`
           in that even subjects with missing target values are not included.
 
         '''
-        return self._val_indices
+        return self._val_subjects
 
-    @val_indices.setter
-    def val_indices(self, val_indices):
-        self._val_indices = val_indices
+    @val_subjects.setter
+    def val_subjects(self, val_subjects):
+        self._val_subjects = val_subjects
 
     @property
-    def train_indices(self):
+    def train_subjects(self):
         '''| This parameter stores the training subjects / index
           used in every fold of the cross-validation. It can be
           useful in some cases to check to see exactly what
@@ -291,46 +303,46 @@ class BPtEvaluator():
 
         | This parameter
           differs from
-          :data:`all_train_indices<BPtEvaluator.all_train_indices>`
+          :data:`all_train_subjects<BPtEvaluator.all_train_subjects>`
           in that even subjects with missing target values are not included.
 
         '''
-        return self._train_indices
+        return self._train_subjects
 
-    @train_indices.setter
-    def train_indices(self, train_indices):
-        self._train_indices = train_indices
+    @train_subjects.setter
+    def train_subjects(self, train_subjects):
+        self._train_subjects = train_subjects
 
     @property
-    def all_val_indices(self):
+    def all_val_subjects(self):
         '''| This parameter stores the validation subjects / index
           used in every fold of the cross-validation.
 
         | This parameter
-          differs from :data:`val_indices<BPtEvaluator.val_indices>`
+          differs from :data:`val_subjects<BPtEvaluator.val_subjects>`
           in that even subjects with missing target values are included.
 
         '''
-        return self._all_val_indices
+        return self._all_val_subjects
 
-    @all_val_indices.setter
-    def all_val_indices(self, all_val_indices):
-        self._all_val_indices = all_val_indices
+    @all_val_subjects.setter
+    def all_val_subjects(self, all_val_subjects):
+        self._all_val_subjects = all_val_subjects
 
     @property
-    def all_train_indices(self):
+    def all_train_subjects(self):
         '''| This parameter stores the training subjects / index
           used in every fold of the cross-validation.
 
         | This parameter
-          differs from :data:`train_indices<BPtEvaluator.train_indices>`
+          differs from :data:`train_subjects<BPtEvaluator.train_subjects>`
           in that even subjects with missing target values are included.
         '''
-        return self._all_train_indices
+        return self._all_train_subjects
 
-    @all_train_indices.setter
-    def all_train_indices(self, all_train_indices):
-        self._all_train_indices = all_train_indices
+    @all_train_subjects.setter
+    def all_train_subjects(self, all_train_subjects):
+        self._all_train_subjects = all_train_subjects
 
     @property
     def timing(self):
@@ -460,8 +472,8 @@ class BPtEvaluator():
         self.scores = {scorer_str: [] for scorer_str in self.ps.scorer}
 
         # Save train and test subjs
-        self.all_train_indices, self.all_val_indices = [], []
-        self.train_indices, self.val_indices = [], []
+        self.all_train_subjects, self.all_val_subjects = [], []
+        self.train_subjects, self.val_subjects = [], []
 
         # Save final feat names
         self.feat_names = []
@@ -599,8 +611,8 @@ class BPtEvaluator():
         estimator_ = clone(self.estimator)
 
         # Save all train and val inds before missing targets removed
-        self.all_train_indices.append(X_tr.index)
-        self.all_val_indices.append(X_val.index)
+        self.all_train_subjects.append(X_tr.index)
+        self.all_val_subjects.append(X_val.index)
 
         # Check for if any missing targets, if so - skip
         # those subjects.
@@ -609,15 +621,15 @@ class BPtEvaluator():
 
         # Keep track of subjects in folds - where a subject is not included
         # in the train or val fold if has NaN target
-        self.train_indices.append(X_tr.index)
-        self.val_indices.append(X_val_c.index)
+        self.train_subjects.append(X_tr.index)
+        self.val_subjects.append(X_val_c.index)
 
         self._print('Train size:', len(X_tr), '- Val size:',
                     len(X_val_c), level=1)
 
         # Print if skipping any due to NaN target
-        dif_tr = len(self.all_train_indices[-1]) - len(self.train_indices[-1])
-        dif_val = len(self.all_train_indices[-1]) - len(self.train_indices[-1])
+        dif_tr = len(self.all_train_subjects[-1]) - len(self.train_subjects[-1])
+        dif_val = len(self.all_train_subjects[-1]) - len(self.train_subjects[-1])
         if dif_tr != 0 or dif_val != 0:
             self._print(f'Skipping Train: {dif_tr} - Val: {dif_val},',
                         'for NaN target values.', level=1)
@@ -702,9 +714,9 @@ class BPtEvaluator():
             self.mean_scores[scorer_key] = np.mean(scores)
 
             # Compute scores weighted by number of subjs
-            # Use val_indices without NaN targets
-            weights = [len(self.val_indices[i])
-                       for i in range(len(self.val_indices))]
+            # Use val_subjects without NaN targets
+            weights = [len(self.val_subjects[i])
+                       for i in range(len(self.val_subjects))]
             self.weighted_mean_scores[scorer_key] =\
                 np.average(scores, weights=weights)
 
@@ -752,10 +764,10 @@ class BPtEvaluator():
         dfs = []
 
         # For each fold
-        for fold_indx in range(len(self.all_val_indices)):
+        for fold_indx in range(len(self.all_val_subjects)):
 
             # Init df
-            df = pd.DataFrame(index=self.all_val_indices[fold_indx])
+            df = pd.DataFrame(index=self.all_val_subjects[fold_indx])
 
             # Add each predict type as a column
             for predict_type in self.preds:
@@ -804,20 +816,20 @@ class BPtEvaluator():
         if self.timing is not None:
             saved_attrs.append('timing')
 
-        saved_attrs += ['train_indices', 'val_indices', 'feat_names', 'ps',
+        saved_attrs += ['train_subjects', 'val_subjects', 'feat_names', 'ps',
                         'mean_scores', 'std_scores',
                         'weighted_mean_scores', 'scores']
 
         # Only show if different
-        ati_len = len(sum([list(e) for e in self.all_train_indices], []))
-        ti_len = len(sum([list(e) for e in self.train_indices], []))
+        ati_len = len(sum([list(e) for e in self.all_train_subjects], []))
+        ti_len = len(sum([list(e) for e in self.train_subjects], []))
         if ati_len != ti_len:
-            saved_attrs.append('all_train_indices')
+            saved_attrs.append('all_train_subjects')
 
-        avi_len = len(sum([list(e) for e in self.all_val_indices], []))
-        vi_len = len(sum([list(e) for e in self.val_indices], []))
+        avi_len = len(sum([list(e) for e in self.all_val_subjects], []))
+        vi_len = len(sum([list(e) for e in self.val_subjects], []))
         if avi_len != vi_len:
-            saved_attrs.append('all_val_indices')
+            saved_attrs.append('all_val_subjects')
 
         if self.estimators is not None:
 
@@ -1091,10 +1103,10 @@ class BPtEvaluator():
 
     def _get_val_fold_Xy(self, estimator, X_df, y_df, fold, just_model=True):
 
-        # Get the X and y df's - assume self.val_indices stores
+        # Get the X and y df's - assume self.val_subjects stores
         # only subjects with non nan target variables
-        X_val_df = X_df.loc[self.val_indices[fold]]
-        y_val_df = y_df.loc[self.val_indices[fold]]
+        X_val_df = X_df.loc[self.val_subjects[fold]]
+        y_val_df = y_df.loc[self.val_subjects[fold]]
 
         # Base as array, and all feat names
         X_trans, feat_names = np.array(X_val_df), list(X_val_df)
@@ -1293,19 +1305,15 @@ class BPtEvaluator():
             of the pipeline.
         '''
 
-        # @TODO hash input dataset to make sure the same?
-        # @TODO change this function to not be specific to one fold
-        # and more in line with rest of functions, i.e., returning a list.
-
         self._estimators_check()
 
         # Estimator from the fold
         estimator = self.estimators[fold]
 
         if subjects == 'tr':
-            subjects = self.train_indices[fold]
+            subjects = self.train_subjects[fold]
         elif subjects == 'val':
-            subjects = self.val_indices[fold]
+            subjects = self.val_subjects[fold]
 
         # Get feature names from fold
         feat_names = self.feat_names[fold]
@@ -1415,17 +1423,17 @@ class BPtEvaluator():
         equal_cv = True
 
         # Make sure same number of folds
-        if len(self.train_indices) != len(other.train_indices):
+        if len(self.train_subjects) != len(other.train_subjects):
             equal_cv = False
 
         # Make sure subjects from folds line up
-        for fold in range(len(self.train_indices)):
-            if not np.array_equal(self.train_indices[fold],
-                                  other.train_indices[fold]):
+        for fold in range(len(self.train_subjects)):
+            if not np.array_equal(self.train_subjects[fold],
+                                  other.train_subjects[fold]):
                 equal_cv = False
 
-            if not np.array_equal(self.val_indices[fold],
-                                  other.val_indices[fold]):
+            if not np.array_equal(self.val_subjects[fold],
+                                  other.val_subjects[fold]):
                 equal_cv = False
 
         # Only compute for the overlapping metrics
@@ -1462,8 +1470,8 @@ class BPtEvaluator():
                 df = n - 1
 
                 # Use the mean train / test size
-                n_train = np.mean([len(ti) for ti in self.train_indices])
-                n_test = np.mean([len(ti) for ti in self.val_indices])
+                n_train = np.mean([len(ti) for ti in self.train_subjects])
+                n_test = np.mean([len(ti) for ti in self.val_subjects])
 
                 # Frequentist Approach
                 t_stat, p_val = compute_corrected_ttest(differences, df,
@@ -1498,7 +1506,7 @@ class BPtEvaluator():
         subsets = {}
 
         # Make sure exists, is categorical and no NaN
-        dataset.validate_group_key(group, name='group')
+        dataset._validate_group_key(group, name='group')
 
         # Get the values for just this column
         values = dataset._get_values(self, group,
@@ -1522,8 +1530,8 @@ class BPtEvaluatorSubset(BPtEvaluator):
         # Save some class attributes
         self.ps = evaluator.ps
         self.estimators = evaluator.estimators
-        self.train_indices = evaluator.train_indices
-        self.all_train_indices = evaluator.all_train_indices
+        self.train_subjects = evaluator.train_subjects
+        self.all_train_subjects = evaluator.all_train_subjects
         self.n_repeats_ = evaluator.n_repeats_
         self.timing = evaluator.timing
         self.verbose = -1
@@ -1532,7 +1540,7 @@ class BPtEvaluatorSubset(BPtEvaluator):
         self.subset_name = subset_name
 
         # Need to set val indices first
-        self._set_val_indices(subjects, evaluator)
+        self._set_val_subjects(subjects, evaluator)
 
         # Then can set preds and scores
         self._set_preds(evaluator)
@@ -1549,19 +1557,19 @@ class BPtEvaluatorSubset(BPtEvaluator):
 
         return base + '(' + self.subset_name + ')'
 
-    def _set_val_indices(self, subjects, evaluator):
+    def _set_val_subjects(self, subjects, evaluator):
 
-        self.val_indices = [fold_indices.intersection(subjects)
-                            for fold_indices in evaluator.val_indices]
+        self.val_subjects = [fold_indices.intersection(subjects)
+                            for fold_indices in evaluator.val_subjects]
 
-        self.all_val_indices = [fold_indices.intersection(subjects)
-                                for fold_indices in evaluator.all_val_indices]
+        self.all_val_subjects = [fold_indices.intersection(subjects)
+                                for fold_indices in evaluator.all_val_subjects]
 
     def _set_preds(self, evaluator):
 
-        masks = [np.array([ind in self.all_val_indices[i]
-                           for ind in evaluator.all_val_indices[i]])
-                 for i in range(len(self.all_val_indices))]
+        masks = [np.array([ind in self.all_val_subjects[i]
+                           for ind in evaluator.all_val_subjects[i]])
+                 for i in range(len(self.all_val_subjects))]
 
         self.preds = {metric: [ps[mask] for ps, mask in
                                zip(evaluator.preds[metric], masks)]
@@ -1597,13 +1605,11 @@ class BPtEvaluatorSubset(BPtEvaluator):
 
 class BPtEvaluatorFold():
 
-    # @TODO version specific to one fold
-    # not sure if I actually want to do this yet, but could
-    # be interesting to have this obj returned from an index
-    # of main BPt evaluator.
-
     def __init__(self, evaluator, fold):
 
         if hasattr(evaluator, 'estimators'):
             self.estimator = evaluator.estimators[fold]
+
+        # self.scores = 
+        # self.feat_names = 
 

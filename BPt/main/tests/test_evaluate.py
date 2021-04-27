@@ -29,8 +29,7 @@ def get_fake_datafile_dataset(m, n):
     data = data.replace(fm)
 
     data.to_data_file(scope='all', inplace=True)
-
-    data['t'] = np.random.random(m)
+    data['t'] = np.random.RandomState(10).random(m)
     data.set_role('t', 'target', inplace=True)
 
     return data
@@ -185,8 +184,8 @@ def test_evaluate_regression_dt():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_indices) == 5
-    assert len(evaluator.val_indices) == 5
+    assert len(evaluator.train_subjects) == 5
+    assert len(evaluator.val_subjects) == 5
 
 
 def test_regression_mean_fis():
@@ -408,21 +407,21 @@ def test_nan_targets():
     assert evaluator.n_repeats_ == 1
     assert evaluator.n_splits_ == 3
 
-    for tr in evaluator.train_indices:
+    for tr in evaluator.train_subjects:
         assert 0 not in tr
 
     # Should be in one here
-    is_in = [0 in tr for tr in evaluator.all_train_indices]
+    is_in = [0 in tr for tr in evaluator.all_train_subjects]
     assert any(is_in)
 
-    assert len(evaluator.all_train_indices) == len(evaluator.train_indices)
+    assert len(evaluator.all_train_subjects) == len(evaluator.train_subjects)
 
-    ati_len = len(sum([list(e) for e in evaluator.all_train_indices], []))
-    ti_len = len(sum([list(e) for e in evaluator.train_indices], []))
+    ati_len = len(sum([list(e) for e in evaluator.all_train_subjects], []))
+    ti_len = len(sum([list(e) for e in evaluator.train_subjects], []))
     assert ati_len != ti_len
 
-    avi_len = len(sum([list(e) for e in evaluator.all_val_indices], []))
-    vi_len = len(sum([list(e) for e in evaluator.val_indices], []))
+    avi_len = len(sum([list(e) for e in evaluator.all_val_subjects], []))
+    vi_len = len(sum([list(e) for e in evaluator.val_subjects], []))
     assert avi_len != vi_len
 
     preds_dfs_dropt = evaluator.get_preds_dfs(drop_nan_targets=True)
@@ -445,7 +444,7 @@ def test_only_fold_cv_param():
     assert evaluator.n_repeats_ == 1
     assert evaluator.n_splits_ == 1
     assert len(evaluator.scores['roc_auc']) == 1
-    assert len(evaluator.train_indices) == 1
+    assert len(evaluator.train_subjects) == 1
 
 
 def test_multiple_only_fold_cv_param():
@@ -463,7 +462,7 @@ def test_multiple_only_fold_cv_param():
     assert evaluator.n_repeats_ == 1
     assert evaluator.n_splits_ == 2
     assert len(evaluator.scores['roc_auc']) == 2
-    assert len(evaluator.train_indices) == 2
+    assert len(evaluator.train_subjects) == 2
 
 
 def test_evaluate_with_resid():
@@ -510,8 +509,8 @@ def test_evaluate_with_resid():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_indices) == 5
-    assert len(evaluator.val_indices) == 5
+    assert len(evaluator.train_subjects) == 5
+    assert len(evaluator.val_subjects) == 5
 
 
 def test_evaluate_with_resid_param_search():
@@ -560,8 +559,8 @@ def test_evaluate_with_resid_param_search():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_indices) == 5
-    assert len(evaluator.val_indices) == 5
+    assert len(evaluator.train_subjects) == 5
+    assert len(evaluator.val_subjects) == 5
 
 
 def test_evaluate_with_resid_grid_search():
@@ -613,8 +612,8 @@ def test_evaluate_with_resid_grid_search():
     assert len(evaluator.preds['predict']) == 5
     assert len(evaluator.preds['y_true']) == 5
 
-    assert len(evaluator.train_indices) == 5
-    assert len(evaluator.val_indices) == 5
+    assert len(evaluator.train_subjects) == 5
+    assert len(evaluator.val_subjects) == 5
 
 
 def test_evaluate_compare():

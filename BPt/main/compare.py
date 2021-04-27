@@ -515,8 +515,8 @@ class CompareDict(dict):
             df = n - 1
 
             # Use the mean train / test size
-            n_train = np.mean([len(ti) for ti in self[model_i].train_indices])
-            n_test = np.mean([len(ti) for ti in self[model_i].val_indices])
+            n_train = np.mean([len(ti) for ti in self[model_i].train_subjects])
+            n_test = np.mean([len(ti) for ti in self[model_i].val_subjects])
 
             # Do t-test
             t_stat, p_val =\

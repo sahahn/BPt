@@ -1,0 +1,8 @@
+.. _whatsnew_201:
+
+Version 2.0.1
+---------------
+
+- New: :func:`Pipeline.build`
+
+- Updated: Predicting Sex Example

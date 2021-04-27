@@ -13,6 +13,7 @@ BPt.ModelPipeline
    .. autosummary::
       :toctree:
       
+      ModelPipeline.build
       ModelPipeline.copy
       ModelPipeline.get_params
       ModelPipeline.print_all

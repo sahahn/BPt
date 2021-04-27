@@ -250,6 +250,54 @@ def test_subset_by():
     assert list(g1_preds[1]) == list(g2_preds[1])
 
 
+def test_subset_by_binary():
+
+    data = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                     [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                     [1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2]])
+    data = data.transpose((1, 0))
+
+    data = Dataset(data=data,
+                   columns=['1', '2', 't', 'grp'],
+                   targets='t', non_inputs='grp')
+    data = data.to_binary('grp')
+    data = data.to_binary('t')
+
+    pipe = Pipeline([Scaler('standard'), Model('linear')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       random_state=2,
+                       scorer='roc_auc',
+                       problem_type='binary',
+                       cv=2)
+    subsets = results.subset_by('grp', data)
+
+    g1 = subsets['1']
+    g2 = subsets['2']
+
+    assert len(g1.scores['roc_auc']) == 2
+    assert len(g2.scores['roc_auc']) == 2
+    assert len(g1.mean_scores) == 1
+    assert len(g2.mean_scores) == 1
+
+    assert len(g1.train_subjects) == 2
+    assert len(g2.train_subjects) == 2
+    assert len(g1.val_subjects) == 2
+    assert len(g2.val_subjects) == 2
+
+    assert len(g1.val_subjects[0].intersection(g2.val_subjects[0])) == 0
+    assert len(g1.val_subjects[1].intersection(g2.val_subjects[1])) == 0
+
+    g1_preds = g1.get_preds_dfs()
+    g2_preds = g2.get_preds_dfs()
+
+    assert list(g1_preds[0]) == list(g2_preds[0])
+    assert list(g1_preds[1]) == list(g2_preds[1])
+
+
 def test_subset_by_categorical():
 
     data = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

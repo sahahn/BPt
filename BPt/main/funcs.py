@@ -18,14 +18,13 @@ _base_docs = {}
 _base_docs[
     "pipeline"
 ] = """pipeline : :class:`Pipeline`
-        A BPt input class Pipeline to be intialized according
-        to the passed dataset and problem_spec.
+        | A BPt input class Pipeline to be intialized according
+          to the passed dataset and problem_spec.
+          This parameter can be either an instance of :class:`Pipeline`,
+          :class:`ModelPipeline` or one of the below cases.
 
-        This parameter can be either an instance of :class:`Pipeline`,
-        :class:`ModelPipeline` or one of the below cases.
-
-        In the case that a single str is passed, it will assumed
-        to be a model indicator str and the pipeline used will be:
+        | In the case that a single str is passed, it will assumed
+          to be a model indicator str and the pipeline used will be:
 
         ::
 
@@ -43,13 +42,14 @@ _base_docs[
 _base_docs[
     "dataset"
 ] = """dataset : :class:`Dataset`
-        The Dataset in function should be evaluated in the context of.
-        The dataset is as the data source for this operation.
+        | The :class:`Dataset` in which this function should be evaluated
+          in the context of. In other words, the dataset is
+          used as the data source for this operation.
 
-        Arguments within problem_spec can be used to
-        select just subsets of data. For example parameter
-        scope can be used to select only some columns or
-        parameter subjects to select a subset of subjects.
+        | Arguments within problem_spec can be used to
+          select just subsets of data. For example parameter
+          scope can be used to select only some columns or
+          parameter subjects to select a subset of subjects.
     """
 
 _base_docs["problem_spec"] = _shared_docs['problem_spec']

@@ -1707,7 +1707,7 @@ class Dataset(pd.DataFrame):
                             add_unique_overlap,
                             _replace_cat_values)
 
-    from ._validation import (_validate_cv_key,
+    from ._validation import (_validate_group_key,
                               _proc_cv_strategy,
                               _validate_split,
                               _finish_split,

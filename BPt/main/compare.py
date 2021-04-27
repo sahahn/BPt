@@ -2,19 +2,11 @@ from .BPtEvaluator import BPtEvaluator
 from .input_operations import BPtInputMixIn
 from copy import deepcopy, copy
 import pandas as pd
-from .stats_helpers import  compute_corrected_ttest
+from .stats_helpers import compute_corrected_ttest
 import numpy as np
 from itertools import combinations
 from math import factorial
-
-
-def clean_str(in_str):
-
-    in_str = str(in_str)
-    in_str = in_str.replace('"', '')
-    in_str = in_str.replace("'", '')
-
-    return in_str
+from .helpers import clean_str
 
 
 def str_to_option(option):

@@ -10,6 +10,9 @@ from ..pipeline.helpers import get_mean_fis
 from sklearn.utils import Bunch
 from scipy.stats import t
 from .stats_helpers import corrected_std, compute_corrected_ttest
+from sklearn.metrics._scorer import (_PredictScorer, _ProbaScorer,
+                                     _ThresholdScorer)
+from .helpers import clean_str
 
 
 def is_notebook():
@@ -27,6 +30,11 @@ def is_notebook():
 # @TODO
 # 1. Store permutation FI's in object after call
 # 2. Add methods for plot feature importance's ?
+
+# @Possible TODO
+# store a shallow copy of the passed Dataset???
+# or some sort of hash to make sure / some way of making sure
+# functions that need a dataset are not passed some wrong input
 
 
 def get_non_nan_Xy(X, y):
@@ -771,8 +779,11 @@ class BPtEvaluator():
 
         return dfs
 
+    def _get_display_name(self):
+        return str(self.__class__.__name__)
+
     def __repr__(self):
-        rep = 'BPtEvaluator\n'
+        rep = self._get_display_name() + '\n'
         rep += '------------\n'
 
         # Add scores + means
@@ -786,6 +797,7 @@ class BPtEvaluator():
 
         if self.estimators is not None:
             saved_attrs.append('estimators')
+            avaliable_methods.append('get_X_transform_df')
         if self.preds is not None:
             saved_attrs.append('preds')
             avaliable_methods.append('get_preds_dfs')
@@ -1281,6 +1293,10 @@ class BPtEvaluator():
             of the pipeline.
         '''
 
+        # @TODO hash input dataset to make sure the same?
+        # @TODO change this function to not be specific to one fold
+        # and more in line with rest of functions, i.e., returning a list.
+
         self._estimators_check()
 
         # Estimator from the fold
@@ -1476,3 +1492,118 @@ class BPtEvaluator():
                 dif_df.loc[metric, 'rope_prob'] = rope_prob
 
         return dif_df
+
+    def subset_by(self, group, dataset, decode_values=True):
+
+        subsets = {}
+
+        # Make sure exists, is categorical and no NaN
+        dataset.validate_group_key(group, name='group')
+
+        # Get the values for just this column
+        values = dataset._get_values(self, group,
+                                     decode_values=decode_values)
+
+        # Add a subset for each set of values
+        for value in values.unique():
+            name = clean_str(f'{group}={value}')
+
+            # Get all subjects with this value
+            subjs = values[values == value].index
+
+            # Get evaluator subset
+            subsets[name] = BPtEvaluatorSubset(self, subjs, group_name=name)
+
+
+class BPtEvaluatorSubset(BPtEvaluator):
+
+    def __init__(self, evaluator, subjects, subset_name=None):
+
+        # Save some class attributes
+        self.ps = evaluator.ps
+        self.estimators = evaluator.estimators
+        self.train_indices = evaluator.train_indices
+        self.all_train_indices = evaluator.all_train_indices
+        self.n_repeats_ = evaluator.n_repeats_
+        self.timing = evaluator.timing
+        self.verbose = -1
+
+        # Save name for display
+        self.subset_name = subset_name
+
+        # Need to set val indices first
+        self._set_val_indices(subjects, evaluator)
+
+        # Then can set preds and scores
+        self._set_preds(evaluator)
+        self._set_scores()
+
+        # Calculate summary scores
+        self._compute_summary_scores()
+
+    def _get_display_name(self):
+
+        base = str(self.__class__.__name__)
+        if self.subset_name is None:
+            return base
+
+        return base + '(' + self.subset_name + ')'
+
+    def _set_val_indices(self, subjects, evaluator):
+
+        self.val_indices = [fold_indices.intersection(subjects)
+                            for fold_indices in evaluator.val_indices]
+
+        self.all_val_indices = [fold_indices.intersection(subjects)
+                                for fold_indices in evaluator.all_val_indices]
+
+    def _set_preds(self, evaluator):
+
+        masks = [np.array([ind in self.all_val_indices[i]
+                           for ind in evaluator.all_val_indices[i]])
+                 for i in range(len(self.all_val_indices))]
+
+        self.preds = {metric: [ps[mask] for ps, mask in
+                               zip(evaluator.preds[metric], masks)]
+                      for metric in evaluator.preds}
+
+    def _set_scores(self):
+        # @TODO make work with categorical ??
+
+        self.scores = {}
+
+        for scorer_str in self.ps.scorer:
+            scorer = self.ps.scorer[scorer_str]
+
+            if isinstance(scorer, _PredictScorer):
+                preds = self.preds['predict']
+            elif isinstance(scorer, _ProbaScorer):
+                preds = [p[:, 1] for p in self.preds['predict_proba']]
+            elif isinstance(scorer, _ThresholdScorer):
+                if 'decision_function' in self.preds:
+                    preds = [p[:, 1] for p in self.preds['decision_function']]
+                else:
+                    preds = [p[:, 1] for p in self.preds['predict_proba']]
+            else:
+                raise RuntimeError('invalid scorer type')
+
+            # Calculate scores for each fold
+            self.scores[scorer_str] = []
+            for p, yt in zip(preds, self.preds['y_true']):
+                score = scorer._score_func(yt, p, **scorer._kwargs)
+                score *= scorer._sign
+                self.scores[scorer_str].append(score)
+
+
+class BPtEvaluatorFold():
+
+    # @TODO version specific to one fold
+    # not sure if I actually want to do this yet, but could
+    # be interesting to have this obj returned from an index
+    # of main BPt evaluator.
+
+    def __init__(self, evaluator, fold):
+
+        if hasattr(evaluator, 'estimators'):
+            self.estimator = evaluator.estimators[fold]
+

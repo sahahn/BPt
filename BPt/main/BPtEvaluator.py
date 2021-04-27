@@ -1521,10 +1521,6 @@ class BPtEvaluator():
         as broken down by the different unique groups
         of a column in the passed :class:`Dataset`.
 
-        .. warning::
-
-            This method has not yet been tested for categorical problem types.
-
         Parameters
         ------------
         group : str
@@ -1607,10 +1603,6 @@ class BPtEvaluatorSubset(BPtEvaluator):
         mean_scores
         weighted_mean_scores
 
-    .. warning::
-
-        This class has not yet been tested for categorical problem types.
-
     '''
 
     def __init__(self, evaluator, subjects, subset_name=None):
@@ -1665,7 +1657,6 @@ class BPtEvaluatorSubset(BPtEvaluator):
                       for metric in evaluator.preds}
 
     def _set_scores(self):
-        # @TODO make work with categorical ??
 
         self.scores = {}
 
@@ -1675,12 +1666,26 @@ class BPtEvaluatorSubset(BPtEvaluator):
             if isinstance(scorer, _PredictScorer):
                 preds = self.preds['predict']
             elif isinstance(scorer, _ProbaScorer):
-                preds = [p[:, 1] for p in self.preds['predict_proba']]
+
+                # Binary case
+                if self.preds['predict_proba'][0][0].shape[0] == 2:
+                    preds = [p[:, 1] for p in self.preds['predict_proba']]
+
+                # Cat case
+                else:
+                    preds = self.preds['predict_proba']
+
             elif isinstance(scorer, _ThresholdScorer):
                 if 'decision_function' in self.preds:
                     preds = self.preds['decision_function']
-                else:
+
+                # Binary proba case
+                elif self.preds['predict_proba'][0][0].shape[0] == 2:
                     preds = [p[:, 1] for p in self.preds['predict_proba']]
+
+                # Cat case
+                else:
+                    preds = self.preds['predict_proba']
             else:
                 raise RuntimeError('invalid scorer type')
 

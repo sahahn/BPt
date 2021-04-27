@@ -1914,7 +1914,7 @@ class Pipeline(Params):
 
         return get_estimator(pipeline=self, dataset=dataset,
                              problem_spec=problem_spec,
-                             extra_params=extra_params)
+                             **extra_params)
 
 
 class ModelPipeline(Pipeline):

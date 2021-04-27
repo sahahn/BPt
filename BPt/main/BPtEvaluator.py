@@ -774,7 +774,7 @@ class BPtEvaluator():
                 ps = self.preds[predict_type][fold_indx]
 
                 # Either float or multi-class case
-                if isinstance(ps[0], float):
+                if isinstance(ps[0], (float, np.floating)):
                     df[predict_type] = ps
 
                 else:
@@ -1509,7 +1509,7 @@ class BPtEvaluator():
         dataset._validate_group_key(group, name='group')
 
         # Get the values for just this column
-        values = dataset._get_values(self, group,
+        values = dataset._get_values(group,
                                      decode_values=decode_values)
 
         # Add a subset for each set of values
@@ -1520,7 +1520,9 @@ class BPtEvaluator():
             subjs = values[values == value].index
 
             # Get evaluator subset
-            subsets[name] = BPtEvaluatorSubset(self, subjs, group_name=name)
+            subsets[name] = BPtEvaluatorSubset(self, subjs, subset_name=name)
+
+        return subsets
 
 
 class BPtEvaluatorSubset(BPtEvaluator):
@@ -1560,10 +1562,11 @@ class BPtEvaluatorSubset(BPtEvaluator):
     def _set_val_subjects(self, subjects, evaluator):
 
         self.val_subjects = [fold_indices.intersection(subjects)
-                            for fold_indices in evaluator.val_subjects]
+                             for fold_indices in evaluator.val_subjects]
 
         self.all_val_subjects = [fold_indices.intersection(subjects)
-                                for fold_indices in evaluator.all_val_subjects]
+                                 for fold_indices
+                                 in evaluator.all_val_subjects]
 
     def _set_preds(self, evaluator):
 
@@ -1589,7 +1592,7 @@ class BPtEvaluatorSubset(BPtEvaluator):
                 preds = [p[:, 1] for p in self.preds['predict_proba']]
             elif isinstance(scorer, _ThresholdScorer):
                 if 'decision_function' in self.preds:
-                    preds = [p[:, 1] for p in self.preds['decision_function']]
+                    preds = self.preds['decision_function']
                 else:
                     preds = [p[:, 1] for p in self.preds['predict_proba']]
             else:

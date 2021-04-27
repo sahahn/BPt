@@ -1,5 +1,6 @@
 from .test_evaluate import get_fake_dataset
 from ..input import (Model, Pipeline, Scaler, CV)
+from ...dataset.Dataset import Dataset
 from ..funcs import evaluate
 from ..BPtEvaluator import is_notebook
 import pytest
@@ -202,3 +203,48 @@ def test_permutation_feature_importance():
     fis = results.permutation_importance(dataset, n_repeats=10)
     assert fis['importances_mean'].shape == (2, 2)
     assert fis['importances_std'].shape == (2, 2)
+
+
+def test_subset_by():
+
+    data = np.array([[1, 1, 1, 1, 1, 1],
+                     [2, 2, 2, 2, 2, 2],
+                     [.1, .2, .3, .4, .5, .6],
+                     [1, 1, 1, 2, 2, 2]])
+    data = data.transpose((1, 0))
+
+    data = Dataset(data=data,
+                   columns=['1', '2', 't', 'grp'],
+                   targets='t', non_inputs='grp')
+    data = data.to_binary('grp')
+
+    pipe = Pipeline([Scaler('standard'), Model('linear')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       random_state=2,
+                       cv=2)
+    subsets = results.subset_by('grp', data)
+
+    g1 = subsets['grp=1.0']
+    g2 = subsets['grp=2.0']
+
+    assert len(g1.scores['explained_variance']) == 2
+    assert len(g2.scores['explained_variance']) == 2
+    assert len(g1.mean_scores) == 2
+    assert len(g2.mean_scores) == 2
+
+    assert len(g1.train_subjects) == 2
+    assert len(g2.train_subjects) == 2
+    assert len(g1.val_subjects) == 2
+    assert len(g2.val_subjects) == 2
+
+    assert len(g1.val_subjects[0].intersection(g2.val_subjects[0])) == 0
+    assert len(g1.val_subjects[1].intersection(g2.val_subjects[1])) == 0
+
+    g1_preds = g1.get_preds_dfs()
+    g2_preds = g2.get_preds_dfs()
+
+    assert list(g1_preds[0]) == list(g2_preds[0])
+    assert list(g1_preds[1]) == list(g2_preds[1])

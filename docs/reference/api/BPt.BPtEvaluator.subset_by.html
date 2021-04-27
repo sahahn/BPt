@@ -41,6 +41,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="BPt.BPtEvaluatorSubset" href="BPt.BPtEvaluatorSubset.html" />
+    <link rel="prev" title="BPt.BPtEvaluator.permutation_importance" href="BPt.BPtEvaluator.permutation_importance.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -78,7 +80,7 @@
             <a class="nav-link" href="../../user_guide/index.html">User Guide</a>
         </li>
         
-        <li class="nav-item ">
+        <li class="nav-item active">
             <a class="nav-link" href="../index.html">API reference</a>
         </li>
         
@@ -144,6 +146,102 @@
         
         
         
+          
+            
+                <li class="">
+                    <a href="../dataset.html">Dataset</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline.html">Pipelines</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pipeline_pieces.html">Pipeline Pieces</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../problem_spec.html">ProblemSpec</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../CV.html">CV</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../input_operations.html">Input Operations</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../compare.html">Compare</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../dists.html">Parameter Distributions</a>
+                </li>
+            
+          
+            
+  
+                <li class="active">
+                    <a href="../evaluate.html">Evaluate</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="BPt.get_estimator.html">BPt.get_estimator</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.evaluate.html">BPt.evaluate</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.cross_validate.html">BPt.cross_validate</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.cross_val_score.html">BPt.cross_val_score</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="BPt.BPtEvaluator.html">BPt.BPtEvaluator</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.BPtEvaluatorSubset.html">BPt.BPtEvaluatorSubset</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../extensions.html">Extension Classes</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../util.html">Util</a>
+                </li>
+            
+          
+        
         
         
         
@@ -181,8 +279,67 @@
 <h1>BPt.BPtEvaluator.subset_by<a class="headerlink" href="#bpt-bptevaluator-subset-by" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.BPtEvaluator.subset_by">
-<code class="sig-prename descclassname">BPtEvaluator.</code><code class="sig-name descname">subset_by</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">group</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">decode_values</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1504-L1523"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.BPtEvaluator.subset_by" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">BPtEvaluator.</code><code class="sig-name descname">subset_by</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">group</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">decode_values</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1515-L1592"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.BPtEvaluator.subset_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate instances of <a class="reference internal" href="BPt.BPtEvaluatorSubset.html#BPt.BPtEvaluatorSubset" title="BPt.BPtEvaluatorSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluatorSubset</span></code></a> based
+on subsets of subjects based on different unique groups.</p>
+<p>This method is used to analyze results
+as broken down by the different unique groups
+of a column in the passed <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method has not yet been tested for categorical problem types.</p>
+</div>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>group</strong><span class="classifier">str</span></dt><dd><p>The name of a column within the passed dataset
+that defines the different subsets of subjects.
+This column must be categorical and have no missing
+values.</p>
+</dd>
+<dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></span></dt><dd><p>The instance of the Dataset class originally passed to
+<a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a different dataset is passed, then unexpected
+behavior may occur.</p>
+</div>
+</dd>
+<dt><strong>decode_values</strong><span class="classifier">bool</span></dt><dd><p>If the original values of the group column
+were encoded via a <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> function,
+this if True, this function will try to
+represent values by their original name
+rather than the name used internally.
+If False, then the internal ordinal number
+value will be used.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>subsets</strong><span class="classifier">dict of <a class="reference internal" href="BPt.BPtEvaluatorSubset.html#BPt.BPtEvaluatorSubset" title="BPt.BPtEvaluatorSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluatorSubset</span></code></a></span></dt><dd><div class="line-block">
+<div class="line">Returns a dictionary of <a class="reference internal" href="BPt.BPtEvaluatorSubset.html#BPt.BPtEvaluatorSubset" title="BPt.BPtEvaluatorSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluatorSubset</span></code></a>,
+where keys are generated as a representation of
+the value stored for each unique group. If decode_values
+is True, then these values are the original names
+otherwise they are the internal names.</div>
+</div>
+<div class="line-block">
+<div class="line">Saved under each key is an instance of
+<a class="reference internal" href="BPt.BPtEvaluatorSubset.html#BPt.BPtEvaluatorSubset" title="BPt.BPtEvaluatorSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluatorSubset</span></code></a>, which can be
+treated the same as an instance of
+<a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>, except it has a subset
+of values for val_subjects, and different
+preds and scores representing this subset.</div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 
@@ -192,6 +349,8 @@
               
               <div class='prev-next-bottom'>
                 
+    <a class='left-prev' id="prev-link" href="BPt.BPtEvaluator.permutation_importance.html" title="previous page">BPt.BPtEvaluator.permutation_importance</a>
+    <a class='right-next' id="next-link" href="BPt.BPtEvaluatorSubset.html" title="next page">BPt.BPtEvaluatorSubset</a>
 
               </div>
               

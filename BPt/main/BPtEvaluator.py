@@ -9,10 +9,24 @@ from ..dataset.helpers import verbose_print
 from ..pipeline.helpers import get_mean_fis
 from sklearn.utils import Bunch
 from scipy.stats import t
+from pandas.util._decorators import doc
 from .stats_helpers import corrected_std, compute_corrected_ttest
 from sklearn.metrics._scorer import (_PredictScorer, _ProbaScorer,
                                      _ThresholdScorer)
 from .helpers import clean_str
+
+_base_docs = {}
+
+_base_docs['dataset'] = """dataset : :class:`Dataset`
+            The instance of the Dataset class originally passed to
+            :func:`evaluate`.
+
+            .. note::
+
+                If a different dataset is passed, then unexpected
+                behavior may occur.
+
+    """
 
 
 def is_notebook():
@@ -93,7 +107,8 @@ def mean_no_zeros(df):
 class BPtEvaluator():
     '''This class is returned from calls to :func:`evaluate`,
     and can be used to store information from evaluate, or
-    compute additional feature importances.'''
+    compute additional feature importances. It should typically not be
+    initialized by the user.'''
 
     # Add verbose print
     _print = verbose_print
@@ -1053,12 +1068,12 @@ class BPtEvaluator():
         automatically calculated feature importances)
         to their original space.
 
-        .. warning ::
+        .. warning::
 
-            | If there are any underlying non-recoverable
-              transformations in the pipeline, this method
-              will fail! For example, if a PCA was applied,
-              then a reverse transformation cannot be computed.
+            If there are any underlying non-recoverable
+            transformations in the pipeline, this method
+            will fail! For example, if a PCA was applied,
+            then a reverse transformation cannot be computed.
 
         This method can be especially helpful when using :class:`Loader`.
 
@@ -1122,6 +1137,7 @@ class BPtEvaluator():
 
         return estimator, X_trans, np.array(y_val_df), feat_names
 
+    @doc(dataset=_base_docs['dataset'])
     def permutation_importance(self, dataset,
                                n_repeats=10, scorer='default',
                                just_model=True, return_as='dfs',
@@ -1132,10 +1148,7 @@ class BPtEvaluator():
 
         Parameters
         -----------
-        dataset : :class:`Dataset`
-            The instance of the Dataset class originally passed to
-            :func:`evaluate`. Note: if you pass a different dataset,
-            you may get unexpected behavior.
+        {dataset}
 
         n_repeats : int, optional
             The number of times to randomly permute each feature.
@@ -1168,7 +1181,7 @@ class BPtEvaluator():
 
                 default = True
 
-        return_as : {'dfs', 'raw'}, optional
+        return_as : ['dfs', 'raw'], optional
             This parameter controls if calculated permutation
             feature importances should be returned as a DataFrame
             with column names as the corresponding feature names,
@@ -1269,16 +1282,14 @@ class BPtEvaluator():
         return Bunch(importances_mean=fis_to_df(mean_series),
                      importances_std=fis_to_df(std_series))
 
+    @doc(dataset=_base_docs['dataset'])
     def get_X_transform_df(self, dataset, fold=0, subjects='tr'):
         '''This method is used as a helper for getting the transformed
         input data for one of the saved models run during evaluate.
 
         Parameters
         -----------
-        dataset : :class:`Dataset`
-            The instance of the Dataset class originally passed to
-            :func:`evaluate`. Note: if you pass a different dataset,
-            you may get unexpected behavior.
+        {dataset}
 
         fold : int, optional
             The corresponding fold of the trained
@@ -1501,7 +1512,62 @@ class BPtEvaluator():
 
         return dif_df
 
+    @doc(dataset=_base_docs['dataset'])
     def subset_by(self, group, dataset, decode_values=True):
+        '''Generate instances of :class:`BPtEvaluatorSubset` based
+        on subsets of subjects based on different unique groups.
+
+        This method is used to analyze results
+        as broken down by the different unique groups
+        of a column in the passed :class:`Dataset`.
+
+        .. warning::
+
+            This method has not yet been tested for categorical problem types.
+
+        Parameters
+        ------------
+        group : str
+            The name of a column within the passed dataset
+            that defines the different subsets of subjects.
+            This column must be categorical and have no missing
+            values.
+
+        {dataset}
+
+        decode_values : bool
+            If the original values of the group column
+            were encoded via a :class:`Dataset` function,
+            this if True, this function will try to
+            represent values by their original name
+            rather than the name used internally.
+            If False, then the internal ordinal number
+            value will be used.
+
+            ::
+
+                default = True
+
+        Returns
+        ---------
+        subsets : dict of :class:`BPtEvaluatorSubset`
+            | Returns a dictionary of :class:`BPtEvaluatorSubset`,
+              where keys are generated as a representation of
+              the value stored for each unique group. If decode_values
+              is True, then these values are the original names
+              otherwise they are the internal names.
+
+            | Saved under each key is an instance of
+              :class:`BPtEvaluatorSubset`, which can be
+              treated the same as an instance of
+              :class:`BPtEvaluator`, except it has a subset
+              of values for val_subjects, and different
+              preds and scores representing this subset.
+        '''
+
+        if self.preds is None:
+            raise RuntimeError('store_preds must have been set '
+                               'to True to use this function.')
 
         subsets = {}
 
@@ -1514,18 +1580,38 @@ class BPtEvaluator():
 
         # Add a subset for each set of values
         for value in values.unique():
-            name = clean_str(f'{group}={value}')
+            subset_name = clean_str(f'{group}={value}')
 
             # Get all subjects with this value
             subjs = values[values == value].index
 
             # Get evaluator subset
-            subsets[name] = BPtEvaluatorSubset(self, subjs, subset_name=name)
+            subsets[clean_str(value)] =\
+                BPtEvaluatorSubset(self, subjs, subset_name=subset_name)
 
         return subsets
 
 
 class BPtEvaluatorSubset(BPtEvaluator):
+    '''This class represents a subset of :class:`BPtEvaluator` and
+    is returned as a result of calling :func:`BPtEvaluator.subset_by`.
+
+    This class specifically updates values for a subset of val_subjects,
+    which mean only the following attributes are re-calculated / will be
+    different from the source :class:`BPtEvaluator` ::
+
+        val_subjects
+        all_val_subjects
+        preds
+        scores
+        mean_scores
+        weighted_mean_scores
+
+    .. warning::
+
+        This class has not yet been tested for categorical problem types.
+
+    '''
 
     def __init__(self, evaluator, subjects, subset_name=None):
 

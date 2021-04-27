@@ -221,6 +221,10 @@
                             <a href="BPt.BPtEvaluator.html">BPt.BPtEvaluator</a>
                         </li>
                     
+                        <li class="">
+                            <a href="BPt.BPtEvaluatorSubset.html">BPt.BPtEvaluatorSubset</a>
+                        </li>
+                    
                     </ul>
                 </li>
             
@@ -275,15 +279,19 @@
 <h1>BPt.BPtEvaluator.get_X_transform_df<a class="headerlink" href="#bpt-bptevaluator-get-x-transform-df" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.BPtEvaluator.get_X_transform_df">
-<code class="sig-prename descclassname">BPtEvaluator.</code><code class="sig-name descname">get_X_transform_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">fold</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">subjects</span><span class="o">=</span><span class="default_value">'tr'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1272-L1330"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.BPtEvaluator.get_X_transform_df" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">BPtEvaluator.</code><code class="sig-name descname">get_X_transform_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">fold</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">subjects</span><span class="o">=</span><span class="default_value">'tr'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1285-L1341"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.BPtEvaluator.get_X_transform_df" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used as a helper for getting the transformed
 input data for one of the saved models run during evaluate.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
 <dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></span></dt><dd><p>The instance of the Dataset class originally passed to
-<a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>. Note: if you pass a different dataset,
-you may get unexpected behavior.</p>
+<a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a different dataset is passed, then unexpected
+behavior may occur.</p>
+</div>
 </dd>
 <dt><strong>fold</strong><span class="classifier">int, optional</span></dt><dd><p>The corresponding fold of the trained
 estimator to use.</p>

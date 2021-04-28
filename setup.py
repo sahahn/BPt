@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='brain-pred-toolbox',
-      version='2.0.1',
+      version='2.0.2',
       description='The Brain Predictability toolbox (BPt) is a ' +
       'Python based machine learning library designed to work with ' +
       'a range of neuroimaging data.',

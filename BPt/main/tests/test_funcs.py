@@ -365,6 +365,37 @@ def test_get_estimator_simple_case():
     assert isinstance(model, Ridge)
 
 
+def test_get_estimator_from_build_simple_case():
+
+    ps = get_checked_ps()
+    data = get_fake_dataset()
+
+    pipe = ModelPipeline(model='ridge', imputers='default',
+                         scalers=None, verbose=1)
+
+    est = pipe.build(dataset=data, problem_spec=ps)
+
+    # Should be BPt pipeline output
+    assert isinstance(est, BPtPipeline)
+
+    # Make sure verbose arg propergates
+    assert est.verbose == 1
+
+    # Should just be model
+    assert len(est.steps) == 1
+
+    model_name = est.steps[0][0]
+    assert isinstance(model_name, str)
+
+    # Should be regression ridge, so make sure
+    # this tests default ps steps too
+    scope_model = est.steps[0][1]
+    assert isinstance(scope_model, BPtModel)
+
+    model = scope_model.estimator
+    assert isinstance(model, Ridge)
+
+
 def test_get_estimator_with_ng_search():
 
     ps = get_checked_ps()

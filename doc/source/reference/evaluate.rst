@@ -33,4 +33,5 @@ BPt Evaluator
 .. autosummary::
    :toctree: api/
 
-   BPtEvaluator   
+   BPtEvaluator
+   BPtEvaluatorSubset  

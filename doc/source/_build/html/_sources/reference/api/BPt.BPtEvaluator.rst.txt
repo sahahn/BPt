@@ -32,8 +32,8 @@ BPt.BPtEvaluator
    .. autosummary::
       :toctree:
       
-      BPtEvaluator.all_train_indices
-      BPtEvaluator.all_val_indices
+      BPtEvaluator.all_train_subjects
+      BPtEvaluator.all_val_subjects
       BPtEvaluator.coef_
       BPtEvaluator.estimators
       BPtEvaluator.feat_names
@@ -47,8 +47,8 @@ BPt.BPtEvaluator
       BPtEvaluator.scores
       BPtEvaluator.std_scores
       BPtEvaluator.timing
-      BPtEvaluator.train_indices
-      BPtEvaluator.val_indices
+      BPtEvaluator.train_subjects
+      BPtEvaluator.val_subjects
       BPtEvaluator.weighted_mean_scores
 
 

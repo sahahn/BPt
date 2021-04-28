@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.cross_val_score &#8212; BPt 2.0.0 documentation</title>
+    <title>BPt.cross_val_score &#8212; BPt 2.0.1 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -221,6 +221,10 @@
                             <a href="BPt.BPtEvaluator.html">BPt.BPtEvaluator</a>
                         </li>
                     
+                        <li class="">
+                            <a href="BPt.BPtEvaluatorSubset.html">BPt.BPtEvaluatorSubset</a>
+                        </li>
+                    
                     </ul>
                 </li>
             
@@ -275,18 +279,22 @@
 <h1>BPt.cross_val_score<a class="headerlink" href="#bpt-cross-val-score" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="BPt.cross_val_score">
-<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">cross_val_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">sk_n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">fit_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_score</span><span class="o">=</span><span class="default_value">nan</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L745-L827"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.cross_val_score" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">cross_val_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">sk_n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">fit_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_score</span><span class="o">=</span><span class="default_value">nan</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L757-L839"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.cross_val_score" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function is a BPt compatible wrapper around
 <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html#sklearn.model_selection.cross_val_score" title="(in scikit-learn v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.cross_val_score()</span></code></a></p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>pipeline</strong><span class="classifier"><a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a></span></dt><dd><p>A BPt input class Pipeline to be intialized according
-to the passed dataset and problem_spec.</p>
-<p>This parameter can be either an instance of <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>,
-<a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> or one of the below cases.</p>
-<p>In the case that a single str is passed, it will assumed
-to be a model indicator str and the pipeline used will be:</p>
+<dt><strong>pipeline</strong><span class="classifier"><a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a></span></dt><dd><div class="line-block">
+<div class="line">A BPt input class Pipeline to be intialized according
+to the passed dataset and problem_spec.
+This parameter can be either an instance of <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>,
+<a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> or one of the below cases.</div>
+</div>
+<div class="line-block">
+<div class="line">In the case that a single str is passed, it will assumed
+to be a model indicator str and the pipeline used will be:</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">Model</span><span class="p">(</span><span class="n">pipeline</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -296,12 +304,17 @@ cast as:</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></span></dt><dd><p>The Dataset in function should be evaluated in the context of.
-The dataset is as the data source for this operation.</p>
-<p>Arguments within problem_spec can be used to
+<dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></span></dt><dd><div class="line-block">
+<div class="line">The <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> in which this function should be evaluated
+in the context of. In other words, the dataset is
+used as the data source for this operation.</div>
+</div>
+<div class="line-block">
+<div class="line">Arguments within problem_spec can be used to
 select just subsets of data. For example parameter
 scope can be used to select only some columns or
-parameter subjects to select a subset of subjects.</p>
+parameter subjects to select a subset of subjects.</div>
+</div>
 </dd>
 <dt><strong>problem_spec</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> or ‘default’, optional</span></dt><dd><p>This parameter accepts an instance of the
 params class <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.

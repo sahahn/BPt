@@ -1263,7 +1263,8 @@ class Dataset(pd.DataFrame):
         '''Calls method according to:
         https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.rename.html
 
-        This version is updated to reflect changes to meta-data after renaming, e.g.,
+        This version is updated to reflect changes
+        to meta-data after renaming, e.g.,
         scopes will be updated to their new name accordingly.
 
         Parameters
@@ -1707,7 +1708,7 @@ class Dataset(pd.DataFrame):
                             add_unique_overlap,
                             _replace_cat_values)
 
-    from ._validation import (_validate_cv_key,
+    from ._validation import (_validate_group_key,
                               _proc_cv_strategy,
                               _validate_split,
                               _finish_split,

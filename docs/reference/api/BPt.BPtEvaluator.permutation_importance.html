@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.BPtEvaluator.permutation_importance &#8212; BPt 2.0.0 documentation</title>
+    <title>BPt.BPtEvaluator.permutation_importance &#8212; BPt 2.0.1 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -41,7 +41,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Extension Classes" href="../extensions.html" />
+    <link rel="next" title="BPt.BPtEvaluator.subset_by" href="BPt.BPtEvaluator.subset_by.html" />
     <link rel="prev" title="BPt.BPtEvaluator.get_preds_dfs" href="BPt.BPtEvaluator.get_preds_dfs.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -221,6 +221,10 @@
                             <a href="BPt.BPtEvaluator.html">BPt.BPtEvaluator</a>
                         </li>
                     
+                        <li class="">
+                            <a href="BPt.BPtEvaluatorSubset.html">BPt.BPtEvaluatorSubset</a>
+                        </li>
+                    
                     </ul>
                 </li>
             
@@ -275,7 +279,7 @@
 <h1>BPt.BPtEvaluator.permutation_importance<a class="headerlink" href="#bpt-bptevaluator-permutation-importance" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.BPtEvaluator.permutation_importance">
-<code class="sig-prename descclassname">BPtEvaluator.</code><code class="sig-name descname">permutation_importance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">n_repeats</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">scorer</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">just_model</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">return_as</span><span class="o">=</span><span class="default_value">'dfs'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">'default'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1101-L1246"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.BPtEvaluator.permutation_importance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">BPtEvaluator.</code><code class="sig-name descname">permutation_importance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">n_repeats</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">scorer</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">just_model</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">return_as</span><span class="o">=</span><span class="default_value">'dfs'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">'default'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1140-L1283"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.BPtEvaluator.permutation_importance" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function computes the permutation feature importances
 from the base scikit-learn function
 <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance" title="(in scikit-learn v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.inspection.permutation_importance()</span></code></a></p>
@@ -283,8 +287,12 @@ from the base scikit-learn function
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
 <dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></span></dt><dd><p>The instance of the Dataset class originally passed to
-<a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>. Note: if you pass a different dataset,
-you may get unexpected behavior.</p>
+<a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a different dataset is passed, then unexpected
+behavior may occur.</p>
+</div>
 </dd>
 <dt><strong>n_repeats</strong><span class="classifier">int, optional</span></dt><dd><p>The number of times to randomly permute each feature.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">10</span>
@@ -310,7 +318,7 @@ original feature space (which may be useful in some context).</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>return_as</strong><span class="classifier">{‘dfs’, ‘raw’}, optional</span></dt><dd><p>This parameter controls if calculated permutation
+<dt><strong>return_as</strong><span class="classifier">[‘dfs’, ‘raw’], optional</span></dt><dd><p>This parameter controls if calculated permutation
 feature importances should be returned as a DataFrame
 with column names as the corresponding feature names,
 or if it should be returned as a list with the raw
@@ -361,7 +369,7 @@ random state.</p>
               <div class='prev-next-bottom'>
                 
     <a class='left-prev' id="prev-link" href="BPt.BPtEvaluator.get_preds_dfs.html" title="previous page">BPt.BPtEvaluator.get_preds_dfs</a>
-    <a class='right-next' id="next-link" href="../extensions.html" title="next page">Extension Classes</a>
+    <a class='right-next' id="next-link" href="BPt.BPtEvaluator.subset_by.html" title="next page">BPt.BPtEvaluator.subset_by</a>
 
               </div>
               

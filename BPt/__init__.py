@@ -12,13 +12,13 @@ from .main.funcs import (get_estimator, cross_validate,
 from .main.input_operations import (Select, Duplicate, Pipe, ValueSubset,
                                     Intersection)
 from .main.compare import Compare, Option, CompareDict
-from .main.BPtEvaluator import BPtEvaluator
+from .main.BPtEvaluator import BPtEvaluator, BPtEvaluatorSubset
 from . import p
 
 from pandas import read_pickle
 
 __author__ = "sahahn"
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 __all__ = ["Dataset", "Loader",
            "Imputer", "Scaler", "Transformer", 'get_estimator',
            "FeatSelector", "Model",
@@ -28,5 +28,6 @@ __all__ = ["Dataset", "Loader",
            "CV", "CVStrategy", "Intersection",
            "cross_validate", "cross_val_score", "evaluate",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',
-           'BPtEvaluator', 'read_pickle', 'Compare', 'Option',
+           'BPtEvaluator', 'BPtEvaluatorSubset', 'read_pickle',
+           'Compare', 'Option',
            'CompareDict', 'read_csv']

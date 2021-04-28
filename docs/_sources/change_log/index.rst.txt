@@ -13,6 +13,7 @@ Version 2.0
    :maxdepth: 2
 
    v2.0.0
+   v2.0.1
 
 Version 1.3
 ------------

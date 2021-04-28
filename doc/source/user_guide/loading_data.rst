@@ -68,6 +68,7 @@ certain types of operations which can end up either re-casting the result back t
 a DataFrame (therefore losing all of the associated metadata), or renaming columns,
 which may cause internal errors and metadata loss.
 
+
 Basic Example
 --------------
 

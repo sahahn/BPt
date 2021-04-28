@@ -204,7 +204,6 @@ class Piece(Params, Check):
     '''This is the base piece in which :ref`pipeline_objects` inherit from. This
     class should not be used directly.'''
 
-    # @TODO make this function work with custom objects
     def build(self, dataset, problem_spec='default', **problem_spec_params):
         '''This method is used to convert a single pipeline piece into
         the base sklearn style object used in the pipeline. This method
@@ -547,7 +546,7 @@ class Loader(Piece):
             If behav = 'all', then this parameter is currently
             skipped!
 
-        Set to None, to ignore
+        Set to None, to ignore.
 
         ::
 
@@ -1675,6 +1674,7 @@ class Pipeline(Params):
         and no associated hyper-parameter distributions.
 
     '''
+
     def __init__(self, steps, param_search=None, cache_loc=None, verbose=0):
         self.steps = steps
         self.param_search = param_search
@@ -1684,6 +1684,9 @@ class Pipeline(Params):
         self._proc_checks()
 
     def _proc_checks(self):
+
+        # Check if steps passed as single model
+        self._check_steps_is_model()
 
         # Check for any custom passed steps
         self._check_for_custom()
@@ -1703,6 +1706,14 @@ class Pipeline(Params):
 
         # Proc input
         self.steps = self._proc_input(self.steps)
+
+    def _check_steps_is_model(self):
+
+        # If passed steps as just one step
+        # wrap in list, though has to be potentially
+        # valid model step
+        if isinstance(self.steps, self._model_like):
+            self.steps = [self.steps]
 
     def _check_for_custom(self):
 
@@ -1742,12 +1753,12 @@ class Pipeline(Params):
             elif isinstance(step, Select):
                 [self._check_is_model(o) for o in step]
 
+            # Note: Pipe case not used for model
             else:
                 raise RuntimeError(repr(step) + ' is not a valid Model')
 
         # If last step isn't model - or custom, raise error
-        if not isinstance(self.steps[-1], (Model, Pipeline,
-                                           Custom, BPtInputMixIn)):
+        if not isinstance(self.steps[-1], self._model_like):
             raise RuntimeError(repr(step) + ' is not a valid Model')
 
     def _validate_input(self):
@@ -1757,7 +1768,7 @@ class Pipeline(Params):
         # Validate steps
         for step in self.steps:
 
-            if not isinstance(step, (Piece, Pipeline, Compare, Select)):
+            if not isinstance(step, self._step_like):
                 raise RuntimeError('passed step:' + repr(step) +
                                    ' is not a valid Pipeline Piece / '
                                    'input wrapper')
@@ -1777,7 +1788,7 @@ class Pipeline(Params):
 
         # First call recursively
         for step in self.steps:
-            if isinstance(step, (Piece, Pipeline, Compare, Select)):
+            if isinstance(step, self._step_like):
                 step._uniquify()
 
         # Then set steps with copy of steps
@@ -1800,7 +1811,7 @@ class Pipeline(Params):
 
         steps = []
         for step in self.steps:
-            if isinstance(step, list) and not isinstance(step, Select):
+            if isinstance(step, list) and not isinstance(step, BPtInputMixIn):
                 for sub_step in step:
                     steps.append(sub_step)
             else:
@@ -1901,6 +1912,33 @@ class Pipeline(Params):
                 setattr(obj, last_key, value)
 
             return self
+
+    def build(self, dataset, problem_spec='default', **extra_params):
+        '''This method generates a sklearn compliant :ref:`estimator<develop>`
+        version of the current :class:`Pipeline` with respect to a passed
+        dataset and :class:`Dataset` and :class:`ProblemSpec`.
+
+        This method calls :func:`get_estimator` with pipeline set as
+        itself, see :func:`get_estimator` for parameters.
+        '''
+
+        from .funcs import get_estimator
+
+        return get_estimator(pipeline=self, dataset=dataset,
+                             problem_spec=problem_spec,
+                             **extra_params)
+
+    @property
+    def _model_like(self):
+        # Compare, Select and Pipe are all BPtInputMixIn
+        # though they can store model_like.
+        return (Model, Pipeline, Custom, Compare, Select, Pipe)
+
+    @property
+    def _step_like(self):
+        # Compare, Select and Pipe are all BPtInputMixIn
+        # though they can store piece.
+        return (Piece, Pipeline, Compare, Select, Pipe)
 
 
 class ModelPipeline(Pipeline):

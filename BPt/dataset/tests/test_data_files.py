@@ -43,7 +43,13 @@ def setup_datafiles():
     df = get_fake_dataset()
 
     def file_to_subject(i):
-        return int(i.split('/')[-1].replace('.npy', ''))
+
+        if '/' in i:
+            return int(i.split('/')[-1].replace('.npy', ''))
+
+        # Windows version
+        else:
+            return int(i.split('\\')[-1].replace('.npy', ''))
 
     temp_dr = tempfile.gettempdir()
     locs = []

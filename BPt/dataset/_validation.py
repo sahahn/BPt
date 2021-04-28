@@ -74,7 +74,7 @@ _val_docs['random_state'] = '''random_state : int or None, optional
 '''
 
 
-def _validate_cv_key(self, cv_key, name):
+def _validate_group_key(self, cv_key, name):
     '''Various input validation.'''
 
     if cv_key not in list(self):
@@ -133,7 +133,7 @@ def _proc_cv_strategy(self, cv_params):
     if group_key is not None:
 
         # Overlapping validations
-        self._validate_cv_key(cv_key=group_key, name='groups')
+        self._validate_group_key(cv_key=group_key, name='groups')
 
         # Make sure it is non input
         if self.roles[group_key] != 'non input':
@@ -149,7 +149,7 @@ def _proc_cv_strategy(self, cv_params):
     elif strat_key is not None:
 
         # Overlapping validations
-        self._validate_cv_key(cv_key=strat_key, name='stratify')
+        self._validate_group_key(cv_key=strat_key, name='stratify')
 
         # Make sure it is non input or target
         if self.roles[strat_key] != 'non input' and \

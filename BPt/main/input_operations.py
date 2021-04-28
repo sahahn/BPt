@@ -79,7 +79,6 @@ class Select(list, BPtInputMixIn):
             # Then replace with copy
             self[i] = copy(option)
 
-
     @property
     def _constructor(self):
 
@@ -212,6 +211,13 @@ class Pipe(list, BPtInputMixIn):
 
     def __str__(self):
         return self.__repr__()
+
+    def _uniquify(self):
+
+        # For pipe just replace each step /
+        # element of the list with a copy
+        for i, option in enumerate(self):
+            self[i] = copy(option)
 
 
 class ValueSubset(BPtInputMixIn):

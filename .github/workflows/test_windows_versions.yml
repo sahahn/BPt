@@ -1,4 +1,4 @@
-name: Test Windows
+name: Windows Python 3.7+
 
 on: [push, pull_request]
 

@@ -1,6 +1,13 @@
 from setuptools import setup, find_packages
 
+from os import path
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(name='brain-pred-toolbox',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
       version='2.0.2',
       description='The Brain Predictability toolbox (BPt) is a ' +
       'Python based machine learning library designed to work with ' +
@@ -38,3 +45,6 @@ setup(name='brain-pred-toolbox',
       test_suite='pytest',
       tests_require=['pytest', 'coverage'],
       zip_safe=False)
+
+
+

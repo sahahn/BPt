@@ -864,9 +864,6 @@ class BPtEvaluator():
 
         return rep
 
-    def _repr_html_(self):
-        pass
-
     def _estimators_check(self):
 
         if self.estimators is None:

@@ -38,6 +38,21 @@ def test_bpt_evaluator_repr():
     assert 'BPtEvaluator' in rr
     assert 'all_train_subjects' not in rr
     assert 'all_val_subjects' not in rr
+    assert 'coef_' not in rr
+
+
+def test_bpt_evaluator_repr2():
+
+    dataset = get_fake_dataset()
+    pipe = Pipeline(Model('linear'))
+
+    results = evaluate(pipeline=pipe,
+                       dataset=dataset,
+                       progress_bar=False,
+                       cv=2)
+
+    rr = repr(results)
+    assert 'coef_' in rr
 
 
 def test_bpt_evaluator_store_preds_false():
@@ -292,6 +307,32 @@ def test_permutation_feature_importance():
     assert fis['importances_std'].shape == (2, 2)
 
 
+def test_subset_by_fail():
+
+    data = np.array([[1, 1, 1, 1, 1, 1],
+                     [2, 2, 2, 2, 2, 2],
+                     [.1, .2, .3, .4, .5, .6],
+                     [1, 1, 1, 2, 2, 2]])
+    data = data.transpose((1, 0))
+
+    data = Dataset(data=data,
+                   columns=['1', '2', 't', 'grp'],
+                   targets='t', non_inputs='grp')
+    data = data.to_binary('grp')
+
+    pipe = Pipeline([Scaler('standard'), Model('linear')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       store_preds=False,
+                       progress_bar=False,
+                       random_state=2,
+                       cv=2)
+
+    with pytest.raises(RuntimeError):
+        results.subset_by('grp', data)
+
+
 def test_subset_by():
 
     data = np.array([[1, 1, 1, 1, 1, 1],
@@ -436,3 +477,6 @@ def test_subset_by_categorical():
 
     assert list(g1_preds[0]) == list(g2_preds[0])
     assert list(g1_preds[1]) == list(g2_preds[1])
+
+    assert 'BPtEvaluatorSubset(grp=1)' in repr(g1)
+    assert 'BPtEvaluatorSubset(grp=2)' in repr(g2)

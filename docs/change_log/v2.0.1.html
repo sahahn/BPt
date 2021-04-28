@@ -246,19 +246,30 @@ method and outputted classes tries to make this process easier.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>New: Added warning when invalid extra_params passed</dt><dd><p>Now when extra params are passed to functions like <code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code> if the
-keys don’t line up with any valid parameters, a warning will be issued.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
 <dt>Changed: train_indices and val_indices in <code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code> to train_subjects and val_subjects</dt><dd><p>This change was made so that parameter names can be more consistent with the <a class="reference internal" href="../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> style input
 and other naming schemes.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
+<dt>Minor Improvement: Added warning when invalid extra_params passed</dt><dd><p>Now when extra params are passed to functions like <code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code> if the
+keys don’t line up with any valid parameters, a warning will be issued.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Minor Improvement: Can now pass single model to <code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></dt><dd><p>Before you had to pass steps as a list, but now <code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code> will
+accept a single model-like step as input.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
 <dt>Updated: Predicting Sex Example</dt><dd><p>Added some more examples of using different more advanced features.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Fixed Tests so Windows Compatible</dt><dd><p>Had hard code file paths that were not compatible with windows before</p>
 </dd>
 </dl>
 </li>

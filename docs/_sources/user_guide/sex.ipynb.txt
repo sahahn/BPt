@@ -849,14 +849,14 @@
      "text": [
       "Loaded NaN Info:\n",
       "There are: 83896 total missing values\n",
-      "224 columns found with 304 missing values (column name overlap: ['smri_', 'cort.'])\n",
-      "9 columns found with 305 missing values (column name overlap: ['smri_', 'cort.'])\n",
+      "224 columns found with 304 missing values (column name overlap: ['cort.', 'smri_'])\n",
+      "9 columns found with 305 missing values (column name overlap: ['cort.', 'smri_'])\n",
       "3 columns found with 408 missing values (column name overlap: ['smri_vol_subcort.aseg_', 'le'])\n",
-      "3 columns found with 349 missing values (column name overlap: ['smri_area_cort.destrieux_g.', 'd.', 'ar'])\n",
+      "3 columns found with 349 missing values (column name overlap: ['smri_area_cort.destrieux_g.', 'ar', 'd.'])\n",
       "3 columns found with 306 missing values (column name overlap: ['smri_area_cort.destrieux_g.'])\n",
-      "2 columns found with 340 missing values (column name overlap: ['smri_area_cort.destrieux_g.', '.lh', 'an', 'l.', '.s'])\n",
+      "2 columns found with 340 missing values (column name overlap: ['smri_area_cort.destrieux_g.', '.lh', '.s', 'an', 'l.'])\n",
       "2 columns found with 324 missing values (column name overlap: ['smri_area_cort.destrieux_g.and.s.cingul.mid.', 't.rh'])\n",
-      "2 columns found with 314 missing values (column name overlap: ['smri_area_cort.destrieux_g.', 'p.lat', 'tem'])\n",
+      "2 columns found with 314 missing values (column name overlap: ['smri_area_cort.destrieux_g.', 'temp.', '.lat'])\n",
       "2 columns found with 309 missing values (column name overlap: ['smri_vol_subcort.aseg_c'])\n",
       "2 columns found with 307 missing values (column name overlap: ['smri_area_cort.destrieux_g.'])\n",
       "2 columns found with 345 missing values (column name overlap: ['smri_area_cort.destrieux_g.', 'ngul.', 't.'])\n",
@@ -889,16 +889,16 @@
       "Dropped 408 Rows\n",
       "Loaded NaN Info:\n",
       "There are: 885 total missing values\n",
-      "9 columns found with 1 missing values (column name overlap: ['smri_', 'cort.'])\n",
+      "9 columns found with 1 missing values (column name overlap: ['cort.', 'smri_'])\n",
       "3 columns found with 2 missing values (column name overlap: ['smri_area_cort.destrieux_g.'])\n",
       "3 columns found with 38 missing values (column name overlap: ['smri_area_cort.destrieux_g.'])\n",
       "3 columns found with 3 missing values (column name overlap: [])\n",
-      "3 columns found with 45 missing values (column name overlap: ['smri_area_cort.destrieux_g.', 'd.', 'ar'])\n",
+      "3 columns found with 45 missing values (column name overlap: ['smri_area_cort.destrieux_g.', 'ar', 'd.'])\n",
       "2 columns found with 43 missing values (column name overlap: ['smri_area_cort.destrieux_g.', '.rh', 'ar', 'nt', 'er'])\n",
       "2 columns found with 41 missing values (column name overlap: ['smri_area_cort.destrieux_g.', 'ngul.', 't.'])\n",
-      "2 columns found with 35 missing values (column name overlap: ['smri_area_cort.destrieux_g.', '.lh', 'an', '.s'])\n",
+      "2 columns found with 35 missing values (column name overlap: ['smri_area_cort.destrieux_g.', '.lh', '.s', 'an'])\n",
       "2 columns found with 5 missing values (column name overlap: ['smri_vol_subcort.aseg_c'])\n",
-      "2 columns found with 10 missing values (column name overlap: ['smri_area_cort.destrieux_g.', 'p.lat', 'tem'])\n",
+      "2 columns found with 10 missing values (column name overlap: ['smri_area_cort.destrieux_g.', 'temp.', '.lat'])\n",
       "\n"
      ]
     }
@@ -1841,7 +1841,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "e24c0c823d854b0db0314e67bca13088",
+       "model_id": "88ee7bcaba0d43f1867b79517de12ce0",
        "version_major": 2,
        "version_minor": 0
       },
@@ -1899,7 +1899,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "f1b2d6a988b44b3caa1b3444cb95b8b7",
+       "model_id": "7bff10e9d767491cac5641115c604164",
        "version_major": 2,
        "version_minor": 0
       },
@@ -2355,9 +2355,7 @@
     {
      "data": {
       "text/plain": [
-       "['household.income=[>=50K & <100K]',\n",
-       " 'household.income=[>=100K]',\n",
-       " 'household.income=[<50K]']"
+       "['[>=50K & <100K]', '[>=100K]', '[<50K]']"
       ]
      },
      "execution_count": 25,
@@ -2376,15 +2374,26 @@
    "metadata": {},
    "outputs": [
     {
-     "ename": "KeyError",
-     "evalue": "'[<50K]'",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[0;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
-      "\u001b[0;32m<ipython-input-26-84df9ba2e2d3>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0msubsets\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'[<50K]'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
-      "\u001b[0;31mKeyError\u001b[0m: '[<50K]'"
-     ]
+     "data": {
+      "text/plain": [
+       "BPtEvaluatorSubset(household.income=[<50K])\n",
+       "------------\n",
+       "mean_scores = {'roc_auc': 0.8927459075402938}\n",
+       "std_scores = {'roc_auc': 0.01241167653252817}\n",
+       "\n",
+       "Saved Attributes: ['estimators', 'preds', 'timing', 'train_subjects', 'val_subjects', 'feat_names', 'ps', 'mean_scores', 'std_scores', 'weighted_mean_scores', 'scores', 'fis_', 'coef_']\n",
+       "\n",
+       "Avaliable Methods: ['get_X_transform_df', 'get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
+       "\n",
+       "Evaluated with:\n",
+       "ProblemSpec(n_jobs=16, problem_type='binary',\n",
+       "            scorer={'roc_auc': make_scorer(roc_auc_score, needs_threshold=True)},\n",
+       "            subjects='all', target='sex')"
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {},
+     "output_type": "execute_result"
     }
    ],
    "source": [
@@ -2400,9 +2409,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 27,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.8824987132808478"
+      ]
+     },
+     "execution_count": 27,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "subsets['[<50K]'].scores['roc_auc'][0]"
    ]
@@ -2420,9 +2440,32 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 28,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay at 0x7fa6c757e3a0>"
+      ]
+     },
+     "execution_count": 28,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 2 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
    "source": [
     "from sklearn.metrics import plot_confusion_matrix\n",
     "\n",
@@ -2445,9 +2488,32 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 29,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay at 0x7fa6c7719be0>"
+      ]
+     },
+     "execution_count": 29,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAUIAAAEGCAYAAAAQZJzmAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjMuMywgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/Il7ecAAAACXBIWXMAAAsTAAALEwEAmpwYAAAchklEQVR4nO3dfZxXZZ3/8dd7hpsB5EbEG0JQLLQfa2mIhLoZYmtgbmQPK90s1izSTM3019r+SqtHbrZ5v6UtKYtaYWqu4eqKphlaYqKmiWaSJgxI3CMCcjPz+f1xztDXcW7ODN8z3/nOeT8fj/OYc67v+Z7zgXnw4brOda7rUkRgZlZkNZUOwMys0pwIzazwnAjNrPCcCM2s8JwIzazwelU6gI4auHvv2GNE30qHYR2wdlGfSodgHbSRdasjYs/Ofv+DxwyINWsbMp37xDNb50XElM7eqxyqLhHuMaIvF91xSKXDsA6Y8863VToE66Bfxu2v7Mr316xt4HfzRmU6t3b4i8N25V7lUHWJ0My6vwAaaax0GJk5EZpZ2QXB9sjWNO4OnAjNLBeuEZpZoQVBQxUN33UiNLNcNOJEaGYFFkCDE6GZFZ1rhGZWaAFs9zNCMyuyINw0NrOCC2ionjzoRGhm5ZeMLKkeToRmlgPRgCodRGZOhGZWdklniROhmRVY8h6hE6GZFVxjFdUIPUO1mZVdU40wy9YeSbMkrZT0bEnZoZIWSPq9pIWSJqTlknSNpMWSnpE0Lku8ToRmVnaBaKAm05bBbKD5DNb/DnwzIg4FLkqPAaYCY9JtBnBdlhs4EZpZLhpDmbb2RMR8YG3zYmBQuj8YWJ7uTwNuisQCYIik4e3dw88IzazsArEtarOePkzSwpLjmRExs53vfAmYJ+kykgrdkWn5CGBpyXn1admrbV3MidDMyi55oTpzg3N1RIzv4C3OBM6LiJ9L+jhwA/CBDl5jJzeNzSwX5eosacV04I50/zZgQrq/DBhZct6+aVmbnAjNrOwiREPUZNo6aTnw/nR/MvBiuj8X+HTaezwR2BARbTaLwU1jM8tJY5leqJY0B5hE8iyxHrgY+BxwtaRewBskPcQA9wDHA4uBzcBpWe7hRGhmZZd0lpQnvUTEKa18dFgL5wZwVkfv4URoZmXXwc6SinMiNLNcNFTREDsnQjMru6aRJdXCidDMctHY+R7hLudEaGZll0y64ERoZgUWiO3Zh9hVnBOhmZVdBLvysnSXcyI0sxyobC9UdwUnQjMru8A1QjMzd5aYWbEF2SZd7S6cCM2s7JLlPKsnvVRPpGZWRbzAu5kVXOCRJWZmrhGaWbFFyDVCMyu2pLPEQ+zMrNDkF6rNrNiSzpLqeUZYPSnbzKpKAzWZtvZImiVppaRnm5WfLemPkhZJ+veS8q9KWizpBUkfzBKra4RmVnZlHlkyG/g+cFNTgaRjgGnAIRGxVdJeaflY4GTg74C3Ab+UdGBENLR1A9cIzSwXjdRk2toTEfOBtc2KzwQujYit6Tkr0/JpwC0RsTUiXiZZ1nMC7XAiNLOyi4DtjTWZNpL1iheWbDPauz5wIPA+SY9J+rWkw9PyEcDSkvPq07I2uWlsZmWXNI0z17NWR8T4Dt6iFzAUmAgcDtwq6YAOXuNNFzMzK7ucR5bUA3ekC7r/TlIjMAxYBowsOW/ftKxNToRdZMG/DmH5Q32p26OR4+9aBcBvztud115OfgXbXxO9BwVT71zF1nXikXOHsvbZ3oz+yBbGX7ShkqEb0LtvI5ffsZjefYLaXsHDdw/h5sv24dC/38hnv/4qNTXBlk01XP6lUSz/S99Kh1txXfD6zJ3AMcCvJB0I9AFWA3OBn0q6gqSzZAzwu/YulmsilDQFuBqoBa6PiEubfd6XpCfoMGAN8ImI+EueMVXKASdu5sBPbmLBhUN2lh115bqd+09eOog+AxsBqO0L7z53I+tf7MWGP/Xu6lCtBdu3iq987O28sbmW2l7BFXcu5vEHB3L2d+r5xmmjWbq4jhOmr+aUc//K5eeNqnS43UD5hthJmgNMInmWWA9cDMwCZqWv1GwDpqe1w0WSbgWeA3YAZ7XXYww5JkJJtcAPgH8gqcY+LmluRDxXctrpwLqIeIekk4HvAp/IK6ZK2uvwbbxe3/KQowhYem8/Js9eDUCv/sGeh21j4yvVM0Sp5xNvbE5+H716B7W9g4jkWVj/gcm/swEDG1j7V//H1aRca5ZExCmtfHRqK+dfAlzSkXvkWSOcACyOiJcAJN1C0rVdmginAd9I928Hvi9JaWYvjFUL+1C3RwMD92/3Py6roJqa4Pvz/sTb9t/GXbP34IWnBnDV+fvy7ZtfZusbNWx+vYYvnTCm0mF2C0mvcfX8R57n6zNZurF3nhMRO4ANwB7NLyRpRlPX+uvrtucUbuW8cnc/Rn1oS6XDsHY0Noov/MNBfPKwsRx06Gb2O2gLJ85Yzdc+NZpTx4/lvp8NZcY3llc6zG6h6YXqLFt3UBXvEUbEzIgYHxHjd9u9ZzU9GnfA0vvr2O94J8Jqsem1Wp7+7W4cPnkjB4zdwgtPDQDg13OHMHb8pgpH1300pkt6trd1B3kmwizd2DvPkdQLGEzSaVIYKx7ty6DRO+i/T2OlQ7E2DB66gwGDkkcXfeoaGXf06yx9sY4BgxoYccBWAMYdvZGlL9ZVMsxuo6nXuFpqhHk+I3wcGCNpNEnCOxn4p2bnzAWmA48CJwEP9tTng7/58hBWPt6XretquPP9e/Ouszfy9pM2s+Tufux3wltrg3Mn78X2TTU0bof6B+o45oY1DH7HjgpEbgBD997OBVcvoaYGampg/l2DeeyXg7jqgpF8/Ud/IRph44ZarvjyyPYvVhCemJXkmZ+kLwLzSF6fmRURiyR9C1gYEXOBG4CbJS0mGUt4cl7xVNpRV6xvsXzipS2Xf/jBlS2WW2W8/Hw/zjruoLeU//bewfz23sEViKh7ixA7nAgTEXEPcE+zsotK9t8APpZnDGZWGd2l2ZuFR5aYWdlV28SsToRmlgsnQjMrtDJPzJo7J0Izy0V3eUcwCydCMyu7CNjR6F5jMys4N43NrND8jNDMjOSl6mrhRGhmuXBniZkVWoSfEZpZ4YmGKuo1rp5IzayqRCjT1h5JsyStTNcnaf7Z+ZJC0rD0WJKukbRY0jOSxmWJ1YnQzMquzPMRzgamNC+UNBI4DlhSUjyVZOW6McAM4LosN3AiNLPyi+Q5YZat3UtFzCeZpq+5K4GvJHfbaRpwUyQWAEMkDW/vHk6EZpaLPKfqlzQNWBYRTzf7KMtaSW/hzhIzK7voWGfJMEkLS45nRsTM1k6W1B/4V5JmcVk4EZpZLjqw6MbqiBjfgUu/HRgNPC0JkvWQnpQ0gWxrJb2Fm8Zmloty9Rq/9brxh4jYKyL2j4j9SZq/4yJiBck6SJ9Oe48nAhsi4tX2rulEaGZll3SElO31mTkkC7wdJKle0ultnH4P8BKwGPgR8IUs8bppbGa5KNfIkog4pZ3P9y/ZD+Csjt7DidDMclFNC/M6EZpZ2QWisYqG2DkRmlkuqqhC6ERoZjkIz0doZlZVVUInQjPLRY+oEUr6D9rI6RFxTi4RmVnVC6CxsQckQmBhG5+ZmbUugJ5QI4yIG0uPJfWPiM35h2RmPUE1vUfY7os+ko6Q9Bzwx/T4EEnX5h6ZmVW3yLh1A1neeLwK+CCwBiCd/+voHGMys6qXbZxxd+lQydRrHBFL0+lumjTkE46Z9RjdpLaXRZZEuFTSkUBI6g2cCzyfb1hmVtUCoop6jbM0jc8gmc1hBLAcOJROzO5gZkWjjFvltVsjjIjVwCe7IBYz60mqqGmcpdf4AEl3SVqVri36C0kHdEVwZlbFeliv8U+BW4HhwNuA24A5eQZlZlWu6YXqLFs3kCUR9o+ImyNiR7r9GKjLOzAzq27lWte4K7Q11nhouvu/ki4EbiHJ858gWRfAzKx1VdRr3FZnyRMkia/pT/P5ks8C+GpeQZlZ9VOZanuSZgEnACsj4uC07HvAPwLbgD8Dp0XE+vSzrwKnk7zvfE5EzGvvHq02jSNidEQckP5svrmzxMxal7WjJFuynA1MaVZ2P3BwRLwb+BNpxUzSWOBk4O/S71wrqba9G2QaWSLpYGAsJc8GI+KmLN81syIqX0dIRMyXtH+zsvtKDhcAJ6X704BbImIr8LKkxcAEkuVAW9VuIpR0MTCJJBHeA0wFHgGcCM2sdV3XEfIZ4Gfp/giSxNikPi1rU5Ze45OAY4EVEXEacAgwuGNxmlnhNGbcYJikhSXbjKy3kPT/gB3AT3Yl1CxN4y0R0Shph6RBwEpg5K7c1Mx6uI5NzLo6IsZ39BaS/pmkE+XYdGF3gGW8OT/tm5a1KUuNcKGkIcCPSHqSn6Sd9raZmSLb1qlrS1OArwAfbjZh9FzgZEl9JY0GxgC/a+96WcYafyHd/aGke4FBEfFMx0M3s0Ip3+szc0j6KYZJqgcuJukl7gvcn04RuCAizoiIRZJuBZ4jaTKfFRHtThvY1gvV49r6LCKe7MgfxsysMyLilBaKb2jj/EuASzpyj7ZqhJe38VkAkztyo3JZ9+eB3PrRSZW4tXXSvOW3VjoE66Da4bt+jXK9UN0V2lq86ZiuDMTMepCgxwyxMzPrvJ5QIzQz2xU9omlsZrZLqigRZpmhWpJOlXRRejxK0oT8QzOzqtbDZqi+FjgCaOrC3gj8ILeIzKzqZX2Zurs0n7M0jd8bEeMkPQUQEesk9ck5LjOrdj2s13h7Op9XAEjak6ah0mZmregutb0ssjSNrwH+G9hL0iUkU3D9W65RmVn1q6JnhFnGGv9E0hMkU3EJ+EhEPJ97ZGZWvbrR878sskzMOgrYDNxVWhYRS/IMzMyqXE9KhMDd/G0RpzpgNPACyZoAZmYtUhX1JGRpGr+r9DidleYLrZxuZlZ1OjyyJCKelPTePIIxsx6kJzWNJX255LAGGAcszy0iM6t+Pa2zBBhYsr+D5Jnhz/MJx8x6jJ6SCNMXqQdGxAVdFI+Z9RQ9IRFK6hUROyQd1ZUBmVn1E9XVa9zWyJKmlZ9+L2mupE9J+mjT1hXBmVmVKuOkC5JmSVop6dmSsqGS7pf0Yvpz97Rckq6RtFjSM22tvVQqyxC7OmANyRolJwD/mP40M2td+YbYzQamNCu7EHggIsYAD6THAFNJlvAcA8wArstyg7aeEe6V9hg/y99eqG5SRa1/M6uIMmWJiJgvaf9mxdNIlvgEuBF4CPiXtPymdMH3BZKGSBoeEa+2dY+2EmEtsBtvToA7Y2s3ejMrtA68PjNM0sKS45kRMbOd7+xdktxWAHun+yOApSXn1adlnU6Er0bEt9oJxsysZdkT4eqIGN/p20SEtGtvLbb1jLB6ZlU0s+4lkl7jLFsn/VXScID058q0fBkwsuS8fdOyNrWVCI/tbIRmZjnPRzgXmJ7uTwd+UVL+6bT3eCKwob3ng9D2Au9rOx2imRVeuYbYSZpD0jEyTFI9cDFwKXCrpNOBV4CPp6ffAxwPLCaZPvC0LPfwcp5mlo/y9Rqf0spHb2m1pr3FZ3X0Hk6EZlZ+3Wga/iycCM2s7ETPm33GzKzDnAjNzJwIzazwnAjNrNB64AzVZmYd50RoZkVXTROzOhGaWS7cNDazYvML1WZmOBGaWbF5ZImZGaDG6smEToRmVn5+Rmhm5qaxmZlrhGZmrhGamTkRmlmhRXUNsWtrFTszs05peo8wy5bpetJ5khZJelbSHEl1kkZLekzSYkk/k9Sns/E6EZpZPiKybe2QNAI4BxgfEQcDtcDJwHeBKyPiHcA64PTOhupEaGa5KGeNkOQxXj9JvYD+wKvAZOD29PMbgY90NlY/I6yQ//rx3WzZ0ouGBtHYUMO5Z32AC7/2KCP23QjAbrtt5/XXe3P2GcdVONLiuvy8kTz2y0EMGbaDmb96AYA/L6rjPy4cyZZNNey97zb+5QevMGDg3x6GrazvzecmvZNTz1/Bx85cVanQK69jL1QPk7Sw5HhmRMzceamIZZIuA5YAW4D7gCeA9RGxIz2tHhjR2XBzS4SSZgEnACvT6mzzzwVcTbIY82bgnyPiybzi6Y4uPH8Sr73Wd+fxpd8+Yuf+Zz//NJs29a5EWJY67hNr+fBpq/neuaN2ll11wSg+d9Ey3n3EJubNGcrt1+3F9K+s2Pn5f35zBIdP3liJcLudDnSWrI6I8a1eR9odmAaMBtYDtwFTdjG8N8mzaTybtoOdCoxJtxnAdTnGUmWC971/Kb/+1chKB1Jo75q4iYG7N7yprP6lvrxr4iYA3nP0Rh65e8jOz377v4PZZ+Q29jvwja4Ms9tSY7Ytgw8AL0fEqojYDtwBHAUMSZvKAPsCyzoba26JMCLmA2vbOGUacFMkFpD8oYbnFU93EwHf/u58rr72fqZ86KU3fXbwu1azfl0dy5cNrFB01pr9DnyDR+8dDMDD/zOEVcuTWvuWTTXceu1enHr+ira+XhxB2TpLSJrEEyX1T1uSxwLPAb8CTkrPmQ78orPhVvIZ4QhgaclxUxv/1eYnSppBUmukrvegLgkub//3S5NZs6Yfg4e8wSXfnU/9koE8+4c9AXj/5CU85Npgt/TlK5Zw3ddH8JOr9uaI4zbQq0/yD/nmy/bhxM+tot+AKnp5LmflGlkSEY9Juh14EtgBPAXMBO4GbpH07bTshs7eoyo6S9IHpzMBBvcbXkXvq7duzZp+AGxYX8ejvxnBge9cy7N/2JOamkaO/PtlnHPmByocobVk1JitfOeWpAZf/+e+PPZA8h/zH5/qzyN3D+GGb7+N11+rRTVBn77BtM+srmS4lVXGf6kRcTFwcbPil4AJ5bh+JRPhMqC02rNLbfxq0rduBzUKtmzpTd+6HbznsL8y58djAXjPYSupXzKQNav7VzhKa8n61b0YMmwHjY3w06v35oRPrQHgijsX7zzn5sv2oW5AQ6GToCdmzW4u8EVJtwDvBTZExFuaxT3R7ru/wde+8VsAamuDhx4cxROP7wPA0ZOW8OtfjWrr69ZFvnPmfjzz6G5sWNuLTx42lk+dv4Itm2u4a/YwAI6auoHjTm7rMXiBRXhiVgBJc4BJJO8I1ZNUa3sDRMQPgXtIXp1ZTPL6zGl5xdLdrHh1N774+ZbfD7zye2Wp6VsZfPW6V1osP/Gzbdf0PnWBO0wAT7oAEBGntPN5AGfldX8zqyw3jc2s2AJw09jMCq968qAToZnlw01jMys89xqbWbF5OU8zK7rkherqyYROhGaWjyoadu1EaGa5cI3QzIrNzwjNzDzW2Mws66Sr3YIToZmVX5Ut8O5EaGb5cI3QzAqvevKgE6GZ5UON1dM2znM5TzMrqiB5oTrLloGkIZJul/RHSc9LOkLSUEn3S3ox/bl7Z8N1IjSzshOBItuW0dXAvRHxTuAQ4HngQuCBiBgDPJAed4oToZnlo0zrGksaDBxNulxnRGyLiPUka6PfmJ52I/CRzobqRGhm+cieCIdJWliyzWh2pdHAKuC/JD0l6XpJA4C9SxZ8WwHs3dlQ3VliZuXX9Iwwm9URMb6Nz3sB44Cz08Xer6ZZMzgiQur8VLCuEZpZLtTYmGnLoB6oj4jH0uPbSRLjXyUNB0h/ruxsrE6EZpaDjM3iDM8II2IFsFTSQWnRscBzJGujT0/LpgO/6Gy0bhqbWfkF5R5ZcjbwE0l9gJdI1kGvAW6VdDrwCvDxzl7cidDM8lHG96kj4vdAS88Rjy3H9Z0IzSwXnpjVzMyJ0MwKLQIaqmessROhmeXDNUIzKzwnQjMrtAC8ZomZFVtA+BmhmRVZ4M4SMzM/IzQzcyI0s2LLNqFCd+FEaGblF0AVLd7kRGhm+XCN0MyKzUPszKzoAsLvEZpZ4XlkiZkVnp8RmlmhRbjX2MysmmqEXsXOzHIQRENDpi0rSbXpAu//kx6PlvSYpMWSfpYu7NQpToRmVn5N03Bl2bI7F3i+5Pi7wJUR8Q5gHXB6Z8N1IjSzfERjti0DSfsCHwKuT48FTCZZ7B3gRuAjnQ3VzwjNrOwCiOy1vWGSFpYcz4yImc3OuQr4CjAwPd4DWB8RO9LjemBE56J1IjSzPESHJmZdHREtrVkMgKQTgJUR8YSkSWWI7i2cCM0sFx3pCGnHUcCHJR0P1AGDgKuBIZJ6pbXCfYFlnb2Booq6uAEkrQJeqXQcORgGrK50ENYhPfl3tl9E7NnZL0u6l+TvJ4vVETEl43UnARdExAmSbgN+HhG3SPoh8ExEXNupeKstEfZUkha21Tyw7se/s67XLBEeANwCDAWeAk6NiK2dua6bxmZWNSLiIeChdP8lYEI5ruvXZ8ys8JwIu4/mrwtY9+ffWQ/hZ4RmVniuEZpZ4TkRmlnhORF2MUlTJL2QzphxYQuf901n0liczqyxfwXCtJSkWZJWSnq2lc8l6Zr09/WMpHFdHaPtOifCLiSpFvgBMBUYC5wiaWyz004H1qUzalxJMsOGVc5soK2XfacCY9JtBnBdF8RkZeZE2LUmAIsj4qWI2EbyMui0ZudMI5lJA5KZNY5NZ9qwCoiI+cDaNk6ZBtwUiQUkw76Gd010Vi5OhF1rBLC05LilGTN2npOOodxAMtOGdU9ZfqfWzTkRmlnhORF2rWXAyJLjlmbM2HmOpF7AYGBNl0RnnZHld2rdnBNh13ocGJOutdAHOBmY2+ycucD0dP8k4MHwW+/d2Vzg02nv8URgQ0S8WumgrGM86UIXiogdkr4IzANqgVkRsUjSt4CFETEXuAG4WdJikof0J1cuYpM0B5hEMotyPXAx0BsgIn4I3AMcDywGNgOnVSZS2xUeYmdmheemsZkVnhOhmRWeE6GZFZ4ToZkVnhOhmRWeE2EPJKlB0u8lPSvpNkn9d+FasyWdlO5f38IkEaXnTpJ0ZCfu8RdJb1nxrLXyZue83sF7fUPSBR2N0Xo2J8KeaUtEHBoRBwPbgDNKP0xHrHRYRHw2Ip5r45RJQIcToVmlORH2fA8D70hraw9Lmgs8J6lW0vckPZ7Oo/d52Dm/3vfTORN/CezVdCFJD0kan+5PkfSkpKclPZDOm3gGcF5aG32fpD0l/Ty9x+OSjkq/u4ek+yQtknQ90O7sOpLulPRE+p0ZzT67Mi1/QNKeadnbJd2bfudhSe8sy9+m9UgeWdKDpTW/qcC9adE44OCIeDlNJhsi4nBJfYHfSLoPeA9wEMl8iXsDzwGzml13T+BHwNHptYZGxNp0ke3XI+Ky9LyfAldGxCOSRpGMqPk/JKMzHomIb0n6EMkcjO35THqPfsDjkn4eEWuAASSjcs6TdFF67S+SLKx0RkS8KOm9wLXA5E78NVoBOBH2TP0k/T7df5hk2N6RwO8i4uW0/Djg3U3P/0gmdxgDHA3MiYgGYLmkB1u4/kRgftO1IqK1+fo+AIwtmU5xkKTd0nt8NP3u3ZLWZfgznSPpxHR/ZBrrGqAR+Fla/mPgjvQeRwK3ldy7b4Z7WEE5EfZMWyLi0NKCNCFsKi0Czo6Iec3OO76McdQAEyPijRZiyUzSJJKkekREbJb0EFDXyumR3nd9878Ds9b4GWFxzQPOlNQbQNKBkgYA84FPpM8QhwPHtPDdBcDRkkan3x2alm8EBpacdx9wdtOBpEPT3fnAP6VlU4Hd24l1MMnyBZvTZ30TSz6rIZmlh/Saj0TEa8DLkj6W3kOSDmnnHlZgToTFdT3J878nlSxM9J8kLYT/Bl5MP7sJeLT5FyNiFcn6HHdIepq/NU3vAk5s6iwBzgHGp50xz/G33utvkiTSRSRN5CXtxHov0EvS88ClJIm4ySZgQvpnmAx8Ky3/JHB6Gt8i3rokgtlOnn3GzArPNUIzKzwnQjMrPCdCMys8J0IzKzwnQjMrPCdCMys8J0IzK7z/Dw9EY6T32vr0AAAAAElFTkSuQmCC\n",
+      "text/plain": [
+       "<Figure size 432x288 with 2 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
    "source": [
     "X, y = train_data.get_Xy(ps=results.ps,\n",
     "                         subjects=subjs)\n",
@@ -2471,9 +2537,31 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 30,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "smri_vol_subcort.aseg_caudate.rh                   -0.491889\n",
+       "smri_vol_subcort.aseg_thalamus.proper.lh           -0.469694\n",
+       "smri_thick_cort.destrieux_g.postcentral.rh         -0.393656\n",
+       "smri_vol_subcort.aseg_cerebellum.white.matter.rh   -0.352483\n",
+       "smri_area_cort.destrieux_g.temp.sup.lateral.rh     -0.345213\n",
+       "                                                      ...   \n",
+       "smri_vol_subcort.aseg_putamen.rh                    0.328204\n",
+       "smri_vol_subcort.aseg_thalamus.proper.rh            0.364399\n",
+       "smri_vol_subcort.aseg_cerebellum.cortex.rh          0.442560\n",
+       "smri_vol_subcort.aseg_intracranialvolume            0.688781\n",
+       "smri_vol_subcort.aseg_cerebral.white.matter.rh      0.703118\n",
+       "Length: 269, dtype: float64"
+      ]
+     },
+     "execution_count": 30,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "results.get_fis(mean=True).sort_values()"
    ]
@@ -2489,9 +2577,44 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 31,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ModelPipeline\n",
+      "-------------\n",
+      "imputers=\\\n",
+      "Imputer(obj='default')\n",
+      "\n",
+      "scalers=\\\n",
+      "[Scaler(obj='robust'),\n",
+      " Scaler(obj=LinearResidualizer(to_resid_df=       smri_vol_subcort.aseg_intracranialvolume\n",
+      "0                                  1.354788e+06\n",
+      "2                                  1.703982e+06\n",
+      "3                                  1.679526e+06\n",
+      "4                                  1.561216e+06\n",
+      "6                                  1.514361e+06\n",
+      "...                                         ...\n",
+      "11870                              1.480336e+06\n",
+      "11871                              1.470497e+06\n",
+      "11872                              1.455727e+06\n",
+      "11873                              1.480286e+06\n",
+      "11874                              1.500072e+06\n",
+      "\n",
+      "[10393 rows x 1 columns]))]\n",
+      "\n",
+      "model=\\\n",
+      "Model(obj='linear')\n",
+      "\n",
+      "param_search=\\\n",
+      "None\n",
+      "\n"
+     ]
+    }
+   ],
    "source": [
     "from BPt.extensions import LinearResidualizer\n",
     "\n",
@@ -2507,9 +2630,46 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 32,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "3dc9d98d8da5462a9e2bfc63b9a5608a",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Folds:   0%|          | 0/5 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "BPtEvaluator\n",
+       "------------\n",
+       "mean_scores = {'roc_auc': 0.904121897548382}\n",
+       "std_scores = {'roc_auc': 0.006991688270369848}\n",
+       "\n",
+       "Saved Attributes: ['estimators', 'preds', 'timing', 'train_subjects', 'val_subjects', 'feat_names', 'ps', 'mean_scores', 'std_scores', 'weighted_mean_scores', 'scores', 'fis_', 'coef_']\n",
+       "\n",
+       "Avaliable Methods: ['get_X_transform_df', 'get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
+       "\n",
+       "Evaluated with:\n",
+       "ProblemSpec(n_jobs=16, problem_type='binary',\n",
+       "            scorer={'roc_auc': make_scorer(roc_auc_score, needs_threshold=True)},\n",
+       "            subjects='all', target='sex')"
+      ]
+     },
+     "execution_count": 32,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "results = bp.evaluate(pipeline=model_pipeline,\n",
     "                      dataset=train_data,\n",
@@ -2521,9 +2681,31 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 33,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "smri_vol_subcort.aseg_caudate.rh                   -0.491889\n",
+       "smri_vol_subcort.aseg_thalamus.proper.lh           -0.469694\n",
+       "smri_thick_cort.destrieux_g.postcentral.rh         -0.393656\n",
+       "smri_vol_subcort.aseg_cerebellum.white.matter.rh   -0.352483\n",
+       "smri_area_cort.destrieux_g.temp.sup.lateral.rh     -0.345213\n",
+       "                                                      ...   \n",
+       "smri_vol_subcort.aseg_putamen.rh                    0.328204\n",
+       "smri_vol_subcort.aseg_thalamus.proper.rh            0.364399\n",
+       "smri_vol_subcort.aseg_cerebellum.cortex.rh          0.442560\n",
+       "smri_vol_subcort.aseg_intracranialvolume            0.688781\n",
+       "smri_vol_subcort.aseg_cerebral.white.matter.rh      0.703118\n",
+       "Length: 269, dtype: float64"
+      ]
+     },
+     "execution_count": 33,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "results.get_fis(mean=True).sort_values()"
    ]
@@ -2542,9 +2724,33 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 34,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['elastic_pipe', 'ridge_pipe', 'lgbm_pipe', 'svm_pipe', 'stacking_pipe', 'compare_pipe']\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "Pipeline(steps=[Imputer(obj='mean', scope='float'),\n",
+       "                Imputer(obj='median', scope='category'), Scaler(obj='robust'),\n",
+       "                Transformer(obj='one hot encoder', scope='category'),\n",
+       "                Model(obj='elastic',\n",
+       "                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),\n",
+       "                                               n_iter=60),\n",
+       "                      params=1)])"
+      ]
+     },
+     "execution_count": 34,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "from BPt.default.pipelines import pipelines\n",
     "\n",
@@ -2557,9 +2763,46 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 35,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "7f509a3864ae437bb6b88535cae37c61",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Folds:   0%|          | 0/5 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "BPtEvaluator\n",
+       "------------\n",
+       "mean_scores = {'roc_auc': 0.9050843516449291}\n",
+       "std_scores = {'roc_auc': 0.006520964845338212}\n",
+       "\n",
+       "Saved Attributes: ['estimators', 'preds', 'timing', 'train_subjects', 'val_subjects', 'feat_names', 'ps', 'mean_scores', 'std_scores', 'weighted_mean_scores', 'scores', 'fis_', 'coef_']\n",
+       "\n",
+       "Avaliable Methods: ['get_X_transform_df', 'get_preds_dfs', 'get_fis', 'get_coef_', 'permutation_importance']\n",
+       "\n",
+       "Evaluated with:\n",
+       "ProblemSpec(n_jobs=16, problem_type='binary',\n",
+       "            scorer={'roc_auc': make_scorer(roc_auc_score, needs_threshold=True)},\n",
+       "            subjects='all', target='sex')"
+      ]
+     },
+     "execution_count": 35,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "results = bp.evaluate(pipeline=pipelines['elastic_pipe'],\n",
     "                      dataset=train_data,\n",
@@ -2570,9 +2813,26 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 36,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Pipeline(steps=[Imputer(obj='mean', scope='float'),\n",
+       "                Imputer(obj='median', scope='category'), Scaler(obj='robust'),\n",
+       "                Transformer(obj='one hot encoder', scope='category'),\n",
+       "                Model(obj='lgbm',\n",
+       "                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),\n",
+       "                                               n_iter=60),\n",
+       "                      params=1)])"
+      ]
+     },
+     "execution_count": 36,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "# Look at the pipeline\n",
     "pipelines['lgbm_pipe']"
@@ -2580,9 +2840,47 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 37,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "8ccd359bd507458699d5779fd5bb5595",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Folds:   0%|          | 0/5 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "BPtEvaluator\n",
+       "------------\n",
+       "mean_scores = {'roc_auc': 0.8810651333645121, 'balanced_accuracy': 0.8031876349839246}\n",
+       "std_scores = {'roc_auc': 0.010968292470025738, 'balanced_accuracy': 0.011458887286564062}\n",
+       "\n",
+       "Saved Attributes: ['estimators', 'preds', 'timing', 'train_subjects', 'val_subjects', 'feat_names', 'ps', 'mean_scores', 'std_scores', 'weighted_mean_scores', 'scores', 'fis_', 'feature_importances_']\n",
+       "\n",
+       "Avaliable Methods: ['get_X_transform_df', 'get_preds_dfs', 'get_fis', 'get_feature_importances', 'permutation_importance']\n",
+       "\n",
+       "Evaluated with:\n",
+       "ProblemSpec(n_jobs=16, problem_type='binary',\n",
+       "            scorer={'balanced_accuracy': make_scorer(balanced_accuracy_score),\n",
+       "                    'roc_auc': make_scorer(roc_auc_score, needs_threshold=True)},\n",
+       "            subjects='all', target='sex')"
+      ]
+     },
+     "execution_count": 37,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "results = bp.evaluate(pipeline=pipelines['lgbm_pipe'],\n",
     "                      dataset=train_data,\n",
@@ -2603,9 +2901,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 38,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.906483521992028"
+      ]
+     },
+     "execution_count": 38,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
    "source": [
     "from sklearn.metrics import roc_auc_score\n",
     "\n",

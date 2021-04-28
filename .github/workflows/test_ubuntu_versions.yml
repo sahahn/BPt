@@ -1,4 +1,4 @@
-name: BPt
+name: Test Ubuntu
 
 on: [push, pull_request]
 

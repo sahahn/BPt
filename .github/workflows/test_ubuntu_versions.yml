@@ -1,4 +1,4 @@
-name: Test Ubuntu
+name: Ubuntu Python 3.7+
 
 on: [push, pull_request]
 

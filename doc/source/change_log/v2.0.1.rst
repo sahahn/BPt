@@ -26,3 +26,6 @@ Version 2.0.1
 
 - Updated: Predicting Sex Example
     Added some more examples of using different more advanced features.
+
+- Fixed Tests so Windows Compatible
+    Had hard code file paths that were not compatible with windows before

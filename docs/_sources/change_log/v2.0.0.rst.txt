@@ -1,9 +1,11 @@
 .. _whatsnew_200:
 
+.. currentmodule:: BPt
+
 Version 2.0.0
 ---------------
 
-- Big Change: New :class:`BPt.Dataset` class
+- Big Change: New :class:`Dataset` class
     - This new Dataset class is designed to fully replace the old system of loading via the BPt_ML class.
     - This new system is designed to be more flexible than the old system.
     - Most of the old functionality is ported over, and various new functionality added.

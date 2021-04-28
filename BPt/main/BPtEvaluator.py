@@ -18,7 +18,7 @@ from .helpers import clean_str
 _base_docs = {}
 
 _base_docs['dataset'] = """dataset : :class:`Dataset`
-            The instance of the Dataset class originally passed to
+            The instance of :class:`Dataset` originally passed to
             :func:`evaluate`.
 
             .. note::

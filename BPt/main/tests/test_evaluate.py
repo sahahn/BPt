@@ -744,6 +744,29 @@ def test_evaluate_step_compare2_mp2():
     assert isinstance(evaluator, CompareDict)
 
 
+def test_evaluate_with_compare_progress_bars():
+
+    dataset = get_fake_dataset()
+    pipe = ModelPipeline(scalers=[Scaler('standard'),
+                                  Compare([Scaler('standard'),
+                                           Scaler('robust')])],
+                         model=Model('dt'))
+
+    # No repeats
+    evaluate(pipeline=pipe,
+             dataset=dataset,
+             progress_bar=True,
+             random_state=2,
+             cv=CV(splits=2, n_repeats=1))
+
+    # With repeats
+    evaluate(pipeline=pipe,
+             dataset=dataset,
+             progress_bar=True,
+             random_state=2,
+             cv=CV(splits=2, n_repeats=2))
+
+
 def test_evaluator_get_X_transform_df():
 
     pipe = Pipeline([Scaler('standard'), Model('dt')])
@@ -922,3 +945,20 @@ def test_evaluate_pipeline_with_custom_selector_mapping():
         run_fs_checks(evaluator)
 
 
+def test_evaluate_nan_targets():
+
+    dataset = get_fake_dataset()
+    dataset.loc[0, '3'] = np.nan
+    dataset.loc[15, '3'] = np.nan
+
+    pipe = Pipeline(Model('dt'))
+
+    results = evaluate(pipeline=pipe,
+                       dataset=dataset,
+                       progress_bar=False,
+                       cv=2)
+
+    rr = repr(results)
+    assert 'BPtEvaluator' in rr
+    assert 'all_train_subjects' in rr
+    assert 'all_val_subjects' in rr

@@ -589,7 +589,7 @@ def _initial_prep(pipeline, dataset, problem_spec,
     for key in extra_params:
         if key not in possible_params:
             warnings.warn(f'Passed extra_params key {key} does not appear '
-                          'to be valid, and will be skipped')
+                          'to be valid, and will be skipped.')
 
     # error if compare can be bool or tuple of bool's
     if isinstance(error_if_compare, tuple):

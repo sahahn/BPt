@@ -8,8 +8,95 @@ import numpy as np
 
 
 def test_is_notebook():
-
     assert not is_notebook()
+
+
+def test_bpt_evaluator_neg_verbose():
+
+    dataset = get_fake_dataset()
+    pipe = Pipeline(Model('dt'))
+
+    evaluate(pipeline=pipe,
+             dataset=dataset,
+             progress_bar=False,
+             random_state=2,
+             cv=2,
+             eval_verbose=-2)
+
+
+def test_bpt_evaluator_repr():
+
+    dataset = get_fake_dataset()
+    pipe = Pipeline(Model('dt'))
+
+    results = evaluate(pipeline=pipe,
+                       dataset=dataset,
+                       progress_bar=False,
+                       cv=2)
+
+    rr = repr(results)
+    assert 'BPtEvaluator' in rr
+    assert 'all_train_subjects' not in rr
+    assert 'all_val_subjects' not in rr
+
+
+def test_bpt_evaluator_store_preds_false():
+
+    dataset = get_fake_dataset()
+    pipe = Pipeline(Model('dt'))
+
+    results = evaluate(pipeline=pipe,
+                       dataset=dataset,
+                       store_preds=False,
+                       progress_bar=False,
+                       cv=2)
+
+    assert results.preds is None
+
+
+def test_bpt_evaluator_progress_bars():
+
+    dataset = get_fake_dataset()
+    pipe = Pipeline(Model('dt'))
+
+    # No repeats
+    evaluate(pipeline=pipe,
+             dataset=dataset,
+             progress_bar=True,
+             random_state=2,
+             cv=CV(splits=2, n_repeats=1))
+
+    # With repeats
+    evaluate(pipeline=pipe,
+             dataset=dataset,
+             progress_bar=True,
+             random_state=2,
+             cv=CV(splits=2, n_repeats=2))
+
+
+def test_bpt_evaluator_score():
+
+    dataset = get_fake_dataset()
+    pipe = Pipeline(Model('dt'))
+
+    results = evaluate(pipeline=pipe,
+                       dataset=dataset,
+                       progress_bar=False,
+                       random_state=2,
+                       cv=2)
+
+    # Make sure score attribute works
+    first_scorer = list(results.mean_scores)[0]
+    assert results.score == results.mean_scores[first_scorer]
+
+    results = evaluate(pipeline=pipe,
+                       dataset=dataset,
+                       progress_bar=False,
+                       random_state=2,
+                       scorer='neg_mean_squared_error',
+                       cv=2)
+
+    assert results.mean_scores['neg_mean_squared_error'] == results.score
 
 
 def test_bpt_evaluator_compare_fail():

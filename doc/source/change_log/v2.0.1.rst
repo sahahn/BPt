@@ -12,13 +12,17 @@ Version 2.0.1
     can be a useful tool in performing post-hoc diagnostic tests on models. This new
     method and outputted classes tries to make this process easier.
 
-- New: Added warning when invalid extra_params passed
-    Now when extra params are passed to functions like :func:`evaluate` if the
-    keys don't line up with any valid parameters, a warning will be issued.
-
 - Changed: train_indices and val_indices in :class:`BPtEvaluator` to train_subjects and val_subjects
     This change was made so that parameter names can be more consistent with the :ref:`Subjects` style input
     and other naming schemes.
+
+- Minor Improvement: Added warning when invalid extra_params passed
+    Now when extra params are passed to functions like :func:`evaluate` if the
+    keys don't line up with any valid parameters, a warning will be issued.
+
+- Minor Improvement: Can now pass single model to :class:`Pipeline`
+    Before you had to pass steps as a list, but now :class:`Pipeline` will
+    accept a single model-like step as input.
 
 - Updated: Predicting Sex Example
     Added some more examples of using different more advanced features.

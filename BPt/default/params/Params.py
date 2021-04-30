@@ -274,13 +274,15 @@ class Dict(Params, ng.p.Dict):
 
         new_dict = {}
 
-        for key in self.value:
+        for key in self._content:
 
-            # Does this even make sense?
-            if isinstance(self.value[key], Params):
-                new_val = self.value[key].to_grid()
+            # Will this work with grid search style params?
+            if isinstance(self._content[key], Params):
+                new_val = self._content[key].to_grid()
+            elif isinstance(self._content[key], ng.p.Constant):
+                new_val = self._content[key].value
             else:
-                new_val = self.value[key]
+                new_val = self._content[key]
 
             new_dict[key] = new_val
 

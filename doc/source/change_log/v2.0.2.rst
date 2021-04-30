@@ -1,4 +1,10 @@
 .. _whatsnew_202:
 
+.. currentmodule:: BPt
+
 Version 2.0.2
 ---------------
+
+- Bug Fix: Fix bug with :class:`ParamSearch` option 'grid'
+    When using :class:`Select` and :class:`ParamSearch` option 'grid', there was previously an error,
+    this has now been fixed.

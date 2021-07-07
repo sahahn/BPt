@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.nsmallest<a class="headerlink" href="#bpt-dataset-nsmallest" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.nsmallest">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">nsmallest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">columns</span></em>, <em class="sig-param"><span class="n">keep</span><span class="o">=</span><span class="default_value">'first'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L5799-L5899"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.nsmallest" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">nsmallest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">columns</span></em>, <em class="sig-param"><span class="n">keep</span><span class="o">=</span><span class="default_value">'first'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L6633-L6731"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.nsmallest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the first <cite>n</cite> rows ordered by <cite>columns</cite> in ascending order.</p>
 <p>Return the first <cite>n</cite> rows with the smallest values in <cite>columns</cite>, in
 ascending order. The columns that are not specified are returned as
@@ -447,9 +447,9 @@ well, but not used for ordering.</p>
 <p>This method is equivalent to
 <code class="docutils literal notranslate"><span class="pre">df.sort_values(columns,</span> <span class="pre">ascending=True).head(n)</span></code>, but more
 performant.</p>
-<dl class="field-list">
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
+<dd class="field-odd"><dl class="simple">
 <dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Number of items to retrieve.</p>
 </dd>
 <dt><strong>columns</strong><span class="classifier">list or str</span></dt><dd><p>Column name or names to order by.</p>
@@ -461,9 +461,6 @@ performant.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> : do not drop any duplicates, even it means
 selecting more than <cite>n</cite> items.</p></li>
 </ul>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 0.24.0.</span></p>
-</div>
 </dd>
 </dl>
 </dd>

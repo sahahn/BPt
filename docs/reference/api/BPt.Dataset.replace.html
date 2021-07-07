@@ -439,10 +439,10 @@
 <h1>BPt.Dataset.replace<a class="headerlink" href="#bpt-dataset-replace" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.replace">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">to_replace</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">regex</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'pad'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L4514-L4531"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.replace" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">to_replace</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">regex</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'pad'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L5223-L5240"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.replace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace values given in <cite>to_replace</cite> with <cite>value</cite>.</p>
-<p>Values of the DataFrame are replaced with other values dynamically.
-This differs from updating with <code class="docutils literal notranslate"><span class="pre">.loc</span></code> or <code class="docutils literal notranslate"><span class="pre">.iloc</span></code>, which require
+<p>Values of the DataFrame are replaced with other values dynamically.</p>
+<p>This differs from updating with <code class="docutils literal notranslate"><span class="pre">.loc</span></code> or <code class="docutils literal notranslate"><span class="pre">.iloc</span></code>, which require
 you to specify a location to update with some value.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -452,24 +452,39 @@ you to specify a location to update with some value.</p>
 <li><p>numeric, str or regex:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>numeric: numeric values equal to <cite>to_replace</cite> will be
-replaced with <cite>value</cite></p></li>
-<li><p>str: string exactly matching <cite>to_replace</cite> will be replaced
-with <cite>value</cite></p></li>
-<li><p>regex: regexs matching <cite>to_replace</cite> will be replaced with
-<cite>value</cite></p></li>
+<li><dl class="simple">
+<dt>numeric: numeric values equal to <cite>to_replace</cite> will be</dt><dd><p>replaced with <cite>value</cite></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>str: string exactly matching <cite>to_replace</cite> will be replaced</dt><dd><p>with <cite>value</cite></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>regex: regexs matching <cite>to_replace</cite> will be replaced with</dt><dd><p><cite>value</cite></p>
+</dd>
+</dl>
+</li>
 </ul>
 </div></blockquote>
 </li>
 <li><p>list of str, regex, or numeric:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>First, if <cite>to_replace</cite> and <cite>value</cite> are both lists, they
-<strong>must</strong> be the same length.</p></li>
-<li><p>Second, if <code class="docutils literal notranslate"><span class="pre">regex=True</span></code> then all of the strings in <strong>both</strong>
-lists will be interpreted as regexs otherwise they will match
+<li><dl class="simple">
+<dt>First, if <cite>to_replace</cite> and <cite>value</cite> are both lists, they</dt><dd><p><strong>must</strong> be the same length.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Second, if <code class="docutils literal notranslate"><span class="pre">regex=True</span></code> then all of the strings in <strong>both</strong></dt><dd><p>lists will be interpreted as regexs otherwise they will match
 directly. This doesn’t matter much for <cite>value</cite> since there
-are only a few possible substitution regexes you can use.</p></li>
+are only a few possible substitution regexes you can use.</p>
+</dd>
+</dl>
+</li>
 <li><p>str, regex and numeric rules apply as above.</p></li>
 </ul>
 </div></blockquote>
@@ -477,36 +492,48 @@ are only a few possible substitution regexes you can use.</p></li>
 <li><p>dict:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Dicts can be used to specify different replacement values
-for different existing values. For example,
+<li><dl class="simple">
+<dt>Dicts can be used to specify different replacement values</dt><dd><p>for different existing values. For example,
 <code class="docutils literal notranslate"><span class="pre">{'a':</span> <span class="pre">'b',</span> <span class="pre">'y':</span> <span class="pre">'z'}</span></code> replaces the value ‘a’ with ‘b’ and
 ‘y’ with ‘z’. To use a dict in this way the <cite>value</cite>
-parameter should be <cite>None</cite>.</p></li>
-<li><p>For a DataFrame a dict can specify that different values
-should be replaced in different columns. For example,
+parameter should be <cite>None</cite>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>For a DataFrame a dict can specify that different values</dt><dd><p>should be replaced in different columns. For example,
 <code class="docutils literal notranslate"><span class="pre">{'a':</span> <span class="pre">1,</span> <span class="pre">'b':</span> <span class="pre">'z'}</span></code> looks for the value 1 in column ‘a’
 and the value ‘z’ in column ‘b’ and replaces these values
 with whatever is specified in <cite>value</cite>. The <cite>value</cite> parameter
 should not be <code class="docutils literal notranslate"><span class="pre">None</span></code> in this case. You can treat this as a
 special case of passing two lists except that you are
-specifying the column to search in.</p></li>
-<li><p>For a DataFrame nested dictionaries, e.g.,
-<code class="docutils literal notranslate"><span class="pre">{'a':</span> <span class="pre">{'b':</span> <span class="pre">np.nan}}</span></code>, are read as follows: look in column
+specifying the column to search in.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>For a DataFrame nested dictionaries, e.g.,</dt><dd><p><code class="docutils literal notranslate"><span class="pre">{'a':</span> <span class="pre">{'b':</span> <span class="pre">np.nan}}</span></code>, are read as follows: look in column
 ‘a’ for the value ‘b’ and replace it with NaN. The <cite>value</cite>
 parameter should be <code class="docutils literal notranslate"><span class="pre">None</span></code> to use a nested dict in this
 way. You can nest regular expressions as well. Note that
 column names (the top-level dictionary keys in a nested
-dictionary) <strong>cannot</strong> be regular expressions.</p></li>
+dictionary) <strong>cannot</strong> be regular expressions.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </div></blockquote>
 </li>
 <li><p>None:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>This means that the <cite>regex</cite> argument must be a string,
-compiled regular expression, or list, dict, ndarray or
+<li><dl class="simple">
+<dt>This means that the <cite>regex</cite> argument must be a string,</dt><dd><p>compiled regular expression, or list, dict, ndarray or
 Series of such elements. If <cite>value</cite> is also <code class="docutils literal notranslate"><span class="pre">None</span></code> then
-this <strong>must</strong> be a nested dictionary or Series.</p></li>
+this <strong>must</strong> be a nested dictionary or Series.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </div></blockquote>
 </li>
@@ -519,11 +546,9 @@ value to use for each column (columns not in the dict will not be
 filled). Regular expressions, strings and lists or dicts of such
 objects are also allowed.</p>
 </dd>
-<dt><strong>inplace</strong><span class="classifier">bool, default False</span></dt><dd><p>If True, in place. Note: this will modify any
-other views on this object (e.g. a column from a DataFrame).
-Returns the caller if this is True.</p>
+<dt><strong>inplace</strong><span class="classifier">bool, default False</span></dt><dd><p>If True, performs operation inplace and returns None.</p>
 </dd>
-<dt><strong>limit</strong><span class="classifier">int or None, default None</span></dt><dd><p>Maximum size gap to forward or backward fill.</p>
+<dt><strong>limit</strong><span class="classifier">int, default None</span></dt><dd><p>Maximum size gap to forward or backward fill.</p>
 </dd>
 <dt><strong>regex</strong><span class="classifier">bool or same types as <cite>to_replace</cite>, default False</span></dt><dd><p>Whether to interpret <cite>to_replace</cite> and/or <cite>value</cite> as regular
 expressions. If this is <code class="docutils literal notranslate"><span class="pre">True</span></code> then <cite>to_replace</cite> <em>must</em> be a
@@ -533,37 +558,55 @@ list, dict, or array of regular expressions in which case
 </dd>
 <dt><strong>method</strong><span class="classifier">{‘pad’, ‘ffill’, ‘bfill’, <cite>None</cite>}</span></dt><dd><p>The method to use when for replacement, when <cite>to_replace</cite> is a
 scalar, list or tuple and <cite>value</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.23.0: </span>Added to DataFrame.</p>
+</div>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>DataFrame or None</dt><dd><p>Object after replacement or None if <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code>.</p>
+<dt>DataFrame</dt><dd><p>Object after replacement.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><dl class="simple">
 <dt>AssertionError</dt><dd><ul class="simple">
-<li><p>If <cite>regex</cite> is not a <code class="docutils literal notranslate"><span class="pre">bool</span></code> and <cite>to_replace</cite> is not
-<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><dl class="simple">
+<dt>If <cite>regex</cite> is not a <code class="docutils literal notranslate"><span class="pre">bool</span></code> and <cite>to_replace</cite> is not</dt><dd><p><code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 <dt>TypeError</dt><dd><ul class="simple">
 <li><p>If <cite>to_replace</cite> is not a scalar, array-like, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p>If <cite>to_replace</cite> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> and <cite>value</cite> is not a <code class="docutils literal notranslate"><span class="pre">list</span></code>,
-<code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, or <code class="docutils literal notranslate"><span class="pre">Series</span></code></p></li>
-<li><p>If <cite>to_replace</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and <cite>regex</cite> is not compilable
-into a regular expression or is a list, dict, ndarray, or
-Series.</p></li>
-<li><p>When replacing multiple <code class="docutils literal notranslate"><span class="pre">bool</span></code> or <code class="docutils literal notranslate"><span class="pre">datetime64</span></code> objects and
-the arguments to <cite>to_replace</cite> does not match the type of the
-value being replaced</p></li>
+<li><dl class="simple">
+<dt>If <cite>to_replace</cite> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> and <cite>value</cite> is not a <code class="docutils literal notranslate"><span class="pre">list</span></code>,</dt><dd><p><code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, or <code class="docutils literal notranslate"><span class="pre">Series</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>If <cite>to_replace</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and <cite>regex</cite> is not compilable</dt><dd><p>into a regular expression or is a list, dict, ndarray, or
+Series.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>When replacing multiple <code class="docutils literal notranslate"><span class="pre">bool</span></code> or <code class="docutils literal notranslate"><span class="pre">datetime64</span></code> objects and</dt><dd><p>the arguments to <cite>to_replace</cite> does not match the type of the
+value being replaced</p>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 <dt>ValueError</dt><dd><ul class="simple">
-<li><p>If a <code class="docutils literal notranslate"><span class="pre">list</span></code> or an <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> is passed to <cite>to_replace</cite> and
-<cite>value</cite> but they are not the same length.</p></li>
+<li><dl class="simple">
+<dt>If a <code class="docutils literal notranslate"><span class="pre">list</span></code> or an <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> is passed to <cite>to_replace</cite> and</dt><dd><p><cite>value</cite> but they are not the same length.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>
@@ -582,18 +625,30 @@ value being replaced</p></li>
 </div>
 <p class="rubric">Notes</p>
 <ul class="simple">
-<li><p>Regex substitution is performed under the hood with <code class="docutils literal notranslate"><span class="pre">re.sub</span></code>. The
-rules for substitution for <code class="docutils literal notranslate"><span class="pre">re.sub</span></code> are the same.</p></li>
-<li><p>Regular expressions will only substitute on strings, meaning you
-cannot provide, for example, a regular expression matching floating
+<li><dl class="simple">
+<dt>Regex substitution is performed under the hood with <code class="docutils literal notranslate"><span class="pre">re.sub</span></code>. The</dt><dd><p>rules for substitution for <code class="docutils literal notranslate"><span class="pre">re.sub</span></code> are the same.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Regular expressions will only substitute on strings, meaning you</dt><dd><p>cannot provide, for example, a regular expression matching floating
 point numbers and expect the columns in your frame that have a
 numeric dtype to be matched. However, if those floating point
-numbers <em>are</em> strings, then you can do this.</p></li>
-<li><p>This method has <em>a lot</em> of options. You are encouraged to experiment
-and play with this method to gain intuition about how it works.</p></li>
-<li><p>When dict is used as the <cite>to_replace</cite> value, it is like
-key(s) in the dict are the to_replace part and
-value(s) in the dict are the value parameter.</p></li>
+numbers <em>are</em> strings, then you can do this.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>This method has <em>a lot</em> of options. You are encouraged to experiment</dt><dd><p>and play with this method to gain intuition about how it works.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>When dict is used as the <cite>to_replace</cite> value, it is like</dt><dd><p>key(s) in the dict are the to_replace part and
+value(s) in the dict are the value parameter.</p>
+</dd>
+</dl>
+</li>
 </ul>
 <p class="rubric">Examples</p>
 <p><strong>Scalar `to_replace` and `value`</strong></p>
@@ -611,7 +666,7 @@ value(s) in the dict are the value parameter.</p></li>
 <span class="gp">... </span>                   <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
 <span class="gp">... </span>                   <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">]})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="go">   A  B  C</span>
+<span class="go">    A  B  C</span>
 <span class="go">0  5  5  a</span>
 <span class="go">1  1  6  b</span>
 <span class="go">2  2  7  c</span>
@@ -621,7 +676,7 @@ value(s) in the dict are the value parameter.</p></li>
 </div>
 <p><strong>List-like `to_replace`</strong></p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="mi">4</span><span class="p">)</span>
-<span class="go">   A  B  C</span>
+<span class="go">    A  B  C</span>
 <span class="go">0  4  5  a</span>
 <span class="go">1  4  6  b</span>
 <span class="go">2  4  7  c</span>
@@ -630,7 +685,7 @@ value(s) in the dict are the value parameter.</p></li>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="go">   A  B  C</span>
+<span class="go">    A  B  C</span>
 <span class="go">0  4  5  a</span>
 <span class="go">1  3  6  b</span>
 <span class="go">2  2  7  c</span>
@@ -649,7 +704,7 @@ value(s) in the dict are the value parameter.</p></li>
 </div>
 <p><strong>dict-like `to_replace`</strong></p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">100</span><span class="p">})</span>
-<span class="go">     A  B  C</span>
+<span class="go">        A  B  C</span>
 <span class="go">0   10  5  a</span>
 <span class="go">1  100  6  b</span>
 <span class="go">2    2  7  c</span>
@@ -658,7 +713,7 @@ value(s) in the dict are the value parameter.</p></li>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span> <span class="mi">100</span><span class="p">)</span>
-<span class="go">     A    B  C</span>
+<span class="go">        A    B  C</span>
 <span class="go">0  100  100  a</span>
 <span class="go">1    1    6  b</span>
 <span class="go">2    2    7  c</span>
@@ -667,7 +722,7 @@ value(s) in the dict are the value parameter.</p></li>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="mi">400</span><span class="p">}})</span>
-<span class="go">     A  B  C</span>
+<span class="go">        A  B  C</span>
 <span class="go">0  100  5  a</span>
 <span class="go">1    1  6  b</span>
 <span class="go">2    2  7  c</span>
@@ -679,35 +734,35 @@ value(s) in the dict are the value parameter.</p></li>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;bat&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bait&#39;</span><span class="p">],</span>
 <span class="gp">... </span>                   <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;xyz&#39;</span><span class="p">]})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">to_replace</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^ba.$&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;new&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">      A    B</span>
+<span class="go">        A    B</span>
 <span class="go">0   new  abc</span>
 <span class="go">1   foo  new</span>
 <span class="go">2  bait  xyz</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;^ba.$&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="s1">&#39;new&#39;</span><span class="p">},</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">      A    B</span>
+<span class="go">        A    B</span>
 <span class="go">0   new  abc</span>
 <span class="go">1   foo  bar</span>
 <span class="go">2  bait  xyz</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^ba.$&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;new&#39;</span><span class="p">)</span>
-<span class="go">      A    B</span>
+<span class="go">        A    B</span>
 <span class="go">0   new  abc</span>
 <span class="go">1   foo  new</span>
 <span class="go">2  bait  xyz</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="p">{</span><span class="sa">r</span><span class="s1">&#39;^ba.$&#39;</span><span class="p">:</span> <span class="s1">&#39;new&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="s1">&#39;xyz&#39;</span><span class="p">})</span>
-<span class="go">      A    B</span>
+<span class="go">        A    B</span>
 <span class="go">0   new  abc</span>
 <span class="go">1   xyz  new</span>
 <span class="go">2  bait  xyz</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s1">&#39;^ba.$&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">],</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;new&#39;</span><span class="p">)</span>
-<span class="go">      A    B</span>
+<span class="go">        A    B</span>
 <span class="go">0   new  abc</span>
 <span class="go">1   new  new</span>
 <span class="go">2  bait  xyz</span>

@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.eval<a class="headerlink" href="#bpt-dataset-eval" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.eval">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">expr</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L3483-L3599"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.eval" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">expr</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L4070-L4186"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.eval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate a string describing operations on DataFrame columns.</p>
 <p>Operates on columns only, not specific rows or elements.  This allows
 <cite>eval</cite> to run arbitrary code, which can make you vulnerable to code
@@ -455,7 +455,7 @@ a new DataFrame is returned.</p>
 </dd>
 <dt><strong>**kwargs</strong></dt><dd><p>See the documentation for <a class="reference internal" href="#BPt.Dataset.eval" title="BPt.Dataset.eval"><code class="xref py py-func docutils literal notranslate"><span class="pre">eval()</span></code></a> for complete details
 on the keyword arguments accepted by
-<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html#pandas.DataFrame.query" title="(in pandas v1.2.4)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">query()</span></code></a>.</p>
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.query.html#pandas.DataFrame.query" title="(in pandas v1.3.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">query()</span></code></a>.</p>
 </dd>
 </dl>
 </dd>
@@ -479,7 +479,7 @@ on the keyword arguments accepted by
 </div>
 <p class="rubric">Notes</p>
 <p>For more details see the API documentation for <a class="reference internal" href="#BPt.Dataset.eval" title="BPt.Dataset.eval"><code class="xref py py-func docutils literal notranslate"><span class="pre">eval()</span></code></a>.
-For detailed examples see <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/enhancingperf.html#enhancingperf-eval" title="(in pandas v1.2.4)"><span class="xref std std-ref">enhancing performance with eval</span></a>.</p>
+For detailed examples see <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/enhancingperf.html#enhancingperf-eval" title="(in pandas v1.3.0)"><span class="xref std std-ref">enhancing performance with eval</span></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>

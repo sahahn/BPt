@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.to_records<a class="headerlink" href="#bpt-dataset-to-records" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.to_records">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_records</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">column_dtypes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index_dtypes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L1899-L2064"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_records" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_records</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">column_dtypes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index_dtypes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L2126-L2289"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_records" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert DataFrame to a NumPy record array.</p>
 <p>Index will be included as the first field of the record array if
 requested.</p>
@@ -449,17 +449,11 @@ requested.</p>
 <dt><strong>index</strong><span class="classifier">bool, default True</span></dt><dd><p>Include index in resulting record array, stored in ‘index’
 field or using the index label, if set.</p>
 </dd>
-<dt><strong>column_dtypes</strong><span class="classifier">str, type, dict, default None</span></dt><dd><div class="versionadded">
-<p><span class="versionmodified added">New in version 0.24.0.</span></p>
-</div>
-<p>If a string or type, the data type to store all columns. If
+<dt><strong>column_dtypes</strong><span class="classifier">str, type, dict, default None</span></dt><dd><p>If a string or type, the data type to store all columns. If
 a dictionary, a mapping of column names and indices (zero-indexed)
 to specific data types.</p>
 </dd>
-<dt><strong>index_dtypes</strong><span class="classifier">str, type, dict, default None</span></dt><dd><div class="versionadded">
-<p><span class="versionmodified added">New in version 0.24.0.</span></p>
-</div>
-<p>If a string or type, the data type to store all index levels. If
+<dt><strong>index_dtypes</strong><span class="classifier">str, type, dict, default None</span></dt><dd><p>If a string or type, the data type to store all index levels. If
 a dictionary, a mapping of index level names and indices
 (zero-indexed) to specific data types.</p>
 <p>This mapping is applied only if <cite>index=True</cite>.</p>
@@ -479,7 +473,7 @@ of the DataFrame as entries.</p>
 <dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.from_records</span></code></dt><dd><p>Convert structured or record ndarray to DataFrame.</p>
 </dd>
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.recarray</span></code></a></dt><dd><p>An ndarray that allows field access using attributes, analogous to typed columns in a spreadsheet.</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.recarray.html#numpy.recarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.recarray</span></code></a></dt><dd><p>An ndarray that allows field access using attributes, analogous to typed columns in a spreadsheet.</p>
 </dd>
 </dl>
 </div>

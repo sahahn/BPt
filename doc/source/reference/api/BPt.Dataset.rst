@@ -237,6 +237,7 @@ BPt.Dataset
       Dataset.to_string
       Dataset.to_timestamp
       Dataset.to_xarray
+      Dataset.to_xml
       Dataset.train_split
       Dataset.transform
       Dataset.transpose

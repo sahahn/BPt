@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.applymap<a class="headerlink" href="#bpt-dataset-applymap" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.applymap">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">applymap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">na_action</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L7770-L7844"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.applymap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">applymap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">na_action</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L8738-L8821"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.applymap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply a function to a Dataframe elementwise.</p>
 <p>This method applies a function that accepts and returns a scalar
 to every element of a DataFrame.</p>
@@ -451,6 +451,12 @@ to every element of a DataFrame.</p>
 <dt><strong>na_action</strong><span class="classifier">{None, ‘ignore’}, default None</span></dt><dd><p>If ‘ignore’, propagate NaN values, without passing them to func.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.2.</span></p>
+</div>
+</dd>
+<dt><strong>**kwargs</strong></dt><dd><p>Additional keyword arguments to pass as keywords arguments to
+<cite>func</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.0.</span></p>
 </div>
 </dd>
 </dl>

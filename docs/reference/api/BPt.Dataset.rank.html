@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.rank<a class="headerlink" href="#bpt-dataset-rank" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.rank">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">rank</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'average'</span></em>, <em class="sig-param"><span class="n">numeric_only</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">na_option</span><span class="o">=</span><span class="default_value">'keep'</span></em>, <em class="sig-param"><span class="n">ascending</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">pct</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L8518-L8640"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.rank" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">rank</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'average'</span></em>, <em class="sig-param"><span class="n">numeric_only</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">na_option</span><span class="o">=</span><span class="default_value">'keep'</span></em>, <em class="sig-param"><span class="n">ascending</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">pct</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L8271-L8397"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.rank" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute numerical data ranks (1 through n) along axis.</p>
 <p>By default, equal values are assigned a rank that is the average of the
 ranks of those values.</p>
@@ -462,8 +462,8 @@ ranks of those values.</p>
 <dt><strong>na_option</strong><span class="classifier">{‘keep’, ‘top’, ‘bottom’}, default ‘keep’</span></dt><dd><p>How to rank NaN values:</p>
 <ul class="simple">
 <li><p>keep: assign NaN rank to NaN values</p></li>
-<li><p>top: assign smallest rank to NaN values if ascending</p></li>
-<li><p>bottom: assign highest rank to NaN values if ascending.</p></li>
+<li><p>top: assign lowest rank to NaN values</p></li>
+<li><p>bottom: assign highest rank to NaN values</p></li>
 </ul>
 </dd>
 <dt><strong>ascending</strong><span class="classifier">bool, default True</span></dt><dd><p>Whether or not the elements should be ranked in ascending order.</p>

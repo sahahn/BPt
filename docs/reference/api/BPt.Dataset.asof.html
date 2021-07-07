@@ -439,11 +439,11 @@
 <h1>BPt.Dataset.asof<a class="headerlink" href="#bpt-dataset-asof" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.asof">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">asof</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">where</span></em>, <em class="sig-param"><span class="n">subset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L7245-L7411"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.asof" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">asof</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">where</span></em>, <em class="sig-param"><span class="n">subset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L6913-L7079"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.asof" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the last row(s) without any NaNs before <cite>where</cite>.</p>
 <p>The last row (for each element in <cite>where</cite>, if list) without any
 NaN is taken.
-In case of a <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></a>, the last row without NaN
+In case of a <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></a>, the last row without NaN
 considering only the subset of columns (if not <cite>None</cite>)</p>
 <p>If there is no good value, NaN is returned for a Series or
 a Series of NaN values for a DataFrame</p>

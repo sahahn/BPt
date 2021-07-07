@@ -439,7 +439,7 @@
 <h1>BPt.Dataset<a class="headerlink" href="#bpt-dataset" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.Dataset">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">roles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scopes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">targets</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">non_inputs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L120-L1737"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">roles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scopes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">targets</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">non_inputs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L120-L1735"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><div class="line-block">
 <div class="line">The BPt Dataset class is the main class used for preparing data
 into a compatible format to work with machine learning. This class is new
@@ -645,7 +645,7 @@ for setting parameters at the time of construction. For example:</p>
 <td><p>Apply a function to a Dataframe elementwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.asfreq.html#BPt.Dataset.asfreq" title="BPt.Dataset.asfreq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asfreq</span></code></a>(freq[, method, how, normalize, …])</p></td>
-<td><p>Convert TimeSeries to specified frequency.</p></td>
+<td><p>Convert time series to specified frequency.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.asof.html#BPt.Dataset.asof" title="BPt.Dataset.asof"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asof</span></code></a>(where[, subset])</p></td>
 <td><p>Return the last row(s) without any NaNs before <cite>where</cite>.</p></td>
@@ -771,7 +771,7 @@ for setting parameters at the time of construction. For example:</p>
 <td><p>This method is used for dropping subjects based on the amount of missing values found across a subset of columns as selected by scope.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.droplevel.html#BPt.Dataset.droplevel" title="BPt.Dataset.droplevel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">droplevel</span></code></a>(level[, axis])</p></td>
-<td><p>Return DataFrame with requested index / column level(s) removed.</p></td>
+<td><p>Return Series/DataFrame with requested index / column level(s) removed.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.dropna.html#BPt.Dataset.dropna" title="BPt.Dataset.dropna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dropna</span></code></a>([axis, how, thresh, subset, inplace])</p></td>
 <td><p>Remove missing values.</p></td>
@@ -791,7 +791,7 @@ for setting parameters at the time of construction. For example:</p>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.ewm.html#BPt.Dataset.ewm" title="BPt.Dataset.ewm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ewm</span></code></a>([com, span, halflife, alpha, …])</p></td>
 <td><p>Provide exponential weighted (EW) functions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.expanding.html#BPt.Dataset.expanding" title="BPt.Dataset.expanding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expanding</span></code></a>([min_periods, center, axis])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.expanding.html#BPt.Dataset.expanding" title="BPt.Dataset.expanding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expanding</span></code></a>([min_periods, center, axis, method])</p></td>
 <td><p>Provide expanding transformations.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.explode.html#BPt.Dataset.explode" title="BPt.Dataset.explode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">explode</span></code></a>(column[, ignore_index])</p></td>
@@ -819,7 +819,7 @@ for setting parameters at the time of construction. For example:</p>
 <td><p>Select initial periods of time series data based on a date offset.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.first_valid_index.html#BPt.Dataset.first_valid_index" title="BPt.Dataset.first_valid_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">first_valid_index</span></code></a>()</p></td>
-<td><p>Return index for first non-NA/null value.</p></td>
+<td><p>Return index for first non-NA value or None, if no NA value is found.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.floordiv.html#BPt.Dataset.floordiv" title="BPt.Dataset.floordiv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floordiv</span></code></a>(other[, axis, level, fill_value])</p></td>
 <td><p>Get Integer division of dataframe and other, element-wise (binary operator <cite>floordiv</cite>).</p></td>
@@ -867,7 +867,7 @@ for setting parameters at the time of construction. For example:</p>
 <td><p>Return the first <cite>n</cite> rows.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.hist.html#BPt.Dataset.hist" title="BPt.Dataset.hist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hist</span></code></a>([column, by, grid, xlabelsize, xrot, …])</p></td>
-<td><p>Make a histogram of the DataFrame’s.</p></td>
+<td><p>Make a histogram of the DataFrame’s columns.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.idxmax.html#BPt.Dataset.idxmax" title="BPt.Dataset.idxmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">idxmax</span></code></a>([axis, skipna])</p></td>
 <td><p>Return index of first occurrence of maximum over requested axis.</p></td>
@@ -927,7 +927,7 @@ for setting parameters at the time of construction. For example:</p>
 <td><p>Select final periods of time series data based on a date offset.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.last_valid_index.html#BPt.Dataset.last_valid_index" title="BPt.Dataset.last_valid_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">last_valid_index</span></code></a>()</p></td>
-<td><p>Return index for last non-NA/null value.</p></td>
+<td><p>Return index for last non-NA value or None, if no NA value is found.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.le.html#BPt.Dataset.le" title="BPt.Dataset.le"><code class="xref py py-obj docutils literal notranslate"><span class="pre">le</span></code></a>(other[, axis, level])</p></td>
 <td><p>Get Less than or equal to of dataframe and other, element-wise (binary operator <cite>le</cite>).</p></td>
@@ -996,7 +996,7 @@ for setting parameters at the time of construction. For example:</p>
 <td><p>Return the first <cite>n</cite> rows ordered by <cite>columns</cite> in ascending order.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.nunique.html#BPt.Dataset.nunique" title="BPt.Dataset.nunique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nunique</span></code></a>([axis, dropna])</p></td>
-<td><p>Count distinct observations over requested axis.</p></td>
+<td><p>Count number of distinct elements in specified axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.ordinalize.html#BPt.Dataset.ordinalize" title="BPt.Dataset.ordinalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ordinalize</span></code></a>(scope[, nan_to_class, inplace])</p></td>
 <td><p>This method is used to ordinalize a group of columns.</p></td>
@@ -1191,7 +1191,7 @@ for setting parameters at the time of construction. For example:</p>
 <td><p>Interchange axes and swap values axes appropriately.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.swaplevel.html#BPt.Dataset.swaplevel" title="BPt.Dataset.swaplevel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swaplevel</span></code></a>([i, j, axis])</p></td>
-<td><p>Swap levels i and j in a MultiIndex on a particular axis.</p></td>
+<td><p>Swap levels i and j in a <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiIndex</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.tail.html#BPt.Dataset.tail" title="BPt.Dataset.tail"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tail</span></code></a>([n])</p></td>
 <td><p>Return the last <cite>n</cite> rows.</p></td>
@@ -1274,52 +1274,55 @@ for setting parameters at the time of construction. For example:</p>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.to_xarray.html#BPt.Dataset.to_xarray" title="BPt.Dataset.to_xarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_xarray</span></code></a>()</p></td>
 <td><p>Return an xarray object from the pandas object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.train_split.html#BPt.Dataset.train_split" title="BPt.Dataset.train_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_split</span></code></a>([size, subjects, cv_strategy, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.to_xml.html#BPt.Dataset.to_xml" title="BPt.Dataset.to_xml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_xml</span></code></a>([path_or_buffer, index, root_name, …])</p></td>
+<td><p>Render a DataFrame to an XML document.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.train_split.html#BPt.Dataset.train_split" title="BPt.Dataset.train_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_split</span></code></a>([size, subjects, cv_strategy, …])</p></td>
 <td><p><div class="line-block">
 <div class="line">This method defines and returns a Train and Test Dataset</div>
 </div>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.transform.html#BPt.Dataset.transform" title="BPt.Dataset.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(func[, axis])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.transform.html#BPt.Dataset.transform" title="BPt.Dataset.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(func[, axis])</p></td>
 <td><p>Call <code class="docutils literal notranslate"><span class="pre">func</span></code> on self producing a DataFrame with transformed values.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.transpose.html#BPt.Dataset.transpose" title="BPt.Dataset.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(*args[, copy])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.transpose.html#BPt.Dataset.transpose" title="BPt.Dataset.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(*args[, copy])</p></td>
 <td><p>Transpose index and columns.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.truediv.html#BPt.Dataset.truediv" title="BPt.Dataset.truediv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">truediv</span></code></a>(other[, axis, level, fill_value])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.truediv.html#BPt.Dataset.truediv" title="BPt.Dataset.truediv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">truediv</span></code></a>(other[, axis, level, fill_value])</p></td>
 <td><p>Get Floating division of dataframe and other, element-wise (binary operator <cite>truediv</cite>).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.truncate.html#BPt.Dataset.truncate" title="BPt.Dataset.truncate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">truncate</span></code></a>([before, after, axis, copy])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.truncate.html#BPt.Dataset.truncate" title="BPt.Dataset.truncate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">truncate</span></code></a>([before, after, axis, copy])</p></td>
 <td><p>Truncate a Series or DataFrame before and after some index value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.tshift.html#BPt.Dataset.tshift" title="BPt.Dataset.tshift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tshift</span></code></a>([periods, freq, axis])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.tshift.html#BPt.Dataset.tshift" title="BPt.Dataset.tshift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tshift</span></code></a>([periods, freq, axis])</p></td>
 <td><p>(DEPRECATED) Shift the time index, using the index’s frequency if available.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.tz_convert.html#BPt.Dataset.tz_convert" title="BPt.Dataset.tz_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tz_convert</span></code></a>(tz[, axis, level, copy])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.tz_convert.html#BPt.Dataset.tz_convert" title="BPt.Dataset.tz_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tz_convert</span></code></a>(tz[, axis, level, copy])</p></td>
 <td><p>Convert tz-aware axis to target time zone.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.tz_localize.html#BPt.Dataset.tz_localize" title="BPt.Dataset.tz_localize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tz_localize</span></code></a>(tz[, axis, level, copy, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.tz_localize.html#BPt.Dataset.tz_localize" title="BPt.Dataset.tz_localize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tz_localize</span></code></a>(tz[, axis, level, copy, …])</p></td>
 <td><p>Localize tz-naive index of a Series or DataFrame to target time zone.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.unstack.html#BPt.Dataset.unstack" title="BPt.Dataset.unstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unstack</span></code></a>([level, fill_value])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.unstack.html#BPt.Dataset.unstack" title="BPt.Dataset.unstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unstack</span></code></a>([level, fill_value])</p></td>
 <td><p>Pivot a level of the (necessarily hierarchical) index labels.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.update.html#BPt.Dataset.update" title="BPt.Dataset.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(other[, join, overwrite, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.update.html#BPt.Dataset.update" title="BPt.Dataset.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(other[, join, overwrite, …])</p></td>
 <td><p>Modify in place using non-NA values from another DataFrame.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.update_data_file_paths.html#BPt.Dataset.update_data_file_paths" title="BPt.Dataset.update_data_file_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_data_file_paths</span></code></a>(old, new)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.update_data_file_paths.html#BPt.Dataset.update_data_file_paths" title="BPt.Dataset.update_data_file_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_data_file_paths</span></code></a>(old, new)</p></td>
 <td><p>Go through and update saved file paths within the Datasets file mapping attribute.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.value_counts.html#BPt.Dataset.value_counts" title="BPt.Dataset.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>([subset, normalize, sort, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.value_counts.html#BPt.Dataset.value_counts" title="BPt.Dataset.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>([subset, normalize, sort, …])</p></td>
 <td><p>Return a Series containing counts of unique rows in the DataFrame.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.var.html#BPt.Dataset.var" title="BPt.Dataset.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></a>([axis, skipna, level, ddof, numeric_only])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.var.html#BPt.Dataset.var" title="BPt.Dataset.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></a>([axis, skipna, level, ddof, numeric_only])</p></td>
 <td><p>Return unbiased variance over requested axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.where.html#BPt.Dataset.where" title="BPt.Dataset.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(cond[, other, inplace, axis, level, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.where.html#BPt.Dataset.where" title="BPt.Dataset.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(cond[, other, inplace, axis, level, …])</p></td>
 <td><p>Replace values where the condition is False.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.xs.html#BPt.Dataset.xs" title="BPt.Dataset.xs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xs</span></code></a>(key[, axis, level, drop_level])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.xs.html#BPt.Dataset.xs" title="BPt.Dataset.xs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xs</span></code></a>(key[, axis, level, drop_level])</p></td>
 <td><p>Return cross-section from the Series/DataFrame.</p></td>
 </tr>
 </tbody>

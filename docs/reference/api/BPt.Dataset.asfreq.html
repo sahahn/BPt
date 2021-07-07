@@ -439,12 +439,23 @@
 <h1>BPt.Dataset.asfreq<a class="headerlink" href="#bpt-dataset-asfreq" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.asfreq">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">asfreq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">how</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">fill_value</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L7727-L7837"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.asfreq" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert TimeSeries to specified frequency.</p>
-<p>Optionally provide filling method to pad/backfill missing values.</p>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">asfreq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">how</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">fill_value</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L10314-L10329"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.asfreq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert time series to specified frequency.</p>
 <p>Returns the original data conformed to a new index with the specified
-frequency. <code class="docutils literal notranslate"><span class="pre">resample</span></code> is more appropriate if an operation, such as
-summarization, is necessary to represent the data at the new frequency.</p>
+frequency.</p>
+<p>If the index of this DataFrame is a <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.PeriodIndex.html#pandas.PeriodIndex" title="(in pandas v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeriodIndex</span></code></a>, the new index
+is the result of transforming the original index with
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.PeriodIndex.asfreq.html#pandas.PeriodIndex.asfreq" title="(in pandas v1.3.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PeriodIndex.asfreq</span></code></a> (so the original index
+will map one-to-one to the new index).</p>
+<p>Otherwise, the new index will be equivalent to <code class="docutils literal notranslate"><span class="pre">pd.date_range(start,</span> <span class="pre">end,</span>
+<span class="pre">freq=freq)</span></code> where <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> are, respectively, the first and
+last entries in the original index (see <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.date_range.html#pandas.date_range" title="(in pandas v1.3.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.date_range()</span></code></a>). The
+values corresponding to any timesteps in the new index which were not present
+in the original index will be null (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>), unless a method for filling
+such unknowns is provided (see the <code class="docutils literal notranslate"><span class="pre">method</span></code> parameter below).</p>
+<p>The <a class="reference internal" href="BPt.Dataset.resample.html#BPt.Dataset.resample" title="BPt.Dataset.resample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resample()</span></code></a> method is more appropriate if an operation on each group of
+timesteps (such as an aggregate) is necessary to represent the data at the new
+frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -469,7 +480,7 @@ this does not fill NaNs that already were present).</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>Same type as caller</dt><dd><p>Object converted to the specified frequency.</p>
+<dt>DataFrame</dt><dd><p>DataFrame object reindexed to the specified frequency.</p>
 </dd>
 </dl>
 </dd>
@@ -487,7 +498,7 @@ this does not fill NaNs that already were present).</p>
 <p>Start by creating a series with 4 one minute timestamps.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">&#39;1/1/2000&#39;</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;s&#39;</span><span class="p">:</span><span class="n">series</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">series</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
 <span class="go">                       s</span>
 <span class="go">2000-01-01 00:00:00    0.0</span>

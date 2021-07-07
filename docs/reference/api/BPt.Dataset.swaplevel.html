@@ -439,8 +439,9 @@
 <h1>BPt.Dataset.swaplevel<a class="headerlink" href="#bpt-dataset-swaplevel" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.swaplevel">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">swaplevel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">j</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L5901-L5930"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.swaplevel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Swap levels i and j in a MultiIndex on a particular axis.</p>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">swaplevel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">j</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L6733-L6808"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.swaplevel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Swap levels i and j in a <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiIndex</span></code>.</p>
+<p>Default is to swap the two innermost levels of the index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -453,10 +454,62 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>DataFrame</dt><dd></dd>
+<dt>DataFrame</dt><dd><p>DataFrame with levels swapped in MultiIndex.</p>
+</dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;Grade&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="n">index</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>        <span class="p">[</span><span class="s2">&quot;Final exam&quot;</span><span class="p">,</span> <span class="s2">&quot;Final exam&quot;</span><span class="p">,</span> <span class="s2">&quot;Coursework&quot;</span><span class="p">,</span> <span class="s2">&quot;Coursework&quot;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="p">[</span><span class="s2">&quot;History&quot;</span><span class="p">,</span> <span class="s2">&quot;Geography&quot;</span><span class="p">,</span> <span class="s2">&quot;History&quot;</span><span class="p">,</span> <span class="s2">&quot;Geography&quot;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="p">[</span><span class="s2">&quot;January&quot;</span><span class="p">,</span> <span class="s2">&quot;February&quot;</span><span class="p">,</span> <span class="s2">&quot;March&quot;</span><span class="p">,</span> <span class="s2">&quot;April&quot;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
+<span class="go">                                    Grade</span>
+<span class="go">Final exam  History     January      A</span>
+<span class="go">            Geography   February     B</span>
+<span class="go">Coursework  History     March        A</span>
+<span class="go">            Geography   April        C</span>
+</pre></div>
+</div>
+<p>In the following example, we will swap the levels of the indices.
+Here, we will swap the levels column-wise, but levels can be swapped row-wise
+in a similar manner. Note that column-wise is the default behaviour.
+By not supplying any arguments for i and j, we swap the last and second to
+last indices.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">swaplevel</span><span class="p">()</span>
+<span class="go">                                    Grade</span>
+<span class="go">Final exam  January     History         A</span>
+<span class="go">            February    Geography       B</span>
+<span class="go">Coursework  March       History         A</span>
+<span class="go">            April       Geography       C</span>
+</pre></div>
+</div>
+<p>By supplying one argument, we can choose which index to swap the last
+index with. We can for example swap the first index with the last one as
+follows.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">swaplevel</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">                                    Grade</span>
+<span class="go">January     History     Final exam      A</span>
+<span class="go">February    Geography   Final exam      B</span>
+<span class="go">March       History     Coursework      A</span>
+<span class="go">April       Geography   Coursework      C</span>
+</pre></div>
+</div>
+<p>We can also define explicitly which indices we want to swap by supplying values
+for both i and j. Here, we for example swap the first and second indices.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">swaplevel</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">                                    Grade</span>
+<span class="go">History     Final exam  January         A</span>
+<span class="go">Geography   Final exam  February        B</span>
+<span class="go">History     Coursework  March           A</span>
+<span class="go">Geography   Coursework  April           C</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

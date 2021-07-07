@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.astype<a class="headerlink" href="#bpt-dataset-astype" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.astype">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">astype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dtype</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">'raise'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L5724-L5887"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.astype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">astype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dtype</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">'raise'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L5652-L5816"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.astype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cast a pandas object to a specified dtype <code class="docutils literal notranslate"><span class="pre">dtype</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -476,9 +476,15 @@ pandas objects).</p>
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_numeric</span></code></dt><dd><p>Convert argument to a numeric type.</p>
 </dd>
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.astype.html#numpy.ndarray.astype" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.astype</span></code></a></dt><dd><p>Cast a numpy array to a specified type.</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.astype.html#numpy.ndarray.astype" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.astype</span></code></a></dt><dd><p>Cast a numpy array to a specified type.</p>
 </dd>
 </dl>
+</div>
+<p class="rubric">Notes</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.3.0: </span>Using <code class="docutils literal notranslate"><span class="pre">astype</span></code> to convert from timezone-naive dtype to
+timezone-aware dtype is deprecated and will raise in a
+future version.  Use <code class="xref py py-meth docutils literal notranslate"><span class="pre">Series.dt.tz_localize()</span></code> instead.</p>
 </div>
 <p class="rubric">Examples</p>
 <p>Create a DataFrame:</p>
@@ -525,7 +531,8 @@ pandas objects).</p>
 </pre></div>
 </div>
 <p>Convert to ordered categorical type with custom ordering:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cat_dtype</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">CategoricalDtype</span><span class="p">(</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pandas.api.types</span> <span class="kn">import</span> <span class="n">CategoricalDtype</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cat_dtype</span> <span class="o">=</span> <span class="n">CategoricalDtype</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">categories</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">cat_dtype</span><span class="p">)</span>
 <span class="go">0    1</span>
@@ -552,15 +559,6 @@ pandas object may propagate changes:</p>
 <span class="go">1   2020-01-02</span>
 <span class="go">2   2020-01-03</span>
 <span class="go">dtype: datetime64[ns]</span>
-</pre></div>
-</div>
-<p>Datetimes are localized to UTC first before
-converting to the specified timezone:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ser_date</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;datetime64[ns, US/Eastern]&#39;</span><span class="p">)</span>
-<span class="go">0   2019-12-31 19:00:00-05:00</span>
-<span class="go">1   2020-01-01 19:00:00-05:00</span>
-<span class="go">2   2020-01-02 19:00:00-05:00</span>
-<span class="go">dtype: datetime64[ns, US/Eastern]</span>
 </pre></div>
 </div>
 </dd></dl>

@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.to_hdf<a class="headerlink" href="#bpt-dataset-to-hdf" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.to_hdf">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_hdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_or_buf</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'a'</span></em>, <em class="sig-param"><span class="n">complevel</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">complib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">append</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">min_itemsize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nan_rep</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dropna</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">'strict'</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">'UTF-8'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L2482-L2622"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_hdf" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_hdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_or_buf</span></em>, <em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'a'</span></em>, <em class="sig-param"><span class="n">complevel</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">complib</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">append</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">min_itemsize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nan_rep</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dropna</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">'strict'</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">'UTF-8'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L2571-L2716"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_hdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the contained data to an HDF5 file using HDFStore.</p>
 <p>Hierarchical Data Format (HDF) is self-describing, allowing an
 application to interpret the structure and contents of a file with
@@ -447,7 +447,12 @@ no outside information. One HDF file can hold a mix of related objects
 which can be accessed as a group or as individual objects.</p>
 <p>In order to add another DataFrame or Series to an existing HDF file
 please use append mode and a different a key.</p>
-<p>For more information see the <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/io.html#io-hdf5" title="(in pandas v1.2.4)"><span class="xref std std-ref">user guide</span></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>One can store a subclass of <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> or <code class="docutils literal notranslate"><span class="pre">Series</span></code> to HDF5,
+but the type of the subclass is lost upon storing.</p>
+</div>
+<p>For more information see the <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/io.html#io-hdf5" title="(in pandas v1.3.0)"><span class="xref std std-ref">user guide</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -500,7 +505,7 @@ Not allowed with append=True.</p>
 </dd>
 <dt><strong>data_columns</strong><span class="classifier">list of columns or True, optional</span></dt><dd><p>List of columns to create as indexed data columns for on-disk
 queries, or True to use all columns. By default only the axes
-of the object are indexed. See <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/io.html#io-hdf5-query-data-columns" title="(in pandas v1.2.4)"><span>Query via data columns</span></a>.
+of the object are indexed. See <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/io.html#io-hdf5-query-data-columns" title="(in pandas v1.3.0)"><span>Query via data columns</span></a>.
 Applicable only to format=’table’.</p>
 </dd>
 </dl>
@@ -509,11 +514,11 @@ Applicable only to format=’table’.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.read_hdf</span></code></dt><dd><p>Read from HDF file.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></dt><dd><p>Read from HDF file.</p>
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.to_parquet</span></code></dt><dd><p>Write a DataFrame to the binary parquet format.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.to_sql</span></code></dt><dd><p>Write to a sql table.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.to_sql</span></code></dt><dd><p>Write to a SQL table.</p>
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.to_feather</span></code></dt><dd><p>Write out feather-format for DataFrames.</p>
 </dd>

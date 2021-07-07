@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.to_json<a class="headerlink" href="#bpt-dataset-to-json" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.to_json">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_or_buf</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">orient</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">date_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">double_precision</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">force_ascii</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">date_unit</span><span class="o">=</span><span class="default_value">'ms'</span></em>, <em class="sig-param"><span class="n">default_handler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lines</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">compression</span><span class="o">=</span><span class="default_value">'infer'</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">storage_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L2199-L2480"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_or_buf</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">orient</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">date_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">double_precision</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">force_ascii</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">date_unit</span><span class="o">=</span><span class="default_value">'ms'</span></em>, <em class="sig-param"><span class="n">default_handler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lines</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">compression</span><span class="o">=</span><span class="default_value">'infer'</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">storage_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L2291-L2569"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the object to a JSON string.</p>
 <p>Note NaN’s and None will be converted to null and datetime objects
 will be converted to UNIX timestamps.</p>
@@ -502,16 +502,13 @@ microsecond, and nanosecond respectively.</p>
 suitable format for JSON. Should receive a single argument which is
 the object to convert and return a serialisable object.</p>
 </dd>
-<dt><strong>lines</strong><span class="classifier">bool, default False</span></dt><dd><p>If ‘orient’ is ‘records’ write out line delimited json format. Will
-throw ValueError if incorrect ‘orient’ since others are not list
-like.</p>
+<dt><strong>lines</strong><span class="classifier">bool, default False</span></dt><dd><p>If ‘orient’ is ‘records’ write out line-delimited json format. Will
+throw ValueError if incorrect ‘orient’ since others are not
+list-like.</p>
 </dd>
 <dt><strong>compression</strong><span class="classifier">{‘infer’, ‘gzip’, ‘bz2’, ‘zip’, ‘xz’, None}</span></dt><dd><p>A string representing the compression to use in the output file,
 only used when the first argument is a filename. By default, the
 compression is inferred from the filename.</p>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 0.24.0: </span>‘infer’ option added and set to default</p>
-</div>
 </dd>
 <dt><strong>index</strong><span class="classifier">bool, default True</span></dt><dd><p>Whether to include the index values in the JSON string. Not
 including the index (<code class="docutils literal notranslate"><span class="pre">index=False</span></code>) is only supported when
@@ -523,11 +520,10 @@ orient is ‘split’ or ‘table’.</p>
 </div>
 </dd>
 <dt><strong>storage_options</strong><span class="classifier">dict, optional</span></dt><dd><p>Extra options that make sense for a particular storage connection, e.g.
-host, port, username, password, etc., if using a URL that will
-be parsed by <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>, e.g., starting “s3://”, “gcs://”. An error
-will be raised if providing this argument with a non-fsspec URL.
-See the fsspec and backend storage implementation docs for the set of
-allowed keys and values.</p>
+host, port, username, password, etc. For HTTP(S) URLs the key-value pairs
+are forwarded to <code class="docutils literal notranslate"><span class="pre">urllib</span></code> as header options. For other URLs (e.g.
+starting with “s3://”, and “gcs://”) the key-value pairs are forwarded to
+<code class="docutils literal notranslate"><span class="pre">fsspec</span></code>. Please see <code class="docutils literal notranslate"><span class="pre">fsspec</span></code> and <code class="docutils literal notranslate"><span class="pre">urllib</span></code> for more details.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.2.0.</span></p>
 </div>

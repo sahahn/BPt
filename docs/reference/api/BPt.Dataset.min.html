@@ -439,9 +439,9 @@
 <h1>BPt.Dataset.min<a class="headerlink" href="#bpt-dataset-min" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.min">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">min</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">skipna</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">numeric_only</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L11200-L11213"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.min" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">min</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">skipna</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">numeric_only</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L10814-L10827"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.min" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the minimum of the values over the requested axis.</p>
-<p>If you want the <em>index</em> of the minimum, use <code class="docutils literal notranslate"><span class="pre">idxmin</span></code>. This isthe equivalent of the <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> method <code class="docutils literal notranslate"><span class="pre">argmin</span></code>.</p>
+<p>If you want the <em>index</em> of the minimum, use <code class="docutils literal notranslate"><span class="pre">idxmin</span></code>. This is the equivalent of the <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> method <code class="docutils literal notranslate"><span class="pre">argmin</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -507,21 +507,6 @@ everything, then use only numeric data. Not implemented for Series.</p>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
 <span class="go">0</span>
-</pre></div>
-</div>
-<p>Min using level names, as well as indices.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;blooded&#39;</span><span class="p">)</span>
-<span class="go">blooded</span>
-<span class="go">warm    2</span>
-<span class="go">cold    0</span>
-<span class="go">Name: legs, dtype: int64</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="go">blooded</span>
-<span class="go">warm    2</span>
-<span class="go">cold    0</span>
-<span class="go">Name: legs, dtype: int64</span>
 </pre></div>
 </div>
 </dd></dl>

@@ -155,10 +155,6 @@ def test_scope():
     dataset['cat missing'] = [1, 1, np.nan, 2, np.nan, 3]
     dataset.add_scope(['cat', 'cat missing'], 'category', inplace=True)
 
-    print(dataset._get_cols('category'))
-    print(dataset)
-    print(dataset.scopes)
-
     assert dataset.get_cols('category') == ['cat', 'cat missing']
 
 

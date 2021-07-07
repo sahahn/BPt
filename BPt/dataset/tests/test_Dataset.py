@@ -147,8 +147,23 @@ def test_copy_shallow():
     assert '4' not in list(df)
 
 
+def test_scope():
+
+    dataset = Dataset()
+    dataset['float col'] = [1, 2, 3, 4, 5, 6]
+    dataset['cat'] = [1, 1, 2, 2, 3, 3]
+    dataset['cat missing'] = [1, 1, np.nan, 2, np.nan, 3]
+    dataset.add_scope(['cat', 'cat missing'], 'category', inplace=True)
+
+    print(dataset._get_cols('category'))
+    print(dataset)
+    print(dataset.scopes)
+
+    assert dataset.get_cols('category') == ['cat', 'cat missing']
+
+
 def test_get_shallow_categories():
-    
+
     # Skip for now
     return True
 

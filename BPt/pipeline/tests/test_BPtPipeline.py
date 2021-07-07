@@ -167,6 +167,7 @@ def run_pipe_with_loader_ts(cache_loc=None):
     X_df = pd.DataFrame(X)
 
     X_trans = pipe.transform_df(X_df)
+
     assert X_trans.shape == (50, 8)
     assert X_trans.loc[4, '1_3'] == 9
     assert X_trans.loc[1, '1_2'] == 3

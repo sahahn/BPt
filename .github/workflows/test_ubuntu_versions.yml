@@ -24,4 +24,8 @@ jobs:
     - name: Run py tests
       run: |
         pytest
+    - name: Run lower pandas version test
+      run: |
+        pip install pandas==1.1.5
+        pytest
     

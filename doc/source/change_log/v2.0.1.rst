@@ -5,11 +5,11 @@
 Version 2.0.1
 ---------------
 
-- New: :func:`BPt.Pipeline.build`
+- New: :func:`Pipeline.build`
     This function just essentially calls :func:`get_estimator`, but may be more intuitive
     to some to have it be accessible via the :class:`Pipeline` classes.
 
-- New: :func:`BPtEvaluator.subset_by`
+- New: :func:`Evaluator.subset_by`
     Post stratifying / splitting results by different subsets of subjects, i.e., by sex,
     can be a useful tool in performing post-hoc diagnostic tests on models. This new
     method and outputted classes tries to make this process easier.

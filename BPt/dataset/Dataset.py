@@ -433,10 +433,8 @@ class Dataset(pd.DataFrame):
             if col not in self.columns:
                 del self.scopes[col]
 
-        # @TODO maybe optimize with self.dtypes ?
-
         # Compute columns which are categorical + columns with scope category
-        dtype_category = set(self.select_dtypes('category'))
+        dtype_category = set(self.dtypes[self.dtypes == 'category'].index)
         scope_category = set([col for col in self.columns if
                              'category' in self.scopes[col]])
 

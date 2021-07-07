@@ -298,7 +298,7 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
 
         # Make sure column is now categorical and replace
         new_col = new_col.astype("Int64").astype('category')
-        remove_unused_categories(new_col)
+        new_col = remove_unused_categories(new_col)
         self[col] = new_col
 
         # Add to name map
@@ -317,7 +317,7 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
 
         # Make sure column is now categorical and replace
         new_col = new_col.astype("Int64").astype('category')
-        remove_unused_categories(new_col)
+        new_col = remove_unused_categories(new_col)
         self[col] = new_col
 
         # Add to name map
@@ -552,13 +552,13 @@ def _replace_cat_values(self, col, new_values, non_nan_subjects):
     new_col = self[col].copy()
 
     # Add new categories if needed / already categorical
-    add_new_categories(new_col, new_values)
+    new_col = add_new_categories(new_col, new_values)
     new_col.loc[non_nan_subjects] = new_values
 
     # Make sure cast to type nullable integer, then
     # category.
     new_col = new_col.astype("Int64").astype('category')
-    remove_unused_categories(new_col)
+    new_col = remove_unused_categories(new_col)
 
     # Add back in place
     self[col] = new_col
@@ -618,9 +618,9 @@ def nan_to_class(self, scope='category', inplace=False):
         new_col = self[col].copy()
 
         # Add categories, replace vals, and remove unused
-        add_new_categories(new_col, [nan_class])
+        new_col = add_new_categories(new_col, [nan_class])
         new_col.loc[nan_subjects] = nan_class
-        remove_unused_categories(new_col)
+        new_col = remove_unused_categories(new_col)
 
         # Replace col with new column
         self[col] = new_col

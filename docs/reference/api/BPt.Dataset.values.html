@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.values &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.values &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -473,7 +473,7 @@ are mixed, the one that accommodates all will be chosen. Use this
 with care if you are not dealing with the blocks.</p>
 <p>e.g. If the dtypes are float16 and float32, dtype will be upcast to
 float32.  If dtypes are int32 and uint8, dtype will be upcast to
-int32. By <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.find_common_type.html#numpy.find_common_type" title="(in NumPy v1.20)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.find_common_type()</span></code></a> convention, mixing int64
+int32. By <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.find_common_type.html#numpy.find_common_type" title="(in NumPy v1.21)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.find_common_type()</span></code></a> convention, mixing int64
 and uint64 will result in a float64 dtype.</p>
 <p class="rubric">Examples</p>
 <p>A DataFrame where all columns are the same type (e.g., int64) results

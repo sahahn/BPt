@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.nunique &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.nunique &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,9 +439,9 @@
 <h1>BPt.Dataset.nunique<a class="headerlink" href="#bpt-dataset-nunique" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.nunique">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">nunique</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dropna</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L8892-L8930"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.nunique" title="Permalink to this definition">¶</a></dt>
-<dd><p>Count distinct observations over requested axis.</p>
-<p>Return Series with number of distinct observations. Can ignore NaN
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">nunique</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dropna</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L9917-L9955"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.nunique" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count number of distinct elements in specified axis.</p>
+<p>Return Series with number of distinct elements. Can ignore NaN
 values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -469,10 +469,10 @@ column-wise.</p>
 </dl>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]})</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
 <span class="go">A    3</span>
-<span class="go">B    1</span>
+<span class="go">B    2</span>
 <span class="go">dtype: int64</span>
 </pre></div>
 </div>

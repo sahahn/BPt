@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.to_excel &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.to_excel &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.to_excel<a class="headerlink" href="#bpt-dataset-to-excel" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.to_excel">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_excel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">excel_writer</span></em>, <em class="sig-param"><span class="n">sheet_name</span><span class="o">=</span><span class="default_value">'Sheet1'</span></em>, <em class="sig-param"><span class="n">na_rep</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">float_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">index_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">startrow</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">startcol</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">engine</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">merge_cells</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inf_rep</span><span class="o">=</span><span class="default_value">'inf'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">freeze_panes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">storage_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L2034-L2197"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_excel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_excel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">excel_writer</span></em>, <em class="sig-param"><span class="n">sheet_name</span><span class="o">=</span><span class="default_value">'Sheet1'</span></em>, <em class="sig-param"><span class="n">na_rep</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">float_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">index_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">startrow</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">startcol</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">engine</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">merge_cells</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">inf_rep</span><span class="o">=</span><span class="default_value">'inf'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">freeze_panes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">storage_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L2126-L2289"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_excel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write object to an Excel sheet.</p>
 <p>To write a single object to an Excel .xlsx file it is only necessary to
 specify a target file name. To write to multiple sheets it is necessary to
@@ -499,11 +499,10 @@ infinity in Excel).</p>
 is to be frozen.</p>
 </dd>
 <dt><strong>storage_options</strong><span class="classifier">dict, optional</span></dt><dd><p>Extra options that make sense for a particular storage connection, e.g.
-host, port, username, password, etc., if using a URL that will
-be parsed by <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>, e.g., starting “s3://”, “gcs://”. An error
-will be raised if providing this argument with a non-fsspec URL.
-See the fsspec and backend storage implementation docs for the set of
-allowed keys and values.</p>
+host, port, username, password, etc. For HTTP(S) URLs the key-value pairs
+are forwarded to <code class="docutils literal notranslate"><span class="pre">urllib</span></code> as header options. For other URLs (e.g.
+starting with “s3://”, and “gcs://”) the key-value pairs are forwarded to
+<code class="docutils literal notranslate"><span class="pre">fsspec</span></code>. Please see <code class="docutils literal notranslate"><span class="pre">fsspec</span></code> and <code class="docutils literal notranslate"><span class="pre">urllib</span></code> for more details.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.2.0.</span></p>
 </div>
@@ -527,8 +526,8 @@ allowed keys and values.</p>
 <p class="rubric">Notes</p>
 <p>For compatibility with <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_csv()</span></code>,
 to_excel serializes lists and dicts to strings before writing.</p>
-<p>Once a workbook has been saved it is not possible write further data
-without rewriting the whole workbook.</p>
+<p>Once a workbook has been saved it is not possible to write further
+data without rewriting the whole workbook.</p>
 <p class="rubric">Examples</p>
 <p>Create, write to and save a workbook:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">]],</span>

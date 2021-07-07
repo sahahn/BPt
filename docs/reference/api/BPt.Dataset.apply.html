@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.apply &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.apply &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.apply<a class="headerlink" href="#bpt-dataset-apply" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.apply">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">raw</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">result_type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">()</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwds</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L7625-L7768"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.apply" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">raw</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">result_type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">()</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L8579-L8736"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.apply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply a function along an axis of the DataFrame.</p>
 <p>Objects passed to the function are Series objects whose index is
 either the DataFrame’s index (<code class="docutils literal notranslate"><span class="pre">axis=0</span></code>) or the DataFrame’s columns
@@ -484,7 +484,7 @@ are expanded to columns.</p>
 <dt><strong>args</strong><span class="classifier">tuple</span></dt><dd><p>Positional arguments to pass to <cite>func</cite> in addition to the
 array/series.</p>
 </dd>
-<dt><strong>**kwds</strong></dt><dd><p>Additional keyword arguments to pass as keywords arguments to
+<dt><strong>**kwargs</strong></dt><dd><p>Additional keyword arguments to pass as keywords arguments to
 <cite>func</cite>.</p>
 </dd>
 </dl>
@@ -508,6 +508,10 @@ DataFrame.</p>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>Functions that mutate the passed object can produce unexpected
+behavior or errors and are not supported. See <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/gotchas.html#gotchas-udf-mutation" title="(in pandas v1.3.0)"><span>Mutating with User Defined Function (UDF) methods</span></a>
+for more details.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.reindex &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.reindex &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.reindex<a class="headerlink" href="#bpt-dataset-reindex" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.reindex">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">reindex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill_value</span><span class="o">=</span><span class="default_value">nan</span></em>, <em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tolerance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L4157-L4176"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.reindex" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">reindex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill_value</span><span class="o">=</span><span class="default_value">nan</span></em>, <em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tolerance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L4748-L4767"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.reindex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Conform Series/DataFrame to new index with optional filling logic.</p>
 <p>Places NA/NaN in locations having no value in the previous index. A new object
 is produced unless the new index is equivalent to the current one and
@@ -637,7 +637,7 @@ value propagation schemes. This is because filling while reindexing
 does not look at dataframe values, but only compares the original and
 desired indexes. If you do want to fill in the <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values present
 in the original dataframe, use the <code class="docutils literal notranslate"><span class="pre">fillna()</span></code> method.</p>
-<p>See the <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/basics.html#basics-reindexing" title="(in pandas v1.2.4)"><span class="xref std std-ref">user guide</span></a> for more.</p>
+<p>See the <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/basics.html#basics-reindexing" title="(in pandas v1.3.0)"><span class="xref std std-ref">user guide</span></a> for more.</p>
 </dd></dl>
 
 </div>

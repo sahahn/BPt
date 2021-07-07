@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Version 2.0.0 &#8212; BPt 2.0.1 documentation</title>
+    <title>Version 2.0.0 &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -41,8 +41,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Version 2.0.1" href="v2.0.1.html" />
-    <link rel="prev" title="Change Log" href="index.html" />
+    <link rel="next" title="Version 1.3.6" href="v1.3.6.html" />
+    <link rel="prev" title="Version 2.0.1" href="v2.0.1.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -152,14 +152,20 @@
         
           
             
-                <li class="active">
-                    <a href="">Version 2.0.0</a>
+                <li class="">
+                    <a href="v2.0.2.html">Version 2.0.2</a>
                 </li>
             
           
             
                 <li class="">
                     <a href="v2.0.1.html">Version 2.0.1</a>
+                </li>
+            
+          
+            
+                <li class="active">
+                    <a href="">Version 2.0.0</a>
                 </li>
             
           
@@ -233,7 +239,7 @@
 <span id="whatsnew-200"></span><h1>Version 2.0.0<a class="headerlink" href="#version-2-0-0" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><dl class="simple">
-<dt>Big Change: New <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.Dataset</span></code></a> class</dt><dd><ul>
+<dt>Big Change: New <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> class</dt><dd><ul>
 <li><p>This new Dataset class is designed to fully replace the old system of loading via the BPt_ML class.</p></li>
 <li><p>This new system is designed to be more flexible than the old system.</p></li>
 <li><p>Most of the old functionality is ported over, and various new functionality added.</p></li>
@@ -243,8 +249,8 @@
 </li>
 <li><dl class="simple">
 <dt>Big Change: New evaluate method</dt><dd><ul>
-<li><p>Instead of previous BPt_ML.Evaluate, now various function are provided instead e.g., <code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></p></li>
-<li><p>Introduce new returned flexible class from <code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code> called <code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code>.</p></li>
+<li><p>Instead of previous BPt_ML.Evaluate, now various function are provided instead e.g., <a class="reference internal" href="../reference/api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a></p></li>
+<li><p>Introduce new returned flexible class from <a class="reference internal" href="../reference/api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a> called <a class="reference internal" href="../reference/api/BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -260,7 +266,7 @@
 <li><dl class="simple">
 <dt>Class name changes</dt><dd><ul>
 <li><p>Input classes with _’s have been replaced with versions without underscores, e.g.,
-Problem_Spec to <code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code>.</p></li>
+Problem_Spec to <a class="reference internal" href="../reference/api/BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -312,8 +318,8 @@ feature of creating overlaps of column values on the fly is depreciated.</p></li
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="index.html" title="previous page">Change Log</a>
-    <a class='right-next' id="next-link" href="v2.0.1.html" title="next page">Version 2.0.1</a>
+    <a class='left-prev' id="prev-link" href="v2.0.1.html" title="previous page">Version 2.0.1</a>
+    <a class='right-next' id="next-link" href="v1.3.6.html" title="next page">Version 1.3.6</a>
 
               </div>
               

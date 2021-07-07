@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.pct_change &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.pct_change &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.pct_change<a class="headerlink" href="#bpt-dataset-pct-change" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.pct_change">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">pct_change</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">periods</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">fill_method</span><span class="o">=</span><span class="default_value">'pad'</span></em>, <em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L10414-L10551"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.pct_change" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">pct_change</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">periods</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">fill_method</span><span class="o">=</span><span class="default_value">'pad'</span></em>, <em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L10023-L10162"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.pct_change" title="Permalink to this definition">¶</a></dt>
 <dd><p>Percentage change between the current and a prior element.</p>
 <p>Computes the percentage change from the immediately previous row by
 default. This is useful in comparing the percentage of change in a time
@@ -558,10 +558,10 @@ the percentage change between columns.</p>
 <span class="go">APPL  30586265  40912316  41403351</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">pct_change</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
-<span class="go">      2016      2015      2014</span>
-<span class="go">GOOG   NaN -0.151997 -0.086016</span>
-<span class="go">APPL   NaN  0.337604  0.012002</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">pct_change</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">,</span> <span class="n">periods</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">          2016      2015  2014</span>
+<span class="go">GOOG  0.179241  0.094112   NaN</span>
+<span class="go">APPL -0.252395 -0.011860   NaN</span>
 </pre></div>
 </div>
 </dd></dl>

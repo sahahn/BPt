@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.to_csv &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.to_csv &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,11 +439,8 @@
 <h1>BPt.Dataset.to_csv<a class="headerlink" href="#bpt-dataset-to-csv" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.to_csv">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_or_buf</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">','</span></em>, <em class="sig-param"><span class="n">na_rep</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">float_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">index_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'w'</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compression</span><span class="o">=</span><span class="default_value">'infer'</span></em>, <em class="sig-param"><span class="n">quoting</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quotechar</span><span class="o">=</span><span class="default_value">'&quot;'</span></em>, <em class="sig-param"><span class="n">line_terminator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chunksize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">date_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">doublequote</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">escapechar</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">decimal</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">'strict'</span></em>, <em class="sig-param"><span class="n">storage_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L3204-L3404"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_csv" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_or_buf</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">','</span></em>, <em class="sig-param"><span class="n">na_rep</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">float_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">index_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'w'</span></em>, <em class="sig-param"><span class="n">encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compression</span><span class="o">=</span><span class="default_value">'infer'</span></em>, <em class="sig-param"><span class="n">quoting</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">quotechar</span><span class="o">=</span><span class="default_value">'&quot;'</span></em>, <em class="sig-param"><span class="n">line_terminator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chunksize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">date_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">doublequote</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">escapechar</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">decimal</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">'strict'</span></em>, <em class="sig-param"><span class="n">storage_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L3294-L3480"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write object to a comma-separated values (csv) file.</p>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 0.24.0: </span>The order of arguments for Series was changed.</p>
-</div>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
@@ -451,9 +448,6 @@
 a string.  If a non-binary file object is passed, it should be opened
 with <cite>newline=’’</cite>, disabling universal newlines. If a binary
 file object is passed, <cite>mode</cite> might need to contain a <cite>‘b’</cite>.</p>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 0.24.0: </span>Was previously named “path” for Series.</p>
-</div>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.2.0: </span>Support for binary file objects was introduced.</p>
 </div>
@@ -468,9 +462,6 @@ file object is passed, <cite>mode</cite> might need to contain a <cite>‘b’</
 </dd>
 <dt><strong>header</strong><span class="classifier">bool or list of str, default True</span></dt><dd><p>Write out the column names. If a list of strings is given it is
 assumed to be aliases for the column names.</p>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 0.24.0: </span>Previously defaulted to False for Series.</p>
-</div>
 </dd>
 <dt><strong>index</strong><span class="classifier">bool, default True</span></dt><dd><p>Write row names (index).</p>
 </dd>
@@ -522,10 +513,7 @@ will treat them as non-numeric.</p>
 </dd>
 <dt><strong>line_terminator</strong><span class="classifier">str, optional</span></dt><dd><p>The newline character or character sequence to use in the output
 file. Defaults to <cite>os.linesep</cite>, which depends on the OS in which
-this method is called (‘n’ for linux, ‘rn’ for Windows, i.e.).</p>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 0.24.0.</span></p>
-</div>
+this method is called (‘\n’ for linux, ‘\r\n’ for Windows, i.e.).</p>
 </dd>
 <dt><strong>chunksize</strong><span class="classifier">int or None</span></dt><dd><p>Rows to write at a time.</p>
 </dd>
@@ -547,11 +535,10 @@ of options.</p>
 </div>
 </dd>
 <dt><strong>storage_options</strong><span class="classifier">dict, optional</span></dt><dd><p>Extra options that make sense for a particular storage connection, e.g.
-host, port, username, password, etc., if using a URL that will
-be parsed by <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>, e.g., starting “s3://”, “gcs://”. An error
-will be raised if providing this argument with a non-fsspec URL.
-See the fsspec and backend storage implementation docs for the set of
-allowed keys and values.</p>
+host, port, username, password, etc. For HTTP(S) URLs the key-value pairs
+are forwarded to <code class="docutils literal notranslate"><span class="pre">urllib</span></code> as header options. For other URLs (e.g.
+starting with “s3://”, and “gcs://”) the key-value pairs are forwarded to
+<code class="docutils literal notranslate"><span class="pre">fsspec</span></code>. Please see <code class="docutils literal notranslate"><span class="pre">fsspec</span></code> and <code class="docutils literal notranslate"><span class="pre">urllib</span></code> for more details.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.2.0.</span></p>
 </div>

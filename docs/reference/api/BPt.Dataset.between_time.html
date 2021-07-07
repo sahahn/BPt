@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.between_time &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.between_time &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,13 +439,13 @@
 <h1>BPt.Dataset.between_time<a class="headerlink" href="#bpt-dataset-between-time" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.between_time">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">between_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_time</span></em>, <em class="sig-param"><span class="n">end_time</span></em>, <em class="sig-param"><span class="n">include_start</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_end</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L7898-L7981"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.between_time" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">between_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start_time</span></em>, <em class="sig-param"><span class="n">end_time</span></em>, <em class="sig-param"><span class="n">include_start</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_end</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L7619-L7700"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.between_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select values between particular times of the day (e.g., 9:00-9:30 AM).</p>
 <p>By setting <code class="docutils literal notranslate"><span class="pre">start_time</span></code> to be later than <code class="docutils literal notranslate"><span class="pre">end_time</span></code>,
 you can get the times that are <em>not</em> between the two times.</p>
-<dl class="field-list">
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
+<dd class="field-odd"><dl class="simple">
 <dt><strong>start_time</strong><span class="classifier">datetime.time or str</span></dt><dd><p>Initial time as a time filter limit.</p>
 </dd>
 <dt><strong>end_time</strong><span class="classifier">datetime.time or str</span></dt><dd><p>End time as a time filter limit.</p>
@@ -455,9 +455,6 @@ you can get the times that are <em>not</em> between the two times.</p>
 <dt><strong>include_end</strong><span class="classifier">bool, default True</span></dt><dd><p>Whether the end time needs to be included in the result.</p>
 </dd>
 <dt><strong>axis</strong><span class="classifier">{0 or ‘index’, 1 or ‘columns’}, default 0</span></dt><dd><p>Determine range time on index or columns value.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 0.24.0.</span></p>
-</div>
 </dd>
 </dl>
 </dd>

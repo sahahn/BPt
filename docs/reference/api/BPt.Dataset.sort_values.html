@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.sort_values &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.sort_values &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.sort_values<a class="headerlink" href="#bpt-dataset-sort-values" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.sort_values">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">sort_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">by</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">ascending</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'quicksort'</span></em>, <em class="sig-param"><span class="n">na_position</span><span class="o">=</span><span class="default_value">'last'</span></em>, <em class="sig-param"><span class="n">ignore_index</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L5417-L5479"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.sort_values" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">sort_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">by</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">ascending</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'quicksort'</span></em>, <em class="sig-param"><span class="n">na_position</span><span class="o">=</span><span class="default_value">'last'</span></em>, <em class="sig-param"><span class="n">ignore_index</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L6211-L6284"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.sort_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort by the values along either axis.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -460,8 +460,8 @@ the by.</p>
 </dd>
 <dt><strong>inplace</strong><span class="classifier">bool, default False</span></dt><dd><p>If True, perform operation in-place.</p>
 </dd>
-<dt><strong>kind</strong><span class="classifier">{‘quicksort’, ‘mergesort’, ‘heapsort’}, default ‘quicksort’</span></dt><dd><p>Choice of sorting algorithm. See also ndarray.np.sort for more
-information.  <cite>mergesort</cite> is the only stable algorithm. For
+<dt><strong>kind</strong><span class="classifier">{‘quicksort’, ‘mergesort’, ‘heapsort’, ‘stable’}, default ‘quicksort’</span></dt><dd><p>Choice of sorting algorithm. See also <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.sort.html#numpy.sort" title="(in NumPy v1.21)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.sort()</span></code></a> for more
+information. <cite>mergesort</cite> and <cite>stable</cite> are the only stable algorithms. For
 DataFrames, this option is only applied when sorting on a single
 column or label.</p>
 </dd>

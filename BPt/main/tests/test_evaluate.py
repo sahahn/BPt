@@ -819,6 +819,23 @@ def test_evaluate_pipeline_with_select():
     assert step1[1].estimator_ == step1[1].estimators[step1[1].to_use][1]
 
 
+def test_select_nested_model_pipes_grid():
+
+    p1 = Pipeline([Model('random forest')])
+    p2 = Pipeline([Model('ridge')])
+
+    select_pipe = Select([Model(p1), Model(p2)])
+
+    pipe = Pipeline([select_pipe],
+                    param_search=ParamSearch(search_type='grid'))
+    dataset = get_fake_dataset()
+
+    evaluate(pipeline=pipe,
+             dataset=dataset,
+             progress_bar=False,
+             cv=2)
+
+
 def test_evaluate_modelpipeline_with_select():
 
     select_scaler = Select([Scaler('standard'), Scaler('robust')])

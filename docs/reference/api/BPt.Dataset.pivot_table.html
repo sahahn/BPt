@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.pivot_table &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.pivot_table &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.pivot_table<a class="headerlink" href="#bpt-dataset-pivot-table" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.pivot_table">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">pivot_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aggfunc</span><span class="o">=</span><span class="default_value">'mean'</span></em>, <em class="sig-param"><span class="n">fill_value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">margins</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dropna</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">margins_name</span><span class="o">=</span><span class="default_value">'All'</span></em>, <em class="sig-param"><span class="n">observed</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L7015-L7042"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.pivot_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">pivot_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">columns</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aggfunc</span><span class="o">=</span><span class="default_value">'mean'</span></em>, <em class="sig-param"><span class="n">fill_value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">margins</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dropna</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">margins_name</span><span class="o">=</span><span class="default_value">'All'</span></em>, <em class="sig-param"><span class="n">observed</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sort</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L7929-L7958"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.pivot_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a spreadsheet-style pivot table as a DataFrame.</p>
 <p>The levels in the pivot table will be stored in MultiIndex objects
 (hierarchical indexes) on the index and columns of the result DataFrame.</p>
@@ -478,6 +478,11 @@ If True: only show observed values for categorical groupers.
 If False: show all values for categorical groupers.</p>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 0.25.0.</span></p>
+</div>
+</dd>
+<dt><strong>sort</strong><span class="classifier">bool, default True</span></dt><dd><p>Specifies if the result should be sorted.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.0.</span></p>
 </div>
 </dd>
 </dl>

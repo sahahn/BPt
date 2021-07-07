@@ -78,3 +78,15 @@ def test_to_grid():
 
     assert hasattr(params['1'], 'to_grid')
     assert hasattr(params['2'], 'to_grid')
+
+
+def test_dict_to_grid():
+
+    params = {'select': Dict(x=1),
+              's2': Dict(x=Choice([1, 2, 3]))}
+    assert params['select'].to_grid() == {'x': 1}
+
+    grid = params['s2'].to_grid()
+    assert grid['x'] == [1, 2, 3]
+
+

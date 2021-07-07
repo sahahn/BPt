@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.mode &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.mode &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,13 +439,13 @@
 <h1>BPt.Dataset.mode<a class="headerlink" href="#bpt-dataset-mode" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.mode">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">mode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">numeric_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dropna</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L9097-L9182"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.mode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">mode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">numeric_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dropna</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L10122-L10212"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the mode(s) of each element along the selected axis.</p>
 <p>The mode of a set of values is the value that appears most often.
 It can be multiple values.</p>
-<dl class="field-list">
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
+<dd class="field-odd"><dl class="simple">
 <dt><strong>axis</strong><span class="classifier">{0 or ‘index’, 1 or ‘columns’}, default 0</span></dt><dd><p>The axis to iterate over while searching for the mode:</p>
 <ul class="simple">
 <li><p>0 or ‘index’ : get mode of each column</p></li>
@@ -455,9 +455,6 @@ It can be multiple values.</p>
 <dt><strong>numeric_only</strong><span class="classifier">bool, default False</span></dt><dd><p>If True, only apply to numeric columns.</p>
 </dd>
 <dt><strong>dropna</strong><span class="classifier">bool, default True</span></dt><dd><p>Don’t consider counts of NaN/NaT.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 0.24.0.</span></p>
-</div>
 </dd>
 </dl>
 </dd>

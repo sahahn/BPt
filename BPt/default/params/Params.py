@@ -260,7 +260,33 @@ class Instrumentation(Params, ng.p.Instrumentation):
 
 class Dict(Params, ng.p.Dict):
     '''BPt parameter wrapper around :class:`nevergrad.p.Dict`.'''
-    to_grid = undefined_to_grid
+
+    def to_grid(self):
+        '''This method will attempt to convert from the
+           current BPt / nevergrad style parameter to a sklearn-grid
+           search compatible one.
+
+           In this case it will just assume the dictionary is
+           a value, and will return a python dictionary, with
+           to_grid called recursively if their are any other Params
+           stored in the values of the dictionary.
+        '''
+
+        new_dict = {}
+
+        for key in self._content:
+
+            # Will this work with grid search style params?
+            if isinstance(self._content[key], Params):
+                new_val = self._content[key].to_grid()
+            elif isinstance(self._content[key], ng.p.Constant):
+                new_val = self._content[key].value
+            else:
+                new_val = self._content[key]
+
+            new_dict[key] = new_val
+
+        return new_dict
 
 
 # @TODO Add more support for different to_grid?

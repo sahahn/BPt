@@ -138,3 +138,7 @@ Examples/Full_Examples/site_by_drug.png
 Examples/Full_Examples/data/nda_rds_201.csv
 Examples/Short_Examples/Old_Examples/Explore_Various_Functions.ipynb
 Examples/Short_Examples/Old_Examples/Loader_Caching_and_Search.ipynb
+install.sh
+
+# Ignore these
+BPt/dataset/experimental

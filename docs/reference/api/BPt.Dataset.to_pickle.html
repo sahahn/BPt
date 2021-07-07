@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.to_pickle &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.to_pickle &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.to_pickle<a class="headerlink" href="#bpt-dataset-to-pickle" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.to_pickle">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_pickle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">compression</span><span class="o">=</span><span class="default_value">'infer'</span></em>, <em class="sig-param"><span class="n">protocol</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">storage_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L2792-L2870"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_pickle" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">to_pickle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">compression</span><span class="o">=</span><span class="default_value">'infer'</span></em>, <em class="sig-param"><span class="n">protocol</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">storage_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L2882-L2960"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.to_pickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pickle (serialize) object to file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -467,11 +467,10 @@ parameter is equivalent to setting its value to HIGHEST_PROTOCOL.</p>
 </dl>
 </dd>
 <dt><strong>storage_options</strong><span class="classifier">dict, optional</span></dt><dd><p>Extra options that make sense for a particular storage connection, e.g.
-host, port, username, password, etc., if using a URL that will
-be parsed by <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>, e.g., starting “s3://”, “gcs://”. An error
-will be raised if providing this argument with a non-fsspec URL.
-See the fsspec and backend storage implementation docs for the set of
-allowed keys and values.</p>
+host, port, username, password, etc. For HTTP(S) URLs the key-value pairs
+are forwarded to <code class="docutils literal notranslate"><span class="pre">urllib</span></code> as header options. For other URLs (e.g.
+starting with “s3://”, and “gcs://”) the key-value pairs are forwarded to
+<code class="docutils literal notranslate"><span class="pre">fsspec</span></code>. Please see <code class="docutils literal notranslate"><span class="pre">fsspec</span></code> and <code class="docutils literal notranslate"><span class="pre">urllib</span></code> for more details.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.2.0.</span></p>
 </div>

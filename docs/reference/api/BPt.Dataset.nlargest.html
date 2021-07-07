@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.nlargest &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.nlargest &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.nlargest<a class="headerlink" href="#bpt-dataset-nlargest" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.nlargest">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">nlargest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">columns</span></em>, <em class="sig-param"><span class="n">keep</span><span class="o">=</span><span class="default_value">'first'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L5690-L5797"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.nlargest" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">nlargest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">columns</span></em>, <em class="sig-param"><span class="n">keep</span><span class="o">=</span><span class="default_value">'first'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/frame.py#L6526-L6631"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.nlargest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the first <cite>n</cite> rows ordered by <cite>columns</cite> in descending order.</p>
 <p>Return the first <cite>n</cite> rows with the largest values in <cite>columns</cite>, in
 descending order. The columns that are not specified are returned as
@@ -447,9 +447,9 @@ well, but not used for ordering.</p>
 <p>This method is equivalent to
 <code class="docutils literal notranslate"><span class="pre">df.sort_values(columns,</span> <span class="pre">ascending=False).head(n)</span></code>, but more
 performant.</p>
-<dl class="field-list">
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
+<dd class="field-odd"><dl class="simple">
 <dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Number of rows to return.</p>
 </dd>
 <dt><strong>columns</strong><span class="classifier">label or list of labels</span></dt><dd><p>Column label(s) to order by.</p>
@@ -464,9 +464,6 @@ performant.</p>
 </dl>
 </li>
 </ul>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 0.24.0.</span></p>
-</div>
 </dd>
 </dl>
 </dd>

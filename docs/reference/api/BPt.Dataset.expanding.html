@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.expanding &#8212; BPt 2.0.1 documentation</title>
+    <title>BPt.Dataset.expanding &#8212; BPt 2.0.2 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -439,17 +439,25 @@
 <h1>BPt.Dataset.expanding<a class="headerlink" href="#bpt-dataset-expanding" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.expanding">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">expanding</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">min_periods</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">center</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L11256-L11271"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.expanding" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">expanding</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">min_periods</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">center</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'single'</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/../../anaconda3/envs/home/lib/python3.8/site-packages/pandas/core/generic.py#L10871-L10892"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.expanding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provide expanding transformations.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
+<dd class="field-odd"><dl>
 <dt><strong>min_periods</strong><span class="classifier">int, default 1</span></dt><dd><p>Minimum number of observations in window required to have a value
 (otherwise result is NA).</p>
 </dd>
 <dt><strong>center</strong><span class="classifier">bool, default False</span></dt><dd><p>Set the labels at the center of the window.</p>
 </dd>
 <dt><strong>axis</strong><span class="classifier">int or str, default 0</span></dt><dd></dd>
+<dt><strong>method</strong><span class="classifier">str {‘single’, ‘table’}, default ‘single’</span></dt><dd><p>Execute the rolling operation per single column or row (<code class="docutils literal notranslate"><span class="pre">'single'</span></code>)
+or over the entire object (<code class="docutils literal notranslate"><span class="pre">'table'</span></code>).</p>
+<p>This argument is only implemented when specifying <code class="docutils literal notranslate"><span class="pre">engine='numba'</span></code>
+in the method call.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.0.</span></p>
+</div>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>

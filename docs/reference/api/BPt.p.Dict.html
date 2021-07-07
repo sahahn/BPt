@@ -287,7 +287,7 @@
 <h1>BPt.p.Dict<a class="headerlink" href="#bpt-p-dict" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.p.Dict">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.p.</code><code class="sig-name descname">Dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/default/params/Params.py#L261-L263"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.p.Dict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.p.</code><code class="sig-name descname">Dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/default/params/Params.py#L261-L289"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.p.Dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>BPt parameter wrapper around <a class="reference external" href="https://facebookresearch.github.io/nevergrad/parametrization_ref.html#nevergrad.p.Dict" title="(in nevergrad)"><code class="xref py py-class docutils literal notranslate"><span class="pre">nevergrad.p.Dict</span></code></a>.</p>
 <p class="rubric">Attributes</p>
 <table class="longtable table autosummary">
@@ -372,7 +372,7 @@
 <td><p>Creates a new instance which shares the same random generator than its parent, is sampled from the same data, and mutates independently from the parentp.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.p.Dict.to_grid.html#BPt.p.Dict.to_grid" title="BPt.p.Dict.to_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_grid</span></code></a>()</p></td>
-<td><p>This parameter does not support converting to sklearn-grid compatible params.</p></td>
+<td><p>This method will attempt to convert from the current BPt / nevergrad style parameter to a sklearn-grid search compatible one.</p></td>
 </tr>
 </tbody>
 </table>

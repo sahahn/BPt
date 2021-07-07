@@ -287,9 +287,14 @@
 <h1>BPt.p.Dict.to_grid<a class="headerlink" href="#bpt-p-dict-to-grid" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.p.Dict.to_grid">
-<code class="sig-prename descclassname">Dict.</code><code class="sig-name descname">to_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/default/params/Params.py#L162-L165"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.p.Dict.to_grid" title="Permalink to this definition">¶</a></dt>
-<dd><p>This parameter does not support converting to
-sklearn-grid compatible params.</p>
+<code class="sig-prename descclassname">Dict.</code><code class="sig-name descname">to_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/default/params/Params.py#L264-L289"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.p.Dict.to_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will attempt to convert from the
+current BPt / nevergrad style parameter to a sklearn-grid
+search compatible one.</p>
+<p>In this case it will just assume the dictionary is
+a value, and will return a python dictionary, with
+to_grid called recursively if their are any other Params
+stored in the values of the dictionary.</p>
 </dd></dl>
 
 </div>

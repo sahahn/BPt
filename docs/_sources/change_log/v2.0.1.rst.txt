@@ -5,7 +5,7 @@
 Version 2.0.1
 ---------------
 
-- New: :func:`Pipeline.build`
+- New: :func:`BPt.Pipeline.build`
     This function just essentially calls :func:`get_estimator`, but may be more intuitive
     to some to have it be accessible via the :class:`Pipeline` classes.
 

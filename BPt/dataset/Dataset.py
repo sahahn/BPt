@@ -438,8 +438,6 @@ class Dataset(pd.DataFrame):
         scope_category = set([col for col in self.columns if
                              'category' in self.scopes[col]])
 
-        print(dtype_category, scope_category)
-
         # End if equal
         if dtype_category == scope_category:
             return

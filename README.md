@@ -32,3 +32,24 @@ and then install it locally with once navigated into the main BPt folder
 pip install .
 ```
 
+### Quick Start Example
+
+Load a pre-set BPt dataset:
+
+```
+from BPt.datasets import load_boston
+
+data = load_boston()
+```
+
+Load a pre-defined ML elastic-net based pipeline and run a default 5-fold ML:
+```
+from BPt.default.pipelines import elastic_pipe
+from BPt import evaluate
+
+results = evaluate(elastic_pipe, data)
+```
+
+The returned object, stored in variable results, is an instance of class [BPtEvaluator](https://sahahn.github.io/BPt/reference/api/BPt.BPtEvaluator.html#BPt.BPtEvaluator), which contains all types of information and metrics from the stored evaluation.
+
+Check out the documentation at <https://sahahn.github.io/BPt/> for more examples on how to get started using BPt!

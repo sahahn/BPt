@@ -18,3 +18,6 @@ Version 2.0.3
 - Fix bug in eval prep
     Fix internal bug when dataset has no test subjects, and
     subjects is set to auto infer.
+
+- Change :func:`evaluate` default verbose
+    `eval_verbose` new default is now 1 instead of 0.

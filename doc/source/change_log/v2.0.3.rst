@@ -14,3 +14,6 @@ Version 2.0.3
 
 - More Examples
     More examples and updated docstrings for different functions
+
+- Fix bug in eval prep
+    Fix internal bug when dataset has no test subjects

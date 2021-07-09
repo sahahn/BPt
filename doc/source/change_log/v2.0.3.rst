@@ -15,7 +15,7 @@ Version 2.0.3
 - More Examples
     More examples and updated docstrings for different functions.
 
-- Fix bugs in eva;
+- Fix bugs in eval
     Fixes some internal bugs when dataset has no test subjects, or
     hasn't had any encoders set.
 

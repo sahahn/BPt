@@ -957,7 +957,7 @@ def evaluate(pipeline, dataset,
              store_estimators=True,
              store_timing=True,
              decode_feat_names=True,
-             eval_verbose=0,
+             eval_verbose=1,
              progress_loc=None,
              **extra_params):
     ''' This method is used to evaluate a model pipeline
@@ -1044,9 +1044,11 @@ def evaluate(pipeline, dataset,
         pipeline has an argument called `verbose`, which can be used
         to set verbosity for the pipeline.
 
+        Changed default from 0 to 1 in version 2.0.3
+
         ::
 
-            default = 0
+            default = 1
 
     progress_loc : str or None, optional
         This parameter is not currently implemented.

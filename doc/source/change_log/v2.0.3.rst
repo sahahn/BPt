@@ -7,14 +7,14 @@ Version 2.0.3
 
 - New option for specifying model in :func:`evaluate`
     Can now pass the names of different default pipelines as a
-    str to the pipeline parameter. E.g., `evaluate(pipeline='elastic_pipe')`
+    str to the pipeline parameter. E.g., `evaluate(pipeline='elastic_pipe')`.
 
 - New Quickstart Example
-    Added to github frontpage README.md
+    Added to github frontpage README.md.
 
 - More Examples
-    More examples and updated docstrings for different functions
+    More examples and updated docstrings for different functions.
 
 - Fix bug in eval prep
     Fix internal bug when dataset has no test subjects, and
-    subjects is set to auto infer
+    subjects is set to auto infer.

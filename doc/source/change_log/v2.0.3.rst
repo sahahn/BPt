@@ -19,5 +19,6 @@ Version 2.0.3
     Fixes some internal bugs when dataset has no test subjects, or
     hasn't had any encoders set.
 
-- Change :func:`evaluate` default verbose
-    `eval_verbose` new default is now 1 instead of 0.
+- Change :func:`evaluate` small updates
+    `eval_verbose` new default is now 1 instead of 0. Also
+    added optional `mute_warnings` flag independent of `eval_verbose`.

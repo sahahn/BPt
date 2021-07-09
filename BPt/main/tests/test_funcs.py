@@ -44,6 +44,12 @@ def test_pipeline_check():
     assert isinstance(mp, Pipeline)
 
 
+def test_get_default_pipeline_str():
+
+    mp = pipeline_check('elastic_pipe')
+    assert isinstance(mp, Pipeline)
+
+
 def test_pipeline_check_compare():
 
     mp_params = Compare([Model('ridge'), Model('elastic')])

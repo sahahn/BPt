@@ -12,6 +12,7 @@ from pandas.util._decorators import doc
 from .CV import inds_from_names
 from ..shared_docs import _shared_docs
 from .compare import (_compare_check, CompareDict, _merge_compare, Compare)
+from ..default.pipelines import pipelines as default_pipelines
 
 
 _base_docs = {}
@@ -139,11 +140,18 @@ def _base_pipeline_check(pipe, **extra_params):
 
         # Check for if model str first
         if isinstance(pipe, str):
-            pipe = Model(obj=pipe)
+
+            # Check if a default pipeline
+            if pipe in default_pipelines:
+                pipe = default_pipelines[pipe].copy()
+            else:
+                pipe = Model(obj=pipe)
 
         # In case of passed valid single model, wrap in Pipeline
         if isinstance(pipe, Model):
             pipe = Pipeline(steps=[pipe])
+        elif isinstance(pipe, Pipeline):
+            pass
         else:
             raise RuntimeError('pipeline must be a Pipeline',
                                ' model str or Model-like')

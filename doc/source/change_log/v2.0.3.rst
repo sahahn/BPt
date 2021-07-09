@@ -5,6 +5,10 @@
 Version 2.0.3
 ---------------
 
+- New option for specifying model in :func:`evaluate`
+    Can now pass the names of different default pipelines as a
+    str to the pipeline parameter. E.g., `evaluate(pipeline='elastic_pipe')`
+
 - New Quickstart Example
     Added to github frontpage README.md
 

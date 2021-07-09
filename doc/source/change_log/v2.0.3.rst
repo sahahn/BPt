@@ -16,4 +16,5 @@ Version 2.0.3
     More examples and updated docstrings for different functions
 
 - Fix bug in eval prep
-    Fix internal bug when dataset has no test subjects
+    Fix internal bug when dataset has no test subjects, and
+    subjects is set to auto infer

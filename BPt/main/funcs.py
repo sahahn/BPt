@@ -681,8 +681,7 @@ def _eval_prep(estimator, ps, dataset, cv=5):
     if ps.subjects == 'default':
 
         # If a test set is defined
-        dataset._check_test_subjects()
-        if dataset.test_subjects is not None:
+        if dataset._get_test_subjects() is not None:
             if cv == 'test':
                 ps.subjects = 'all'
             else:
@@ -1167,7 +1166,7 @@ def _evaluate(estimator, dataset, ps, cv,
     # Check decode feat_names arg, if True, pass along encoders
     encoders = None
     if decode_feat_names:
-        encoders = dataset.encoders
+        encoders = dataset._get_encoders()
 
     # Init evaluator
     evaluator = BPtEvaluator(estimator=estimator, ps=ps,

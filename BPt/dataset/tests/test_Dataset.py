@@ -789,3 +789,11 @@ def test_repr_html():
     # Just make sure throws no errors
     data = get_full_int_index_dataset()
     data._repr_html_()
+
+
+def test_get_defaults():
+
+    data = Dataset()
+    assert len(data._get_encoders()) == 0
+    assert data._get_test_subjects() is None
+    assert data._get_train_subjects() is None

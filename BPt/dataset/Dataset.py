@@ -283,10 +283,20 @@ class Dataset(pd.DataFrame):
         if not hasattr(self, 'test_subjects'):
             self.test_subjects = None
 
+    def _get_test_subjects(self):
+
+        self._check_test_subjects()
+        return self.test_subjects
+
     def _check_train_subjects(self):
 
         if not hasattr(self, 'train_subjects'):
             self.train_subjects = None
+
+    def _get_train_subjects(self):
+
+        self._check_train_subjects()
+        return self.train_subjects
 
     def _check_file_mapping(self):
 
@@ -330,6 +340,11 @@ class Dataset(pd.DataFrame):
             self.encoders = {}
         elif getattr(self, 'encoders') is None:
             self.encoders = {}
+
+    def _get_encoders(self):
+
+        self._check_encoders()
+        return self.encoders
 
     def _check_cols(self):
         '''BPt / scopes assume that all columns are of

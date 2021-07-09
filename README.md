@@ -34,20 +34,15 @@ pip install .
 
 ### Quick Start Example
 
-Load a pre-set BPt dataset:
+Load a pre-set BPt dataset, then
+run a default 5-fold cross validation.
 
 ```
 from BPt.datasets import load_boston
-
-data = load_boston()
-```
-
-Load a pre-defined ML elastic-net based pipeline and run a default 5-fold ML:
-```
-from BPt.default.pipelines import elastic_pipe
 from BPt import evaluate
 
-results = evaluate(elastic_pipe, data)
+data = load_boston()
+results = evaluate('elastic_pipe', data)
 ```
 
 The returned object, stored in variable results, is an instance of class [BPtEvaluator](https://sahahn.github.io/BPt/reference/api/BPt.BPtEvaluator.html#BPt.BPtEvaluator), which contains all types of information and metrics from the stored evaluation.

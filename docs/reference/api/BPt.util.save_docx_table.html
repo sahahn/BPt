@@ -263,7 +263,7 @@
 <h1>BPt.util.save_docx_table<a class="headerlink" href="#bpt-util-save-docx-table" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="BPt.util.save_docx_table">
-<code class="sig-prename descclassname">BPt.util.</code><code class="sig-name descname">save_docx_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/util.py#L57-L123"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.util.save_docx_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">BPt.util.</code><code class="sig-name descname">save_docx_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">3</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/util.py#L57-L145"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.util.save_docx_table" title="Permalink to this definition">¶</a></dt>
 <dd><div class="line-block">
 <div class="line">Helper function for saving a dataframe to a docx file.</div>
 </div>
@@ -298,6 +298,32 @@ table.</p>
 </dd>
 </dl>
 </div>
+<p class="rubric">Examples</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+
+<span class="gp">In [2]: </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="gp">In [3]: </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span>
+
+<span class="gp">In [4]: </span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Subject Name&#39;</span>
+
+<span class="gp">In [5]: </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Column 1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.00</span><span class="p">,</span> <span class="mf">2.00</span><span class="p">,</span> <span class="mf">3.00</span><span class="p">]</span>
+
+<span class="gp">In [6]: </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Column 2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">]</span>
+
+<span class="gp">In [7]: </span><span class="n">df</span>
+<span class="gh">Out[7]: </span><span class="go"></span>
+<span class="go">              Column 1 Column 2</span>
+<span class="go">Subject Name                   </span>
+<span class="go">a                  1.0        A</span>
+<span class="go">b                  2.0        B</span>
+<span class="go">c                  3.0        C</span>
+
+<span class="gp">In [8]: </span><span class="n">bp</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">save_docx_table</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s1">&#39;test.docx&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which will save the following table</p>
+<img alt="Example output" src="../../_images/ex.png" />
 </dd></dl>
 
 </div>

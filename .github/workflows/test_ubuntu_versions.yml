@@ -27,6 +27,6 @@ jobs:
         pytest
     - name: Run lower pandas version test
       run: |
-        pip install pandas==1.2.1
+        pip install pandas==1.1.5
         pytest
     

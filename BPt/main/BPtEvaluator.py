@@ -121,6 +121,7 @@ class BPtEvaluator():
                  store_timing=False,
                  eval_verbose=0,
                  progress_loc=None,
+                 mute_warnings=False,
                  compare_bars=None):
 
         # Save base
@@ -146,9 +147,9 @@ class BPtEvaluator():
         if store_timing:
             self.timing = {'fit': [], 'score': []}
 
-        # @TODO Add in progress loc func.
         self.progress_loc = progress_loc
         self.verbose = eval_verbose
+        self.mute_warnings = mute_warnings
         self.compare_bars = compare_bars
 
     @property
@@ -450,7 +451,8 @@ class BPtEvaluator():
 
         # If verbose is lower than -1,
         # then don't show any warnings no matter the source.
-        if self.verbose < -1:
+        # or mute warnings flag set.
+        if self.verbose < -1 or self.mute_warnings:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 self._evaluate(X, y, cv)
@@ -687,6 +689,9 @@ class BPtEvaluator():
                                                np.array(y_val))
             self.scores[scorer_str].append(score)
             self._print(scorer_str + ':', str(score), level=1)
+
+        # Spacing for nice looking output
+        self._print(level=1)
 
     def _save_preds(self, estimator, X_val, y_val):
 

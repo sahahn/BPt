@@ -84,6 +84,30 @@ def save_docx_table(df, filename, decimals=3):
     ----------
     BPt.Dataset.summary : Create and optionally save a summary of columns.
 
+    Examples
+    ---------
+
+    .. ipython:: python
+
+        import BPt as bp
+        import pandas as pd
+
+        df = pd.DataFrame(index=['a', 'b', 'c'])
+        df.index.name = 'Subject Name'
+
+        df['Column 1'] = [1.00, 2.00, 3.00]
+        df['Column 2'] = ['A', 'B', 'C']
+
+        df
+
+        bp.util.save_docx_table(df, 'test.docx')
+
+    Which will save the following table (screenshot taken from table
+    opened in LibreOffice):
+
+    .. image:: ../../_static/ex.png
+      :alt: Example Saved Table
+
     '''
 
     import docx

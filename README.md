@@ -32,3 +32,19 @@ and then install it locally with once navigated into the main BPt folder
 pip install .
 ```
 
+### Quick Start Example
+
+Load a pre-set BPt dataset, then
+run a default 5-fold cross validation.
+
+```
+from BPt.datasets import load_boston
+from BPt import evaluate
+
+data = load_boston()
+results = evaluate('elastic_pipe', data)
+```
+
+The returned object, stored in variable results, is an instance of class [BPtEvaluator](https://sahahn.github.io/BPt/reference/api/BPt.BPtEvaluator.html#BPt.BPtEvaluator), which contains all types of information and metrics from the stored evaluation.
+
+Check out the documentation at <https://sahahn.github.io/BPt/> for more examples on how to get started using BPt!

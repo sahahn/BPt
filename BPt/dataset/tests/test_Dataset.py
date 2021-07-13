@@ -1,4 +1,3 @@
-from copy import deepcopy
 import numpy as np
 import pandas as pd
 import tempfile
@@ -158,19 +157,21 @@ def test_scope():
     assert dataset.get_cols('category') == ['cat', 'cat missing']
 
 
-def test_get_shallow2():
+def test_copy_behavior():
 
     df = get_fake_dataset()
-    df_copy = df.copy(deep=False)
 
-    # On a shallow copy, setting like
+    # Make copy via add scope
+    df_copy = df.add_scope(scope='1', scope_val='a')
+    df_copy.loc[0, '1'] = 8
+
+    # Setting like
     # this won't effect the original
     df_copy['2'] = [10, 10, 10]
     assert df.loc[0, '2'] != 10
 
-    # Making changes like this
-    # will influence original?
-    df_copy.loc[0, '1'] = 8
+    # Setting like this will effect the original
+    assert df_copy.loc[0, '1'] == 8
     assert df.loc[0, '1'] == 8
 
 
@@ -789,3 +790,11 @@ def test_repr_html():
     # Just make sure throws no errors
     data = get_full_int_index_dataset()
     data._repr_html_()
+
+
+def test_get_defaults():
+
+    data = Dataset()
+    assert len(data._get_encoders()) == 0
+    assert data._get_test_subjects() is None
+    assert data._get_train_subjects() is None

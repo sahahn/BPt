@@ -22,3 +22,6 @@ Version 2.0.3
 - Change :func:`evaluate` small updates
     `eval_verbose` new default is now 1 instead of 0. Also
     added optional `mute_warnings` flag independent of `eval_verbose`.
+
+- Custom objects tweak
+    Custom passed objects will now be checked and updated if they have parameters n_jobs or random_state.

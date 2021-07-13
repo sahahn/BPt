@@ -245,12 +245,35 @@
 <span id="whatsnew-203"></span><h1>Version 2.0.3<a class="headerlink" href="#version-2-0-3" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><dl class="simple">
-<dt>New Quickstart Example</dt><dd><p>Added to github frontpage README.md</p>
+<dt>New option for specifying model in <a class="reference internal" href="../reference/api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a></dt><dd><p>Can now pass the names of different default pipelines as a
+str to the pipeline parameter. E.g., <cite>evaluate(pipeline=’elastic_pipe’)</cite>.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>More Examples</dt><dd><p>More examples and updated docstrings for different functions</p>
+<dt>New Quickstart Example</dt><dd><p>Added to github frontpage README.md.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>More Examples</dt><dd><p>More examples and updated docstrings for different functions.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Fix bugs in eval</dt><dd><p>Fixes some internal bugs when dataset has no test subjects, or
+hasn’t had any encoders set.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Change <a class="reference internal" href="../reference/api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a> small updates</dt><dd><p><cite>eval_verbose</cite> new default is now 1 instead of 0. Also
+added optional <cite>mute_warnings</cite> flag independent of <cite>eval_verbose</cite>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Custom objects tweak</dt><dd><p>Custom passed objects will now be checked and updated if they have parameters n_jobs or random_state.</p>
 </dd>
 </dl>
 </li>

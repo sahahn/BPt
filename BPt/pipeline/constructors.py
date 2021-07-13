@@ -247,6 +247,9 @@ class Constructor():
         except AttributeError:
             pass
 
+        # Run the param checks on the object
+        user_obj = self._check_params(user_obj)
+
         # Return in obj_param format
         return (name, (user_obj, user_obj_params))
 

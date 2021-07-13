@@ -161,7 +161,7 @@ def test_scope():
 def test_copy_behavior():
 
     df = get_fake_dataset()
-    
+
     # Make copy via add scope
     df_copy = df.add_scope(scope='1', scope_val='a')
     df_copy.loc[0, '1'] = 8

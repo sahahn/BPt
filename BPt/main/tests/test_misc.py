@@ -49,7 +49,7 @@ def save_load_del(obj):
     loc = os.path.join(temp_dr, 'temp.pkl')
 
     with open(loc, 'wb') as f:
-        pkl.dump(obj, f, protocol=pkl.HIGHEST_PROTOCOL)
+        pkl.dump(obj, f)
 
     with open(loc, 'rb') as f:
         obj = pkl.load(f)

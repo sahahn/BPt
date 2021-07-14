@@ -33,14 +33,9 @@ class Params():
 
         super().__init__(*self.args_, **self.kwargs_)
 
-    @property
-    def value(self):
-        '''Stores the value of the parameter.'''
-        return super().value
-
-    @value.setter
-    def value(self, value):
-        super().value = value
+        # Default consistent choice value
+        if isinstance(self, Choice):
+            self.indices.value = [0]
 
     @property
     def descriptors(self):

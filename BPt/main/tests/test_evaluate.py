@@ -979,3 +979,19 @@ def test_evaluate_nan_targets():
     assert 'BPtEvaluator' in rr
     assert 'all_train_subjects' in rr
     assert 'all_val_subjects' in rr
+
+
+def test_linear_svm():
+
+    search_cv = CV(splits=3, n_repeats=1)
+    random_search = ParamSearch('RandomSearch', n_iter=2, cv=search_cv)
+    linear_svm_search = Model('linear svm', params=1,
+                              param_search=random_search)
+    pipe = Pipeline(steps=[linear_svm_search])
+
+    dataset = get_fake_dataset()
+
+    _ = evaluate(pipeline=pipe,
+                 dataset=dataset,
+                 progress_bar=False,
+                 cv=2)

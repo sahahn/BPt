@@ -14,3 +14,7 @@ Version 2.1.0
     Now allows for dataset of 'default' to be passed, and will trigger
     warnings in cases where specific scopes have been passed.
 
+- Update Nevergrad Version
+    Update to a later version of nevergrad, which fixes some
+    pickling issues for 'ChoiceTag', code and tests are changed accordingly.
+    Bumps hard version requiriment from nevergrad==0.4.3 to nevergrad==0.4.3.post4.

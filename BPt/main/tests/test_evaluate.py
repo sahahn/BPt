@@ -981,10 +981,10 @@ def test_evaluate_nan_targets():
     assert 'all_val_subjects' in rr
 
 
-def test_linear_svm():
+def test_linear_svm_with_multiproc():
 
     search_cv = CV(splits=3, n_repeats=1)
-    random_search = ParamSearch('RandomSearch', n_iter=2, cv=search_cv)
+    random_search = ParamSearch('RandomSearch', n_iter=16, cv=search_cv)
     linear_svm_search = Model('linear svm', params=1,
                               param_search=random_search)
     pipe = Pipeline(steps=[linear_svm_search])
@@ -994,4 +994,4 @@ def test_linear_svm():
     _ = evaluate(pipeline=pipe,
                  dataset=dataset,
                  progress_bar=False,
-                 cv=2)
+                 cv=2, n_jobs=4)

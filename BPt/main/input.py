@@ -204,7 +204,8 @@ class Piece(Params, Check):
     '''This is the base piece in which :ref`pipeline_objects` inherit from. This
     class should not be used directly.'''
 
-    def build(self, dataset, problem_spec='default', **problem_spec_params):
+    def build(self, dataset='default', problem_spec='default',
+              **problem_spec_params):
         '''This method is used to convert a single pipeline piece into
         the base sklearn style object used in the pipeline. This method
         is mostly used to investigate pieces and is not necessarily
@@ -215,12 +216,32 @@ class Piece(Params, Check):
 
         Parameters
         -----------
-        dataset : :class:`Dataset`
-            The Dataset in which the pipeline should be initialized
+        dataset : :class:`Dataset` or 'default', optional
+            The Dataset in which the pipeline piece should be initialized
             according to. For example, pipeline's can include Scopes,
             these need a reference Dataset.
 
-            Something something
+            If left as default will initialize and use
+            an instance of a FakeDataset class, which will
+            work fine for initializing pipeline objects
+            with scope of 'all', but should be used with caution
+            when elements of the pipeline use non 'all' scopes.
+            In these cases a warning will be issued.
+
+            It is advisable to use this
+            build function only for viewing objects. If using
+            the build function instead for eventual modelling it
+            is important to pass the correct :class:`Dataset` in
+            the case that any of the pipeline pieces are at all
+            dependant on the structure of the input data.
+
+            Note: If problem type is not defined in problem_spec
+            and Dataset is left as default, then a problem type of
+            'regression' will be used.
+
+            ::
+
+                default = 'default'
 
         problem_spec : :class:`ProblemSpec` or 'default', optional
             This parameter accepts an instance of the
@@ -295,11 +316,10 @@ class Piece(Params, Check):
 
         '''
 
-        # @TODO also passing no dataset here
-        # as long as all scopes are all, i.e., make
-        # a fake dataset class and it should have a function
-        # _get_data_inds, and _get_cols that throw errors
-        # when invalid. Add this option to get_estimator also.
+        # If default use FakeDataset
+        if isinstance(dataset, str) and (dataset == 'default'):
+            from ..dataset.fake_dataset import FakeDataset
+            dataset = FakeDataset()
 
         from ..main.funcs import problem_spec_check
 
@@ -1913,20 +1933,93 @@ class Pipeline(Params):
 
             return self
 
-    def build(self, dataset, problem_spec='default', **extra_params):
+    def build(self, dataset='default', problem_spec='default',
+              **problem_spec_params):
         '''This method generates a sklearn compliant :ref:`estimator<develop>`
         version of the current :class:`Pipeline` with respect to a passed
         dataset and :class:`Dataset` and :class:`ProblemSpec`.
 
         This method calls :func:`get_estimator` with pipeline set as
-        itself, see :func:`get_estimator` for parameters.
+        itself.
+
+        Parameters
+        -----------
+        dataset : :class:`Dataset` or 'default', optional
+            The Dataset in which the pipeline should be initialized
+            according to. For example, pipeline's can include scopes,
+            which require a reference dataset.
+
+            If left as default will initialize and use
+            an instance of a FakeDataset class, which will
+            work fine for initializing pipeline objects
+            with scope of 'all', but should be used with caution
+            when elements of the pipeline use non 'all' scopes.
+            In these cases a warning will be issued.
+
+            It is advisable to use this
+            build function only for viewing pipelines. If using
+            the build function instead for eventual modelling it
+            is important to pass the correct :class:`Dataset` in
+            the case that any of the pipeline pieces are at all
+            dependant on the structure of the input data.
+
+            Note: If problem type is not defined in problem_spec
+            and Dataset is left as default, then a problem type of
+            'regression' will be used.
+
+            ::
+
+                default = 'default'
+
+        problem_spec : :class:`ProblemSpec` or 'default', optional
+            This parameter accepts an instance of the
+            params class :class:`ProblemSpec`.
+            The ProblemSpec is essentially a wrapper
+            around commonly used
+            parameters needs to define the context
+            the model pipeline should be evaluated in.
+            It includes parameters like problem_type, scorer, n_jobs,
+            random_state, etc...
+
+            See :class:`ProblemSpec` for more information
+            and for how to create an instance of this object.
+
+            If left as 'default', then will initialize a
+            ProblemSpec with default params.
+
+            ::
+
+                default = "default"
+
+        problem_spec_params : :class:`ProblemSpec` params, optional
+            You may also pass any valid problem spec argument-value pairs here,
+            in order to override a value in the passed :class:`ProblemSpec`.
+            Overriding params should be passed in kwargs style, for example:
+
+            ::
+
+                func(..., problem_type='binary')
+
+        Returns
+        -------
+        estimator : sklearn compatible estimator
+            Returns the BPt-style sklearn compatible estimator
+            version of this piece as converted to internally
+            when building the pipeline
+
+        params : dict
+            Returns a dictionary with any parameter distributions
+            associated with this object, for example
+            this can be used to check what exactly
+            pre-existing parameter distributions point
+            to.
         '''
 
         from .funcs import get_estimator
 
         return get_estimator(pipeline=self, dataset=dataset,
                              problem_spec=problem_spec,
-                             **extra_params)
+                             **problem_spec_params)
 
     @property
     def _model_like(self):

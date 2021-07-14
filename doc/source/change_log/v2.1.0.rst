@@ -5,3 +5,12 @@
 Version 2.1.0
 ---------------
 
+- Modified :func:`get_estimator` for default pipeline 
+    :func:`get_estimator` and the associated :class:`Pipeline`
+    build function have been updated to allow default
+    dataset w/ warnings.
+
+- Modified :func:`Piece.build` function for :class:`Pipeline` pieces.
+    Now allows for dataset of 'default' to be passed, and will trigger
+    warnings in cases where specific scopes have been passed.
+

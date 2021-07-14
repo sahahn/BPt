@@ -116,7 +116,6 @@ class Constructor():
 
     def get_inds(self, scope):
 
-        # @ TODO ADD warning when a scope returns None here?
         return self.dataset._get_data_inds(ps_scope=self.spec['scope'],
                                            scope=scope)
 

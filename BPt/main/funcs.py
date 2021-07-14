@@ -13,7 +13,7 @@ from .CV import inds_from_names
 from ..shared_docs import _shared_docs
 from .compare import (_compare_check, CompareDict, _merge_compare, Compare)
 from ..default.pipelines import pipelines as default_pipelines
-
+from ..dataset.fake_dataset import FakeDataset
 
 _base_docs = {}
 
@@ -278,7 +278,7 @@ def _base_ps_check(ps, dataset):
 
 
 @doc(**_base_docs)
-def get_estimator(pipeline, dataset,
+def get_estimator(pipeline, dataset='default',
                   problem_spec='default',
                   **extra_params):
     '''Get a sklearn compatible :ref:`estimator<develop>` from a
@@ -288,7 +288,24 @@ def get_estimator(pipeline, dataset,
     -----------
     {pipeline}
 
-    {dataset}
+    dataset : :class:`Dataset` or 'default', optional
+        | The :class:`Dataset` in which this function should be evaluated
+          in the context of. In other words, the dataset is
+          used as the data source for this operation.
+
+        | If left as default will initialize and use
+          an instance of a FakeDataset class, which will
+          work fine for initializing pipeline objects
+          with scope of 'all', but should be used with caution
+          when elements of the pipeline use non 'all' scopes.
+          In these cases a warning will be issued.
+
+        | It is typically advised to pass the actual :class:`Dataset`
+          of interest here.
+
+        ::
+
+            default = 'default'
 
     {problem_spec}
 
@@ -342,6 +359,10 @@ def get_estimator(pipeline, dataset,
         estimator.score(X, y)
 
     '''
+
+    # Check for default dataset
+    if isinstance(dataset, str) and (dataset == 'default'):
+        dataset = FakeDataset()
 
     # Use initial prep
     estimator_ps = _initial_prep(pipeline, dataset, problem_spec,

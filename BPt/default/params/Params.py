@@ -168,8 +168,6 @@ def undefined_to_grid(self):
 class TransitionChoice(Params, ng.p.TransitionChoice):
     '''BPt parameter wrapper around :class:`nevergrad.p.TransitionChoice`.'''
     to_grid = choice_to_grid
-    ChoiceTag = ng.p.TransitionChoice.ChoiceTag
-    ChoiceTag.__doc__ = '''Used to identity param as choice.'''
 
 
 class Choice(Params, ng.p.Choice):
@@ -197,8 +195,6 @@ class Choice(Params, ng.p.Choice):
 
     '''
     to_grid = choice_to_grid
-    ChoiceTag = ng.p.Choice.ChoiceTag
-    ChoiceTag.__doc__ = '''Used to identity param as choice.'''
 
 
 class Array(ValParams, ng.p.Array):

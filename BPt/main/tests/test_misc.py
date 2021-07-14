@@ -1,7 +1,9 @@
 import pickle as pkl
-from ..input import Model, Pipeline
+from ..input import Model, Pipeline, ParamSearch
 from ...pipeline.BPtPipeline import BPtPipeline
 import warnings
+import tempfile
+import os
 
 
 def test_default_model_build_float_scope():
@@ -39,3 +41,47 @@ def test_default_pipeline_build():
 
     assert isinstance(est, BPtPipeline)
     assert est.steps[0][1].inds is Ellipsis
+
+
+def save_load_del(obj):
+
+    temp_dr = tempfile.gettempdir()
+    loc = os.path.join(temp_dr, 'temp.pkl')
+
+    with open(loc, 'wb') as f:
+        pkl.dump(obj, f, protocol=pkl.HIGHEST_PROTOCOL)
+
+    with open(loc, 'rb') as f:
+        obj = pkl.load(f)
+
+    os.remove(loc)
+
+
+def test_pickle_pipe_with_params():
+
+    pipe = Pipeline([Model('rf', params=1)])
+    est = pipe.build()
+    save_load_del(est)
+
+
+def test_pickle_pipe_with_params_binary():
+
+    pipe = Pipeline([Model('rf', params=1)])
+    est = pipe.build(problem_type='binary')
+    save_load_del(est)
+
+
+def test_pickle_pipe_search():
+
+    pipe = Pipeline([Model('rf', params=1)],
+                    param_search=ParamSearch())
+    est = pipe.build()
+    save_load_del(est)
+
+
+def test_pickle_pipe_search_binary():
+
+    pipe = Pipeline([Model('rf', params=1)],
+                    param_search=ParamSearch())
+    est = pipe.build(problem_type='binary')
+    save_load_del(est)

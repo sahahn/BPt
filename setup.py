@@ -45,6 +45,3 @@ setup(name='brain-pred-toolbox',
       test_suite='pytest',
       tests_require=['pytest', 'coverage'],
       zip_safe=False)
-
-
-

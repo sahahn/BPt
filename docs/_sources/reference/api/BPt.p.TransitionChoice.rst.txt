@@ -13,6 +13,7 @@ BPt.p.TransitionChoice
    .. autosummary::
       :toctree:
       
+      TransitionChoice.add_layer
       TransitionChoice.copy
       TransitionChoice.freeze
       TransitionChoice.get_standardized_data
@@ -48,11 +49,7 @@ BPt.p.TransitionChoice
       TransitionChoice.kwargs
       TransitionChoice.losses
       TransitionChoice.name
-      TransitionChoice.parameters
-      TransitionChoice.position
-      TransitionChoice.positions
       TransitionChoice.random_state
       TransitionChoice.transitions
-      TransitionChoice.value
 
 

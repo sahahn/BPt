@@ -279,7 +279,7 @@
 <h1>BPt.get_estimator<a class="headerlink" href="#bpt-get-estimator" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="BPt.get_estimator">
-<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">get_estimator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L280-L358"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.get_estimator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">get_estimator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L280-L379"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.get_estimator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a sklearn compatible <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v0.24)"><span class="xref std std-ref">estimator</span></a> from a
 <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>, <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> and <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p>
 <dl class="field-list">
@@ -304,16 +304,25 @@ cast as:</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></span></dt><dd><div class="line-block">
+<dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> or ‘default’, optional</span></dt><dd><div class="line-block">
 <div class="line">The <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> in which this function should be evaluated
 in the context of. In other words, the dataset is
 used as the data source for this operation.</div>
 </div>
 <div class="line-block">
-<div class="line">Arguments within problem_spec can be used to
-select just subsets of data. For example parameter
-scope can be used to select only some columns or
-parameter subjects to select a subset of subjects.</div>
+<div class="line">If left as default will initialize and use
+an instance of a FakeDataset class, which will
+work fine for initializing pipeline objects
+with scope of ‘all’, but should be used with caution
+when elements of the pipeline use non ‘all’ scopes.
+In these cases a warning will be issued.</div>
+</div>
+<div class="line-block">
+<div class="line">It is typically advised to pass the actual <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>
+of interest here.</div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+</pre></div>
 </div>
 </dd>
 <dt><strong>problem_spec</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> or ‘default’, optional</span></dt><dd><p>This parameter accepts an instance of the
@@ -399,8 +408,7 @@ style estimator.</p>
 <span class="go">BPtPipeline(steps=[(&#39;standard float&#39;,</span>
 <span class="go">                    ScopeTransformer(estimator=StandardScaler(), inds=Ellipsis)),</span>
 <span class="go">                   (&#39;linear regressor&#39;,</span>
-<span class="go">                    BPtModel(estimator=LinearRegression(n_jobs=1), inds=Ellipsis))],</span>
-<span class="go">            verbose=0)</span>
+<span class="go">                    BPtModel(estimator=LinearRegression(n_jobs=1), inds=Ellipsis))])</span>
 
 <span class="gp">In [10]: </span><span class="n">estimator</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="gh">Out[10]: </span><span class="go">0.9999999999999475</span>

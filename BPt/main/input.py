@@ -435,16 +435,16 @@ _bp_docs = _piece_docs.copy()
 _piece_docs[
     "param_search"
 ] = """param_search : :class:`ParamSearch`, None, optional
-        This parameter optionally specifies that this object
-        should be nested with a hyper-parameter search.
+        | This parameter optionally specifies that this object
+          should be nested with a hyper-parameter search.
 
-        If passed an instance of :class:`ParamSearch`, the
-        underlying object, or components of the underlying
-        object (if a pipeline) must have atleast one valid
-        hyper-parameter distribution to search over.
+        | If passed an instance of :class:`ParamSearch`, the
+          underlying object, or components of the underlying
+          object (if a pipeline) must have atleast one valid
+          hyper-parameter distribution to search over.
 
-        By default this parameter is set to None, which
-        specifies no parameter search.
+        | If left as None, the default, then no hyper-parameter
+          search will be performed.
 
         ::
 
@@ -1601,9 +1601,13 @@ _pipeline_docs['cache_loc'] = """cache_loc : Path str or None, optional
             default = None
 """
 
-_pipeline_docs['verbose'] = """verbose : int, optional
-        If greater than 0, print statements about
+_pipeline_docs['verbose'] = """verbose : bool, optional
+        If True, then print statements about
         the current progress of the pipeline during fitting.
+
+        Note: If in a multi-processed context, where pipelines
+        are being fit on different threads, verbose output may be
+        messy (i.e., overlapping messages from different threads).
 
         ::
 
@@ -1695,7 +1699,8 @@ class Pipeline(Params):
 
     '''
 
-    def __init__(self, steps, param_search=None, cache_loc=None, verbose=0):
+    def __init__(self, steps, param_search=None,
+                 cache_loc=None, verbose=False):
         self.steps = steps
         self.param_search = param_search
         self.cache_loc = cache_loc
@@ -2034,6 +2039,7 @@ class Pipeline(Params):
         return (Piece, Pipeline, Compare, Select, Pipe)
 
 
+@doc(**_pipeline_docs)
 class ModelPipeline(Pipeline):
     '''The ModelPipeline class is used to create BPtPipeline's.
     The ModelPipeline differs from :class:`Pipeline`
@@ -2172,48 +2178,13 @@ class ModelPipeline(Pipeline):
 
             default =  'default'
 
-    param_search : :class:`ParamSearch` or None, optional
-        A :class:`ParamSearch` can be provided specifying that
-        a nested hyper-parameter search be constructed across
-        all valid param distributions (as set within each piece).
+    {param_search}
 
-        If a parameter search is passed, it is required
-        that atleast one piece have a relevant hyper-parameter
-        distribution (i.e., as set in a pieces `params`).
+    {cache_loc}
 
-        If param search is None, any defined parameter distributions
-        will be ignored, though any static parameters specified via
-        `params` will still be set.
+    {verbose}
 
-        Note: The input wrapper :class:`Select`,
-        is acts a hyper-parameter distribution
-        and therefore requires a search to be passed here.
-
-        ::
-
-            default = None
-
-    cache_loc : Path str or None, optional
-        Optional parameter specifying a directory
-        in which full BPt pipeline's should
-        be cached after fitting. This may be useful
-        in some contexts. If desired,
-        pass the location of the directory in
-        which to store this cache.
-
-        ::
-
-            default = None
-
-    verbose : int, optional
-        If greater than 0, print statements about
-        the current progress of the pipeline during fitting.
-
-        ::
-
-            default = 0
-
-        '''
+    '''
 
     @property
     def fixed_piece_order(self):
@@ -2238,7 +2209,7 @@ class ModelPipeline(Pipeline):
                  model='default',
                  param_search=None,
                  cache_loc=None,
-                 verbose=0):
+                 verbose=False):
 
         if isinstance(loaders, str):
             loaders = Loader(loaders)

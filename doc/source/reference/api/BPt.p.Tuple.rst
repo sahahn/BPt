@@ -13,6 +13,7 @@ BPt.p.Tuple
    .. autosummary::
       :toctree:
       
+      Tuple.add_layer
       Tuple.copy
       Tuple.freeze
       Tuple.get_standardized_data
@@ -45,8 +46,6 @@ BPt.p.Tuple
       Tuple.kwargs
       Tuple.losses
       Tuple.name
-      Tuple.parameters
       Tuple.random_state
-      Tuple.value
 
 

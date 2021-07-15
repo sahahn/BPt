@@ -11,7 +11,7 @@ from .base import (_get_est_fit_params, _get_est_trans_params,
                    _needs)
 
 
-# @TODO add docsrings here and also add to docs
+# @TODO add docstrings here - and add to docs?
 class BPtPipeline(Pipeline):
 
     _needs_mapping = True
@@ -22,6 +22,8 @@ class BPtPipeline(Pipeline):
                  cache_loc=None):
 
         self.cache_loc = cache_loc
+
+        # The verbose of the base super pipeline class is binary
         super().__init__(steps=steps, memory=memory, verbose=verbose)
 
     @property
@@ -115,7 +117,7 @@ class BPtPipeline(Pipeline):
 
                 # Print if an estimator is skipped, if verbose
                 if cloned_transformer.estimator_ is None:
-                    if self.verbose >= 1:
+                    if self.verbose:
                         print('Skipping Step:', name, 'due to empty scope.',
                               flush=True)
 
@@ -221,6 +223,10 @@ class BPtPipeline(Pipeline):
         return self
 
     def _load_from_hash(self):
+
+        if self.verbose:
+            print('Loading fitted pipeline from saved cache directory',
+                  'cache_loc:', str(self.cache_loc), flush=True)
 
         # Load from saved hash, by
         # loading the fitted object

@@ -14,6 +14,11 @@ Version 2.1.0
     Now allows for dataset of 'default' to be passed, and will trigger
     warnings in cases where specific scopes have been passed.
 
+- Added more verbosity to :class:`Pipeline` and :class:`ParamSearch`
+    In both cases, the verbosity options have been updated with more useful information.
+    Pipeline was switched to a boolean verbosity flag to match the sklearn Pipeline,
+    and the SearchCV is left more flexible, but now more output will appear.
+
 - Update Nevergrad Version
     Update to a later version of nevergrad, which fixes some
     pickling issues for 'ChoiceTag', code and tests are changed accordingly.

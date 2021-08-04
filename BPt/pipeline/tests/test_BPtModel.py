@@ -3,7 +3,7 @@ from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
 import numpy as np
 
 
-def model_test_classes_none():
+def test_model_classes_none():
 
     model = BPtModel(estimator=DecisionTreeRegressor(), inds=Ellipsis)
 
@@ -18,7 +18,7 @@ def model_test_classes_none():
     assert score == 1
 
 
-def model_test_classes_some():
+def test_model_classes_some():
 
     model = BPtModel(estimator=DecisionTreeClassifier(), inds=Ellipsis)
 

@@ -263,12 +263,77 @@
 <h1>BPt.Pipeline.build<a class="headerlink" href="#bpt-pipeline-build" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Pipeline.build">
-<code class="sig-prename descclassname">Pipeline.</code><code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L1916-L1929"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Pipeline.build" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Pipeline.</code><code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">problem_spec_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L1941-L2027"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Pipeline.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method generates a sklearn compliant <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v0.24)"><span class="xref std std-ref">estimator</span></a>
 version of the current <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> with respect to a passed
 dataset and <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> and <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p>
 <p>This method calls <a class="reference internal" href="BPt.get_estimator.html#BPt.get_estimator" title="BPt.get_estimator"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_estimator()</span></code></a> with pipeline set as
-itself, see <a class="reference internal" href="BPt.get_estimator.html#BPt.get_estimator" title="BPt.get_estimator"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_estimator()</span></code></a> for parameters.</p>
+itself.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> or ‘default’, optional</span></dt><dd><p>The Dataset in which the pipeline should be initialized
+according to. For example, pipeline’s can include scopes,
+which require a reference dataset.</p>
+<p>If left as default will initialize and use
+an instance of a FakeDataset class, which will
+work fine for initializing pipeline objects
+with scope of ‘all’, but should be used with caution
+when elements of the pipeline use non ‘all’ scopes.
+In these cases a warning will be issued.</p>
+<p>It is advisable to use this
+build function only for viewing pipelines. If using
+the build function instead for eventual modelling it
+is important to pass the correct <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> in
+the case that any of the pipeline pieces are at all
+dependant on the structure of the input data.</p>
+<p>Note: If problem type is not defined in problem_spec
+and Dataset is left as default, then a problem type of
+‘regression’ will be used.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>problem_spec</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> or ‘default’, optional</span></dt><dd><p>This parameter accepts an instance of the
+params class <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.
+The ProblemSpec is essentially a wrapper
+around commonly used
+parameters needs to define the context
+the model pipeline should be evaluated in.
+It includes parameters like problem_type, scorer, n_jobs,
+random_state, etc…</p>
+<p>See <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> for more information
+and for how to create an instance of this object.</p>
+<p>If left as ‘default’, then will initialize a
+ProblemSpec with default params.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>problem_spec_params</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> params, optional</span></dt><dd><p>You may also pass any valid problem spec argument-value pairs here,
+in order to override a value in the passed <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.
+Overriding params should be passed in kwargs style, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">problem_type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>estimator</strong><span class="classifier">sklearn compatible estimator</span></dt><dd><p>Returns the BPt-style sklearn compatible estimator
+version of this piece as converted to internally
+when building the pipeline</p>
+</dd>
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>Returns a dictionary with any parameter distributions
+associated with this object, for example
+this can be used to check what exactly
+pre-existing parameter distributions point
+to.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

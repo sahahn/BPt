@@ -2,11 +2,23 @@ from ..params.Params import TransitionChoice, Choice, Dict, Scalar, Array
 import nevergrad as ng
 
 
-def test_content():
+def test_choice_repr_aligns():
 
     base = ng.p.Choice([None, 'balanced'])
+    base.indices.value = [0]
     p = Choice([None, 'balanced'])
+
     assert repr(base._content) == repr(p._content)
+
+
+def test_equiv():
+
+    p1 = Choice([None, 'balanced'])
+    p2 = Choice([None, 'balanced'])
+    p3 = Choice([None, 'balanced'])
+
+    assert repr(p1) == repr(p2)
+    assert repr(p2) == repr(p3)
 
 
 def test_transition_choice():
@@ -33,12 +45,16 @@ def test_scalar():
 
     # Confirm base behavior
     base = ng.p.Scalar(lower=5, upper=10).set_integer_casting()
-    assert repr(base).startswith('Scalar{int')
+    assert repr(base).startswith('Scalar{Cl(')
     assert base.integer
 
     # Confirm cast works
-    p = Scalar(lower=5, upper=10).set_integer_casting()
+    p = Scalar(lower=5, upper=10)
+    p = p.set_integer_casting()
     assert p.integer
+
+    # Make sure values work as expected
+    assert base.value == p.value
 
 
 def test_array():
@@ -88,5 +104,3 @@ def test_dict_to_grid():
 
     grid = params['s2'].to_grid()
     assert grid['x'] == [1, 2, 3]
-
-

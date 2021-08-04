@@ -287,7 +287,7 @@
 <h1>BPt.p.Scalar.set_mutation<a class="headerlink" href="#bpt-p-scalar-set-mutation" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.p.Scalar.set_mutation">
-<code class="sig-prename descclassname">Scalar.</code><code class="sig-name descname">set_mutation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/default/params/Params.py#L72-L85"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.p.Scalar.set_mutation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Scalar.</code><code class="sig-name descname">set_mutation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/default/params/Params.py#L67-L80"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.p.Scalar.set_mutation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Output will be cast to integer(s) through deterministic rounding.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -298,10 +298,6 @@ of the Parameter.</p>
 </dd>
 <dt><strong>exponent: float</strong></dt><dd><p>exponent for the logarithmic mode. With the default sigma=1, using exponent=2 will perform
 x2 or /2 “on average” on the value at each mutation.</p>
-</dd>
-<dt><strong>custom: str or Parameter</strong></dt><dd><p>custom mutation which can be a string (“gaussian” or “cauchy”)
-or Mutation/Recombination like object
-or a Parameter which value is either of those</p>
 </dd>
 </dl>
 </dd>

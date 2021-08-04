@@ -287,7 +287,7 @@
 <h1>BPt.Model<a class="headerlink" href="#bpt-model" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.Model">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">param_search</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_scaler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L892-L949"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Model" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">param_search</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_scaler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L912-L969"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Model" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Model class represents a
 base component of the <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>
 / <a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a>. This component
@@ -344,14 +344,20 @@ how scopes can be specified.</div>
 </pre></div>
 </div>
 </dd>
-<dt>param_search<span class="classifier"><a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, None, optional</span></dt><dd><p>This parameter optionally specifies that this object
-should be nested with a hyper-parameter search.</p>
-<p>If passed an instance of <a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, the
+<dt>param_search<span class="classifier"><a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, None, optional</span></dt><dd><div class="line-block">
+<div class="line">This parameter optionally specifies that this object
+should be nested with a hyper-parameter search.</div>
+</div>
+<div class="line-block">
+<div class="line">If passed an instance of <a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, the
 underlying object, or components of the underlying
 object (if a pipeline) must have atleast one valid
-hyper-parameter distribution to search over.</p>
-<p>By default this parameter is set to None, which
-specifies no parameter search.</p>
+hyper-parameter distribution to search over.</div>
+</div>
+<div class="line-block">
+<div class="line">If left as None, the default, then no hyper-parameter
+search will be performed.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
@@ -423,7 +429,7 @@ called size, and we want it fixed as 10, we can specify that with:</div>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Model.build.html#BPt.Model.build" title="BPt.Model.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>(dataset[, problem_spec])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Model.build.html#BPt.Model.build" title="BPt.Model.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>([dataset, problem_spec])</p></td>
 <td><p>This method is used to convert a single pipeline piece into the base sklearn style object used in the pipeline.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Model.copy.html#BPt.Model.copy" title="BPt.Model.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>

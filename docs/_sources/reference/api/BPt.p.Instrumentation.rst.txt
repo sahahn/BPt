@@ -13,6 +13,7 @@ BPt.p.Instrumentation
    .. autosummary::
       :toctree:
       
+      Instrumentation.add_layer
       Instrumentation.copy
       Instrumentation.freeze
       Instrumentation.get_standardized_data
@@ -45,8 +46,6 @@ BPt.p.Instrumentation
       Instrumentation.kwargs
       Instrumentation.losses
       Instrumentation.name
-      Instrumentation.parameters
       Instrumentation.random_state
-      Instrumentation.value
 
 

@@ -33,14 +33,9 @@ class Params():
 
         super().__init__(*self.args_, **self.kwargs_)
 
-    @property
-    def value(self):
-        '''Stores the value of the parameter.'''
-        return super().value
-
-    @value.setter
-    def value(self, value):
-        super().value = value
+        # Default consistent choice value
+        if isinstance(self, Choice):
+            self.indices.value = [0]
 
     @property
     def descriptors(self):
@@ -168,8 +163,6 @@ def undefined_to_grid(self):
 class TransitionChoice(Params, ng.p.TransitionChoice):
     '''BPt parameter wrapper around :class:`nevergrad.p.TransitionChoice`.'''
     to_grid = choice_to_grid
-    ChoiceTag = ng.p.TransitionChoice.ChoiceTag
-    ChoiceTag.__doc__ = '''Used to identity param as choice.'''
 
 
 class Choice(Params, ng.p.Choice):
@@ -197,8 +190,6 @@ class Choice(Params, ng.p.Choice):
 
     '''
     to_grid = choice_to_grid
-    ChoiceTag = ng.p.Choice.ChoiceTag
-    ChoiceTag.__doc__ = '''Used to identity param as choice.'''
 
 
 class Array(ValParams, ng.p.Array):

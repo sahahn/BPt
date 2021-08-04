@@ -13,7 +13,7 @@ from .CV import inds_from_names
 from ..shared_docs import _shared_docs
 from .compare import (_compare_check, CompareDict, _merge_compare, Compare)
 from ..default.pipelines import pipelines as default_pipelines
-
+from ..dataset.fake_dataset import FakeDataset
 
 _base_docs = {}
 
@@ -278,7 +278,7 @@ def _base_ps_check(ps, dataset):
 
 
 @doc(**_base_docs)
-def get_estimator(pipeline, dataset,
+def get_estimator(pipeline, dataset='default',
                   problem_spec='default',
                   **extra_params):
     '''Get a sklearn compatible :ref:`estimator<develop>` from a
@@ -288,7 +288,24 @@ def get_estimator(pipeline, dataset,
     -----------
     {pipeline}
 
-    {dataset}
+    dataset : :class:`Dataset` or 'default', optional
+        | The :class:`Dataset` in which this function should be evaluated
+          in the context of. In other words, the dataset is
+          used as the data source for this operation.
+
+        | If left as default will initialize and use
+          an instance of a FakeDataset class, which will
+          work fine for initializing pipeline objects
+          with scope of 'all', but should be used with caution
+          when elements of the pipeline use non 'all' scopes.
+          In these cases a warning will be issued.
+
+        | It is typically advised to pass the actual :class:`Dataset`
+          of interest here.
+
+        ::
+
+            default = 'default'
 
     {problem_spec}
 
@@ -342,6 +359,10 @@ def get_estimator(pipeline, dataset,
         estimator.score(X, y)
 
     '''
+
+    # Check for default dataset
+    if isinstance(dataset, str) and (dataset == 'default'):
+        dataset = FakeDataset()
 
     # Use initial prep
     estimator_ps = _initial_prep(pipeline, dataset, problem_spec,
@@ -682,7 +703,7 @@ def _eval_prep(estimator, ps, dataset, cv=5):
 
         # If a test set is defined
         if dataset._get_test_subjects() is not None:
-            if cv == 'test':
+            if cv == 'test' or cv == 'Test':
                 ps.subjects = 'all'
             else:
                 ps.subjects = 'train'
@@ -730,7 +751,7 @@ def _eval_prep(estimator, ps, dataset, cv=5):
         sk_cv = [(train, test)]
 
         # Set as actual index
-        sk_cv = inds_from_names(dataset.index, sk_cv)
+        sk_cv = inds_from_names(X.index, sk_cv)
 
     # Cast explicitly to sklearn style cv from either user
     # passed input or inds
@@ -740,7 +761,7 @@ def _eval_prep(estimator, ps, dataset, cv=5):
     sk_cv = check_cv(cv=sk_cv, y=None if pd.isnull(y).any() else y,
                      classifier=is_classifier)
 
-    # Make sure random_state and shuffle are set set, if avaliable attributes.
+    # Make sure random_state and shuffle are set, if avaliable attributes.
     if hasattr(sk_cv, 'random_state'):
         setattr(sk_cv, 'random_state', ps.random_state)
     if hasattr(sk_cv, 'shuffle'):

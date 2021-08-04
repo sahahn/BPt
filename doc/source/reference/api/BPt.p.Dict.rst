@@ -13,10 +13,13 @@ BPt.p.Dict
    .. autosummary::
       :toctree:
       
+      Dict.add_layer
       Dict.copy
       Dict.freeze
       Dict.get_standardized_data
       Dict.get_value_hash
+      Dict.items
+      Dict.keys
       Dict.mutate
       Dict.recombine
       Dict.register_cheap_constraint
@@ -26,6 +29,7 @@ BPt.p.Dict
       Dict.set_standardized_data
       Dict.spawn_child
       Dict.to_grid
+      Dict.values
 
 
 
@@ -45,8 +49,6 @@ BPt.p.Dict
       Dict.kwargs
       Dict.losses
       Dict.name
-      Dict.parameters
       Dict.random_state
-      Dict.value
 
 

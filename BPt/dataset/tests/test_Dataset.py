@@ -6,7 +6,7 @@ import pytest
 from ...main.input_operations import Intersection
 from ...main.input import ProblemSpec
 from ..helpers import base_load_subjects, save_subjects
-from .datasets import (get_fake_dataset, 
+from .datasets import (get_fake_dataset,
                        get_fake_multi_index_dataset,
                        get_fake_dataset5, get_full_dataset,
                        get_full_int_index_dataset)

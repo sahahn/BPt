@@ -204,7 +204,8 @@ class Piece(Params, Check):
     '''This is the base piece in which :ref`pipeline_objects` inherit from. This
     class should not be used directly.'''
 
-    def build(self, dataset, problem_spec='default', **problem_spec_params):
+    def build(self, dataset='default', problem_spec='default',
+              **problem_spec_params):
         '''This method is used to convert a single pipeline piece into
         the base sklearn style object used in the pipeline. This method
         is mostly used to investigate pieces and is not necessarily
@@ -215,12 +216,32 @@ class Piece(Params, Check):
 
         Parameters
         -----------
-        dataset : :class:`Dataset`
-            The Dataset in which the pipeline should be initialized
+        dataset : :class:`Dataset` or 'default', optional
+            The Dataset in which the pipeline piece should be initialized
             according to. For example, pipeline's can include Scopes,
             these need a reference Dataset.
 
-            Something something
+            If left as default will initialize and use
+            an instance of a FakeDataset class, which will
+            work fine for initializing pipeline objects
+            with scope of 'all', but should be used with caution
+            when elements of the pipeline use non 'all' scopes.
+            In these cases a warning will be issued.
+
+            It is advisable to use this
+            build function only for viewing objects. If using
+            the build function instead for eventual modelling it
+            is important to pass the correct :class:`Dataset` in
+            the case that any of the pipeline pieces are at all
+            dependant on the structure of the input data.
+
+            Note: If problem type is not defined in problem_spec
+            and Dataset is left as default, then a problem type of
+            'regression' will be used.
+
+            ::
+
+                default = 'default'
 
         problem_spec : :class:`ProblemSpec` or 'default', optional
             This parameter accepts an instance of the
@@ -295,11 +316,10 @@ class Piece(Params, Check):
 
         '''
 
-        # @TODO also passing no dataset here
-        # as long as all scopes are all, i.e., make
-        # a fake dataset class and it should have a function
-        # _get_data_inds, and _get_cols that throw errors
-        # when invalid. Add this option to get_estimator also.
+        # If default use FakeDataset
+        if isinstance(dataset, str) and (dataset == 'default'):
+            from ..dataset.fake_dataset import FakeDataset
+            dataset = FakeDataset()
 
         from ..main.funcs import problem_spec_check
 
@@ -415,16 +435,16 @@ _bp_docs = _piece_docs.copy()
 _piece_docs[
     "param_search"
 ] = """param_search : :class:`ParamSearch`, None, optional
-        This parameter optionally specifies that this object
-        should be nested with a hyper-parameter search.
+        | This parameter optionally specifies that this object
+          should be nested with a hyper-parameter search.
 
-        If passed an instance of :class:`ParamSearch`, the
-        underlying object, or components of the underlying
-        object (if a pipeline) must have atleast one valid
-        hyper-parameter distribution to search over.
+        | If passed an instance of :class:`ParamSearch`, the
+          underlying object, or components of the underlying
+          object (if a pipeline) must have atleast one valid
+          hyper-parameter distribution to search over.
 
-        By default this parameter is set to None, which
-        specifies no parameter search.
+        | If left as None, the default, then no hyper-parameter
+          search will be performed.
 
         ::
 
@@ -1581,9 +1601,13 @@ _pipeline_docs['cache_loc'] = """cache_loc : Path str or None, optional
             default = None
 """
 
-_pipeline_docs['verbose'] = """verbose : int, optional
-        If greater than 0, print statements about
+_pipeline_docs['verbose'] = """verbose : bool, optional
+        If True, then print statements about
         the current progress of the pipeline during fitting.
+
+        Note: If in a multi-processed context, where pipelines
+        are being fit on different threads, verbose output may be
+        messy (i.e., overlapping messages from different threads).
 
         ::
 
@@ -1675,7 +1699,8 @@ class Pipeline(Params):
 
     '''
 
-    def __init__(self, steps, param_search=None, cache_loc=None, verbose=0):
+    def __init__(self, steps, param_search=None,
+                 cache_loc=None, verbose=False):
         self.steps = steps
         self.param_search = param_search
         self.cache_loc = cache_loc
@@ -1913,20 +1938,93 @@ class Pipeline(Params):
 
             return self
 
-    def build(self, dataset, problem_spec='default', **extra_params):
+    def build(self, dataset='default', problem_spec='default',
+              **problem_spec_params):
         '''This method generates a sklearn compliant :ref:`estimator<develop>`
         version of the current :class:`Pipeline` with respect to a passed
         dataset and :class:`Dataset` and :class:`ProblemSpec`.
 
         This method calls :func:`get_estimator` with pipeline set as
-        itself, see :func:`get_estimator` for parameters.
+        itself.
+
+        Parameters
+        -----------
+        dataset : :class:`Dataset` or 'default', optional
+            The Dataset in which the pipeline should be initialized
+            according to. For example, pipeline's can include scopes,
+            which require a reference dataset.
+
+            If left as default will initialize and use
+            an instance of a FakeDataset class, which will
+            work fine for initializing pipeline objects
+            with scope of 'all', but should be used with caution
+            when elements of the pipeline use non 'all' scopes.
+            In these cases a warning will be issued.
+
+            It is advisable to use this
+            build function only for viewing pipelines. If using
+            the build function instead for eventual modelling it
+            is important to pass the correct :class:`Dataset` in
+            the case that any of the pipeline pieces are at all
+            dependant on the structure of the input data.
+
+            Note: If problem type is not defined in problem_spec
+            and Dataset is left as default, then a problem type of
+            'regression' will be used.
+
+            ::
+
+                default = 'default'
+
+        problem_spec : :class:`ProblemSpec` or 'default', optional
+            This parameter accepts an instance of the
+            params class :class:`ProblemSpec`.
+            The ProblemSpec is essentially a wrapper
+            around commonly used
+            parameters needs to define the context
+            the model pipeline should be evaluated in.
+            It includes parameters like problem_type, scorer, n_jobs,
+            random_state, etc...
+
+            See :class:`ProblemSpec` for more information
+            and for how to create an instance of this object.
+
+            If left as 'default', then will initialize a
+            ProblemSpec with default params.
+
+            ::
+
+                default = "default"
+
+        problem_spec_params : :class:`ProblemSpec` params, optional
+            You may also pass any valid problem spec argument-value pairs here,
+            in order to override a value in the passed :class:`ProblemSpec`.
+            Overriding params should be passed in kwargs style, for example:
+
+            ::
+
+                func(..., problem_type='binary')
+
+        Returns
+        -------
+        estimator : sklearn compatible estimator
+            Returns the BPt-style sklearn compatible estimator
+            version of this piece as converted to internally
+            when building the pipeline
+
+        params : dict
+            Returns a dictionary with any parameter distributions
+            associated with this object, for example
+            this can be used to check what exactly
+            pre-existing parameter distributions point
+            to.
         '''
 
         from .funcs import get_estimator
 
         return get_estimator(pipeline=self, dataset=dataset,
                              problem_spec=problem_spec,
-                             **extra_params)
+                             **problem_spec_params)
 
     @property
     def _model_like(self):
@@ -1941,6 +2039,7 @@ class Pipeline(Params):
         return (Piece, Pipeline, Compare, Select, Pipe)
 
 
+@doc(**_pipeline_docs)
 class ModelPipeline(Pipeline):
     '''The ModelPipeline class is used to create BPtPipeline's.
     The ModelPipeline differs from :class:`Pipeline`
@@ -2079,48 +2178,13 @@ class ModelPipeline(Pipeline):
 
             default =  'default'
 
-    param_search : :class:`ParamSearch` or None, optional
-        A :class:`ParamSearch` can be provided specifying that
-        a nested hyper-parameter search be constructed across
-        all valid param distributions (as set within each piece).
+    {param_search}
 
-        If a parameter search is passed, it is required
-        that atleast one piece have a relevant hyper-parameter
-        distribution (i.e., as set in a pieces `params`).
+    {cache_loc}
 
-        If param search is None, any defined parameter distributions
-        will be ignored, though any static parameters specified via
-        `params` will still be set.
+    {verbose}
 
-        Note: The input wrapper :class:`Select`,
-        is acts a hyper-parameter distribution
-        and therefore requires a search to be passed here.
-
-        ::
-
-            default = None
-
-    cache_loc : Path str or None, optional
-        Optional parameter specifying a directory
-        in which full BPt pipeline's should
-        be cached after fitting. This may be useful
-        in some contexts. If desired,
-        pass the location of the directory in
-        which to store this cache.
-
-        ::
-
-            default = None
-
-    verbose : int, optional
-        If greater than 0, print statements about
-        the current progress of the pipeline during fitting.
-
-        ::
-
-            default = 0
-
-        '''
+    '''
 
     @property
     def fixed_piece_order(self):
@@ -2145,7 +2209,7 @@ class ModelPipeline(Pipeline):
                  model='default',
                  param_search=None,
                  cache_loc=None,
-                 verbose=0):
+                 verbose=False):
 
         if isinstance(loaders, str):
             loaders = Loader(loaders)

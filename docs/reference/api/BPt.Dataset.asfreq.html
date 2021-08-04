@@ -443,13 +443,13 @@
 <dd><p>Convert time series to specified frequency.</p>
 <p>Returns the original data conformed to a new index with the specified
 frequency.</p>
-<p>If the index of this DataFrame is a <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.PeriodIndex.html#pandas.PeriodIndex" title="(in pandas v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeriodIndex</span></code></a>, the new index
+<p>If the index of this DataFrame is a <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.PeriodIndex.html#pandas.PeriodIndex" title="(in pandas v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeriodIndex</span></code></a>, the new index
 is the result of transforming the original index with
-<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.PeriodIndex.asfreq.html#pandas.PeriodIndex.asfreq" title="(in pandas v1.3.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PeriodIndex.asfreq</span></code></a> (so the original index
+<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.PeriodIndex.asfreq.html#pandas.PeriodIndex.asfreq" title="(in pandas v1.3.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PeriodIndex.asfreq</span></code></a> (so the original index
 will map one-to-one to the new index).</p>
 <p>Otherwise, the new index will be equivalent to <code class="docutils literal notranslate"><span class="pre">pd.date_range(start,</span> <span class="pre">end,</span>
 <span class="pre">freq=freq)</span></code> where <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> are, respectively, the first and
-last entries in the original index (see <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.date_range.html#pandas.date_range" title="(in pandas v1.3.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.date_range()</span></code></a>). The
+last entries in the original index (see <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.date_range.html#pandas.date_range" title="(in pandas v1.3.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.date_range()</span></code></a>). The
 values corresponding to any timesteps in the new index which were not present
 in the original index will be null (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>), unless a method for filling
 such unknowns is provided (see the <code class="docutils literal notranslate"><span class="pre">method</span></code> parameter below).</p>

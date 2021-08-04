@@ -13,6 +13,7 @@ BPt.p.Choice
    .. autosummary::
       :toctree:
       
+      Choice.add_layer
       Choice.copy
       Choice.freeze
       Choice.get_standardized_data
@@ -48,10 +49,6 @@ BPt.p.Choice
       Choice.kwargs
       Choice.losses
       Choice.name
-      Choice.parameters
-      Choice.probabilities
       Choice.random_state
-      Choice.value
-      Choice.weights
 
 

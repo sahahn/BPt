@@ -13,6 +13,7 @@ BPt.p.Array
    .. autosummary::
       :toctree:
       
+      Array.add_layer
       Array.copy
       Array.freeze
       Array.get_standardized_data
@@ -43,15 +44,15 @@ BPt.p.Array
       :toctree:
       
       Array.args
+      Array.bounds
       Array.descriptors
       Array.dimension
       Array.generation
+      Array.integer
       Array.kwargs
       Array.losses
       Array.name
-      Array.parameters
       Array.random_state
       Array.sigma
-      Array.value
 
 

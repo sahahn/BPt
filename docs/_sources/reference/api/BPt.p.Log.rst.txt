@@ -13,6 +13,7 @@ BPt.p.Log
    .. autosummary::
       :toctree:
       
+      Log.add_layer
       Log.copy
       Log.freeze
       Log.get_standardized_data
@@ -43,15 +44,15 @@ BPt.p.Log
       :toctree:
       
       Log.args
+      Log.bounds
       Log.descriptors
       Log.dimension
       Log.generation
+      Log.integer
       Log.kwargs
       Log.losses
       Log.name
-      Log.parameters
       Log.random_state
       Log.sigma
-      Log.value
 
 

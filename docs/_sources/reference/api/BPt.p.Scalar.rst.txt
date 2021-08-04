@@ -13,6 +13,7 @@ BPt.p.Scalar
    .. autosummary::
       :toctree:
       
+      Scalar.add_layer
       Scalar.copy
       Scalar.freeze
       Scalar.get_standardized_data
@@ -43,15 +44,15 @@ BPt.p.Scalar
       :toctree:
       
       Scalar.args
+      Scalar.bounds
       Scalar.descriptors
       Scalar.dimension
       Scalar.generation
+      Scalar.integer
       Scalar.kwargs
       Scalar.losses
       Scalar.name
-      Scalar.parameters
       Scalar.random_state
       Scalar.sigma
-      Scalar.value
 
 

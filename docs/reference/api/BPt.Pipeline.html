@@ -263,7 +263,7 @@
 <h1>BPt.Pipeline<a class="headerlink" href="#bpt-pipeline" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="BPt.Pipeline">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Pipeline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">steps</span></em>, <em class="sig-param"><span class="n">param_search</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L1595-L1941"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Pipeline" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Pipeline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">steps</span></em>, <em class="sig-param"><span class="n">param_search</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L1619-L2039"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Pipeline" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class is used to create flexible BPt style pipeline’s.</p>
 <p>See <a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> for an alternate version of this class
 which enforces a strict ordering on how pipeline pieces can be set, and
@@ -283,14 +283,20 @@ This constraint excludes any nested models.</div>
 <div class="line">See below for example usage.</div>
 </div>
 </dd>
-<dt><strong>param_search</strong><span class="classifier"><a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, None, optional</span></dt><dd><p>This parameter optionally specifies that this object
-should be nested with a hyper-parameter search.</p>
-<p>If passed an instance of <a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, the
+<dt><strong>param_search</strong><span class="classifier"><a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, None, optional</span></dt><dd><div class="line-block">
+<div class="line">This parameter optionally specifies that this object
+should be nested with a hyper-parameter search.</div>
+</div>
+<div class="line-block">
+<div class="line">If passed an instance of <a class="reference internal" href="BPt.ParamSearch.html#BPt.ParamSearch" title="BPt.ParamSearch"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSearch</span></code></a>, the
 underlying object, or components of the underlying
 object (if a pipeline) must have atleast one valid
-hyper-parameter distribution to search over.</p>
-<p>By default this parameter is set to None, which
-specifies no parameter search.</p>
+hyper-parameter distribution to search over.</div>
+</div>
+<div class="line-block">
+<div class="line">If left as None, the default, then no hyper-parameter
+search will be performed.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
@@ -304,8 +310,11 @@ a directory in which cached fitted pipeline should be saved.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">int, optional</span></dt><dd><p>If greater than 0, print statements about
+<dt><strong>verbose</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then print statements about
 the current progress of the pipeline during fitting.</p>
+<p>Note: If in a multi-processed context, where pipelines
+are being fit on different threads, verbose output may be
+messy (i.e., overlapping messages from different threads).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="mi">0</span>
 </pre></div>
 </div>
@@ -383,7 +392,7 @@ and no associated hyper-parameter distributions.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Pipeline.build.html#BPt.Pipeline.build" title="BPt.Pipeline.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>(dataset[, problem_spec])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Pipeline.build.html#BPt.Pipeline.build" title="BPt.Pipeline.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>([dataset, problem_spec])</p></td>
 <td><p>This method generates a sklearn compliant <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v0.24)"><span class="xref std std-ref">estimator</span></a> version of the current <a class="reference internal" href="#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> with respect to a passed dataset and <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> and <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.Pipeline.copy.html#BPt.Pipeline.copy" title="BPt.Pipeline.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>

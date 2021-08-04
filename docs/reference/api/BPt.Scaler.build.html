@@ -287,7 +287,7 @@
 <h1>BPt.Scaler.build<a class="headerlink" href="#bpt-scaler-build" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Scaler.build">
-<code class="sig-prename descclassname">Scaler.</code><code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">problem_spec_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L207-L320"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Scaler.build" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Scaler.</code><code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">problem_spec_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L207-L340"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Scaler.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used to convert a single pipeline piece into
 the base sklearn style object used in the pipeline. This method
 is mostly used to investigate pieces and is not necessarily
@@ -297,10 +297,27 @@ obj is a custom object.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></span></dt><dd><p>The Dataset in which the pipeline should be initialized
+<dt><strong>dataset</strong><span class="classifier"><a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> or ‘default’, optional</span></dt><dd><p>The Dataset in which the pipeline piece should be initialized
 according to. For example, pipeline’s can include Scopes,
 these need a reference Dataset.</p>
-<p>Something something</p>
+<p>If left as default will initialize and use
+an instance of a FakeDataset class, which will
+work fine for initializing pipeline objects
+with scope of ‘all’, but should be used with caution
+when elements of the pipeline use non ‘all’ scopes.
+In these cases a warning will be issued.</p>
+<p>It is advisable to use this
+build function only for viewing objects. If using
+the build function instead for eventual modelling it
+is important to pass the correct <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> in
+the case that any of the pipeline pieces are at all
+dependant on the structure of the input data.</p>
+<p>Note: If problem type is not defined in problem_spec
+and Dataset is left as default, then a problem type of
+‘regression’ will be used.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+</pre></div>
+</div>
 </dd>
 <dt><strong>problem_spec</strong><span class="classifier"><a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a> or ‘default’, optional</span></dt><dd><p>This parameter accepts an instance of the
 params class <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.
@@ -378,7 +395,7 @@ as used here).</p>
 <span class="go"> BPtModel(estimator=Ridge(max_iter=100, random_state=1, solver=&#39;lsqr&#39;), inds=&#39;all&#39;))</span>
 
 <span class="gp">In [11]: </span><span class="n">params</span>
-<span class="gh">Out[11]: </span><span class="go">{&#39;ridge regressor__estimator__alpha&#39;: Log(lower=0.001, upper=100000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.001, 100000.0, full_range_sampling=True)}</span>
+<span class="gh">Out[11]: </span><span class="go">{&#39;ridge regressor__estimator__alpha&#39;: Log(lower=0.001, upper=100000.0)}</span>
 </pre></div>
 </div>
 </dd></dl>

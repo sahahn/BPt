@@ -195,7 +195,7 @@ class BPtSearchCV(BaseEstimator):
                                  'fit_index! Or passed X as '
                                  'a DataFrame.')
 
-        if self.ps['verbose'] > 1:
+        if self.ps['verbose'] >= 3:
             print('Fit Search CV, len(fit_index) == ',
                   len(fit_index),
                   'has mapping == ', 'mapping' in fit_params,
@@ -288,8 +288,9 @@ class ProgressLogger():
             f.write('params,')
 
 
-def ng_cv_score(X, y, estimator, scoring, weight_scorer, cv_inds, cv_subjects,
-                mapping, fit_params, search_only_params, **search_params):
+def ng_cv_score(X, y, estimator, scoring, weight_scorer,
+                cv_inds, cv_subjects, mapping, fit_params,
+                search_only_params, **search_params):
 
     # If passing memmap
     if isinstance(X, tuple):
@@ -332,7 +333,6 @@ def ng_cv_score(X, y, estimator, scoring, weight_scorer, cv_inds, cv_subjects,
         else:
             score = -scoring(estimator, X[test_inds], y[test_inds])
 
-        # score = -scoring(estimator, X[test_inds], y[test_inds])
         cv_scores.append(score)
 
     if weight_scorer:
@@ -369,6 +369,7 @@ class NevergradSearchCV(BPtSearchCV):
             else:
                 X_mem = X
 
+            # Convert parameters into compatible instrumentation
             instrumentation =\
                 ng.p.Instrumentation(X_mem, y, self.estimator,
                                      self.ps['scorer'],
@@ -381,11 +382,16 @@ class NevergradSearchCV(BPtSearchCV):
 
         # If using dask client, pre-scatter some big memory fixed params
         else:
+
+            if self.ps['verbose'] >= 2:
+                print('Scattering data to dask nodes.', flush=True)
+
             X_s = client.scatter(X)
             y_s = client.scatter(y)
             cv_inds_s = client.scatter(self.cv_inds)
             cv_subjects_s = client.scatter(self.cv_subjects)
 
+            # Convert parameters into compatible instrumentation
             instrumentation =\
                 ng.p.Instrumentation(X_s, y_s, self.estimator,
                                      self.ps['scorer'],
@@ -422,12 +428,20 @@ class NevergradSearchCV(BPtSearchCV):
                 self.random_state
 
         if self.ps['progress_loc'] is not None:
-            logger = ProgressLogger(self.ps['progress_loc'])
+
+            pl = self.ps['progress_loc']
+            logger = ProgressLogger(pl)
             optimizer.register_callback('tell', logger)
+
+            if self.ps['verbose'] >= 2:
+                print(f'Storing SearchCV progress logs at: {pl}')
 
         return optimizer
 
     def run_search(self, optimizer, client):
+
+        if self.ps['verbose'] >= 1:
+            print('Starting nevergrad hyper-parameter search.', flush=True)
 
         # n_jobs 1, always local
         if self.n_jobs == 1:
@@ -461,13 +475,20 @@ class NevergradSearchCV(BPtSearchCV):
                                                         executor=ex,
                                                         batch_mode=False)
             except RuntimeError:
-                raise(RuntimeError('Try changing the mp_context'))
+                raise(RuntimeError('Error with SearchCV!' +
+                                   ' try changing the mp_context.'))
 
         # Save best search search score
         # "optimistic", "pessimistic", "average"
         # and best params
         self.best_score_ = optimizer.current_bests["optimistic"].mean
         self.best_params_ = recommendation.kwargs
+
+        if self.ps['verbose'] >= 1:
+            print('Finished nevergrad hyper-parameter search,',
+                  'with best internal CV score:', self.best_score_)
+        if self.ps['verbose'] >= 2:
+            print('Selected hyper-parameters:', self.best_params_)
 
         return recommendation
 
@@ -506,6 +527,9 @@ class NevergradSearchCV(BPtSearchCV):
 
     def fit_best_estimator(self, recommendation,  X, y, mapping,
                            fit_index, fit_params):
+
+        if self.ps['verbose'] >= 1:
+            print('Fitting SearchCV with best parameters on all train data.')
 
         # Fit best estimator, w/ found best params
         self.best_estimator_ = clone(self.estimator)

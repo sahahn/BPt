@@ -751,7 +751,7 @@ def _eval_prep(estimator, ps, dataset, cv=5):
         sk_cv = [(train, test)]
 
         # Set as actual index
-        sk_cv = inds_from_names(dataset.index, sk_cv)
+        sk_cv = inds_from_names(X.index, sk_cv)
 
     # Cast explicitly to sklearn style cv from either user
     # passed input or inds
@@ -766,10 +766,6 @@ def _eval_prep(estimator, ps, dataset, cv=5):
         setattr(sk_cv, 'random_state', ps.random_state)
     if hasattr(sk_cv, 'shuffle'):
         setattr(sk_cv, 'shuffle', True)
-        
-        # Set False if special cv test
-        if cv == 'test' or cv == 'Test':
-            setattr(sk_cv, 'shuffle', False)
 
     # Store n_repeats in sk_cv
     setattr(sk_cv, 'n_repeats', n_repeats)

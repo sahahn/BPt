@@ -50,6 +50,8 @@ def is_notebook():
 # or some sort of hash to make sure / some way of making sure
 # functions that need a dataset are not passed some wrong input
 
+# TODO - function to easily export saved results
+
 
 def get_non_nan_Xy(X, y):
 

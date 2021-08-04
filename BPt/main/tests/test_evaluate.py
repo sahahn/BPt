@@ -113,7 +113,6 @@ def get_fake_dataset():
 
     return fake
 
-
 def test_sk_check_y():
 
     # Make sure passes
@@ -995,3 +994,36 @@ def test_linear_svm_with_multiproc():
                  dataset=dataset,
                  progress_bar=False,
                  cv=2, n_jobs=4)
+
+
+def test_evaluate_cv_test():
+
+    linear_pipe = ModelPipeline(model=Model('linear'))
+    dataset = get_fake_category_dataset()
+    dataset = dataset.set_test_split(.2, random_state=2)
+
+    results = evaluate(pipeline=linear_pipe,
+                       dataset=dataset,
+                       problem_spec='default',
+                       cv='test',
+                       problem_type='categorical')
+
+    assert len(set(results.val_subjects[0]) - set(dataset.test_subjects)) == 0
+    assert len(set(dataset.test_subjects) - set(results.val_subjects[0])) == 0
+
+
+def test_evaluate_second_cv_test():
+
+    dataset = get_fake_dataset()
+    dataset = dataset.set_test_split(.2, random_state=2)
+
+    pipe = Pipeline(Model('dt'))
+
+    results = evaluate(pipeline=pipe,
+                       dataset=dataset,
+                       progress_bar=False,
+                       subjects='all',
+                       cv='test')
+
+    assert len(set(results.val_subjects[0]) - set(dataset.test_subjects)) == 0
+    assert len(set(dataset.test_subjects) - set(results.val_subjects[0])) == 0

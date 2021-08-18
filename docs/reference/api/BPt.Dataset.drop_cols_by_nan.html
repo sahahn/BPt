@@ -439,7 +439,7 @@
 <h1>BPt.Dataset.drop_cols_by_nan<a class="headerlink" href="#bpt-dataset-drop-cols-by-nan" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.drop_cols_by_nan">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_cols_by_nan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L758-L833"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_cols_by_nan" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_cols_by_nan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L758-L838"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_cols_by_nan" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used for dropping columns based on
 the amount of missing values per column, dropping any
 which exceed a user defined threshold.</p>
@@ -469,9 +469,11 @@ absolute value in which if a column has that number
 of subjects or greater with NaN, it will be dropped.</div>
 </div>
 <div class="line-block">
-<div class="line">For example, if a column has 3 non missing values and 7 NaN values,
-so a total of 10 rows, a threshold of .7 or lower would drop the column.
-On the other hand, anything above .7, would not.</div>
+<div class="line">For example, if a column within a dataset containing
+10 total rows has 3 non-missing values
+and 7 missing values, a threshold of .7 or lower
+will drop the column.
+On the other hand, anything above .7, will not.</div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span>
 </pre></div>
@@ -486,6 +488,8 @@ On the other hand, anything above .7, would not.</div>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
+<p>Consider a brief example below where we first load in
+a simple Dataset and then apply the drop_cols_by_nan method.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/example1.csv&#39;</span><span class="p">)</span>
 
 <span class="gp">In [2]: </span><span class="n">data</span>

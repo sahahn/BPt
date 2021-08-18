@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.drop_cols_by_nan &#8212; BPt 2.0.3 documentation</title>
+    <title>BPt.Dataset.drop_cols_by_nan &#8212; BPt 2.1.1 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -153,7 +153,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="">
+                        <li class="active">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -439,11 +439,10 @@
 <h1>BPt.Dataset.drop_cols_by_nan<a class="headerlink" href="#bpt-dataset-drop-cols-by-nan" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt id="BPt.Dataset.drop_cols_by_nan">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_cols_by_nan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L754-L813"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_cols_by_nan" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_cols_by_nan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L758-L833"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_cols_by_nan" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used for dropping columns based on
-the amount of missing values found across all subjects.
-Each column is dropped if it has greater than or equal
-to the passed threshold of NaN values.</p>
+the amount of missing values per column, dropping any
+which exceed a user defined threshold.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
@@ -457,17 +456,23 @@ can be applied.</p>
 </pre></div>
 </div>
 </dd>
-<dt><strong>threshold</strong><span class="classifier">float or int, optional</span></dt><dd><p>Passed as a float between 0 and 1, or
+<dt><strong>threshold</strong><span class="classifier">float or int, optional</span></dt><dd><div class="line-block">
+<div class="line">Passed as a float between 0 and 1, or
 as an int. If greater than 0 or less than 1,
 this parameter represents the threshold in which
 a column should be dropped if it has greater than or
-equal to this percent of its columns as NaN values.</p>
-<p>If greater than 1, then this threshold represents the
+equal to this percent of its columns as NaN values.</div>
+</div>
+<div class="line-block">
+<div class="line">If passed a value greater than 1, then this threshold represents the
 absolute value in which if a column has that number
-of subjects or greater with NaN, it will be dropped.</p>
-<p>For example, if a column has 3 values and 7 NaN values,
-passing .7 or lower here would drop this column, but passing
-anything above .7, e.g., .8 would not.</p>
+of subjects or greater with NaN, it will be dropped.</div>
+</div>
+<div class="line-block">
+<div class="line">For example, if a column has 3 non missing values and 7 NaN values,
+so a total of 10 rows, a threshold of .7 or lower would drop the column.
+On the other hand, anything above .7, would not.</div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span>
 </pre></div>
 </div>
@@ -480,6 +485,40 @@ anything above .7, e.g., .8 would not.</p>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/example1.csv&#39;</span><span class="p">)</span>
+
+<span class="gp">In [2]: </span><span class="n">data</span>
+<span class="gh">Out[2]: </span><span class="go"></span>
+<span class="go">  animals  numbers</span>
+<span class="go">0   &#39;cat&#39;      1.0</span>
+<span class="go">1   &#39;cat&#39;      2.0</span>
+<span class="go">2   &#39;dog&#39;      1.0</span>
+<span class="go">3   &#39;dog&#39;      2.0</span>
+<span class="go">4   &#39;elk&#39;      NaN</span>
+
+<span class="gp">In [3]: </span><span class="n">data</span><span class="o">.</span><span class="n">drop_cols_by_nan</span><span class="p">(</span><span class="n">threshold</span><span class="o">=.</span><span class="mi">1</span><span class="p">)</span>
+<span class="gh">Out[3]: </span><span class="go"></span>
+<span class="go">  animals</span>
+<span class="go">0   &#39;cat&#39;</span>
+<span class="go">1   &#39;cat&#39;</span>
+<span class="go">2   &#39;dog&#39;</span>
+<span class="go">3   &#39;dog&#39;</span>
+<span class="go">4   &#39;elk&#39;</span>
+</pre></div>
+</div>
+<p>Alternatively, note that if we pass a threshold above
+.2, then no columns will be dropped.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="n">data</span><span class="o">.</span><span class="n">drop_cols_by_nan</span><span class="p">(</span><span class="n">threshold</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+<span class="gh">Out[4]: </span><span class="go"></span>
+<span class="go">  animals  numbers</span>
+<span class="go">0   &#39;cat&#39;      1.0</span>
+<span class="go">1   &#39;cat&#39;      2.0</span>
+<span class="go">2   &#39;dog&#39;      1.0</span>
+<span class="go">3   &#39;dog&#39;      2.0</span>
+<span class="go">4   &#39;elk&#39;      NaN</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

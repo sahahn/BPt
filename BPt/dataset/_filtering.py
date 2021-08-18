@@ -32,6 +32,10 @@ def drop_nan_subjects(self, scope, inplace=False):
 
         data = bp.read_csv('data/example1.csv')
         data
+
+        # We can specify a scope of 'all' or a specific column
+        # both yielding the same results.
+
         data.drop_nan_subjects(scope='all')
         data.drop_nan_subjects(scope='numbers')
 
@@ -754,9 +758,8 @@ def drop_cols_by_unique_val(self, scope='all', threshold=1,
 @doc(**_sip_docs)
 def drop_cols_by_nan(self, scope='all', threshold=.5, inplace=False):
     '''This method is used for dropping columns based on
-    the amount of missing values found across all subjects.
-    Each column is dropped if it has greater than or equal
-    to the passed threshold of NaN values.
+    the amount of missing values per column, dropping any
+    which exceed a user defined threshold.
 
     Parameters
     -----------
@@ -766,25 +769,45 @@ def drop_cols_by_nan(self, scope='all', threshold=.5, inplace=False):
             default = 'all'
 
     threshold : float or int, optional
-        Passed as a float between 0 and 1, or
-        as an int. If greater than 0 or less than 1,
-        this parameter represents the threshold in which
-        a column should be dropped if it has greater than or
-        equal to this percent of its columns as NaN values.
+        | Passed as a float between 0 and 1, or
+          as an int. If greater than 0 or less than 1,
+          this parameter represents the threshold in which
+          a column should be dropped if it has greater than or
+          equal to this percent of its columns as NaN values.
+          
+        | If passed a value greater than 1, then this threshold represents the
+          absolute value in which if a column has that number
+          of subjects or greater with NaN, it will be dropped.
 
-        If greater than 1, then this threshold represents the
-        absolute value in which if a column has that number
-        of subjects or greater with NaN, it will be dropped.
-
-        For example, if a column has 3 values and 7 NaN values,
-        passing .7 or lower here would drop this column, but passing
-        anything above .7, e.g., .8 would not.
+        | For example, if a column has 3 non missing values and 7 NaN values,
+          so a total of 10 rows, a threshold of .7 or lower would drop the column.
+          On the other hand, anything above .7, would not.
 
         ::
 
             default = .5
 
     {inplace}
+
+    Examples
+    ---------
+
+    Consider a brief example below where we first load in
+    a simple Dataset and then apply the drop_cols_by_nan method.
+
+    .. ipython:: python
+
+        data = bp.read_csv('data/example1.csv')
+        data
+        
+        data.drop_cols_by_nan(threshold=.1)
+
+    Alternatively, note that if we pass a threshold above
+    .2, then no columns will be dropped.
+
+    .. ipython:: python
+
+        data.drop_cols_by_nan(threshold=.5)
 
     '''
 

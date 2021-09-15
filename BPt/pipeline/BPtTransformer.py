@@ -1,6 +1,7 @@
 from .helpers import update_mapping
 from .ScopeObjs import ScopeTransformer
 from sklearn.preprocessing import OneHotEncoder
+import pandas as pd
 
 
 class BPtTransformer(ScopeTransformer):
@@ -138,9 +139,13 @@ class BPtTransformer(ScopeTransformer):
                 except KeyError:
                     cat = cat
 
-            # If Float, turn to int before cast to str
+            # If float, turn to int before cast to str
             if isinstance(cat, float):
-                cat = int(cat)
+
+                if pd.isnull(cat):
+                    cat = 'NaN'
+                else:
+                    cat = int(cat)
 
             return str(name) + '=' + repr(cat)
 

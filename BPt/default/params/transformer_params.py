@@ -14,4 +14,4 @@ P['ohe'] =\
 P['dummy code'] =\
         {'sparse': False,
          'drop': 'first',
-         'handle_unknown': 'error'}
+         'handle_unknown': 'ignore'}

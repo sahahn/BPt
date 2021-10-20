@@ -279,7 +279,7 @@ def test_threshold_network_measures_abs():
     assert np.sum(thresh_X) == 8
 
     import networkx as nx
-    G = nx.from_numpy_matrix(thresh_X)
+    G = nx.from_numpy_array(thresh_X)
 
     degrees = [n[1] for n in G.degree()]
     X_trans = nm.transform(X)

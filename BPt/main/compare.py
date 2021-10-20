@@ -189,8 +189,8 @@ class Compare(BPtInputMixIn):
 
     .. ipython:: python
 
-        from BPt.datasets import load_boston
-        data = bp.datasets.load_boston()
+        from BPt.datasets import load_cali
+        data = bp.datasets.load_cali()
         data.shape
 
         pipe_options = bp.Compare([bp.Option(bp.Model('elastic'),

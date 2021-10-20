@@ -21,7 +21,8 @@ jobs:
         brew install libomp
         python -m pip install --upgrade pip
         pip install pytest
-        pip install .[extra] --use-feature=in-tree-build
+        pip install .[extra]
+        brew install lightgbm
     - name: Test with pytest with coverage
       run: |
         pytest

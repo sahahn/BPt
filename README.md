@@ -38,10 +38,10 @@ Load a pre-set BPt dataset, then
 run a default 5-fold cross validation.
 
 ```
-from BPt.datasets import load_boston
+from BPt.datasets import load_cali
 from BPt import evaluate
 
-data = load_boston()
+data = load_cali()
 results = evaluate('elastic_pipe', data)
 ```
 

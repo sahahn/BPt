@@ -7,3 +7,12 @@ Version 2.1.1
 
 - Compatibility with sklearn 1.0
     No major changes, just slight tweaks.
+
+- Fixed OHE encoding issue
+    Issue with one hot encoder names failing when encountering NaN, now fixed.
+
+- Changed dummy code default
+    Now by default will handle unknown.
+
+- Fixed issue with plotting
+    Bug when plotting NaN values, due to new pandas version, now fixed.

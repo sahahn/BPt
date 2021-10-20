@@ -280,7 +280,7 @@
 <dl class="py function">
 <dt id="BPt.get_estimator">
 <code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">get_estimator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L280-L379"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.get_estimator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a sklearn compatible <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v0.24)"><span class="xref std std-ref">estimator</span></a> from a
+<dd><p>Get a sklearn compatible <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v1.0)"><span class="xref std std-ref">estimator</span></a> from a
 <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>, <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a> and <a class="reference internal" href="BPt.ProblemSpec.html#BPt.ProblemSpec" title="BPt.ProblemSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a>.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -357,7 +357,7 @@ in the passed problem_spec. Or for example:</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>estimator</strong><span class="classifier"><a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v0.24)"><span class="xref std std-ref">sklearn Estimator</span></a></span></dt><dd><p>The returned object is a sklearn-compatible estimator.
+<dt><strong>estimator</strong><span class="classifier"><a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#develop" title="(in scikit-learn v1.0)"><span class="xref std std-ref">sklearn Estimator</span></a></span></dt><dd><p>The returned object is a sklearn-compatible estimator.
 It will be either of type BPtPipeline or a BPtPipeline
 wrapped in a search CV object.</p>
 </dd>
@@ -411,7 +411,7 @@ style estimator.</p>
 <span class="go">                    BPtModel(estimator=LinearRegression(n_jobs=1), inds=Ellipsis))])</span>
 
 <span class="gp">In [10]: </span><span class="n">estimator</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="gh">Out[10]: </span><span class="go">0.9999999999999475</span>
+<span class="gh">Out[10]: </span><span class="go">0.9999999999999672</span>
 </pre></div>
 </div>
 </dd></dl>

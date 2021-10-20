@@ -320,12 +320,12 @@ nesting this choice as a hyper-parameter to optimize
 </div>
 <p class="rubric">Examples</p>
 <p>Compare is used with <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, for example:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">BPt.datasets</span> <span class="kn">import</span> <span class="n">load_boston</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">BPt.datasets</span> <span class="kn">import</span> <span class="n">load_cali</span>
 
-<span class="gp">In [2]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">load_boston</span><span class="p">()</span>
+<span class="gp">In [2]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">load_cali</span><span class="p">()</span>
 
 <span class="gp">In [3]: </span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
-<span class="gh">Out[3]: </span><span class="go">(506, 14)</span>
+<span class="gh">Out[3]: </span><span class="go">(20640, 9)</span>
 
 <span class="gp">In [4]: </span><span class="n">pipe_options</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Compare</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;elastic&#39;</span><span class="p">),</span>
 <span class="gp">   ...: </span>                                     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;elastic&#39;</span><span class="p">),</span>
@@ -335,72 +335,72 @@ nesting this choice as a hyper-parameter to optimize
 
 <span class="gp">In [5]: </span><span class="n">bp</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">pipe_options</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
 <span class="go">Running Compare: Options(pipeline=elastic)</span>
-<span class="go">Predicting target = PRICE</span>
+<span class="go">Predicting target = MedHouseVal</span>
 <span class="go">Using problem_type = regression</span>
-<span class="go">Using scope = all (defining a total of 13 features).</span>
-<span class="go">Evaluating 404 total data points.</span>
+<span class="go">Using scope = all (defining a total of 8 features).</span>
+<span class="go">Evaluating 16512 total data points.</span>
 
-<span class="go">Train size: 323 - Val size: 81</span>
-<span class="go">Fit fold in 0.017 seconds.</span>
-<span class="go">explained_variance: 0.6286253121701577</span>
-<span class="go">neg_mean_squared_error: -39.47310776833825</span>
+<span class="go">Train size: 13209 - Val size: 3303</span>
+<span class="go">Fit fold in 0.028 seconds.</span>
+<span class="go">explained_variance: 0.4303526850247802</span>
+<span class="go">neg_mean_squared_error: -0.7532195015186975</span>
 
-<span class="go">Train size: 323 - Val size: 81</span>
-<span class="go">Fit fold in 0.001 seconds.</span>
-<span class="go">explained_variance: 0.6326282479003889</span>
-<span class="go">neg_mean_squared_error: -26.008659591884</span>
+<span class="go">Train size: 13209 - Val size: 3303</span>
+<span class="go">Fit fold in 0.116 seconds.</span>
+<span class="go">explained_variance: 0.4201275250708906</span>
+<span class="go">neg_mean_squared_error: -0.7907574869926868</span>
 
-<span class="go">Train size: 323 - Val size: 81</span>
-<span class="go">Fit fold in 0.001 seconds.</span>
-<span class="go">explained_variance: 0.6345111243873746</span>
-<span class="go">neg_mean_squared_error: -25.756919598316518</span>
+<span class="go">Train size: 13210 - Val size: 3302</span>
+<span class="go">Fit fold in 0.035 seconds.</span>
+<span class="go">explained_variance: 0.4187985303961742</span>
+<span class="go">neg_mean_squared_error: -0.7790367337849885</span>
 
-<span class="go">Train size: 323 - Val size: 81</span>
-<span class="go">Fit fold in 0.001 seconds.</span>
-<span class="go">explained_variance: 0.6393980322007062</span>
-<span class="go">neg_mean_squared_error: -35.637540092379304</span>
+<span class="go">Train size: 13210 - Val size: 3302</span>
+<span class="go">Fit fold in 0.015 seconds.</span>
+<span class="go">explained_variance: 0.41480846434221896</span>
+<span class="go">neg_mean_squared_error: -0.8074063045886442</span>
 
-<span class="go">Train size: 324 - Val size: 80</span>
-<span class="go">Fit fold in 0.018 seconds.</span>
-<span class="go">explained_variance: 0.73369693866172</span>
-<span class="go">neg_mean_squared_error: -23.217231445311636</span>
+<span class="go">Train size: 13210 - Val size: 3302</span>
+<span class="go">Fit fold in 0.016 seconds.</span>
+<span class="go">explained_variance: 0.42100072154562873</span>
+<span class="go">neg_mean_squared_error: -0.7310167619998845</span>
 
 <span class="go">Running Compare: Options(pipeline=ridge)</span>
-<span class="go">Predicting target = PRICE</span>
+<span class="go">Predicting target = MedHouseVal</span>
 <span class="go">Using problem_type = regression</span>
-<span class="go">Using scope = all (defining a total of 13 features).</span>
-<span class="go">Evaluating 404 total data points.</span>
+<span class="go">Using scope = all (defining a total of 8 features).</span>
+<span class="go">Evaluating 16512 total data points.</span>
 
-<span class="go">Train size: 323 - Val size: 81</span>
-<span class="go">Fit fold in 0.005 seconds.</span>
-<span class="go">explained_variance: 0.6280007208525934</span>
-<span class="go">neg_mean_squared_error: -39.04822145031345</span>
+<span class="go">Train size: 13209 - Val size: 3303</span>
+<span class="go">Fit fold in 0.055 seconds.</span>
+<span class="go">explained_variance: 0.47942036236467067</span>
+<span class="go">neg_mean_squared_error: -0.6883175222611597</span>
 
-<span class="go">Train size: 323 - Val size: 81</span>
-<span class="go">Fit fold in 0.004 seconds.</span>
-<span class="go">explained_variance: 0.6149865905035248</span>
-<span class="go">neg_mean_squared_error: -27.01552318487866</span>
+<span class="go">Train size: 13209 - Val size: 3303</span>
+<span class="go">Fit fold in 0.042 seconds.</span>
+<span class="go">explained_variance: -0.04647581479632268</span>
+<span class="go">neg_mean_squared_error: -1.4276138159882825</span>
 
-<span class="go">Train size: 323 - Val size: 81</span>
-<span class="go">Fit fold in 0.004 seconds.</span>
-<span class="go">explained_variance: 0.6336786236941319</span>
-<span class="go">neg_mean_squared_error: -25.971537120044445</span>
+<span class="go">Train size: 13210 - Val size: 3302</span>
+<span class="go">Fit fold in 0.032 seconds.</span>
+<span class="go">explained_variance: 0.468909253175655</span>
+<span class="go">neg_mean_squared_error: -0.7118827601249856</span>
 
-<span class="go">Train size: 323 - Val size: 81</span>
-<span class="go">Fit fold in 0.012 seconds.</span>
-<span class="go">explained_variance: 0.6402106156824884</span>
-<span class="go">neg_mean_squared_error: -35.51335324449537</span>
+<span class="go">Train size: 13210 - Val size: 3302</span>
+<span class="go">Fit fold in 0.045 seconds.</span>
+<span class="go">explained_variance: 0.4704647037779085</span>
+<span class="go">neg_mean_squared_error: -0.7305922994939364</span>
 
-<span class="go">Train size: 324 - Val size: 80</span>
-<span class="go">Fit fold in 0.004 seconds.</span>
-<span class="go">explained_variance: 0.7544817614898738</span>
-<span class="go">neg_mean_squared_error: -21.42594101522012</span>
+<span class="go">Train size: 13210 - Val size: 3302</span>
+<span class="go">Fit fold in 0.038 seconds.</span>
+<span class="go">explained_variance: 0.46299178662045715</span>
+<span class="go">neg_mean_squared_error: -0.677978598779746</span>
 
 <span class="gh">Out[5]: </span><span class="go"></span>
 <span class="go">          mean_scores_explained_variance  mean_scores_neg_mean_squared_error  std_scores_explained_variance  std_scores_neg_mean_squared_error  mean_timing_fit  mean_timing_score</span>
 <span class="go">pipeline                                                                                                                                                                          </span>
-<span class="go">elastic                         0.653772                          -30.018692                       0.040112                           6.347604         0.007735           0.000966</span>
-<span class="go">ridge                           0.654272                          -29.794915                       0.050788                           6.491644         0.005666           0.001039</span>
+<span class="go">elastic                         0.421018                           -0.772287                       0.005127                           0.027155         0.042047           0.016855</span>
+<span class="go">ridge                           0.367062                           -0.847277                       0.206836                           0.290747         0.042503           0.012909</span>
 </pre></div>
 </div>
 </dd></dl>

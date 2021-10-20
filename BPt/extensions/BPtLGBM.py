@@ -67,6 +67,10 @@ class BPtMixIn():
 
     def fit(self, X, y, mapping=None, fit_index=None, **kwargs):
 
+        # By default if n_jobs is left as -1 at time of fit, change to 1.
+        if self.n_jobs == -1:
+            self.n_jobs = 1
+
         # Get rid of "other params"
         self._other_params = {}
 

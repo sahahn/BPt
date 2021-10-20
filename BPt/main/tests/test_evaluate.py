@@ -587,7 +587,8 @@ def test_evaluate_with_resid_grid_search():
     dataset = get_fake_dataset()
     resid = LinearResidualizer(to_resid_df=dataset[['1']])
 
-    model = Model('dt', params={'criterion': Choice(['mse', 'friedman_mse'])})
+    model = Model('dt', params={'criterion': Choice(['squared_error',
+                                                    'friedman_mse'])})
     pipe = Pipeline(steps=[Scaler(obj=resid, scope='all'),
                            model], param_search=ParamSearch('grid'))
 
@@ -849,13 +850,13 @@ def test_select_nested_model_pipes_grid():
 
     pipe = Pipeline([select_pipe],
                     param_search=ParamSearch(search_type='grid'))
-    
+
     d1, d2 = get_fake_dataset(), get_fake_dataset2()
     for dataset in [d1, d2]:
         evaluate(pipeline=pipe,
-                dataset=dataset,
-                progress_bar=False,
-                cv=2)
+                 dataset=dataset,
+                 progress_bar=False,
+                 cv=2)
 
 
 def test_evaluate_modelpipeline_with_select():
@@ -871,9 +872,9 @@ def test_evaluate_modelpipeline_with_select():
     for dataset in [d1, d2]:
 
         evaluator = evaluate(pipeline=pipe,
-                            dataset=dataset,
-                            progress_bar=False,
-                            cv=3)
+                             dataset=dataset,
+                             progress_bar=False,
+                             cv=3)
 
         assert isinstance(evaluator, BPtEvaluator)
         search_est = evaluator.estimators[0]
@@ -900,9 +901,9 @@ def test_evaluate_pipeline_with_custom_selector():
     for dataset in [d1, d2]:
 
         evaluator = evaluate(pipeline=pipe,
-                            dataset=dataset,
-                            progress_bar=False,
-                            cv=3)
+                             dataset=dataset,
+                             progress_bar=False,
+                             cv=3)
 
         est1 = evaluator.estimators[0]
         assert isinstance(est1, NevergradSearchCV)

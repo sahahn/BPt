@@ -1,3 +1,3 @@
-from .from_sklearn import load_boston
+from .from_sklearn import load_cali
 
-__all__ = ["load_boston"]
+__all__ = ["load_cali"]

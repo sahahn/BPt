@@ -137,9 +137,7 @@ def run_pipe_with_loader_ts(cache_loc=None):
     # Add basic linear regression model
     # Original inds should work on all
     model = BPtModel(estimator=LinearRegression(), inds=[0, 1])
-    param_dists = {'estimator__fit_intercept': Choice([True, False]),
-                   'estimator__normalize':
-                   TransitionChoice([True, False])}
+    param_dists = {'estimator__fit_intercept': Choice([True, False])}
     search_model = NevergradSearchCV(estimator=model,
                                      ps=get_param_search(),
                                      param_distributions=param_dists)

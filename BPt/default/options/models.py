@@ -1,4 +1,3 @@
-from sklearn.experimental import enable_hist_gradient_boosting
 from ...extensions.MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor

@@ -18,7 +18,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        brew install libomp@11.0.0
+        wget https://raw.githubusercontent.com/Homebrew/homebrew-core/fb8323f2b170bd4ae97e1bac9bf3e2983af3fdb0/Formula/libomp.rb
+        brew install libomp.rb
         python -m pip install --upgrade pip
         pip install pytest
         pip install .[extra]

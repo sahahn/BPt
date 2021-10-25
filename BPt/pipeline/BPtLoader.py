@@ -436,7 +436,7 @@ class BPtListLoader(BPtLoader):
                                              transform_index=transform_index)
 
         # Get X_trans
-        X_trans = self.estimator_.transform(X=X[self.inds_[0]], **trans_params)
+        X_trans = self.estimator_.transform(X[self.inds_[0]], **trans_params)
 
         # Save number of output features after X_trans
         self.n_trans_feats_ = X_trans.shape[1]

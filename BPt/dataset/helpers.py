@@ -4,6 +4,7 @@ import glob
 import os
 import warnings
 from joblib import wrap_non_picklable_objects
+from ..util import get_top_substrs
 
 
 def proc_fop(fop):
@@ -22,19 +23,61 @@ def proc_fop(fop):
     return tuple([fop[0]/100, 1-(fop[1] / 100)])
 
 
-def auto_file_to_subject(in_path):
+def auto_determine_subjects(file_paths, existing_index):
 
-    base_name = os.path.basename(in_path)
-    return os.path.splitext(base_name)[0]
+    # Set as list from index
+    existing_index = list(existing_index)
+    if len(existing_index) > 1:
+
+        # Figure out from existing index
+        # how it would have been loaded by auto
+        ei_as_auto_subjs = auto_determine_subjects(existing_index, [])
+
+        # Use this information to generate templates
+        templates = [ei.replace(ei_subj, 'SUBJ-MARKER')
+                     for ei, ei_subj in zip(existing_index, ei_as_auto_subjs)]
+
+        # In the case where some templates are messed up
+        # e.g., the common path may repeat, e.g.,
+        # ['subjs_grp1-0001', 'subjs_grp1-0002', 'subjs_grp1-0003']
+        # we want to get the most common template
+        unique, cnts = np.unique(templates, return_counts=True)
+        template = unique[np.argmax(cnts)]
+
+    # Otherwise no template is used
+    else:
+        template = None
+
+    # Get all top common sub strings
+    top_substrs = get_top_substrs(file_paths)
+
+    # Remove all common strs from paths
+    # to determine subject
+    subjects = []
+    for file in file_paths:
+        subj = file
+        for substr in top_substrs:
+            subj = subj.replace(substr, '')
+
+        # If there was a template found,
+        # add the subj as the subject
+        # within the template
+        if template is not None:
+            subj = template.replace('SUBJ-MARKER', subj)
+
+        # Add final
+        subjects.append(subj)
+
+    return subjects
 
 
-def proc_file_input(files, file_to_subject):
+def proc_file_input(files, file_to_subject, existing_index=None):
+
+    if existing_index is None:
+        existing_index = []
 
     if not isinstance(files, dict):
         raise ValueError('files must be passed as a python dict')
-
-    if file_to_subject == 'auto':
-        file_to_subject = auto_file_to_subject
 
     if file_to_subject is None:
         raise RuntimeError('file_to_subject must be specified!')
@@ -61,7 +104,15 @@ def proc_file_input(files, file_to_subject):
         if isinstance(file_paths, str):
             file_paths = glob.glob(file_paths)
 
-        subjects = [file_to_subject[key](fp) for fp in file_paths]
+        # Auto case
+        if file_to_subject[key] == 'auto':
+            subjects = auto_determine_subjects(file_paths,
+                                               existing_index=existing_index)
+
+        # Otherwise normal function
+        else:
+            subjects = [file_to_subject[key](fp) for fp in file_paths]
+
         files_series[key] = pd.Series(file_paths, index=subjects,
                                       dtype='object')
 

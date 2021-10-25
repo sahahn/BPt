@@ -76,7 +76,10 @@ def get_mean_fis(estimators, prop):
             return None
 
     # Make sure all same len
-    if len(set([len(x) for x in fis])) != 1:
+    try:
+        if len(set([len(x) for x in fis])) != 1:
+            return None
+    except TypeError:
         return None
 
     # Return as mean

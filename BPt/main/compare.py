@@ -7,6 +7,9 @@ import numpy as np
 from itertools import combinations
 from math import factorial
 from .helpers import clean_str
+import pickle as pkl
+import os
+from ..util import get_unique_str_markers
 
 
 def str_to_option(option):
@@ -579,20 +582,96 @@ class CompareDict(dict):
 
 
 def compare_dict_from_existing(results):
-    '''
-    Results can be passed as either:
-    1. A dictionary where the elements are
-    result objects.
-    2. A dictionary where the elements are
-    the loc of pickle saved results.
-    3. A single str directory where the contents
-    of the directory are pickle saved results objects.
-    Derive the names from the file names.
-    4. A list of results? What would the names be then?
-    could try to do an automated check to find difs.
+    '''Load in a :class:`CompareDict` from some combination
+    of already run instances of :class:`BPtEvaluator`.
+
+    Parameters
+    -----------
+    results : dict, list or str
+        This parameter can be passed in a number
+        of different ways.
+
+        1. As a dictionary, where key-values
+           correspond to either an instance of
+           :class:`BPtEvaluator` or the str location
+           of a pickle saved :class:`BPtEvaluator`.
+
+        2. As a list, of either :class:`BPtEvaluator`
+           instances, str file locations where they are
+           saved, or a mix.
+
+        3. As a str, corresponding to the location of
+           a directory, where every file in the directory
+           is a pickle saved instance of :class:`BPtEvaluator`.
+
+        Note: The key values in the compare dictionary
+        will be in the case that a dictionary is passed, the
+        same keys as in the passed dictionary. In the case
+        a list is passed, just a simple str index, or lastly
+        in the case that either a directory of saved files
+        or list of all files is passed, the key names will be
+        auto-determined based on the passed file names.
     '''
 
-    pass
+    compare_dict = CompareDict()
+
+    def _add_element(key, element):
+
+        # If result, add directly
+        if isinstance(element, BPtEvaluator):
+            compare_dict[key] = element
+
+        # If str, load as pickle
+        elif isinstance(element, str):
+            with open(element, 'rb') as f:
+                compare_dict[key] = pkl.load(f)
+
+        # Error if anything else
+        else:
+            raise RuntimeError(f'Unable to add {element} to CompareDict.')
+
+    def _list_of_files_case(files):
+
+        # Get unique names to add each file under
+        file_unique_names = get_unique_str_markers(files)
+
+        # Add all
+        for key, file in zip(file_unique_names, files):
+            _add_element(key, file)
+
+    # Dict case
+    if isinstance(results, dict):
+        for key in results:
+            _add_element(key, results[key])
+
+    # List case
+    elif isinstance(results, list):
+
+        # Check for case where passing custom
+        # list of files
+        if all([isinstance(e, str) for e in results]):
+            _list_of_files_case(results)
+
+        # Otherwise add each as is
+        else:
+            for i, element in enumerate(results):
+                _add_element(str(i), element)
+
+    # If str, treat as directory of results case
+    elif isinstance(results, str):
+
+        # If doesn't exist
+        if not os.path.exists(results):
+            raise RuntimeError("Passed input as str, but loc does not exist.")
+
+        # Get list of files
+        files = [os.path.join(results, file_name)
+                 for file_name in os.listdir(results)]
+
+        # Go to list of files case
+        _list_of_files_case(files)
+
+    return compare_dict
 
 
 def _make_compare_copies(objs, key, compare):

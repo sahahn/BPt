@@ -427,9 +427,6 @@ class BPtListLoader(BPtLoader):
         if not os.path.exists(hash_loc):
             return None
 
-        # Otherwise load from hashed
-        # print('Loading from hashed:', hash_loc)
-
         # Load saved
         loader_attrs = load(hash_loc)
 

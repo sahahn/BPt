@@ -1,4 +1,7 @@
-from ..compare import Option, Compare, Options, CompareDict
+from ..compare import (Option, Compare, Options,
+                       CompareDict, compare_dict_from_existing)
+
+import tempfile
 
 
 def test_option1():
@@ -9,3 +12,10 @@ def test_option1():
 
     assert not o1 > o2
     assert not o1 < o2
+
+
+def test_compare_dict_from_existing():
+
+    temp_dr = tempfile.gettempdir()
+    pass
+

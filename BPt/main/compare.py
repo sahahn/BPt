@@ -578,6 +578,23 @@ class CompareDict(dict):
         return
 
 
+def compare_dict_from_existing(results):
+    '''
+    Results can be passed as either:
+    1. A dictionary where the elements are
+    result objects.
+    2. A dictionary where the elements are
+    the loc of pickle saved results.
+    3. A single str directory where the contents
+    of the directory are pickle saved results objects.
+    Derive the names from the file names.
+    4. A list of results? What would the names be then?
+    could try to do an automated check to find difs.
+    '''
+
+    pass
+
+
 def _make_compare_copies(objs, key, compare):
 
     # If not already compare dict, cast to compare dict

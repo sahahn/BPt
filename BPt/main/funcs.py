@@ -976,6 +976,7 @@ def evaluate(pipeline, dataset,
              store_preds=True,
              store_estimators=True,
              store_timing=True,
+             store_cv=True,
              decode_feat_names=True,
              eval_verbose=1,
              progress_loc=None,
@@ -1034,6 +1035,15 @@ def evaluate(pipeline, dataset,
         If True, then the returned :class:`BPtEvaluator`
         will store the time it took to fit and score the pipeline
         under :data:`BPt.BPtEvaluator.timing`.
+
+        ::
+
+            default = True
+
+    store_cv : bool, optional
+        If True, then the returned :class:`BPtEvaluator`
+        will store a copy of the exact CV splitter object
+        used during evaluation.
 
         ::
 
@@ -1129,6 +1139,7 @@ def evaluate(pipeline, dataset,
               'store_preds': store_preds,
               'store_estimators': store_estimators,
               'store_timing': store_timing,
+              'store_cv': store_cv,
               'eval_verbose': eval_verbose,
               'progress_loc': progress_loc,
               'mute_warnings': mute_warnings

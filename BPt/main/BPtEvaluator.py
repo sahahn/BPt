@@ -1624,7 +1624,9 @@ class BPtEvaluator():
         return subsets
 
     def to_pickle(self, loc):
-        pass
+
+        with open(loc, 'wb') as f:
+            pkl.dump(self, f)
 
 
 class BPtEvaluatorSubset(BPtEvaluator):

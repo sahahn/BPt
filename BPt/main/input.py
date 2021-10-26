@@ -557,9 +557,12 @@ class Loader(Piece):
 
     cache_loc : str, Path or None, optional
         | Optional location in which to if set, the Loader transform
-          function will be cached for each subject. These cached
+          function will be cached for each subject when
+          behav is 'all'. These cached
           transformations can then be loaded for each subject when
           they appear again in later folds.
+
+        | 
 
         .. warning ::
 

@@ -15,6 +15,7 @@ from sklearn.metrics._scorer import (_PredictScorer, _ProbaScorer,
                                      _ThresholdScorer)
 from .helpers import clean_str
 from copy import deepcopy
+import pickle as pkl
 
 _base_docs = {}
 
@@ -122,6 +123,7 @@ class BPtEvaluator():
                  store_preds=False,
                  store_estimators=False,
                  store_timing=False,
+                 store_cv=True,
                  eval_verbose=0,
                  progress_loc=None,
                  mute_warnings=False,
@@ -149,6 +151,11 @@ class BPtEvaluator():
         self.timing = None
         if store_timing:
             self.timing = {'fit': [], 'score': []}
+
+        # Keep track of if to store cv
+        self._store_cv = store_cv
+        if not self._store_cv:
+            self.cv = None
 
         self.progress_loc = progress_loc
         self.verbose = eval_verbose
@@ -441,6 +448,20 @@ class BPtEvaluator():
     def estimators(self, estimators):
         self._estimators = estimators
 
+    @property
+    def cv(self):
+        '''If set to store CV is true, a deepcopy of the
+        passed cv splitter will be stored'''
+
+        try:
+            return self._cv
+        except AttributeError:
+            return None
+
+    @cv.setter
+    def cv(self, cv):
+        self._cv = cv
+
     def _set_progress_bar(self, progress_bar):
 
         if not progress_bar:
@@ -467,8 +488,9 @@ class BPtEvaluator():
     def _evaluate(self, X, y, cv):
         '''cv is passed as raw index, X and y as dataframes.'''
 
-        # Make deepcopy of cv
-        self._cv = deepcopy(cv)
+        # Store a deep copy of cv if requested
+        if self._store_cv:
+            self.cv = deepcopy(cv)
 
         # Compute and warn about num nan targets
         n_nan_targets = pd.isnull(y).sum()
@@ -651,8 +673,11 @@ class BPtEvaluator():
                     len(X_val_c), level=1)
 
         # Print if skipping any due to NaN target
-        dif_tr = len(self.all_train_subjects[-1]) - len(self.train_subjects[-1])
-        dif_val = len(self.all_train_subjects[-1]) - len(self.train_subjects[-1])
+        dif_tr = len(self.all_train_subjects[-1]) -\
+            len(self.train_subjects[-1])
+        dif_val = len(self.all_train_subjects[-1]) -\
+            len(self.train_subjects[-1])
+
         if dif_tr != 0 or dif_val != 0:
             self._print(f'Skipping Train: {dif_tr} - Val: {dif_val},',
                         'for NaN target values.', level=1)
@@ -868,6 +893,9 @@ class BPtEvaluator():
                 avaliable_methods += ['get_fis', 'get_coef_']
 
             avaliable_methods.append('permutation_importance')
+
+        if self._store_cv:
+            saved_attrs += ['cv']
 
         rep += 'Saved Attributes: ' + repr(saved_attrs) + '\n\n'
         rep += 'Avaliable Methods: ' + repr(avaliable_methods) + '\n\n'
@@ -1595,6 +1623,11 @@ class BPtEvaluator():
 
         return subsets
 
+    def to_pickle(self, loc):
+
+        with open(loc, 'wb') as f:
+            pkl.dump(self, f)
+
 
 class BPtEvaluatorSubset(BPtEvaluator):
     '''This class represents a subset of :class:`BPtEvaluator` and
@@ -1622,6 +1655,8 @@ class BPtEvaluatorSubset(BPtEvaluator):
         self.all_train_subjects = evaluator.all_train_subjects
         self.n_repeats_ = evaluator.n_repeats_
         self.timing = evaluator.timing
+        self.cv = evaluator.cv
+        self._store_cv = evaluator._store_cv
         self.verbose = -1
 
         # Save name for display

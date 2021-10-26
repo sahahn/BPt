@@ -1,5 +1,5 @@
 from sklearn.feature_selection._base import SelectorMixin
-from .helpers import update_mapping, get_reverse_mapping, proc_mapping
+from .helpers import update_mapping
 from .ScopeObjs import ScopeTransformer
 import numpy as np
 import pandas as pd

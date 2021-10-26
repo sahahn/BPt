@@ -4,7 +4,7 @@ import glob
 import os
 import warnings
 from joblib import wrap_non_picklable_objects
-from ..util import get_top_substrs
+from ..util import get_unique_str_markers
 
 
 def proc_fop(fop):
@@ -48,25 +48,11 @@ def auto_determine_subjects(file_paths, existing_index):
     else:
         template = None
 
-    # Get all top common sub strings
-    top_substrs = get_top_substrs(file_paths)
-
-    # Remove all common strs from paths
-    # to determine subject
-    subjects = []
-    for file in file_paths:
-        subj = file
-        for substr in top_substrs:
-            subj = subj.replace(substr, '')
-
-        # If there was a template found,
-        # add the subj as the subject
-        # within the template
-        if template is not None:
-            subj = template.replace('SUBJ-MARKER', subj)
-
-        # Add final
-        subjects.append(subj)
+    # Get top common sub strings, then remove
+    # from all pieces
+    subjects = get_unique_str_markers(file_paths,
+                                      template=template,
+                                      template_marker='SUBJ-MARKER')
 
     return subjects
 

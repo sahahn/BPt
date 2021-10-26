@@ -179,3 +179,29 @@ def get_top_substrs(keys):
         top = find_substr(keys)
 
     return found
+
+
+def get_unique_str_markers(strs, template=None,
+                           template_marker=None):
+
+    # Get all top common sub strings
+    top_substrs = get_top_substrs(strs)
+
+    # Remove all common strs from paths
+    # to determine subject
+    unique_strs = []
+    for s in strs:
+        piece = s
+        for substr in top_substrs:
+            piece = piece.replace(substr, '')
+
+        # If there was a template found,
+        # add the subj as the subject
+        # within the template
+        if template is not None:
+            piece = template.replace(template_marker, piece)
+
+        # Add final
+        unique_strs.append(piece)
+
+    return unique_strs

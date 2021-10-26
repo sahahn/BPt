@@ -318,6 +318,22 @@ def pipe_hash(objs, steps):
     return hash_str1 + hash_str2
 
 
+def list_loader_hash(X_col, file_mapping, y, estimator):
+
+    # Convert X_col to data files then hash
+    as_data_files = [file_mapping[int(key)] for key in X_col]
+    hash_str1 = joblib_hash(as_data_files, hash_name='md5')
+
+    # Hash y
+    hash_str2 = joblib_hash(y, hash_name='md5')
+
+    # Hash the estimator - w/ extra special check
+    hash_estimator_copy = check_replace(deepcopy(estimator))
+    hash_str3 = joblib_hash(hash_estimator_copy, hash_name='md5')
+
+    return hash_str1 + hash_str2 + hash_str3
+
+
 def replace_with_in_params(params, original, replace):
 
     new_params = {}

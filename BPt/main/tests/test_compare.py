@@ -1,4 +1,3 @@
-from genericpath import exists
 from ..compare import (Option, CompareDict, compare_dict_from_existing)
 from ...dataset.Dataset import Dataset
 from ..funcs import evaluate

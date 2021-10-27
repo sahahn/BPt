@@ -20,7 +20,7 @@ from .main.plotting import plot_roc
 from pandas import read_pickle
 
 __author__ = "sahahn"
-__version__ = "2.1.3"
+__version__ = "2.1.4"
 __all__ = ["Dataset", "Loader",
            "Imputer", "Scaler", "Transformer", 'get_estimator',
            "FeatSelector", "Model",

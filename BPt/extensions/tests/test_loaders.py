@@ -330,10 +330,49 @@ def test_threshold_network_measures_density():
                                  threshold_type='abs',
                                  threshold_method='density')
 
-    X = np.array([[.1, .2, .3, -.4],
+    X = np.array([[0, .2, .3, -.4],
                   [.2, 0, -.5, 0],
                   [.3, -.5, 0, 0],
                   [-.4, 0, 0, 0]])
 
     thresh_X = nm._apply_threshold(X)
-    assert np.sum(thresh_X) == 2
+   
+    # 20% of 16 possible edges
+    # rounded up is 4
+    assert np.sum(thresh_X) == 4
+
+def test_threshold_network_measures_density_pos():
+
+    nm =\
+        ThresholdNetworkMeasures(threshold=.2,
+                                 threshold_type='pos',
+                                 threshold_method='density')
+
+    X = np.array([[0, .2, .3, -.4],
+                  [.2, 0, -.5, 0],
+                  [0, -.5, 0, 0],
+                  [-.4, 0, 0, 0]])
+
+    thresh_X = nm._apply_threshold(X)
+   
+    # 20% of 16 possible edges
+    # rounded up is 4
+    assert np.sum(thresh_X) == 3
+
+def test_threshold_network_measures_density_neg():
+
+    nm =\
+        ThresholdNetworkMeasures(threshold=.2,
+                                 threshold_type='neg',
+                                 threshold_method='density')
+
+    X = np.array([[0, .2, .3, -.4],
+                  [.2, 0, -.5, 0],
+                  [.3, 0, 0, 0],
+                  [-.4, 0, 0, 0]])
+
+    thresh_X = nm._apply_threshold(X)
+   
+    # 20% of 16 possible edges
+    # rounded up is 4
+    assert np.sum(thresh_X) == 3

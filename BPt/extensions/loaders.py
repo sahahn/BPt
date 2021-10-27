@@ -956,6 +956,9 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
         be set as an edge. The type of threshold_method
         also changes how this threshold behaves.
 
+        If 'density', then this value represents the
+        percent of edges to keep, out of all possible edges.
+
         ::
 
             default = .2
@@ -989,10 +992,11 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
         is set to for example .2, then the top 20% of edges by weight
         will be set as an edge, regardless of the actual value of the edge.
 
-        Note: The passed percentage will be considered
-        out of all of the the total possible edges in the adjacency matrix.
-        That includes both the upper and lower repeated triangles
-        if non-directional edges.
+        The passed percentage will be considered
+        out of all the possible edges. This will be used to
+        select a threshold value, rounding up if needed, then
+        all edges above or equal to the threshold will be kept
+        (positive or abs case) or in neg case, all edges less than or equal.
 
         ::
 
@@ -1155,14 +1159,20 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
 
         elif self.threshold_method == 'density':
 
-            top_n = round(len(X_t) * self.threshold) - 1
+            # Rounded up
+            top_n = round(X_t.shape[0] * X_t.shape[1] * self.threshold) - 1
 
             # If less than 0, set to 0
             if top_n < 0:
                 top_n = 0
 
+            # If neg, sort differently
             reverse = False if self.threshold_type == 'neg' else True
-            thresh = sorted(np.triu(X_t).flatten(), reverse=reverse)[top_n]
+            thresh = sorted(X_t.flatten(), reverse=reverse)[top_n]
+
+            # Neg and pos case
+            if self.threshold_type == 'neg':
+                return np.where(X_t <= thresh, 1, 0)
             return np.where(X_t >= thresh, 1, 0)
 
         raise RuntimeError(str(self.threshold_method) + ' not a valid.')

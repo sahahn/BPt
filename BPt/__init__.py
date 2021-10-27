@@ -32,4 +32,4 @@ __all__ = ["Dataset", "Loader",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',
            'BPtEvaluator', 'BPtEvaluatorSubset', 'read_pickle',
            'Compare', 'Option', 'compare_dict_from_existing',
-           'CompareDict', 'read_csv']
+           'CompareDict', 'read_csv', 'plot_roc']

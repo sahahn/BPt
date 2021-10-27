@@ -1,4 +1,5 @@
-from ..helpers import proc_fop, proc_file_input
+from ..helpers import proc_fop, proc_file_input, auto_determine_subjects
+from ..Dataset import Dataset
 import pytest
 
 
@@ -32,6 +33,29 @@ def test_proc_file_input():
         proc_file_input(files=files,
                         file_to_subject={'dif_key': 'auto'})
 
-    file_series = proc_file_input(files={'something': '*.npy'},
-                                  file_to_subject='auto')
-    assert isinstance(file_series, dict)
+
+def test_auto_determine_subjects_template1():
+
+    data = Dataset()
+    data['1'] = [1, 2]
+    data.index = ['subj-0001', 'subj-0002']
+    existing_index = data.index
+    file_paths =\
+        ['data/ds003097/derivatives/proc_fmri/sub-0001/func_timeseries.npy',
+         'data/ds003097/derivatives/proc_fmri/sub-0002/func_timeseries.npy']
+
+    auto_determine_subjects(file_paths, existing_index) == ['subj-0001',
+                                                            'subj-0002']
+
+
+def test_auto_determine_subjects_template2():
+
+    data = Dataset()
+    data['1'] = [1, 2, 3]
+    data.index = ['subjs_grp1-0001', 'subjs_grp1-0002', 'subjs_grp1-0003']
+    existing_index = data.index
+    file_paths = ['some_loc/subjs_grp1-0001', 'some_loc/subjs_grp1-0002',
+                  'some_loc/subjs_grp1-0003']
+    auto_determine_subjects(file_paths, existing_index) == ['subjs_grp1-0001',
+                                                            'subjs_grp1-0002',
+                                                            'subjs_grp1-0003']

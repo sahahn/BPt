@@ -507,7 +507,8 @@ def _plot_category(self, col, subjs, print_info=True, **plot_args):
 
     # Get counts
     counts = pd.DataFrame(
-        values.value_counts(normalize=not plot_args['count']))
+        values.value_counts(normalize=not plot_args['count'],
+                            dropna=False))
 
     # Reset index
     counts = counts.reset_index()

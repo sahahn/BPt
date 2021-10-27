@@ -1198,7 +1198,7 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
 
         # Apply threshold
         X = self._apply_threshold(X)
-        G = nx.from_numpy_matrix(X)
+        G = nx.from_numpy_array(X)
 
         X_trans = []
 

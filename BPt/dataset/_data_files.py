@@ -195,7 +195,7 @@ def add_data_files(self, files, file_to_subject,
     self._check_file_mapping()
 
     # Get dict of key to files
-    file_series = proc_file_input(files, file_to_subject)
+    file_series = proc_file_input(files, file_to_subject, self.index)
 
     # For each column
     for file in file_series:

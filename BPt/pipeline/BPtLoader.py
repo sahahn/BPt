@@ -1,3 +1,4 @@
+from typing import Mapping
 from .helpers import (update_mapping, proc_mapping, get_reverse_mapping)
 import numpy as np
 from joblib import Parallel, delayed
@@ -7,7 +8,10 @@ from .ScopeObjs import ScopeTransformer
 from operator import itemgetter
 from .base import _get_est_trans_params
 from ..util import get_top_substrs
+from .helpers import list_loader_hash
+from joblib import load, dump
 import pandas as pd
+import os
 
 
 def load_and_trans(transformer, load_func, loc):
@@ -141,6 +145,9 @@ class BPtLoader(ScopeTransformer):
 
         # Update the mapping + out_mapping_
         self._update_loader_mappings(mapping)
+
+        # Compat with list loader style caching
+        self._cache_fit(mapping)
 
         # Now return X_trans
         return X_trans
@@ -345,6 +352,10 @@ class BPtLoader(ScopeTransformer):
 
         return new_name
 
+    def _cache_fit(self, mapping):
+        '''Just exists for compat.'''
+        return
+
 
 class CompatArray(list):
 
@@ -388,6 +399,11 @@ class BPtListLoader(BPtLoader):
         if len(self.inds_) != 1:
             raise RuntimeWarning('BPtListLoader can only work on one column.')
 
+        # Check hash
+        X_trans = self._check_hash(X, y=y, mapping=mapping, is_fit=True)
+        if X_trans is not None:
+            return X_trans
+
         # Calls super fit_transform, but passing
         # X with the data columns replaced by CompatArray
         return super().fit_transform(self._get_X_compat(X), y=y,
@@ -395,9 +411,103 @@ class BPtListLoader(BPtLoader):
                                      fit_index=fit_index,
                                      **fit_params)
 
+    def _check_hash(self, X, y=None, mapping=None, is_fit=True):
+
+        if self.cache_loc is None:
+            return None
+
+        # Compute the hash for this fit / transform
+        # Note: this value is frequently overwritten
+        self.hash_ = list_loader_hash(X_col=X[:, self.inds_[0]],
+                                      file_mapping=self.file_mapping,
+                                      y=y, estimator=self.estimator)
+
+        # Check if hash exists - It doesn't, end.
+        hash_loc = self._get_hash_loc()
+        if not os.path.exists(hash_loc):
+            return None
+
+        # Load saved
+        loader_attrs = load(hash_loc)
+
+        # Update loader attrs with saved values
+        # that are set regardless of fit_transform or just transform
+        self.n_trans_feats_ = loader_attrs['n_trans_feats_']
+        self.X_trans_inds_ = loader_attrs['X_trans_inds_']
+        self.out_mapping_ = loader_attrs['out_mapping_']
+
+        # If is fit_transform, and not just transform
+        if is_fit:
+
+            # Load saved from fit
+            loader_fit_attrs = load(hash_loc + '_fit')
+
+            # Update attributes
+            self.estimator_ = loader_fit_attrs['estimator_']
+            self.base_dtype_ = loader_fit_attrs['base_dtype']
+            self.n_features_in_ = loader_fit_attrs['n_features_in_']
+            self.rest_inds_ = loader_fit_attrs['rest_inds_']
+
+            # Load in the state of the mapping after fit
+            # then update current mapping to these values
+            mapping_post_fit = loader_fit_attrs['mapping']
+            if mapping is not None:
+                mapping.update(mapping_post_fit)
+
+        # Then return saved X_trans
+        return loader_attrs['X_trans']
+
+    def _cache_fit(self, mapping):
+
+        if self.cache_loc is None:
+            return
+
+        # Get the fit hash loc
+        hash_loc = self._get_hash_loc() + '_fit'
+
+        # Save attributes
+        loader_fit_attrs = {}
+        loader_fit_attrs['estimator_'] = self.estimator_
+        loader_fit_attrs['base_dtype'] = self.base_dtype_
+        loader_fit_attrs['n_features_in_'] = self.n_features_in_
+        loader_fit_attrs['rest_inds_'] = self.rest_inds_
+
+        # Save state of mapping right after fit
+        loader_fit_attrs['mapping'] = mapping
+
+        # Save
+        dump(loader_fit_attrs, hash_loc)
+
+    def _cache_transform(self, X_trans):
+
+        if self.cache_loc is None:
+            return
+
+        # Get the hash loc
+        hash_loc = self._get_hash_loc()
+
+        # Generate loader attrs to save
+        loader_attrs = {'X_trans': X_trans,
+                        'n_trans_feats_': self.n_trans_feats_,
+                        'X_trans_inds_': self.X_trans_inds_,
+                        'out_mapping_': self.out_mapping_}
+
+        # Save
+        dump(loader_attrs, hash_loc)
+
+    def _get_hash_loc(self):
+
+        # Make sure directory exists
+        os.makedirs(self.cache_loc, exist_ok=True)
+
+        # Set hash loc as directory + hash of fit args
+        hash_loc = os.path.join(self.cache_loc, self.hash_)
+
+        return hash_loc
+
     def _get_X_compat(self, X):
 
-        ind = self.inds[0]
+        ind = self.inds_[0]
         X_loaded = CompatArray(X)
         X_loaded[ind] = self._load_col(X[:, ind])
 
@@ -408,8 +518,8 @@ class BPtListLoader(BPtLoader):
 
         X_col_loaded = []
         for key in X_col:
-            DataFile = self.file_mapping[int(key)]
-            data = DataFile.load()
+            data_file = self.file_mapping[int(key)]
+            data = data_file.load()
             X_col_loaded.append(data)
 
         return X_col_loaded
@@ -429,6 +539,19 @@ class BPtListLoader(BPtLoader):
 
         # Load if not loaded
         if not isinstance(X, CompatArray):
+
+            # Only in the case where X is not already
+            # a CompatArray, and therefore the case
+            # where transform is being called
+            # independent of fit_transform
+            # do we check for a hash here
+            X_trans = self._check_hash(X, y=None,
+                                       mapping=None,
+                                       is_fit=False)
+            if X_trans is not None:
+                return X_trans
+
+            # Otherwise, load
             X = self._get_X_compat(X)
 
         # Get transform params
@@ -436,7 +559,7 @@ class BPtListLoader(BPtLoader):
                                              transform_index=transform_index)
 
         # Get X_trans
-        X_trans = self.estimator_.transform(X=X[self.inds_[0]], **trans_params)
+        X_trans = self.estimator_.transform(X[self.inds_[0]], **trans_params)
 
         # Save number of output features after X_trans
         self.n_trans_feats_ = X_trans.shape[1]
@@ -444,5 +567,10 @@ class BPtListLoader(BPtLoader):
         # For compat
         self.X_trans_inds_ = [list(range(self.n_trans_feats_))]
 
-        # Return stacked X_trans with rest inds
-        return np.hstack([X_trans, X.conv_rest_back(self.rest_inds_)])
+        # Prepare stacked X_trans with rest inds
+        ret_X_trans = np.hstack([X_trans, X.conv_rest_back(self.rest_inds_)])
+
+        # Cache returned result if needed
+        self._cache_transform(ret_X_trans)
+
+        return ret_X_trans

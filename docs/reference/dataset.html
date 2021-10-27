@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dataset &#8212; BPt 2.0.3 documentation</title>
+    <title>Dataset &#8212; BPt 2.1.1 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -623,7 +623,7 @@
 <td><p>This method will drop any columns with less than or equal to the number of unique values.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.drop_cols_by_nan.html#BPt.Dataset.drop_cols_by_nan" title="BPt.Dataset.drop_cols_by_nan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.drop_cols_by_nan</span></code></a>([scope, threshold, …])</p></td>
-<td><p>This method is used for dropping columns based on the amount of missing values found across all subjects.</p></td>
+<td><p>This method is used for dropping columns based on the amount of missing values per column, dropping any which exceed a user defined threshold.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.drop_id_cols.html#BPt.Dataset.drop_id_cols" title="BPt.Dataset.drop_id_cols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.drop_id_cols</span></code></a>([scope, inplace])</p></td>
 <td><p>This method will drop any str-type / object type columns where the number of unique columns is equal to the length of the dataframe.</p></td>

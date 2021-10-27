@@ -113,6 +113,7 @@ def get_fake_dataset():
 
     return fake
 
+
 def get_fake_dataset2():
 
     dataset = get_fake_dataset()
@@ -123,6 +124,7 @@ def get_fake_dataset2():
     dataset = dataset.set_index('ind')
 
     return dataset
+
 
 def test_sk_check_y():
 
@@ -142,19 +144,19 @@ def test_evaluate_match_cross_val_score():
 
     d1, d2 = get_fake_dataset(), get_fake_dataset2()
     for dataset in [d1, d2]:
-    
+
         dataset = get_fake_dataset()
         evaluator = evaluate(pipeline=dt_pipe,
-                            dataset=dataset,
-                            problem_spec='default',
-                            cv=5,
-                            scorer='r2',
-                            progress_bar=False,
-                            store_preds=True,
-                            store_estimators=True,
-                            store_timing=True,
-                            progress_loc=None,
-                            problem_type='regression')
+                             dataset=dataset,
+                             problem_spec='default',
+                             cv=5,
+                             scorer='r2',
+                             progress_bar=False,
+                             store_preds=True,
+                             store_estimators=True,
+                             store_timing=True,
+                             progress_loc=None,
+                             problem_type='regression')
 
         cv_scores = cross_val_score(pipeline=dt_pipe,
                                     dataset=dataset,
@@ -168,20 +170,20 @@ def test_evaluate_match_cross_val_score():
 def test_evaluate_regression_dt():
 
     dt_pipe = ModelPipeline(model=Model('dt'))
-    
+
     d1, d2 = get_fake_dataset(), get_fake_dataset2()
     for dataset in [d1, d2]:
 
         evaluator = evaluate(pipeline=dt_pipe,
-                            dataset=dataset,
-                            problem_spec='default',
-                            cv=5,
-                            progress_bar=False,
-                            store_preds=True,
-                            store_estimators=True,
-                            store_timing=True,
-                            progress_loc=None,
-                            problem_type='regression')
+                             dataset=dataset,
+                             problem_spec='default',
+                             cv=5,
+                             progress_bar=False,
+                             store_preds=True,
+                             store_estimators=True,
+                             store_timing=True,
+                             progress_loc=None,
+                             problem_type='regression')
 
         assert len(evaluator.scores) > 0
         assert len(evaluator.timing['fit']) > 0
@@ -212,10 +214,10 @@ def test_regression_mean_fis():
     d1, d2 = get_fake_dataset(), get_fake_dataset2()
     for dataset in [d1, d2]:
         evaluator = evaluate(pipeline=dt_pipe,
-                            dataset=dataset,
-                            progress_bar=False,
-                            problem_type='regression',
-                            random_state=0)
+                             dataset=dataset,
+                             progress_bar=False,
+                             problem_type='regression',
+                             random_state=0)
 
         mean_fis = evaluator.get_fis(mean=True)
         assert len(mean_fis) == 0
@@ -587,7 +589,8 @@ def test_evaluate_with_resid_grid_search():
     dataset = get_fake_dataset()
     resid = LinearResidualizer(to_resid_df=dataset[['1']])
 
-    model = Model('dt', params={'criterion': Choice(['mse', 'friedman_mse'])})
+    model = Model('dt', params={'criterion': Choice(['squared_error',
+                                                    'friedman_mse'])})
     pipe = Pipeline(steps=[Scaler(obj=resid, scope='all'),
                            model], param_search=ParamSearch('grid'))
 
@@ -818,14 +821,14 @@ def test_evaluate_pipeline_with_select():
 
     pipe = Pipeline([select_scaler, select_model],
                     param_search=ParamSearch(n_iter=2))
-    
+
     d1, d2 = get_fake_dataset(), get_fake_dataset2()
     for dataset in [d1, d2]:
 
         evaluator = evaluate(pipeline=pipe,
-                            dataset=dataset,
-                            progress_bar=False,
-                            cv=3)
+                             dataset=dataset,
+                             progress_bar=False,
+                             cv=3)
 
         assert isinstance(evaluator, BPtEvaluator)
         search_est = evaluator.estimators[0]
@@ -849,13 +852,13 @@ def test_select_nested_model_pipes_grid():
 
     pipe = Pipeline([select_pipe],
                     param_search=ParamSearch(search_type='grid'))
-    
+
     d1, d2 = get_fake_dataset(), get_fake_dataset2()
     for dataset in [d1, d2]:
         evaluate(pipeline=pipe,
-                dataset=dataset,
-                progress_bar=False,
-                cv=2)
+                 dataset=dataset,
+                 progress_bar=False,
+                 cv=2)
 
 
 def test_evaluate_modelpipeline_with_select():
@@ -871,9 +874,9 @@ def test_evaluate_modelpipeline_with_select():
     for dataset in [d1, d2]:
 
         evaluator = evaluate(pipeline=pipe,
-                            dataset=dataset,
-                            progress_bar=False,
-                            cv=3)
+                             dataset=dataset,
+                             progress_bar=False,
+                             cv=3)
 
         assert isinstance(evaluator, BPtEvaluator)
         search_est = evaluator.estimators[0]
@@ -900,9 +903,9 @@ def test_evaluate_pipeline_with_custom_selector():
     for dataset in [d1, d2]:
 
         evaluator = evaluate(pipeline=pipe,
-                            dataset=dataset,
-                            progress_bar=False,
-                            cv=3)
+                             dataset=dataset,
+                             progress_bar=False,
+                             cv=3)
 
         est1 = evaluator.estimators[0]
         assert isinstance(est1, NevergradSearchCV)
@@ -1076,6 +1079,7 @@ def test_evaluate_second_cv_test():
     assert len(set(results.val_subjects[0]) - set(dataset.test_subjects)) == 0
     assert len(set(dataset.test_subjects) - set(results.val_subjects[0])) == 0
 
+
 def test_evaluate_second_cv_test_named_index():
 
     dataset = get_fake_dataset2()
@@ -1092,5 +1096,3 @@ def test_evaluate_second_cv_test_named_index():
 
     assert len(set(results.val_subjects[0]) - set(dataset.test_subjects)) == 0
     assert len(set(dataset.test_subjects) - set(results.val_subjects[0])) == 0
-
-

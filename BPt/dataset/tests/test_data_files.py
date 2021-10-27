@@ -118,6 +118,7 @@ def test_data_files_consolidate2():
                               scope='data file', cast_to='float64',
                               clear_existing='fail', n_jobs=-1)
 
+
 def test_data_files_integration():
 
     df = setup_datafiles()

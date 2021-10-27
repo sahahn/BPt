@@ -5,6 +5,9 @@ from ..funcs import evaluate
 from ..BPtEvaluator import is_notebook
 import pytest
 import numpy as np
+from tempfile import gettempdir
+import os
+import pickle as pkl
 
 
 def test_is_notebook():
@@ -480,3 +483,26 @@ def test_subset_by_categorical():
 
     assert 'BPtEvaluatorSubset(grp=1)' in repr(g1)
     assert 'BPtEvaluatorSubset(grp=2)' in repr(g2)
+
+
+def test_bpt_evaluator_to_pickle():
+
+    dataset = get_fake_dataset()
+    pipe = Pipeline(Model('dt'))
+    results = evaluate(pipeline=pipe,
+                       dataset=dataset,
+                       cv=2)
+
+    assert results.score is not None
+
+    # Save to temp spot
+    temp_dr = gettempdir()
+    temp_save_loc = os.path.join(temp_dr, 'temp.pkl')
+    results.to_pickle(temp_save_loc)
+
+    # Then load in, mostly
+    # just testing for no errors thrown
+    with open(temp_save_loc, 'rb') as f:
+        results_loaded = pkl.load(f)
+
+    assert results_loaded.score == results.score

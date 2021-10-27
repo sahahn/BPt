@@ -14,6 +14,7 @@ from .main.input_operations import (Select, Duplicate, Pipe, ValueSubset,
 from .main.compare import Compare, Option, CompareDict
 from .main.BPtEvaluator import BPtEvaluator, BPtEvaluatorSubset
 from . import p
+from .main.plotting import plot_roc
 
 from pandas import read_pickle
 
@@ -30,4 +31,4 @@ __all__ = ["Dataset", "Loader",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',
            'BPtEvaluator', 'BPtEvaluatorSubset', 'read_pickle',
            'Compare', 'Option',
-           'CompareDict', 'read_csv']
+           'CompareDict', 'read_csv', 'plot_roc']

@@ -14,6 +14,7 @@ from .stats_helpers import corrected_std, compute_corrected_ttest
 from sklearn.metrics._scorer import (_PredictScorer, _ProbaScorer,
                                      _ThresholdScorer)
 from .helpers import clean_str
+from copy import deepcopy
 
 _base_docs = {}
 
@@ -465,6 +466,9 @@ class BPtEvaluator():
 
     def _evaluate(self, X, y, cv):
         '''cv is passed as raw index, X and y as dataframes.'''
+
+        # Store cv
+        self._cv = deepcopy(cv)
 
         # Compute and warn about num nan targets
         n_nan_targets = pd.isnull(y).sum()

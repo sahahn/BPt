@@ -870,7 +870,7 @@ class BPtEvaluator():
         # Add scores + means pretty rep
         for key in self.mean_scores:
             rep += f'{key}: {score_rep(self.mean_scores[key])} '
-            rep += f'(std: {score_rep(self.std_scores[key])})\n'
+            rep += f'± {score_rep(self.std_scores[key])}\n'
 
         # Show avaliable saved attrs
         saved_attrs = []

@@ -39,7 +39,7 @@ def score_rep(score):
 
     # Smaller
     if score > 1 or score < -1:
-        f'{score:.2f}'
+        return f'{score:.2f}'
 
     # Last case is between 1 and -1
     return f'{score:.4f}'
@@ -516,7 +516,7 @@ class BPtEvaluator():
 
             if self.preds is not None:
                 self._print('Note: Predictions will still be made for any',
-                            'subjects with missing values in ',
+                            'subjects with missing values in',
                             'any validation folds.')
 
         # Verbose info
@@ -689,8 +689,8 @@ class BPtEvaluator():
         # Print if skipping any due to NaN target
         dif_tr = len(self.all_train_subjects[-1]) -\
             len(self.train_subjects[-1])
-        dif_val = len(self.all_train_subjects[-1]) -\
-            len(self.train_subjects[-1])
+        dif_val = len(self.all_val_subjects[-1]) -\
+            len(self.val_subjects[-1])
 
         if dif_tr != 0 or dif_val != 0:
             self._print(f'Skipping Train: {dif_tr} - Val: {dif_val},',

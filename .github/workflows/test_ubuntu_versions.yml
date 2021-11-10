@@ -1,8 +1,8 @@
 name: Ubuntu
 
 on:
-  push
-  pull_request
+  push:
+  pull_request:
   schedule:
       - cron: '0 13 * * 1' # Every Monday at 1PM UTC (9AM EST)
 

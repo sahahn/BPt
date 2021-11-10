@@ -683,8 +683,8 @@ class BPtEvaluator():
         self.train_subjects.append(X_tr.index)
         self.val_subjects.append(X_val_c.index)
 
-        self._print('Train size:', len(X_tr), '- Val size:',
-                    len(X_val_c), level=1)
+        self._print('Train shape:', X_tr.shape, '- Val shape:',
+                    X_val_c.shape, level=1)
 
         # Print if skipping any due to NaN target
         dif_tr = len(self.all_train_subjects[-1]) -\
@@ -693,8 +693,8 @@ class BPtEvaluator():
             len(self.val_subjects[-1])
 
         if dif_tr != 0 or dif_val != 0:
-            self._print(f'Skipping Train: {dif_tr} - Val: {dif_val},',
-                        'for NaN target values.', level=1)
+            self._print(f'(skipped n_subjs: train={dif_tr}, val={dif_val}',
+                        'for NaN in target)', level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()

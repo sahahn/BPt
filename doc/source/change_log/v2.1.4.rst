@@ -5,6 +5,10 @@
 Version 2.1.4
 ---------------
 
+- Updated :class:`Dataset`
+  New Dataset behavior is to upon init,
+  allow setting parameter verbose, as well the new default verbose values is 1 from 0.
+
 - Updated :class:`Ensemble`
   The ensemble object can now automatically accept
   instances of :class:`BPtPipeline` directly to its `models` parameter. Before,

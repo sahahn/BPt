@@ -683,18 +683,22 @@ class BPtEvaluator():
         self.train_subjects.append(X_tr.index)
         self.val_subjects.append(X_val_c.index)
 
-        self._print('Train shape:', X_tr.shape, '- Val shape:',
-                    X_val_c.shape, level=1)
+        # Add extra to verbose print if any skipped for NaN
+        tr_extra, val_extra = '', ''
 
-        # Print if skipping any due to NaN target
         dif_tr = len(self.all_train_subjects[-1]) -\
             len(self.train_subjects[-1])
         dif_val = len(self.all_val_subjects[-1]) -\
             len(self.val_subjects[-1])
 
-        if dif_tr != 0 or dif_val != 0:
-            self._print(f'(skipped n_subjs: train={dif_tr}, val={dif_val}',
-                        'for NaN in target)', level=1)
+        if dif_tr != 0:
+            tr_extra = f' (skipped {dif_tr} NaN targets)'
+        if dif_val != 0:
+            val_extra = f' (skipped {dif_val} NaN targets)'
+
+        # Print info on sizes
+        self._print(f'Training set: {X_tr.shape}{tr_extra}', level=1)
+        self._print(f'Validation set: {X_val_c.shape}{val_extra}', level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()

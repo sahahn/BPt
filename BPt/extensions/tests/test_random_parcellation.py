@@ -1,8 +1,7 @@
 from ..random_parcellation import RandomParcellation
 import numpy as np
-import pytest
 from ..loaders import load_surf
-
+import pytest
 
 def test_base():
 

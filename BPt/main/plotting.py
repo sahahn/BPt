@@ -2,7 +2,240 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt  
+from sklearn import metrics
+import numpy as np
+import seaborn as sns
+from matplotlib.colors import Normalize
 
+
+def _plot_roc_fold(fprs, tprs, i, ax, alpha=.5):
+    
+    display = metrics.RocCurveDisplay(fpr=fprs[i], tpr=tprs[i],
+                                      roc_auc=metrics.auc(fprs[i], tprs[i]),
+                                      estimator_name=f'Fold {i+1}')
+
+    display.plot(ax=ax, alpha=alpha)
+
+def plot_roc(results, show_folds=True, n_std=1,
+             mean_alpha=.8, fold_alpha=.5,
+             std_alpha=.2, ax=None):
+    '''
+    
+    Note: For now this function only supports
+    plotting the results of binary classifcation problems.
+
+    Paramaters
+    -----------
+    results : :class:`BPtEvaluator`
+        An instance of :class:`BPtEvaluator` as
+        returned from :func:`evaluate`, in which
+        to plot the results of.
+
+    show_folds : bool, optional
+        If the individual folds should be plotted seperately.
+        If passed False, then only the mean curve as computed across
+        each seperate fold will be plotted.
+
+        ::
+
+            default = True
+    
+    '''
+
+    # @TODO handle repeats in results ?
+    
+    # Init figure if not passed
+    if ax is None:
+        fig, ax = plt.subplots()
+    
+    y_true = results.preds['y_true']
+    y_pred = results.preds['predict_proba']
+    y_pred = [y_pred[i][:, 1] for i in range(len(y_pred))]
+    
+    # Calculate fprs and tprs
+    base_fprs = [metrics.roc_curve(y_true[i], y_pred[i])[0]
+                 for i in range(len(y_true))]
+    base_tprs = [metrics.roc_curve(y_true[i], y_pred[i])[1]
+                 for i in range(len(y_true))]
+    
+    # Plot the individual folds if requested
+    if show_folds:
+        for i in range(len(base_fprs)):
+            _plot_roc_fold(fprs=base_fprs, tprs=base_tprs,
+                           i=i, ax=ax, alpha=fold_alpha)
+
+    # Calculate mean fprs, tprs values
+    mean_fpr = np.linspace(0, 1, 100)
+
+    trps = []
+    for fpr, tpr in zip(base_fprs, base_tprs):
+        interp_tpr = np.interp(mean_fpr, fpr, tpr)
+        interp_tpr[0] = 0.0
+        trps.append(interp_tpr)
+
+    mean_tpr = np.mean(trps, axis=0)
+    mean_tpr[-1] = 1.0
+    mean_auc = metrics.auc(mean_fpr, mean_tpr)
+    
+    # Add mean ROC to plot
+    ax.plot(mean_fpr, mean_tpr, color='b',
+            label=f'Mean ROC (AUC = {mean_auc:.2f})',
+            lw=2, alpha=mean_alpha)
+    
+    # Optionally add gray box representing std dev
+    if n_std is not None:
+
+        std_tpr = np.std(trps, axis=0)
+        tprs_upper = np.minimum(mean_tpr + (n_std*std_tpr), 1)
+        tprs_lower = np.maximum(mean_tpr - (n_std*std_tpr), 0)
+        ax.fill_between(mean_fpr, tprs_lower, tprs_upper,
+        color='grey', alpha=std_alpha, label=f'$\pm$ {n_std} std. dev.')
+
+    ax.legend(loc="lower right")
+
+    return ax
+
+def _get_top_global(df, top_n, get_abs):
+
+    # Get as raw values or as absolute values
+    if get_abs:
+        imps = np.mean(np.abs(df))
+    else:
+        imps = np.mean(df)
+    
+    # Sort
+    imps.sort_values(ascending=False, inplace=True)
+
+    # If top_n not None
+    if top_n is not None:
+        to_get = list(range(top_n))
+        if not get_abs:
+            to_get += [-i for i in range(1, top_n+1)][::-1]
+            
+    # If None, keep all
+    else:
+        to_get = imps.index
+   
+    # Proc
+    top = imps[to_get]
+    feats = imps[to_get].index
+    top_df = df[feats]
+
+    if get_abs:
+        top_df = top_df.abs()
+
+    wide = top_df.melt()
+
+    # Add mean
+    wide['mean'] = wide['variable'].copy()
+    wide['mean'] = wide['mean'].replace(top.to_dict())
+
+
+    # Normalize to special range if pos and neg
+    p_min, p_max = wide['mean'].min(), wide['mean'].max()
+
+    # Only need in this case
+    if p_min < 0 and p_max > 0:
+        if np.abs(p_max) > np.abs(p_min):
+            vmin, vmax = -p_max, p_max
+        else:
+            vmin, vmax = p_min, -p_min
+            
+        norm = Normalize(vmin=vmin, vmax=vmax)
+        wide['mean'] = wide['mean'].apply(norm)
+
+    return wide
+
+def plot_feat_importances(df,
+                          xlabel='Feature Importances',
+                          top_n=10,
+                          show_abs=False, ci=95,
+                          palette='default', title='default',
+                          ax=None):
+
+    # Distinguish between feat importances that have been set to abs
+    min_val = np.min(np.min(df))
+    add_abs_sign = True
+
+    if min_val >= 0:
+        show_abs = True
+    else:
+        add_abs_sign = False
+
+    # Get df, with only top_n, in wide form for plotting
+    top_df = _get_top_global(df, top_n, show_abs)
+
+    # Abs / all pos values
+    if show_abs:
+        
+        if palette == 'default':
+            palette = 'Reds'
+
+        if title == 'default':
+            if top_n is None:
+                title = 'All Features'
+            else:
+                title = 'Top ' + str(top_n) + ' Features'
+
+        sns.barplot(x='value', y='variable', hue='mean',
+                    data=top_df, orient='h', ci=ci,
+                    palette=palette, errwidth=2,
+                    ax=ax, dodge=False)
+
+    # Pos + neg values
+    else:
+        
+        if palette == 'default':
+            palette = 'coolwarm'
+
+        if title == 'default':
+            
+            if top_n is None:
+                title = 'All Features'
+            else:
+                title = 'Top ' + str(top_n) + ' +/- Features'
+        
+        # If default clabel and abs add |'s'
+        if xlabel == 'Feature Importances' and add_abs_sign:
+            xlabel = '|' + xlabel + '|'
+        
+        # Convert pal to cmap - for better value mapping
+        cmap = sns.color_palette(palette, as_cmap=True)
+        pal_map = {h: cmap(h) for h in top_df['mean']}
+            
+        sns.barplot(x='value', y='variable', hue='mean',
+                    data=top_df, orient='h', ci=ci,
+                    palette=pal_map, errwidth=2, ax=ax,
+                    dodge=False)
+
+        # Add an extra line down the center
+        if ax is None:
+            current_ax = plt.gca()
+            current_ax.axvline(0, color='k', lw=.2)
+            sns.despine(ax=current_ax, top=True, left=True, bottom=True,
+                        right=True)
+        else:
+            ax.axvline(0, color='k', lw=.2)
+            sns.despine(ax=ax, top=True, left=True, bottom=True, right=True)
+
+    # Process rest fo params based on if for axis or global
+    if ax is None:
+        plt.title(title)
+        plt.xlabel(xlabel)
+        plt.ylabel('')
+        plt.legend().remove()
+
+    else:
+        
+        ax.set_title(title)
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel('')
+        ax.get_legend().remove()
+        return ax
+
+
+"""
 def _get_top_global(self, df, top_n, get_abs):
 
     if get_abs:
@@ -328,3 +561,5 @@ def _plot_global_feat_importances(self, df, feat_importances, top_n=10,
         ax.set_ylabel('')
         ax.get_legend().remove()
         return ax
+
+"""

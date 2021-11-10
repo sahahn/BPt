@@ -15,11 +15,12 @@ from .main.compare import (Compare, Option, CompareDict,
                            compare_dict_from_existing)
 from .main.BPtEvaluator import BPtEvaluator, BPtEvaluatorSubset
 from . import p
+from .main.plotting import plot_roc
 
 from pandas import read_pickle
 
 __author__ = "sahahn"
-__version__ = "2.1.3"
+__version__ = "2.1.4"
 __all__ = ["Dataset", "Loader",
            "Imputer", "Scaler", "Transformer", 'get_estimator',
            "FeatSelector", "Model",
@@ -31,4 +32,4 @@ __all__ = ["Dataset", "Loader",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',
            'BPtEvaluator', 'BPtEvaluatorSubset', 'read_pickle',
            'Compare', 'Option', 'compare_dict_from_existing',
-           'CompareDict', 'read_csv']
+           'CompareDict', 'read_csv', 'plot_roc']

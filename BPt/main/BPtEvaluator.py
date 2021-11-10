@@ -34,7 +34,7 @@ _base_docs['dataset'] = """dataset : :class:`Dataset`
 def score_rep(score):
 
     # If big int
-    if len(int(score)) > 5:
+    if len(repr(int(score))) > 5:
         return f'{score:.1f}'
 
     # Smaller
@@ -694,7 +694,7 @@ class BPtEvaluator():
 
         if dif_tr != 0 or dif_val != 0:
             self._print(f'Skipping Train: {dif_tr} - Val: {dif_val},',
-                         'for NaN target values.', level=1)
+                        'for NaN target values.', level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()
@@ -913,7 +913,9 @@ class BPtEvaluator():
 
         rep += 'Saved Attributes: ' + repr(saved_attrs) + '\n\n'
         rep += 'Avaliable Methods: ' + repr(avaliable_methods) + '\n\n'
-        rep += '\n' + self.ps._get_display_str() + '\n'
+
+        # Use custom display str, no need to show scorer.
+        rep += '\n' + self.ps._get_display_str(show_scorer=False) + '\n'
 
         return rep
 

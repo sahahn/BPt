@@ -1161,7 +1161,6 @@ class Ensemble(Model):
             if isinstance(self.models, Pipeline):
                 self.models = Model(self.models)
 
-
             if not isinstance(self.models, Model):
                 raise IOError(
                     'Passed model in models must be a valid Model/Ensemble.')
@@ -2681,15 +2680,8 @@ class ProblemSpec(Params):
         repr += '------------\n'
 
         # Base info
-        repr += f'target: {self.target} with problem_type: {self.problem_type}\n'
-        repr += f'scope: {self.scope}\n'
-
-        # Optionally show scorer
-        if show_scorer:
-            if isinstance(self.scorer, str):
-                repr += f'scorer: {self.scorer}\n'
-            else:
-                repr += f'scorer: {list(self.scorer)}\n'
+        repr += f'target: {self.target} with problem_type: {self.problem_type}'
+        repr += f'\nscope: {self.scope}\n'
 
         # Different options for showing subjects
         if isinstance(self.subjects, ValueSubset):
@@ -2699,13 +2691,20 @@ class ProblemSpec(Params):
         else:
             repr += f'len(subjects): {len(self.subjects)}\n'
 
+        # Optionally show scorer
+        if show_scorer:
+            if isinstance(self.scorer, str):
+                repr += f'scorer: {self.scorer}\n'
+            else:
+                repr += f'scorer: {list(self.scorer)}\n'
+
         # Add rest
         repr += f'random_state: {self.random_state}\n'
 
         # Only add if not default
-        if self.n_jobs != 1:
+        if self.n_jobs != ProblemSpec().n_jobs:
             repr += f'n_jobs: {self.n_jobs}\n'
-        if self.base_dtype != 'float32':
+        if self.base_dtype != ProblemSpec().base_dtype:
             repr += f'base_dtype: {self.base_dtype}\n'
 
         return repr

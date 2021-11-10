@@ -2674,46 +2674,50 @@ class ProblemSpec(Params):
     def _proc_checks(self):
         proc_all(self)
 
-    def _get_display_str(self, show_scorer=True):
+    def _get_display_str(self, show_header=False, show_scorer=True):
 
-        repr = 'ProblemSpec\n'
-        repr += '------------\n'
+        rep = ''
+
+        if show_header:
+            rep += 'ProblemSpec\n'
+            rep += '------------\n'
 
         # Base info
-        repr += f'target: {self.target} with problem_type: {self.problem_type}'
-        repr += f'\nscope: {self.scope}\n'
+        rep += f'target: {self.target}\n'
+        rep += f'problem_type: {self.problem_type}\n'
+        rep += f'scope: {self.scope}\n'
 
         # Different options for showing subjects
         if isinstance(self.subjects, ValueSubset):
-            repr += f'subjects: {self.subjects}\n'
+            rep += f'subjects: {self.subjects}\n'
         elif len(self.subjects) < 50:
-            repr += f'subjects: {self.subjects}\n'
+            rep += f'subjects: {self.subjects}\n'
         else:
-            repr += f'len(subjects): {len(self.subjects)}\n'
+            rep += f'len(subjects): {len(self.subjects)}\n'
 
         # Optionally show scorer
         if show_scorer:
             if isinstance(self.scorer, str):
-                repr += f'scorer: {self.scorer}\n'
+                rep += f'scorer: {self.scorer}\n'
             else:
-                repr += f'scorer: {list(self.scorer)}\n'
+                rep += f'scorer: {list(self.scorer)}\n'
 
         # Add rest
-        repr += f'random_state: {self.random_state}\n'
+        rep += f'random_state: {self.random_state}\n'
 
         # Only add if not default
         if self.n_jobs != ProblemSpec().n_jobs:
-            repr += f'n_jobs: {self.n_jobs}\n'
+            rep += f'n_jobs: {self.n_jobs}\n'
         if self.base_dtype != ProblemSpec().base_dtype:
-            repr += f'base_dtype: {self.base_dtype}\n'
+            rep += f'base_dtype: {self.base_dtype}\n'
 
-        return repr
+        return rep
 
-    def print_all(self, show_scorer=True, _print=print):
+    def print_all(self, show_header=False, show_scorer=True,  _print=print):
         '''This method can be used to print a formatted
         representation of this object.'''
 
-        _print(self._get_display_str(show_scorer=show_scorer))
+        _print(self._get_display_str(show_header=show_header, show_scorer=show_scorer))
 
     def _get_spec(self):
 

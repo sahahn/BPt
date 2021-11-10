@@ -871,6 +871,7 @@ class BPtEvaluator():
         for key in self.mean_scores:
             rep += f'{key}: {score_rep(self.mean_scores[key])} '
             rep += f'± {score_rep(self.std_scores[key])}\n'
+        rep += '\n'
 
         # Show avaliable saved attrs
         saved_attrs = []
@@ -919,7 +920,8 @@ class BPtEvaluator():
         rep += 'Avaliable Methods: ' + repr(avaliable_methods) + '\n\n'
 
         # Use custom display str, no need to show scorer.
-        rep += '\n' + self.ps._get_display_str(show_scorer=False) + '\n'
+        rep += 'Evaluated With:\n'
+        rep += self.ps._get_display_str(show_scorer=False) + '\n'
 
         return rep
 

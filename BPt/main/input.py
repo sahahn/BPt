@@ -2675,25 +2675,46 @@ class ProblemSpec(Params):
     def _proc_checks(self):
         proc_all(self)
 
-    def print_all(self, _print=print):
+    def _get_display_str(self, show_scorer=True):
+
+        repr = 'ProblemSpec\n'
+        repr += '------------\n'
+
+        # Base info
+        repr += f'target: {self.target} with problem_type: {self.problem_type}\n'
+        repr += f'scope: {self.scope}\n'
+
+        # Optionally show scorer
+        if show_scorer:
+            if isinstance(self.scorer, str):
+                repr += f'scorer: {self.scorer}\n'
+            else:
+                repr += f'scorer: {list(self.scorer)}\n'
+
+        # Different options for showing subjects
+        if isinstance(self.subjects, ValueSubset):
+            repr += f'subjects: {self.subjects}\n'
+        elif len(self.subjects) < 50:
+            repr += f'subjects: {self.subjects}\n'
+        else:
+            repr += f'len(subjects): {len(self.subjects)}\n'
+
+        # Add rest
+        repr += f'random_state: {self.random_state}\n'
+
+        # Only add if not default
+        if self.n_jobs != 1:
+            repr += f'n_jobs: {self.n_jobs}\n'
+        if self.base_dtype != 'float32':
+            repr += f'base_dtype: {self.base_dtype}\n'
+
+        return repr
+
+    def print_all(self, show_scorer=True, _print=print):
         '''This method can be used to print a formatted
         representation of this object.'''
 
-        _print('ProblemSpec')
-        _print('------------')
-        _print('problem_type =', self.problem_type)
-        _print('target =', self.target)
-        _print('scorer =', self.scorer)
-        _print('scope =', self.scope)
-
-        if isinstance(self.subjects, ValueSubset):
-            _print('subjects =', self.subjects)
-        elif len(self.subjects) < 50:
-            _print('subjects =', self.subjects)
-
-        _print('n_jobs =', self.n_jobs)
-        _print('random_state =', self.random_state)
-        _print()
+        _print(self._get_display_str(show_scorer=show_scorer))
 
     def _get_spec(self):
 

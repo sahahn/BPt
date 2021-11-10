@@ -31,6 +31,20 @@ _base_docs['dataset'] = """dataset : :class:`Dataset`
     """
 
 
+def score_rep(score):
+
+    # If big int
+    if len(int(score)) > 5:
+        return f'{score:.1f}'
+
+    # Smaller
+    if score > 1 or score < -1:
+        f'{score:.2f}'
+
+    # Last case is between 1 and -1
+    return f'{score:.4f}'
+
+
 def is_notebook():
 
     try:
@@ -680,14 +694,14 @@ class BPtEvaluator():
 
         if dif_tr != 0 or dif_val != 0:
             self._print(f'Skipping Train: {dif_tr} - Val: {dif_val},',
-                        'for NaN target values.', level=1)
+                         'for NaN target values.', level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()
 
         estimator_.fit(X=X_tr, y=np.array(y_tr))
         fit_time = time.time() - start_time
-        self._print(f'Fit fold in {fit_time:.3f} seconds.', level=1)
+        self._print(f'Fit fold in {fit_time:.1f} seconds.', level=1)
 
         # Score estimator
         start_time = time.time()
@@ -719,7 +733,7 @@ class BPtEvaluator():
                                                X_val,
                                                np.array(y_val))
             self.scores[scorer_str].append(score)
-            self._print(scorer_str + ':', str(score), level=1)
+            self._print(f'{scorer_str}: {score_rep(score)}', level=1)
 
         # Spacing for nice looking output
         self._print(level=1)
@@ -849,10 +863,10 @@ class BPtEvaluator():
         rep = self._get_display_name() + '\n'
         rep += '------------\n'
 
-        # Add scores + means
-        rep += 'mean_scores = ' + repr(self.mean_scores) + '\n'
-        rep += 'std_scores = ' + repr(self.std_scores) + '\n'
-        rep += '\n'
+        # Add scores + means pretty rep
+        for key in self.mean_scores:
+            rep += f'{key}: {score_rep(self.mean_scores[key])} '
+            rep += f'(std: {score_rep(self.std_scores[key])})\n'
 
         # Show avaliable saved attrs
         saved_attrs = []
@@ -899,7 +913,7 @@ class BPtEvaluator():
 
         rep += 'Saved Attributes: ' + repr(saved_attrs) + '\n\n'
         rep += 'Avaliable Methods: ' + repr(avaliable_methods) + '\n\n'
-        rep += 'Evaluated with:\n' + repr(self.ps) + '\n'
+        rep += '\n' + self.ps._get_display_str() + '\n'
 
         return rep
 

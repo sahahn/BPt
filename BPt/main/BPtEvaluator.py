@@ -697,8 +697,8 @@ class BPtEvaluator():
             val_extra = f' (skipped {dif_val} NaN targets)'
 
         # Print info on sizes
-        self._print(f'Training set: {X_tr.shape}{tr_extra}', level=1)
-        self._print(f'Validation set: {X_val_c.shape}{val_extra}', level=1)
+        self._print(f'Training Set: {X_tr.shape}{tr_extra}', level=1)
+        self._print(f'Validation Set: {X_val_c.shape}{val_extra}', level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()

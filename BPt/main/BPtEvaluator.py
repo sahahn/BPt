@@ -515,7 +515,7 @@ class BPtEvaluator():
                         'scoring.')
 
             if self.preds is not None:
-                self._print('Note: Predictions will still be made for any',
+                self._print('Predictions will still be made for any',
                             'subjects with missing values in',
                             'any validation folds.')
 

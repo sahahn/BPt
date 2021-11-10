@@ -1,0 +1,15 @@
+.. _whatsnew_214:
+
+.. currentmodule:: BPt
+
+Version 2.1.4
+---------------
+
+- Updated :class:`Ensemble`
+  The ensemble object can now automatically accept
+  instances of :class:`BPtPipeline` directly to its `models` parameter. Before,
+  these had to be wrapped in a :class:`Model`.
+
+- Updated :class:`extensions.ThresholdNetworkMeasures`
+  Updated and fixed some logic errors when thresholding in the extensions thresholded network object.
+  Also added additional tests for the these new features. Moving forward this object should be more robust and reliable.

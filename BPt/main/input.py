@@ -1018,6 +1018,9 @@ class Ensemble(Model):
         | See :class:`Model` for how to create a valid base model(s)
             to pass as input here.
 
+        | New in version 2.1.4: You may now pass instances of class
+            :class:`Pipeline` directly, without model wrapping them.
+
     {params}
 
     {scope}

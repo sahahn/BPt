@@ -1141,12 +1141,24 @@ class Ensemble(Model):
     def _check_extra_args(self):
 
         if isinstance(self.models, list):
-            for model in self.models:
+            for i, model in enumerate(self.models):
+
+                # If pipeline, Model wrap
+                if isinstance(model, Pipeline):
+                    model = Model(model)
+                    self.models[i] = model
+
                 if not isinstance(model, Model):
                     raise IOError(
                         'All models must be valid Model/Ensemble !')
 
         else:
+
+            # If pipeline, model wrap
+            if isinstance(self.models, Pipeline):
+                self.models = Model(self.models)
+
+
             if not isinstance(self.models, Model):
                 raise IOError(
                     'Passed model in models must be a valid Model/Ensemble.')

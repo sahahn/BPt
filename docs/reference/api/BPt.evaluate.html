@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.evaluate &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.evaluate &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.cross_validate" href="BPt.cross_validate.html" />
@@ -278,8 +276,8 @@
   <div class="section" id="bpt-evaluate">
 <h1>BPt.evaluate<a class="headerlink" href="#bpt-evaluate" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="BPt.evaluate">
-<code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">progress_bar</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">store_preds</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">store_estimators</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">store_timing</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">decode_feat_names</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">eval_verbose</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">progress_loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mute_warnings</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extra_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L971-L1189"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.evaluate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.evaluate">
+<span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_preds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode_feat_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mute_warnings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/funcs.py#L971-L1200"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used to evaluate a model pipeline
 with cross-validation.</p>
 <dl class="field-list">
@@ -381,6 +379,13 @@ feature importance as well.</p>
 <dt><strong>store_timing</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the returned <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>
 will store the time it took to fit and score the pipeline
 under <a class="reference internal" href="BPt.BPtEvaluator.timing.html#BPt.BPtEvaluator.timing" title="BPt.BPtEvaluator.timing"><code class="xref py py-data docutils literal notranslate"><span class="pre">BPt.BPtEvaluator.timing</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>store_cv</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, then the returned <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>
+will store a copy of the exact CV splitter object
+used during evaluation.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
@@ -505,7 +510,7 @@ is set to True, predictions will still be made for these subjects.</div>
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

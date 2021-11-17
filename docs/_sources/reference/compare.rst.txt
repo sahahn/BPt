@@ -14,3 +14,4 @@ Compare
    Compare
    Option
    CompareDict
+   compare_dict_from_existing

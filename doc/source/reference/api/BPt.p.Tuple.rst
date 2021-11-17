@@ -47,5 +47,6 @@ BPt.p.Tuple
       Tuple.losses
       Tuple.name
       Tuple.random_state
+      Tuple.value
 
 

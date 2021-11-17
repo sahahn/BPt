@@ -54,5 +54,6 @@ BPt.p.Array
       Array.name
       Array.random_state
       Array.sigma
+      Array.value
 
 

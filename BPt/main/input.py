@@ -1018,6 +1018,9 @@ class Ensemble(Model):
         | See :class:`Model` for how to create a valid base model(s)
             to pass as input here.
 
+        | New in version 2.1.4: You may now pass instances of class
+            :class:`Pipeline` directly, without model wrapping them.
+
     {params}
 
     {scope}
@@ -1141,12 +1144,23 @@ class Ensemble(Model):
     def _check_extra_args(self):
 
         if isinstance(self.models, list):
-            for model in self.models:
+            for i, model in enumerate(self.models):
+
+                # If pipeline, Model wrap
+                if isinstance(model, Pipeline):
+                    model = Model(model)
+                    self.models[i] = model
+
                 if not isinstance(model, Model):
                     raise IOError(
                         'All models must be valid Model/Ensemble !')
 
         else:
+
+            # If pipeline, model wrap
+            if isinstance(self.models, Pipeline):
+                self.models = Model(self.models)
+
             if not isinstance(self.models, Model):
                 raise IOError(
                     'Passed model in models must be a valid Model/Ensemble.')
@@ -2660,25 +2674,50 @@ class ProblemSpec(Params):
     def _proc_checks(self):
         proc_all(self)
 
-    def print_all(self, _print=print):
+    def _get_display_str(self, show_header=False, show_scorer=True):
+
+        rep = ''
+
+        if show_header:
+            rep += 'ProblemSpec\n'
+            rep += '------------\n'
+
+        # Base info
+        rep += f'target: {self.target}\n'
+        rep += f'problem_type: {self.problem_type}\n'
+        rep += f'scope: {self.scope}\n'
+
+        # Different options for showing subjects
+        if isinstance(self.subjects, ValueSubset):
+            rep += f'subjects: {self.subjects}\n'
+        elif len(self.subjects) < 50:
+            rep += f'subjects: {self.subjects}\n'
+        else:
+            rep += f'len(subjects): {len(self.subjects)}\n'
+
+        # Optionally show scorer
+        if show_scorer:
+            if isinstance(self.scorer, str):
+                rep += f'scorer: {self.scorer}\n'
+            else:
+                rep += f'scorer: {list(self.scorer)}\n'
+
+        # Add rest
+        rep += f'random_state: {self.random_state}\n'
+
+        # Only add if not default
+        if self.n_jobs != ProblemSpec().n_jobs:
+            rep += f'n_jobs: {self.n_jobs}\n'
+        if self.base_dtype != ProblemSpec().base_dtype:
+            rep += f'base_dtype: {self.base_dtype}\n'
+
+        return rep
+
+    def print_all(self, show_header=False, show_scorer=True,  _print=print):
         '''This method can be used to print a formatted
         representation of this object.'''
 
-        _print('ProblemSpec')
-        _print('------------')
-        _print('problem_type =', self.problem_type)
-        _print('target =', self.target)
-        _print('scorer =', self.scorer)
-        _print('scope =', self.scope)
-
-        if isinstance(self.subjects, ValueSubset):
-            _print('subjects =', self.subjects)
-        elif len(self.subjects) < 50:
-            _print('subjects =', self.subjects)
-
-        _print('n_jobs =', self.n_jobs)
-        _print('random_state =', self.random_state)
-        _print()
+        _print(self._get_display_str(show_header=show_header, show_scorer=show_scorer))
 
     def _get_spec(self):
 

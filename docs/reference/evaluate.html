@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Evaluate &#8212; BPt 2.1.1 documentation</title>
+    <title>Evaluate &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="BPt.get_estimator" href="api/BPt.get_estimator.html" />
@@ -314,13 +312,13 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(pipeline, dataset[, problem_spec, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(pipeline, dataset[, problem_spec, ...])</p></td>
 <td><p>This method is used to evaluate a model pipeline with cross-validation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.cross_validate.html#BPt.cross_validate" title="BPt.cross_validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_validate</span></code></a>(pipeline, dataset[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.cross_validate.html#BPt.cross_validate" title="BPt.cross_validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_validate</span></code></a>(pipeline, dataset[, ...])</p></td>
 <td><p>This function is a BPt compatible wrapper around <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate" title="(in scikit-learn v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.cross_validate()</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.cross_val_score.html#BPt.cross_val_score" title="BPt.cross_val_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_val_score</span></code></a>(pipeline, dataset[, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.cross_val_score.html#BPt.cross_val_score" title="BPt.cross_val_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_val_score</span></code></a>(pipeline, dataset[, ...])</p></td>
 <td><p>This function is a BPt compatible wrapper around <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html#sklearn.model_selection.cross_val_score" title="(in scikit-learn v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.cross_val_score()</span></code></a></p></td>
 </tr>
 </tbody>
@@ -334,10 +332,10 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>(estimator, ps[, encoders, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a>(estimator, ps[, encoders, ...])</p></td>
 <td><p>This class is returned from calls to <a class="reference internal" href="api/BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, and can be used to store information from evaluate, or compute additional feature importances.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.BPtEvaluatorSubset.html#BPt.BPtEvaluatorSubset" title="BPt.BPtEvaluatorSubset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BPtEvaluatorSubset</span></code></a>(evaluator, subjects[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.BPtEvaluatorSubset.html#BPt.BPtEvaluatorSubset" title="BPt.BPtEvaluatorSubset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BPtEvaluatorSubset</span></code></a>(evaluator, subjects[, ...])</p></td>
 <td><p>This class represents a subset of <a class="reference internal" href="api/BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a> and is returned as a result of calling <a class="reference internal" href="api/BPt.BPtEvaluator.subset_by.html#BPt.BPtEvaluator.subset_by" title="BPt.BPtEvaluator.subset_by"><code class="xref py py-func docutils literal notranslate"><span class="pre">BPtEvaluator.subset_by()</span></code></a>.</p></td>
 </tr>
 </tbody>
@@ -370,7 +368,7 @@
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

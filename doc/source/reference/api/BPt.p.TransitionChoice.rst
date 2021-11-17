@@ -51,5 +51,6 @@ BPt.p.TransitionChoice
       TransitionChoice.name
       TransitionChoice.random_state
       TransitionChoice.transitions
+      TransitionChoice.value
 
 

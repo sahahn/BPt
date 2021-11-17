@@ -54,5 +54,6 @@ BPt.p.Scalar
       Scalar.name
       Scalar.random_state
       Scalar.sigma
+      Scalar.value
 
 

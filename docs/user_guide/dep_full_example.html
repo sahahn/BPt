@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Predicting Substance Dependence from Multi-Site Data &#8212; BPt 2.1.1 documentation</title>
+    <title>Predicting Substance Dependence from Multi-Site Data &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Predict Stop Signal Response Time (SSRT)" href="ssrt.html" />
@@ -580,7 +578,7 @@ div.rendered_html tbody tr:hover {
 to data use agreements.</p>
 <p>The key idea explored in this notebook is a particular tricky problem introduced by case-only sites, which are subject’s data from site’s with only case’s. This introduces a confound where you cannot easily tell if the classifier is learning to predict site or the dependence status of interest.</p>
 <p>Featured in this notebook as well are some helpful code snippets for converting from BPt versions earlier than BPt 2.0 to valid BPt 2.0+ code.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -595,6 +593,15 @@ to data use agreements.</p>
 <span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">ConvergenceWarning</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/sage/anaconda3/envs/bpt/lib/python3.9/site-packages/nilearn/datasets/__init__.py:93: FutureWarning: Fetchers from the nilearn.datasets module will be updated in version 0.9 to return python strings instead of bytes and Pandas dataframes instead of Numpy arrays.
+  warn(&#34;Fetchers from the nilearn.datasets module will be &#34;
+</pre></div></div>
 </div>
 <div class="section" id="Loading-/-Preparing-Data">
 <h2>Loading / Preparing Data<a class="headerlink" href="#Loading-/-Preparing-Data" title="Permalink to this headline">¶</a></h2>
@@ -973,11 +980,12 @@ Dependent any drug: 624 rows
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ProblemSpec(n_jobs=16, scorer=[&#39;matthews&#39;, &#39;roc_auc&#39;, &#39;balanced_accuracy&#39;], subjects=&#39;train&#39;)
+ProblemSpec(n_jobs=16, scorer=[&#39;matthews&#39;, &#39;roc_auc&#39;, &#39;balanced_accuracy&#39;],
+            subjects=&#39;train&#39;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1010,7 +1018,8 @@ model=\
 Model(obj=&#39;elastic&#39;, params=1)
 
 param_search=\
-ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=64, search_type=&#39;DiscreteOnePlusOne&#39;)
+ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=64,
+            search_type=&#39;DiscreteOnePlusOne&#39;)
 
 </pre></div></div>
 </div>
@@ -1019,7 +1028,7 @@ ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=64, search_type=&#39;Discret
 <h2>3-fold CV random splits<a class="headerlink" href="#3-fold-CV-random-splits" title="Permalink to this headline">¶</a></h2>
 <p>Let’s start by evaluating this model is a fairly naive way, just 3 folds of CV.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1033,25 +1042,66 @@ ParamSearch(cv=CV(cv_strategy=CVStrategy()), n_iter=64, search_type=&#39;Discret
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "538599e7b21943e2b44b9c2c215370d7", "version_major": 2, "version_minor": 0}</script></div>
+<div class="highlight"><pre>
+Predicting target = Dependent any drug
+Using problem_type = binary
+Using scope = all (defining a total of 163 features).
+Evaluating 2379 total data points.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "096378b8b9d045239c0e5fce543c3999", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Train size: 1586 - Val size: 793
+Fit fold in 15.781 seconds.
+matthews: 0.45819711214039605
+roc_auc: 0.8219843414397561
+balanced_accuracy: 0.7347294394789718
+
+Train size: 1586 - Val size: 793
+Fit fold in 12.219 seconds.
+matthews: 0.43270247791412836
+roc_auc: 0.8060915258007118
+balanced_accuracy: 0.7243174488434163
+
+Train size: 1586 - Val size: 793
+Fit fold in 11.532 seconds.
+matthews: 0.4005078667838128
+roc_auc: 0.7789128332642631
+balanced_accuracy: 0.7066203895565686
+
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 BPtEvaluator
 ------------
-mean_scores = {&#39;matthews&#39;: 0.42533195477230185, &#39;roc_auc&#39;: 0.8064400876380518, &#39;balanced_accuracy&#39;: 0.7194033665229546}
-std_scores = {&#39;matthews&#39;: 0.02372948469896042, &#39;roc_auc&#39;: 0.014513566540939276, &#39;balanced_accuracy&#39;: 0.012339782022093257}
+mean_scores = {&#39;matthews&#39;: 0.43046915227944577, &#39;roc_auc&#39;: 0.8023295668349103, &#39;balanced_accuracy&#39;: 0.721889092626319}
+std_scores = {&#39;matthews&#39;: 0.023604421407805696, &#39;roc_auc&#39;: 0.01778394323677345, &#39;balanced_accuracy&#39;: 0.0116032282095078}
 
 Saved Attributes: [&#39;estimators&#39;, &#39;preds&#39;, &#39;timing&#39;, &#39;train_subjects&#39;, &#39;val_subjects&#39;, &#39;feat_names&#39;, &#39;ps&#39;, &#39;mean_scores&#39;, &#39;std_scores&#39;, &#39;weighted_mean_scores&#39;, &#39;scores&#39;, &#39;fis_&#39;, &#39;coef_&#39;]
 
-Avaliable Methods: [&#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
+Avaliable Methods: [&#39;get_X_transform_df&#39;, &#39;get_preds_dfs&#39;, &#39;get_fis&#39;, &#39;get_coef_&#39;, &#39;permutation_importance&#39;]
 
 Evaluated with:
-ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score), &#39;matthews&#39;: make_scorer(matthews_corrcoef), &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)}, subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
+ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;,
+            scorer={&#39;balanced_accuracy&#39;: make_scorer(balanced_accuracy_score),
+                    &#39;matthews&#39;: make_scorer(matthews_corrcoef),
+                    &#39;roc_auc&#39;: make_scorer(roc_auc_score, needs_threshold=True)},
+            subjects=&#39;train&#39;, target=&#39;Dependent any drug&#39;)
 </pre></div></div>
 </div>
 <p>Notably this is likely going to give us overly optimistic results. Let’s look at just the Site’s drawn from the first evaluation fold to get a feel for why.</p>
@@ -2310,7 +2360,7 @@ ProblemSpec(n_jobs=16, problem_type=&#39;binary&#39;, scorer={&#39;balanced_accu
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

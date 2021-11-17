@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.plot &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.Dataset.plot &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.Dataset.plot_bivar" href="BPt.Dataset.plot_bivar.html" />
@@ -438,8 +436,8 @@
   <div class="section" id="bpt-dataset-plot">
 <h1>BPt.Dataset.plot<a class="headerlink" href="#bpt-dataset-plot" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
-<dt id="BPt.Dataset.plot">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">scope</em>, <em class="sig-param">subjects='all'</em>, <em class="sig-param">cut=0</em>, <em class="sig-param">decode_values=True</em>, <em class="sig-param">count=True</em>, <em class="sig-param">show=True</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=-1</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_plotting.py#L368-L459"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.plot" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.Dataset.plot">
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scope</span></em>, <em class="sig-param"><span class="pre">subjects='all'</span></em>, <em class="sig-param"><span class="pre">cut=0</span></em>, <em class="sig-param"><span class="pre">decode_values=True</span></em>, <em class="sig-param"><span class="pre">count=True</span></em>, <em class="sig-param"><span class="pre">show=True</span></em>, <em class="sig-param"><span class="pre">reduce_func=&lt;function</span> <span class="pre">mean&gt;</span></em>, <em class="sig-param"><span class="pre">n_jobs=-1</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_plotting.py#L368-L459"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function creates plots for each of the passed
 columns (as specified by scope) seperately.</p>
 <dl class="field-list">
@@ -532,7 +530,7 @@ be memory intensive depending on the underlying size of the file.</p>
 </pre></div>
 </div>
 <div class="figure align-default">
-<img alt="../../_images/BPt-Dataset-plot-1.png" src="../../_images/BPt-Dataset-plot-1.png" />
+<img alt="../../_images/BPt-Dataset-plot-1.png" class="plot-directive" src="../../_images/BPt-Dataset-plot-1.png" />
 </div>
 </dd></dl>
 
@@ -563,7 +561,7 @@ be memory intensive depending on the underlying size of the file.</p>
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

@@ -31,6 +31,20 @@ _base_docs['dataset'] = """dataset : :class:`Dataset`
     """
 
 
+def score_rep(score):
+
+    # If big int
+    if len(repr(int(score))) > 5:
+        return f'{score:.1f}'
+
+    # Smaller
+    if score > 1 or score < -1:
+        return f'{score:.2f}'
+
+    # Last case is between 1 and -1
+    return f'{score:.4f}'
+
+
 def is_notebook():
 
     try:
@@ -501,8 +515,8 @@ class BPtEvaluator():
                         'scoring.')
 
             if self.preds is not None:
-                self._print('Note: Predictions will still be made for any',
-                            'subjects with missing values in ',
+                self._print('Predictions will still be made for any',
+                            'subjects with missing values in',
                             'any validation folds.')
 
         # Verbose info
@@ -669,25 +683,29 @@ class BPtEvaluator():
         self.train_subjects.append(X_tr.index)
         self.val_subjects.append(X_val_c.index)
 
-        self._print('Train size:', len(X_tr), '- Val size:',
-                    len(X_val_c), level=1)
+        # Add extra to verbose print if any skipped for NaN
+        tr_extra, val_extra = '', ''
 
-        # Print if skipping any due to NaN target
         dif_tr = len(self.all_train_subjects[-1]) -\
             len(self.train_subjects[-1])
-        dif_val = len(self.all_train_subjects[-1]) -\
-            len(self.train_subjects[-1])
+        dif_val = len(self.all_val_subjects[-1]) -\
+            len(self.val_subjects[-1])
 
-        if dif_tr != 0 or dif_val != 0:
-            self._print(f'Skipping Train: {dif_tr} - Val: {dif_val},',
-                        'for NaN target values.', level=1)
+        if dif_tr != 0:
+            tr_extra = f' (skipped {dif_tr} NaN targets)'
+        if dif_val != 0:
+            val_extra = f' (skipped {dif_val} NaN targets)'
+
+        # Print info on sizes
+        self._print(f'Training Set: {X_tr.shape}{tr_extra}', level=1)
+        self._print(f'Validation Set: {X_val_c.shape}{val_extra}', level=1)
 
         # Fit estimator_, passing as arrays, and with train data index
         start_time = time.time()
 
         estimator_.fit(X=X_tr, y=np.array(y_tr))
         fit_time = time.time() - start_time
-        self._print(f'Fit fold in {fit_time:.3f} seconds.', level=1)
+        self._print(f'Fit fold in {fit_time:.1f} seconds.', level=1)
 
         # Score estimator
         start_time = time.time()
@@ -719,7 +737,7 @@ class BPtEvaluator():
                                                X_val,
                                                np.array(y_val))
             self.scores[scorer_str].append(score)
-            self._print(scorer_str + ':', str(score), level=1)
+            self._print(f'{scorer_str}: {score_rep(score)}', level=1)
 
         # Spacing for nice looking output
         self._print(level=1)
@@ -849,9 +867,10 @@ class BPtEvaluator():
         rep = self._get_display_name() + '\n'
         rep += '------------\n'
 
-        # Add scores + means
-        rep += 'mean_scores = ' + repr(self.mean_scores) + '\n'
-        rep += 'std_scores = ' + repr(self.std_scores) + '\n'
+        # Add scores + means pretty rep
+        for key in self.mean_scores:
+            rep += f'{key}: {score_rep(self.mean_scores[key])} '
+            rep += f'± {score_rep(self.std_scores[key])}\n'
         rep += '\n'
 
         # Show avaliable saved attrs
@@ -899,7 +918,10 @@ class BPtEvaluator():
 
         rep += 'Saved Attributes: ' + repr(saved_attrs) + '\n\n'
         rep += 'Avaliable Methods: ' + repr(avaliable_methods) + '\n\n'
-        rep += 'Evaluated with:\n' + repr(self.ps) + '\n'
+
+        # Use custom display str, no need to show scorer.
+        rep += 'Evaluated With:\n'
+        rep += self.ps._get_display_str(show_scorer=False) + '\n'
 
         return rep
 

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.drop_nan_subjects &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.Dataset.drop_nan_subjects &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.Dataset.drop_subjects_by_nan" href="BPt.Dataset.drop_subjects_by_nan.html" />
@@ -438,8 +436,8 @@
   <div class="section" id="bpt-dataset-drop-nan-subjects">
 <h1>BPt.Dataset.drop_nan_subjects<a class="headerlink" href="#bpt-dataset-drop-nan-subjects" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
-<dt id="BPt.Dataset.drop_nan_subjects">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_nan_subjects</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L16-L57"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_nan_subjects" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.Dataset.drop_nan_subjects">
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">drop_nan_subjects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L16-L57"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.drop_nan_subjects" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used for
 dropping all of the subjects which have NaN
 values for a given scope / column.</p>
@@ -474,6 +472,7 @@ can be applied.</p>
 <span class="go"># We can specify a scope of &#39;all&#39; or a specific column</span>
 <span class="go"># both yielding the same results.</span>
 <span class="gp">In [3]: </span><span class="n">data</span><span class="o">.</span><span class="n">drop_nan_subjects</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<span class="go">Dropped 1 Rows</span>
 <span class="gh">Out[3]: </span><span class="go"></span>
 <span class="go">  animals  numbers</span>
 <span class="go">0   &#39;cat&#39;      1.0</span>
@@ -482,6 +481,7 @@ can be applied.</p>
 <span class="go">3   &#39;dog&#39;      2.0</span>
 
 <span class="gp">In [4]: </span><span class="n">data</span><span class="o">.</span><span class="n">drop_nan_subjects</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;numbers&#39;</span><span class="p">)</span>
+<span class="go">Dropped 1 Rows</span>
 <span class="gh">Out[4]: </span><span class="go"></span>
 <span class="go">  animals  numbers</span>
 <span class="go">0   &#39;cat&#39;      1.0</span>
@@ -519,7 +519,7 @@ can be applied.</p>
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

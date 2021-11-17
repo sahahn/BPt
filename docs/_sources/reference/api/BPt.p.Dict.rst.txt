@@ -50,5 +50,6 @@ BPt.p.Dict
       Dict.losses
       Dict.name
       Dict.random_state
+      Dict.value
 
 

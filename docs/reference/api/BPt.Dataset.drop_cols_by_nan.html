@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.drop_cols_by_nan &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.Dataset.drop_cols_by_nan &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.Dataset.drop_cols_by_unique_val" href="BPt.Dataset.drop_cols_by_unique_val.html" />
@@ -438,8 +436,8 @@
   <div class="section" id="bpt-dataset-drop-cols-by-nan">
 <h1>BPt.Dataset.drop_cols_by_nan<a class="headerlink" href="#bpt-dataset-drop-cols-by-nan" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
-<dt id="BPt.Dataset.drop_cols_by_nan">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">drop_cols_by_nan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L758-L838"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.drop_cols_by_nan" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.Dataset.drop_cols_by_nan">
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">drop_cols_by_nan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L758-L838"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.drop_cols_by_nan" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used for dropping columns based on
 the amount of missing values per column, dropping any
 which exceed a user defined threshold.</p>
@@ -502,6 +500,8 @@ a simple Dataset and then apply the drop_cols_by_nan method.</p>
 <span class="go">4   &#39;elk&#39;      NaN</span>
 
 <span class="gp">In [3]: </span><span class="n">data</span><span class="o">.</span><span class="n">drop_cols_by_nan</span><span class="p">(</span><span class="n">threshold</span><span class="o">=.</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">Setting NaN threshold to: 0.5</span>
+<span class="go">Dropped 1 Columns</span>
 <span class="gh">Out[3]: </span><span class="go"></span>
 <span class="go">  animals</span>
 <span class="go">0   &#39;cat&#39;</span>
@@ -514,6 +514,7 @@ a simple Dataset and then apply the drop_cols_by_nan method.</p>
 <p>Alternatively, note that if we pass a threshold above
 .2, then no columns will be dropped.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="n">data</span><span class="o">.</span><span class="n">drop_cols_by_nan</span><span class="p">(</span><span class="n">threshold</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">Setting NaN threshold to: 2.5</span>
 <span class="gh">Out[4]: </span><span class="go"></span>
 <span class="go">  animals  numbers</span>
 <span class="go">0   &#39;cat&#39;      1.0</span>
@@ -552,7 +553,7 @@ a simple Dataset and then apply the drop_cols_by_nan method.</p>
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

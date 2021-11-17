@@ -47,5 +47,6 @@ BPt.p.Instrumentation
       Instrumentation.losses
       Instrumentation.name
       Instrumentation.random_state
+      Instrumentation.value
 
 

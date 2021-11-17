@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.BPtEvaluatorSubset &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.BPtEvaluatorSubset &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.BPtEvaluatorSubset.all_train_subjects" href="BPt.BPtEvaluatorSubset.all_train_subjects.html" />
@@ -278,8 +276,8 @@
   <div class="section" id="bpt-bptevaluatorsubset">
 <h1>BPt.BPtEvaluatorSubset<a class="headerlink" href="#bpt-bptevaluatorsubset" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="BPt.BPtEvaluatorSubset">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">BPtEvaluatorSubset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">evaluator</span></em>, <em class="sig-param"><span class="n">subjects</span></em>, <em class="sig-param"><span class="n">subset_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1599-L1705"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.BPtEvaluatorSubset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.BPtEvaluatorSubset">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">BPtEvaluatorSubset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1654-L1762"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.BPtEvaluatorSubset" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class represents a subset of <a class="reference internal" href="BPt.BPtEvaluator.html#BPt.BPtEvaluator" title="BPt.BPtEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluator</span></code></a> and
 is returned as a result of calling <a class="reference internal" href="BPt.BPtEvaluator.subset_by.html#BPt.BPtEvaluator.subset_by" title="BPt.BPtEvaluator.subset_by"><code class="xref py py-func docutils literal notranslate"><span class="pre">BPtEvaluator.subset_by()</span></code></a>.</p>
 <p>This class specifically updates values for a subset of val_subjects,
@@ -315,58 +313,61 @@ different from the source <a class="reference internal" href="BPt.BPtEvaluator.h
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.coef_.html#BPt.BPtEvaluatorSubset.coef_" title="BPt.BPtEvaluatorSubset.coef_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coef_</span></code></a></p></td>
 <td><p>This attribute represents the mean <cite>coef_</cite> as a numpy array across all folds.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.estimator.html#BPt.BPtEvaluatorSubset.estimator" title="BPt.BPtEvaluatorSubset.estimator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimator</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.cv.html#BPt.BPtEvaluatorSubset.cv" title="BPt.BPtEvaluatorSubset.cv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cv</span></code></a></p></td>
+<td><p>If set to store CV is true, a deepcopy of the passed cv splitter will be stored</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.estimator.html#BPt.BPtEvaluatorSubset.estimator" title="BPt.BPtEvaluatorSubset.estimator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimator</span></code></a></p></td>
 <td><p>This parameter stores the passed saved, unfitted estimator used in this evaluation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.estimators.html#BPt.BPtEvaluatorSubset.estimators" title="BPt.BPtEvaluatorSubset.estimators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimators</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.estimators.html#BPt.BPtEvaluatorSubset.estimators" title="BPt.BPtEvaluatorSubset.estimators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimators</span></code></a></p></td>
 <td><p>If the parameter <cite>store_estimators</cite> is set to True when calling <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, then this parameter will store the fitted estimator in a list.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.feat_names.html#BPt.BPtEvaluatorSubset.feat_names" title="BPt.BPtEvaluatorSubset.feat_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">feat_names</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.feat_names.html#BPt.BPtEvaluatorSubset.feat_names" title="BPt.BPtEvaluatorSubset.feat_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">feat_names</span></code></a></p></td>
 <td><p>The features names corresponding to any measures of feature importance, stored as a list of lists, where the top level list represents each fold of cross validation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.feature_importances_.html#BPt.BPtEvaluatorSubset.feature_importances_" title="BPt.BPtEvaluatorSubset.feature_importances_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">feature_importances_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.feature_importances_.html#BPt.BPtEvaluatorSubset.feature_importances_" title="BPt.BPtEvaluatorSubset.feature_importances_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">feature_importances_</span></code></a></p></td>
 <td><p>This property stores the mean values across fitted estimators assuming each fitted estimator has a non empty <cite>feature_importances_</cite> attribute.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.fis_.html#BPt.BPtEvaluatorSubset.fis_" title="BPt.BPtEvaluatorSubset.fis_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fis_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.fis_.html#BPt.BPtEvaluatorSubset.fis_" title="BPt.BPtEvaluatorSubset.fis_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fis_</span></code></a></p></td>
 <td><p>This property stores the mean value across each fold of the CV for either the <cite>coef_</cite> or <cite>feature_importance_</cite> parameter.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.mean_scores.html#BPt.BPtEvaluatorSubset.mean_scores" title="BPt.BPtEvaluatorSubset.mean_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_scores</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.mean_scores.html#BPt.BPtEvaluatorSubset.mean_scores" title="BPt.BPtEvaluatorSubset.mean_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_scores</span></code></a></p></td>
 <td><p>This parameter stores the mean scores as a dictionary of values, where each dictionary is indexed by the name of the scorer, and the dictionary value is the mean score for that scorer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.mean_timing.html#BPt.BPtEvaluatorSubset.mean_timing" title="BPt.BPtEvaluatorSubset.mean_timing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_timing</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.mean_timing.html#BPt.BPtEvaluatorSubset.mean_timing" title="BPt.BPtEvaluatorSubset.mean_timing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_timing</span></code></a></p></td>
 <td><p>This property stores information on the fit and scoring times, if requested by the original call to <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.preds.html#BPt.BPtEvaluatorSubset.preds" title="BPt.BPtEvaluatorSubset.preds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preds</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.preds.html#BPt.BPtEvaluatorSubset.preds" title="BPt.BPtEvaluatorSubset.preds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preds</span></code></a></p></td>
 <td><p>If the parameter <cite>store_preds</cite> is set to True when calling <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, then this parameter will store the predictions from every evaluate fold.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.ps.html#BPt.BPtEvaluatorSubset.ps" title="BPt.BPtEvaluatorSubset.ps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ps</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.ps.html#BPt.BPtEvaluatorSubset.ps" title="BPt.BPtEvaluatorSubset.ps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ps</span></code></a></p></td>
 <td><p>A saved and pre-processed version of the problem_spec used (with any extra_params applied) when running this instance of Evaluator.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.score.html#BPt.BPtEvaluatorSubset.score" title="BPt.BPtEvaluatorSubset.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.score.html#BPt.BPtEvaluatorSubset.score" title="BPt.BPtEvaluatorSubset.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a></p></td>
 <td><p>This property represents a quick helper for accessing the mean scores of whatever the first scorer is (in the case of multiple scorers).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.scores.html#BPt.BPtEvaluatorSubset.scores" title="BPt.BPtEvaluatorSubset.scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scores</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.scores.html#BPt.BPtEvaluatorSubset.scores" title="BPt.BPtEvaluatorSubset.scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scores</span></code></a></p></td>
 <td><p>This property stores the scores for each scorer as a dictionary of lists, where the keys are the names of the scorer and the list represents the score obtained for each fold, where each index corresponds to to a fold of cross validation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.std_scores.html#BPt.BPtEvaluatorSubset.std_scores" title="BPt.BPtEvaluatorSubset.std_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std_scores</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.std_scores.html#BPt.BPtEvaluatorSubset.std_scores" title="BPt.BPtEvaluatorSubset.std_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std_scores</span></code></a></p></td>
 <td><p>This parameter stores the standard deviation scores as a dictionary of values, where each dictionary is indexed by the name of the scorer, and value contains the standard deviation across evaluation folds for that scorer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.timing.html#BPt.BPtEvaluatorSubset.timing" title="BPt.BPtEvaluatorSubset.timing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timing</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.timing.html#BPt.BPtEvaluatorSubset.timing" title="BPt.BPtEvaluatorSubset.timing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timing</span></code></a></p></td>
 <td><p>This property stores information on the fit and scoring times, if requested by the original call to <a class="reference internal" href="BPt.evaluate.html#BPt.evaluate" title="BPt.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.train_subjects.html#BPt.BPtEvaluatorSubset.train_subjects" title="BPt.BPtEvaluatorSubset.train_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_subjects</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.train_subjects.html#BPt.BPtEvaluatorSubset.train_subjects" title="BPt.BPtEvaluatorSubset.train_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_subjects</span></code></a></p></td>
 <td><p><div class="line-block">
 <div class="line">This parameter stores the training subjects / index</div>
 </div>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.val_subjects.html#BPt.BPtEvaluatorSubset.val_subjects" title="BPt.BPtEvaluatorSubset.val_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">val_subjects</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.val_subjects.html#BPt.BPtEvaluatorSubset.val_subjects" title="BPt.BPtEvaluatorSubset.val_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">val_subjects</span></code></a></p></td>
 <td><p><div class="line-block">
 <div class="line">This parameter stores the validation subjects / index</div>
 </div>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.weighted_mean_scores.html#BPt.BPtEvaluatorSubset.weighted_mean_scores" title="BPt.BPtEvaluatorSubset.weighted_mean_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weighted_mean_scores</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.weighted_mean_scores.html#BPt.BPtEvaluatorSubset.weighted_mean_scores" title="BPt.BPtEvaluatorSubset.weighted_mean_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weighted_mean_scores</span></code></a></p></td>
 <td><p>This property stores the mean scores across evaluation folds (simmilar to <a class="reference internal" href="BPt.BPtEvaluator.mean_scores.html#BPt.BPtEvaluator.mean_scores" title="BPt.BPtEvaluator.mean_scores"><code class="xref py py-data docutils literal notranslate"><span class="pre">mean_scores</span></code></a>), but weighted by the number of subjects / datapoints in each fold.</p></td>
 </tr>
 </tbody>
@@ -399,11 +400,22 @@ different from the source <a class="reference internal" href="BPt.BPtEvaluator.h
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.get_preds_dfs.html#BPt.BPtEvaluatorSubset.get_preds_dfs" title="BPt.BPtEvaluatorSubset.get_preds_dfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_preds_dfs</span></code></a>([drop_nan_targets])</p></td>
 <td><p>This function can be used to return the raw predictions made during evaluation as a list of pandas Dataframes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.permutation_importance.html#BPt.BPtEvaluatorSubset.permutation_importance" title="BPt.BPtEvaluatorSubset.permutation_importance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">permutation_importance</span></code></a>(dataset[, n_repeats, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.permutation_importance.html#BPt.BPtEvaluatorSubset.permutation_importance" title="BPt.BPtEvaluatorSubset.permutation_importance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">permutation_importance</span></code></a>(dataset[, n_repeats, ...])</p></td>
 <td><p>This function computes the permutation feature importances from the base scikit-learn function <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance" title="(in scikit-learn v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.inspection.permutation_importance()</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.BPtEvaluatorSubset.subset_by.html#BPt.BPtEvaluatorSubset.subset_by" title="BPt.BPtEvaluatorSubset.subset_by"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subset_by</span></code></a>(group, dataset[, decode_values])</p></td>
 <td><p>Generate instances of <a class="reference internal" href="#BPt.BPtEvaluatorSubset" title="BPt.BPtEvaluatorSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluatorSubset</span></code></a> based on subsets of subjects based on different unique groups.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>to_pickle</strong></p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -436,7 +448,7 @@ different from the source <a class="reference internal" href="BPt.BPtEvaluator.h
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

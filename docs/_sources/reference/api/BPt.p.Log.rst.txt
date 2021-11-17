@@ -54,5 +54,6 @@ BPt.p.Log
       Log.name
       Log.random_state
       Log.sigma
+      Log.value
 
 

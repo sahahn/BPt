@@ -173,7 +173,7 @@ class Dataset(pd.DataFrame):
                  columns=None, dtype=None,
                  copy=None, roles=None,
                  scopes=None, targets=None,
-                 non_inputs=None):
+                 non_inputs=None, verbose=1):
 
         super().__init__(data=data, index=index,
                          columns=columns, dtype=dtype,
@@ -194,6 +194,9 @@ class Dataset(pd.DataFrame):
         if non_inputs is not None:
             self.set_non_input(non_inputs, inplace=True)
             self._check_roles()
+
+        # Process passed verbose
+        self.verbose = verbose
 
     def __getitem__(self, key):
 

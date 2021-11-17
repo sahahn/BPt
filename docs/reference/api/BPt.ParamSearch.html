@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.ParamSearch &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.ParamSearch &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.ParamSearch.copy" href="BPt.ParamSearch.copy.html" />
@@ -286,8 +284,8 @@
   <div class="section" id="bpt-paramsearch">
 <h1>BPt.ParamSearch<a class="headerlink" href="#bpt-paramsearch" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="BPt.ParamSearch">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">ParamSearch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">search_type</span><span class="o">=</span><span class="default_value">'RandomSearch'</span></em>, <em class="sig-param"><span class="n">cv</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">n_iter</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">scorer</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">weight_scorer</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mp_context</span><span class="o">=</span><span class="default_value">'loky'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">dask_ip</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">memmap_X</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">search_only_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">progress_loc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L1186-L1520"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.ParamSearch" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.ParamSearch">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">ParamSearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RandomSearch'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scorer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_scorer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mp_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'loky'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memmap_X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_only_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L1203-L1537"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.ParamSearch" title="Permalink to this definition">¶</a></dt>
 <dd><p>ParamSearch is special input object designed to be
 used with <a class="reference internal" href="BPt.ModelPipeline.html#BPt.ModelPipeline" title="BPt.ModelPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelPipeline</span></code></a> or <a class="reference internal" href="BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a> that
 is used in order to define a hyperparameter search strategy.</p>
@@ -636,7 +634,7 @@ to append to after every completed parameter.</p>
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

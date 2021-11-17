@@ -12,6 +12,7 @@ Version 2.0
 .. toctree::
    :maxdepth: 2
    
+   v2.1.4
    v2.1.3
    v2.1.2
    v2.1.1

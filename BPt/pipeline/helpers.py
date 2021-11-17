@@ -6,6 +6,7 @@ import inspect
 from copy import deepcopy
 from joblib import hash as joblib_hash
 from ..util import is_array_like
+from ..dataset.data_file import DataFile
 from ..default.params.Params import Params
 
 
@@ -258,6 +259,9 @@ def get_possible_params(estimator, method):
 
 def check_replace(objs):
 
+    jobs_aliases = ['n_jobs', 'fix_n_jobs', '_fix_n_jobs',
+                    'fix_n_jobs_', '_n_jobs', 'n_jobs_']
+
     if isinstance(objs, list):
         return [check_replace(o) for o in objs]
 
@@ -271,6 +275,25 @@ def check_replace(objs):
         return tuple([check_replace(o) for o in objs])
 
     if isinstance(objs, dict):
+
+        if len(objs) == 0:
+            return objs
+
+        # Check first element, if data file
+        # assume this is dict of data files
+        # and return right away
+        # @TODO maybe do something smarter w/ checking
+        # cache w.r.t to DataFiles here, like idk, convert path
+        # to something universal, or sort of something.
+        if isinstance(objs[list(objs)[0]], DataFile):
+            return objs
+
+        # Check n_jobs in dict
+        for k in objs:
+            for j_a in jobs_aliases:
+                if k == j_a:
+                    objs[k] = 1
+
         return {k: check_replace(objs[k]) for k in objs}
 
     if hasattr(objs, 'get_params'):
@@ -279,20 +302,13 @@ def check_replace(objs):
             setattr(objs, param, new_value)
 
         # Also if has n_jobs replace all with fixed 1
-        if hasattr(objs, 'n_jobs'):
-            setattr(objs, 'n_jobs', 1)
-        if hasattr(objs, 'fix_n_jobs'):
-            setattr(objs, 'fix_n_jobs', 1)
-        if hasattr(objs, '_n_jobs'):
-            try:
-                setattr(objs, '_n_jobs', 1)
-            except AttributeError:
-                pass
-        if hasattr(objs, 'n_jobs_'):
-            try:
-                setattr(objs, 'n_jobs_', 1)
-            except AttributeError:
-                pass
+        # trying in a bunch of different ways
+        for j_a in jobs_aliases:
+            if hasattr(objs, j_a):
+                try:
+                    setattr(objs, j_a, 1)
+                except AttributeError:
+                    pass
 
         # Return objs as changed in place
         return objs

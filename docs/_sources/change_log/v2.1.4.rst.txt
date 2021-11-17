@@ -5,6 +5,10 @@
 Version 2.1.4
 ---------------
 
+- Updated :class:`Pipeline`
+  Fixed bug that when using a pipeline with nevergrad search and custom
+  n_jobs, would not corrected find the cache when the n_jobs passed varied.
+
 - Updated :class:`Dataset`
   New Dataset behavior is to upon init,
   allow setting parameter verbose, as well the new default verbose values is 1 from 0.

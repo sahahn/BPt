@@ -272,6 +272,9 @@
   <div class="section" id="version-2-1-4">
 <span id="whatsnew-214"></span><h1>Version 2.1.4<a class="headerlink" href="#version-2-1-4" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
+<li><p>Updated <a class="reference internal" href="../reference/api/BPt.Pipeline.html#BPt.Pipeline" title="BPt.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>
+Fixed bug that when using a pipeline with nevergrad search and custom
+n_jobs, would not corrected find the cache when the n_jobs passed varied.</p></li>
 <li><p>Updated <a class="reference internal" href="../reference/api/BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>
 New Dataset behavior is to upon init,
 allow setting parameter verbose, as well the new default verbose values is 1 from 0.</p></li>

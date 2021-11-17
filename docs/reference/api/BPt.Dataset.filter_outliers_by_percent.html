@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.filter_outliers_by_percent &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.Dataset.filter_outliers_by_percent &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.Dataset.filter_outliers_by_std" href="BPt.Dataset.filter_outliers_by_std.html" />
@@ -438,8 +436,8 @@
   <div class="section" id="bpt-dataset-filter-outliers-by-percent">
 <h1>BPt.Dataset.filter_outliers_by_percent<a class="headerlink" href="#bpt-dataset-filter-outliers-by-percent" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
-<dt id="BPt.Dataset.filter_outliers_by_percent">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">filter_outliers_by_percent</code><span class="sig-paren">(</span><em class="sig-param">scope='float'</em>, <em class="sig-param">fop=1</em>, <em class="sig-param">drop=True</em>, <em class="sig-param">reduce_func=&lt;function mean&gt;</em>, <em class="sig-param">n_jobs=-1</em>, <em class="sig-param">inplace=False</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L204-L314"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.filter_outliers_by_percent" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.Dataset.filter_outliers_by_percent">
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">filter_outliers_by_percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scope='float'</span></em>, <em class="sig-param"><span class="pre">fop=1</span></em>, <em class="sig-param"><span class="pre">drop=True</span></em>, <em class="sig-param"><span class="pre">reduce_func=&lt;function</span> <span class="pre">mean&gt;</span></em>, <em class="sig-param"><span class="pre">n_jobs=-1</span></em>, <em class="sig-param"><span class="pre">inplace=False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_filtering.py#L204-L314"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.filter_outliers_by_percent" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is designed to allow dropping a fixed percent of outliers
 from the requested columns. This method is designed to work
 on float type / cont. variables.</p>
@@ -553,7 +551,7 @@ be memory intensive depending on the underlying size of the file.</p>
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

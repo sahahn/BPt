@@ -50,5 +50,6 @@ BPt.p.Choice
       Choice.losses
       Choice.name
       Choice.random_state
+      Choice.value
 
 

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ensemble Types &#8212; BPt 2.1.1 documentation</title>
+    <title>Ensemble Types &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Scorers" href="scorers.html" />
@@ -237,6 +235,10 @@
         </li>
     
         <li class="nav-item toc-entry toc-h3">
+            <a href="#balanced-bagging-classifier" class="nav-link">“balanced bagging classifier”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
             <a href="#stacking-classifier" class="nav-link">“stacking classifier”</a>
         </li>
     
@@ -281,11 +283,15 @@
         </li>
     
         <li class="nav-item toc-entry toc-h3">
-            <a href="#id4" class="nav-link">“stacking classifier”</a>
+            <a href="#id4" class="nav-link">“balanced bagging classifier”</a>
         </li>
     
         <li class="nav-item toc-entry toc-h3">
-            <a href="#id5" class="nav-link">“voting classifier”</a>
+            <a href="#id5" class="nav-link">“stacking classifier”</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id6" class="nav-link">“voting classifier”</a>
         </li>
     
             </ul>
@@ -333,6 +339,22 @@ Also note that ensemble may require a few extra params!</p>
 <h3>“bagging classifier”<a class="headerlink" href="#bagging-classifier" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Base Class Documentation: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingClassifier.html#sklearn.ensemble.BaggingClassifier" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble.BaggingClassifier</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="balanced-bagging-classifier">
+<h3>“balanced bagging classifier”<a class="headerlink" href="#balanced-bagging-classifier" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://imbalanced-learn.org/stable/references/generated/imblearn.ensemble.BalancedBaggingClassifier.html#imblearn.ensemble.BalancedBaggingClassifier" title="(in imbalanced-learn v0.8.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">imblearn.ensemble.BalancedBaggingClassifier</span></code></a></p>
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
@@ -480,7 +502,23 @@ Also note that ensemble may require a few extra params!</p>
 </div></blockquote>
 </div>
 <div class="section" id="id4">
-<h3>“stacking classifier”<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3>“balanced bagging classifier”<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Base Class Documentation: <a class="reference external" href="https://imbalanced-learn.org/stable/references/generated/imblearn.ensemble.BalancedBaggingClassifier.html#imblearn.ensemble.BalancedBaggingClassifier" title="(in imbalanced-learn v0.8.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">imblearn.ensemble.BalancedBaggingClassifier</span></code></a></p>
+<p>Param Distributions</p>
+<blockquote>
+<div><ol class="arabic" start="0">
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="id5">
+<h3>“stacking classifier”<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.pipeline.ensemble_wrappers.BPtStackingClassifier</span></code></p>
 <p>Param Distributions</p>
@@ -495,8 +533,8 @@ Also note that ensemble may require a few extra params!</p>
 </div></blockquote>
 </div></blockquote>
 </div>
-<div class="section" id="id5">
-<h3>“voting classifier”<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>“voting classifier”<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Base Class Documentation: <code class="xref py py-class docutils literal notranslate"><span class="pre">BPt.pipeline.ensemble_wrappers.BPtVotingClassifier</span></code></p>
 <p>Param Distributions</p>
@@ -539,7 +577,7 @@ Also note that ensemble may require a few extra params!</p>
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

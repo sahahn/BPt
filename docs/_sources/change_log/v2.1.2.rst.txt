@@ -1,0 +1,9 @@
+.. _whatsnew_212:
+
+.. currentmodule:: BPt
+
+Version 2.1.2
+---------------
+
+- New auto funcs
+  See commits

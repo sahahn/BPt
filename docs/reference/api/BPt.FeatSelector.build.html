@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.FeatSelector.build &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.FeatSelector.build &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.FeatSelector.copy" href="BPt.FeatSelector.copy.html" />
@@ -286,8 +284,8 @@
   <div class="section" id="bpt-featselector-build">
 <h1>BPt.FeatSelector.build<a class="headerlink" href="#bpt-featselector-build" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
-<dt id="BPt.FeatSelector.build">
-<code class="sig-prename descclassname">FeatSelector.</code><code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">problem_spec</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">problem_spec_params</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L207-L340"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.FeatSelector.build" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.FeatSelector.build">
+<span class="sig-prename descclassname"><span class="pre">FeatSelector.</span></span><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_spec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">problem_spec_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/input.py#L207-L340"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.FeatSelector.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used to convert a single pipeline piece into
 the base sklearn style object used in the pipeline. This method
 is mostly used to investigate pieces and is not necessarily
@@ -363,39 +361,39 @@ to.</p>
 <p>Given a dataset and pipeline piece (this can be any
 of the valid <a class="reference internal" href="../pipeline_pieces.html#api-pipeline-pieces"><span class="std std-ref">Pipeline Pieces</span></a> not just <a class="reference internal" href="BPt.Model.html#BPt.Model" title="BPt.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>
 as used here).</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="kn">import</span> <span class="nn">BPt</span> <span class="k">as</span> <span class="nn">bp</span>
 
-<span class="gp">In [2]: </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+<span class="gp">In [13]: </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
 
-<span class="gp">In [3]: </span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">In [14]: </span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 
-<span class="gp">In [4]: </span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;col2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="gp">In [15]: </span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;col2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
 
-<span class="gp">In [5]: </span><span class="n">dataset</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;col2&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">In [16]: </span><span class="n">dataset</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;col2&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="gp">In [6]: </span><span class="n">dataset</span>
-<span class="gh">Out[6]: </span><span class="go"></span>
+<span class="gp">In [17]: </span><span class="n">dataset</span>
+<span class="gh">Out[17]: </span><span class="go"></span>
 <span class="go">   col1  col2</span>
 <span class="go">0     1     3</span>
 <span class="go">1     2     4</span>
 <span class="go">2     3     5</span>
 
-<span class="gp">In [7]: </span><span class="n">piece</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;ridge&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">In [18]: </span><span class="n">piece</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s1">&#39;ridge&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="gp">In [8]: </span><span class="n">piece</span>
-<span class="gh">Out[8]: </span><span class="go">Model(obj=&#39;ridge&#39;, params=1)</span>
+<span class="gp">In [19]: </span><span class="n">piece</span>
+<span class="gh">Out[19]: </span><span class="go">Model(obj=&#39;ridge&#39;, params=1)</span>
 </pre></div>
 </div>
 <p>We can call build from the piece</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">estimator</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="n">estimator</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
 
-<span class="gp">In [10]: </span><span class="n">estimator</span>
-<span class="gh">Out[10]: </span><span class="go"></span>
+<span class="gp">In [21]: </span><span class="n">estimator</span>
+<span class="gh">Out[21]: </span><span class="go"></span>
 <span class="go">(&#39;ridge regressor&#39;,</span>
 <span class="go"> BPtModel(estimator=Ridge(max_iter=100, random_state=1, solver=&#39;lsqr&#39;), inds=&#39;all&#39;))</span>
 
-<span class="gp">In [11]: </span><span class="n">params</span>
-<span class="gh">Out[11]: </span><span class="go">{&#39;ridge regressor__estimator__alpha&#39;: Log(lower=0.001, upper=100000.0)}</span>
+<span class="gp">In [22]: </span><span class="n">params</span>
+<span class="gh">Out[22]: </span><span class="go">{&#39;ridge regressor__estimator__alpha&#39;: Log(lower=0.001, upper=100000.0)}</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -427,7 +425,7 @@ as used here).</p>
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

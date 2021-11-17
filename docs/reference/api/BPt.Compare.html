@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Compare &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.Compare &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.Option" href="BPt.Option.html" />
@@ -201,6 +199,10 @@
                             <a href="BPt.CompareDict.html">BPt.CompareDict</a>
                         </li>
                     
+                        <li class="">
+                            <a href="BPt.compare_dict_from_existing.html">BPt.compare_dict_from_existing</a>
+                        </li>
+                    
                     </ul>
                 </li>
             
@@ -266,8 +268,8 @@
   <div class="section" id="bpt-compare">
 <h1>BPt.Compare<a class="headerlink" href="#bpt-compare" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="BPt.Compare">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.</code><code class="sig-name descname">Compare</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/compare.py#L138-L234"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Compare" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.Compare">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">Compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/compare.py#L141-L237"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Compare" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a special BPt input class which
 can be used as a helper to more easily run comparison
 analysis between a few choice of parameters.</p>
@@ -323,6 +325,13 @@ nesting this choice as a hyper-parameter to optimize
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">BPt.datasets</span> <span class="kn">import</span> <span class="n">load_cali</span>
 
 <span class="gp">In [2]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">load_cali</span><span class="p">()</span>
+<span class="go">Performing test split on: 20640 subjects.</span>
+<span class="go">random_state: 3</span>
+<span class="go">Test split size: 0.2</span>
+
+<span class="go">Performed train/test split</span>
+<span class="go">Train size: 16512</span>
+<span class="go">Test size:  4128</span>
 
 <span class="gp">In [3]: </span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
 <span class="gh">Out[3]: </span><span class="go">(20640, 9)</span>
@@ -340,30 +349,35 @@ nesting this choice as a hyper-parameter to optimize
 <span class="go">Using scope = all (defining a total of 8 features).</span>
 <span class="go">Evaluating 16512 total data points.</span>
 
-<span class="go">Train size: 13209 - Val size: 3303</span>
-<span class="go">Fit fold in 0.028 seconds.</span>
-<span class="go">explained_variance: 0.4303526850247802</span>
-<span class="go">neg_mean_squared_error: -0.7532195015186975</span>
+<span class="go">Training Set: (13209, 8)</span>
+<span class="go">Validation Set: (3303, 8)</span>
+<span class="go">Fit fold in 0.2 seconds.</span>
+<span class="go">explained_variance: 0.4304</span>
+<span class="go">neg_mean_squared_error: -0.7532</span>
 
-<span class="go">Train size: 13209 - Val size: 3303</span>
-<span class="go">Fit fold in 0.116 seconds.</span>
-<span class="go">explained_variance: 0.4201275250708906</span>
-<span class="go">neg_mean_squared_error: -0.7907574869926868</span>
+<span class="go">Training Set: (13209, 8)</span>
+<span class="go">Validation Set: (3303, 8)</span>
+<span class="go">Fit fold in 0.1 seconds.</span>
+<span class="go">explained_variance: 0.4201</span>
+<span class="go">neg_mean_squared_error: -0.7908</span>
 
-<span class="go">Train size: 13210 - Val size: 3302</span>
-<span class="go">Fit fold in 0.035 seconds.</span>
-<span class="go">explained_variance: 0.4187985303961742</span>
-<span class="go">neg_mean_squared_error: -0.7790367337849885</span>
+<span class="go">Training Set: (13210, 8)</span>
+<span class="go">Validation Set: (3302, 8)</span>
+<span class="go">Fit fold in 0.0 seconds.</span>
+<span class="go">explained_variance: 0.4188</span>
+<span class="go">neg_mean_squared_error: -0.7790</span>
 
-<span class="go">Train size: 13210 - Val size: 3302</span>
-<span class="go">Fit fold in 0.015 seconds.</span>
-<span class="go">explained_variance: 0.41480846434221896</span>
-<span class="go">neg_mean_squared_error: -0.8074063045886442</span>
+<span class="go">Training Set: (13210, 8)</span>
+<span class="go">Validation Set: (3302, 8)</span>
+<span class="go">Fit fold in 0.1 seconds.</span>
+<span class="go">explained_variance: 0.4148</span>
+<span class="go">neg_mean_squared_error: -0.8074</span>
 
-<span class="go">Train size: 13210 - Val size: 3302</span>
-<span class="go">Fit fold in 0.016 seconds.</span>
-<span class="go">explained_variance: 0.42100072154562873</span>
-<span class="go">neg_mean_squared_error: -0.7310167619998845</span>
+<span class="go">Training Set: (13210, 8)</span>
+<span class="go">Validation Set: (3302, 8)</span>
+<span class="go">Fit fold in 0.1 seconds.</span>
+<span class="go">explained_variance: 0.4210</span>
+<span class="go">neg_mean_squared_error: -0.7310</span>
 
 <span class="go">Running Compare: Options(pipeline=ridge)</span>
 <span class="go">Predicting target = MedHouseVal</span>
@@ -371,36 +385,41 @@ nesting this choice as a hyper-parameter to optimize
 <span class="go">Using scope = all (defining a total of 8 features).</span>
 <span class="go">Evaluating 16512 total data points.</span>
 
-<span class="go">Train size: 13209 - Val size: 3303</span>
-<span class="go">Fit fold in 0.055 seconds.</span>
-<span class="go">explained_variance: 0.47942036236467067</span>
-<span class="go">neg_mean_squared_error: -0.6883175222611597</span>
+<span class="go">Training Set: (13209, 8)</span>
+<span class="go">Validation Set: (3303, 8)</span>
+<span class="go">Fit fold in 0.1 seconds.</span>
+<span class="go">explained_variance: 0.4794</span>
+<span class="go">neg_mean_squared_error: -0.6883</span>
 
-<span class="go">Train size: 13209 - Val size: 3303</span>
-<span class="go">Fit fold in 0.042 seconds.</span>
-<span class="go">explained_variance: -0.04647581479632268</span>
-<span class="go">neg_mean_squared_error: -1.4276138159882825</span>
+<span class="go">Training Set: (13209, 8)</span>
+<span class="go">Validation Set: (3303, 8)</span>
+<span class="go">Fit fold in 0.0 seconds.</span>
+<span class="go">explained_variance: -0.0465</span>
+<span class="go">neg_mean_squared_error: -1.43</span>
 
-<span class="go">Train size: 13210 - Val size: 3302</span>
-<span class="go">Fit fold in 0.032 seconds.</span>
-<span class="go">explained_variance: 0.468909253175655</span>
-<span class="go">neg_mean_squared_error: -0.7118827601249856</span>
+<span class="go">Training Set: (13210, 8)</span>
+<span class="go">Validation Set: (3302, 8)</span>
+<span class="go">Fit fold in 0.0 seconds.</span>
+<span class="go">explained_variance: 0.4689</span>
+<span class="go">neg_mean_squared_error: -0.7119</span>
 
-<span class="go">Train size: 13210 - Val size: 3302</span>
-<span class="go">Fit fold in 0.045 seconds.</span>
-<span class="go">explained_variance: 0.4704647037779085</span>
-<span class="go">neg_mean_squared_error: -0.7305922994939364</span>
+<span class="go">Training Set: (13210, 8)</span>
+<span class="go">Validation Set: (3302, 8)</span>
+<span class="go">Fit fold in 0.1 seconds.</span>
+<span class="go">explained_variance: 0.4705</span>
+<span class="go">neg_mean_squared_error: -0.7306</span>
 
-<span class="go">Train size: 13210 - Val size: 3302</span>
-<span class="go">Fit fold in 0.038 seconds.</span>
-<span class="go">explained_variance: 0.46299178662045715</span>
-<span class="go">neg_mean_squared_error: -0.677978598779746</span>
+<span class="go">Training Set: (13210, 8)</span>
+<span class="go">Validation Set: (3302, 8)</span>
+<span class="go">Fit fold in 0.1 seconds.</span>
+<span class="go">explained_variance: 0.4630</span>
+<span class="go">neg_mean_squared_error: -0.6780</span>
 
 <span class="gh">Out[5]: </span><span class="go"></span>
 <span class="go">          mean_scores_explained_variance  mean_scores_neg_mean_squared_error  std_scores_explained_variance  std_scores_neg_mean_squared_error  mean_timing_fit  mean_timing_score</span>
 <span class="go">pipeline                                                                                                                                                                          </span>
-<span class="go">elastic                         0.421018                           -0.772287                       0.005127                           0.027155         0.042047           0.016855</span>
-<span class="go">ridge                           0.367062                           -0.847277                       0.206836                           0.290747         0.042503           0.012909</span>
+<span class="go">elastic                         0.421018                           -0.772287                       0.005127                           0.027155         0.123069           0.047592</span>
+<span class="go">ridge                           0.367062                           -0.847277                       0.206836                           0.290747         0.056915           0.007780</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -432,7 +451,7 @@ nesting this choice as a hyper-parameter to optimize
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

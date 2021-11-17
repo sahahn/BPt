@@ -22,6 +22,7 @@ BPt.BPtEvaluatorSubset
       BPtEvaluatorSubset.get_preds_dfs
       BPtEvaluatorSubset.permutation_importance
       BPtEvaluatorSubset.subset_by
+      BPtEvaluatorSubset.to_pickle
 
 
 
@@ -37,6 +38,7 @@ BPt.BPtEvaluatorSubset
       BPtEvaluatorSubset.all_train_subjects
       BPtEvaluatorSubset.all_val_subjects
       BPtEvaluatorSubset.coef_
+      BPtEvaluatorSubset.cv
       BPtEvaluatorSubset.estimator
       BPtEvaluatorSubset.estimators
       BPtEvaluatorSubset.feat_names

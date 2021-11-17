@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.p.Log &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.p.Log &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.p.Log.args" href="BPt.p.Log.args.html" />
@@ -286,8 +284,8 @@
   <div class="section" id="bpt-p-log">
 <h1>BPt.p.Log<a class="headerlink" href="#bpt-p-log" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="BPt.p.Log">
-<em class="property">class </em><code class="sig-prename descclassname">BPt.p.</code><code class="sig-name descname">Log</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/default/params/Params.py#L237-L239"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.p.Log" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.p.Log">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.p.</span></span><span class="sig-name descname"><span class="pre">Log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/default/params/Params.py#L237-L239"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.p.Log" title="Permalink to this definition">¶</a></dt>
 <dd><p>BPt parameter wrapper around <a class="reference external" href="https://facebookresearch.github.io/nevergrad/parametrization_ref.html#nevergrad.p.Log" title="(in nevergrad)"><code class="xref py py-class docutils literal notranslate"><span class="pre">nevergrad.p.Log</span></code></a>.</p>
 <p class="rubric">Attributes</p>
 <table class="longtable table autosummary">
@@ -306,7 +304,7 @@
 <td><p>Stores the descriptor information for this parameter.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.p.Log.dimension.html#BPt.p.Log.dimension" title="BPt.p.Log.dimension"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimension</span></code></a></p></td>
-<td><p>Dimension of the standardized space for this parameter i.e size of the vector returned by get_standardized_data(reference=…)</p></td>
+<td><p>Dimension of the standardized space for this parameter i.e size of the vector returned by get_standardized_data(reference=...)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.p.Log.generation.html#BPt.p.Log.generation" title="BPt.p.Log.generation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generation</span></code></a></p></td>
 <td><p>Generation of the parameter (children are current generation + 1)</p></td>
@@ -353,7 +351,7 @@
 <td><p>Creates a full copy of the parameter (with new unique uid).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.p.Log.freeze.html#BPt.p.Log.freeze" title="BPt.p.Log.freeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">freeze</span></code></a>()</p></td>
-<td><p>Prevents the parameter from changing value again (through value, mutate etc…)</p></td>
+<td><p>Prevents the parameter from changing value again (through value, mutate etc...)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="BPt.p.Log.get_standardized_data.html#BPt.p.Log.get_standardized_data" title="BPt.p.Log.get_standardized_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_standardized_data</span></code></a>(*, reference)</p></td>
 <td><p>Get the standardized data representing the value of the instance as an array in the optimization space.</p></td>
@@ -431,7 +429,7 @@
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

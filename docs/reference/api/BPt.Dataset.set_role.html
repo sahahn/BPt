@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.set_role &#8212; BPt 2.1.1 documentation</title>
+    <title>BPt.Dataset.set_role &#8212; BPt 2.1.4 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -25,20 +25,18 @@
     href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/getting_started.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/pandas.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="BPt.Dataset.set_roles" href="BPt.Dataset.set_roles.html" />
@@ -438,8 +436,8 @@
   <div class="section" id="bpt-dataset-set-role">
 <h1>BPt.Dataset.set_role<a class="headerlink" href="#bpt-dataset-set-role" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
-<dt id="BPt.Dataset.set_role">
-<code class="sig-prename descclassname">Dataset.</code><code class="sig-name descname">set_role</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span></em>, <em class="sig-param"><span class="n">role</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L489-L550"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BPt.Dataset.set_role" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="BPt.Dataset.set_role">
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">set_role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L492-L553"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.set_role" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is used to set a role for
 either a single column or multiple, as set
 through the scope parameter. See <a class="reference internal" href="../../user_guide/role.html#role"><span class="std std-ref">Role</span></a>
@@ -504,6 +502,7 @@ which has the additional constraint that no NaN values
 can be present in that column. So we can see below
 that one row is dropped.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="s1">&#39;numbers&#39;</span><span class="p">,</span> <span class="s1">&#39;non input&#39;</span><span class="p">)</span>
+<span class="go">Dropped 1 Rows</span>
 
 <span class="gp">In [6]: </span><span class="n">data</span>
 <span class="gh">Out[6]: </span><span class="go"></span>
@@ -546,7 +545,7 @@ that one row is dropped.</p>
   <div class="container">
     <p>
           &copy; Copyright 2020-2021.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>
 </footer>

@@ -53,7 +53,7 @@ binary
 		class_weight: TransitionChoice([None, 'balanced'])
 		solver: 'saga'
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
-		C: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=100000.0)
 
 	2. "elastic clf v2" ::
 
@@ -63,7 +63,7 @@ binary
 		class_weight: TransitionChoice([None, 'balanced'])
 		solver: 'saga'
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
-		C: Log(lower=0.01, upper=100000.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(0.01, 100000.0, full_range_sampling=True)
+		C: Log(lower=0.01, upper=100000.0)
 
 	3. "elastic classifier extra" ::
 
@@ -73,8 +73,8 @@ binary
 		class_weight: TransitionChoice([None, 'balanced'])
 		solver: 'saga'
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
-		C: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
-		tol: Log(lower=1e-06, upper=0.01).set_mutation(exponent=4.641588833612779, sigma=1.0).set_bounds(1e-06, 0.01, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=100000.0)
+		tol: Log(lower=1e-06, upper=0.01)
 
 
 "et classifier"
@@ -176,7 +176,7 @@ binary
 		penalty: 'l1'
 		class_weight: TransitionChoice([None, 'balanced'])
 		solver: 'liblinear'
-		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=1000.0)
 
 	2. "lasso C extra" ::
 
@@ -185,8 +185,8 @@ binary
 		penalty: 'l1'
 		class_weight: TransitionChoice([None, 'balanced'])
 		solver: 'liblinear'
-		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
-		tol: Log(lower=1e-06, upper=0.01).set_mutation(exponent=4.641588833612779, sigma=1.0).set_bounds(1e-06, 0.01, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=1000.0)
+		tol: Log(lower=1e-06, upper=0.01)
 
 
 "light gbm classifier"
@@ -207,11 +207,11 @@ binary
 		n_estimators: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
 		num_leaves: Scalar(init=20, lower=6, upper=80).set_mutation(sigma=12.333333333333334).set_bounds(full_range_sampling=False, lower=6, upper=80).set_integer_casting()
 		min_child_samples: Scalar(lower=10, upper=500).set_mutation(sigma=81.66666666666667).set_bounds(full_range_sampling=True, lower=10, upper=500).set_integer_casting()
-		min_child_weight: Log(lower=1e-05, upper=10000.0).set_mutation(exponent=31.62277660168379, sigma=1.0).set_bounds(1e-05, 10000.0, full_range_sampling=True)
+		min_child_weight: Log(lower=1e-05, upper=10000.0)
 		subsample: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
 		colsample_bytree: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
-		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
-		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
+		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1)])
+		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1)])
 		class_weight: TransitionChoice([None, 'balanced'])
 
 	2. "lgbm classifier dist2" ::
@@ -255,7 +255,7 @@ binary
 	1. "linear svc dist" ::
 
 		max_iter: 100
-		C: Log(lower=0.0001, upper=10000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.0001, 10000.0, full_range_sampling=True)
+		C: Log(lower=0.0001, upper=10000.0)
 		class_weight: TransitionChoice([None, 'balanced'])
 
 
@@ -290,10 +290,10 @@ binary
 
 		hidden_layer_sizes: Array(init=(100, 100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -302,10 +302,10 @@ binary
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -316,10 +316,10 @@ binary
 
 		hidden_layer_sizes: Array(init=(100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -328,10 +328,10 @@ binary
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -342,10 +342,10 @@ binary
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -354,10 +354,10 @@ binary
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -415,16 +415,16 @@ binary
 
 		max_iter: 100
 		solver: 'saga'
-		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=1000.0)
 		class_weight: TransitionChoice([None, 'balanced'])
 
 	2. "ridge C extra" ::
 
 		max_iter: Scalar(lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=True, lower=100, upper=1000).set_integer_casting()
 		solver: 'saga'
-		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=1000.0)
 		class_weight: TransitionChoice([None, 'balanced'])
-		tol: Log(lower=1e-06, upper=0.01).set_mutation(exponent=4.641588833612779, sigma=1.0).set_bounds(1e-06, 0.01, full_range_sampling=True)
+		tol: Log(lower=1e-06, upper=0.01)
 
 
 "sgd classifier"
@@ -442,7 +442,7 @@ binary
 
 		loss: 'squared_epsilon_insensitive'
 		penalty: 'elasticnet'
-		alpha: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100000.0)
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
 		class_weight: TransitionChoice([None, 'balanced'])
 
@@ -450,11 +450,11 @@ binary
 
 		loss: TransitionChoice(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'])
 		penalty: TransitionChoice(['l2', 'l1', 'elasticnet'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
 		max_iter: 100
 		learning_rate: TransitionChoice(['optimal', 'invscaling', 'adaptive', 'constant'])
-		eta0: Log(lower=1e-06, upper=1000.0).set_mutation(exponent=31.62277660168379, sigma=1.0).set_bounds(1e-06, 1000.0, full_range_sampling=True)
+		eta0: Log(lower=1e-06, upper=1000.0)
 		power_t: Scalar(lower=0.1, upper=0.9).set_mutation(sigma=0.13333333333333333).set_bounds(full_range_sampling=True, lower=0.1, upper=0.9)
 		early_stopping: TransitionChoice([False, True])
 		validation_fraction: Scalar(lower=0.05, upper=0.5).set_mutation(sigma=0.075).set_bounds(full_range_sampling=True, lower=0.05, upper=0.5)
@@ -478,8 +478,8 @@ binary
 	1. "svm classifier dist" ::
 
 		kernel: 'rbf'
-		gamma: Log(lower=1e-06, upper=1).set_mutation(exponent=9.999999999999998, sigma=1.0).set_bounds(1e-06, 1, full_range_sampling=True)
-		C: Log(lower=0.0001, upper=10000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.0001, 10000.0, full_range_sampling=True)
+		gamma: Log(lower=1e-06, upper=1)
+		C: Log(lower=0.0001, upper=10000.0)
 		probability: True
 		class_weight: TransitionChoice([None, 'balanced'])
 
@@ -501,11 +501,11 @@ binary
 		verbosity: 0
 		objective: 'binary:logistic'
 		n_estimators: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
-		min_child_weight: Log(lower=1e-05, upper=10000.0).set_mutation(exponent=31.62277660168379, sigma=1.0).set_bounds(1e-05, 10000.0, full_range_sampling=True)
+		min_child_weight: Log(lower=1e-05, upper=10000.0)
 		subsample: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
 		colsample_bytree: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
-		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
-		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
+		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1)])
+		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1)])
 
 	2. "xgb classifier dist2" ::
 
@@ -527,7 +527,7 @@ binary
 		max_depth: TransitionChoice(array([3, 4, 5, 6, 7, 8, 9]))
 		subsample: Scalar(lower=0.5, upper=1).set_mutation(sigma=0.08333333333333333).set_bounds(full_range_sampling=True, lower=0.5, upper=1)
 		colsample_bytree: Scalar(lower=0.5, upper=1).set_mutation(sigma=0.08333333333333333).set_bounds(full_range_sampling=True, lower=0.5, upper=1)
-		reg_alpha: Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)
+		reg_alpha: Log(lower=1e-05, upper=1)
 
 
 
@@ -588,15 +588,15 @@ regression
 	1. "elastic regression" ::
 
 		max_iter: 100
-		alpha: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100000.0)
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
 
 	2. "elastic regression extra" ::
 
 		max_iter: Scalar(lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=True, lower=100, upper=1000).set_integer_casting()
-		alpha: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100000.0)
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
-		tol: Log(lower=1e-06, upper=0.01).set_mutation(exponent=4.641588833612779, sigma=1.0).set_bounds(1e-06, 0.01, full_range_sampling=True)
+		tol: Log(lower=1e-06, upper=0.01)
 
 
 "et regressor"
@@ -679,7 +679,7 @@ regression
 	1. "lasso regressor dist" ::
 
 		max_iter: 100
-		alpha: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100000.0)
 
 
 "light gbm regressor"
@@ -700,11 +700,11 @@ regression
 		n_estimators: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
 		num_leaves: Scalar(init=20, lower=6, upper=80).set_mutation(sigma=12.333333333333334).set_bounds(full_range_sampling=False, lower=6, upper=80).set_integer_casting()
 		min_child_samples: Scalar(lower=10, upper=500).set_mutation(sigma=81.66666666666667).set_bounds(full_range_sampling=True, lower=10, upper=500).set_integer_casting()
-		min_child_weight: Log(lower=1e-05, upper=10000.0).set_mutation(exponent=31.62277660168379, sigma=1.0).set_bounds(1e-05, 10000.0, full_range_sampling=True)
+		min_child_weight: Log(lower=1e-05, upper=10000.0)
 		subsample: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
 		colsample_bytree: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
-		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
-		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
+		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1)])
+		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1)])
 
 	2. "lgbm dist2" ::
 
@@ -759,7 +759,7 @@ regression
 
 		loss: 'epsilon_insensitive'
 		max_iter: 100
-		C: Log(lower=0.0001, upper=10000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.0001, 10000.0, full_range_sampling=True)
+		C: Log(lower=0.0001, upper=10000.0)
 
 
 "mlp regressor"
@@ -777,10 +777,10 @@ regression
 
 		hidden_layer_sizes: Array(init=(100, 100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -789,10 +789,10 @@ regression
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -803,10 +803,10 @@ regression
 
 		hidden_layer_sizes: Array(init=(100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -815,10 +815,10 @@ regression
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -829,10 +829,10 @@ regression
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -841,10 +841,10 @@ regression
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -888,7 +888,7 @@ regression
 
 		max_iter: 100
 		solver: 'lsqr'
-		alpha: Log(lower=0.001, upper=100000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.001, 100000.0, full_range_sampling=True)
+		alpha: Log(lower=0.001, upper=100000.0)
 
 
 "svm regressor"
@@ -906,8 +906,8 @@ regression
 	1. "svm dist" ::
 
 		kernel: 'rbf'
-		gamma: Log(lower=1e-06, upper=1).set_mutation(exponent=9.999999999999998, sigma=1.0).set_bounds(1e-06, 1, full_range_sampling=True)
-		C: Log(lower=0.0001, upper=10000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.0001, 10000.0, full_range_sampling=True)
+		gamma: Log(lower=1e-06, upper=1)
+		C: Log(lower=0.0001, upper=10000.0)
 
 
 "tweedie regressor"
@@ -939,11 +939,11 @@ regression
 		verbosity: 0
 		objective: 'reg:squarederror'
 		n_estimators: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
-		min_child_weight: Log(lower=1e-05, upper=10000.0).set_mutation(exponent=31.62277660168379, sigma=1.0).set_bounds(1e-05, 10000.0, full_range_sampling=True)
+		min_child_weight: Log(lower=1e-05, upper=10000.0)
 		subsample: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
 		colsample_bytree: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
-		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
-		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
+		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1)])
+		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1)])
 
 	2. "xgb dist2" ::
 
@@ -965,7 +965,7 @@ regression
 		max_depth: TransitionChoice(array([3, 4, 5, 6, 7, 8, 9]))
 		subsample: Scalar(lower=0.5, upper=1).set_mutation(sigma=0.08333333333333333).set_bounds(full_range_sampling=True, lower=0.5, upper=1)
 		colsample_bytree: Scalar(lower=0.5, upper=1).set_mutation(sigma=0.08333333333333333).set_bounds(full_range_sampling=True, lower=0.5, upper=1)
-		reg_alpha: Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)
+		reg_alpha: Log(lower=1e-05, upper=1)
 
 
 
@@ -1013,7 +1013,7 @@ categorical
 		class_weight: TransitionChoice([None, 'balanced'])
 		solver: 'saga'
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
-		C: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=100000.0)
 
 	2. "elastic clf v2" ::
 
@@ -1023,7 +1023,7 @@ categorical
 		class_weight: TransitionChoice([None, 'balanced'])
 		solver: 'saga'
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
-		C: Log(lower=0.01, upper=100000.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(0.01, 100000.0, full_range_sampling=True)
+		C: Log(lower=0.01, upper=100000.0)
 
 	3. "elastic classifier extra" ::
 
@@ -1033,8 +1033,8 @@ categorical
 		class_weight: TransitionChoice([None, 'balanced'])
 		solver: 'saga'
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
-		C: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
-		tol: Log(lower=1e-06, upper=0.01).set_mutation(exponent=4.641588833612779, sigma=1.0).set_bounds(1e-06, 0.01, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=100000.0)
+		tol: Log(lower=1e-06, upper=0.01)
 
 
 "et classifier"
@@ -1136,7 +1136,7 @@ categorical
 		penalty: 'l1'
 		class_weight: TransitionChoice([None, 'balanced'])
 		solver: 'liblinear'
-		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=1000.0)
 
 	2. "lasso C extra" ::
 
@@ -1145,8 +1145,8 @@ categorical
 		penalty: 'l1'
 		class_weight: TransitionChoice([None, 'balanced'])
 		solver: 'liblinear'
-		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
-		tol: Log(lower=1e-06, upper=0.01).set_mutation(exponent=4.641588833612779, sigma=1.0).set_bounds(1e-06, 0.01, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=1000.0)
+		tol: Log(lower=1e-06, upper=0.01)
 
 
 "light gbm classifier"
@@ -1167,11 +1167,11 @@ categorical
 		n_estimators: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
 		num_leaves: Scalar(init=20, lower=6, upper=80).set_mutation(sigma=12.333333333333334).set_bounds(full_range_sampling=False, lower=6, upper=80).set_integer_casting()
 		min_child_samples: Scalar(lower=10, upper=500).set_mutation(sigma=81.66666666666667).set_bounds(full_range_sampling=True, lower=10, upper=500).set_integer_casting()
-		min_child_weight: Log(lower=1e-05, upper=10000.0).set_mutation(exponent=31.62277660168379, sigma=1.0).set_bounds(1e-05, 10000.0, full_range_sampling=True)
+		min_child_weight: Log(lower=1e-05, upper=10000.0)
 		subsample: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
 		colsample_bytree: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
-		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
-		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
+		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1)])
+		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1)])
 		class_weight: TransitionChoice([None, 'balanced'])
 
 	2. "lgbm classifier dist2" ::
@@ -1215,7 +1215,7 @@ categorical
 	1. "linear svc dist" ::
 
 		max_iter: 100
-		C: Log(lower=0.0001, upper=10000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.0001, 10000.0, full_range_sampling=True)
+		C: Log(lower=0.0001, upper=10000.0)
 		class_weight: TransitionChoice([None, 'balanced'])
 
 
@@ -1250,10 +1250,10 @@ categorical
 
 		hidden_layer_sizes: Array(init=(100, 100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -1262,10 +1262,10 @@ categorical
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -1276,10 +1276,10 @@ categorical
 
 		hidden_layer_sizes: Array(init=(100, 100)).set_mutation(sigma=50).set_bounds(lower=1, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -1288,10 +1288,10 @@ categorical
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -1302,10 +1302,10 @@ categorical
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -1314,10 +1314,10 @@ categorical
 
 		hidden_layer_sizes: Scalar(init=100, lower=2, upper=300).set_mutation(sigma=49.666666666666664).set_bounds(full_range_sampling=False, lower=2, upper=300).set_integer_casting()
 		activation: TransitionChoice(['identity', 'logistic', 'tanh', 'relu'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		batch_size: TransitionChoice(['auto', Scalar(init=200, lower=50, upper=400).set_mutation(sigma=58.333333333333336).set_bounds(full_range_sampling=False, lower=50, upper=400).set_integer_casting()])
 		learning_rate: TransitionChoice(['constant', 'invscaling', 'adaptive'])
-		learning_rate_init: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		learning_rate_init: Log(lower=1e-05, upper=100.0)
 		max_iter: Scalar(init=200, lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=False, lower=100, upper=1000).set_integer_casting()
 		beta_1: Scalar(init=0.9, lower=0.1, upper=0.99).set_mutation(sigma=0.14833333333333334).set_bounds(full_range_sampling=False, lower=0.1, upper=0.99)
 		beta_2: Scalar(init=0.999, lower=0.1, upper=0.9999).set_mutation(sigma=0.14998333333333333).set_bounds(full_range_sampling=False, lower=0.1, upper=0.9999)
@@ -1375,16 +1375,16 @@ categorical
 
 		max_iter: 100
 		solver: 'saga'
-		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=1000.0)
 		class_weight: TransitionChoice([None, 'balanced'])
 
 	2. "ridge C extra" ::
 
 		max_iter: Scalar(lower=100, upper=1000).set_mutation(sigma=150.0).set_bounds(full_range_sampling=True, lower=100, upper=1000).set_integer_casting()
 		solver: 'saga'
-		C: Log(lower=1e-05, upper=1000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(1e-05, 1000.0, full_range_sampling=True)
+		C: Log(lower=1e-05, upper=1000.0)
 		class_weight: TransitionChoice([None, 'balanced'])
-		tol: Log(lower=1e-06, upper=0.01).set_mutation(exponent=4.641588833612779, sigma=1.0).set_bounds(1e-06, 0.01, full_range_sampling=True)
+		tol: Log(lower=1e-06, upper=0.01)
 
 
 "sgd classifier"
@@ -1402,7 +1402,7 @@ categorical
 
 		loss: 'squared_epsilon_insensitive'
 		penalty: 'elasticnet'
-		alpha: Log(lower=1e-05, upper=100000.0).set_mutation(exponent=46.415888336127786, sigma=1.0).set_bounds(1e-05, 100000.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100000.0)
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
 		class_weight: TransitionChoice([None, 'balanced'])
 
@@ -1410,11 +1410,11 @@ categorical
 
 		loss: TransitionChoice(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'])
 		penalty: TransitionChoice(['l2', 'l1', 'elasticnet'])
-		alpha: Log(lower=1e-05, upper=100.0).set_mutation(exponent=14.677992676220699, sigma=1.0).set_bounds(1e-05, 100.0, full_range_sampling=True)
+		alpha: Log(lower=1e-05, upper=100.0)
 		l1_ratio: Scalar(lower=0.01, upper=1).set_mutation(sigma=0.165).set_bounds(full_range_sampling=True, lower=0.01, upper=1)
 		max_iter: 100
 		learning_rate: TransitionChoice(['optimal', 'invscaling', 'adaptive', 'constant'])
-		eta0: Log(lower=1e-06, upper=1000.0).set_mutation(exponent=31.62277660168379, sigma=1.0).set_bounds(1e-06, 1000.0, full_range_sampling=True)
+		eta0: Log(lower=1e-06, upper=1000.0)
 		power_t: Scalar(lower=0.1, upper=0.9).set_mutation(sigma=0.13333333333333333).set_bounds(full_range_sampling=True, lower=0.1, upper=0.9)
 		early_stopping: TransitionChoice([False, True])
 		validation_fraction: Scalar(lower=0.05, upper=0.5).set_mutation(sigma=0.075).set_bounds(full_range_sampling=True, lower=0.05, upper=0.5)
@@ -1438,8 +1438,8 @@ categorical
 	1. "svm classifier dist" ::
 
 		kernel: 'rbf'
-		gamma: Log(lower=1e-06, upper=1).set_mutation(exponent=9.999999999999998, sigma=1.0).set_bounds(1e-06, 1, full_range_sampling=True)
-		C: Log(lower=0.0001, upper=10000.0).set_mutation(exponent=21.544346900318843, sigma=1.0).set_bounds(0.0001, 10000.0, full_range_sampling=True)
+		gamma: Log(lower=1e-06, upper=1)
+		C: Log(lower=0.0001, upper=10000.0)
 		probability: True
 		class_weight: TransitionChoice([None, 'balanced'])
 
@@ -1461,11 +1461,11 @@ categorical
 		verbosity: 0
 		objective: 'binary:logistic'
 		n_estimators: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
-		min_child_weight: Log(lower=1e-05, upper=10000.0).set_mutation(exponent=31.62277660168379, sigma=1.0).set_bounds(1e-05, 10000.0, full_range_sampling=True)
+		min_child_weight: Log(lower=1e-05, upper=10000.0)
 		subsample: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
 		colsample_bytree: Scalar(lower=0.3, upper=0.95).set_mutation(sigma=0.10833333333333332).set_bounds(full_range_sampling=True, lower=0.3, upper=0.95)
-		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
-		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)])
+		reg_alpha: TransitionChoice([0, Log(lower=1e-05, upper=1)])
+		reg_lambda: TransitionChoice([0, Log(lower=1e-05, upper=1)])
 
 	2. "xgb classifier dist2" ::
 
@@ -1487,7 +1487,7 @@ categorical
 		max_depth: TransitionChoice(array([3, 4, 5, 6, 7, 8, 9]))
 		subsample: Scalar(lower=0.5, upper=1).set_mutation(sigma=0.08333333333333333).set_bounds(full_range_sampling=True, lower=0.5, upper=1)
 		colsample_bytree: Scalar(lower=0.5, upper=1).set_mutation(sigma=0.08333333333333333).set_bounds(full_range_sampling=True, lower=0.5, upper=1)
-		reg_alpha: Log(lower=1e-05, upper=1).set_mutation(exponent=6.812920690579612, sigma=1.0).set_bounds(1e-05, 1, full_range_sampling=True)
+		reg_alpha: Log(lower=1e-05, upper=1)
 
 
 

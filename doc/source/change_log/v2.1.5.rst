@@ -1,0 +1,10 @@
+.. _whatsnew_215:
+
+.. currentmodule:: BPt
+
+Version 2.1.5
+---------------
+
+- Updated :class:`CompareDict`
+  Adding better summaries for cases when for now problem type
+  varies across different comparisons

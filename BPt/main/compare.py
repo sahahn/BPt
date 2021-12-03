@@ -453,6 +453,11 @@ class CompareDict(dict):
 
     def _evaluator_summary(self):
 
+        # TODO what about if the metrics
+        # computed vary ... or one was
+        # run w/o timing or something, handle these
+        # cases
+
         keys = list(self.keys())
         repr_key = keys[0]
         option_keys = [o.key for o in repr_key.options]

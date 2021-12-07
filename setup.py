@@ -20,7 +20,7 @@ setup(name='brain-pred-toolbox',
       python_requires=">=3.7",
       install_requires=[
           'scikit-learn>=1.0.0',
-          'numpy==1.19.5',
+          'numpy>=1.21',
           'scipy>=1.2',
           'pandas>=1.1.5',
           'matplotlib>=3.2.2',

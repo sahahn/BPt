@@ -1,5 +1,3 @@
-from ..transformer import BPtTransformerMV
-from ..input import MVTransformer
 from ....dataset.Dataset import Dataset
 from ....main.input import Pipeline, Scaler, Model, ParamSearch
 from ....main.funcs import get_estimator
@@ -21,6 +19,12 @@ def get_X():
 
 
 def basic_test():
+
+    try:
+        from ..transformer import BPtTransformerMV
+    except ImportError:
+        return
+
 
     X = get_X()
     mv = BPtTransformerMV(estimator=CCA(multiview_output=False),
@@ -50,6 +54,11 @@ def basic_test():
 
 def test_with_cache():
 
+    try:
+        from ..transformer import BPtTransformerMV
+    except ImportError:
+        return
+
     temp_dr = os.path.join(tempfile.gettempdir(), 'temp_dr')
     if os.path.exists(temp_dr):
         shutil.rmtree(temp_dr)
@@ -73,6 +82,11 @@ def test_with_cache():
 
 
 def test_with_mapping():
+
+    try:
+        from ..transformer import BPtTransformerMV
+    except ImportError:
+        return
 
     X = get_X()
     mv = BPtTransformerMV(estimator=CCA(multiview_output=False),
@@ -111,6 +125,12 @@ def get_dataset():
 
 def test_build():
 
+    try:
+        from ..transformer import BPtTransformerMV
+        from ..input import MVTransformer
+    except ImportError:
+        return
+
     data = get_dataset()
 
     piece = MVTransformer(obj='cca', scopes=[['1', '2'], ['3', '4']])
@@ -134,6 +154,12 @@ def test_build():
 
 
 def test_basic_pipeline_integration():
+
+    try:
+        from ..transformer import BPtTransformerMV
+        from ..input import MVTransformer
+    except ImportError:
+        return
 
     data = get_dataset()
     mv_trans = MVTransformer(obj='cca',
@@ -166,6 +192,12 @@ def test_basic_pipeline_integration():
 
 def test_pipeline_with_search_integration():
     '''Want to make sure doesn't break in a multi-proc context.'''
+
+    try:
+        from ..transformer import BPtTransformerMV
+        from ..input import MVTransformer
+    except ImportError:
+        return
 
     data = get_dataset()
     mv_trans = MVTransformer(obj='cca',

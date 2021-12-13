@@ -1,3 +1,4 @@
+from numpy.lib.shape_base import split
 from .BPtEvaluator import BPtEvaluator
 from .input_operations import BPtInputMixIn
 from copy import deepcopy, copy
@@ -406,15 +407,56 @@ class CompareDict(dict):
 
         # @TODO make sure all of same time
 
-        # if evaluation results
+        # if Evaluation results
         if isinstance(ex, BPtEvaluator):
+            if self._check_multiple_problem_types():
+                return self._split_evaluator_summary(by='problem_type')
             return self._evaluator_summary()
 
         # @TODO add more options
 
         raise RuntimeError('Base options not comparable.')
 
+    def _check_multiple_problem_types(self):
+
+        problem_types = []
+        for key in list(self.keys()):
+            problem_types.append(self[key].ps.problem_type)
+
+        if len(set(problem_types)) > 1:
+            return True
+        return False
+
+    def _split_evaluator_summary(self, by='problem_type'):
+
+        # @TODO add more by options + auto detect
+
+        subsets = {}
+        for key in list(self.keys()):
+
+            if by == 'problem_type':
+                split = self[key].ps.problem_type
+
+            # Add to subset by split value
+            try:
+                subsets[split][key] = self[key]
+            except KeyError:
+                subsets[split] = {key: self[key]}
+
+        # Convert to individual summary dfs
+        summary_dfs = {split: CompareDict(subsets[split]).summary()
+                       for split in subsets}
+
+        # Return separate summary per split in special 
+        # MultipleSummary display object
+        return MultipleSummary(summary_dfs)
+
     def _evaluator_summary(self):
+
+        # TODO what about if the metrics
+        # computed vary ... or one was
+        # run w/o timing or something, handle these
+        # cases
 
         keys = list(self.keys())
         repr_key = keys[0]
@@ -579,6 +621,27 @@ class CompareDict(dict):
         '''
 
         return
+
+class MultipleSummary():
+
+    def __init__(self, summary_dfs):
+        self.summary_dfs = summary_dfs
+
+    def _repr_html_(self):
+
+        template = """<div style="float: left; padding: 10px;">
+        <h3>{0}</h3>{1}</div>"""
+
+        html = ''
+        for name in self.summary_dfs:
+            html += template.format(name, self.summary_dfs[name]._repr_html_())
+            html += '\n'
+
+        return html
+
+    def __repr__(self):
+
+        return repr(self.summary_dfs)
 
 
 def compare_dict_from_existing(results):

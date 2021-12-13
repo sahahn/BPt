@@ -230,7 +230,7 @@ def to_data_file(self, scope,
 
         import BPt as bp
         data = bp.Dataset()
-        data['files'] = ['loc1.npy', 'loc2.npy']
+        data['files'] = ['data/loc1.npy', 'data/loc2.npy']
         data
 
     We now have a :class:`Dataset`, but out column 'files' is not

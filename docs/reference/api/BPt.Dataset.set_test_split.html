@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.set_test_split &#8212; BPt 2.1.4 documentation</title>
+    <title>BPt.Dataset.set_test_split &#8212; BPt 2.1.5 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -538,25 +538,36 @@ each time the function is called.)</p>
 
 <span class="gp">In [3]: </span><span class="n">data</span>
 <span class="gh">Out[3]: </span><span class="go"></span>
-<span class="go">   col0  col1  col2</span>
-<span class="go">0     0     1     2</span>
-<span class="go">1     0     1     2</span>
-<span class="go">2     0     1     2</span>
-<span class="go">3     0     1     2</span>
-<span class="go">4     0     1     2</span>
+<span class="go">  animals  numbers</span>
+<span class="go">0   &#39;cat&#39;      1.0</span>
+<span class="go">1   &#39;cat&#39;      2.0</span>
+<span class="go">2   &#39;dog&#39;      1.0</span>
+<span class="go">3   &#39;dog&#39;      2.0</span>
+<span class="go">4   &#39;elk&#39;      NaN</span>
 
 <span class="gp">In [4]: </span><span class="n">data</span><span class="o">.</span><span class="n">set_test_split</span><span class="p">(</span><span class="n">size</span><span class="o">=.</span><span class="mi">6</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">Performing test split on: 5 subjects.</span>
+<span class="go">random_state: None</span>
+<span class="go">Test split size: 0.6</span>
+
+<span class="go">Performed train/test split</span>
+<span class="go">Train size: 2</span>
+<span class="go">Test size:  3</span>
 
 <span class="gp">In [5]: </span><span class="n">data</span><span class="o">.</span><span class="n">train_subjects</span>
-<span class="gh">Out[5]: </span><span class="go">Int64Index([2, 1], dtype=&#39;int64&#39;)</span>
+<span class="gh">Out[5]: </span><span class="go">Int64Index([1, 2], dtype=&#39;int64&#39;)</span>
 
 <span class="gp">In [6]: </span><span class="n">data</span><span class="o">.</span><span class="n">test_subjects</span>
-<span class="gh">Out[6]: </span><span class="go">Int64Index([3, 4, 0], dtype=&#39;int64&#39;)</span>
+<span class="gh">Out[6]: </span><span class="go">Int64Index([4, 3, 0], dtype=&#39;int64&#39;)</span>
 </pre></div>
 </div>
 <p>Note that the split is stored in the dataset itself.
 We can also pass specific subjects.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_test_split</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="go">Overriding existing train/test split.</span>
+<span class="go">Performed train/test split</span>
+<span class="go">Train size: 3</span>
+<span class="go">Test size:  2</span>
 
 <span class="gp">In [8]: </span><span class="n">data</span><span class="o">.</span><span class="n">train_subjects</span>
 <span class="gh">Out[8]: </span><span class="go">Int64Index([2, 3, 4], dtype=&#39;int64&#39;)</span>

@@ -136,6 +136,14 @@ binary
 
 		defaults only
 
+	1. "hgb classifier dist1" ::
+
+		max_iter: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
+		min_samples_leaf: Scalar(lower=10, upper=100).set_mutation(sigma=15.0).set_bounds(full_range_sampling=True, lower=10, upper=100).set_integer_casting()
+		max_leaf_nodes: Scalar(init=20, lower=6, upper=80).set_mutation(sigma=12.333333333333334).set_bounds(full_range_sampling=False, lower=6, upper=80).set_integer_casting()
+		l2_regularization: TransitionChoice([0, Log(lower=1e-05, upper=1)])
+		class_weight: TransitionChoice([None, 'balanced'])
+
 
 "knn classifier"
 ****************
@@ -647,6 +655,13 @@ regression
 
 		defaults only
 
+	1. "hgb dist1" ::
+
+		max_iter: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
+		min_samples_leaf: Scalar(lower=10, upper=100).set_mutation(sigma=15.0).set_bounds(full_range_sampling=True, lower=10, upper=100).set_integer_casting()
+		max_leaf_nodes: Scalar(init=20, lower=6, upper=80).set_mutation(sigma=12.333333333333334).set_bounds(full_range_sampling=False, lower=6, upper=80).set_integer_casting()
+		l2_regularization: TransitionChoice([0, Log(lower=1e-05, upper=1)])
+
 
 "knn regressor"
 ***************
@@ -1095,6 +1110,14 @@ categorical
 	0. "default" ::
 
 		defaults only
+
+	1. "hgb classifier dist1" ::
+
+		max_iter: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
+		min_samples_leaf: Scalar(lower=10, upper=100).set_mutation(sigma=15.0).set_bounds(full_range_sampling=True, lower=10, upper=100).set_integer_casting()
+		max_leaf_nodes: Scalar(init=20, lower=6, upper=80).set_mutation(sigma=12.333333333333334).set_bounds(full_range_sampling=False, lower=6, upper=80).set_integer_casting()
+		l2_regularization: TransitionChoice([0, Log(lower=1e-05, upper=1)])
+		class_weight: TransitionChoice([None, 'balanced'])
 
 
 "knn classifier"

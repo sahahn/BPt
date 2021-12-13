@@ -1,9 +1,13 @@
-from ..BPtLGBM import BPtLGBMClassifier, BPtLGBMRegressor
 from ...main.CV import BPtCV, CVStrategy
 import numpy as np
 
 
 def test_basic():
+
+    try:
+        from ..BPtLGBM import BPtLGBMClassifier, BPtLGBMRegressor
+    except:
+        return
 
     X = np.ones((20, 20))
     y = np.ones((20))
@@ -20,6 +24,11 @@ def test_basic():
 
 
 def test_with_bpt_cv():
+
+    try:
+        from ..BPtLGBM import BPtLGBMRegressor
+    except:
+        return
 
     cv = BPtCV(splits=.5, n_repeats=1, cv_strategy=CVStrategy(),
                splits_vals=None, random_state=1)
@@ -50,6 +59,11 @@ def test_with_bpt_cv():
 
 def test_cv_as_size():
 
+    try:
+        from ..BPtLGBM import BPtLGBMRegressor
+    except:
+        return
+
     X = np.ones((20, 20))
     y = np.ones((20))
 
@@ -67,6 +81,11 @@ def test_cv_as_size():
 
 
 def test_with_cat_features():
+
+    try:
+        from ..BPtLGBM import BPtLGBMRegressor
+    except:
+        return
 
     X = np.ones((5, 5))
     y = np.ones((5))

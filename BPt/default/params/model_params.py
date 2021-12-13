@@ -126,6 +126,19 @@ P['rf dist'] = {'n_estimators': n_estimators,
 P['rf classifier dist'] = P['rf dist'].copy()
 P['rf classifier dist']['class_weight'] = cls_weight
 
+from sklearn.ensemble import HistGradientBoostingRegressor
+
+# Hist gradient boosting params
+P['hgb dist1'] =\
+    {'max_iter': n_estimators,
+     'min_samples_leaf': Scalar(lower=10, upper=100).set_integer_casting(),
+     'max_leaf_nodes': Scalar(init=20, lower=6, upper=80).set_integer_casting(),
+     'l2_regularization': TransitionChoice([0, Log(lower=1e-5, upper=1)])}
+
+# Classifier version
+P['hgb classifier dist1'] = P['hgb dist1'].copy()
+P['hgb classifier dist1']['class_weight'] = cls_weight
+
 # Light gbm params
 P['base lgbm'] = {'silent': True}
 

@@ -1,4 +1,5 @@
-from ..compare import (Option, CompareDict, compare_dict_from_existing)
+from ..compare import (Option, CompareDict, MultipleSummary,
+                       compare_dict_from_existing)
 from ...dataset.Dataset import Dataset
 from ..funcs import evaluate
 import numpy as np
@@ -33,13 +34,14 @@ def test_option_compares_not_equal():
     assert o1 != o2
 
 
-def get_results():
+def get_results(problem_type='regression'):
 
     fake = Dataset()
 
     fake['1'] = np.ones((20))
     fake['2'] = np.ones((20))
     fake['3'] = np.ones((20))
+    fake['3'][:10] = 0
     fake = fake.set_role('3', 'target')
 
     pipe = Pipeline(Model('dt'))
@@ -47,10 +49,21 @@ def get_results():
     results = evaluate(pipeline=pipe,
                        dataset=fake,
                        cv=2,
+                       problem_type=problem_type,
                        progress_bar=False)
 
     return results
 
+def test_compare_dict_mixed_summary():
+
+    r1 = get_results('regression')
+    r2 = get_results('binary')
+
+    cd = compare_dict_from_existing([r1, r2])
+
+    ms = cd.summary()
+    assert isinstance(ms, MultipleSummary)
+    assert len(list(ms.summary_dfs)) == 2
 
 def test_compare_dict_from_existing_case1():
     # Dict case

@@ -11,6 +11,11 @@ def test_conv_to_list_None():
 
 def test_save_docx_table():
 
+    try:
+        import docx
+    except ImportError:
+        return
+
     loc = os.path.join(tempfile.gettempdir(), 't.docx')
 
     df = pd.DataFrame(['1', '2', '3'], columns=['1'])

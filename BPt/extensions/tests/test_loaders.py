@@ -1,6 +1,4 @@
-from ..loaders import (SurfMaps, SurfLabels, Identity,
-                       load_surf, SingleConnectivityMeasure,
-                       ThresholdNetworkMeasures)
+from ..loaders import (SurfMaps, SurfLabels, Identity, load_surf)
 import numpy as np
 import tempfile
 import os
@@ -237,6 +235,11 @@ def test_surf_maps_average_fail():
 
 def test_single_connectivity_measure():
 
+    try:
+        from ..loaders import SingleConnectivityMeasure
+    except ImportError:
+        return
+
     scm = SingleConnectivityMeasure()
     X_trans = scm.fit_transform(np.ones((5, 10)))
     assert X_trans.shape == (10, 10)
@@ -251,6 +254,11 @@ def test_single_connectivity_measure():
 
 
 def test_threshold_network_measures_abs():
+
+    try:
+        from ..loaders import ThresholdNetworkMeasures
+    except:
+        return
 
     nm =\
         ThresholdNetworkMeasures(threshold=0.2,
@@ -289,6 +297,11 @@ def test_threshold_network_measures_abs():
 
 def test_threshold_network_measures_neg():
 
+    try:
+        from ..loaders import ThresholdNetworkMeasures
+    except:
+        return
+
     nm =\
         ThresholdNetworkMeasures(threshold=-.2,
                                  threshold_type='neg',
@@ -306,6 +319,11 @@ def test_threshold_network_measures_neg():
 
 
 def test_threshold_network_measures_pos():
+
+    try:
+        from ..loaders import ThresholdNetworkMeasures
+    except:
+        return
 
     nm =\
         ThresholdNetworkMeasures(threshold=.2,
@@ -325,6 +343,11 @@ def test_threshold_network_measures_pos():
 
 def test_threshold_network_measures_density():
 
+    try:
+        from ..loaders import ThresholdNetworkMeasures
+    except:
+        return
+
     nm =\
         ThresholdNetworkMeasures(threshold=.2,
                                  threshold_type='abs',
@@ -343,6 +366,11 @@ def test_threshold_network_measures_density():
 
 def test_threshold_network_measures_density_pos():
 
+    try:
+        from ..loaders import ThresholdNetworkMeasures
+    except:
+        return
+
     nm =\
         ThresholdNetworkMeasures(threshold=.2,
                                  threshold_type='pos',
@@ -360,6 +388,11 @@ def test_threshold_network_measures_density_pos():
     assert np.sum(thresh_X) == 3
 
 def test_threshold_network_measures_density_neg():
+
+    try:
+        from ..loaders import ThresholdNetworkMeasures
+    except:
+        return
 
     nm =\
         ThresholdNetworkMeasures(threshold=.2,

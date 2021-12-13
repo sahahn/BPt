@@ -1,0 +1,6 @@
+animals,numbers
+'cat',1.0
+'cat',2.0
+'dog',1.0
+'dog',2.0
+'elk',NaN

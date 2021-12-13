@@ -22,7 +22,7 @@ def basic_test():
 
     try:
         from ..transformer import BPtTransformerMV
-    except ImportError:
+    except (ImportError, ModuleNotFoundError):
         return
 
 
@@ -56,7 +56,7 @@ def test_with_cache():
 
     try:
         from ..transformer import BPtTransformerMV
-    except ImportError:
+    except (ImportError, ModuleNotFoundError):
         return
 
     temp_dr = os.path.join(tempfile.gettempdir(), 'temp_dr')
@@ -85,7 +85,7 @@ def test_with_mapping():
 
     try:
         from ..transformer import BPtTransformerMV
-    except ImportError:
+    except (ImportError, ModuleNotFoundError):
         return
 
     X = get_X()
@@ -128,7 +128,7 @@ def test_build():
     try:
         from ..transformer import BPtTransformerMV
         from ..input import MVTransformer
-    except ImportError:
+    except (ImportError, ModuleNotFoundError):
         return
 
     data = get_dataset()
@@ -158,7 +158,7 @@ def test_basic_pipeline_integration():
     try:
         from ..transformer import BPtTransformerMV
         from ..input import MVTransformer
-    except ImportError:
+    except (ImportError, ModuleNotFoundError):
         return
 
     data = get_dataset()
@@ -196,7 +196,7 @@ def test_pipeline_with_search_integration():
     try:
         from ..transformer import BPtTransformerMV
         from ..input import MVTransformer
-    except ImportError:
+    except (ImportError, ModuleNotFoundError):
         return
 
     data = get_dataset()

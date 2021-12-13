@@ -25,9 +25,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install wheel
         pip install pytest
-        pip install .[extra]
+        pip install
     - name: Run py tests
       run: |
+        pytest
+    - name: Add extra and test
+      run: |
+        pip install .[extra]
         pytest
     - name: Run lower pandas version test
       run: |

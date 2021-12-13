@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.to_data_file &#8212; BPt 2.1.4 documentation</title>
+    <title>BPt.Dataset.to_data_file &#8212; BPt 2.1.5 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -507,13 +507,13 @@ We will perform a simple example here.</p>
 
 <span class="gp">In [2]: </span><span class="n">data</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
 
-<span class="gp">In [3]: </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;loc1.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;loc2.npy&#39;</span><span class="p">]</span>
+<span class="gp">In [3]: </span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;data/loc1.npy&#39;</span><span class="p">,</span> <span class="s1">&#39;data/loc2.npy&#39;</span><span class="p">]</span>
 
 <span class="gp">In [4]: </span><span class="n">data</span>
 <span class="gh">Out[4]: </span><span class="go"></span>
-<span class="go">      files</span>
-<span class="go">0  loc1.npy</span>
-<span class="go">1  loc2.npy</span>
+<span class="go">           files</span>
+<span class="go">0  data/loc1.npy</span>
+<span class="go">1  data/loc2.npy</span>
 </pre></div>
 </div>
 <p>We now have a <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>, but out column ‘files’ is not
@@ -533,8 +533,8 @@ shows integers. That’s actually the desired behavior though, we
 can check it out in file_mapping.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="n">data</span><span class="o">.</span><span class="n">file_mapping</span>
 <span class="gh">Out[7]: </span><span class="go"></span>
-<span class="go">{0: DataFile(loc=&#39;/home/sage/BPt/doc/loc1.npy&#39;),</span>
-<span class="go"> 1: DataFile(loc=&#39;/home/sage/BPt/doc/loc2.npy&#39;)}</span>
+<span class="go">{0: DataFile(loc=&#39;/home/sage/BPt/doc/data/loc1.npy&#39;),</span>
+<span class="go"> 1: DataFile(loc=&#39;/home/sage/BPt/doc/data/loc2.npy&#39;)}</span>
 </pre></div>
 </div>
 <p>The file_mapping is then used internally with <a class="reference internal" href="BPt.Loader.html#BPt.Loader" title="BPt.Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">Loader</span></code></a>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Default Pipelines &#8212; BPt 2.1.4 documentation</title>
+    <title>Default Pipelines &#8212; BPt 2.1.5 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -210,7 +210,7 @@ be accessed though BPt.default.pipelines.</p>
 <span class="gh">Out[3]: </span><span class="go"></span>
 <span class="go">[&#39;elastic_pipe&#39;,</span>
 <span class="go"> &#39;ridge_pipe&#39;,</span>
-<span class="go"> &#39;lgbm_pipe&#39;,</span>
+<span class="go"> &#39;gb_pipe&#39;,</span>
 <span class="go"> &#39;svm_pipe&#39;,</span>
 <span class="go"> &#39;stacking_pipe&#39;,</span>
 <span class="go"> &#39;compare_pipe&#39;]</span>
@@ -251,7 +251,7 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go">                      param_search=ParamSearch(cv=CV(cv_strategy=CVStrategy()),</span>
 <span class="go">                                               n_iter=60),</span>
 <span class="go">                      params=1)])</span>
-<span class="go">lgbm_pipe</span>
+<span class="go">gb_pipe</span>
 <span class="go">Pipeline(steps=[Imputer(obj=&#39;mean&#39;, scope=&#39;float&#39;),</span>
 <span class="go">                Imputer(obj=&#39;median&#39;, scope=&#39;category&#39;), Scaler(obj=&#39;robust&#39;),</span>
 <span class="go">                Transformer(obj=&#39;one hot encoder&#39;, scope=&#39;category&#39;),</span>
@@ -295,7 +295,7 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go">                                       params=1)],</span>
 <span class="go">                         n_jobs_type=&#39;models&#39;, obj=&#39;stacking&#39;)])</span>
 <span class="go">compare_pipe</span>
-<span class="go">&lt;BPt.main.compare.Compare object at 0x7f6434a44850&gt;</span>
+<span class="go">&lt;BPt.main.compare.Compare object at 0x7fefc0690f10&gt;</span>
 </pre></div>
 </div>
 <p>Note also that the individual pieces which make up the default pipelines can be accessed as well.</p>
@@ -309,7 +309,7 @@ be accessed though BPt.default.pipelines.</p>
 <span class="go"> &#39;ohe&#39;,</span>
 <span class="go"> &#39;random_search&#39;,</span>
 <span class="go"> &#39;elastic_search&#39;,</span>
-<span class="go"> &#39;lgbm_search&#39;,</span>
+<span class="go"> &#39;gb_search&#39;,</span>
 <span class="go"> &#39;u_feat&#39;,</span>
 <span class="go"> &#39;svm&#39;,</span>
 <span class="go"> &#39;svm_search_pipe&#39;,</span>

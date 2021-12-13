@@ -52,22 +52,22 @@ binary
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7fee3976c4c0>
+		score_func: <function f_classif at 0x7f314e9661f0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7fee3976c4c0>
+		score_func: <function f_classif at 0x7f314e9661f0>
 		percentile: Scalar(init=50, lower=1, upper=99).set_mutation(sigma=16.333333333333332).set_bounds(full_range_sampling=False, lower=1, upper=99)
 
 	2. "univar fs c keep more" ::
 
-		score_func: <function f_classif at 0x7fee3976c4c0>
+		score_func: <function f_classif at 0x7f314e9661f0>
 		percentile: Scalar(init=75, lower=50, upper=99).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=50, upper=99)
 
 	3. "univar fs c keep less" ::
 
-		score_func: <function f_classif at 0x7fee3976c4c0>
+		score_func: <function f_classif at 0x7f314e9661f0>
 		percentile: Scalar(init=25, lower=1, upper=50).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=1, upper=50)
 
 
@@ -127,22 +127,22 @@ regression
 
 	0. "base univar fs regression" ::
 
-		score_func: <function f_regression at 0x7fee3976c700>
+		score_func: <function f_regression at 0x7f314e966430>
 		percentile: 50
 
 	1. "univar fs regression dist" ::
 
-		score_func: <function f_regression at 0x7fee3976c700>
+		score_func: <function f_regression at 0x7f314e966430>
 		percentile: Scalar(init=50, lower=1, upper=99).set_mutation(sigma=16.333333333333332).set_bounds(full_range_sampling=False, lower=1, upper=99)
 
 	2. "univar fs r keep more" ::
 
-		score_func: <function f_regression at 0x7fee3976c700>
+		score_func: <function f_regression at 0x7f314e966430>
 		percentile: Scalar(init=75, lower=50, upper=99).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=50, upper=99)
 
 	3. "univar fs r keep less" ::
 
-		score_func: <function f_regression at 0x7fee3976c700>
+		score_func: <function f_regression at 0x7f314e966430>
 		percentile: Scalar(init=25, lower=1, upper=50).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=1, upper=50)
 
 
@@ -202,22 +202,22 @@ categorical
 
 	0. "base univar fs classifier" ::
 
-		score_func: <function f_classif at 0x7fee3976c4c0>
+		score_func: <function f_classif at 0x7f314e9661f0>
 		percentile: 50
 
 	1. "univar fs classifier dist" ::
 
-		score_func: <function f_classif at 0x7fee3976c4c0>
+		score_func: <function f_classif at 0x7f314e9661f0>
 		percentile: Scalar(init=50, lower=1, upper=99).set_mutation(sigma=16.333333333333332).set_bounds(full_range_sampling=False, lower=1, upper=99)
 
 	2. "univar fs c keep more" ::
 
-		score_func: <function f_classif at 0x7fee3976c4c0>
+		score_func: <function f_classif at 0x7f314e9661f0>
 		percentile: Scalar(init=75, lower=50, upper=99).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=50, upper=99)
 
 	3. "univar fs c keep less" ::
 
-		score_func: <function f_classif at 0x7fee3976c4c0>
+		score_func: <function f_classif at 0x7f314e9661f0>
 		percentile: Scalar(init=25, lower=1, upper=50).set_mutation(sigma=8.166666666666666).set_bounds(full_range_sampling=False, lower=1, upper=50)
 
 

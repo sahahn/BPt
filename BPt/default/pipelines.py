@@ -20,6 +20,7 @@ svm_search = Model(svm_search_pipe)
 
 # A little funky, but if lgbm not installed, use hbm
 try:
+    import lightgbm
     gb_search = Model('lgbm', params=1, param_search=random_search)
 except ImportError:
     gb_search = Model('hbm', params=1, param_search=random_search)

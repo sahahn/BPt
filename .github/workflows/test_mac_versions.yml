@@ -22,11 +22,16 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        brew install libomp
         python -m pip install --upgrade pip
         pip install pytest
-        pip install .[extra]
+        pip install .
         brew install lightgbm
     - name: Test with pytest with coverage
       run: |
+        pytest
+    - name: Upgrade and re-test
+      run : |
+        brew install libomp
+        pip install .[extra]
+        brew install lightgbm
         pytest

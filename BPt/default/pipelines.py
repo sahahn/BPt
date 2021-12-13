@@ -23,7 +23,7 @@ try:
     import lightgbm
     gb_search = Model('lgbm', params=1, param_search=random_search)
 except ImportError:
-    gb_search = Model('hbm', params=1, param_search=random_search)
+    gb_search = Model('hgb', params=1, param_search=random_search)
 
 stacking = Ensemble('stacking', models=[elastic_search,
                                         ridge_search,

@@ -5,7 +5,6 @@ import tempfile
 import shutil
 import os
 import numpy as np
-from mvlearn.embed import CCA
 
 
 def get_X():
@@ -22,6 +21,7 @@ def basic_test():
 
     try:
         from ..transformer import BPtTransformerMV
+        from mvlearn.embed import CCA
     except (ImportError, ModuleNotFoundError):
         return
 
@@ -56,6 +56,7 @@ def test_with_cache():
 
     try:
         from ..transformer import BPtTransformerMV
+        from mvlearn.embed import CCA
     except (ImportError, ModuleNotFoundError):
         return
 
@@ -85,6 +86,7 @@ def test_with_mapping():
 
     try:
         from ..transformer import BPtTransformerMV
+        from mvlearn.embed import CCA
     except (ImportError, ModuleNotFoundError):
         return
 
@@ -128,6 +130,7 @@ def test_build():
     try:
         from ..transformer import BPtTransformerMV
         from ..input import MVTransformer
+        from mvlearn.embed import CCA
     except (ImportError, ModuleNotFoundError):
         return
 
@@ -158,6 +161,7 @@ def test_basic_pipeline_integration():
     try:
         from ..transformer import BPtTransformerMV
         from ..input import MVTransformer
+        from mvlearn.embed import CCA
     except (ImportError, ModuleNotFoundError):
         return
 
@@ -196,6 +200,7 @@ def test_pipeline_with_search_integration():
     try:
         from ..transformer import BPtTransformerMV
         from ..input import MVTransformer
+        from mvlearn.embed import CCA
     except (ImportError, ModuleNotFoundError):
         return
 

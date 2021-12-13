@@ -97,6 +97,11 @@ def test_summary_float_col():
 
 def test_summary_save():
 
+    try:
+        import docx
+    except ImportError:
+        return
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
 

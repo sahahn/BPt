@@ -366,6 +366,11 @@ def test_threshold_network_measures_density():
 
 def test_threshold_network_measures_density_pos():
 
+    try:
+        from ..loaders import ThresholdNetworkMeasures
+    except:
+        return
+
     nm =\
         ThresholdNetworkMeasures(threshold=.2,
                                  threshold_type='pos',

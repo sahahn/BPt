@@ -104,29 +104,31 @@ class BPtLoader(ScopeTransformer):
         # Note there already is an out mapping
         # which has been applied to mapping,
         # so we need to consider that
-        self.new_out_mapping_ = {}
+        new_out_mapping_ = {}
 
         # Update inds / rest inds by current out mapping
-        inds = proc_mapping(self.inds_, self.out_mapping_)
+        self.post_inds_ = proc_mapping(self.inds_, self.out_mapping_)
         rest_inds = proc_mapping(self.rest_inds_, self.out_mapping_)
 
         # Add changed X_trans by col
-        for c in range(len(inds)):
-            ind = inds[c]
-            self.new_out_mapping_[ind] = self.X_trans_inds_[c]
+        for c in range(len(self.post_inds_)):
+            ind = self.post_inds_[c]
+            new_out_mapping_[ind] = self.X_trans_inds_[c]
 
         # Fill the remaining spots sequentially,
         # for each of the rest inds.
         for c in range(len(rest_inds)):
             ind = rest_inds[c]
-            self.new_out_mapping_[ind] = self.n_trans_feats_ + c
+            new_out_mapping_[ind] = self.n_trans_feats_ + c
 
         # Overwrite out mapping
-        self.out_mapping_ = self.new_out_mapping_
+        self.out_mapping_ = new_out_mapping_
 
         # Update the original mapping, this is the mapping which
         # will be passed to the next piece of the pipeline
         update_mapping(mapping, self.out_mapping_)
+
+        self.pass_on_mapping_ = mapping.copy()
 
     def fit_transform(self, X, y=None, mapping=None,
                       fit_index=None, **fit_params):
@@ -316,7 +318,8 @@ class BPtLoader(ScopeTransformer):
         for col_ind in self.inds_:
 
             # Get reverse inds and data for just this col
-            reverse_inds = proc_mapping([col_ind], self.out_mapping_)
+            reverse_inds = proc_mapping([col_ind], self.pass_on_mapping_)
+
             col_fis = fis_data[reverse_inds]
             col_names = fis_names[reverse_inds]
 
@@ -333,7 +336,7 @@ class BPtLoader(ScopeTransformer):
 
         # Fill in with original
         for col_ind in self.rest_inds_:
-            reverse_ind = proc_mapping([col_ind], self.out_mapping_)[0]
+            reverse_ind = proc_mapping([col_ind], self.pass_on_mapping_)[0]
             original_ind = reverse_mapping[col_ind]
 
             # Just pass along data and name, but in original spot

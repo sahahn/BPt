@@ -265,7 +265,6 @@ def test_pipeline_inverse_transform_FIs_loader_static_transform():
 
     fis = pd.Series(coef_, index=feat_names)
     inverse_fis = pipe.inverse_transform_FIs(fis)
-    print(inverse_fis)
 
     assert inverse_fis.loc[0] == 4
     assert inverse_fis.loc[1].shape == ((2, 2))

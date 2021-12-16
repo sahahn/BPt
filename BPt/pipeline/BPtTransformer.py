@@ -1,4 +1,4 @@
-from .helpers import update_mapping, check_om
+from .helpers import update_mapping, proc_mapping
 from .ScopeObjs import ScopeTransformer
 from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
@@ -19,26 +19,30 @@ class BPtTransformer(ScopeTransformer):
 
     def _update_transformer_mapping(self, mapping):
 
-        # Minor concern
-        check_om(self.out_mapping_)
-
         # Need to update the mapping before returning
+
+        # Update inds / rest inds by current out mapping
+        inds = proc_mapping(self.inds_, self.out_mapping_)
+        rest_inds = proc_mapping(self.rest_inds_, self.out_mapping_)
 
         # Many to many case for transformer,
         # override existing out_mapping_
-        self.out_mapping_ = {}
+        new_out_mapping_ = {}
         X_trans_inds = list(range(self.n_trans_feats_))
 
         # Many to many case, each ind is mapped
         # to all outputted X_trans_inds
-        for i in self.inds_:
-            self.out_mapping_[i] = X_trans_inds
+        for i in inds:
+            new_out_mapping_[i] = X_trans_inds
 
         # Fill the remaining spots sequentially,
         # for each of the rest inds.
-        for c in range(len(self.rest_inds_)):
-            ind = self.rest_inds_[c]
-            self.out_mapping_[ind] = self.n_trans_feats_ + c
+        for c in range(len(rest_inds)):
+            ind = rest_inds[c]
+            new_out_mapping_[ind] = self.n_trans_feats_ + c
+
+        # Override
+        self.out_mapping_ = new_out_mapping_
 
         # Update the original mapping, this is the mapping which
         # will be passed to the next piece of the pipeline

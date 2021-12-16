@@ -1,4 +1,4 @@
-from .helpers import update_mapping
+from .helpers import update_mapping, check_om
 from .ScopeObjs import ScopeTransformer
 from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
@@ -18,6 +18,9 @@ class BPtTransformer(ScopeTransformer):
         return self
 
     def _update_transformer_mapping(self, mapping):
+
+        # Minor concern
+        check_om(self.out_mapping_)
 
         # Need to update the mapping before returning
 

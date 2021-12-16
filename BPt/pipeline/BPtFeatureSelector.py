@@ -1,5 +1,5 @@
 from sklearn.feature_selection._base import SelectorMixin
-from .helpers import update_mapping
+from .helpers import update_mapping, check_om
 from .ScopeObjs import ScopeTransformer
 import numpy as np
 import pandas as pd
@@ -8,6 +8,9 @@ import pandas as pd
 class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
 
     def _update_feat_mapping(self, X, mapping):
+
+        # Minor concern
+        check_om(self.out_mapping_)
 
         # Need to pass along the correct mapping
         # overwrite existing out mapping

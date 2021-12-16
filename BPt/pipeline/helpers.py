@@ -358,3 +358,20 @@ def replace_with_in_params(params, original, replace):
         new_params[key.replace(original, replace)] = params[key]
 
     return new_params
+
+
+def check_om(out_mapping):
+
+    # Worried about possibility
+    # make sure out_mapping at these stages
+    # is 1:1
+    flag = False
+
+    for key in out_mapping:
+        if key != out_mapping[key]:
+            flag = True
+
+    # Issue warning if comes up
+    if flag:
+        import warnings
+        warnings.warn('Maybe an issue with updating inds correctly, carefully validate results.')

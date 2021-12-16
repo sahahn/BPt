@@ -699,7 +699,7 @@ def _eval_prep(estimator, ps, dataset, cv=5):
     '''Internal helper function.'''
 
     # Check for subjects == 'default' in problem_spec
-    if ps.subjects == 'default':
+    if isinstance(ps.subjects, str) and ps.subjects == 'default':
 
         # If a test set is defined
         if dataset._get_test_subjects() is not None:

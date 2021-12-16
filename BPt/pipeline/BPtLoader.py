@@ -1,4 +1,3 @@
-from typing import Mapping
 from .helpers import (update_mapping, proc_mapping, get_reverse_mapping)
 import numpy as np
 from joblib import Parallel, delayed
@@ -102,19 +101,28 @@ class BPtLoader(ScopeTransformer):
 
     def _update_loader_mappings(self, mapping):
 
-        # Need to set out_mapping_ and update mapping
-        self.out_mapping_ = {}
+        # Note there already is an out mapping
+        # which has been applied to mapping,
+        # so we need to consider that
+        self.new_out_mapping_ = {}
+
+        # Update inds / rest inds by current out mapping
+        inds = proc_mapping(self.inds_, self.out_mapping_)
+        rest_inds = proc_mapping(self.rest_inds_, self.out_mapping_)
 
         # Add changed X_trans by col
-        for c in range(len(self.inds_)):
-            ind = self.inds_[c]
-            self.out_mapping_[ind] = self.X_trans_inds_[c]
+        for c in range(len(inds)):
+            ind = inds[c]
+            self.new_out_mapping_[ind] = self.X_trans_inds_[c]
 
         # Fill the remaining spots sequentially,
         # for each of the rest inds.
-        for c in range(len(self.rest_inds_)):
-            ind = self.rest_inds_[c]
-            self.out_mapping_[ind] = self.n_trans_feats_ + c
+        for c in range(len(rest_inds)):
+            ind = rest_inds[c]
+            self.new_out_mapping_[ind] = self.n_trans_feats_ + c
+
+        # Overwrite out mapping
+        self.out_mapping_ = self.new_out_mapping_
 
         # Update the original mapping, this is the mapping which
         # will be passed to the next piece of the pipeline
@@ -206,7 +214,12 @@ class BPtLoader(ScopeTransformer):
     def _get_trans_col(self, fm_keys):
 
         # Grab the right data files from the file mapping (casting to int!)
-        data_files = [self.file_mapping[int(fm_key)] for fm_key in fm_keys]
+        try:
+            data_files = [self.file_mapping[int(fm_key)] for fm_key in fm_keys]
+
+        # Add error about if NaN found
+        except ValueError:
+            raise ValueError('NaN error trying to load DataFile, make sure no missing DataFiles!')
 
         # Clone the base loader
         cloned_estimator = clone(self.estimator)
@@ -394,6 +407,8 @@ class BPtListLoader(BPtLoader):
         # Process the mapping
         if mapping is None:
             mapping = {}
+
+        # ???
         self._proc_mapping(mapping)
 
         if len(self.inds_) != 1:

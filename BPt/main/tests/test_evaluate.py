@@ -945,22 +945,12 @@ def run_fs_checks(evaluator):
     assert msk[0] == msk[1]
 
     if msk[0]:
-        assert sel.out_mapping_[0] == 0
-        assert sel.out_mapping_[1] == 1
-
         if msk[2]:
-            assert sel.out_mapping_[2] == 2
             assert len(evaluator.feat_names[0]) == 3
         else:
-            assert sel.out_mapping_[2] is None
             assert len(evaluator.feat_names[0]) == 2
-
     else:
-        assert sel.out_mapping_[0] is None
-        assert sel.out_mapping_[1] is None
-        assert sel.out_mapping_[2] == 0
         assert len(evaluator.feat_names[0]) == 1
-
         if not msk[2]:
             raise AssertionError('Mask all False!')
 

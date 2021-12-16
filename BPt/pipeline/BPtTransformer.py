@@ -48,9 +48,14 @@ class BPtTransformer(ScopeTransformer):
         # will be passed to the next piece of the pipeline
         update_mapping(mapping, self.out_mapping_)
 
+        # Set final out mapping
+        self.out_mapping_ = mapping.copy()
+
         return self
 
     def _all_case_update_transformer_mapping(self, X, mapping):
+
+        # TODO Should this be changed at all???
 
         # Get as list of
         X_trans_inds = list(range(self.n_trans_feats_))

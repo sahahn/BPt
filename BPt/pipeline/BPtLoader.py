@@ -128,7 +128,10 @@ class BPtLoader(ScopeTransformer):
         # will be passed to the next piece of the pipeline
         update_mapping(mapping, self.out_mapping_)
 
-        self.pass_on_mapping_ = mapping.copy()
+        # Set final out mapping
+        self.out_mapping_ = mapping.copy()
+
+        return self
 
     def fit_transform(self, X, y=None, mapping=None,
                       fit_index=None, **fit_params):
@@ -318,7 +321,7 @@ class BPtLoader(ScopeTransformer):
         for col_ind in self.inds_:
 
             # Get reverse inds and data for just this col
-            reverse_inds = proc_mapping([col_ind], self.pass_on_mapping_)
+            reverse_inds = proc_mapping([col_ind], self.out_mapping_)
 
             col_fis = fis_data[reverse_inds]
             col_names = fis_names[reverse_inds]
@@ -336,7 +339,7 @@ class BPtLoader(ScopeTransformer):
 
         # Fill in with original
         for col_ind in self.rest_inds_:
-            reverse_ind = proc_mapping([col_ind], self.pass_on_mapping_)[0]
+            reverse_ind = proc_mapping([col_ind], self.out_mapping_)[0]
             original_ind = reverse_mapping[col_ind]
 
             # Just pass along data and name, but in original spot
@@ -453,6 +456,7 @@ class BPtListLoader(BPtLoader):
         self.n_trans_feats_ = loader_attrs['n_trans_feats_']
         self.X_trans_inds_ = loader_attrs['X_trans_inds_']
         self.out_mapping_ = loader_attrs['out_mapping_']
+        self.out_mapping_ = loader_attrs['pass_on_mapping_']
 
         # If is fit_transform, and not just transform
         if is_fit:
@@ -508,7 +512,8 @@ class BPtListLoader(BPtLoader):
         loader_attrs = {'X_trans': X_trans,
                         'n_trans_feats_': self.n_trans_feats_,
                         'X_trans_inds_': self.X_trans_inds_,
-                        'out_mapping_': self.out_mapping_}
+                        'out_mapping_': self.out_mapping_,
+                        'pass_on_mapping_': self.out_mapping_}
 
         # Save
         dump(loader_attrs, hash_loc)

@@ -51,6 +51,9 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
         # will be passed to the next piece of the pipeline
         update_mapping(mapping, self.out_mapping_)
 
+        # Set final out mapping
+        self.out_mapping_ = mapping.copy()
+
         return self
 
     def fit(self, X, y=None, mapping=None,

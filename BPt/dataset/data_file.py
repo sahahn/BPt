@@ -8,7 +8,12 @@ class DataFile():
 
     def __init__(self, loc, load_func):
 
-        self.loc = os.path.abspath(loc)
+        # Allow list of locs also
+        if isinstance(loc, list):
+            self.loc = [os.path.abspath(l) for l in loc]
+        else:
+            self.loc = os.path.abspath(loc)
+
         self.load_func = load_func
 
     def _load(self):

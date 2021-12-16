@@ -1,0 +1,10 @@
+.. _whatsnew_216:
+
+.. currentmodule:: BPt
+
+Version 2.1.6
+---------------
+
+- DataFiles now can support multiple locs
+  Added initial support for DataFiles / Loader being able to work with multiple
+  file locations at once.

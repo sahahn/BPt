@@ -348,7 +348,7 @@ def list_loader_hash(X_col, file_mapping, y, estimator):
 
     # Convert X_col to data files,  then str, then hash
     as_data_files_str = [file_mapping[int(key)].quick_hash_repr() for key in X_col]
-    hash_str1 = file_mapping_to_hash(as_data_files_str)
+    hash_str1 = joblib_hash(as_data_files_str, hash_name='md5')
 
     # Hash y
     hash_str2 = joblib_hash(y, hash_name='md5')

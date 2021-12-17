@@ -50,7 +50,7 @@ class DataFile():
         return self.loc == other.loc
 
     def __hash__(self):
-        return hash(self.loc)
+        return hash(self.loc + self.load_func.__name__)
 
     def __deepcopy__(self, memo):
         return DataFile(deepcopy(self.loc, memo), self.load_func)
@@ -60,6 +60,9 @@ class DataFile():
 
     def __str__(self):
         return self.__repr__()
+
+    def quick_hash_repr(self):
+        return self.loc + '-' + self.load_func.__name__
 
 
 def mp_single_load(files, reduce_func):

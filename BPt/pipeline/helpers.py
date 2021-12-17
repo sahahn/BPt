@@ -282,11 +282,14 @@ def check_replace(objs):
         # Check first element, if data file
         # assume this is dict of data files
         # and return right away
-        # @TODO maybe do something smarter w/ checking
-        # cache w.r.t to DataFiles here, like idk, convert path
-        # to something universal, or sort of something.
         if isinstance(objs[list(objs)[0]], DataFile):
-            return objs
+
+            # Remove NaN first
+            if np.nan in objs:
+                del objs[np.nan]
+
+            # Instead of full dict, return str representation for faster hash
+            return ''.join([str(k) + objs[k].quick_hash_repr() for k in objs])
 
         # Check n_jobs in dict
         for k in objs:

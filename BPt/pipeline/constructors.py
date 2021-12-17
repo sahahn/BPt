@@ -119,6 +119,11 @@ class Constructor():
         return self.dataset._get_data_inds(ps_scope=self.spec['scope'],
                                            scope=scope)
 
+    def get_col_names(self, scope):
+
+        return self.dataset._get_data_col_names(ps_scope=self.spec['scope'],
+                                                scope=scope)
+
     def process(self, params):
         '''params is a list of Param piece classes, or potentially a list
         like custom object,
@@ -742,6 +747,11 @@ class LoaderConstructor(Constructor):
             # special case for loader, don't want
             # to pass Ellipsis for now.
             inds = self.get_inds(param.scope)
+            
+
+            # Get just file_mapping subset of interest
+            cols = self.get_col_names(param.scope)
+            file_mapping_subset = self.dataset.get_file_mapping(cols=cols)
 
             # Unpack to name and object
             name, obj = named_obj
@@ -764,7 +774,7 @@ class LoaderConstructor(Constructor):
             # Wrap in BPtLoader
             wrapped_obj =\
                 Loader(estimator=obj, inds=inds,
-                       file_mapping=self.dataset.get_file_mapping(),
+                       file_mapping=file_mapping_subset,
                        n_jobs=self.spec['n_jobs'],
                        fix_n_jobs=param.fix_n_wrapper_jobs,
                        cache_loc=param.cache_loc)

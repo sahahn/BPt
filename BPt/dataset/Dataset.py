@@ -1011,6 +1011,18 @@ class Dataset(pd.DataFrame):
 
         return sorted(inds)
 
+    def _get_data_col_names(self, ps_scope, scope):
+
+        # Mimic _get_data_inds, but return just the col names
+        data_cols = self._get_data_cols(ps_scope)
+
+        # If scope is 'all', data inds
+        if scope == 'all':
+            return data_cols
+
+        # Return just subset
+        return self._get_cols(scope, limit_to=data_cols)
+
     def _is_data_cat(self, ps_scope, scope):
 
         # Get data cols

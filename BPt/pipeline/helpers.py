@@ -256,6 +256,17 @@ def get_possible_params(estimator, method):
     pos_params = dict(inspect.getmembers(getattr(estimator, method).__code__))
     return pos_params['co_varnames']
 
+def file_mapping_to_str(file_mapping):
+
+    # Remove NaN first
+    if np.nan in file_mapping:
+        del file_mapping[np.nan]
+
+    # Instead of full dict, return str representation for faster hash
+    str_rep = ''.join([str(k) + file_mapping[k].quick_hash_repr() for k in file_mapping])
+
+    return str_rep
+
 
 def check_replace(objs):
 
@@ -284,12 +295,8 @@ def check_replace(objs):
         # and return right away
         if isinstance(objs[list(objs)[0]], DataFile):
 
-            # Remove NaN first
-            if np.nan in objs:
-                del objs[np.nan]
-
-            # Instead of full dict, return str representation for faster hash
-            return ''.join([str(k) + objs[k].quick_hash_repr() for k in objs])
+            # Return fast hash str repr of file mapping
+            return file_mapping_to_str(objs)
 
         # Check n_jobs in dict
         for k in objs:
@@ -339,9 +346,9 @@ def pipe_hash(objs, steps):
 
 def list_loader_hash(X_col, file_mapping, y, estimator):
 
-    # Convert X_col to data files then hash
-    as_data_files = [file_mapping[int(key)] for key in X_col]
-    hash_str1 = joblib_hash(as_data_files, hash_name='md5')
+    # Convert X_col to data files,  then str, then hash
+    as_data_files_str = [file_mapping[int(key)].quick_hash_repr() for key in X_col]
+    hash_str1 = file_mapping_to_hash(as_data_files_str)
 
     # Hash y
     hash_str2 = joblib_hash(y, hash_name='md5')

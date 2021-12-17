@@ -17,3 +17,6 @@ Version 2.1.6
 
 - Updates to summary()
   Added some better formatting + extra options to CompareDict summary func calls
+
+- Compute hash faster for large file mappings
+  In cases with many data files / file mappings, was computing hash slow. Now much faster.

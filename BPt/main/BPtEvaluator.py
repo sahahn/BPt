@@ -385,6 +385,22 @@ class BPtEvaluator():
         self._all_train_subjects = all_train_subjects
 
     @property
+    def n_subjects(self):
+        '''A quicker helper property to get
+        the sum of the length of :data:`train_subjects<BPtEvaluator.train_subjects>`
+        and :data:`val_subjects<BPtEvaluator.val_subjects>` from the 1st fold.
+        '''
+        return len(self.train_subjects[0]) + len(self.val_subjects[0])
+
+    @property
+    def n_folds(self):
+        '''A quicker helper property to get the number of CV folds
+        this object was evaluated with.
+        '''
+        # Just use len of train subjects as proxy for n_folds
+        return len(self.train_subjects)
+
+    @property
     def timing(self):
         '''This property stores information on
         the fit and scoring times, if requested by the

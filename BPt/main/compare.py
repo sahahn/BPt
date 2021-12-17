@@ -397,7 +397,7 @@ class CompareDict(dict):
     def __str__(self):
         return self.__repr__()
 
-    def summary(self):
+    def summary(self, **kwargs):
         '''Return a pandas DataFrame with summary
         information as broken down by all of the different
         original :class:`Compare` options.'''
@@ -410,8 +410,8 @@ class CompareDict(dict):
         # if Evaluation results
         if isinstance(ex, BPtEvaluator):
             if self._check_multiple_problem_types():
-                return self._split_evaluator_summary(by='problem_type')
-            return self._evaluator_summary()
+                return self._split_evaluator_summary(by='problem_type', **kwargs)
+            return self._evaluator_summary(**kwargs)
 
         # @TODO add more options
 
@@ -427,7 +427,7 @@ class CompareDict(dict):
             return True
         return False
 
-    def _split_evaluator_summary(self, by='problem_type'):
+    def _split_evaluator_summary(self, by='problem_type', **kwargs):
 
         # @TODO add more by options + auto detect
 
@@ -444,25 +444,38 @@ class CompareDict(dict):
                 subsets[split] = {key: self[key]}
 
         # Convert to individual summary dfs
-        summary_dfs = {split: CompareDict(subsets[split]).summary()
+        summary_dfs = {split: CompareDict(subsets[split]).summary(**kwargs)
                        for split in subsets}
 
         # Return separate summary per split in special 
         # MultipleSummary display object
         return MultipleSummary(summary_dfs)
 
-    def _evaluator_summary(self):
+    def _evaluator_summary(self, **kwargs):
 
         # TODO what about if the metrics
         # computed vary ... or one was
         # run w/o timing or something, handle these
         # cases
 
+        # Un-pack kwargs
+        show_timing = False
+        if 'show_timing' in kwargs:
+            show_timing = kwargs['show_timing']
+        show_std = True
+        if 'show_std' in kwargs:
+            show_std = kwargs['show_std']
+
+        # Setup
         keys = list(self.keys())
         repr_key = keys[0]
         option_keys = [o.key for o in repr_key.options]
         cols = {key: [] for key in option_keys}
 
+        # Get flags for extra to show
+        flags = self._check_evaluator_difs()
+
+        # Go through each evaluator in self
         for key in list(self.keys()):
 
             for o in key.options:
@@ -471,13 +484,46 @@ class CompareDict(dict):
             # Add values
             evaluator = self[key]
             add_scores(cols, evaluator, attr_name='mean_scores')
-            add_scores(cols, evaluator, attr_name='std_scores')
-            add_scores(cols, evaluator, attr_name='mean_timing')
+
+            if show_std:
+                add_scores(cols, evaluator, attr_name='std_scores')
+
+            if show_timing:
+                add_scores(cols, evaluator, attr_name='mean_timing')
+
+            # Add any extra in flags
+            for attr in flags:
+                try:
+                    cols[attr].append(getattr(evaluator, attr))
+                except KeyError:
+                    cols[attr] = [getattr(evaluator, attr)]
 
         summary = pd.DataFrame.from_dict(cols)
         summary = summary.set_index(option_keys)
 
         return summary
+
+    def _check_evaluator_difs(self):
+
+        # Init
+        attrs = ['n_subjects', 'n_folds']
+        attr_values = {attr: [] for attr in attrs}
+
+        # Go through all
+        for key in list(self.keys()):
+            
+            # Add each value
+            for attr in attrs:
+                attr_values[attr].append(getattr(self[key], attr))
+
+        # If any not all save value, return flags
+        flags = []
+        for attr in attr_values:
+            if len(set(attr_values[attr])) > 1:
+                flags.append(attr)
+        
+        return flags
+
 
     def pairwise_t_stats(self, metric='first'):
         '''This method performs pair-wise t-test

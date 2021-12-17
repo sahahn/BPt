@@ -14,3 +14,6 @@ Version 2.1.6
 
 - Added functions to Dataset
   Added some helper utilities for getting subjects with and without nan, now by scope
+
+- Updates to summary()
+  Added some better formatting + extra options to CompareDict summary func calls

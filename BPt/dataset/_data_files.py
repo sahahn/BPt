@@ -39,13 +39,8 @@ def get_file_mapping(self, cols=None):
         # Get just the data files in scope
         u_values = np.unique(np.array(self[cols]))
 
-        # Make sure if NaN in data
-        # NaN to NaN in is file_mapping
-        if any(pd.isnull(u_values)):
-            self.file_mapping[np.nan] = np.nan
-
-        # Return relevant subset only
-        return {u: self.file_mapping[u] for u in u_values}
+        # Return relevant subset only -  don't include any NaN in subset
+        return {u: self.file_mapping[u] for u in u_values if not pd.isnull(u)}
 
     return self.file_mapping
 

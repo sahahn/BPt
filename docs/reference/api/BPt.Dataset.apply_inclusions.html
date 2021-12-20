@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.apply_inclusions &#8212; BPt 2.1.5 documentation</title>
+    <title>BPt.Dataset.apply_inclusions &#8212; BPt 2.1.6 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -151,7 +151,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -304,6 +304,10 @@
                         </li>
                     
                         <li class="">
+                            <a href="BPt.Dataset.plot_bivar.html">BPt.Dataset.plot_bivar</a>
+                        </li>
+                    
+                        <li class="">
                             <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
@@ -449,10 +453,12 @@ other’s loaded will be dropped.</p>
 <dd class="field-odd"><dl>
 <dt><strong>subjects</strong><span class="classifier"><a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a></span></dt><dd><p>This argument can be any of the BPt accepted
 subject style inputs. E.g., None, ‘nan’ for subjects
-with any nan data, the str location of a file
-formatted with one subject per line, or directly an
-array-like of subjects, to name some options.</p>
-<p>See <a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> for all options.</p>
+with any nan data, or ‘not not’ for subjects without any,
+the str location of a file formatted with one subject per
+line, or directly as an array-like of subjects, to list a few
+options.</p>
+<p>See <a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> for all options, and a more detailed description
+of the already mentioned options.</p>
 </dd>
 <dt><strong>inplace</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, perform the current function inplace and return None.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">default</span> <span class="o">=</span> <span class="kc">False</span>

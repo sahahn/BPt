@@ -46,6 +46,8 @@ BPt.BPtEvaluatorSubset
       BPtEvaluatorSubset.fis_
       BPtEvaluatorSubset.mean_scores
       BPtEvaluatorSubset.mean_timing
+      BPtEvaluatorSubset.n_folds
+      BPtEvaluatorSubset.n_subjects
       BPtEvaluatorSubset.preds
       BPtEvaluatorSubset.ps
       BPtEvaluatorSubset.score

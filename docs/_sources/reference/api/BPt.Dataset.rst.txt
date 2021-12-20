@@ -97,6 +97,8 @@ BPt.Dataset
       Dataset.get_Xy
       Dataset.get_cols
       Dataset.get_file_mapping
+      Dataset.get_nan_subjects
+      Dataset.get_non_nan_subjects
       Dataset.get_roles
       Dataset.get_scopes
       Dataset.get_subjects

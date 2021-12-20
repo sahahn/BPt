@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.consolidate_data_files &#8212; BPt 2.1.5 documentation</title>
+    <title>BPt.Dataset.consolidate_data_files &#8212; BPt 2.1.6 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -151,7 +151,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -304,6 +304,10 @@
                         </li>
                     
                         <li class="">
+                            <a href="BPt.Dataset.plot_bivar.html">BPt.Dataset.plot_bivar</a>
+                        </li>
+                    
+                        <li class="">
                             <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
@@ -437,7 +441,7 @@
 <h1>BPt.Dataset.consolidate_data_files<a class="headerlink" href="#bpt-dataset-consolidate-data-files" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.consolidate_data_files">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">consolidate_data_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data</span> <span class="pre">file'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_existing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fail'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_data_files.py#L299-L425"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.consolidate_data_files" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">consolidate_data_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data</span> <span class="pre">file'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_existing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fail'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_data_files.py#L313-L439"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.consolidate_data_files" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function is designed as helper to consolidate all
 or a subset of the loaded data files into one column. While this
 removes information, in can provide a speed up in terms of downstream

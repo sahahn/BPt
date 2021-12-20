@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.set_train_split &#8212; BPt 2.1.5 documentation</title>
+    <title>BPt.Dataset.set_train_split &#8212; BPt 2.1.6 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -151,7 +151,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -301,6 +301,10 @@
                     
                         <li class="">
                             <a href="BPt.Dataset.plot.html">BPt.Dataset.plot</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="BPt.Dataset.plot_bivar.html">BPt.Dataset.plot_bivar</a>
                         </li>
                     
                         <li class="">
@@ -555,10 +559,10 @@ each time the function is called.)</p>
 <span class="go">Test size:  2</span>
 
 <span class="gp">In [5]: </span><span class="n">data</span><span class="o">.</span><span class="n">train_subjects</span>
-<span class="gh">Out[5]: </span><span class="go">Int64Index([2, 4, 1], dtype=&#39;int64&#39;)</span>
+<span class="gh">Out[5]: </span><span class="go">Int64Index([2, 3, 4], dtype=&#39;int64&#39;)</span>
 
 <span class="gp">In [6]: </span><span class="n">data</span><span class="o">.</span><span class="n">test_subjects</span>
-<span class="gh">Out[6]: </span><span class="go">Int64Index([0, 3], dtype=&#39;int64&#39;)</span>
+<span class="gh">Out[6]: </span><span class="go">Int64Index([0, 1], dtype=&#39;int64&#39;)</span>
 </pre></div>
 </div>
 <p>Note that the split is stored in the dataset itself.

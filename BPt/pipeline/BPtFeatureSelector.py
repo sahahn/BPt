@@ -1,5 +1,5 @@
 from sklearn.feature_selection._base import SelectorMixin
-from .helpers import update_mapping
+from .helpers import update_mapping, check_om, proc_mapping
 from .ScopeObjs import ScopeTransformer
 import numpy as np
 import pandas as pd
@@ -11,7 +11,7 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
 
         # Need to pass along the correct mapping
         # overwrite existing out mapping
-        self.out_mapping_ = {}
+        new_out_mapping_ = {}
 
         # This is the calculated support from the base estimator
         support = self.estimator_.get_support()
@@ -22,27 +22,37 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
         else:
             in_scope_inds = self.inds_
 
+        # Update inds / rest inds by current out mapping
+        in_scope_inds = proc_mapping(in_scope_inds, self.out_mapping_)
+        rest_inds = proc_mapping(self.rest_inds_, self.out_mapping_)
+
         # First half is for updating the index within scope
         cnt = 0
         for i, ind in enumerate(in_scope_inds):
 
             # If kept by feat selection, add, otherwise set to None
             if support[i]:
-                self.out_mapping_[ind] = cnt
+                new_out_mapping_[ind] = cnt
                 cnt += 1
             else:
-                self.out_mapping_[ind] = None
+                new_out_mapping_[ind] = None
 
         # Next, need to update the mapping for the remaining wrapper inds
         # essentially setting them where the cnt left off, then sequentially
         # If None, will just  skip
-        for rem_ind in range(len(self.rest_inds_)):
-            self.out_mapping_[self.rest_inds_[rem_ind]] = cnt
+        for rem_ind in range(len(rest_inds)):
+            new_out_mapping_[rest_inds[rem_ind]] = cnt
             cnt += 1
+
+        # Over-write
+        self.out_mapping_ = new_out_mapping_
 
         # Update the original mapping, this is the mapping which
         # will be passed to the next piece of the pipeline
         update_mapping(mapping, self.out_mapping_)
+
+        # Set final out mapping
+        self.out_mapping_ = mapping.copy()
 
         return self
 

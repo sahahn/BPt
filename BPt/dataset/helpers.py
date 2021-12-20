@@ -99,6 +99,19 @@ def proc_file_input(files, file_to_subject, existing_index=None):
         else:
             subjects = [file_to_subject[key](fp) for fp in file_paths]
 
+        # If more subjects than unique subjects
+        # assume DataFile is made of multiple paths
+        if len(subjects) != len(np.unique(subjects)):
+
+            # Convert to dict of subjects to list of paths
+            subjects_dict = {subject: [] for subject in set(subjects)}
+            for subject, path in zip(subjects, file_paths):
+                subjects_dict[subject].append(path)
+
+            # Then convert to two lists lists
+            subjects, file_paths = list(subjects_dict.keys()), list(subjects_dict.values())
+
+        # Put together in series
         files_series[key] = pd.Series(file_paths, index=subjects,
                                       dtype='object')
 

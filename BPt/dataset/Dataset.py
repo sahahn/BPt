@@ -109,11 +109,14 @@ _shared_docs['drop'] = '''drop : bool, optional
 _shared_docs['subjects'] = '''subjects : :ref:`Subjects`
         This argument can be any of the BPt accepted
         subject style inputs. E.g., None, 'nan' for subjects
-        with any nan data, the str location of a file
-        formatted with one subject per line, or directly an
-        array-like of subjects, to name some options.
+        with any nan data, or 'not not' for subjects without any,
+        the str location of a file formatted with one subject per
+        line, or directly as an array-like of subjects, to list a few
+        options.
 
-        See :ref:`Subjects` for all options.
+        See :ref:`Subjects` for all options, and a more detailed description
+        of the already mentioned options.
+
 '''
 
 
@@ -1008,6 +1011,18 @@ class Dataset(pd.DataFrame):
 
         return sorted(inds)
 
+    def _get_data_col_names(self, ps_scope, scope):
+
+        # Mimic _get_data_inds, but return just the col names
+        data_cols = self._get_data_cols(ps_scope)
+
+        # If scope is 'all', data inds
+        if scope == 'all':
+            return data_cols
+
+        # Return just subset
+        return self._get_cols(scope, limit_to=data_cols)
+
     def _is_data_cat(self, ps_scope, scope):
 
         # Get data cols
@@ -1128,6 +1143,41 @@ class Dataset(pd.DataFrame):
 
     def _get_non_nan_subjects(self, col):
         return self[col][~self[col].isna()].index
+
+    def get_nan_subjects(self, scope):
+        '''TODO - write docstring.
+        
+        This method returns the set of subjects with
+        even a single NaN in any of the in scope columns, i.e.,
+        the inverse of get_non_nan_subjects.'''
+
+        # Check scope and role
+        self._check_sr()
+
+        # Get cols from scope
+        cols = self._get_cols(scope)
+
+        # Checks the subset of scope columns if any NaN
+        # and returns any found.
+        return self[~pd.isnull(self[cols][:]).any(axis=1)].index
+
+    def get_non_nan_subjects(self, scope):
+        '''TODO - write docstring
+        
+        This function is designed to return the set
+        of subjects with no missing data
+        '''
+
+        # Check scope and role
+        self._check_sr()
+
+        # Get cols from scope
+        cols = self._get_cols(scope)
+
+        # Checks the subset of scope columns if any NaN
+        # and will only return the subjects where there are no NaN
+        return self[~pd.isnull(self[cols][:]).any(axis=1)].index
+        
 
     def auto_detect_categorical(self, scope='all', obj_thresh=30,
                                 all_thresh=None, inplace=False):
@@ -1682,6 +1732,7 @@ class Dataset(pd.DataFrame):
 
     from ._subjects import (_apply_only_level,
                             _get_nan_loaded_subjects,
+                            _get_not_nan_loaded_subjects,
                             _get_value_subset_loaded_subjects,
                             _get_base_loaded_subjects,
                             _return_subjects_as,

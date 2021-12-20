@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset &#8212; BPt 2.1.5 documentation</title>
+    <title>BPt.Dataset &#8212; BPt 2.1.6 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -304,6 +304,10 @@
                         </li>
                     
                         <li class="">
+                            <a href="BPt.Dataset.plot_bivar.html">BPt.Dataset.plot_bivar</a>
+                        </li>
+                    
+                        <li class="">
                             <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
@@ -437,7 +441,7 @@
 <h1>BPt.Dataset<a class="headerlink" href="#bpt-dataset" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="BPt.Dataset">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scopes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">non_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L120-L1753"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">BPt.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scopes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">non_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/Dataset.py#L123-L1804"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><div class="line-block">
 <div class="line">The BPt Dataset class is the main class used for preparing data
 into a compatible format to work with machine learning. This class is new
@@ -840,8 +844,14 @@ for setting parameters at the time of construction. For example:</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.get_cols.html#BPt.Dataset.get_cols" title="BPt.Dataset.get_cols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cols</span></code></a>(scope[, limit_to])</p></td>
 <td><p>This method is the main internal and external facing way of getting the names of columns which match a passed scope from the Dataset.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.get_file_mapping.html#BPt.Dataset.get_file_mapping" title="BPt.Dataset.get_file_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_mapping</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.get_file_mapping.html#BPt.Dataset.get_file_mapping" title="BPt.Dataset.get_file_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_file_mapping</span></code></a>([cols])</p></td>
 <td><p>This function is used to access the up to date file mapping.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.get_nan_subjects.html#BPt.Dataset.get_nan_subjects" title="BPt.Dataset.get_nan_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nan_subjects</span></code></a>(scope)</p></td>
+<td><p>TODO - write docstring.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="BPt.Dataset.get_non_nan_subjects.html#BPt.Dataset.get_non_nan_subjects" title="BPt.Dataset.get_non_nan_subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_non_nan_subjects</span></code></a>(scope)</p></td>
+<td><p>TODO - write docstring</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="BPt.Dataset.get_roles.html#BPt.Dataset.get_roles" title="BPt.Dataset.get_roles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_roles</span></code></a>()</p></td>
 <td><p>This function can be used to get a dictionary with the currently loaded roles, See <a class="reference internal" href="../../user_guide/role.html#role"><span class="std std-ref">Role</span></a> for more information on how roles are defined and used within BPt.</p></td>

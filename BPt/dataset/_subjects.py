@@ -23,11 +23,20 @@ def _get_nan_loaded_subjects(self, only_level):
     # Get nan subjects
     nan_subjects = self[pd.isnull(self[:]).any(axis=1)].index
 
-    # Apply only level + convert to sat
+    # Apply only level + convert to set
     nan_subjects = self._apply_only_level(nan_subjects, only_level)
 
     return nan_subjects
 
+def _get_not_nan_loaded_subjects(self, only_level):
+
+    # Get not nan subjects
+    non_nan_subjects = self[~pd.isnull(self[:]).any(axis=1)].index
+
+    # Apply only level + convert to set
+    non_nan_subjects = self._apply_only_level(non_nan_subjects, only_level)
+
+    return non_nan_subjects
 
 def _get_value_subset_loaded_subjects(self, subjects, only_level):
 
@@ -206,6 +215,10 @@ def get_subjects(self, subjects, return_as='set', only_level=None):
     elif isinstance(subjects, str) and subjects == 'nan':
         loaded_subjects =\
             self._get_nan_loaded_subjects(only_level=only_level)
+
+    elif isinstance(subjects, str) and subjects == 'not nan':
+        loaded_subjects =\
+            self._get_not_nan_loaded_subjects(only_level=only_level)
 
     elif isinstance(subjects, str) and subjects in ['all', 'default']:
         loaded_subjects = all_subjects

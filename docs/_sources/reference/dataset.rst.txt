@@ -88,6 +88,7 @@ Plotting / Viewing
    :toctree: api/
 
    Dataset.plot
+   Dataset.plot_bivar
    Dataset.nan_info
    Dataset.summary
 

@@ -46,6 +46,8 @@ BPt.BPtEvaluator
       BPtEvaluator.fis_
       BPtEvaluator.mean_scores
       BPtEvaluator.mean_timing
+      BPtEvaluator.n_folds
+      BPtEvaluator.n_subjects
       BPtEvaluator.preds
       BPtEvaluator.ps
       BPtEvaluator.score

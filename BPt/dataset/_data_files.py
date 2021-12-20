@@ -9,9 +9,11 @@ import numpy as np
 import pandas as pd
 
 
-def get_file_mapping(self):
+def get_file_mapping(self, cols=None):
     '''This function is used to access the
-    up to date file mapping.
+    up to date file mapping. And can be used
+    to specify that only the subset of the file mapping
+    of interest be used, to save on how much info is passed around.
 
     Returns
     --------
@@ -27,7 +29,19 @@ def get_file_mapping(self):
 
     '''
 
+    # Make sure up to date first
     self._check_file_mapping()
+
+    # If a subset of cols passed,
+    # create new subset of file_mapping to return
+    if cols is not None:
+
+        # Get just the data files in scope
+        u_values = np.unique(np.array(self[cols]))
+
+        # Return relevant subset only -  don't include any NaN in subset
+        return {u: self.file_mapping[u] for u in u_values if not pd.isnull(u)}
+
     return self.file_mapping
 
 

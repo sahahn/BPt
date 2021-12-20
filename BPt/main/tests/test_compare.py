@@ -34,21 +34,21 @@ def test_option_compares_not_equal():
     assert o1 != o2
 
 
-def get_results(problem_type='regression'):
+def get_results(problem_type='regression', cv=2, n_subjs=20):
 
     fake = Dataset()
 
-    fake['1'] = np.ones((20))
-    fake['2'] = np.ones((20))
-    fake['3'] = np.ones((20))
-    fake['3'][:10] = 0
+    fake['1'] = np.ones((n_subjs))
+    fake['2'] = np.ones((n_subjs))
+    fake['3'] = np.ones((n_subjs))
+    fake['3'][:n_subjs//2] = 0
     fake = fake.set_role('3', 'target')
 
     pipe = Pipeline(Model('dt'))
 
     results = evaluate(pipeline=pipe,
                        dataset=fake,
-                       cv=2,
+                       cv=cv,
                        problem_type=problem_type,
                        progress_bar=False)
 
@@ -61,7 +61,7 @@ def test_compare_dict_mixed_summary():
 
     cd = compare_dict_from_existing([r1, r2])
 
-    ms = cd.summary()
+    ms = cd.summary(show_timing=True)
     assert isinstance(ms, MultipleSummary)
     assert len(list(ms.summary_dfs)) == 2
 
@@ -74,7 +74,7 @@ def test_compare_dict_from_existing_case1():
     cd = compare_dict_from_existing(results)
     assert isinstance(cd, CompareDict)
     assert cd['3'] is not None
-    assert cd.summary().shape == (3, 6)
+    assert cd.summary(show_timing=True).shape == (3, 6)
 
 
 def test_compare_dict_from_existing_case2():
@@ -87,7 +87,8 @@ def test_compare_dict_from_existing_case2():
     assert isinstance(cd, CompareDict)
     assert cd['0'] is not None
     assert cd['2'] is not None
-    assert cd.summary().shape == (3, 6)
+    assert cd.summary(show_timing=True).shape == (3, 6)
+    assert cd.summary().shape == (3, 4)
 
 
 def test_compare_dict_from_existing_case3():
@@ -107,14 +108,14 @@ def test_compare_dict_from_existing_case3():
     assert isinstance(cd, CompareDict)
     assert cd['x'] is not None
     assert cd['y'] is not None
-    assert cd.summary().shape == (2, 6)
+    assert cd.summary(show_timing=True).shape == (2, 6)
 
     # List case
     cd = compare_dict_from_existing([s_loc1, s_loc2])
     assert isinstance(cd, CompareDict)
     assert cd['1'] is not None
     assert cd['2'] is not None
-    assert cd.summary().shape == (2, 6)
+    assert cd.summary(show_timing=True).shape == (2, 6)
 
     # Alt list mixed case
     cd = compare_dict_from_existing([s_loc1, s_loc2, r1])
@@ -122,7 +123,7 @@ def test_compare_dict_from_existing_case3():
     assert cd['0'] is not None
     assert cd['1'] is not None
     assert cd['2'] is not None
-    assert cd.summary().shape == (3, 6)
+    assert cd.summary(show_timing=True).shape == (3, 6)
 
     # Clean up
     os.remove(s_loc1)
@@ -151,7 +152,41 @@ def test_compare_dict_from_existing_case4():
     assert cd['X'] is not None
     assert cd['Y'] is not None
     assert cd['Z'] is not None
-    assert cd.summary().shape == (3, 6)
+    assert cd.summary(show_timing=True).shape == (3, 6)
 
     # Clean up
     shutil.rmtree(temp_dr)
+
+def test_compare_dict_summary_df_cv():
+    # list case
+
+    r1 = get_results()
+    r2 = get_results(cv=3)
+
+    results = [r1, r2]
+
+    cd = compare_dict_from_existing(results)
+    assert isinstance(cd, CompareDict)
+    assert cd['0'] is not None
+    assert cd['1'] is not None
+
+    assert 'n_folds' in cd._check_evaluator_difs()
+    assert cd.summary(show_timing=True).shape == (2, 7)
+
+
+def test_compare_dict_summary_df_cv_dif2():
+    # list case
+
+    r1 = get_results()
+    r2 = get_results(cv=3, n_subjs=30)
+
+    results = [r1, r2]
+
+    cd = compare_dict_from_existing(results)
+    assert isinstance(cd, CompareDict)
+    assert cd['0'] is not None
+    assert cd['1'] is not None
+
+    assert 'n_folds' in cd._check_evaluator_difs()
+    assert 'n_subjects' in cd._check_evaluator_difs()
+    assert cd.summary(show_timing=True).shape == (2, 8)

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.get_subjects &#8212; BPt 2.1.5 documentation</title>
+    <title>BPt.Dataset.get_subjects &#8212; BPt 2.1.6 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -151,7 +151,7 @@
                     <a href="../dataset.html">Dataset</a>
                     <ul>
                     
-                        <li class="active">
+                        <li class="">
                             <a href="BPt.Dataset.html">BPt.Dataset</a>
                         </li>
                     
@@ -304,6 +304,10 @@
                         </li>
                     
                         <li class="">
+                            <a href="BPt.Dataset.plot_bivar.html">BPt.Dataset.plot_bivar</a>
+                        </li>
+                    
+                        <li class="">
                             <a href="BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
@@ -437,7 +441,7 @@
 <h1>BPt.Dataset.get_subjects<a class="headerlink" href="#bpt-dataset-get-subjects" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.get_subjects">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">get_subjects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'set'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_subjects.py#L112-L240"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.get_subjects" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">get_subjects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_as</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'set'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_subjects.py#L121-L253"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.get_subjects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to get a set of subjects, from
 a set of already loaded ones, or from a saved location.</p>
 <dl class="field-list">
@@ -445,10 +449,12 @@ a set of already loaded ones, or from a saved location.</p>
 <dd class="field-odd"><dl>
 <dt><strong>subjects</strong><span class="classifier"><a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a></span></dt><dd><p>This argument can be any of the BPt accepted
 subject style inputs. E.g., None, ‘nan’ for subjects
-with any nan data, the str location of a file
-formatted with one subject per line, or directly an
-array-like of subjects, to name some options.</p>
-<p>See <a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> for all options.</p>
+with any nan data, or ‘not not’ for subjects without any,
+the str location of a file formatted with one subject per
+line, or directly as an array-like of subjects, to list a few
+options.</p>
+<p>See <a class="reference internal" href="../../user_guide/subjects.html#subjects"><span class="std std-ref">Subjects</span></a> for all options, and a more detailed description
+of the already mentioned options.</p>
 </dd>
 <dt><strong>return_as</strong><span class="classifier">[‘set’, ‘index’, ‘flat index’], optional</span></dt><dd><ul class="simple">
 <li><dl class="simple">

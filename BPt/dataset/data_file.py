@@ -8,7 +8,12 @@ class DataFile():
 
     def __init__(self, loc, load_func):
 
-        self.loc = os.path.abspath(loc)
+        # Allow list of locs also
+        if isinstance(loc, list):
+            self.loc = [os.path.abspath(l) for l in loc]
+        else:
+            self.loc = os.path.abspath(loc)
+
         self.load_func = load_func
 
     def _load(self):
@@ -45,7 +50,7 @@ class DataFile():
         return self.loc == other.loc
 
     def __hash__(self):
-        return hash(self.loc)
+        return hash(self.loc + self.load_func.__name__)
 
     def __deepcopy__(self, memo):
         return DataFile(deepcopy(self.loc, memo), self.load_func)
@@ -55,6 +60,9 @@ class DataFile():
 
     def __str__(self):
         return self.__repr__()
+
+    def quick_hash_repr(self):
+        return self.loc + '-' + self.load_func.__name__
 
 
 def mp_single_load(files, reduce_func):

@@ -256,6 +256,17 @@ def get_possible_params(estimator, method):
     pos_params = dict(inspect.getmembers(getattr(estimator, method).__code__))
     return pos_params['co_varnames']
 
+def file_mapping_to_str(file_mapping):
+
+    # Remove NaN first
+    if np.nan in file_mapping:
+        del file_mapping[np.nan]
+
+    # Instead of full dict, return str representation for faster hash
+    str_rep = ''.join([str(k) + file_mapping[k].quick_hash_repr() for k in file_mapping])
+
+    return str_rep
+
 
 def check_replace(objs):
 
@@ -282,11 +293,10 @@ def check_replace(objs):
         # Check first element, if data file
         # assume this is dict of data files
         # and return right away
-        # @TODO maybe do something smarter w/ checking
-        # cache w.r.t to DataFiles here, like idk, convert path
-        # to something universal, or sort of something.
         if isinstance(objs[list(objs)[0]], DataFile):
-            return objs
+
+            # Return fast hash str repr of file mapping
+            return file_mapping_to_str(objs)
 
         # Check n_jobs in dict
         for k in objs:
@@ -336,9 +346,9 @@ def pipe_hash(objs, steps):
 
 def list_loader_hash(X_col, file_mapping, y, estimator):
 
-    # Convert X_col to data files then hash
-    as_data_files = [file_mapping[int(key)] for key in X_col]
-    hash_str1 = joblib_hash(as_data_files, hash_name='md5')
+    # Convert X_col to data files,  then str, then hash
+    as_data_files_str = [file_mapping[int(key)].quick_hash_repr() for key in X_col]
+    hash_str1 = joblib_hash(as_data_files_str, hash_name='md5')
 
     # Hash y
     hash_str2 = joblib_hash(y, hash_name='md5')
@@ -358,3 +368,20 @@ def replace_with_in_params(params, original, replace):
         new_params[key.replace(original, replace)] = params[key]
 
     return new_params
+
+
+def check_om(out_mapping):
+
+    # Worried about possibility
+    # make sure out_mapping at these stages
+    # is 1:1
+    flag = False
+
+    for key in out_mapping:
+        if key != out_mapping[key]:
+            flag = True
+
+    # Issue warning if comes up
+    if flag:
+        import warnings
+        warnings.warn('Maybe an issue with updating inds correctly, carefully validate results.')

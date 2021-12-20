@@ -1,4 +1,3 @@
-from typing import Mapping
 from .helpers import (update_mapping, proc_mapping, get_reverse_mapping)
 import numpy as np
 from joblib import Parallel, delayed
@@ -102,23 +101,37 @@ class BPtLoader(ScopeTransformer):
 
     def _update_loader_mappings(self, mapping):
 
-        # Need to set out_mapping_ and update mapping
-        self.out_mapping_ = {}
+        # Note there already is an out mapping
+        # which has been applied to mapping,
+        # so we need to consider that
+        new_out_mapping_ = {}
+
+        # Update inds / rest inds by current out mapping
+        self.post_inds_ = proc_mapping(self.inds_, self.out_mapping_)
+        rest_inds = proc_mapping(self.rest_inds_, self.out_mapping_)
 
         # Add changed X_trans by col
-        for c in range(len(self.inds_)):
-            ind = self.inds_[c]
-            self.out_mapping_[ind] = self.X_trans_inds_[c]
+        for c in range(len(self.post_inds_)):
+            ind = self.post_inds_[c]
+            new_out_mapping_[ind] = self.X_trans_inds_[c]
 
         # Fill the remaining spots sequentially,
         # for each of the rest inds.
-        for c in range(len(self.rest_inds_)):
-            ind = self.rest_inds_[c]
-            self.out_mapping_[ind] = self.n_trans_feats_ + c
+        for c in range(len(rest_inds)):
+            ind = rest_inds[c]
+            new_out_mapping_[ind] = self.n_trans_feats_ + c
+
+        # Overwrite out mapping
+        self.out_mapping_ = new_out_mapping_
 
         # Update the original mapping, this is the mapping which
         # will be passed to the next piece of the pipeline
         update_mapping(mapping, self.out_mapping_)
+
+        # Set final out mapping
+        self.out_mapping_ = mapping.copy()
+
+        return self
 
     def fit_transform(self, X, y=None, mapping=None,
                       fit_index=None, **fit_params):
@@ -206,7 +219,12 @@ class BPtLoader(ScopeTransformer):
     def _get_trans_col(self, fm_keys):
 
         # Grab the right data files from the file mapping (casting to int!)
-        data_files = [self.file_mapping[int(fm_key)] for fm_key in fm_keys]
+        try:
+            data_files = [self.file_mapping[int(fm_key)] for fm_key in fm_keys]
+
+        # Add error about if NaN found
+        except ValueError:
+            raise ValueError('NaN error trying to load DataFile, make sure no missing DataFiles!')
 
         # Clone the base loader
         cloned_estimator = clone(self.estimator)
@@ -304,6 +322,7 @@ class BPtLoader(ScopeTransformer):
 
             # Get reverse inds and data for just this col
             reverse_inds = proc_mapping([col_ind], self.out_mapping_)
+
             col_fis = fis_data[reverse_inds]
             col_names = fis_names[reverse_inds]
 
@@ -394,6 +413,8 @@ class BPtListLoader(BPtLoader):
         # Process the mapping
         if mapping is None:
             mapping = {}
+
+        # ???
         self._proc_mapping(mapping)
 
         if len(self.inds_) != 1:
@@ -435,6 +456,7 @@ class BPtListLoader(BPtLoader):
         self.n_trans_feats_ = loader_attrs['n_trans_feats_']
         self.X_trans_inds_ = loader_attrs['X_trans_inds_']
         self.out_mapping_ = loader_attrs['out_mapping_']
+        self.out_mapping_ = loader_attrs['pass_on_mapping_']
 
         # If is fit_transform, and not just transform
         if is_fit:
@@ -490,7 +512,8 @@ class BPtListLoader(BPtLoader):
         loader_attrs = {'X_trans': X_trans,
                         'n_trans_feats_': self.n_trans_feats_,
                         'X_trans_inds_': self.X_trans_inds_,
-                        'out_mapping_': self.out_mapping_}
+                        'out_mapping_': self.out_mapping_,
+                        'pass_on_mapping_': self.out_mapping_}
 
         # Save
         dump(loader_attrs, hash_loc)

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dataset &#8212; BPt 2.1.5 documentation</title>
+    <title>Dataset &#8212; BPt 2.1.6 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -304,6 +304,10 @@
                         </li>
                     
                         <li class="">
+                            <a href="api/BPt.Dataset.plot_bivar.html">BPt.Dataset.plot_bivar</a>
+                        </li>
+                    
+                        <li class="">
                             <a href="api/BPt.Dataset.nan_info.html">BPt.Dataset.nan_info</a>
                         </li>
                     
@@ -585,7 +589,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.update_data_file_paths.html#BPt.Dataset.update_data_file_paths" title="BPt.Dataset.update_data_file_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.update_data_file_paths</span></code></a>(old, new)</p></td>
 <td><p>Go through and update saved file paths within the Datasets file mapping attribute.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.get_file_mapping.html#BPt.Dataset.get_file_mapping" title="BPt.Dataset.get_file_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_file_mapping</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.get_file_mapping.html#BPt.Dataset.get_file_mapping" title="BPt.Dataset.get_file_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.get_file_mapping</span></code></a>([cols])</p></td>
 <td><p>This function is used to access the up to date file mapping.</p></td>
 </tr>
 </tbody>
@@ -649,10 +653,13 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.plot.html#BPt.Dataset.plot" title="BPt.Dataset.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.plot</span></code></a>(scope[, subjects, cut, ...])</p></td>
 <td><p>This function creates plots for each of the passed columns (as specified by scope) seperately.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.nan_info.html#BPt.Dataset.nan_info" title="BPt.Dataset.nan_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.nan_info</span></code></a>([scope])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.plot_bivar.html#BPt.Dataset.plot_bivar" title="BPt.Dataset.plot_bivar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.plot_bivar</span></code></a>(col1, col2[, subjects, ...])</p></td>
+<td><p>This method can be used to plot the relationship between two variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.nan_info.html#BPt.Dataset.nan_info" title="BPt.Dataset.nan_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.nan_info</span></code></a>([scope])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.Dataset.summary.html#BPt.Dataset.summary" title="BPt.Dataset.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.summary</span></code></a>(scope[, subjects, measures, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.Dataset.summary.html#BPt.Dataset.summary" title="BPt.Dataset.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dataset.summary</span></code></a>(scope[, subjects, measures, ...])</p></td>
 <td><p>This method is used to generate a summary across some data.</p></td>
 </tr>
 </tbody>

@@ -1,0 +1,10 @@
+.. _whatsnew_220:
+
+.. currentmodule:: BPt
+
+Version 2.2.0
+---------------
+
+- Initial support for Datasets concat
+  New :func:`concat` simmilar to :func:`pandas.concat` for
+  concatenating with respect to :class:`Dataset` attributes.

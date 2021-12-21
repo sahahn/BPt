@@ -1803,12 +1803,3 @@ class Dataset(pd.DataFrame):
                              drop_cols_by_unique_val,
                              drop_cols_by_nan)
 
-
-def read_csv(*args, **kwargs):
-    '''Passes along all arguments and kwargs to
-    :func:`pandas.read_csv` then casts to :class:`Dataset`.
-
-    This method is just a helper wrapper function.
-    '''
-
-    return Dataset(pd.read_csv(*args, **kwargs))

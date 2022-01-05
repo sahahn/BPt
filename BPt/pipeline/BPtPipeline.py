@@ -19,6 +19,7 @@ class BPtPipeline(Pipeline):
 
     _needs_mapping = True
     _needs_fit_index = True
+    _needs_transform_nested_model = True
 
     def __init__(self, steps, memory=None,
                  verbose=False,
@@ -82,6 +83,17 @@ class BPtPipeline(Pipeline):
     def set_params(self, **kwargs):
         super()._set_params('steps', **kwargs)
         return self
+
+    @property
+    def _nested_final_estimator(self):
+
+        # Get any nested
+        final_estimator = self._final_estimator
+        while hasattr(final_estimator, '_final_estimator') and \
+         getattr(final_estimator, '_final_estimator') is not None:
+            final_estimator = getattr(final_estimator, '_final_estimator')
+
+        return final_estimator
 
     def _fit(self, X, y=None, fit_index=None, **fit_params_steps):
 
@@ -260,7 +272,7 @@ class BPtPipeline(Pipeline):
 
         return ordered_objs, ordered_names
 
-    def transform(self, X, transform_index=None):
+    def transform(self, X, transform_index=None, nested_model=False):
 
         Xt = X
 
@@ -271,17 +283,34 @@ class BPtPipeline(Pipeline):
             transform_index = Xt.index
             Xt = np.array(Xt)
 
-        # For each transformer, but the last
+        # For each step / transformer, but the last
         for step in self.steps[:-1]:
             transformer = step[1]
 
             # Get any needed transform params
             trans_params =\
                 _get_est_trans_params(transformer,
-                                      transform_index=transform_index)
+                                      transform_index=transform_index,
+                                      nested_model=False)
 
             # Transform X - think in place is okay
             Xt = transformer.transform(Xt, **trans_params)
+
+        # Need to check the last step / model in case of nested model
+        if nested_model:
+            model = self.steps[-1][1]
+
+            # Only if model has transform method
+            if hasattr(model, 'transform'):
+
+                # Get any needed transform params
+                trans_params =\
+                    _get_est_trans_params(model,
+                                          transform_index=transform_index,
+                                          nested_model=nested_model)
+
+                # Transform X
+                Xt = model.transform(Xt, **trans_params)
 
         return Xt
 
@@ -299,22 +328,38 @@ class BPtPipeline(Pipeline):
 
         return X_df
 
-    def transform_feat_names(self, X_df, encoders=None):
-        '''Like transform df, but just transform feat names.'''
+    def transform_feat_names(self, X_df, encoders=None, nested_model=False):
+        '''Like transform df, but just transform feat names.
+        Note that X_df can be DataFrame or just list of feat names'''
 
         # Get as two lists - all steps but last
         ordered_objs, ordered_base_names =\
             self._get_ordered_objs_and_names()
-
+        
+        # Apply proc new names to each
         feat_names = list(X_df)
         for obj, base_name in zip(ordered_objs, ordered_base_names):
             feat_names = obj._proc_new_names(feat_names, base_name=base_name,
                                              encoders=encoders)
 
+        # Need to check the last step / model to see if
+        # has method tranform_feat_names
+        if nested_model:
+            model = self.steps[-1][1]
+            if hasattr(model, 'transform_feat_names'):
+                feat_names = model.transform_feat_names(feat_names, encoders=encoders,
+                                                        nested_model=nested_model)
+
         return feat_names
 
     def inverse_transform_FIs(self, fis):
         '''fis should be a pandas Series as indexed by feature name'''
+
+        # Need to check the last step / model to see if has
+        # inverse transform FIs step.
+        model = self.steps[-1][1]
+        if hasattr(model, 'inverse_transform_FIs'):
+            fis = model.inverse_transform_FIs(fis)
 
         # Get as two lists - all steps but last
         ordered_objs, _ =\

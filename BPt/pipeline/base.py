@@ -48,7 +48,7 @@ def _get_est_fit_params(estimator, mapping=None,
     return fit_params
 
 
-def _get_est_trans_params(estimator, transform_index=None):
+def _get_est_trans_params(estimator, transform_index=None, nested_model=False):
 
     trans_params = {}
 
@@ -56,6 +56,13 @@ def _get_est_trans_params(estimator, transform_index=None):
                                               '_needs_transform_index',
                                               'transform_index', 'transform'):
         trans_params['transform_index'] = transform_index
+
+    # Check for nested model not False, then needs
+    if nested_model and _needs(estimator,
+                               '_needs_transform_nested_model',
+                               'nested_model', 'transform'):
+        trans_params['nested_model'] = nested_model
+
 
     return trans_params
 

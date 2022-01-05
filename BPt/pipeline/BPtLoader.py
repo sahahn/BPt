@@ -96,8 +96,8 @@ class BPtLoader(ScopeTransformer):
         fit_fm_key = X[0, first_feat]
         fit_X = self.file_mapping[int(fit_fm_key)].load()
 
-        # Fit the first data point
-        self.estimator_.fit(fit_X, y=y, **fit_params)
+        # Fit + transform the first data point
+        self.estimator_.fit_transform(fit_X, y=y, **fit_params)
 
     def _update_loader_mappings(self, mapping):
 

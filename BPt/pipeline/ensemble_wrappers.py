@@ -10,12 +10,13 @@ from sklearn.base import clone, is_classifier
 from sklearn.utils import Bunch
 from sklearn.model_selection import check_cv, cross_val_predict
 import numpy as np
+import pandas as pd
 from .base import _fit_single_estimator, _get_est_fit_params
 from ..main.CV import BPtCV
 
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.preprocessing import LabelEncoder
-from .helpers import get_mean_fis
+from .helpers import get_mean_fis, get_concat_fis, get_concat_fis_len, check_for_nested_loader
 
 
 def _fit_all_estimators(self, X, y, sample_weight=None, mapping=None,
@@ -162,6 +163,134 @@ def ensemble_classifier_fit(self, X, y,
                         **kwargs)
 
 
+def _base_transform_feat_names(self, X_df, encoders=None, nested_model=False):
+    '''This base functions works under the assumption of calculating
+    mean coef's.'''
+
+    # Check each sub estimator for the method
+    # transform feat names
+    all_feat_names = []
+    for est in self.estimators_:
+        if hasattr(est, 'transform_feat_names'):
+            feat_names = est.transform_feat_names(X_df, encoders=encoders,
+                                                  nested_model=nested_model)
+            all_feat_names.append(feat_names)
+
+    # If None found
+    if len(all_feat_names) == 0:
+        return list(X_df)
+
+    # If some found, only return updated if all the same
+    # So check if all same as first
+    # if any not the same, return base
+    for fn in all_feat_names[1:]:
+        if fn != all_feat_names[0]:
+            return list(X_df)
+
+    # Otherwise, return first
+    return all_feat_names[0]
+
+
+def _loader_transform_feat_names(self, X_df, encoders=None, nested_model=False):
+
+    # Check each estimator
+    all_feat_names = []
+    for est in self.estimators_:
+        if hasattr(est, 'transform_feat_names'):
+            feat_names = est.transform_feat_names(X_df, encoders=encoders,
+                                                  nested_model=nested_model)
+            all_feat_names.append(feat_names)
+
+    # If none found
+    if len(all_feat_names) == 0:
+        return list(X_df)
+
+    # Get concat list
+    all_concat = list(np.concatenate(all_feat_names))
+
+    # If all unique, return concat
+    if len(set(all_concat)) == len(all_concat):
+        return all_concat
+
+    # Otherwise, append unique identifier
+    all_concat = []
+    for i, fn in enumerate(all_feat_names):
+        all_concat += [str(i) + '_' + str(name) for name in fn]
+
+    return all_concat
+
+
+def voting_transform_feat_names(self, X_df, encoders=None, nested_model=False):
+
+    if self.has_nested_loader():
+        return self._loader_transform_feat_names(X_df, encoders=encoders, nested_model=nested_model)
+    else:
+        return self._base_transform_feat_names(X_df, encoders=encoders, nested_model=nested_model)
+
+
+def _get_fis_lens(self):
+    '''This method is used in loader version of voting ensembles'''
+
+    # Try coef first
+    fi_len = get_concat_fis_len(self.estimators_, 'coef_')
+    if fi_len is not None:
+        return fi_len
+
+    # Then feature importances
+    fi_len = get_concat_fis_len(self.estimators_, 'feature_importances_')
+    if fi_len is not None:
+        return fi_len
+
+    # TODO - could do a search in each base estimator to try and determine
+    # the final n features in ?
+
+    return None
+
+
+def voting_inverse_transform_FIs(self, fis):
+
+    # If not loader, return as is
+    if not self.has_nested_loader():
+        return fis
+
+    # Get underlying lengths
+    concat_fi_lens_ = self._get_fis_lens()
+    
+    if concat_fi_lens_ is None:
+        return fis
+
+    # Go through and inverse transform each chunk
+    fi_chunks, ind = [], 0
+    for est, l in zip(self.estimators_, concat_fi_lens_):
+        
+        # If any don't have it, return passed original
+        if not hasattr(est, 'inverse_transform_FIs'):
+            return fis
+
+        # Append the inverse transformed chunk
+        fi_chunks.append(est.inverse_transform_FIs(fis.iloc[ind:ind+l]))
+        ind += l
+
+    # Combine together in DataFrame
+    fi_df = pd.DataFrame(fi_chunks)
+
+    # Calculate means from numpy representation
+    means = np.mean(np.array(fi_df), axis=0)
+
+    # Put back together in series, and return that
+    return pd.Series(means, index=list(fi_df))
+
+
+def has_nested_loader(self):
+
+    # If not already set, set
+    if not hasattr(self, 'nested_loader_'):
+        setattr(self, 'nested_loader_',
+                check_for_nested_loader(self.estimators_))
+
+    return getattr(self, 'nested_loader_')
+
+
 class BPtStackingRegressor(StackingRegressor):
     _needs_mapping = True
     _needs_fit_index = True
@@ -180,24 +309,46 @@ class BPtStackingClassifier(StackingClassifier):
 class BPtVotingRegressor(VotingRegressor):
     _needs_mapping = True
     _needs_fit_index = True
+    
     _fit_all_estimators = _fit_all_estimators
     fit = voting_fit
 
+    has_nested_loader = has_nested_loader
+    transform_feat_names = voting_transform_feat_names
+    _base_transform_feat_names = _base_transform_feat_names
+    _loader_transform_feat_names = _loader_transform_feat_names
+    _get_fis_lens = _get_fis_lens
+    inverse_transform_FIs = voting_inverse_transform_FIs
+
     @property
     def feature_importances_(self):
+        
+        if self.has_nested_loader():
+            return get_concat_fis(self.estimators_, 'feature_importances_')
         return get_mean_fis(self.estimators_, 'feature_importances_')
 
     @property
     def coef_(self):
+        
+        if self.has_nested_loader():
+            return get_concat_fis(self.estimators_, 'coef_')
         return get_mean_fis(self.estimators_, 'coef_')
 
 
 class BPtVotingClassifier(VotingClassifier):
     _needs_mapping = True
     _needs_fit_index = True
+    
     _fit_all_estimators = _fit_all_estimators
     bpt_fit = voting_fit
     fit = ensemble_classifier_fit
+
+    has_nested_loader = has_nested_loader
+    transform_feat_names = voting_transform_feat_names
+    _base_transform_feat_names = _base_transform_feat_names
+    _loader_transform_feat_names = _loader_transform_feat_names
+    _get_fis_lens = _get_fis_lens
+    inverse_transform_FIs = voting_inverse_transform_FIs
 
     @property
     def feature_importances_(self):

@@ -51,7 +51,7 @@ def get_grid_params(params):
     return grid_params
 
 
-def get_mean_fis(estimators, prop):
+def _get_fis_list(estimators, prop):
 
     fis = []
 
@@ -69,12 +69,41 @@ def get_mean_fis(estimators, prop):
                 fi = fi.squeeze()
             except AttributeError:
                 pass
-
+            
+            # Add to list
             fis.append(fi)
 
         # If any don't, return None
         else:
             return None
+
+    return fis
+
+
+def get_concat_fis_len(estimators, prop):
+
+    fis = _get_fis_list(estimators, prop)
+
+    if fis is None:
+        return None
+
+    # Return length of each
+    return [len(c) for c in fis]
+
+def get_concat_fis(estimators, prop):
+
+    fis = _get_fis_list(estimators, prop)
+
+    if fis is None:
+        return None
+
+    # Return concat
+    return np.concatenate(fis)
+
+
+def get_mean_fis(estimators, prop):
+
+    fis = _get_fis_list(estimators, prop)
 
     # Make sure all same len
     try:
@@ -83,9 +112,33 @@ def get_mean_fis(estimators, prop):
     except TypeError:
         return None
 
-    # Return as mean
+    # Return as mean over axis 0
     return np.mean(np.array(fis), axis=0)
 
+def check_for_nested_loader(objs):
+    '''Go through in nested manner and see if any
+    objects are instance of BPtLoader.'''
+
+    from .BPtLoader import BPtLoader
+
+    def _check_for_nested_loader(objs):
+        
+        if isinstance(objs, BPtLoader):
+            return True
+
+        elif isinstance(objs, (list, set, tuple, frozenset)):
+            return any([_check_for_nested_loader(o) for o in objs])
+
+        elif isinstance(objs, dict):
+            return any([_check_for_nested_loader(objs[k] for k in objs)])
+
+        elif hasattr(objs, 'get_params'):
+            return any([_check_for_nested_loader(getattr(objs, param))
+                        for param in objs.get_params(deep=False)])
+
+        return False
+
+    return _check_for_nested_loader(objs)
 
 def proc_mapping(indx, mapping):
 

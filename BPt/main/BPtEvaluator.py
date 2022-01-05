@@ -1177,9 +1177,10 @@ class BPtEvaluator():
             fis = self._get_base_fis_list()
 
         # If passed in df format, convert first
+        # Drop any NaN also ~
         # @ TODO handle categorical case ... 
         elif isinstance(fis, pd.DataFrame):
-            fis = [fis.loc[i] for i in range(len(fis))]
+            fis = [fis.loc[i].dropna() for i in range(len(fis))]
 
         # Otherwise, assumes passed
         inv_trans_fis = []

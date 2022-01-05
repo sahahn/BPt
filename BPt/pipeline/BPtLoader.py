@@ -296,7 +296,7 @@ class BPtLoader(ScopeTransformer):
 
         return all_names
 
-    def inverse_transform_FIs(self, fis):
+    def inverse_transform_fis(self, fis):
 
         # Skip if skipped
         if self.estimator_ is None:

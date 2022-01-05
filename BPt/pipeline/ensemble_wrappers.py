@@ -247,7 +247,7 @@ def _get_fis_lens(self):
     return None
 
 
-def voting_inverse_transform_FIs(self, fis):
+def voting_inverse_transform_fis(self, fis):
 
     # If not loader, return as is
     if not self.has_nested_loader():
@@ -264,11 +264,11 @@ def voting_inverse_transform_FIs(self, fis):
     for est, l in zip(self.estimators_, concat_fi_lens_):
         
         # If any don't have it, return passed original
-        if not hasattr(est, 'inverse_transform_FIs'):
+        if not hasattr(est, 'inverse_transform_fis'):
             return fis
 
         # Append the inverse transformed chunk
-        fi_chunks.append(est.inverse_transform_FIs(fis.iloc[ind:ind+l]))
+        fi_chunks.append(est.inverse_transform_fis(fis.iloc[ind:ind+l]))
         ind += l
 
     # Combine together in DataFrame
@@ -318,7 +318,7 @@ class BPtVotingRegressor(VotingRegressor):
     _base_transform_feat_names = _base_transform_feat_names
     _loader_transform_feat_names = _loader_transform_feat_names
     _get_fis_lens = _get_fis_lens
-    inverse_transform_FIs = voting_inverse_transform_FIs
+    inverse_transform_fis = voting_inverse_transform_fis
 
     @property
     def feature_importances_(self):
@@ -348,7 +348,7 @@ class BPtVotingClassifier(VotingClassifier):
     _base_transform_feat_names = _base_transform_feat_names
     _loader_transform_feat_names = _loader_transform_feat_names
     _get_fis_lens = _get_fis_lens
-    inverse_transform_FIs = voting_inverse_transform_FIs
+    inverse_transform_fis = voting_inverse_transform_fis
 
     @property
     def feature_importances_(self):

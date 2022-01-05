@@ -171,8 +171,8 @@ class BPtSearchCV(BaseEstimator):
                                                          nested_model=nested_model)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def inverse_transform_FIs(self, fis):
-        return self.best_estimator_.inverse_transform_FIs(fis)
+    def inverse_transform_fis(self, fis):
+        return self.best_estimator_.inverse_transform_fis(fis)
 
     def _set_cv(self, fit_index):
 

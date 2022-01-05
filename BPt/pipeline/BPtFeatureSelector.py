@@ -100,7 +100,7 @@ class BPtFeatureSelector(ScopeTransformer, SelectorMixin):
 
         return support
 
-    def inverse_transform_FIs(self, fis):
+    def inverse_transform_fis(self, fis):
 
         # Skip if skipped
         if self.estimator_ is None:

@@ -352,14 +352,14 @@ class BPtPipeline(Pipeline):
 
         return feat_names
 
-    def inverse_transform_FIs(self, fis):
+    def inverse_transform_fis(self, fis):
         '''fis should be a pandas Series as indexed by feature name'''
 
         # Need to check the last step / model to see if has
         # inverse transform FIs step.
         model = self.steps[-1][1]
-        if hasattr(model, 'inverse_transform_FIs'):
-            fis = model.inverse_transform_FIs(fis)
+        if hasattr(model, 'inverse_transform_fis'):
+            fis = model.inverse_transform_fis(fis)
 
         # Get as two lists - all steps but last
         ordered_objs, _ =\
@@ -369,8 +369,8 @@ class BPtPipeline(Pipeline):
         for obj in ordered_objs[::-1]:
 
             # Process only if object has method
-            if hasattr(obj, 'inverse_transform_FIs'):
-                fis = obj.inverse_transform_FIs(fis)
+            if hasattr(obj, 'inverse_transform_fis'):
+                fis = obj.inverse_transform_fis(fis)
 
         return fis
 

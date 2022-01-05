@@ -58,8 +58,8 @@ class BPtModel(ScopeObj):
                                                     nested_model=nested_model)
 
     @if_delegate_has_method(delegate='estimator_')
-    def inverse_transform_FIs(self, fis):
-        return self.estimator_.inverse_transform_FIs(fis)
+    def inverse_transform_fis(self, fis):
+        return self.estimator_.inverse_transform_fis(fis)
 
     @if_delegate_has_method(delegate='estimator_')
     def transform(self, X, transform_index=None, nested_model=False):

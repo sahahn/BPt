@@ -1191,12 +1191,12 @@ class BPtEvaluator():
             # Non-categorical case
             if isinstance(fi, pd.Series):
                 inv_trans_fis.append(
-                    estimator.inverse_transform_FIs(fi))
+                    estimator.inverse_transform_fis(fi))
 
             # Categorical case
             else:
                 cat_inv_fis =\
-                    [estimator.inverse_transform_FIs(f) for f in fi]
+                    [estimator.inverse_transform_fis(f) for f in fi]
                 inv_trans_fis.append(cat_inv_fis)
 
         return inv_trans_fis

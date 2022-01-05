@@ -1,9 +1,8 @@
 from ..helpers import get_obj_and_params, all_from_objects
-from ...extensions.loaders import Identity, SurfLabels
+from ...extensions.loaders import Identity
 
 LOADERS = {
     'identity': (Identity, ['default']),
-    'surface rois': (SurfLabels, ['default']),
 }
 
 # If nilearn dependencies

@@ -1,5 +1,5 @@
 from .FeatSelectors import FeatureSelector
-from .loaders import Identity, SurfLabels, SurfMaps
+from .loaders import Identity,
 
 try:
     from .loaders import SingleConnectivityMeasure
@@ -14,14 +14,12 @@ except ImportError:
         pass
 
 from .MLP import MLPRegressor_Wrapper, MLPClassifier_Wrapper
-from .random_parcellation import RandomParcellation
 from .Scalers import Winsorizer
 from .residualizer import LinearResidualizer
 
 
 __all__ = ['FeatureSelector',
-           'Identity', 'SurfLabels', 'SingleConnectivityMeasure',
+           'Identity', 'SingleConnectivityMeasure',
            'MLPRegressor_Wrapper',
            'MLPClassifier_Wrapper', 'LinearResidualizer',
-           'RandomParcellation', 'Winsorizer',
-           'ThresholdNetworkMeasures', 'SurfMaps']
+           'Winsorizer', 'ThresholdNetworkMeasures']

@@ -352,6 +352,7 @@ def _get_voting_pred_chunks(self, X, method='predict'):
 
     return pred_chunks
 
+
 class BPtStackingRegressor(StackingRegressor):
     _needs_mapping = True
     _needs_fit_index = True
@@ -541,22 +542,25 @@ class EnsembleWrapper():
         self.n_jobs = n_jobs
         self.random_state = random_state
 
+    def _update_params(self, p_name, to_add):
+
+        # Get existing
+        params = getattr(self, p_name)
+        
+        # Fill in new
+        new_params = {}
+        for key in params:
+            new_params[to_add + '__' + key] = params[key]
+
+        # Update
+        setattr(self, p_name, new_params)
+
     def _update_model_ensemble_params(self, to_add, model=True, ensemble=True):
 
         if model:
-            new_model_params = {}
-            for key in self.model_params:
-                new_model_params[to_add + '__' + key] =\
-                    self.model_params[key]
-            self.model_params = new_model_params
-
+            self._update_params('model_params', to_add)
         if ensemble:
-
-            new_ensemble_params = {}
-            for key in self.ensemble_params:
-                new_ensemble_params[to_add + '__' + key] =\
-                    self.ensemble_params[key]
-            self.ensemble_params = new_ensemble_params
+            self._update_params('ensemble_params', to_add)
 
     def _basic_ensemble(self, models, name, ensemble=False):
 

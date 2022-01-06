@@ -141,16 +141,6 @@ def test_basic_rf_b():
     results = run_eval(pipe='rf_pipe', target='b')
     standard_check(results)
 
-def test_basic_gb_r():
-
-    results = run_eval(pipe='gb_pipe', target='r')
-    standard_check(results)
-
-def test_basic_gb_b():
-
-    results = run_eval(pipe='gb_pipe', target='b')
-    standard_check(results)
-
 def test_permutation_svm_r():
 
     results = run_eval(pipe='svm_pipe', target='r')
@@ -209,14 +199,14 @@ def test_voting_elastic_b():
     results = run_eval(pipe='elastic_pipe', target='b', ensemble='voting')
     voting_base_check(results)
 
-def test_voting_gb_r():
+def test_voting_rf_r():
 
-    results = run_eval(pipe='gb_pipe', target='r', ensemble='voting')
+    results = run_eval(pipe='rf_pipe', target='r', ensemble='voting')
     voting_base_check(results)
 
-def test_voting_gb_b():
+def test_voting_rf_b():
 
-    results = run_eval(pipe='gb_pipe', target='b', ensemble='voting')
+    results = run_eval(pipe='rf_pipe', target='b', ensemble='voting')
     voting_base_check(results)
 
 def test_voting_permutation_svm_r():

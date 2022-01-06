@@ -135,10 +135,6 @@ P['hgb dist1'] =\
      'max_leaf_nodes': Scalar(init=20, lower=6, upper=80).set_integer_casting(),
      'l2_regularization': TransitionChoice([0, Log(lower=1e-5, upper=1)])}
 
-# Classifier version
-P['hgb classifier dist1'] = P['hgb dist1'].copy()
-P['hgb classifier dist1']['class_weight'] = cls_weight
-
 # Light gbm params
 P['base lgbm'] = {'silent': True}
 

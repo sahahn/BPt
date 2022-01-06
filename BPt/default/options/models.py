@@ -149,7 +149,7 @@ MODELS = {
     'gb classifier': (GradientBoostingClassifier, ['default']),
     'gb regressor': (GradientBoostingRegressor, ['default']),
 
-    'hgb classifier': (HistGradientBoostingClassifier, ['default', 'hgb classifier dist1']),
+    'hgb classifier': (HistGradientBoostingClassifier, ['default', 'hgb dist1']),
     'hgb regressor': (HistGradientBoostingRegressor, ['default', 'hgb dist1']),
 
     'et classifier': (ExtraTreesClassifier, ['default']),

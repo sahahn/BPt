@@ -23,3 +23,6 @@ Version 2.2.0
 
 - Removed RandomParcellation, SurfLabels and SurfMaps
   Newer implementations, with more tests are available for these objects through the neurotools package.
+
+- Add / changed some default pipelines
+  Changed name of svm pipe, and some new other default pipes

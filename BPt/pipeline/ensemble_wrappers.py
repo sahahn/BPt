@@ -445,10 +445,16 @@ class BPtVotingClassifier(VotingClassifier):
 
     @property
     def feature_importances_(self):
+        
+        if self.has_nested_loader():
+            return get_concat_fis(self.estimators_, 'feature_importances_')
         return get_mean_fis(self.estimators_, 'feature_importances_')
 
     @property
     def coef_(self):
+        
+        if self.has_nested_loader():
+            return get_concat_fis(self.estimators_, 'coef_')
         return get_mean_fis(self.estimators_, 'coef_')
 
     def _check_voting(self):

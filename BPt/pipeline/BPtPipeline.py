@@ -1,6 +1,6 @@
 from sklearn.pipeline import Pipeline
 import numpy as np
-from .helpers import pipe_hash
+from .helpers import pipe_hash, get_nested_final_estimator
 from joblib import load, dump
 import pandas as pd
 from sklearn.utils.metaestimators import if_delegate_has_method
@@ -10,8 +10,6 @@ from sklearn.base import clone
 from .base import (_get_est_fit_params, _get_est_trans_params,
                    _needs)
 
-# TODO - Try to make caching pipelines ignore the number of jobs
-# of the base pipeline components
 
 
 # @TODO add docstrings here - and add to docs?
@@ -86,14 +84,7 @@ class BPtPipeline(Pipeline):
 
     @property
     def _nested_final_estimator(self):
-
-        # Get any nested
-        final_estimator = self._final_estimator
-        while hasattr(final_estimator, '_final_estimator') and \
-         getattr(final_estimator, '_final_estimator') is not None:
-            final_estimator = getattr(final_estimator, '_final_estimator')
-
-        return final_estimator
+        return get_nested_final_estimator(self._final_estimator)
 
     def _fit(self, X, y=None, fit_index=None, **fit_params_steps):
 

@@ -2,7 +2,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import numpy as np
 import warnings
 import networkx as nx
-from scipy.linalg import lstsq
 
 
 class Identity(BaseEstimator, TransformerMixin):
@@ -90,7 +89,6 @@ class Identity(BaseEstimator, TransformerMixin):
         '''
 
         return X_trans.reshape(self.X_shape_)
-
 
 def proc_X(X):
 
@@ -429,6 +427,50 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
         return avg_degree
 
 
-def get_loader_ensemble():
+def get_loader_pipe(parc, pipe='elastic_pipe', obj_params=None, **loader_params):
+    '''TODO write doc  -  then add to docs.'''
+
+    from ..main.funcs import pipeline_check
+    from ..main.input import Loader
+
+    if obj_params is None:
+        obj_params = {}
+
+    try:
+        from neurotools.transform import SurfLabels, SurfMaps
+        from neurotools.loading import load
+        from nilearn.input_data  import NiftiLabelsMasker, NiftiMapsMasker
+    except ImportError:
+        raise ImportError('neurotools must be installed!')
+
+    # Apply pipeline check
+    pipe = pipeline_check(pipe)
+
+    # Get dimensionality of parcellation
+    parc_dims = len(load(parc).shape)
+
+    # Get correct object based off 
+    if parc_dims == 1:
+        obj = SurfLabels(labels=parc, **obj_params)
+    elif parc_dims == 2:
+        obj = SurfMaps(maps=parc, **obj_params)
+    elif parc_dims == 3:
+        obj = NiftiLabelsMasker(labels_img=parc, **obj_params)
+    elif parc_dims == 4:
+        obj = NiftiMapsMasker(maps_img=parc, **obj_params)
+
+    # Init loader from object
+    loader = Loader(obj, **loader_params)
+
+    # Add loader before rest of steps
+    pipe.steps = [loader] + pipe.steps
+
+    return pipe
+
+    
+
+    
+
+    
 
 

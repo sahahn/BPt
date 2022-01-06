@@ -140,6 +140,18 @@ def check_for_nested_loader(objs):
 
     return _check_for_nested_loader(objs)
 
+def get_nested_final_estimator(estimator):
+
+    # Init loop
+    final_estimator = estimator
+
+    # Check for nested in loops
+    while hasattr(final_estimator, '_final_estimator') and \
+        getattr(final_estimator, '_final_estimator') is not None:
+        final_estimator = getattr(final_estimator, '_final_estimator')
+
+    return final_estimator
+
 def proc_mapping(indx, mapping):
 
     # Special case, if passed index of Ellipsis

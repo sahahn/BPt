@@ -1,5 +1,5 @@
 from .FeatSelectors import FeatureSelector
-from .loaders import Identity,
+from .loaders import Identity, get_loader_pipe
 
 try:
     from .loaders import SingleConnectivityMeasure
@@ -18,7 +18,7 @@ from .Scalers import Winsorizer
 from .residualizer import LinearResidualizer
 
 
-__all__ = ['FeatureSelector',
+__all__ = ['FeatureSelector', 'get_loader_pipe',
            'Identity', 'SingleConnectivityMeasure',
            'MLPRegressor_Wrapper',
            'MLPClassifier_Wrapper', 'LinearResidualizer',

@@ -14,9 +14,12 @@ import pandas as pd
 from .base import _fit_single_estimator, _get_est_fit_params
 from ..main.CV import BPtCV
 
+from sklearn.utils.validation import check_is_fitted
 from sklearn.utils.multiclass import check_classification_targets
+from sklearn.utils.metaestimators import available_if
 from sklearn.preprocessing import LabelEncoder
-from .helpers import get_mean_fis, get_concat_fis, get_concat_fis_len, check_for_nested_loader
+from .helpers import (get_mean_fis, get_concat_fis, get_concat_fis_len,
+                      check_for_nested_loader, get_nested_final_estimator)
 
 
 def _fit_all_estimators(self, X, y, sample_weight=None, mapping=None,
@@ -56,6 +59,23 @@ def voting_fit(self, X, y, sample_weight=None, mapping=None,
     return self
 
 
+def _get_cv_inds(self, index):
+
+    # If BPtCV call get_cv
+    if isinstance(self.cv, BPtCV):
+
+        random_state = None
+        if hasattr(self, 'random_state'):
+            random_state = self.random_state
+
+        return self.cv.get_cv(fit_index=index,
+                              random_state=random_state,
+                              return_index=True)
+
+    # Otherwise treat as sklearn arg directly
+    return self.cv
+
+
 def stacking_fit(self, X, y, sample_weight=None, mapping=None,
                  fit_index=None, **kwargs):
 
@@ -70,20 +90,8 @@ def stacking_fit(self, X, y, sample_weight=None, mapping=None,
     # To train the meta-classifier using the most data as possible, we use
     # a cross-validation to obtain the output of the stacked estimators.
 
-    # If BPtCV call get_cv
-    if isinstance(self.cv, BPtCV):
-
-        random_state = None
-        if hasattr(self, 'random_state'):
-            random_state = self.random_state
-
-        cv_inds = self.cv.get_cv(fit_index,
-                                 random_state=random_state,
-                                 return_index=True)
-
-    # Otherwise treat as sklearn arg directly
-    else:
-        cv_inds = self.cv
+    # Get cv inds w/ handle cases for BPtCV
+    cv_inds = self._get_cv_inds(fit_index)
 
     # To ensure that the data provided to each estimator are the same, we
     # need to set the random state of the cv if there is one and we need to
@@ -153,10 +161,10 @@ def ensemble_classifier_fit(self, X, y,
     # To make compatible with each Voting and Stacking ...
     self._le = LabelEncoder().fit(y)
     self.le_ = self._le
-
     self.classes_ = self._le.classes_
+    transformed_y = self._le.transform(y)
 
-    return self.bpt_fit(X, self._le.transform(y),
+    return self.bpt_fit(X, transformed_y,
                         sample_weight=sample_weight,
                         mapping=mapping,
                         fit_index=fit_index,
@@ -231,7 +239,11 @@ def voting_transform_feat_names(self, X_df, encoders=None, nested_model=False):
 def _get_fis_lens(self):
     '''This method is used in loader version of voting ensembles'''
 
-    # Try coef first
+    # If already stored as attribute, use that
+    if hasattr(self, 'concat_est_lens_'):
+        return getattr(self, 'concat_est_lens_')
+
+    # Try coef
     fi_len = get_concat_fis_len(self.estimators_, 'coef_')
     if fi_len is not None:
         return fi_len
@@ -291,11 +303,61 @@ def has_nested_loader(self):
     return getattr(self, 'nested_loader_')
 
 
+def voting_transform(self, X, nested_model=False):
+        
+    # Not nested, base case transform
+    if not nested_model:
+        return super().transform(X)
+        
+    # If nested model case, return concatenation of transforms
+    if self.has_nested_loader():
+
+        # Init
+        Xts, self.concat_est_lens_ = [], []
+        for estimator in self.estimators_:
+
+            # Get transformed X, passing along nested model True
+            Xt = estimator.transform(X, nested_model=nested_model)
+
+            # Keep track of transformed + length
+            Xts.append(Xt)
+            self.concat_est_lens_.append(Xt.shape[-1])
+
+        # Return concat along axis 1
+        return np.concatenate(Xts, axis=1)
+
+    # TODO - non nested loader case, but still nested model case
+    else:
+        raise RuntimeError('Not implemented.')
+
+
+def _get_voting_pred_chunks(self, X, method='predict'):
+
+    # Go through each estimator, to make predictions
+    # on just the chunk of transformed input relevant for each.
+    pred_chunks, ind = [], 0
+    for estimator, l in zip(self.estimators_, self.concat_est_lens_):
+
+        # Get the corresponding final estimator
+        final_estimator = get_nested_final_estimator(estimator)
+
+        # Get predictions        
+        pred_chunk = getattr(final_estimator, method)(X[:, ind:ind+l])
+
+        # Append predictions
+        pred_chunks.append(pred_chunk)
+
+        # Increment index
+        ind += l
+
+    return pred_chunks
+
 class BPtStackingRegressor(StackingRegressor):
     _needs_mapping = True
     _needs_fit_index = True
     _fit_all_estimators = _fit_all_estimators
     fit = stacking_fit
+    _get_cv_inds = _get_cv_inds
 
 
 class BPtStackingClassifier(StackingClassifier):
@@ -304,21 +366,26 @@ class BPtStackingClassifier(StackingClassifier):
     _fit_all_estimators = _fit_all_estimators
     bpt_fit = stacking_fit
     fit = ensemble_classifier_fit
+    _get_cv_inds = _get_cv_inds
 
 
 class BPtVotingRegressor(VotingRegressor):
+    
+    # Set tags
     _needs_mapping = True
     _needs_fit_index = True
     
+    # Override / set methods
     _fit_all_estimators = _fit_all_estimators
     fit = voting_fit
-
     has_nested_loader = has_nested_loader
     transform_feat_names = voting_transform_feat_names
     _base_transform_feat_names = _base_transform_feat_names
     _loader_transform_feat_names = _loader_transform_feat_names
     _get_fis_lens = _get_fis_lens
     inverse_transform_fis = voting_inverse_transform_fis
+    transform = voting_transform
+    _get_voting_pred_chunks  = _get_voting_pred_chunks
 
     @property
     def feature_importances_(self):
@@ -333,6 +400,30 @@ class BPtVotingRegressor(VotingRegressor):
         if self.has_nested_loader():
             return get_concat_fis(self.estimators_, 'coef_')
         return get_mean_fis(self.estimators_, 'coef_')
+
+    def predict(self, X):
+        
+        # Make sure fitted
+        check_is_fitted(self)
+
+        # Base case is when number of features stays the same as expected.
+        if X.shape[-1] == self.n_features_in_:
+            return super().predict(X)
+
+        # Otherwise, two cases, nested loader or not
+        if self.has_nested_loader():
+
+            # If nested loader, then the expectation is that this
+            # predict is receiving the concat fully model nested transformed
+            # output from each of the self.estimators_
+            pred_chunks = self._get_voting_pred_chunks(X, method='predict')
+
+            # The voting ensemble just uses the mean from each
+            mean_preds = np.mean(pred_chunks, axis=0)
+            return mean_preds
+
+        # TODO fill in other case?
+        raise RuntimeError('Not Implemented')
 
 
 class BPtVotingClassifier(VotingClassifier):
@@ -349,6 +440,8 @@ class BPtVotingClassifier(VotingClassifier):
     _loader_transform_feat_names = _loader_transform_feat_names
     _get_fis_lens = _get_fis_lens
     inverse_transform_fis = voting_inverse_transform_fis
+    transform = voting_transform
+    _get_voting_pred_chunks  = _get_voting_pred_chunks
 
     @property
     def feature_importances_(self):
@@ -357,6 +450,78 @@ class BPtVotingClassifier(VotingClassifier):
     @property
     def coef_(self):
         return get_mean_fis(self.estimators_, 'coef_')
+
+    def _check_voting(self):
+        if self.voting == "hard":
+            raise AttributeError(
+                f"predict_proba is not available when voting={repr(self.voting)}"
+            )
+        return True
+
+    def predict(self, X):
+        
+        # Make sure fitted
+        check_is_fitted(self)
+
+        # Base case is when number of features stays the same as expected.
+        if X.shape[-1] == self.n_features_in_:
+            return super().predict(X)
+
+        # If loader based
+        if self.has_nested_loader():
+
+            # If nested loader, then the expectation is that this
+            # predict is receiving the concat fully model nested transformed
+            # output from each of the self.estimators_
+
+            # If soft voting, can use predict proba instead
+            if self.voting == "soft":
+                maj = np.argmax(self.predict_proba(X), axis=1)
+            
+            # Hard voting, use base pred
+            else:
+
+                # Get predictions with special nested
+                predictions = np.asarray(self._get_voting_pred_chunks(X, method='predict')).T
+
+                # Get majority vote w/
+                maj = np.apply_along_axis(
+                    lambda x: np.argmax(np.bincount(x, weights=self._weights_not_none)),
+                    axis=1,
+                    arr=predictions,
+                )
+
+            # Use label encoder to inverse transform before returning
+            maj = self.le_.inverse_transform(maj)
+            return maj
+
+        # TODO fill in other case?
+        raise RuntimeError('Not Implemented')
+
+
+    @available_if(_check_voting)
+    def predict_proba(self, X):
+
+        check_is_fitted(self)
+
+        # Base case is when number of features stays the same as expected.
+        if X.shape[-1] == self.n_features_in_:
+            return super().predict_proba(X)
+
+        # Otherwise, two cases, nested loader or not
+        if self.has_nested_loader():
+
+            # Get predict probas from each
+            predict_probas = self._get_voting_pred_chunks(X, method='predict_proba')
+
+            # Calculate average
+            avg = np.average(predict_probas, axis=0, weights=self._weights_not_none)
+            
+            # And return
+            return avg
+
+        # TODO fill in other case?
+        raise RuntimeError('Not Implemented')
 
 
 class EnsembleWrapper():

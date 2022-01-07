@@ -10,12 +10,15 @@ from ..funcs import evaluate, cross_val_score, _sk_check_y
 import pytest
 import pandas as pd
 import numpy as np
+import os
 from ...extensions import LinearResidualizer
 from ..compare import Compare, Option, CompareDict, Options
 from sklearn.tree import DecisionTreeClassifier
 from ...pipeline.BPtLoader import BPtLoader
 import warnings
 from ...pipeline.Selector import Selector
+import tempfile
+import shutil
 from ...pipeline.tests.helpers import get_fake_mapping, clean_fake_mapping
 
 
@@ -51,6 +54,63 @@ def test_evaluate_with_loader():
     # Clean up
     clean_fake_mapping(100)
 
+def test_evaluate_with_list_loader():
+
+    data = get_fake_datafile_dataset(50, 2)
+    pipe = Pipeline([Loader('identity', scope='col1', behav='all'), Model('dt')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       cv=3)
+
+    assert len(results.feat_names[0]) == 5
+    assert isinstance(results.estimators[0].steps[0][1], BPtLoader)
+
+    # Clean up
+    clean_fake_mapping(100)
+
+
+def run_evaluate_with_list_loader_cache(data, cache_loc):
+
+    
+    pipe = Pipeline([Loader('identity', scope='col1', behav='all', cache_loc=cache_loc), Model('dt')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       cv=3)
+
+    assert len(results.feat_names[0]) == 5
+    assert isinstance(results.estimators[0].steps[0][1], BPtLoader)
+
+def test_list_loader_cache():
+
+    data = get_fake_datafile_dataset(50, 2)
+    loc = os.path.join(tempfile.gettempdir(), 'temp_bpt_test_cache')
+    for _ in range(3):
+        run_evaluate_with_list_loader_cache(data, cache_loc=loc)
+    clean_fake_mapping(100)
+
+    shutil.rmtree(loc)
+
+
+def test_evaluate_with_loader_n_jobs2():
+
+    data = get_fake_datafile_dataset(50, 2)
+    pipe = Pipeline([Loader('identity'), Model('dt')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       n_jobs=2,
+                       cv=3)
+
+    assert len(results.feat_names[0]) == 8
+    assert isinstance(results.estimators[0].steps[0][1], BPtLoader)
+
+    # Clean up
+    clean_fake_mapping(100)
 
 def test_evaluate_with_loader_inverse_fis():
 
@@ -1148,5 +1208,14 @@ def test_custom_cv_leave_one_out():
         assert np.var(v) == [8.25]
 
 
+def test_empty_loader():
 
+    dt_pipe = Pipeline([Loader('identity'), Model('dt')])
+    dataset = get_fake_binary_dataset()
 
+    cv = CV(splits=.5, n_repeats=3)
+    evaluate(pipeline=dt_pipe,
+             dataset=dataset,
+             cv=cv,
+             progress_bar=False,
+             problem_type='binary')

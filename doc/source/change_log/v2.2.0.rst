@@ -26,3 +26,6 @@ Version 2.2.0
 
 - Add / changed some default pipelines
   Changed name of svm pipe, and some new other default pipes
+
+- Improving Test coverage
+  Added more misc tests, filling in gaps related to test coverage.

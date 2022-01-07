@@ -34,7 +34,13 @@ class Identity(BaseEstimator, TransformerMixin):
                 default = None
 
         '''
-        self.X_shape_ = X.shape
+        
+        if isinstance(X, list):
+            self.n_subjects_ = len(X)
+            self.X_shape_ = X[0].shape
+        else:
+            self.X_shape_ = X.shape
+        
         return self
 
     def fit_transform(self, X, y=None):
@@ -71,6 +77,8 @@ class Identity(BaseEstimator, TransformerMixin):
             1D flattened array for this subject.
 
         '''
+        if isinstance(X, list):
+            return np.array([x.flatten() for x in X])
         return X.flatten()
 
     def inverse_transform(self, X_trans):

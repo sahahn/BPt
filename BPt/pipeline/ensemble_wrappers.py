@@ -340,7 +340,7 @@ def stacking_inverse_transform_fis(self, fis):
         try:
             return np.average(fis, axis=0, weights=weights)
         except ZeroDivisionError:
-            return np.zeros(fis.shape)
+            return np.average(fis, axis=0)
 
     return self.base_inverse_transform_fis(fis, stacked_avg)
 

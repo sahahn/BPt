@@ -16,7 +16,7 @@ from ..main.CV import BPtCV
 
 from sklearn.utils.validation import check_is_fitted
 from sklearn.utils.multiclass import check_classification_targets
-from sklearn.utils.metaestimators import available_if
+from sklearn.utils.metaestimators import available_if, if_delegate_has_method
 from sklearn.preprocessing import LabelEncoder
 from .helpers import (get_mean_fis, get_concat_fis, get_concat_fis_len,
                       check_for_nested_loader, get_nested_final_estimator)
@@ -228,7 +228,7 @@ def _loader_transform_feat_names(self, X_df, encoders=None, nested_model=False):
     return all_concat
 
 
-def voting_transform_feat_names(self, X_df, encoders=None, nested_model=False):
+def _transform_feat_names(self, X_df, encoders=None, nested_model=False):
 
     if self.has_nested_loader():
         return self._loader_transform_feat_names(X_df, encoders=encoders, nested_model=nested_model)
@@ -259,7 +259,7 @@ def _get_fis_lens(self):
     return None
 
 
-def voting_inverse_transform_fis(self, fis):
+def base_inverse_transform_fis(self, fis, avg_method):
 
     # If not loader, return as is
     if not self.has_nested_loader():
@@ -286,11 +286,60 @@ def voting_inverse_transform_fis(self, fis):
     # Combine together in DataFrame
     fi_df = pd.DataFrame(fi_chunks)
 
-    # Calculate means from numpy representation
-    means = np.mean(np.array(fi_df), axis=0)
+    avg = avg_method(fi_df)
 
     # Put back together in series, and return that
-    return pd.Series(means, index=list(fi_df))
+    return pd.Series(avg, index=list(fi_df))
+
+
+def voting_inverse_transform_fis(self, fis):
+
+    def mean_avg(fi_df):
+        return np.mean(np.array(fi_df), axis=0)
+
+    return self.base_inverse_transform_fis(fis, mean_avg)
+
+
+def _get_estimator_fi_weights(estimator):
+
+    weights = None
+    if hasattr(estimator, 'coef_'):
+        weights = getattr(estimator, 'coef_')
+
+    if weights is None and hasattr(estimator, 'feature_importances_'):
+        weights = getattr(estimator, 'feature_importances_')
+
+    if weights is None:
+        return None
+
+    # Set to absolute
+    weights = np.abs(weights)
+
+    # Shape if not 1D is (1, n_features) or (n_classes, n_features)
+    # TODO handle multiclass
+    if len(np.shape(weights)) > 1:
+        weights = weights[0]
+    
+    return weights
+
+
+def stacking_inverse_transform_fis(self, fis):
+
+    def stacked_avg(fi_df):
+
+        # First assumption we need to make is that we
+        # are only interested in absolute values
+        fis = np.abs(np.array(fi_df))
+
+        # Use coef / feat importance from estimator as weights
+        weights = _get_estimator_fi_weights(self.final_estimator_)
+        if weights is None:
+            return None
+        
+        # Return weighted average
+        return np.average(fis, axis=0, weights=weights)
+
+    return self.base_inverse_transform_fis(fis, stacked_avg)
 
 
 def has_nested_loader(self):
@@ -303,12 +352,8 @@ def has_nested_loader(self):
     return getattr(self, 'nested_loader_')
 
 
-def voting_transform(self, X, nested_model=False):
-        
-    # Not nested, base case transform
-    if not nested_model:
-        return super().transform(X)
-        
+def ensemble_transform(self, X):
+
     # If nested model case, return concatenation of transforms
     if self.has_nested_loader():
 
@@ -317,7 +362,7 @@ def voting_transform(self, X, nested_model=False):
         for estimator in self.estimators_:
 
             # Get transformed X, passing along nested model True
-            Xt = estimator.transform(X, nested_model=nested_model)
+            Xt = estimator.transform(X, nested_model=True)
 
             # Keep track of transformed + length
             Xts.append(Xt)
@@ -331,18 +376,22 @@ def voting_transform(self, X, nested_model=False):
         raise RuntimeError('Not implemented.')
 
 
-def _get_voting_pred_chunks(self, X, method='predict'):
+def _get_estimators_pred_chunks(self, X, method='predict'):
+
+    # Convert method to list if not
+    if not isinstance(method, list):
+        method = [method for _ in range(len(self.estimators_))]
 
     # Go through each estimator, to make predictions
     # on just the chunk of transformed input relevant for each.
     pred_chunks, ind = [], 0
-    for estimator, l in zip(self.estimators_, self.concat_est_lens_):
+    for estimator, l, m in zip(self.estimators_, self.concat_est_lens_, method):
 
         # Get the corresponding final estimator
         final_estimator = get_nested_final_estimator(estimator)
 
         # Get predictions        
-        pred_chunk = getattr(final_estimator, method)(X[:, ind:ind+l])
+        pred_chunk = getattr(final_estimator, m)(X[:, ind:ind+l])
 
         # Append predictions
         pred_chunks.append(pred_chunk)
@@ -350,7 +399,31 @@ def _get_voting_pred_chunks(self, X, method='predict'):
         # Increment index
         ind += l
 
-    return pred_chunks
+    return np.asarray(pred_chunks)
+
+
+def _stacked_classifier_predict(self, X, method, **predict_params):
+
+    check_is_fitted(self)
+
+    # Nested loader case
+    if self.has_nested_loader():
+    
+        # Get predict probas from each
+        predict_probas = self._get_estimators_pred_chunks(X, method=self.stack_method_)
+        concat_preds = self._concatenate_predictions(X, predict_probas)
+
+        # Make preds with final estimator on concat preds
+        y_pred = getattr(self.final_estimator_, method)(concat_preds)
+
+        # If predict, cast to inverse transform 
+        if method == 'predict':
+            y_pred = self._le.inverse_transform(y_pred)
+
+        return y_pred
+    
+    # TODO finish other case for stacked classifier
+    raise RuntimeError('Not Implemented')
 
 
 class BPtStackingRegressor(StackingRegressor):
@@ -360,7 +433,65 @@ class BPtStackingRegressor(StackingRegressor):
     fit = stacking_fit
     _get_cv_inds = _get_cv_inds
 
+    has_nested_loader = has_nested_loader
+    transform_feat_names = _transform_feat_names
+    _base_transform_feat_names = _base_transform_feat_names
+    _loader_transform_feat_names = _loader_transform_feat_names
+    _get_fis_lens = _get_fis_lens
 
+    inverse_transform_fis = stacking_inverse_transform_fis
+    base_inverse_transform_fis = base_inverse_transform_fis
+
+    _get_estimators_pred_chunks  = _get_estimators_pred_chunks
+    ensemble_transform = ensemble_transform
+
+    @property
+    def feature_importances_(self):
+        
+        if self.has_nested_loader():
+            return get_concat_fis(self.estimators_, 'feature_importances_')
+
+        # TODO - average according to stacked ... 
+
+    @property
+    def coef_(self):
+        
+        if self.has_nested_loader():
+            return get_concat_fis(self.estimators_, 'coef_')
+
+        # TODO - average according to stacked ... 
+
+    def transform(self, X, nested_model=False):
+        
+        # Not nested, base case transform
+        if not nested_model:
+            return super().transform(X)
+
+        return self.ensemble_transform(X)
+
+    def predict(self, X):
+
+        # Base case is when number of features stays the same as expected.
+        if X.shape[-1] == self.n_features_in_:
+            return super().predict(X)
+
+        check_is_fitted(self)
+
+        # Nested loader case
+        if self.has_nested_loader():
+
+            # If nested loader, then the expectation is that this
+            # predict is receiving the concat fully model nested transformed
+            # output from each of the self.estimators_
+            pred_chunks = self._get_estimators_pred_chunks(X, method='predict').T
+            
+            # Return predictions from final estimator
+            return self.final_estimator_.predict(pred_chunks)
+
+        # TODO fill in other case?
+        raise RuntimeError('Not Implemented')
+
+    
 class BPtStackingClassifier(StackingClassifier):
     _needs_mapping = True
     _needs_fit_index = True
@@ -368,6 +499,73 @@ class BPtStackingClassifier(StackingClassifier):
     bpt_fit = stacking_fit
     fit = ensemble_classifier_fit
     _get_cv_inds = _get_cv_inds
+
+    has_nested_loader = has_nested_loader
+    transform_feat_names = _transform_feat_names
+    _base_transform_feat_names = _base_transform_feat_names
+    _loader_transform_feat_names = _loader_transform_feat_names
+    _get_fis_lens = _get_fis_lens
+
+    inverse_transform_fis = stacking_inverse_transform_fis
+    base_inverse_transform_fis = base_inverse_transform_fis
+
+    _get_estimators_pred_chunks  = _get_estimators_pred_chunks
+    ensemble_transform = ensemble_transform
+    _stacked_classifier_predict = _stacked_classifier_predict
+
+    @property
+    def feature_importances_(self):
+        
+        if self.has_nested_loader():
+            return get_concat_fis(self.estimators_, 'feature_importances_')
+
+        # TODO - average according to stacked ... 
+
+    @property
+    def coef_(self):
+        
+        if self.has_nested_loader():
+            return get_concat_fis(self.estimators_, 'coef_')
+
+        # TODO - average according to stacked ... 
+
+    def transform(self, X, nested_model=False):
+        
+        # Not nested, base case transform
+        if not nested_model:
+            return super().transform(X)
+
+        return self.ensemble_transform(X)
+
+    @if_delegate_has_method(delegate="final_estimator_")
+    def predict(self, X, **predict_params):
+
+        # Base case
+        if X.shape[-1] == self.n_features_in_:
+            return super().predict(X, **predict_params)
+
+        # Other case
+        return self._stacked_classifier_predict(X, method='predict', **predict_params)
+
+    @if_delegate_has_method(delegate="final_estimator_")
+    def predict_proba(self, X):
+
+        # Base case
+        if X.shape[-1] == self.n_features_in_:
+            return super().predict_proba(X)
+
+        # Other case
+        return self._stacked_classifier_predict(X, method='predict_proba')
+
+    @if_delegate_has_method(delegate="final_estimator_")
+    def decision_function(self, X):
+
+        # Base case
+        if X.shape[-1] == self.n_features_in_:
+            return super().decision_function(X)
+
+        # Other case
+        return self._stacked_classifier_predict(X, method='decision_function')
 
 
 class BPtVotingRegressor(VotingRegressor):
@@ -380,13 +578,16 @@ class BPtVotingRegressor(VotingRegressor):
     _fit_all_estimators = _fit_all_estimators
     fit = voting_fit
     has_nested_loader = has_nested_loader
-    transform_feat_names = voting_transform_feat_names
+    transform_feat_names = _transform_feat_names
     _base_transform_feat_names = _base_transform_feat_names
     _loader_transform_feat_names = _loader_transform_feat_names
     _get_fis_lens = _get_fis_lens
+
     inverse_transform_fis = voting_inverse_transform_fis
-    transform = voting_transform
-    _get_voting_pred_chunks  = _get_voting_pred_chunks
+    base_inverse_transform_fis = base_inverse_transform_fis
+
+    ensemble_transform = ensemble_transform
+    _get_estimators_pred_chunks  = _get_estimators_pred_chunks
 
     @property
     def feature_importances_(self):
@@ -417,7 +618,7 @@ class BPtVotingRegressor(VotingRegressor):
             # If nested loader, then the expectation is that this
             # predict is receiving the concat fully model nested transformed
             # output from each of the self.estimators_
-            pred_chunks = self._get_voting_pred_chunks(X, method='predict')
+            pred_chunks = self._get_estimators_pred_chunks(X, method='predict')
 
             # The voting ensemble just uses the mean from each
             mean_preds = np.mean(pred_chunks, axis=0)
@@ -425,6 +626,14 @@ class BPtVotingRegressor(VotingRegressor):
 
         # TODO fill in other case?
         raise RuntimeError('Not Implemented')
+
+    def transform(self, X, nested_model=False):
+        
+        # Not nested, base case transform
+        if not nested_model:
+            return super().transform(X)
+
+        return self.ensemble_transform(X)
 
 
 class BPtVotingClassifier(VotingClassifier):
@@ -436,13 +645,14 @@ class BPtVotingClassifier(VotingClassifier):
     fit = ensemble_classifier_fit
 
     has_nested_loader = has_nested_loader
-    transform_feat_names = voting_transform_feat_names
+    transform_feat_names = _transform_feat_names
     _base_transform_feat_names = _base_transform_feat_names
     _loader_transform_feat_names = _loader_transform_feat_names
     _get_fis_lens = _get_fis_lens
     inverse_transform_fis = voting_inverse_transform_fis
-    transform = voting_transform
-    _get_voting_pred_chunks  = _get_voting_pred_chunks
+    base_inverse_transform_fis = base_inverse_transform_fis
+    ensemble_transform = ensemble_transform
+    _get_estimators_pred_chunks  = _get_estimators_pred_chunks
 
     @property
     def feature_importances_(self):
@@ -489,7 +699,7 @@ class BPtVotingClassifier(VotingClassifier):
             else:
 
                 # Get predictions with special nested
-                predictions = np.asarray(self._get_voting_pred_chunks(X, method='predict')).T
+                predictions = self._get_estimators_pred_chunks(X, method='predict')
 
                 # Get majority vote w/
                 maj = np.apply_along_axis(
@@ -505,6 +715,14 @@ class BPtVotingClassifier(VotingClassifier):
         # TODO fill in other case?
         raise RuntimeError('Not Implemented')
 
+    def transform(self, X, nested_model=False):
+        
+        # Not nested, base case transform
+        if not nested_model:
+            return super().transform(X)
+
+        return self.ensemble_transform(X)
+
 
     @available_if(_check_voting)
     def predict_proba(self, X):
@@ -519,7 +737,7 @@ class BPtVotingClassifier(VotingClassifier):
         if self.has_nested_loader():
 
             # Get predict probas from each
-            predict_probas = self._get_voting_pred_chunks(X, method='predict_proba')
+            predict_probas = self._get_estimators_pred_chunks(X, method='predict_proba')
 
             # Calculate average
             avg = np.average(predict_probas, axis=0, weights=self._weights_not_none)

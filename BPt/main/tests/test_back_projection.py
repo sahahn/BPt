@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import tempfile
 from ..funcs import pipeline_check, evaluate
-from ..input import Loader, Ensemble
+from ..input import Loader, Ensemble, Model
 
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -36,10 +36,10 @@ def setup_dataset():
     data = Dataset()
 
     # Add targets
-    subjs = [f'subj{i}' for i in range(10)]
-    data['r'] = pd.Series([.1, .2, .3, .4, .5, .6, .7, .8, .9, 1],
+    subjs = [f'subj{i}' for i in range(20)]
+    data['r'] = pd.Series([.1, .2, .3, .4, .5, .6, .7, .8, .9, 1, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1],
                           index=subjs)
-    data['b'] = pd.Series([0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+    data['b'] = pd.Series([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
                           index=subjs)
     data = data.set_role(['r', 'b'], 'target')
     data = data.to_binary(scope='b')
@@ -47,7 +47,7 @@ def setup_dataset():
     # Gen and save fake data files
     files = {'d_files': []}
     temp_dr = tempfile.gettempdir()
-    for i in range(10):
+    for i in range(20):
         save_loc = os.path.join(temp_dr, f'subj{i}.npy')
         x = np.arange(SZ) + np.random.random(SZ)
         np.save(save_loc, x)
@@ -75,18 +75,22 @@ def get_pipe(pipe):
 
     return pipe
 
-def run_eval(pipe='elastic_pipe', target='t_regression', ensemble=None):
+def run_eval(pipe='elastic_pipe', target='t_regression', ensemble=None,
+             scorer='default'):
 
     if ensemble is None:
         pipe = get_pipe(pipe)
-    elif  ensemble == 'voting':
-        pipe = Ensemble('voting', models=[get_pipe(pipe) for i in range(2)])
+    elif ensemble == 'voting':
+        pipe = Ensemble('voting', models=[get_pipe(pipe) for _ in range(2)])
+    elif ensemble == 'stacking':
+        pipe = Ensemble('stacking', models=[get_pipe(pipe) for _ in range(2)],
+                        base_model=Model('ridge'))
 
     data = setup_dataset()
 
     return evaluate(pipeline=pipe, dataset=data,
                     target=target, mute_warnings=True,
-                    progress_bar=False, cv=2)
+                    progress_bar=False, cv=2, scorer=scorer)
 
 
 def standard_check(results):
@@ -129,6 +133,11 @@ def test_basic_elastic_r():
 def test_basic_elastic_b():
 
     results = run_eval(pipe='elastic_pipe', target='b')
+    standard_check(results)
+
+def test_basic_elastic_b_roc_auc():
+
+    results = run_eval(pipe='elastic_pipe', target='b', scorer='roc_auc')
     standard_check(results)
 
 def test_basic_rf_r():
@@ -199,6 +208,12 @@ def test_voting_elastic_b():
     results = run_eval(pipe='elastic_pipe', target='b', ensemble='voting')
     voting_base_check(results)
 
+def test_voting_elastic_b_roc_auc():
+
+    results = run_eval(pipe='elastic_pipe', target='b',
+                       ensemble='voting', scorer='roc_auc')
+    voting_base_check(results)
+
 def test_voting_rf_r():
 
     results = run_eval(pipe='rf_pipe', target='r', ensemble='voting')
@@ -245,3 +260,53 @@ def test_voting_permutation_svm_fs_b():
     
     results = run_eval(pipe='svm_fs_pipe', target='b', ensemble='voting')
     fs_permutation_check(results)
+
+def test_voting_permutation_svm_fs_b_roc_auc():
+    
+    results = run_eval(pipe='svm_fs_pipe', target='b',
+                       ensemble='voting', scorer='roc_auc')
+    fs_permutation_check(results)
+
+def test_stacking_elastic_r():
+
+    results = run_eval(pipe='elastic_pipe', target='r', ensemble='stacking')
+    voting_base_check(results)
+
+def test_stacking_elastic_b():
+
+    results = run_eval(pipe='elastic_pipe', target='b', ensemble='stacking')
+    voting_base_check(results)
+
+def test_stacking_elastic_b_roc_auc():
+
+    results = run_eval(pipe='elastic_pipe', target='b',
+                       ensemble='stacking', scorer='roc_auc')
+    voting_base_check(results)
+
+def test_stacking_rf_r():
+
+    results = run_eval(pipe='rf_pipe', target='r', ensemble='stacking')
+    voting_base_check(results)
+
+def test_stacking_rf_b():
+
+    results = run_eval(pipe='rf_pipe', target='b', ensemble='stacking')
+    voting_base_check(results)
+
+def test_stacking_permutation_svm_r():
+
+    results = run_eval(pipe='svm_pipe', target='r', ensemble='stacking')
+    voting_permutation_check(results)
+
+def test_stacking_permutation_svm_b():
+
+    results = run_eval(pipe='svm_pipe', target='b', ensemble='stacking')
+    voting_permutation_check(results)
+
+def test_stacking_permutation_svm_b_roc_auc():
+
+    results = run_eval(pipe='svm_pipe', target='b',
+                       ensemble='stacking', scorer='roc_auc')
+    voting_permutation_check(results)
+
+

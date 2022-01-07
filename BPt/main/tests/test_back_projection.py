@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import tempfile
 from ..funcs import pipeline_check, evaluate
-from ..input import Loader, Ensemble, Model
+from ..input import Loader, Ensemble, Model, CV
 
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -76,7 +76,7 @@ def get_pipe(pipe):
     return pipe
 
 def run_eval(pipe='elastic_pipe', target='t_regression', ensemble=None,
-             scorer='default'):
+             scorer='default', cv=None):
 
     if ensemble is None:
         pipe = get_pipe(pipe)
@@ -84,7 +84,7 @@ def run_eval(pipe='elastic_pipe', target='t_regression', ensemble=None,
         pipe = Ensemble('voting', models=[get_pipe(pipe) for _ in range(2)])
     elif ensemble == 'stacking':
         pipe = Ensemble('stacking', models=[get_pipe(pipe) for _ in range(2)],
-                        base_model=Model('ridge'))
+                        base_model=Model('ridge'), cv=None)
 
     data = setup_dataset()
 
@@ -270,6 +270,12 @@ def test_voting_permutation_svm_fs_b_roc_auc():
 def test_stacking_elastic_r():
 
     results = run_eval(pipe='elastic_pipe', target='r', ensemble='stacking')
+    voting_base_check(results)
+
+def test_stacking_elastic_r_custom_cv():
+
+    results = run_eval(pipe='elastic_pipe', target='r', ensemble='stacking',
+                       cv=CV(splits=3))
     voting_base_check(results)
 
 def test_stacking_elastic_b():

@@ -66,7 +66,7 @@ def is_notebook():
 # or some sort of hash to make sure / some way of making sure
 # functions that need a dataset are not passed some wrong input
 
-# TODO - function to easily export saved results
+# TODO - function to easily export saved results in different formats.
 
 
 def get_non_nan_Xy(X, y):
@@ -388,9 +388,18 @@ class BPtEvaluator():
     def n_subjects(self):
         '''A quicker helper property to get
         the sum of the length of :data:`train_subjects<BPtEvaluator.train_subjects>`
-        and :data:`val_subjects<BPtEvaluator.val_subjects>` from the 1st fold.
+        and :data:`val_subjects<BPtEvaluator.val_subjects>`. If this number varies by fold,
+        it will be set to None.
+
+        This number is supposed to represent the number of subjects with non NaN targets
+        used in the training and testing. 
         '''
-        return len(self.train_subjects[0]) + len(self.val_subjects[0])
+
+        lens = [len(self.train_subjects[i]) + len(self.val_subjects[i]) for i in range(len(self.train_subjects))]
+
+        if len(set(lens)) == 1:
+            return lens[0]
+        return None
 
     @property
     def n_folds(self):
@@ -1675,6 +1684,9 @@ class BPtEvaluator():
         as broken down by the different unique groups
         of a column in the passed :class:`Dataset`.
 
+        Note that the train subjects in resulting breakdown will not change,
+        that only the validation sets will be split by group.
+
         Parameters
         ------------
         group : str
@@ -1715,6 +1727,8 @@ class BPtEvaluator():
               preds and scores representing this subset.
         '''
 
+        from .compare import compare_dict_from_existing
+
         if self.preds is None:
             raise RuntimeError('store_preds must have been set '
                                'to True to use this function.')
@@ -1739,7 +1753,8 @@ class BPtEvaluator():
             subsets[clean_str(value)] =\
                 BPtEvaluatorSubset(self, subjs, subset_name=subset_name)
 
-        return subsets
+        # Return as compare dict, so we have access to the summary function
+        return compare_dict_from_existing(subsets)
 
     def to_pickle(self, loc):
         '''Quick helper to save as pickle.

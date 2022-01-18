@@ -310,16 +310,14 @@ P['mlp dist 3 layer']['hidden_layer_sizes'] = three_layer
 P['base linear svc'] = {'max_iter': 100}
 
 P['linear svc dist'] = P['base linear svc'].copy()
-P['linear svc dist']['C'] = Log(lower=1e-4, upper=1e4)
+P['linear svc dist']['C'] = Log(lower=1, upper=1e4)
 P['linear svc dist']['class_weight'] = cls_weight
 
 P['base linear svr'] = {'loss': 'epsilon_insensitive',
-                        'max_iter': 100}
+                        'max_iter': 1e4}
 
 P['linear svr dist'] = P['base linear svr'].copy()
-P['linear svr dist']['C'] = Log(lower=1e-4, upper=1e4)
-
-P['base sgd'] = {'loss': 'squared_loss'}
+P['linear svr dist']['C'] = Log(lower=1, upper=1e4)
 
 
 loss_choice = TransitionChoice(['hinge', 'log', 'modified_huber',

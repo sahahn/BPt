@@ -309,21 +309,21 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
 
         # The dictionary of valid options
         self._func_dict = {
-            'avg_cluster': nx.average_clustering,
-            'assortativity': nx.degree_assortativity_coefficient,
-            'global_eff': nx.global_efficiency,
-            'local_eff': nx.local_efficiency,
-            'sigma': nx.sigma,
-            'omega': nx.omega,
-            'transitivity': nx.transitivity,
-            'avg_eigenvector_centrality': avg(nx.eigenvector_centrality_numpy),
-            'avg_closeness_centrality': avg(nx.closeness_centrality),
-            'avg_degree': self._avg_degree,
-            'avg_triangles': avg(nx.triangles),
-            'avg_pagerank': avg(nx.pagerank),
-            'avg_betweenness_centrality': avg(nx.betweenness_centrality),
-            'avg_information_centrality': avg(nx.information_centrality),
-            'avg_shortest_path_length': nx.average_shortest_path_length
+            'avg_cluster': (nx.average_clustering, False),
+            'assortativity': (nx.degree_assortativity_coefficient, False),
+            'global_eff': (nx.global_efficiency, False),
+            'local_eff': (nx.local_efficiency, False),
+            'sigma': (nx.sigma, False),
+            'omega': (nx.omega, False),
+            'transitivity': (nx.transitivity, False),
+            'avg_eigenvector_centrality': (nx.eigenvector_centrality_numpy),
+            'avg_closeness_centrality': (nx.closeness_centrality),
+            'avg_degree': (self._avg_degree, False),
+            'avg_triangles': (nx.triangles, True),
+            'avg_pagerank': (nx.pagerank, True),
+            'avg_betweenness_centrality': (nx.betweenness_centrality, True),
+            'avg_information_centrality': (nx.information_centrality, True),
+            'avg_shortest_path_length': (nx.average_shortest_path_length, False)
         }
 
         # Compute the feat names to return once here.
@@ -419,7 +419,9 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
 
         # Apply threshold
         X = self._apply_threshold(X)
-        G = nx.from_numpy_array(X)
+
+        # Before trying from numpy array call squeeze
+        G = nx.from_numpy_array(np.squeeze(X))
 
         X_trans = []
 
@@ -427,12 +429,21 @@ class ThresholdNetworkMeasures(BaseEstimator, TransformerMixin):
             if compute not in self._func_dict:
                 X_trans += [compute(G)]
             else:
-                X_trans += [self._func_dict[compute](G)]
+                X_trans += [self._compute(G, self._func_dict[compute])]
         return np.array(X_trans)
 
     def _avg_degree(self, G):
         avg_degree = np.mean([i[1] for i in nx.degree(G)])
         return avg_degree
+
+    def _compute(self, G, func_avg):
+
+        func, avg = func_avg[0], func_avg[1]
+
+        if avg:
+            return np.mean(func(G).values())
+        
+        return func(G)
 
 
 def get_loader_pipe(parc, pipe='elastic_pipe', obj_params=None, **loader_params):

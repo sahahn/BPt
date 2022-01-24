@@ -1124,6 +1124,10 @@ class Dataset(pd.DataFrame):
 
         # Make copy of values
         values = values.copy()
+        
+        # Change dtype from categorical in this case
+        # So that replace will work
+        values = cat_to_equiv_check(values)
 
         try:
             encoder = self.encoders[col]
@@ -1803,3 +1807,14 @@ class Dataset(pd.DataFrame):
                              drop_cols_by_unique_val,
                              drop_cols_by_nan)
 
+def cat_to_equiv_check(values):
+
+    # Check if categorical, if not return as isCheck for categorical case:
+    if not values.dtype == 'category':
+        return values
+
+    # If categorical, change the values to the dtype
+    # of the categorical categories
+    cat_dtype = values.dtype.categories.dtype
+
+    return values.astype(cat_dtype)

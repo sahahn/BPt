@@ -358,8 +358,8 @@ def test_subset_by():
                        cv=2)
     subsets = results.subset_by('grp', data)
 
-    g1 = subsets['1.0']
-    g2 = subsets['2.0']
+    g1 = subsets['1']
+    g2 = subsets['2']
 
     assert len(g1.scores['explained_variance']) == 2
     assert len(g2.scores['explained_variance']) == 2

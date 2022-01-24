@@ -1752,7 +1752,7 @@ class BPtEvaluator():
             # Get evaluator subset
             subsets[clean_str(value)] =\
                 BPtEvaluatorSubset(self, subjs, subset_name=subset_name)
-
+        
         # Return as compare dict, so we have access to the summary function
         return compare_dict_from_existing(subsets)
 

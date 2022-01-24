@@ -267,11 +267,11 @@ class Dataset(pd.DataFrame):
     def verbose(self, verbose):
         self.verbose_ = verbose
 
-    def _inplace(self, func_name, args):
+    def _inplace(self, func_name, args, deep=False):
         '''Assumes that inplace is True for this func to be called.'''
 
         # Create shallow copy
-        data_copy = self.copy(deep=False)
+        data_copy = self.copy(deep=deep)
 
         # Get args to pass to copy
         copy_args = {key: args[key] for key in args

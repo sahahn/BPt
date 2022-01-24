@@ -79,7 +79,7 @@ def to_binary(self, scope, drop=True, inplace=False):
     '''
 
     if not inplace:
-        return self._inplace('to_binary', locals())
+        return self._inplace('to_binary', locals(), deep=not drop)
 
     # Make sure encoders init'ed
     self._check_encoders()
@@ -250,6 +250,7 @@ def binarize(self, scope, threshold, replace=True, drop=True, inplace=False):
 
 def _binarize(self, col, threshold, lower, upper, replace, drop):
 
+
     # Keep track of initial NaN subjects
     nan_subjects = self._get_nan_subjects(col)
 
@@ -273,6 +274,11 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
         # Change col to new_key
         col = new_key
 
+    # If passing category col here
+    # try to cast values to float first
+    if values.dtype == 'category':
+        values = values.astype('float')
+
     # If upper and lower passed instead of threshold
     if threshold is None:
 
@@ -287,6 +293,8 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
         # Grab copy of column to fill
         # after drops
         new_col = self[col].copy()
+        if new_col.dtype == 'category':
+            new_col = new_col.astype('float')
 
         # Binarize
         new_col = new_col.where(new_col > lower, 0)
@@ -310,6 +318,8 @@ def _binarize(self, col, threshold, lower, upper, replace, drop):
 
         # Get copy of column to operate on
         new_col = self[col].copy()
+        if new_col.dtype == 'category':
+            new_col = new_col.astype('float')
 
         # Binarize
         new_col = new_col.where(new_col >= threshold, 0)

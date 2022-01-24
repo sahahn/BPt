@@ -543,7 +543,7 @@ def _get_plot_values(self, col, subjs,
 
     # Get subset of subjects
     overlap_subjs = subjs.intersection(values.index)
-    values = values.loc[overlap_subjs]
+    values = values.loc[list(overlap_subjs)]
 
     # Compute info
     info = {'n': len(values),

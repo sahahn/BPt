@@ -183,11 +183,14 @@ def _validate_split(self, size, subjects):
 
 def _finish_split(self):
 
+
     # Save in class, pd.Index style
     self.train_subjects = pd.Index(self.train_subjects,
-                                   name=self.index.name)
+                                   name=self.index.name,
+                                   dtype=self.index.dtype)
     self.test_subjects = pd.Index(self.test_subjects,
-                                  name=self.index.name)
+                                  name=self.index.name,
+                                  dtype=self.index.dtype)
 
     self._print('Performed train/test split', level=1)
     self._print('Train size:', len(self.train_subjects), level=1)
@@ -640,8 +643,8 @@ def save_train_split(self, loc):
 def split(data):
 
     # Get the train and test subjects
-    train_subjects = data.get_subjects('train')
-    test_subjects = data.get_subjects('test')
+    train_subjects = data.get_subjects('train', return_as='flat index')
+    test_subjects = data.get_subjects('test', return_as='flat index')
 
     # Reset split to None
     data.train_subjects, data.test_subjects = None, None

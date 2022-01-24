@@ -129,14 +129,19 @@ def drop_subjects_by_nan(self, scope='all', threshold=.5, inplace=False):
 
             default = 'all'
 
-    threshold : float or int, optional
-        Passed as a float between 0 and 1, or
-        as an int. If greater than 0 or less than 1,
-        this threshold represents the percent of columns
-        a subject needs to have missing for it to be dropped.
-        If 1 or over, then it represents an absolute number of
+    threshold : float, int, 'all' or 'any', optional
+        Can pass input as either a float greater than 0
+        and less than 1, which refers to calculating 
+        a percent of columns to drop, or as an absolute passed
+        as an int, then it represents an absolute number of
         columns that a subject needs to have greater than or equal
         to that value in order to drop.
+
+        There are also special keywords 'all' and 'any' to
+        drop if any missing in scope, or all in scope respectively.
+
+        So for example, pass either threshold=1, or threshold='any',
+        to drop the subject if there are any NaN's at all in scope.
 
         ::
 
@@ -155,12 +160,28 @@ def drop_subjects_by_nan(self, scope='all', threshold=.5, inplace=False):
     # Get nan counts by column
     col_nan_cnts = self[cols].isnull().sum(axis=1)
 
+    # Check for key words
+    if isinstance(threshold, str):
+        
+        if threshold == 'all':
+            threshold = len(cols)
+        elif threshold == 'any':
+            threshold = 1
+        else:
+            raise RuntimeError('Invalid threshold passed.')
+
+        self._print('Setting NaN threshold to:', threshold, level=1)
+
     # If between 0 and 1
-    if threshold > 0 and threshold < 1:
+    elif threshold > 0 and threshold < 1:
 
         # Change threshold from percent to abs
         threshold = threshold * len(cols)
         self._print('Setting NaN threshold to:', threshold, level=1)
+
+    # Invalid input
+    elif threshold <= 0:
+        raise RuntimeError('threshold must be greater than 0.')
 
     # Calculate subjects to drop if greater than or equal to threshold
     to_drop = self.loc[col_nan_cnts >= threshold].index
@@ -187,7 +208,6 @@ def _data_file_fail_check(self, cols):
         if 'data file' in self.scopes[col]:
             raise RuntimeError('Loaded column: ' + col + ' cannot be a'
                                ' data file.')
-
 
 def _drop_cols(self, to_drop):
 
@@ -509,7 +529,7 @@ def filter_categorical_by_percent(self, scope='category', drop_percent=1,
     '''
 
     if not inplace:
-        return self._inplace('filter_categorical_by_percent', locals())
+        return self._inplace('filter_categorical_by_percent', locals(), deep=not drop)
 
     # Check scope and role
     self._check_sr()

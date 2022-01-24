@@ -8,7 +8,10 @@ def clean_str(in_str):
         if float(as_int_str) == in_str:
             in_str = as_int_str
 
+    # Make sure str
     in_str = str(in_str)
+
+    # Get rid of some common repr issues
     in_str = in_str.replace('"', '')
     in_str = in_str.replace("'", '')
 

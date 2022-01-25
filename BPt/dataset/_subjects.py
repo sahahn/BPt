@@ -71,7 +71,7 @@ def _get_base_loaded_subjects(self, subjects, only_level):
 
         # If want multi-index returned
         if only_level is None:
-            loaded_subjects = set(self.loc[loaded_subjects].index)
+            loaded_subjects = set(self.loc[list(loaded_subjects)].index)
 
     # Non multi-index case try to cast to correct type
     else:

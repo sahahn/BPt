@@ -6,6 +6,7 @@ from .helpers import verbose_print
 from pandas.util._decorators import doc
 import pandas.core.common as com
 from pandas.core.dtypes.generic import ABCMultiIndex
+from pandas.api.types import is_integer_dtype
 
 
 _shared_docs = {}
@@ -267,11 +268,11 @@ class Dataset(pd.DataFrame):
     def verbose(self, verbose):
         self.verbose_ = verbose
 
-    def _inplace(self, func_name, args):
+    def _inplace(self, func_name, args, deep=False):
         '''Assumes that inplace is True for this func to be called.'''
 
         # Create shallow copy
-        data_copy = self.copy(deep=False)
+        data_copy = self.copy(deep=deep)
 
         # Get args to pass to copy
         copy_args = {key: args[key] for key in args
@@ -1124,6 +1125,10 @@ class Dataset(pd.DataFrame):
 
         # Make copy of values
         values = values.copy()
+        
+        # Change dtype from categorical in this case
+        # So that replace will work
+        values = cat_to_equiv_check(values)
 
         try:
             encoder = self.encoders[col]
@@ -1803,12 +1808,17 @@ class Dataset(pd.DataFrame):
                              drop_cols_by_unique_val,
                              drop_cols_by_nan)
 
+def cat_to_equiv_check(values):
 
-def read_csv(*args, **kwargs):
-    '''Passes along all arguments and kwargs to
-    :func:`pandas.read_csv` then casts to :class:`Dataset`.
+    # Check if categorical, if not return as isCheck for categorical case:
+    if not values.dtype == 'category':
+        return values
 
-    This method is just a helper wrapper function.
-    '''
+    # If categorical, change the values to the dtype
+    # of the categorical categories
+    cat_dtype = values.dtype.categories.dtype
 
-    return Dataset(pd.read_csv(*args, **kwargs))
+    if is_integer_dtype(cat_dtype) and values.isna().any():
+        cat_dtype = 'float'
+
+    return values.astype(cat_dtype)

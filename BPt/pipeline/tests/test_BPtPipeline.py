@@ -3,14 +3,14 @@ from ..BPtPipeline import BPtPipeline
 from .helpers import ToFixedTransformer, get_fake_mapping, clean_fake_mapping
 from ..ScopeObjs import ScopeTransformer
 from ..BPtModel import BPtModel
-from ..BPtLoader import BPtLoader
+from ..BPtLoader import BPtLoader, BPtListLoader
 from ...extensions import Identity
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import pandas as pd
 import os
 import tempfile
-from ...default.params.Params import Choice, TransitionChoice
+from ...default.params.Params import Choice
 from .helpers import get_param_search
 from ..BPtSearchCV import NevergradSearchCV
 import shutil
@@ -97,7 +97,6 @@ def test_skip_loader_no_inds():
     pipe.fit(X, y)
     assert pipe.steps[0][1].estimator_ is None
 
-
 def test_file_mapping_hash():
 
     # Make sure that regardless of DataFile position
@@ -119,6 +118,8 @@ def run_pipe_with_loader_ts(cache_loc=None):
     # Loader - transform (5, 2) to (5, 8)
     # as each DataFile contains np.zeros((2, 2))
     file_mapping = get_fake_mapping(100)
+
+
     loader = BPtLoader(estimator=Identity(),
                        inds=[0, 1],
                        file_mapping=file_mapping,
@@ -189,7 +190,6 @@ def run_pipe_with_loader_ts(cache_loc=None):
 
     return pipe
 
-
 def test_pipeline_with_loader():
 
     # Base pipeline with loader tests
@@ -217,7 +217,7 @@ def test_pipeline_fit_caching():
     del pipe
 
     # Run again a few times to make sure loading from cache works
-    for i in range(5):
+    for _ in range(5):
         pipe = run_pipe_with_loader_ts(cache_loc=cache_loc)
         assert hasattr(pipe, 'hash_')
         assert pipe.loaded_ is True
@@ -227,7 +227,7 @@ def test_pipeline_fit_caching():
     shutil.rmtree(cache_loc)
 
 
-def test_pipeline_inverse_transform_FIs_loader_static_transform():
+def test_pipeline_inverse_transform_fis_loader_static_transform():
 
     steps = []
 
@@ -264,7 +264,7 @@ def test_pipeline_inverse_transform_FIs_loader_static_transform():
     feat_names = pipe.transform_feat_names(X)
 
     fis = pd.Series(coef_, index=feat_names)
-    inverse_fis = pipe.inverse_transform_FIs(fis)
+    inverse_fis = pipe.inverse_transform_fis(fis)
 
     assert inverse_fis.loc[0] == 4
     assert inverse_fis.loc[1].shape == ((2, 2))
@@ -273,7 +273,7 @@ def test_pipeline_inverse_transform_FIs_loader_static_transform():
     clean_fake_mapping(100)
 
 
-def test_pipeline_inverse_transform_FIs_loader_fs():
+def test_pipeline_inverse_transform_fis_loader_fs():
 
     warnings.filterwarnings("ignore")
 
@@ -308,7 +308,7 @@ def test_pipeline_inverse_transform_FIs_loader_fs():
 
     feat_names = pipe.transform_feat_names(X)
     fis = pd.Series(coef_, index=feat_names)
-    inverse_fis = pipe.inverse_transform_FIs(fis)
+    inverse_fis = pipe.inverse_transform_fis(fis)
 
     # Don't make assumptions on specific coef
     assert inverse_fis.loc[0].shape == (2, 2)
@@ -319,7 +319,7 @@ def test_pipeline_inverse_transform_FIs_loader_fs():
     clean_fake_mapping(100)
 
 
-def test_pipeline_inverse_transform_FIs_loader_fs_v2():
+def test_pipeline_inverse_transform_fis_loader_fs_v2():
 
     warnings.filterwarnings("ignore")
 
@@ -358,7 +358,7 @@ def test_pipeline_inverse_transform_FIs_loader_fs_v2():
 
     feat_names = pipe.transform_feat_names(X)
     fis = pd.Series(coef_, index=feat_names)
-    inverse_fis = pipe.inverse_transform_FIs(fis)
+    inverse_fis = pipe.inverse_transform_fis(fis)
 
     # Don't make assumptions on specific coef
     assert inverse_fis.loc[0].shape == (2, 2)
@@ -369,7 +369,7 @@ def test_pipeline_inverse_transform_FIs_loader_fs_v2():
     clean_fake_mapping(100)
 
 
-def test_pipeline_inverse_transform_FIs_loader_fs_v3():
+def test_pipeline_inverse_transform_fis_loader_fs_v3():
 
     warnings.filterwarnings("ignore")
 
@@ -408,7 +408,7 @@ def test_pipeline_inverse_transform_FIs_loader_fs_v3():
 
     feat_names = pipe.transform_feat_names(X)
     fis = pd.Series(coef_, index=feat_names)
-    inverse_fis = pipe.inverse_transform_FIs(fis)
+    inverse_fis = pipe.inverse_transform_fis(fis)
 
     # Don't make assumptions on specific coef
     assert inverse_fis.loc[0].shape == (2, 2)
@@ -419,7 +419,7 @@ def test_pipeline_inverse_transform_FIs_loader_fs_v3():
     clean_fake_mapping(100)
 
 
-def test_pipeline_inverse_transform_FIs_impossible():
+def test_pipeline_inverse_transform_fis_impossible():
 
     warnings.filterwarnings("ignore")
 
@@ -457,7 +457,7 @@ def test_pipeline_inverse_transform_FIs_impossible():
     fis = pd.Series(coef_, index=feat_names)
 
     with pytest.raises(IndexError):
-        pipe.inverse_transform_FIs(fis)
+        pipe.inverse_transform_fis(fis)
 
     # Clean up
     clean_fake_mapping(100)

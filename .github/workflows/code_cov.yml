@@ -3,8 +3,7 @@ name: Code Coverage
 on: [push, pull_request]
 
 jobs:
-  build:
-  
+  build:  
     runs-on: ubuntu-latest
 
     steps:
@@ -26,4 +25,3 @@ jobs:
       uses: codecov/codecov-action@v1
       with:
         fail_ci_if_error: true
-    

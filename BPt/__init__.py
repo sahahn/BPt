@@ -1,4 +1,5 @@
-from .dataset.Dataset import Dataset, read_csv
+from .dataset.Dataset import Dataset
+from .dataset.funcs import read_csv, concat
 from .main.input import (Loader, Imputer, Scaler,
                          Transformer,
                          FeatSelector, Model, Ensemble,
@@ -20,7 +21,7 @@ from .main.plotting import plot_roc
 from pandas import read_pickle
 
 __author__ = "sahahn"
-__version__ = "2.1.6"
+__version__ = "2.2.0"
 __all__ = ["Dataset", "Loader",
            "Imputer", "Scaler", "Transformer", 'get_estimator',
            "FeatSelector", "Model",
@@ -32,4 +33,4 @@ __all__ = ["Dataset", "Loader",
            'p', "Feat_Selector", 'ModelPipeline', 'Pipeline',
            'BPtEvaluator', 'BPtEvaluatorSubset', 'read_pickle',
            'Compare', 'Option', 'compare_dict_from_existing',
-           'CompareDict', 'read_csv', 'plot_roc']
+           'CompareDict', 'read_csv', 'concat', 'plot_roc']

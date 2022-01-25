@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Extension Classes &#8212; BPt 2.1.6 documentation</title>
+    <title>Extension Classes &#8212; BPt 2.2.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -40,7 +40,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="BPt.extensions.Identity" href="api/BPt.extensions.Identity.html" />
-    <link rel="prev" title="BPt.BPtEvaluatorSubset.subset_by" href="api/BPt.BPtEvaluatorSubset.subset_by.html" />
+    <link rel="prev" title="BPt.BPtEvaluatorSubset.to_pickle" href="api/BPt.BPtEvaluatorSubset.to_pickle.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -210,23 +210,11 @@
                         </li>
                     
                         <li class="">
-                            <a href="api/BPt.extensions.SurfLabels.html">BPt.extensions.SurfLabels</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="api/BPt.extensions.SurfMaps.html">BPt.extensions.SurfMaps</a>
-                        </li>
-                    
-                        <li class="">
                             <a href="api/BPt.extensions.ThresholdNetworkMeasures.html">BPt.extensions.ThresholdNetworkMeasures</a>
                         </li>
                     
                         <li class="">
                             <a href="api/BPt.extensions.SingleConnectivityMeasure.html">BPt.extensions.SingleConnectivityMeasure</a>
-                        </li>
-                    
-                        <li class="">
-                            <a href="api/BPt.extensions.RandomParcellation.html">BPt.extensions.RandomParcellation</a>
                         </li>
                     
                     </ul>
@@ -284,12 +272,6 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.extensions.Identity.html#BPt.extensions.Identity" title="BPt.extensions.Identity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Identity</span></code></a>()</p></td>
 <td><p>This loader will simply flatten the input object, if not already.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.extensions.SurfLabels.html#BPt.extensions.SurfLabels" title="BPt.extensions.SurfLabels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SurfLabels</span></code></a>(labels[, background_label, mask, ...])</p></td>
-<td><p>Extract signals from non-overlapping labels.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/BPt.extensions.SurfMaps.html#BPt.extensions.SurfMaps" title="BPt.extensions.SurfMaps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SurfMaps</span></code></a>(maps[, strategy, mask, vectorize])</p></td>
-<td><p>Extract signals from overlapping labels.</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="api/BPt.extensions.ThresholdNetworkMeasures.html#BPt.extensions.ThresholdNetworkMeasures" title="BPt.extensions.ThresholdNetworkMeasures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ThresholdNetworkMeasures</span></code></a>([threshold, ...])</p></td>
 <td><p>This class is designed for thresholding and then extracting network measures from an input correlation matrix.</p></td>
 </tr>
@@ -298,9 +280,6 @@
 <div class="line">See <a class="reference external" href="https://nilearn.github.io/modules/generated/nilearn.connectome.ConnectivityMeasure.html#nilearn.connectome.ConnectivityMeasure" title="(in Nilearn)"><code class="xref py py-class docutils literal notranslate"><span class="pre">nilearn.connectome.ConnectivityMeasure</span></code></a>.</div>
 </div>
 </p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/BPt.extensions.RandomParcellation.html#BPt.extensions.RandomParcellation" title="BPt.extensions.RandomParcellation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomParcellation</span></code></a>(geo, n_parcels[, ...])</p></td>
-<td><p>This object can be used to generate a random surface parcellation.</p></td>
 </tr>
 </tbody>
 </table>
@@ -312,7 +291,7 @@
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="api/BPt.BPtEvaluatorSubset.subset_by.html" title="previous page">BPt.BPtEvaluatorSubset.subset_by</a>
+    <a class='left-prev' id="prev-link" href="api/BPt.BPtEvaluatorSubset.to_pickle.html" title="previous page">BPt.BPtEvaluatorSubset.to_pickle</a>
     <a class='right-next' id="next-link" href="api/BPt.extensions.Identity.html" title="next page">BPt.extensions.Identity</a>
 
               </div>
@@ -330,7 +309,7 @@
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2020-2021.<br/>
+          &copy; Copyright 2020-2022.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>

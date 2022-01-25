@@ -26,7 +26,7 @@ def get_bpt_cv(cv, dataset):
         if dataset.roles[cv.splits] != 'non input':
             raise RuntimeError('Passed splits col must be role == non input.')
 
-        # @TODO input validation on choice of leave out variable
+        # Set vals
         splits_vals = dataset[cv.splits]
 
     else:

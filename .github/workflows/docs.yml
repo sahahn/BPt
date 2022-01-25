@@ -1,0 +1,32 @@
+name: Generate Docs
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:  
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        pip install pytest-cov
+        pip install .[extra]
+    - name: Generate docs
+      run: |
+        sudo apt install pandoc
+        pip install sphinx==4.2.0
+        pip install numpydoc==1.1.0
+        pip install nbsphinx
+        pip install pydata_sphinx_theme
+        cd doc
+        python make.py html

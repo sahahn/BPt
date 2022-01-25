@@ -1,8 +1,8 @@
 from BPt.pipeline.BPtPipeline import BPtPipeline
 from BPt.main.BPtEvaluator import BPtEvaluator
 from ...pipeline.BPtSearchCV import BPtGridSearchCV, NevergradSearchCV
-from ..input import (Loader, ModelPipeline, Model, CV, Pipeline, Scaler,
-                     ParamSearch, FeatSelector, Transformer)
+from ..input import (Loader, ModelPipeline, Model, Pipeline, Scaler,
+                     ParamSearch, FeatSelector, Transformer, CV, CVStrategy)
 from ..input_operations import Select
 from ...dataset.Dataset import Dataset
 from ...default.params.Params import Choice
@@ -10,12 +10,15 @@ from ..funcs import evaluate, cross_val_score, _sk_check_y
 import pytest
 import pandas as pd
 import numpy as np
+import os
 from ...extensions import LinearResidualizer
 from ..compare import Compare, Option, CompareDict, Options
 from sklearn.tree import DecisionTreeClassifier
 from ...pipeline.BPtLoader import BPtLoader
 import warnings
 from ...pipeline.Selector import Selector
+import tempfile
+import shutil
 from ...pipeline.tests.helpers import get_fake_mapping, clean_fake_mapping
 
 
@@ -51,6 +54,63 @@ def test_evaluate_with_loader():
     # Clean up
     clean_fake_mapping(100)
 
+def test_evaluate_with_list_loader():
+
+    data = get_fake_datafile_dataset(50, 2)
+    pipe = Pipeline([Loader('identity', scope='col1', behav='all'), Model('dt')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       cv=3)
+
+    assert len(results.feat_names[0]) == 5
+    assert isinstance(results.estimators[0].steps[0][1], BPtLoader)
+
+    # Clean up
+    clean_fake_mapping(100)
+
+
+def run_evaluate_with_list_loader_cache(data, cache_loc):
+
+    
+    pipe = Pipeline([Loader('identity', scope='col1', behav='all', cache_loc=cache_loc), Model('dt')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       cv=3)
+
+    assert len(results.feat_names[0]) == 5
+    assert isinstance(results.estimators[0].steps[0][1], BPtLoader)
+
+def test_list_loader_cache():
+
+    data = get_fake_datafile_dataset(50, 2)
+    loc = os.path.join(tempfile.gettempdir(), 'temp_bpt_test_cache')
+    for _ in range(3):
+        run_evaluate_with_list_loader_cache(data, cache_loc=loc)
+    clean_fake_mapping(100)
+
+    shutil.rmtree(loc)
+
+
+def test_evaluate_with_loader_n_jobs2():
+
+    data = get_fake_datafile_dataset(50, 2)
+    pipe = Pipeline([Loader('identity'), Model('dt')])
+
+    results = evaluate(pipeline=pipe,
+                       dataset=data,
+                       progress_bar=False,
+                       n_jobs=2,
+                       cv=3)
+
+    assert len(results.feat_names[0]) == 8
+    assert isinstance(results.estimators[0].steps[0][1], BPtLoader)
+
+    # Clean up
+    clean_fake_mapping(100)
 
 def test_evaluate_with_loader_inverse_fis():
 
@@ -235,6 +295,7 @@ def get_fake_category_dataset():
     fake['2'] = base
     fake['3'] = base
 
+    fake = fake.ordinalize('3')
     fake = fake.set_role('3', 'target')
 
     return fake
@@ -329,6 +390,7 @@ def get_fake_binary_dataset():
     fake['2'] = base
     fake['3'] = base
 
+    fake = fake.to_binary('3')
     fake = fake.set_role('3', 'target')
 
     return fake
@@ -1086,3 +1148,74 @@ def test_evaluate_second_cv_test_named_index():
 
     assert len(set(results.val_subjects[0]) - set(dataset.test_subjects)) == 0
     assert len(set(dataset.test_subjects) - set(results.val_subjects[0])) == 0
+
+def test_custom_cv_repeated_train_test():
+
+    dt_pipe = ModelPipeline(model=Model('dt'))
+    dataset = get_fake_binary_dataset()
+
+    cv = CV(splits=.5, n_repeats=3)
+    results = evaluate(pipeline=dt_pipe,
+                       dataset=dataset,
+                       cv=cv,
+                       progress_bar=False,
+                       problem_type='binary')
+
+    assert len(results.train_subjects) ==  3
+
+
+def test_custom_cv_repeated_stratify():
+
+    dt_pipe = ModelPipeline(model=Model('dt'))
+    dataset = get_fake_binary_dataset()
+
+    # Stratify on target
+    cv = CV(splits=2, n_repeats=2,
+            cv_strategy=CVStrategy(stratify='3'))
+
+    results = evaluate(pipeline=dt_pipe,
+                       dataset=dataset,
+                       cv=cv,
+                       progress_bar=False,
+                       problem_type='binary')
+
+    # Make sure worked w/ stratify, 10 subjects each fold size 5
+    for tr, val in zip(results.train_subjects, results.val_subjects):
+        assert np.sum(tr >= 10)  == 5
+        assert np.sum(val >= 10)  == 5
+
+    # Make sure 4 total folds
+    assert len(results.train_subjects) == 4
+
+def test_custom_cv_leave_one_out():
+
+    dt_pipe = ModelPipeline(model=Model('dt'))
+
+    data = get_fake_category_dataset()
+    data = data.set_role('3', 'non input')
+    data = data.set_role('1', 'target')
+
+    results = evaluate(pipeline=dt_pipe,
+                       dataset=data,
+                       cv=CV(splits='3'),
+                       progress_bar=False,
+                       problem_type='regression')
+
+    # Confirm did leave one out split
+    for v in results.val_subjects:
+        assert len(v) == 10
+        assert np.sum(v) in [45, 145, 245]
+        assert np.var(v) == [8.25]
+
+
+def test_empty_loader():
+
+    dt_pipe = Pipeline([Loader('identity'), Model('dt')])
+    dataset = get_fake_binary_dataset()
+
+    cv = CV(splits=.5, n_repeats=3)
+    evaluate(pipeline=dt_pipe,
+             dataset=dataset,
+             cv=cv,
+             progress_bar=False,
+             problem_type='binary')

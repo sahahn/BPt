@@ -72,3 +72,5 @@ def test_stacking_classifier():
 
     assert m1_2.out_mapping_[3] is not None
     assert m2_2.out_mapping_[3] is None
+
+

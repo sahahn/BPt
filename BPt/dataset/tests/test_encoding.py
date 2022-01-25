@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from .datasets import (get_fake_dataset, get_fake_dataset7,
-                       get_fake_multi_index_dataset)
+                       get_fake_multi_index_dataset, get_example1_dataset)
 from ..Dataset import Dataset
 
 
@@ -85,13 +85,14 @@ def test_to_binary_inplace_copy():
 def test_to_binary_inplace_copy2():
 
     df = get_fake_dataset()
-    assert len(df['2'].unique()) == 3
 
-    df.to_binary('2', drop=False, inplace=False)
-    assert np.nan not in df['2'].values
+    tb_copy = df.to_binary('2', drop=False, inplace=False)
+    assert not any(pd.isnull(df['2'].values))
+    assert any(pd.isnull(tb_copy['2'].values))
 
+    # And check reverse with drop
     df.to_binary('2', drop=False, inplace=True)
-    assert np.nan in df['2'].values
+    assert any(pd.isnull(df['2'].values))
 
 
 def test_to_binary_from_bool():
@@ -271,6 +272,33 @@ def test_binarize_inplace_copy():
     assert df.loc[0, '1'] != 0
     assert df.loc[1, '1'] != 1
 
+def test_binarize_inplace_copy_drop_false():
+
+    df = get_fake_dataset()
+
+    df_ret = df.binarize('1', threshold=(1.5, 2.5),
+                         inplace=False, drop=False)
+
+    # Should be NaN in returned
+    assert any(pd.isnull(df_ret['1']))
+
+    # Not in original
+    assert not any(pd.isnull(df['1']))
+
+def test_binarize_inplace_copy_drop_false_cat():
+
+    df = get_fake_dataset()
+
+    print(df['2'])
+
+    df_ret = df.binarize('2', threshold=(6.5, 7.5),
+                         inplace=False, drop=False)
+
+    # Should be NaN in returned
+    assert any(pd.isnull(df_ret['2']))
+
+    # Not in original
+    assert not any(pd.isnull(df['2']))
 
 def test_binarize_replace():
 
@@ -361,3 +389,11 @@ def test_copy_as_non_input_not_inplace():
     assert '1_copy' in df_copy
     assert 'bleh' in df_copy.scopes['1_copy']
     assert '1_copy' not in df.scopes
+
+def test_add_unique_overlap2():
+
+    data = get_example1_dataset()
+    data.add_unique_overlap(cols=['animals', 'numbers'],
+                            new_col='combo', inplace=True)
+
+    assert len(data['combo'].unique()) ==  5

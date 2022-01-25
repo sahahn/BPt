@@ -11,7 +11,10 @@ Subjects
 Various functions within BPt, and :class:`Dataset` can accept subjects or some variation on this
 name as an argument. The parameter can accept a few different values. These are explained below:
 
-1. You may pass any array-like (e.g., list, set, pandas Index, etc...) of subjects directly.
+1. array-like
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You may pass any array-like (e.g., list, set, pandas Index, etc...) of subjects directly.
 Warning: Passing a python tuple is reserved for a special MultiIndex case!
 
 For example:
@@ -20,9 +23,12 @@ For example:
 
   subjects = ['subj1', 'subj2', 'subj3']
 
-Would select those three subjects.
+Would select those three subjects, where the list could also be a numpy array or pandas index for example.
 
-2. You may pass the location of a text file were subject's names are stored as one subject's
+2. location 
+~~~~~~~~~~~~~~~~~~~
+
+You may pass the location of a text file were subject's names are stored as one subject's
 name per line. Names should be saved with python style types, e.g., quotes around str's, but
 if they are not, it should in most cases still be able to figure out the correct type.
 For example if subjects.txt contained:
@@ -41,7 +47,9 @@ We could pass:
 
 To select those three subjects.
 
-3. A reserved key word may be passed. These include:
+3. reserved keyword
+~~~~~~~~~~~~~~~~~~~~~
+A reserved key word may be passed. These include:
 
 - 'all'
   Operate on all subjects
@@ -64,11 +72,15 @@ To select those three subjects.
   a train/test split defined, and a cv value is passed that isn't 'test', then
   subjects = 'train' will be used. Otherwise, subjects='all' will be used.
 
-4. You can pass the special input wrapper :class:`ValueSubset`. This can be
+
+4. value subset case
+~~~~~~~~~~~~~~~~~~~~~
+You can pass the special input wrapper :class:`ValueSubset`. This can be
 used to select subsets of subject by a column's
 value or values. See :class:`ValueSubset` for more
 information on how this input class is used.
 
+5. multi-index case
 There also exists the case where you may wish for the underlying index of subjects to be a MultiIndex.
 In this case, there is some extra functionality to discuss.
 Say for example we have a Dataset multi-indexed
@@ -97,7 +109,9 @@ Note that if we pass arguments in this manner, BPt will assume they refer to wha
 index is first, in this case 'subject', and not 'eventname'. If we wish to also select
 explicitly by eventname, we have two options.
 
-1. Pass fully indexed tuples in an array-like manner, the same as 1. from before, e.g.:
+6. multi-index array-like
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You may pass fully indexed tuples in an array-like manner, the same as 1. from before, e.g.:
 
 ::
 
@@ -111,7 +125,7 @@ could select this same subset if subjects.txt was formatted as:
   ('subj1', 'e1')
   ('subj2', 'e2')
 
-2. Our second option is to use the special tuple reserved input. In this case,
+Our second option is to use the special tuple reserved input. In this case,
 we must pass a python tuple with the same length at the number of levels in the
 underlying MultiIndex, e.g., in the example before, of length two. Each index in the
 tuple will then be used to specify the BPt subjects compatible argument for just that

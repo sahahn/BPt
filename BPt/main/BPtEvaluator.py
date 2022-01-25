@@ -66,7 +66,7 @@ def is_notebook():
 # or some sort of hash to make sure / some way of making sure
 # functions that need a dataset are not passed some wrong input
 
-# TODO - function to easily export saved results
+# TODO - function to easily export saved results in different formats.
 
 
 def get_non_nan_Xy(X, y):
@@ -388,9 +388,18 @@ class BPtEvaluator():
     def n_subjects(self):
         '''A quicker helper property to get
         the sum of the length of :data:`train_subjects<BPtEvaluator.train_subjects>`
-        and :data:`val_subjects<BPtEvaluator.val_subjects>` from the 1st fold.
+        and :data:`val_subjects<BPtEvaluator.val_subjects>`. If this number varies by fold,
+        it will be set to None.
+
+        This number is supposed to represent the number of subjects with non NaN targets
+        used in the training and testing. 
         '''
-        return len(self.train_subjects[0]) + len(self.val_subjects[0])
+
+        lens = [len(self.train_subjects[i]) + len(self.val_subjects[i]) for i in range(len(self.train_subjects))]
+
+        if len(set(lens)) == 1:
+            return lens[0]
+        return None
 
     @property
     def n_folds(self):
@@ -737,9 +746,11 @@ class BPtEvaluator():
         self._save_preds(estimator_, X_val, y_val)
 
         # Get and save final transformed feat names
+        # Feat names w/ nested model applied ~
         self.feat_names.append(
             estimator_.transform_feat_names(X_tr,
-                                            encoders=self.encoders_))
+                                            encoders=self.encoders_,
+                                            nested_model=True))
 
         # If store estimators, save in self.estimators
         if self.estimators is not None:
@@ -891,14 +902,16 @@ class BPtEvaluator():
 
         # Show avaliable saved attrs
         saved_attrs = []
-        avaliable_methods = []
+        avaliable_methods = ['to_pickle', 'compare']
 
         if self.estimators is not None:
             saved_attrs.append('estimators')
             avaliable_methods.append('get_X_transform_df')
+            avaliable_methods.append('get_inverse_fis')
         if self.preds is not None:
             saved_attrs.append('preds')
             avaliable_methods.append('get_preds_dfs')
+            avaliable_methods.append('subset_by')
         if self.timing is not None:
             saved_attrs.append('timing')
 
@@ -1055,7 +1068,7 @@ class BPtEvaluator():
             elif fi is not None:
                 fis.append(fi_to_series(fi, feat_names))
             else:
-                fis.appends(None)
+                fis.append(None)
 
         return fis
 
@@ -1136,7 +1149,7 @@ class BPtEvaluator():
         # Base mean case
         return mean_no_zeros(base)
 
-    def get_inverse_fis(self):
+    def get_inverse_fis(self, fis=None):
         '''Try to inverse transform stored
         feature importances (either beta weights or
         automatically calculated feature importances)
@@ -1152,7 +1165,7 @@ class BPtEvaluator():
         This method can be especially helpful when using :class:`Loader`.
 
         Returns
-        --------
+        -------
         inverse_fis : list of pandas Series
             | The inverse feature importances will be returned
               as a list, where each index of the list refers to
@@ -1169,8 +1182,16 @@ class BPtEvaluator():
         '''
 
         # As list of series or list of list of series
-        fis = self._get_base_fis_list()
+        if fis is None:        
+            fis = self._get_base_fis_list()
 
+        # If passed in df format, convert first
+        # Drop any NaN also ~
+        # @ TODO handle categorical case ... 
+        elif isinstance(fis, pd.DataFrame):
+            fis = [fis.loc[i].dropna() for i in range(len(fis))]
+
+        # Otherwise, assumes passed
         inv_trans_fis = []
         for i, fi in enumerate(fis):
 
@@ -1180,17 +1201,19 @@ class BPtEvaluator():
             # Non-categorical case
             if isinstance(fi, pd.Series):
                 inv_trans_fis.append(
-                    estimator.inverse_transform_FIs(fi))
+                    estimator.inverse_transform_fis(fi))
 
             # Categorical case
             else:
                 cat_inv_fis =\
-                    [estimator.inverse_transform_FIs(f) for f in fi]
+                    [estimator.inverse_transform_fis(f) for f in fi]
                 inv_trans_fis.append(cat_inv_fis)
 
         return inv_trans_fis
 
-    def _get_val_fold_Xy(self, estimator, X_df, y_df, fold, just_model=True):
+    def _get_val_fold_Xy(self, estimator, X_df,
+                         y_df, fold, just_model=True,
+                         nested_model=True):
 
         # Get the X and y df's - assume self.val_subjects stores
         # only subjects with non nan target variables
@@ -1202,20 +1225,35 @@ class BPtEvaluator():
 
         # Transform the X df, casts to array if just_model.
         if just_model:
+
+            # Calculate corresponding feat names
+            # with or without nested_model
             feat_names =\
                 estimator.transform_feat_names(feat_names,
-                                               encoders=self.encoders_)
+                                               encoders=self.encoders_,
+                                               nested_model=nested_model)
+
+            # Also calculate X_trans, with and without nested model
             X_trans = estimator.transform(X_trans,
-                                          transform_index=X_val_df.index)
-            estimator = estimator._final_estimator
+                                          transform_index=X_val_df.index,
+                                          nested_model=nested_model)
+
+            # If nested model, then we need to make sure to
+            # grab the nested final estimator
+            if nested_model:
+                estimator = estimator._nested_final_estimator
+
+            # Otherwise use the one deep final estimator
+            else:
+                estimator = estimator._final_estimator
 
         return estimator, X_trans, np.array(y_val_df), feat_names
 
     @doc(dataset=_base_docs['dataset'])
     def permutation_importance(self, dataset,
                                n_repeats=10, scorer='default',
-                               just_model=True, return_as='dfs',
-                               n_jobs=1, random_state='default'):
+                               just_model=True, nested_model=True,
+                               return_as='dfs', n_jobs=1, random_state='default'):
         '''This function computes the permutation feature importances
         from the base scikit-learn function
         :func:`sklearn.inspection.permutation_importance`
@@ -1250,6 +1288,26 @@ class BPtEvaluator():
             be re-transformed through the full pipeline to evaluate each
             feature. If set to False, will permute the features in the
             original feature space (which may be useful in some context).
+
+            ::
+
+                default = True
+
+        nested_model : bool, optional
+            In the case that `just_model` is set to True, there exists
+            in some cases the further option to use an even more transformed
+            set of features. For example, in the case where in the main pipeline
+            the final estimator is another pipeline, there could be more static
+            transformations applied in this second pipeline. If `nested_model` is
+            set to True, then it will attempt to apply these further nested
+            transformations in the same way as with just_model, feeding in
+            eventually an even further transformed set of features and even more
+            specific final estimator when calculating the permutation feature
+            importances.
+
+            By default, this value is True, so the calculated
+            feature importances here will correspond to the
+            saved `self.feat_names` in this object.
 
             ::
 
@@ -1329,7 +1387,8 @@ class BPtEvaluator():
             # Get correct estimator, X_val, y_val and feat_names
             estimator, X_val, y_val, feat_names =\
                 self._get_val_fold_Xy(estimator, X_df=X, y_df=y,
-                                      fold=fold, just_model=just_model)
+                                      fold=fold, just_model=just_model,
+                                      nested_model=nested_model)
             all_feat_names.append(feat_names)
 
             # Run the sklearn feature importances.
@@ -1357,7 +1416,7 @@ class BPtEvaluator():
                      importances_std=fis_to_df(std_series))
 
     @doc(dataset=_base_docs['dataset'])
-    def get_X_transform_df(self, dataset, fold=0, subjects='tr'):
+    def get_X_transform_df(self, dataset, fold=0, subjects='tr', nested_model=True):
         '''This method is used as a helper for getting the transformed
         input data for one of the saved models run during evaluate.
 
@@ -1377,6 +1436,26 @@ class BPtEvaluator():
             selected for or lastly any valid
             :ref:`Subjects` style input.
 
+            ::
+
+                default = 'tr'
+
+        nested_model : bool, optional
+            In the case where the final estimator is itself
+            a nested pipeline, the user may want to apply any of
+            those transformations too. If passed as True, then these
+            transformed features will apply to the fitted estimators
+            `self._nested_final_estimator`, which may not be the same
+            a the base `self._final_estimator`.
+
+            Note: In the case of some complex nested ensemble, this method
+            may break.
+
+            ::
+
+                default = False
+
+
         Returns
         ----------
         X_trans_df : pandas DataFrame
@@ -1390,6 +1469,8 @@ class BPtEvaluator():
             of the pipeline.
         '''
 
+        # This method requires that the fitted estimators
+        # were saved.
         self._estimators_check()
 
         # Estimator from the fold
@@ -1400,16 +1481,24 @@ class BPtEvaluator():
         elif subjects == 'val':
             subjects = self.val_subjects[fold]
 
-        # Get feature names from fold
-        feat_names = self.feat_names[fold]
-
-        # Get as X
+        # Get as X dataframe, since passing df don't need to worry
+        # about transform_index
         X_fold, _ = dataset.get_Xy(problem_spec=self.ps,
                                    subjects=subjects)
 
+        # Get feature names from fold
+        if nested_model:
+            feat_names = self.feat_names[fold]
+
+        # If not using nested_model, need to re-calculate
+        else:
+            feat_names = estimator.transform_feat_names(X_fold,
+                                                        encoders=self.encoders_,
+                                                        nested_model=False)
+
         # Transform the data up to right before it gets passed to the
-        # elastic net
-        X_trans_fold = estimator.transform(X_fold)
+        # final model
+        X_trans_fold = estimator.transform(X_fold, nested_model=nested_model)
 
         # Put the data in a dataframe with associated feature names
         return pd.DataFrame(X_trans_fold, columns=feat_names)
@@ -1595,6 +1684,9 @@ class BPtEvaluator():
         as broken down by the different unique groups
         of a column in the passed :class:`Dataset`.
 
+        Note that the train subjects in resulting breakdown will not change,
+        that only the validation sets will be split by group.
+
         Parameters
         ------------
         group : str
@@ -1635,6 +1727,8 @@ class BPtEvaluator():
               preds and scores representing this subset.
         '''
 
+        from .compare import compare_dict_from_existing
+
         if self.preds is None:
             raise RuntimeError('store_preds must have been set '
                                'to True to use this function.')
@@ -1658,10 +1752,18 @@ class BPtEvaluator():
             # Get evaluator subset
             subsets[clean_str(value)] =\
                 BPtEvaluatorSubset(self, subjs, subset_name=subset_name)
-
-        return subsets
+        
+        # Return as compare dict, so we have access to the summary function
+        return compare_dict_from_existing(subsets)
 
     def to_pickle(self, loc):
+        '''Quick helper to save as pickle.
+
+        Parameters
+        -----------
+        loc : str
+            The location in which to save the results object.
+        '''
 
         with open(loc, 'wb') as f:
             pkl.dump(self, f)

@@ -350,6 +350,12 @@ class CompareDict(dict):
             return None
 
         if not isinstance(k, Options):
+            
+            # Cast w/ clean str if numeric
+            if isinstance(k, (int, float)):
+               k = clean_str(k)
+
+            # To options
             k = Options(k)
 
         return k

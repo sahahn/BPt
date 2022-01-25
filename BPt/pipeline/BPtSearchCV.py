@@ -25,6 +25,7 @@ class BPtSearchCV(BaseEstimator):
 
     _needs_mapping = True
     _needs_fit_index = True
+    _needs_transform_nested_model = True
     name = 'search'
 
     def __init__(self, estimator=None, ps=None,
@@ -141,11 +142,12 @@ class BPtSearchCV(BaseEstimator):
         return self.best_estimator_.decision_function(X)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def transform(self, X, transform_index=None):
+    def transform(self, X, transform_index=None, nested_model=False):
 
         trans_params = _get_est_trans_params(
             self.best_estimator_,
-            transform_index=transform_index)
+            transform_index=transform_index,
+            nested_model=nested_model)
 
         return self.best_estimator_.transform(X, **trans_params)
 
@@ -163,13 +165,14 @@ class BPtSearchCV(BaseEstimator):
         return self.best_estimator_.transform_df(X_df, encoders=encoders)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def transform_feat_names(self, X_df, encoders=None):
+    def transform_feat_names(self, X_df, encoders=None, nested_model=False):
         return self.best_estimator_.transform_feat_names(X_df,
-                                                         encoders=encoders)
+                                                         encoders=encoders,
+                                                         nested_model=nested_model)
 
     @if_delegate_has_method(delegate=('best_estimator_', 'estimator'))
-    def inverse_transform_FIs(self, fis):
-        return self.best_estimator_.inverse_transform_FIs(fis)
+    def inverse_transform_fis(self, fis):
+        return self.best_estimator_.inverse_transform_fis(fis)
 
     def _set_cv(self, fit_index):
 

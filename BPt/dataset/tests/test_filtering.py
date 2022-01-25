@@ -242,6 +242,49 @@ def test_filter_categorical_by_percent():
     assert 'category' not in df.scopes['1']
     assert 'category' in df.scopes['2']
 
+def test_filter_categorical_by_percent_category():
+
+    df = get_fake_dataset6(catergory=True)
+    df.filter_categorical_by_percent(drop_percent=1, scope='all',
+                                     drop=True, inplace=True)
+    assert len(df) == 10
+    assert len(df['2'].unique()) == 3
+
+    df = get_fake_dataset6(catergory=True)
+    df = df.filter_categorical_by_percent(drop_percent=11, scope='all',
+                                          drop=True)
+    assert len(df) == 9
+    assert len(df['2'].unique()) == 2
+
+    df = get_fake_dataset6(catergory=True)
+    df = df.filter_categorical_by_percent(drop_percent=11, scope='2',
+                                          drop=True)
+    assert len(df) == 10
+
+    df = get_fake_dataset6(catergory=True)
+    df.filter_categorical_by_percent(drop_percent=20, scope='2',
+                                     drop=True, inplace=True)
+    assert len(df) == 9
+    assert len(df['2'].unique()) == 2
+
+    df = get_fake_dataset6(catergory=True)
+    df.filter_categorical_by_percent(drop_percent=20, scope='2',
+                                     drop=False, inplace=True)
+    assert len(df) == 10
+    assert len(df['2'].unique()) == 2
+    assert 'category' in df.scopes['2']
+
+def test_fobp_cat_drop_false():
+
+    df = get_fake_dataset6(catergory=True)
+
+    assert len(df['2'].unique()) == 3
+    assert df['2'].isna().sum() == 1
+
+    ret_df = df.filter_categorical_by_percent(drop_percent=20, scope='2',
+                                              drop=False, inplace=False)
+    assert df['2'].isna().sum() == 1
+    assert ret_df['2'].isna().sum() == 2
 
 def test_drop_subjects_by_nan():
 
@@ -277,6 +320,39 @@ def test_drop_subjects_by_nan():
     df = df.drop_subjects_by_nan(threshold=.9, scope='all')
     assert df.shape == (4, 4)
 
+def test_drop_subjects_by_nan_keywords():
+    
+    df = get_nans_dataset()
+    df = df.drop_subjects_by_nan(threshold='any', scope='all')
+    assert df.shape == (1, 4)
+
+    df = get_nans_dataset()
+    df = df.drop_subjects_by_nan(threshold='all', scope='all')
+    assert df.shape == (4, 4)
+
+def test_drop_subjects_by_nan_inplace():
+
+    df = get_nans_dataset()
+    ret_df = df.drop_subjects_by_nan(threshold=1, scope='all')
+    assert df.shape == (4, 4)
+    assert ret_df.shape == (1, 4)
+
+    df.drop_subjects_by_nan(threshold=1, inplace=True, scope='all')
+    assert df.shape == (1, 4)
+
+def test_drop_subjects_by_nan_inplace_cat():
+
+    # Set cols to category
+    df = get_nans_dataset()
+    for col in df:
+        df[col] = df[col].astype('category')
+
+    ret_df = df.drop_subjects_by_nan(threshold=1, scope='all')
+    assert df.shape == (4, 4)
+    assert ret_df.shape == (1, 4)
+
+    df.drop_subjects_by_nan(threshold=1, inplace=True, scope='all')
+    assert df.shape == (1, 4)
 
 def test_drop_cols_by_nan():
 

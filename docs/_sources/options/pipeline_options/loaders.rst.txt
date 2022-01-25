@@ -20,18 +20,6 @@ Additionally, a link to the original models documentation as well as the impleme
 		defaults only
 
 
-"surface rois"
-**************
-
-  Base Class Documentation: :class:`BPt.extensions.loaders.SurfLabels`
-
-  Param Distributions
-
-	0. "default" ::
-
-		defaults only
-
-
 "volume rois"
 *************
 

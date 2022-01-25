@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.BPtEvaluatorSubset.n_subjects &#8212; BPt 2.1.6 documentation</title>
+    <title>BPt.BPtEvaluatorSubset.n_subjects &#8212; BPt 2.2.0 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -280,7 +280,10 @@
 <em class="property"><span class="pre">property</span> </em><span class="sig-prename descclassname"><span class="pre">BPtEvaluatorSubset.</span></span><span class="sig-name descname"><span class="pre">n_subjects</span></span><a class="headerlink" href="#BPt.BPtEvaluatorSubset.n_subjects" title="Permalink to this definition">¶</a></dt>
 <dd><p>A quicker helper property to get
 the sum of the length of <a class="reference internal" href="BPt.BPtEvaluator.train_subjects.html#BPt.BPtEvaluator.train_subjects" title="BPt.BPtEvaluator.train_subjects"><code class="xref py py-data docutils literal notranslate"><span class="pre">train_subjects</span></code></a>
-and <a class="reference internal" href="BPt.BPtEvaluator.val_subjects.html#BPt.BPtEvaluator.val_subjects" title="BPt.BPtEvaluator.val_subjects"><code class="xref py py-data docutils literal notranslate"><span class="pre">val_subjects</span></code></a> from the 1st fold.</p>
+and <a class="reference internal" href="BPt.BPtEvaluator.val_subjects.html#BPt.BPtEvaluator.val_subjects" title="BPt.BPtEvaluator.val_subjects"><code class="xref py py-data docutils literal notranslate"><span class="pre">val_subjects</span></code></a>. If this number varies by fold,
+it will be set to None.</p>
+<p>This number is supposed to represent the number of subjects with non NaN targets
+used in the training and testing.</p>
 </dd></dl>
 
 </div>
@@ -309,7 +312,7 @@ and <a class="reference internal" href="BPt.BPtEvaluator.val_subjects.html#BPt.B
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2020-2021.<br/>
+          &copy; Copyright 2020-2022.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>

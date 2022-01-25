@@ -271,7 +271,7 @@ def save(lines, name):
             f.write('\n')
 
 
-def main():
+def save_all():
 
     problem_types = ['binary', 'regression', 'categorical']
 
@@ -411,4 +411,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    save_all()

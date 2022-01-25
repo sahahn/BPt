@@ -62,11 +62,16 @@ def get_fake_dataset5():
     return df
 
 
-def get_fake_dataset6():
+def get_fake_dataset6(catergory=False):
 
     df = Dataset()
     df['1'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
     df['2'] = [0, 0, 0, 0, 0, 0, 0, 0, np.nan, 1]
+
+    if catergory:
+        df['1'] = df['1'].astype('category')
+        df['2'] = df['2'].astype('category')
+
     return df
 
 
@@ -140,3 +145,11 @@ def get_fake_multi_index_dataset():
     fake.set_index(['subj', 'event'], inplace=True)
 
     return fake
+
+def get_example1_dataset():
+    
+    df = Dataset()
+    df['animals'] = ['cat', 'cat', 'dog', 'dog', 'elk']
+    df['numbers'] = [1.0, 2.0, 1.0, 2.0, np.nan]
+
+    return df

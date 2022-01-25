@@ -23,6 +23,9 @@ import webbrowser
 import docutils
 import docutils.parsers.rst
 
+from save_pipe_options import save_all
+from prep_docs_data import prep_data
+
 DOC_PATH = os.path.dirname(os.path.abspath(__file__))
 SOURCE_PATH = os.path.join(DOC_PATH, "source")
 BUILD_PATH = os.path.join(DOC_PATH, "build")
@@ -308,6 +311,11 @@ def main():
         raise ValueError(
             f"Unknown command {args.command}. Available options: {joined}")
 
+    # Make sure docs data is generated / up to date
+    if args.command != 'clean':
+        prep_data()
+        save_all()
+
     # Below we update both os.environ and sys.path. The former is used by
     # external libraries (namely Sphinx) to compile this module and resolve
     # the import of `python_path` correctly. The latter is used to resolve
@@ -332,10 +340,18 @@ def main():
     getattr(builder, args.command)()
 
     if args.command == 'html':
+
+        # Remove existing if any 
         print('Removing existing ../docs/ and adding copy of generated docs.')
         shutil.rmtree('../docs/', ignore_errors=True)
+
+        # Make sure exists
+        os.makedirs('build/html/', exist_ok=True)
+
+        # Then copy
         shutil.copytree('build/html/', '../docs/')
 
+        # Add no jekyll tag
         with open('../docs/.nojekyll', 'w') as f:
             f.write('')
 

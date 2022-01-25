@@ -20,6 +20,7 @@ def test_BPtLoader():
     assert loader._n_jobs == 1
 
     X_trans = loader.fit_transform(X)
+    
 
     assert X_trans.shape == (5, 8)
     assert X_trans[0][0] == 0
@@ -28,6 +29,21 @@ def test_BPtLoader():
 
     # Clean up
     clean_fake_mapping(10)
+
+def test_BPtLoader_fit():
+
+    mapping = get_fake_mapping(10)
+    X = np.arange(10).reshape((5, 2))
+
+    # Test base behavior
+    loader = BPtLoader(estimator=Identity(),
+                       inds=[0, 1],
+                       file_mapping=mapping,
+                       n_jobs=1,
+                       fix_n_jobs=False,
+                       cache_loc=None)
+
+    X_trans = loader.fit(X)
 
 def test_BPtLoader2():
 

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.Dataset.test_split &#8212; BPt 2.1.6 documentation</title>
+    <title>BPt.Dataset.test_split &#8212; BPt 2.2.0 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -441,7 +441,7 @@
 <h1>BPt.Dataset.test_split<a class="headerlink" href="#bpt-dataset-test-split" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.Dataset.test_split">
-<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">test_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv_strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_validation.py#L441-L522"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.test_split" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Dataset.</span></span><span class="sig-name descname"><span class="pre">test_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv_strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/dataset/_validation.py#L444-L525"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.Dataset.test_split" title="Permalink to this definition">¶</a></dt>
 <dd><div class="line-block">
 <div class="line">This method defines and returns a Train and Test Dataset
 based on the passed parameters, allowing for defining
@@ -575,14 +575,14 @@ influence the original <a class="reference internal" href="BPt.Dataset.html#BPt.
 <span class="gh">Out[5]: </span><span class="go"></span>
 <span class="go">  animals  numbers</span>
 <span class="go">0   &#39;cat&#39;      1.0</span>
+<span class="go">1   &#39;cat&#39;      2.0</span>
 <span class="go">2   &#39;dog&#39;      1.0</span>
 <span class="go">3   &#39;dog&#39;      2.0</span>
-<span class="go">4   &#39;elk&#39;      NaN</span>
 
 <span class="gp">In [6]: </span><span class="n">test_data</span>
 <span class="gh">Out[6]: </span><span class="go"></span>
 <span class="go">  animals  numbers</span>
-<span class="go">1   &#39;cat&#39;      2.0</span>
+<span class="go">4   &#39;elk&#39;      NaN</span>
 </pre></div>
 </div>
 <p>We can also define a split by passing specific subjects.</p>
@@ -635,7 +635,7 @@ are set as test subjects.</p>
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2020-2021.<br/>
+          &copy; Copyright 2020-2022.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>

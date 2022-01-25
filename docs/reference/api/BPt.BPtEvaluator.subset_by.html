@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BPt.BPtEvaluator.subset_by &#8212; BPt 2.1.6 documentation</title>
+    <title>BPt.BPtEvaluator.subset_by &#8212; BPt 2.2.0 documentation</title>
     
   <link rel="stylesheet" href="../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -39,7 +39,7 @@
     <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="BPt.BPtEvaluatorSubset" href="BPt.BPtEvaluatorSubset.html" />
+    <link rel="next" title="BPt.BPtEvaluator.to_pickle" href="BPt.BPtEvaluator.to_pickle.html" />
     <link rel="prev" title="BPt.BPtEvaluator.permutation_importance" href="BPt.BPtEvaluator.permutation_importance.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -277,12 +277,14 @@
 <h1>BPt.BPtEvaluator.subset_by<a class="headerlink" href="#bpt-bptevaluator-subset-by" title="Permalink to this headline">¶</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="BPt.BPtEvaluator.subset_by">
-<span class="sig-prename descclassname"><span class="pre">BPtEvaluator.</span></span><span class="sig-name descname"><span class="pre">subset_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1589-L1662"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.BPtEvaluator.subset_by" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">BPtEvaluator.</span></span><span class="sig-name descname"><span class="pre">subset_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/sahahn/BPt/blob/master/BPt/main/BPtEvaluator.py#L1678-L1757"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BPt.BPtEvaluator.subset_by" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate instances of <a class="reference internal" href="BPt.BPtEvaluatorSubset.html#BPt.BPtEvaluatorSubset" title="BPt.BPtEvaluatorSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BPtEvaluatorSubset</span></code></a> based
 on subsets of subjects based on different unique groups.</p>
 <p>This method is used to analyze results
 as broken down by the different unique groups
 of a column in the passed <a class="reference internal" href="BPt.Dataset.html#BPt.Dataset" title="BPt.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a>.</p>
+<p>Note that the train subjects in resulting breakdown will not change,
+that only the validation sets will be split by group.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
@@ -344,7 +346,7 @@ preds and scores representing this subset.</div>
               <div class='prev-next-bottom'>
                 
     <a class='left-prev' id="prev-link" href="BPt.BPtEvaluator.permutation_importance.html" title="previous page">BPt.BPtEvaluator.permutation_importance</a>
-    <a class='right-next' id="next-link" href="BPt.BPtEvaluatorSubset.html" title="next page">BPt.BPtEvaluatorSubset</a>
+    <a class='right-next' id="next-link" href="BPt.BPtEvaluator.to_pickle.html" title="next page">BPt.BPtEvaluator.to_pickle</a>
 
               </div>
               
@@ -361,7 +363,7 @@ preds and scores representing this subset.</div>
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2020-2021.<br/>
+          &copy; Copyright 2020-2022.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
     </p>
   </div>

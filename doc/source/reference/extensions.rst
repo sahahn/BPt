@@ -12,8 +12,5 @@ Extension Classes
    :toctree: api/
 
    Identity
-   SurfLabels
-   SurfMaps
    ThresholdNetworkMeasures
    SingleConnectivityMeasure
-   RandomParcellation

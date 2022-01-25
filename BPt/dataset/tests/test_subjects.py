@@ -80,20 +80,20 @@ def test_get_subjects_nan():
 
     subjects = df.get_subjects('nan', return_as='set')
     assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
+    assert df.loc[list(subjects)].shape == (1, 3)
     subj = subjects.pop()
     assert subj == 0
     assert isinstance(subj, int)
 
     subjects = df.get_subjects('nan', return_as='flat index')
     assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
+    assert df.loc[list(subjects)].shape == (1, 3)
     assert subjects[0] == 0
     assert subjects[0].dtype == index_dtype
 
     subjects = df.get_subjects('nan', return_as='index')
     assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
+    assert df.loc[list(subjects)].shape == (1, 3)
     assert subjects[0] == 0
     assert subjects[0].dtype == index_dtype
 
@@ -144,7 +144,7 @@ def test_get_subjects_ValueSubset():
     vs = ValueSubset(name='3', values=[np.nan, 2], decode_values=False)
     subjects = df.get_subjects(vs, return_as='set')
     assert len(subjects) == 2
-    assert df.loc[subjects].shape == (2, 3)
+    assert df.loc[list(subjects)].shape == (2, 3)
 
     # Bad name col
     vs = ValueSubset(name=1, values=[np.nan, 2], decode_values=False)
@@ -163,32 +163,32 @@ def test_get_subjects_base():
     subjs = [0]
     subjects = df.get_subjects(subjs, return_as='set')
     assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
+    assert df.loc[list(subjects)].shape == (1, 3)
 
     subjs = ['0']
     subjects = df.get_subjects(subjs, return_as='set')
     assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
+    assert df.loc[list(subjects)].shape == (1, 3)
 
     subjs = np.array([0])
     subjects = df.get_subjects(subjs, return_as='set')
     assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
+    assert df.loc[list(subjects)].shape == (1, 3)
 
     subjs = pd.Index(data=[0], name=df.index.name)
     subjects = df.get_subjects(subjs, return_as='set')
     assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
+    assert df.loc[list(subjects)].shape == (1, 3)
 
     subjs = pd.Index(data=np.array([0, 2]), name=df.index.name)
     subjects = df.get_subjects(subjs, return_as='index')
     assert len(subjects) == 2
-    assert df.loc[subjects].shape == (2, 3)
+    assert df.loc[list(subjects)].shape == (2, 3)
     assert np.array_equal(np.array([0, 2]), subjects)
 
     subjects = df.get_subjects(subjs, return_as='flat index')
     assert len(subjects) == 2
-    assert df.loc[subjects].shape == (2, 3)
+    assert df.loc[list(subjects)].shape == (2, 3)
     assert np.array_equal(np.array([0, 2]), subjects)
 
 
@@ -202,7 +202,7 @@ def test_get_subjects_base_file():
 
     subjects = df.get_subjects(temp_loc, return_as='set')
     assert len(subjects) == 1
-    assert df.loc[subjects].shape == (1, 3)
+    assert df.loc[list(subjects)].shape == (1, 3)
 
     temp_loc = os.path.join(tempfile.gettempdir(), 'temp.txt')
     with open(temp_loc, 'w') as f:
@@ -211,7 +211,7 @@ def test_get_subjects_base_file():
 
     subjects = df.get_subjects(temp_loc, return_as='set')
     assert len(subjects) == 2
-    assert df.loc[subjects].shape == (2, 3)
+    assert df.loc[list(subjects)].shape == (2, 3)
 
 
 def test_multi_index_get_subjects():
@@ -251,4 +251,4 @@ def test_multi_index_get_subjects():
     subjs = df.get_subjects(subjects=('all', ['e1']),
                             return_as='set')
     assert len(subjs) == 3
-    assert df.loc[subjs].shape == (3, 3)
+    assert df.loc[list(subjs)].shape == (3, 3)

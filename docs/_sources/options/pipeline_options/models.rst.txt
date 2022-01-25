@@ -136,13 +136,12 @@ binary
 
 		defaults only
 
-	1. "hgb classifier dist1" ::
+	1. "hgb dist1" ::
 
 		max_iter: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
 		min_samples_leaf: Scalar(lower=10, upper=100).set_mutation(sigma=15.0).set_bounds(full_range_sampling=True, lower=10, upper=100).set_integer_casting()
 		max_leaf_nodes: Scalar(init=20, lower=6, upper=80).set_mutation(sigma=12.333333333333334).set_bounds(full_range_sampling=False, lower=6, upper=80).set_integer_casting()
 		l2_regularization: TransitionChoice([0, Log(lower=1e-05, upper=1)])
-		class_weight: TransitionChoice([None, 'balanced'])
 
 
 "knn classifier"
@@ -263,7 +262,7 @@ binary
 	1. "linear svc dist" ::
 
 		max_iter: 100
-		C: Log(lower=0.0001, upper=10000.0)
+		C: Log(lower=1, upper=10000.0)
 		class_weight: TransitionChoice([None, 'balanced'])
 
 
@@ -442,9 +441,9 @@ binary
 
   Param Distributions
 
-	0. "base sgd" ::
+	0. "default" ::
 
-		loss: 'squared_loss'
+		defaults only
 
 	1. "sgd elastic classifier" ::
 
@@ -768,13 +767,13 @@ regression
 	0. "base linear svr" ::
 
 		loss: 'epsilon_insensitive'
-		max_iter: 100
+		max_iter: 10000.0
 
 	1. "linear svr dist" ::
 
 		loss: 'epsilon_insensitive'
-		max_iter: 100
-		C: Log(lower=0.0001, upper=10000.0)
+		max_iter: 10000.0
+		C: Log(lower=1, upper=10000.0)
 
 
 "mlp regressor"
@@ -1111,13 +1110,12 @@ categorical
 
 		defaults only
 
-	1. "hgb classifier dist1" ::
+	1. "hgb dist1" ::
 
 		max_iter: Scalar(init=100, lower=3, upper=500).set_mutation(sigma=82.83333333333333).set_bounds(full_range_sampling=False, lower=3, upper=500).set_integer_casting()
 		min_samples_leaf: Scalar(lower=10, upper=100).set_mutation(sigma=15.0).set_bounds(full_range_sampling=True, lower=10, upper=100).set_integer_casting()
 		max_leaf_nodes: Scalar(init=20, lower=6, upper=80).set_mutation(sigma=12.333333333333334).set_bounds(full_range_sampling=False, lower=6, upper=80).set_integer_casting()
 		l2_regularization: TransitionChoice([0, Log(lower=1e-05, upper=1)])
-		class_weight: TransitionChoice([None, 'balanced'])
 
 
 "knn classifier"
@@ -1238,7 +1236,7 @@ categorical
 	1. "linear svc dist" ::
 
 		max_iter: 100
-		C: Log(lower=0.0001, upper=10000.0)
+		C: Log(lower=1, upper=10000.0)
 		class_weight: TransitionChoice([None, 'balanced'])
 
 
@@ -1417,9 +1415,9 @@ categorical
 
   Param Distributions
 
-	0. "base sgd" ::
+	0. "default" ::
 
-		loss: 'squared_loss'
+		defaults only
 
 	1. "sgd elastic classifier" ::
 

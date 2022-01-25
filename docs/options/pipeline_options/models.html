@@ -644,12 +644,11 @@ Additionally, a link to the original models documentation as well as the impleme
 </pre></div>
 </div>
 </li>
-<li><p>“hgb classifier dist1”</p>
+<li><p>“hgb dist1”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">82.83333333333333</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">min_samples_leaf</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">15.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">max_leaf_nodes</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">12.333333333333334</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">l2_regularization</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">)])</span>
-<span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </li>
@@ -793,7 +792,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </li>
 <li><p>“linear svc dist”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
-<span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">)</span>
+<span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">)</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -1006,8 +1005,8 @@ Additionally, a link to the original models documentation as well as the impleme
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
-<li><p>“base sgd”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span><span class="p">:</span> <span class="s1">&#39;squared_loss&#39;</span>
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
 </pre></div>
 </div>
 </li>
@@ -1406,14 +1405,14 @@ Additionally, a link to the original models documentation as well as the impleme
 <div><ol class="arabic" start="0">
 <li><p>“base linear svr”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span><span class="p">:</span> <span class="s1">&#39;epsilon_insensitive&#39;</span>
-<span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
+<span class="n">max_iter</span><span class="p">:</span> <span class="mf">10000.0</span>
 </pre></div>
 </div>
 </li>
 <li><p>“linear svr dist”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span><span class="p">:</span> <span class="s1">&#39;epsilon_insensitive&#39;</span>
-<span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
-<span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">)</span>
+<span class="n">max_iter</span><span class="p">:</span> <span class="mf">10000.0</span>
+<span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
@@ -1820,12 +1819,11 @@ Additionally, a link to the original models documentation as well as the impleme
 </pre></div>
 </div>
 </li>
-<li><p>“hgb classifier dist1”</p>
+<li><p>“hgb dist1”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">82.83333333333333</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">min_samples_leaf</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">15.0</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">max_leaf_nodes</span><span class="p">:</span> <span class="n">Scalar</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">set_mutation</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="mf">12.333333333333334</span><span class="p">)</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">full_range_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">set_integer_casting</span><span class="p">()</span>
 <span class="n">l2_regularization</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mi">1</span><span class="p">)])</span>
-<span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </li>
@@ -1969,7 +1967,7 @@ Additionally, a link to the original models documentation as well as the impleme
 </li>
 <li><p>“linear svc dist”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_iter</span><span class="p">:</span> <span class="mi">100</span>
-<span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">)</span>
+<span class="n">C</span><span class="p">:</span> <span class="n">Log</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">)</span>
 <span class="n">class_weight</span><span class="p">:</span> <span class="n">TransitionChoice</span><span class="p">([</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;balanced&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -2182,8 +2180,8 @@ Additionally, a link to the original models documentation as well as the impleme
 <p>Param Distributions</p>
 <blockquote>
 <div><ol class="arabic" start="0">
-<li><p>“base sgd”</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loss</span><span class="p">:</span> <span class="s1">&#39;squared_loss&#39;</span>
+<li><p>“default”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">defaults</span> <span class="n">only</span>
 </pre></div>
 </div>
 </li>

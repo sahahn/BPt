@@ -23,6 +23,7 @@ import webbrowser
 import docutils
 import docutils.parsers.rst
 
+from save_pipe_options import save_all
 from prep_docs_data import prep_data
 
 DOC_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -311,7 +312,9 @@ def main():
             f"Unknown command {args.command}. Available options: {joined}")
 
     # Make sure docs data is generated / up to date
-    prep_data()
+    if args.command != 'clean':
+        prep_data()
+        save_all()
 
     # Below we update both os.environ and sys.path. The former is used by
     # external libraries (namely Sphinx) to compile this module and resolve

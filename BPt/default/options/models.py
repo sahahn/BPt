@@ -142,9 +142,9 @@ MODELS = {
     'linear svm regressor': (LinearSVR, ['base linear svr',
                                          'linear svr dist']),
 
-    'sgd classifier': (SGDClassifier, ['base sgd', 'sgd elastic classifier',
+    'sgd classifier': (SGDClassifier, ['default', 'sgd elastic classifier',
                                        'sgd classifier big search']),
-    'sgd regressor': (SGDRegressor, ['base sgd', 'sgd elastic']),
+    'sgd regressor': (SGDRegressor, ['default', 'sgd elastic']),
 
     'gb classifier': (GradientBoostingClassifier, ['default']),
     'gb regressor': (GradientBoostingRegressor, ['default']),

@@ -3,8 +3,7 @@ name: Code Coverage
 on: [push, pull_request]
 
 jobs:
-  build:
-  
+  build:  
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +27,7 @@ jobs:
         fail_ci_if_error: true
 
     - name: Docs
-     run: |
+      run: |
         sudo apt install pandoc
         pip install sphinx==4.2.0
         pip install numpydoc

@@ -1165,7 +1165,7 @@ class BPtEvaluator():
         This method can be especially helpful when using :class:`Loader`.
 
         Returns
-        --------
+        -------
         inverse_fis : list of pandas Series
             | The inverse feature importances will be returned
               as a list, where each index of the list refers to

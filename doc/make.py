@@ -22,6 +22,7 @@ import webbrowser
 
 import docutils
 import docutils.parsers.rst
+from sqlalchemy import exists
 
 DOC_PATH = os.path.dirname(os.path.abspath(__file__))
 SOURCE_PATH = os.path.join(DOC_PATH, "source")
@@ -332,10 +333,18 @@ def main():
     getattr(builder, args.command)()
 
     if args.command == 'html':
+
+        # Remove existing if any 
         print('Removing existing ../docs/ and adding copy of generated docs.')
         shutil.rmtree('../docs/', ignore_errors=True)
+
+        # Make sure exists
+        os.makedirs('build/html/', exist_ok=True)
+
+        # Then copy
         shutil.copytree('build/html/', '../docs/')
 
+        # Add no jekyll tag
         with open('../docs/.nojekyll', 'w') as f:
             f.write('')
 
